@@ -323,11 +323,10 @@ def _OptimizeWithR8(options,
                               stderr_filter=stderr_filter,
                               fail_on_output=options.warnings_as_errors)
     except build_utils.CalledProcessError as e:
-      # Python will print the original exception as well.
-      raise Exception(
-          'R8 failed. Please see '
-          'https://chromium.googlesource.com/chromium/src/+/HEAD/build/'
-          'android/docs/java_optimization.md#Debugging-common-failures') from e
+      # Do not output command line because it is massive and makes the actual
+      # error message hard to find.
+      sys.stderr.write(e.output)
+      sys.exit(1)
 
     logging.debug('Collecting ouputs')
     base_context.CreateOutput()
@@ -442,10 +441,16 @@ https://chromium.googlesource.com/chromium/src.git/+/main/docs/ui/android/byteco
         stderr = ''
     return stderr
 
-  build_utils.CheckOutput(cmd,
-                          print_stdout=True,
-                          stderr_filter=stderr_filter,
-                          fail_on_output=warnings_as_errors)
+  try:
+    build_utils.CheckOutput(cmd,
+                            print_stdout=True,
+                            stderr_filter=stderr_filter,
+                            fail_on_output=warnings_as_errors)
+  except build_utils.CalledProcessError as e:
+    # Do not output command line because it is massive and makes the actual
+    # error message hard to find.
+    sys.stderr.write(e.output)
+    sys.exit(1)
   return failed_holder[0]
 
 

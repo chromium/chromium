@@ -20,6 +20,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import textwrap
 import time
 import zipfile
 
@@ -282,29 +283,23 @@ def CheckOutput(args,
   has_stderr = print_stderr and stderr
   if has_stdout or has_stderr:
     if has_stdout and has_stderr:
-      stream_string = 'stdout and stderr'
+      stream_name = 'stdout and stderr'
     elif has_stdout:
-      stream_string = 'stdout'
+      stream_name = 'stdout'
     else:
-      stream_string = 'stderr'
+      stream_name = 'stderr'
 
     if fail_on_output:
       MSG = """
 Command failed because it wrote to {}.
 You can often set treat_warnings_as_errors=false to not treat output as \
-failure (useful when developing locally)."""
-      raise CalledProcessError(cwd, args, MSG.format(stream_string))
-
-    MSG = """
-The above {} output was from:
-{}
+failure (useful when developing locally).
 """
-    if sys.version_info.major == 2:
-      joined_args = ' '.join(args)
-    else:
-      joined_args = shlex.join(args)
+      raise CalledProcessError(cwd, args, MSG.format(stream_name))
 
-    sys.stderr.write(MSG.format(stream_string, joined_args))
+    short_cmd = textwrap.shorten(shlex.join(args), width=200)
+    sys.stderr.write(
+        f'\nThe above {stream_name} output was from: {short_cmd}\n')
 
   return stdout
 
