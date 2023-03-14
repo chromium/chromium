@@ -163,10 +163,8 @@ public class ShareDelegateImpl implements ShareDelegate {
             final WebContents webContents, final String title, final @NonNull GURL visibleUrl,
             final GURL canonicalUrl, @ShareOrigin final int shareOrigin,
             final boolean shareDirectly) {
-        ShareParams.Builder builder =
-                new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl))
-                        .setScreenshotUri(null);
-        share(builder.build(),
+        share(new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl))
+                        .build(),
                 new ChromeShareExtras.Builder()
                         .setSaveLastUsed(!shareDirectly)
                         .setShareDirectly(shareDirectly)

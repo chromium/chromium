@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.android_share_sheet;
 
 import android.app.Activity;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -112,6 +113,13 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         if (customActions == null || customActions.size() == 0) {
             Log.i(TAG, "No custom actions provided.");
         }
+
+        // Update the image being shared into ShareParams's url based on the information from
+        // chromeShareExtras.
+        if (chromeShareExtras.isImage()) {
+            String imageUrlToShare = getImageUrlToShare(params, chromeShareExtras);
+            params.setUrl(imageUrlToShare);
+        }
         ShareHelper.shareWithSystemShareSheetUi(
                 params, profile, chromeShareExtras.saveLastUsed(), customActions);
     }
@@ -119,5 +127,16 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     @VisibleForTesting
     public static void resetForTesting() {
         AndroidCustomActionProvider.unregisterBroadcastReceiver();
+    }
+
+    private static String getImageUrlToShare(
+            ShareParams shareParams, ChromeShareExtras chromeShareExtras) {
+        if (!TextUtils.isEmpty(shareParams.getUrl())) {
+            return shareParams.getUrl();
+        }
+        if (!chromeShareExtras.getImageSrcUrl().isEmpty()) {
+            return chromeShareExtras.getImageSrcUrl().getSpec();
+        }
+        return chromeShareExtras.getContentUrl().getSpec();
     }
 }

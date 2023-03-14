@@ -158,6 +158,15 @@ public class ChromeShareExtras {
     }
 
     /**
+     * Whether the content being shared is an image based on the {@link #getDetailedContentType()}.
+     * */
+    public boolean isImage() {
+        return mDetailedContentType == DetailedContentType.IMAGE
+                || mDetailedContentType == DetailedContentType.GIF
+                || mDetailedContentType == DetailedContentType.SCREENSHOT;
+    }
+
+    /**
      * The builder for {@link ChromeShareExtras} objects.
      */
     public static class Builder {

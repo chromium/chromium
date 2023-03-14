@@ -4,18 +4,14 @@
 
 package org.chromium.chrome.browser.share;
 
-import android.content.ClipData;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Parcelable;
-import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -106,42 +102,6 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     }
 
     /**
-     * Share an image URI with an activity identified by the provided Component Name.
-     * @param window The current window.
-     * @param name The component name of the activity to share the image with.
-     * @param imageUri The uri generated from the content provider of the image to share with the
-     *         external activity.
-     * @param contentUrl The web url shared along with the image as a text if set.
-     */
-    public static void shareImage(final WindowAndroid window, final Profile profile,
-            final ComponentName name, Uri imageUri, @Nullable String contentUrl) {
-        shareImage(window, profile, name, imageUri, contentUrl, null);
-    }
-
-    /**
-     * Share an image URI with an activity identified by the provided Component Name.
-     * @param window The current window.
-     * @param name The component name of the activity to share the image with.
-     * @param imageUri The uri generated from the content provider of the image to share with the
-     *         external activity.
-     * @param contentUrl The web url shared along with the image as a text if set.
-     * @param customActions List of custom action for Android share sheet.
-     */
-    public static void shareImage(final WindowAndroid window, final Profile profile,
-            final ComponentName name, Uri imageUri, @Nullable String contentUrl,
-            @Nullable List<Parcelable> customActions) {
-        Intent shareIntent = getShareImageIntent(imageUri, contentUrl);
-        if (name == null) {
-            recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
-            sendChooserIntent(
-                    window, shareIntent, new SaveComponentCallback(profile, null), customActions);
-        } else {
-            shareIntent.setComponent(name);
-            fireIntent(window, shareIntent, null);
-        }
-    }
-
-    /**
      * Convenience method to create an Intent to retrieve all the apps that support sharing text.
      */
     public static Intent getShareTextAppCompatibilityIntent() {
@@ -157,7 +117,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * Convenience method to create an Intent to retrieve all the apps that support sharing image.
      */
     public static Intent getShareImageAppCompatibilityIntent() {
-        return getShareImageIntent(null, null);
+        return getShareFileAppCompatibilityIntent("image/jpeg");
     }
 
     /**
@@ -318,26 +278,5 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         public void onCancel() {
             if (mOriginalCallback != null) mOriginalCallback.onCancel();
         }
-    }
-
-    private static Intent getShareImageIntent(@Nullable Uri imageUri, @Nullable String contentUrl) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        intent.setType("image/jpeg");
-        if (imageUri == null) {
-            return intent;
-        }
-
-        intent.putExtra(Intent.EXTRA_STREAM, imageUri);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        // Add text, title and clip data preview for the image being shared.
-        ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
-        intent.setType(resolver.getType(imageUri));
-        intent.setClipData(ClipData.newUri(resolver, null, imageUri));
-        if (!TextUtils.isEmpty(contentUrl)) {
-            intent.putExtra(Intent.EXTRA_TEXT, contentUrl);
-        }
-        return intent;
     }
 }

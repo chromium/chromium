@@ -48,8 +48,11 @@ public class ShareParams {
     /** The Uri to the offline MHTML file to be shared. */
     private final Uri mOfflineUri;
 
-    /** The Uri of the screenshot of the page to be shared. */
-    private final Uri mScreenshotUri;
+    /**
+     * The Uri of a single image to be shared. If multiple image are being shared, use {@link
+     * #mFileUris}.
+     */
+    private final Uri mSingleImageUri;
 
     /** The boolean result of link to text generation. */
     private final Boolean mLinkToTextSuccessful;
@@ -69,7 +72,7 @@ public class ShareParams {
     private ShareParams(WindowAndroid window, String title, String text, String textFormat,
             String url, @Nullable String fileContentType, @Nullable ArrayList<Uri> fileUris,
             @Nullable ArrayList<String> fileAltTexts, @Nullable Uri offlineUri,
-            @Nullable Uri screenshotUri, @Nullable TargetChosenCallback callback,
+            @Nullable Uri singleImageUri, @Nullable TargetChosenCallback callback,
             @Nullable Boolean linkToTextSuccessful, @Nullable String previewText,
             String previewTextFormat) {
         mWindow = window;
@@ -81,7 +84,7 @@ public class ShareParams {
         mFileUris = fileUris;
         mFileAltTexts = fileAltTexts;
         mOfflineUri = offlineUri;
-        mScreenshotUri = screenshotUri;
+        mSingleImageUri = singleImageUri;
         mCallback = callback;
         mLinkToTextSuccessful = linkToTextSuccessful;
         mPreviewText = previewText;
@@ -180,11 +183,11 @@ public class ShareParams {
     }
 
     /**
-     * @return The Uri of the screenshot of the page to be shared.
+     * @return The Uri of a single image to be shared.
      */
     @Nullable
-    public Uri getScreenshotUri() {
-        return mScreenshotUri;
+    public Uri getSingleImageUri() {
+        return mSingleImageUri;
     }
 
     /**
@@ -230,7 +233,7 @@ public class ShareParams {
         private ArrayList<Uri> mFileUris;
         private ArrayList<String> mFileAltTexts;
         private Uri mOfflineUri;
-        private Uri mScreenshotUri;
+        private Uri mSingleImageUri;
         private TargetChosenCallback mCallback;
         private Boolean mLinkToTextSuccessful;
         private String mPreviewText;
@@ -302,10 +305,11 @@ public class ShareParams {
         }
 
         /**
-         * Sets the Uri of the screenshot of the page to be shared.
+         * Sets the Uri of a single image to be shared. If multiple image are being shared, use
+         * {@link #setFileUris(ArrayList)}.
          */
-        public Builder setScreenshotUri(@Nullable Uri screenshotUri) {
-            mScreenshotUri = screenshotUri;
+        public Builder setSingleImageUri(@Nullable Uri singleImageUri) {
+            mSingleImageUri = singleImageUri;
             return this;
         }
 
@@ -340,7 +344,7 @@ public class ShareParams {
                 mUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
             }
             return new ShareParams(mWindow, mTitle, mText, mTextFormat, mUrl, mFileContentType,
-                    mFileUris, mFileAltTexts, mOfflineUri, mScreenshotUri, mCallback,
+                    mFileUris, mFileAltTexts, mOfflineUri, mSingleImageUri, mCallback,
                     mLinkToTextSuccessful, mPreviewText, mPreviewTextFormat);
         }
     }

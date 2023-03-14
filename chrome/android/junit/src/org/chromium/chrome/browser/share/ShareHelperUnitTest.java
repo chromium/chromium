@@ -91,7 +91,11 @@ public class ShareHelperUnitTest {
 
     @Test
     public void shareImageWithChooser() throws SendIntentException {
-        ShareHelper.shareImage(mWindow, null, null, mImageUri, JUnitTestGURLs.BLUE_1);
+        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.BLUE_1)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setSingleImageUri(mImageUri)
+                                     .build();
+        ShareHelper.shareWithSystemShareSheetUi(params, null, true);
 
         Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
         assertNotNull("Shared intent is null.", nextIntent);
@@ -116,9 +120,12 @@ public class ShareHelperUnitTest {
     }
 
     @Test
-    public void shareImageWithComponentName() {
-        ShareHelper.shareImage(
-                mWindow, null, TEST_COMPONENT_NAME_1, mImageUri, JUnitTestGURLs.BLUE_1);
+    public void shareImageDirectly() {
+        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.BLUE_1)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setSingleImageUri(mImageUri)
+                                     .build();
+        ShareHelper.shareDirectly(params, TEST_COMPONENT_NAME_1, null, false);
 
         Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
         assertNotNull("Shared intent is null.", nextIntent);

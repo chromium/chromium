@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -40,8 +41,6 @@ import org.chromium.ui.base.WindowAndroid.IntentCallback;
 public class ShareHelper {
     /** The task ID of the activity that triggered the share action. */
     private static final String EXTRA_TASK_ID = "org.chromium.chrome.extra.TASK_ID";
-
-    private static final String EXTRA_SHARE_SCREENSHOT_AS_STREAM = "share_screenshot_as_stream";
 
     /** The string identifier used as a key to set the extra stream's alt text */
     private static final String EXTRA_STREAM_ALT_TEXT = "android.intent.extra.STREAM_ALT_TEXT";
@@ -272,14 +271,20 @@ public class ShareHelper {
                 | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(EXTRA_TASK_ID, params.getWindow().getActivity().get().getTaskId());
 
-        Uri screenshotUri = params.getScreenshotUri();
-        if (screenshotUri != null) {
+        Uri imageUri = params.getSingleImageUri();
+        if (imageUri != null) {
+            intent.putExtra(Intent.EXTRA_STREAM, imageUri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            // To give read access to an Intent target, we need to put |screenshotUri| in clipData
-            // because adding Intent.FLAG_GRANT_READ_URI_PERMISSION doesn't work for
-            // EXTRA_SHARE_SCREENSHOT_AS_STREAM.
-            intent.setClipData(ClipData.newRawUri("", screenshotUri));
-            intent.putExtra(EXTRA_SHARE_SCREENSHOT_AS_STREAM, screenshotUri);
+
+            // Add text, title and clip data preview for the image being shared.
+            ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
+            intent.setType(resolver.getType(imageUri));
+            intent.setClipData(ClipData.newUri(resolver, null, imageUri));
+            if (!TextUtils.isEmpty(params.getUrl())) {
+                intent.putExtra(Intent.EXTRA_TEXT, params.getUrl());
+            }
+
+            return intent;
         }
 
         if (params.getOfflineUri() != null) {
