@@ -30,6 +30,30 @@ using ScopedWebStateListObservation =
 using ScopedWebStateObservation =
     base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>;
 
+namespace {
+
+// Constructs an array of TabSwitcherItems from a `web_state_list` sorted by
+// recency, with the most recent first.
+NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
+  NSMutableArray* items = [[NSMutableArray alloc] init];
+  std::vector<web::WebState*> web_states;
+
+  for (int i = 0; i < web_state_list->count(); i++) {
+    web_states.push_back(web_state_list->GetWebStateAt(i));
+  }
+  std::sort(web_states.begin(), web_states.end(),
+            [](web::WebState* a, web::WebState* b) -> bool {
+              return a->GetLastActiveTime() > b->GetLastActiveTime();
+            });
+
+  for (web::WebState* web_state : web_states) {
+    [items addObject:GetTabSwitcherItem(web_state)];
+  }
+  return items;
+}
+
+}  // namespace
+
 @interface InactiveTabsMediator () <CRWWebStateObserver,
                                     SnapshotCacheObserver,
                                     WebStateListObserving> {
@@ -77,15 +101,14 @@ using ScopedWebStateObservation =
         std::make_unique<web::WebStateObserverBridge>(self);
     _scopedWebStateObservation = std::make_unique<ScopedWebStateObservation>(
         _webStateObserverBridge.get());
-    NSMutableArray* items = [[NSMutableArray alloc] init];
     for (int i = 0; i < _webStateList->count(); i++) {
       web::WebState* webState = _webStateList->GetWebStateAt(i);
       _scopedWebStateObservation->AddObservation(webState);
-      [items addObject:GetTabSwitcherItem(webState)];
     }
 
     // Push the tabs to the consumer.
-    [_consumer populateItems:items selectedItemID:nil];
+    [_consumer populateItems:CreateItemsOrderedByRecency(_webStateList)
+              selectedItemID:nil];
 
     // TODO(crbug.com/1421321): The snapshot cache never returns snapshots.
     // Investigate why.
