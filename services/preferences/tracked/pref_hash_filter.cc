@@ -173,7 +173,6 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::FilterSerializeData(
       GetOnWriteSynchronousCallbacks(pref_store_contents);
 
   if (!changed_paths_.empty()) {
-    base::TimeTicks checkpoint = base::TimeTicks::Now();
     {
       DictionaryHashStoreContents dictionary_contents(pref_store_contents);
       std::unique_ptr<PrefHashStoreTransaction> hash_store_transaction(
@@ -197,8 +196,6 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::FilterSerializeData(
       }
       changed_paths_.clear();
     }
-    UMA_HISTOGRAM_TIMES("Settings.FilterSerializeDataTime",
-                        base::TimeTicks::Now() - checkpoint);
   }
 
   return callback_pair;
@@ -219,8 +216,6 @@ void PrefHashFilter::FinalizeFilterOnLoad(
     PostFilterOnLoadCallback post_filter_on_load_callback,
     base::Value::Dict pref_store_contents,
     bool prefs_altered) {
-  base::TimeTicks checkpoint = base::TimeTicks::Now();
-
   bool did_reset = false;
   {
     DictionaryHashStoreContents dictionary_contents(pref_store_contents);
@@ -260,9 +255,6 @@ void PrefHashFilter::FinalizeFilterOnLoad(
       reset_on_load_observer_->OnResetOnLoad();
   }
   reset_on_load_observer_.reset();
-
-  UMA_HISTOGRAM_TIMES("Settings.FilterOnLoadTime",
-                      base::TimeTicks::Now() - checkpoint);
 
   std::move(post_filter_on_load_callback)
       .Run(std::move(pref_store_contents), prefs_altered);
