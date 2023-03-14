@@ -656,7 +656,7 @@ export class DeviceOperator {
   }
 
   /**
-   * Changes whether the camera frame rotation is enabled inside the Chrome OS
+   * Changes whether the camera frame rotation is enabled inside the ChromeOS
    * video capture device.
    *
    * @param deviceId The id of target camera device.

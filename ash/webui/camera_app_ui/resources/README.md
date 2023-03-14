@@ -4,7 +4,7 @@ Camera App is a packaged app designed to take photos and record videos.
 
 ## Supported systems
 
-Chrome OS. Other platforms are not guaranteed to work.
+ChromeOS. Other platforms are not guaranteed to work.
 
 ## Installing, packaging, and testing
 
