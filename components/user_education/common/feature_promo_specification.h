@@ -121,8 +121,24 @@ class FeaturePromoSpecification {
   FeaturePromoSpecification& operator=(FeaturePromoSpecification&& other);
 
   // Specifies a standard toast promo.
-  // Because toasts are transient, they expect a separate screen reader prompt.
-  // It is recommended that the prompt include an
+  //
+  // Because toasts are transient and time out after a short period, it can be
+  // difficult for screen reader users to navigate to the UI they point to.
+  // Because of this, toasts require a screen reader prompt that is different
+  // from the bubble text. This prompt should fully describe the UI the toast is
+  // pointing to, and may include a single parameter, which is the accelerator
+  // that is used to open/access the UI.
+  //
+  // For example, for a promo for the bookmark star, you might have:
+  // Bubble text: "Click here to bookmark the current tab."
+  // Accessible text: "Press |<ph name="ACCEL">$1<ex>Ctrl+D</ex></ph>| "
+  //                  "to bookmark the current tab"
+  // Accelerator: AcceleratorInfo(IDC_BOOKMARK_THIS_TAB)
+  //
+  // In this case, the system-specific accelerator for IDC_BOOKMARK_THIS_TAB is
+  // retrieved and its text representation is injected into the accessible text
+  // for screen reader users. An empty `AcceleratorInfo()` can be used for cases
+  // where the accessible text does not require an accelerator.
   static FeaturePromoSpecification CreateForToastPromo(
       const base::Feature& feature,
       ui::ElementIdentifier anchor_element_id,

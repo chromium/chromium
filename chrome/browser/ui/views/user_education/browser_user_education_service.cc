@@ -209,12 +209,10 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHAutofillVirtualCardSuggestionFeature:
   registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
           kAutofillCreditCardSuggestionEntryElementId,
-          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL,
-          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL,
-          FeaturePromoSpecification::AcceleratorInfo())
+          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL)
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)));
 
   // kIPHDesktopPwaInstallFeature:
@@ -295,14 +293,14 @@ void MaybeRegisterChromeFeaturePromos(
       kBookmarkStarViewElementId, IDS_READING_LIST_ENTRY_POINT_PROMO));
 
   // kIPHIntentChipFeature
-  registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
-      feature_engagement::kIPHIntentChipFeature, kIntentChipElementId,
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+      &feature_engagement::kIPHIntentChipFeature, kIntentChipElementId,
 #if BUILDFLAG(IS_CHROMEOS)
-      IDS_INTENT_CHIP_IPH_CHROME_OS, IDS_INTENT_CHIP_IPH_CHROME_OS,
+      IDS_INTENT_CHIP_IPH_CHROME_OS
 #else
-      IDS_INTENT_CHIP_IPH_GENERIC, IDS_INTENT_CHIP_IPH_GENERIC,
+      IDS_INTENT_CHIP_IPH_GENERIC
 #endif
-      FeaturePromoSpecification::AcceleratorInfo()));
+      ));
 
   // kIPHReadingListInSidePanelFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
