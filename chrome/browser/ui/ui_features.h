@@ -92,7 +92,7 @@ BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 BASE_DECLARE_FEATURE(kTabGroupsNewBadgePromo);
 
 BASE_DECLARE_FEATURE(kTabGroupsSave);
-extern const base::FeatureParam<bool> kTabGroupsSaveSyncIntegration;
+BASE_DECLARE_FEATURE(kTabGroupsSaveSyncIntegration);
 
 BASE_DECLARE_FEATURE(kTabHoverCardImages);
 

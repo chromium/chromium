@@ -470,7 +470,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-    if (features::kTabGroupsSaveSyncIntegration.Get()) {
+    if (base::FeatureList::IsEnabled(features::kTabGroupsSaveSyncIntegration)) {
       controllers.push_back(std::make_unique<syncer::ModelTypeController>(
           syncer::SAVED_TAB_GROUP,
           std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
@@ -643,7 +643,8 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     case syncer::SAVED_TAB_GROUP: {
-      DCHECK(features::kTabGroupsSaveSyncIntegration.Get());
+      DCHECK(base::FeatureList::IsEnabled(
+          features::kTabGroupsSaveSyncIntegration));
       return SavedTabGroupServiceFactory::GetForProfile(profile_)
           ->bridge()
           ->change_processor()

@@ -184,8 +184,12 @@ BASE_FEATURE(kTabGroupsNewBadgePromo,
 BASE_FEATURE(kTabGroupsSave,
              "TabGroupsSave",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kTabGroupsSaveSyncIntegration{
-    &kTabGroupsSave, "TabGroupsSaveSyncIntegration", false};
+
+// Enables users to explicitly save and recall tab groups.
+// https://crbug.com/1223929
+BASE_FEATURE(kTabGroupsSaveSyncIntegration,
+             "TabGroupsSaveSyncIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954
