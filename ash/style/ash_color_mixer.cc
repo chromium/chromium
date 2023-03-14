@@ -156,9 +156,13 @@ void AddContentColors(ui::ColorMixer& mixer,
       ui::SetAlpha(kColorAshAppStateIndicatorColor, kDisabledColorOpacity);
   mixer[kColorAshShelfHandleColor] = {cros_tokens::kIconColorSecondary};
   mixer[kColorAshShelfTooltipBackgroundColor] = {
-      kColorAshInvertedShieldAndBase80};
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshInvertedShieldAndBase80};
   mixer[kColorAshShelfTooltipForegroundColor] = {
-      cros_tokens::kTextColorPrimaryInverted};
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysInverseOnSurface)
+          : cros_tokens::kTextColorPrimaryInverted};
   mixer[kColorAshSliderColorActive] = {kColorAshTextColorURL};
   mixer[kColorAshSliderColorInactive] = {kColorAshScrollBarColor};
   mixer[kColorAshRadioColorActive] = {kColorAshTextColorURL};
