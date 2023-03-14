@@ -359,8 +359,6 @@ AutoUnlockMaybeEventsDisallowed::~AutoUnlockMaybeEventsDisallowed() {
   }
 }
 
-
-
 bool IsMainThread() {
   return V8IsMainThread();
 }

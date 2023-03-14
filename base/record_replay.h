@@ -194,13 +194,13 @@ inline unsigned HashInt(uint64_t key) {
 
 // Replay's hashing function for pointers, using the registered pointer id.
 template <typename T>
-struct ReplayPtrHash {
+struct ReplayPointerIdHash {
   static unsigned GetHash(T* key) {
-    if (!recordreplay::IsRecordingOrReplaying("pointer-ids")) {
+    if (!IsRecordingOrReplaying("pointer-ids")) {
       return HashInt((uint64_t)key);
     }
 
-    int ptr = recordreplay::PointerId(key);
+    int ptr = PointerId(key);
     CHECK(ptr != 0);
     return HashInt((uint32_t)ptr);
   }
@@ -212,18 +212,18 @@ struct ReplayPtrHash {
 
 // Replay's hashing function for scoped pointers, using the registered pointer id.
 template <typename T>
-struct ReplayRefPtrHash : ReplayPtrHash<T> {
-  using ReplayPtrHash<T>::GetHash;
+struct ReplayRefPointerIdHash : ReplayPointerIdHash<T> {
+  using ReplayPointerIdHash<T>::GetHash;
   static unsigned GetHash(const scoped_refptr<T>& key) {
-    if (!recordreplay::IsRecordingOrReplaying("pointer-ids")) {
+    if (!IsRecordingOrReplaying("pointer-ids")) {
       return HashInt((uint64_t)key.get());
     }
 
-    int ptr = recordreplay::PointerId(key.get());
+    int ptr = PointerId(key.get());
     CHECK(ptr != 0);
     return HashInt((uint32_t)ptr);
   }
-  using ReplayPtrHash<T>::Equal;
+  using ReplayPointerIdHash<T>::Equal;
   static bool Equal(const scoped_refptr<T>& a, const scoped_refptr<T>& b) {
     return a == b;
   }
@@ -253,8 +253,6 @@ class SCOPED_LOCKABLE AutoUnlockMaybeEventsDisallowed {
  private:
   base::Lock& lock_;
 };
-
-
 
 // This drop-in replacement for unique_ptr purposefully leaks owned memory
 // in non-deterministic execution paths, so as not to perform cleanup operations

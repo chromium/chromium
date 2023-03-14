@@ -122,7 +122,7 @@ void DeferredTaskHandler::HandleDirtyAudioSummingJunctions() {
 void DeferredTaskHandler::HandleDirtyAudioNodeOutputs() {
   AssertGraphOwner();
 
-  HashSet<AudioNodeOutput*, recordreplay::ReplayPtrHash<AudioNodeOutput>> dirty_outputs;
+  HashSet<AudioNodeOutput*, recordreplay::ReplayPointerIdHash<AudioNodeOutput>> dirty_outputs;
   dirty_audio_node_outputs_.swap(dirty_outputs);
 
   // Note: the updating of rendering state may cause output nodes
