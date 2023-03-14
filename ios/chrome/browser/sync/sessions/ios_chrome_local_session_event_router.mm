@@ -39,15 +39,18 @@ IOSChromeLocalSessionEventRouter::IOSChromeLocalSessionEventRouter(
     ChromeBrowserState* browser_state,
     sync_sessions::SyncSessionsClient* sessions_client,
     const syncer::SyncableService::StartSyncFlare& flare)
-    : handler_(nullptr), sessions_client_(sessions_client), flare_(flare) {
-  tab_parented_subscription_ =
-      TabParentingGlobalObserver::GetInstance()->RegisterCallback(
-          base::BindRepeating(&IOSChromeLocalSessionEventRouter::OnTabParented,
-                              base::Unretained(this)));
-
-  registrars_.insert(std::make_unique<AllWebStateListObservationRegistrar>(
-      browser_state, std::make_unique<Observer>(this),
-      AllWebStateListObservationRegistrar::Mode::REGULAR));
+    : registrar_(std::make_unique<AllWebStateListObservationRegistrar>(
+          browser_state,
+          std::make_unique<Observer>(this),
+          AllWebStateListObservationRegistrar::Mode::REGULAR)),
+      sessions_client_(sessions_client),
+      flare_(flare),
+      tab_parented_subscription_(
+          TabParentingGlobalObserver::GetInstance()->RegisterCallback(
+              base::BindRepeating(
+                  &IOSChromeLocalSessionEventRouter::OnTabParented,
+                  base::Unretained(this)))) {
+  DCHECK(sessions_client_);
 }
 
 IOSChromeLocalSessionEventRouter::~IOSChromeLocalSessionEventRouter() {}
@@ -141,8 +144,7 @@ void IOSChromeLocalSessionEventRouter::OnSessionEventEnded() {
   if (handler_)
     handler_->OnSessionRestoreComplete();
   if (!flare_.is_null()) {
-    flare_.Run(syncer::SESSIONS);
-    flare_.Reset();
+    std::move(flare_).Run(syncer::SESSIONS);
   }
 }
 
@@ -160,8 +162,7 @@ void IOSChromeLocalSessionEventRouter::OnWebStateChange(
     return;
 
   if (!flare_.is_null()) {
-    flare_.Run(syncer::SESSIONS);
-    flare_.Reset();
+    std::move(flare_).Run(syncer::SESSIONS);
   }
 }
 
