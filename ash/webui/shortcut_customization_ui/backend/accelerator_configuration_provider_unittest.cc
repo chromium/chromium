@@ -857,6 +857,12 @@ TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
   EXPECT_EQ(u"backspace", ash::GetKeyDisplay(ui::VKEY_BACK));
   EXPECT_EQ(u"enter", ash::GetKeyDisplay(ui::VKEY_RETURN));
   EXPECT_EQ(u"space", ash::GetKeyDisplay(ui::VKEY_SPACE));
+  EXPECT_EQ(u"home", ash::GetKeyDisplay(ui::VKEY_HOME));
+  EXPECT_EQ(u"end", ash::GetKeyDisplay(ui::VKEY_END));
+  EXPECT_EQ(u"delete", ash::GetKeyDisplay(ui::VKEY_DELETE));
+  EXPECT_EQ(u"insert", ash::GetKeyDisplay(ui::VKEY_INSERT));
+  EXPECT_EQ(u"page up", ash::GetKeyDisplay(ui::VKEY_PRIOR));
+  EXPECT_EQ(u"page down", ash::GetKeyDisplay(ui::VKEY_NEXT));
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {

@@ -41,6 +41,12 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
           {ui::KeyboardCode::VKEY_DICTATE, u"ToggleDictation"},
           {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
           {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
+          {ui::KeyboardCode::VKEY_HOME, u"home"},
+          {ui::KeyboardCode::VKEY_END, u"end"},
+          {ui::KeyboardCode::VKEY_DELETE, u"delete"},
+          {ui::KeyboardCode::VKEY_INSERT, u"insert"},
+          {ui::KeyboardCode::VKEY_PRIOR, u"page up"},
+          {ui::KeyboardCode::VKEY_NEXT, u"page down"},
           // TODO(longbowei): Determine if these strings require localization.
           // PM/UX input needed
           {ui::KeyboardCode::VKEY_SPACE,
