@@ -1482,7 +1482,7 @@ component("base") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger:fuchsia.logger_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.process.lifecycle:fuchsia.process.lifecycle_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.process.lifecycle:fuchsia.process.lifecycle_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/async",
       "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",
