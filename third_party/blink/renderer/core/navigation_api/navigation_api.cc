@@ -569,7 +569,14 @@ NavigationResult* NavigationApi::PerformNonTraverseNavigation(
   NavigationApiNavigation* navigation =
       MakeGarbageCollected<NavigationApiNavigation>(
           script_state, options, String(), std::move(serialized_state));
-  upcoming_non_traversal_navigation_ = navigation;
+  if (HasEntriesAndEventsDisabled()) {
+    // If `HasEntriesAndEventsDisabled()` is true, we still allow the
+    // navigation, but the navigate event won't fire and we won't do anything
+    // with the promises, so we need to detach the promise resolvers.
+    navigation->CleanupForWillNeverSettle();
+  } else {
+    upcoming_non_traversal_navigation_ = navigation;
+  }
 
   window_->GetFrame()->MaybeLogAdClickNavigation();
   window_->GetFrame()->Navigate(request, frame_load_type);
@@ -727,13 +734,15 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   PromoteUpcomingNavigationToOngoing(key);
 
   if (HasEntriesAndEventsDisabled()) {
-    if (ongoing_navigation_) {
-      // The spec only does the equivalent of CleanupApiNavigation() + resetting
-      // the state, but we need to detach promise resolvers for this case since
-      // we will never resolve the finished/committed promises.
-      ongoing_navigation_->CleanupForWillNeverSettle();
-      ongoing_navigation_ = nullptr;
-    }
+    // This assertions holds because:
+    // * back()/forward()/traverseTo() immediately fail when
+    //   `HasEntriesAndEventsDisabled()` is false, because current_entry_index_
+    //   will be permanently -1.
+    // * navigate()/reload() will not set `upcoming_non_traversal_navigation_`
+    //   when `HasEntriesAndEventsDisabled()` is false, so there's nothing to
+    //   promote to `ongoing_navigation_`.
+    // * non-NavigationApi navigations never create an upcoming navigation.
+    DCHECK(!ongoing_navigation_);
     return DispatchResult::kContinue;
   }
 
