@@ -650,7 +650,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="15916883652754430">Configurações de voz do sistema</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> desativou a depuração do adb, o que redefinirá seu <ph name="DEVICE_TYPE" />. Faça backup dos seus arquivos antes de reiniciar.</translation>
 <translation id="1592126057537046434">Tradução das Respostas rápidas</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Permissões removidas de <ph name="BEGIN_BOLD" />um site<ph name="END_BOLD" /> que você não visita há algum tempo}one{Permissões removidas de <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> que você não visita há algum tempo}other{Permissões removidas de <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> que você não visita há algum tempo}}</translation>
+<translation id="1593327942193951498">{NUM_SITES,plural, =1{Permissões removidas de <ph name="BEGIN_BOLD" />um site<ph name="END_BOLD" /> que você não acessa há algum tempo}one{Permissões removidas de <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> que você não acessa há algum tempo}other{Permissões removidas de <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> que você não acessa há algum tempo}}</translation>
 <translation id="1593594475886691512">Formatando...</translation>
 <translation id="159359590073980872">Cache de imagem</translation>
 <translation id="1593926297800505364">Salvar forma de pagamento</translation>
