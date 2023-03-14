@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/wizard_controller.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -67,6 +69,7 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/fake_auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
@@ -247,6 +250,89 @@ class ScopedFakeAutoEnrollmentClientFactory {
 
   policy::FakeAutoEnrollmentClient* created_auto_enrollment_client_ = nullptr;
   base::OnceClosure run_on_auto_enrollment_client_created_;
+};
+
+// Used to set up a fake `EnrollmentStateFetcher::Factory` for the duration of a
+// test, which invokes result callback with the specified enrollment state.
+class ScopedEnrollmentStateFetcherFactory {
+ public:
+  explicit ScopedEnrollmentStateFetcherFactory(
+      policy::AutoEnrollmentController* controller)
+      : controller_(controller) {
+    controller_->SetEnrollmentStateFetcherFactoryForTesting(base::BindRepeating(
+        &ScopedEnrollmentStateFetcherFactory::Create, base::Unretained(this)));
+  }
+
+  ScopedEnrollmentStateFetcherFactory(
+      const ScopedEnrollmentStateFetcherFactory&) = delete;
+  ScopedEnrollmentStateFetcherFactory& operator=(
+      const ScopedEnrollmentStateFetcherFactory&) = delete;
+
+  ~ScopedEnrollmentStateFetcherFactory() {
+    controller_->SetEnrollmentStateFetcherFactoryForTesting(
+        base::NullCallback());
+  }
+
+  // Waits until the `policy::AutoEnrollmentController` has requested the
+  // creation of an `EnrollmentStateFetcher`. If an `EnrollmentStateFetcher` has
+  // already been created, returns immediately. Note: The returned instance is
+  // owned by `policy::AutoEnrollmentController`.
+  void WaitUntilEnrollmentStateFetcherCreated() {
+    if (!fetcher_created_) {
+      base::RunLoop run_loop;
+      created_callback_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+  }
+
+  void ReportEnrollmentState(policy::AutoEnrollmentState state) {
+    ASSERT_TRUE(fetcher_created_);
+    ASSERT_FALSE(report_result_.is_null());
+    std::move(report_result_).Run(state);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void Reset() {
+    fetcher_created_ = false;
+    created_callback_.Reset();
+  }
+
+ private:
+  class MockEnrollmentStateFetcher
+      : public testing::StrictMock<policy::EnrollmentStateFetcher> {
+   public:
+    MOCK_METHOD(void, Start, ());
+  };
+
+  std::unique_ptr<policy::EnrollmentStateFetcher> Create(
+      base::OnceCallback<void(policy::AutoEnrollmentState)> report_result,
+      PrefService* local_state,
+      policy::EnrollmentStateFetcher::RlweClientFactory rlwe_client_factory,
+      policy::DeviceManagementService* device_management_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      ash::SystemClockClient* system_clock_client) {
+    // Only allow one `EnrollmentStateFetcher` to be created. The test should
+    // call `Reset` to expect a new `EnrollmentStateFetcher` to be created.
+    EXPECT_FALSE(fetcher_created_);
+    fetcher_created_ = true;
+    report_result_ = std::move(report_result);
+
+    auto fetcher = std::make_unique<MockEnrollmentStateFetcher>();
+    EXPECT_CALL(*fetcher, Start()).WillOnce(testing::Return());
+
+    if (!created_callback_.is_null()) {
+      std::move(created_callback_).Run();
+    }
+    return std::move(fetcher);
+  }
+
+  // The `policy::AutoEnrollmentController` which is using
+  // `MockEnrollmentStateFetcher`.
+  policy::AutoEnrollmentController* controller_;
+
+  bool fetcher_created_ = false;
+  base::OnceCallback<void(policy::AutoEnrollmentState)> report_result_;
+  base::OnceClosure created_callback_;
 };
 
 struct SwitchLanguageTestData {
@@ -1452,6 +1538,188 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          WizardControllerDeviceStateExplicitRequirementTest,
                          testing::Values(false, true));
+
+class WizardControllerUnifiedEnrollmentTest
+    : public WizardControllerDeviceStateTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WizardControllerDeviceStateTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
+  }
+
+  void ProgressUntilAutoEnrollmentCheckScreen() {
+    CheckCurrentScreen(WelcomeView::kScreenId);
+    EXPECT_CALL(*mock_welcome_screen_, HideImpl());
+    EXPECT_CALL(*mock_network_screen_, ShowImpl());
+    mock_welcome_screen_->ExitScreen(WelcomeScreen::Result::NEXT);
+
+    CheckCurrentScreen(NetworkScreenView::kScreenId);
+    EXPECT_CALL(*mock_network_screen_, HideImpl());
+    EXPECT_CALL(*mock_update_screen_, ShowImpl());
+
+    mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+
+    // Let update screen smooth time process (time = 0ms).
+    base::RunLoop().RunUntilIdle();
+
+    CheckCurrentScreen(UpdateView::kScreenId);
+    EXPECT_CALL(*mock_update_screen_, HideImpl());
+    EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl());
+    mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+
+    CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
+    mock_auto_enrollment_check_screen_->RealShow();
+  }
+};
+
+// Tests that when EnrollmentStateFetcher reports kNoEnrollment, we skip
+// enrollment screen and set state correctly.
+IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, NoEnrollment) {
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentState::kNoEnrollment);
+
+  CheckCurrentScreen(UserCreationView::kScreenId);
+  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(0);
+  EXPECT_CALL(*mock_enrollment_screen_, HideImpl()).Times(0);
+  EXPECT_EQ(policy::AutoEnrollmentState::kNoEnrollment,
+            auto_enrollment_controller()->state());
+  EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::
+                kForcedReEnrollmentExplicitlyRequired,
+            auto_enrollment_controller()->auto_enrollment_check_type());
+}
+
+// Tests that when EnrollmentStateFetcher reports kServerError, we show an error
+// on enrollment check screen and that it is not possible to enter guest mode.
+IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, ServerError) {
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentState::kServerError);
+
+  CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
+  EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
+            GetErrorScreen()->GetParentScreen());
+  test::OobeJS().ExpectHiddenPath(kGuestSessionLink);
+}
+
+// Tests that when EnrollmentStateFetcher reports kConnectionError, we show an
+// error on enrollment check screen and that it is not possible to enter guest
+// mode (like in FRE).
+IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, ConnectionError) {
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentState::kConnectionError);
+
+  CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
+  EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
+            GetErrorScreen()->GetParentScreen());
+  test::OobeJS().ExpectHiddenPath(kGuestSessionLink);
+}
+
+// Tests that when EnrollmentStateFetcher reports kEnrollment and configures
+// device state mode as FRE, we shown enrollment screen.
+IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Enrollment) {
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
+  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl());
+  base::Value::Dict device_state;
+  device_state.Set(
+      policy::kDeviceStateMode,
+      base::Value(policy::kDeviceStateRestoreModeReEnrollmentEnforced));
+  g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
+                                            std::move(device_state));
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentState::kEnrollment);
+
+  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
+}
+
+// Tests that when EnrollmentStateFetcher reports kDisabled and configures
+// corresponding device state mode, we show device disabled screen.
+IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Disabled) {
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
+  EXPECT_CALL(*device_disabled_screen_view_,
+              Show(_, _, kDisabledMessage, false));
+  base::Value::Dict device_state;
+  device_state.Set(policy::kDeviceStateMode,
+                   base::Value(policy::kDeviceStateModeDisabled));
+  device_state.Set(policy::kDeviceStateDisabledMessage,
+                   base::Value(kDisabledMessage));
+  g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
+                                            std::move(device_state));
+  fetcher_factory.ReportEnrollmentState(policy::AutoEnrollmentState::kDisabled);
+
+  CheckCurrentScreen(DeviceDisabledScreenView::kScreenId);
+}
+
+// Tests that when EnrollmentStateFetcher times out, we set state correctly,
+// show an error on enrollment check screen and that it is not possible to enter
+// guest mode (like in FRE).
+IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Timeout) {
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  auto_enrollment_controller()->SafeguardTimerForTesting().FireNow();
+
+  // Ensure that we show an error on enrollment check screen and that it is not
+  // possible to enter guest mode (like in FRE).
+  EXPECT_EQ(auto_enrollment_controller()->state(),
+            policy::AutoEnrollmentState::kConnectionError);
+  CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
+  EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
+            GetErrorScreen()->GetParentScreen());
+  test::OobeJS().ExpectHiddenPath(kGuestSessionLink);
+}
+
+// Tests that AutoEnrollmentController does not create another
+// EnrollmentStateFetcher while previous one is still running, but also that it
+// does create one when previous has completed and reported a state.
+IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, OneFetchAtATime) {
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  // This should determine that the enrollment state is already being fetched
+  // and skip creating a new EnrollmentStateFetcher. Otherwise, it would fail an
+  // expectation in fetcher_factory allowing only one EnrollmentStateFetcher to
+  // be created.
+  auto_enrollment_controller()->Start();
+
+  // Simulate connection error, reset factory and attempt a retry.
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentState::kConnectionError);
+  fetcher_factory.Reset();
+  auto_enrollment_controller()->Retry();
+
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+}
 
 class WizardControllerDeviceStateWithInitialEnrollmentTest
     : public WizardControllerDeviceStateTest {
