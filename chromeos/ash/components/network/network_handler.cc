@@ -367,6 +367,9 @@ void NetworkHandler::SetIsEnterpriseManaged(bool is_enterprise_managed) {
     esim_policy_login_metrics_logger_->SetIsEnterpriseManaged(
         is_enterprise_managed);
   }
+  if (hotspot_metrics_helper_) {
+    hotspot_metrics_helper_->set_is_enterprise_managed(is_enterprise_managed);
+  }
 }
 
 }  // namespace ash

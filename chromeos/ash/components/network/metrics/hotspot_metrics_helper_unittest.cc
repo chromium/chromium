@@ -253,4 +253,24 @@ TEST_F(HotspotMetricsHelperTest, HotspotMaxClientCountHistogram) {
       /*sample=*/2, /*expected_count=*/1);
 }
 
+TEST_F(HotspotMetricsHelperTest, HotspotIsDeviceManagedHistogram) {
+  PrepareEnableHotspotForTesting();
+  hotspot_controller_->EnableHotspot(base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotIsDeviceManaged, false,
+      /*expected_count=*/1);
+  hotspot_controller_->DisableHotspot(
+      base::DoNothing(), hotspot_config::mojom::DisableReason::kUserInitiated);
+  base::RunLoop().RunUntilIdle();
+
+  hotspot_metrics_helper_->set_is_enterprise_managed(
+      /*is_enterprise_managed=*/true);
+  hotspot_controller_->EnableHotspot(base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotIsDeviceManaged, true,
+      /*expected_count=*/1);
+}
+
 }  // namespace ash

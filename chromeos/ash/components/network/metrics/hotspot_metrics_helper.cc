@@ -60,6 +60,11 @@ const char HotspotMetricsHelper::kHotspotMaxClientCount[] =
     "Network.Ash.Hotspot.Upstream.Cellular.Usage.MaxConnectedDeviceCount";
 
 // static
+const char HotspotMetricsHelper::kHotspotIsDeviceManaged[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.Usage."
+    "ManagedStateWhenHotspotEnabled";
+
+// static
 void HotspotMetricsHelper::RecordSetTetheringEnabledResult(
     bool enabled,
     hotspot_config::mojom::HotspotControlResult result) {
@@ -293,9 +298,14 @@ void HotspotMetricsHelper::LogMaxClientCount() {
   base::UmaHistogramCounts100(kHotspotMaxClientCount, max_client_count_);
 }
 
+void HotspotMetricsHelper::LogIsDeviceManaged() {
+  base::UmaHistogramBoolean(kHotspotIsDeviceManaged, is_enterprise_managed_);
+}
+
 void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
   is_hotspot_active_ = true;
   LogUsageConfig();
+  LogIsDeviceManaged();
 
   usage_timer_ = base::ElapsedTimer();
   max_client_count_ = 0;

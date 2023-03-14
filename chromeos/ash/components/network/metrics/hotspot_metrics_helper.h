@@ -50,6 +50,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
             HotspotStateHandler* hotspot_state_handler,
             HotspotController* hotspot_controller);
 
+  void set_is_enterprise_managed(bool is_enterprise_managed) {
+    is_enterprise_managed_ = is_enterprise_managed;
+  }
+
  private:
   friend class HotspotMetricsHelperTest;
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
@@ -60,6 +64,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
                            HotspotUsageDurationHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
                            HotspotMaxClientCountHistogram);
+  FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
+                           HotspotIsDeviceManagedHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, EnableTetheringSuccess);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
                            EnableTetheringReadinessCheckFailure);
@@ -85,6 +91,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   static const char kHotspotUsageConfigCompatibilityMode[];
   static const char kHotspotUsageDuration[];
   static const char kHotspotMaxClientCount[];
+  static const char kHotspotIsDeviceManaged[];
   static const base::TimeDelta kLogAllowStatusAtLoginTimeout;
 
   static HotspotMetricsCheckReadinessResult GetCheckReadinessMetricsResult(
@@ -167,6 +174,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   void LogUsageConfig();
   void LogUsageDuration();
   void LogMaxClientCount();
+  void LogIsDeviceManaged();
 
   // Retrieves the latest hotspot allow status and converts to
   // HotspotMetricsAllowStatus enum. Return absl::nullopt if it is disallowed
@@ -191,6 +199,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
 
   // Tracks the usage time for each hotspot session.
   absl::optional<base::ElapsedTimer> usage_timer_;
+
+  // Tracks if the device is enterprise managed or not.
+  bool is_enterprise_managed_ = false;
 
   mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
       hotspot_state_enabled_state_observer_receiver_{this};

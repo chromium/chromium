@@ -12782,6 +12782,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Main frame"/>
 </enum>
 
+<enum name="BooleanManaged">
+  <int value="0" label="Unmanaged"/>
+  <int value="1" label="Managed"/>
+</enum>
+
 <enum name="BooleanManagedPref">
   <int value="0" label="Unmanaged Pref"/>
   <int value="1" label="Managed Pref"/>

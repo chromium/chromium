@@ -349,6 +349,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Network.Ash.Hotspot.Upstream.Cellular.Usage.ManagedStateWhenHotspotEnabled"
+    enum="BooleanManaged" expires_after="2023-10-01">
+  <owner>jiajunz@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Measures and tracks the number of the hotspot being used on a managed device
+    or not. Emitted each time the hotspot starts successfully.
+  </summary>
+</histogram>
+
+<histogram
     name="Network.Ash.Hotspot.Upstream.Cellular.Usage.MaxConnectedDeviceCount"
     units="count" expires_after="2023-10-01">
   <owner>jiajunz@google.com</owner>
