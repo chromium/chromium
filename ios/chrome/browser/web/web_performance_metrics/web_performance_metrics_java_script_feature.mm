@@ -74,19 +74,21 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  std::string* metric = message.body()->GetDict().FindString("metric");
+  base::Value::Dict& body_dict = message.body()->GetDict();
+
+  std::string* metric = body_dict.FindString("metric");
   if (!metric || metric->empty()) {
     return;
   }
 
-  absl::optional<double> value = message.body()->GetDict().FindDouble("value");
+  absl::optional<double> value = body_dict.FindDouble("value");
   if (!value) {
     return;
   }
 
   if (*metric == "FirstContentfulPaint") {
     absl::optional<double> frame_navigation_start_time =
-        message.body()->FindDoubleKey("frameNavigationStartTime");
+        body_dict.FindDouble("frameNavigationStartTime");
     if (!frame_navigation_start_time) {
       return;
     }
@@ -96,8 +98,7 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
                                      frame_navigation_start_time.value(),
                                      value.value(), message.is_main_frame());
   } else if (*metric == "FirstInputDelay") {
-    absl::optional<bool> loaded_from_cache =
-        message.body()->FindBoolKey("cached");
+    absl::optional<bool> loaded_from_cache = body_dict.FindBool("cached");
     if (!loaded_from_cache.has_value()) {
       return;
     }
