@@ -157,9 +157,49 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void DeleteIfNeeded();
 
   // Records loading milestones. Called only after ForwardToServiceWorker() is
-  // called and there was no error. |handled| is true when a fetch handler
-  // handled the request (i.e. non network fallback case).
-  void RecordTimingMetrics(bool handled);
+  // called and there was no error.
+  bool InitRecordTimingMetricsIfEligible(
+      const net::LoadTimingInfo& load_timing);
+  // Called when the fetch handler handles the request.
+  void RecordTimingMetricsForFetchHandlerHandledCase();
+  // Called when the fetch handler doesn't handle the requset (i.e. network
+  // fallback case).
+  void RecordTimingMetricsForNetworkFallbackCase();
+  // Time between the request is made and the request is routed to this loader.
+  void RecordStartToForwardServiceWorkerTiming(
+      const net::LoadTimingInfo& load_timing,
+      const std::string& initial_worker_status);
+  // Time spent for service worker startup.
+  void RecordForwardServiceWorkerToWorkerReadyTiming(
+      const net::LoadTimingInfo& load_timing,
+      const std::string& initial_worker_status);
+  // Browser -> Renderer IPC delay.
+  void RecordWorkerReadyToFetchHandlerStartTiming(
+      const net::LoadTimingInfo& load_timing,
+      const std::string& initial_worker_status);
+  // Time spent by fetch handlers.
+  void RecordFetchHandlerStartToFetchHandlerEndTiming(
+      const net::LoadTimingInfo& load_timing,
+      const std::string& initial_worker_status);
+  // Renderer -> Browser IPC delay.
+  void RecordFetchHandlerEndToResponseReceivedTiming(
+      const net::LoadTimingInfo& load_timing,
+      const std::string& initial_worker_status);
+  // Time spent reading response body.
+  void RecordResponseReceivedToCompletedTiming(
+      const net::LoadTimingInfo& load_timing,
+      const std::string& initial_worker_status);
+  // Time between the request is made and complete reading response body.
+  void RecordStartToCompletedTiming(const net::LoadTimingInfo& load_timing,
+                                    const std::string& initial_worker_status);
+  // Time between the request is made and network fallback.
+  void RecordStartToFallbackNetworkTiming(
+      const net::LoadTimingInfo& load_timing,
+      const std::string& initial_worker_status);
+  // Renderer -> Browser IPC delay (network fallback case).
+  void RecordFetchHandlerEndToFallbackNetworkTiming(
+      const net::LoadTimingInfo& load_timing,
+      const std::string& initial_worker_status);
 
   // Records metrics related to the fetch event handler execution.
   void RecordFetchEventHandlerMetrics(
