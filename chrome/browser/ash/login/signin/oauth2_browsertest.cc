@@ -12,10 +12,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
@@ -117,9 +117,7 @@ const char* BoolToString(bool value) {
 class OAuth2LoginManagerStateWaiter : public OAuth2LoginManager::Observer {
  public:
   explicit OAuth2LoginManagerStateWaiter(Profile* profile)
-      : profile_(profile),
-        waiting_for_state_(false),
-        final_state_(OAuth2LoginManager::SESSION_RESTORE_NOT_STARTED) {}
+      : profile_(profile) {}
 
   OAuth2LoginManagerStateWaiter(const OAuth2LoginManagerStateWaiter&) = delete;
   OAuth2LoginManagerStateWaiter& operator=(
@@ -138,8 +136,8 @@ class OAuth2LoginManagerStateWaiter : public OAuth2LoginManager::Observer {
 
     waiting_for_state_ = true;
     login_manager->AddObserver(this);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
+    signal_ = std::make_unique<base::test::TestFuture<void>>();
+    EXPECT_TRUE(signal_->Wait());
     login_manager->RemoveObserver(this);
   }
 
@@ -158,14 +156,16 @@ class OAuth2LoginManagerStateWaiter : public OAuth2LoginManager::Observer {
 
     final_state_ = state;
     waiting_for_state_ = false;
-    run_loop_->Quit();
+    // Acts as a notification for anyone waiting on `signal_`.
+    signal_->SetValue();
   }
 
-  Profile* profile_;
+  const base::raw_ptr<Profile> profile_;
   std::set<OAuth2LoginManager::SessionRestoreState> states_;
-  bool waiting_for_state_;
-  OAuth2LoginManager::SessionRestoreState final_state_;
-  std::unique_ptr<base::RunLoop> run_loop_;
+  bool waiting_for_state_ = false;
+  OAuth2LoginManager::SessionRestoreState final_state_ =
+      OAuth2LoginManager::SESSION_RESTORE_NOT_STARTED;
+  std::unique_ptr<base::test::TestFuture<void>> signal_;
 };
 
 // Blocks a thread associated with a given `task_runner` on construction and
@@ -214,27 +214,28 @@ class RequestDeferrer {
     if (start_event_.IsSignaled())
       return;
 
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
+    signal_ = std::make_unique<base::test::TestFuture<void>>();
+    EXPECT_TRUE(signal_->Wait());
   }
 
   void InterceptRequest(const HttpRequest& request) {
     start_event_.Signal();
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&RequestDeferrer::QuitRunnerOnUIThread,
+        FROM_HERE, base::BindOnce(&RequestDeferrer::NotifyOnUIThread,
                                   base::Unretained(this)));
     blocking_event_.Wait();
   }
 
  private:
-  void QuitRunnerOnUIThread() {
-    if (run_loop_)
-      run_loop_->Quit();
+  void NotifyOnUIThread() {
+    if (signal_) {
+      signal_->SetValue();
+    }
   }
 
   base::WaitableEvent blocking_event_;
   base::WaitableEvent start_event_;
-  std::unique_ptr<base::RunLoop> run_loop_;
+  std::unique_ptr<base::test::TestFuture<void>> signal_;
 };
 
 }  // namespace
@@ -492,13 +493,13 @@ class CookieReader {
   ~CookieReader() = default;
 
   void ReadCookies(Profile* profile) {
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> signal;
     profile->GetDefaultStoragePartition()
         ->GetCookieManagerForBrowserProcess()
         ->GetAllCookies(base::BindOnce(&CookieReader::OnGotAllCookies,
                                        base::Unretained(this),
-                                       run_loop.QuitClosure()));
-    run_loop.Run();
+                                       signal.GetCallback()));
+    EXPECT_TRUE(signal.Wait());
   }
 
   std::string GetCookieValue(const std::string& name) {
@@ -655,9 +656,9 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, TerminateOnBadMergeSessionAfterOnlineAuth) {
   SimulateNetworkOnline();
   WaitForGaiaPageLoad();
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> signal;
   auto subscription =
-      browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
+      browser_shutdown::AddAppTerminatingCallback(signal.GetCallback());
 
   // Configure FakeGaia so that online auth succeeds but merge session fails.
   FakeGaia::MergeSessionParams params;
@@ -676,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, TerminateOnBadMergeSessionAfterOnlineAuth) {
                                 kTestAccountServices);
 
   // User session should be terminated.
-  run_loop.Run();
+  EXPECT_TRUE(signal.Wait());
 
   // Merge session should fail. Check after `termination_waiter` to ensure
   // user profile is initialized and there is an OAuth2LoginManage.
@@ -802,7 +803,7 @@ class FakeGoogle {
     if (request_path == kHelloPagePath) {  // Serving "google" page.
       start_event_.Signal();
       content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&FakeGoogle::QuitRunnerOnUIThread,
+          FROM_HERE, base::BindOnce(&FakeGoogle::NotifyPageRequestSignal,
                                     base::Unretained(this)));
 
       http_response->set_code(net::HTTP_OK);
@@ -815,7 +816,7 @@ class FakeGoogle {
     } else if (hang_merge_session_ && request_path == kMergeSessionPath) {
       merge_session_event_.Signal();
       content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&FakeGoogle::QuitMergeRunnerOnUIThread,
+          FROM_HERE, base::BindOnce(&FakeGoogle::NotifyMergeSessionSignal,
                                     base::Unretained(this)));
       return std::make_unique<HungResponse>();
     } else {
@@ -834,8 +835,8 @@ class FakeGoogle {
     if (start_event_.IsSignaled())
       return;
 
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
+    page_request_signal_ = std::make_unique<base::test::TestFuture<void>>();
+    EXPECT_TRUE(page_request_signal_->Wait());
   }
 
   // Waits until we receive a request to serve the /MergeSession page.
@@ -844,28 +845,32 @@ class FakeGoogle {
     if (merge_session_event_.IsSignaled())
       return;
 
-    merge_session_run_loop_ = std::make_unique<base::RunLoop>();
-    merge_session_run_loop_->Run();
+    merge_session_signal_ = std::make_unique<base::test::TestFuture<void>>();
+    EXPECT_TRUE(merge_session_signal_->Wait());
   }
 
   void set_hang_merge_session() { hang_merge_session_ = true; }
 
  private:
-  void QuitRunnerOnUIThread() {
-    if (run_loop_)
-      run_loop_->Quit();
+  void NotifyPageRequestSignal() {
+    if (page_request_signal_) {
+      page_request_signal_->SetValue();
+    }
   }
-  void QuitMergeRunnerOnUIThread() {
-    if (merge_session_run_loop_)
-      merge_session_run_loop_->Quit();
+
+  void NotifyMergeSessionSignal() {
+    if (merge_session_signal_) {
+      merge_session_signal_->SetValue();
+    }
   }
+
   // This event will tell us when we actually see HTTP request on the server
   // side. It should be signalled only after the page/XHR throttle had been
   // removed (after merge session completes).
   base::WaitableEvent start_event_;
   base::WaitableEvent merge_session_event_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-  std::unique_ptr<base::RunLoop> merge_session_run_loop_;
+  std::unique_ptr<base::test::TestFuture<void>> page_request_signal_;
+  std::unique_ptr<base::test::TestFuture<void>> merge_session_signal_;
   bool hang_merge_session_ = false;
 };
 
@@ -996,9 +1001,9 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, PageThrottle) {
       browser->tab_strip_model()->GetActiveWebContents();
   auto* js_dialog_manager =
       javascript_dialogs::TabModalDialogManager::FromWebContents(tab);
-  base::RunLoop dialog_wait;
+  base::test::TestFuture<void> dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
-      dialog_wait.QuitClosure());
+      dialog_wait.GetCallback());
 
   // Wait until we get send merge session request.
   WaitForMergeSessionToStart();
@@ -1022,7 +1027,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, PageThrottle) {
 
   // Check that real page is no longer blocked by the throttle and that the
   // real page pops up JS dialog.
-  dialog_wait.Run();
+  EXPECT_TRUE(dialog_wait.Wait());
   js_dialog_manager->HandleJavaScriptDialog(tab, true, nullptr);
 
   ui_test_utils::GetCurrentTabTitle(browser, &title);
