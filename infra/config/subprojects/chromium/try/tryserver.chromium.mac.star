@@ -348,6 +348,7 @@ ios_builder(
         "ci/ios-blink-dbg-fyi",
     ],
     cpu = cpu.ARM64,
+    execution_timeout = 12 * time.hour,
 )
 
 ios_builder(
