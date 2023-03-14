@@ -47,11 +47,12 @@ ReportingServiceSettings::ReportingServiceSettings(
     const ServiceProviderConfig& service_provider_config) {
   if (!settings_value.is_dict())
     return;
+  const base::Value::Dict& settings_dict = settings_value.GetDict();
 
   // The service provider identifier should always be there, and it should match
   // an existing provider.
   const std::string* service_provider_name =
-      settings_value.FindStringKey(kKeyServiceProvider);
+      settings_dict.FindString(kKeyServiceProvider);
   if (service_provider_name) {
     service_provider_name_ = *service_provider_name;
     if (service_provider_config.count(service_provider_name_)) {
@@ -64,11 +65,11 @@ ReportingServiceSettings::ReportingServiceSettings(
     return;
   }
 
-  const base::Value* enabled_event_name_list_value =
-      settings_value.FindListKey(kKeyEnabledEventNames);
+  const base::Value::List* enabled_event_name_list_value =
+      settings_dict.FindList(kKeyEnabledEventNames);
   if (enabled_event_name_list_value) {
     for (const base::Value& enabled_event_name_value :
-         enabled_event_name_list_value->GetList()) {
+         *enabled_event_name_list_value) {
       if (enabled_event_name_value.is_string())
         enabled_event_names_.insert(enabled_event_name_value.GetString());
       else
@@ -86,17 +87,17 @@ ReportingServiceSettings::ReportingServiceSettings(
     }
   }
 
-  const base::Value* enabled_opt_in_events_value =
-      settings_value.FindListKey(kKeyEnabledOptInEvents);
+  const base::Value::List* enabled_opt_in_events_value =
+      settings_dict.FindList(kKeyEnabledOptInEvents);
   if (enabled_opt_in_events_value) {
-    for (const base::Value& event : enabled_opt_in_events_value->GetList()) {
+    for (const base::Value& event : *enabled_opt_in_events_value) {
       DCHECK(event.is_dict());
-      const std::string* name = event.FindStringKey(kKeyOptInEventName);
-      const base::Value* url_patterns_value =
-          event.FindListKey(kKeyOptInEventUrlPatterns);
+      const std::string* name = event.GetDict().FindString(kKeyOptInEventName);
+      const base::Value::List* url_patterns_value =
+          event.GetDict().FindList(kKeyOptInEventUrlPatterns);
 
-      DCHECK(url_patterns_value->is_list());
-      for (const base::Value& url_pattern : url_patterns_value->GetList()) {
+      DCHECK(url_patterns_value);
+      for (const base::Value& url_pattern : *url_patterns_value) {
         DCHECK(url_pattern.is_string());
 
         enabled_opt_in_events_[*name].push_back(url_pattern.GetString());

@@ -103,18 +103,19 @@ AnalysisServiceSettings::AnalysisServiceSettings(
       settings_dict.FindList(kKeyCustomMessages);
   if (custom_messages) {
     for (const base::Value& value : *custom_messages) {
+      const base::Value::Dict& dict = value.GetDict();
+
       // As of now, this list will contain one message per tag. At some point,
       // the server may start sending one message per language/tag pair. If this
       // is the case, this code should be changed to match the language to
       // Chrome's UI language.
-      const std::string* tag = value.FindStringKey(kKeyCustomMessagesTag);
+      const std::string* tag = dict.FindString(kKeyCustomMessagesTag);
       if (!tag)
         continue;
 
       CustomMessageData data;
 
-      const std::string* message =
-          value.FindStringKey(kKeyCustomMessagesMessage);
+      const std::string* message = dict.FindString(kKeyCustomMessagesMessage);
       // This string originates as a protobuf string on the server, which are
       // utf8 and it's used in the UI where it needs to be encoded as utf16. Do
       // the conversion now, otherwise code down the line may not be able to
@@ -122,8 +123,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
       // UI.
       data.message = base::UTF8ToUTF16(message ? *message : "");
 
-      const std::string* url =
-          value.FindStringKey(kKeyCustomMessagesLearnMoreUrl);
+      const std::string* url = dict.FindString(kKeyCustomMessagesLearnMoreUrl);
       data.learn_more_url = url ? GURL(*url) : GURL();
 
       tags_[*tag].custom_message = std::move(data);

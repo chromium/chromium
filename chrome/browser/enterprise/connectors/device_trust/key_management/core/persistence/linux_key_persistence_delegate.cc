@@ -201,7 +201,7 @@ std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair() {
   }
 
   // Get the trust level.
-  auto stored_trust_level = keyinfo->FindIntKey(kSigningKeyTrustLevel);
+  auto stored_trust_level = keyinfo->GetDict().FindInt(kSigningKeyTrustLevel);
   if (!stored_trust_level.has_value()) {
     RecordFailure(KeyPersistenceOperation::kLoadKeyPair,
                   KeyPersistenceError::kKeyPairMissingTrustLevel,
@@ -219,7 +219,7 @@ std::unique_ptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair() {
   }
 
   // Get the key.
-  std::string* encoded_key = keyinfo->FindStringKey(kSigningKeyName);
+  std::string* encoded_key = keyinfo->GetDict().FindString(kSigningKeyName);
   std::string decoded_key;
   if (!encoded_key) {
     RecordFailure(
