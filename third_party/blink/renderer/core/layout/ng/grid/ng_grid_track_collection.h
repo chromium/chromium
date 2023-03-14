@@ -409,7 +409,7 @@ class CORE_EXPORT NGGridSizingTrackCollection final
   // Caches the geometry of definite sets; this is useful when building the sets
   // of a subgrid since we need to determine whether its available size (i.e.,
   // the grid area it spans on its parent grid) is definite or not.
-  void CacheDefiniteSetsGeometry(LayoutUnit grid_available_size);
+  void CacheDefiniteSetsGeometry();
   // Caches the geometry of the initialized sets' growth limit if they're
   // definite; this will be used to measure grid item contributions.
   void CacheInitializedSetsGeometry(LayoutUnit first_set_offset);
