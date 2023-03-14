@@ -1468,7 +1468,6 @@
     {
       name: "FastPositionIterator",
       // Not enabled due to a RTL issue. crbug.com/1421016.
-      status: "test",
     },
     {
       name: "FeaturePolicyReporting",
