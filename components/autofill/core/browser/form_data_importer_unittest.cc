@@ -4446,7 +4446,7 @@ TEST_P(FormDataImporterTest,
 
   iban_save_strike_database.AddStrikes(
       iban_save_strike_database.GetMaxStrikesLimit(),
-      kIbanValueWithoutWhitespaces);
+      IBANSaveManager::GetPartialIbanHashString(kIbanValueWithoutWhitespaces));
 
   // Simulate a form submission with a new IBAN.
   FormData form;

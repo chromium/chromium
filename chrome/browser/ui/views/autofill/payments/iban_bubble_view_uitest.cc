@@ -410,7 +410,8 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   EXPECT_FALSE(GetSaveIbanBubbleView());
   EXPECT_EQ(
       1, iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()->GetStrikes(
-             kIbanValueWithoutWhitespaces));
+             IBANSaveManager::GetPartialIbanHashString(
+                 kIbanValueWithoutWhitespaces)));
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",
       autofill_metrics::SaveIbanPromptOffer::kShown, 1);
@@ -439,7 +440,8 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   }
   EXPECT_EQ(
       iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()->GetStrikes(
-          kIbanValueWithoutWhitespaces),
+          IBANSaveManager::GetPartialIbanHashString(
+              kIbanValueWithoutWhitespaces)),
       iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
           ->GetMaxStrikesLimit());
   // Submit the form a fourth time. Since the IBAN now has maximum strikes,
@@ -450,8 +452,10 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   SubmitForm();
   WaitForObservedEvent();
 
-  EXPECT_TRUE(iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
-                  ->ShouldBlockFeature(kIbanValueWithoutWhitespaces));
+  EXPECT_TRUE(
+      iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
+          ->ShouldBlockFeature(IBANSaveManager::GetPartialIbanHashString(
+              kIbanValueWithoutWhitespaces)));
 
   EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
 
@@ -33,6 +34,9 @@ class IBANSaveManager {
   IBANSaveManager(const IBANSaveManager&) = delete;
   IBANSaveManager& operator=(const IBANSaveManager&) = delete;
   virtual ~IBANSaveManager();
+
+  // Return the first half of hashed IBAN value.
+  static std::string GetPartialIbanHashString(const std::string& value);
 
   // Checks that all requirements for offering local IBAN save are fulfilled.
   // Returns true if the save prompt was shown, and false otherwise.
