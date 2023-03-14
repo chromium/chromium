@@ -27,6 +27,11 @@ import './internet_page/internet_subpage.js';
 import './os_about_page/detailed_build_info_subpage.js';
 import './os_search_page/google_assistant_subpage.js';
 import './os_search_page/search_subpage.js';
+import './os_people_page/account_manager_subpage.js';
+import './os_people_page/fingerprint_list.js';
+import './os_people_page/lock_screen.js';
+import './os_people_page/os_sync_controls_subpage.js';
+import './os_people_page/os_sync_subpage.js';
 // TODO(b/263414034) Determine if elements below adhere to the lazy loading
 // criteria and are needed here
 import './crostini_page/bruschetta_subpage.js';
@@ -103,7 +108,9 @@ export {SettingsTtsSubpageElement} from './os_a11y_page/tts_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
 export {LanguagesBrowserProxyImpl} from './os_languages_page/languages_browser_proxy.js';
 export {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.js';
+export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
 export {SettingsLockScreenElement} from './os_people_page/lock_screen.js';
+export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.js';
 export {PrinterType} from './os_printing_page/cups_printer_types.js';
 export {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';

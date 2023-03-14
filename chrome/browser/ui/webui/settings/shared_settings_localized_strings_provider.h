@@ -25,7 +25,7 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source);
 void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
 #endif
 
-// Adds strings used by both <settings-sync-page> and <os-settings-sync-page>
+// Adds strings used by both <settings-sync-page> and <os-settings-sync-subpage>
 // elements.
 void AddSharedSyncPageStrings(content::WebUIDataSource* html_source);
 

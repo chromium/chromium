@@ -21,7 +21,7 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_sync_browser_proxy.js';
-import {getTemplate} from './os_sync_controls.html.js';
+import {getTemplate} from './os_sync_controls_subpage.html.js';
 
 /**
  * Names of the radio buttons which allow the user to choose their data sync
@@ -49,14 +49,14 @@ const SyncPrefsIndividualDataTypes: Array<keyof OsSyncPrefs> = [
 /**
  * TODO(https://crbug.com/1294178): Consider merging this with sync_controls.
  * @fileoverview
- * 'os-sync-controls' contains all OS sync data type controls.
+ * 'os-sync-controls-subpage' contains all OS sync data type controls.
  */
-const OsSyncControlsElementBase = DeepLinkingMixin(
+const OsSyncControlsSubpageElementBase = DeepLinkingMixin(
     WebUiListenerMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
-class OsSyncControlsElement extends OsSyncControlsElementBase {
+class OsSyncControlsSubpageElement extends OsSyncControlsSubpageElementBase {
   static get is() {
-    return 'os-sync-controls' as const;
+    return 'os-sync-controls-subpage' as const;
   }
 
   static get template() {
@@ -245,8 +245,9 @@ class OsSyncControlsElement extends OsSyncControlsElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [OsSyncControlsElement.is]: OsSyncControlsElement;
+    [OsSyncControlsSubpageElement.is]: OsSyncControlsSubpageElement;
   }
 }
 
-customElements.define(OsSyncControlsElement.is, OsSyncControlsElement);
+customElements.define(
+    OsSyncControlsSubpageElement.is, OsSyncControlsSubpageElement);

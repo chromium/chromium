@@ -65,59 +65,6 @@ TEST_F_WITH_PREAMBLE(
     'OSSettingsDevicePageV3Test', 'MAYBE_All',
     () => mocha.grep('/^((?!arrow_key_arrangement_disabled).)*$/').run());
 
-// TODO(crbug.com/1347746): move this to the generic test lists below after the
-// feature is launched.
-var OSSettingsPeoplePageAccountManagerV3Test =
-    class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      disabled: [
-        'ash::features::kLacrosSupport',
-      ],
-    };
-  }
-};
-
-TEST_F('OSSettingsPeoplePageAccountManagerV3Test', 'All', () => mocha.run());
-
-var OSSettingsPeoplePageAccountManagerWithArcAccountRestrictionsEnabledV3Test =
-    class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/people_page_account_manager_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'ash::features::kLacrosSupport',
-      ],
-    };
-  }
-};
-
-TEST_F(
-    'OSSettingsPeoplePageAccountManagerWithArcAccountRestrictionsEnabledV3Test',
-    'All', () => mocha.run());
-
-var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_sync_controls_test.js';
-  }
-};
-
-TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Fast pair is launched.
 var OSSettingsOsBluetoothDevicesSubpageV3Test =
@@ -456,11 +403,22 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsSearchPage', 'os_search_page_test.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
  ['OSSettingsMenu', 'os_settings_menu_test.js'],
+ ['OsSyncControlsSubpage', 'os_sync_controls_subpage_test.js'],
  [
    'ParentalControlsPage',
    'parental_controls_page/parental_controls_page_test.js'
  ],
  ['PeoplePage', 'os_people_page_test.js'],
+ [
+   'PeoplePageAccountManagerSubpage',
+   'people_page_account_manager_subpage_test.js',
+   {disabled: ['ash::features::kLacrosSupport']},
+ ],
+ [
+   'PeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled',
+   'people_page_account_manager_subpage_test.js',
+   {enabled: ['ash::features::kLacrosSupport']},
+ ],
  ['PeoplePageQuickUnlock', 'quick_unlock_authenticate_browsertest_chromeos.js'],
  [
    'PerDeviceKeyboard', 'per_device_keyboard_test.js',

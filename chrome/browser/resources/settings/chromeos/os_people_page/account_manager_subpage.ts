@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * 'settings-account-manager' is the settings subpage containing controls to
- * list, add and delete Secondary Google Accounts.
+ * 'settings-account-manager-subpage' is the settings subpage containing
+ * controls to list, add and delete Secondary Google Accounts.
  */
 
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
@@ -35,21 +35,22 @@ import {ParentalControlsBrowserProxyImpl} from '../parental_controls_page/parent
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
-import {getTemplate} from './account_manager.html.js';
 import {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
+import {getTemplate} from './account_manager_subpage.html.js';
 
-const SettingsAccountManagerElementBase = RouteObserverMixin(
+const SettingsAccountManagerSubpageElementBase = RouteObserverMixin(
     WebUiListenerMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-interface SettingsAccountManagerElement {
+interface SettingsAccountManagerSubpageElement {
   $: {
     removeConfirmationDialog: CrDialogElement,
   };
 }
 
-class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
+class SettingsAccountManagerSubpageElement extends
+    SettingsAccountManagerSubpageElementBase {
   static get is() {
-    return 'settings-account-manager' as const;
+    return 'settings-account-manager-subpage' as const;
   }
 
   static get template() {
@@ -412,9 +413,11 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsAccountManagerElement.is]: SettingsAccountManagerElement;
+    [SettingsAccountManagerSubpageElement.is]:
+        SettingsAccountManagerSubpageElement;
   }
 }
 
 customElements.define(
-    SettingsAccountManagerElement.is, SettingsAccountManagerElement);
+    SettingsAccountManagerSubpageElement.is,
+    SettingsAccountManagerSubpageElement);

@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AccountManagerBrowserProxyImpl, osPageVisibility, PageStatus, ProfileInfoBrowserProxyImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
+
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {osPageVisibility, PageStatus, ProfileInfoBrowserProxyImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestProfileInfoBrowserProxy} from 'chrome://webui-test/settings/chromeos/test_profile_info_browser_proxy.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {TestProfileInfoBrowserProxy} from 'chrome://webui-test/settings/chromeos/test_profile_info_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.js';
@@ -208,7 +210,7 @@ suite('PeoplePageTests', function() {
 
     // Make the sync page configurable.
     const syncPage =
-        peoplePage.shadowRoot.querySelector('os-settings-sync-page');
+        peoplePage.shadowRoot.querySelector('os-settings-sync-subpage');
     assert(syncPage);
     syncPage.syncPrefs = {
       customPassphraseAllowed: true,
@@ -244,7 +246,7 @@ suite('PeoplePageTests', function() {
     const fakeOsProfileName = 'Currently signed in as username';
     loadTimeData.overrideValues({
       isAccountManagerEnabled: true,
-      // settings-account-manager requires this to have a value.
+      // settings-account-manager-subpage requires this to have a value.
       secondaryGoogleAccountSigninAllowed: true,
       osProfileName: fakeOsProfileName,
     });

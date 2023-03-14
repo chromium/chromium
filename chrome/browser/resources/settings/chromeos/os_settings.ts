@@ -84,10 +84,6 @@ import './os_bluetooth_page/os_paired_bluetooth_list_item.js';
 import './os_bluetooth_page/os_saved_devices_list.js';
 import './os_bluetooth_page/os_saved_devices_list_item.js';
 import './os_bluetooth_page/settings_fast_pair_constants.js';
-import './os_people_page/account_manager.js';
-import './os_people_page/os_people_page.js';
-import './os_people_page/os_sync_controls.js';
-import './parental_controls_page/parental_controls_page.js';
 
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -165,10 +161,8 @@ export {setAppNotificationProviderForTesting} from './os_apps_page/app_notificat
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';
 export {FastPairSavedDevice, FastPairSavedDevicesOptInStatus} from './os_bluetooth_page/settings_fast_pair_constants.js';
 export {osPageVisibility} from './os_page_visibility.js';
-export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';
 export {FingerprintBrowserProxyImpl, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
-export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.js';
 export {FingerprintSetupStep} from './os_people_page/setup_fingerprint_dialog.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';

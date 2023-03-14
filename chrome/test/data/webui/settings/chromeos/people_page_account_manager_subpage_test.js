@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AccountManagerBrowserProxyImpl, ParentalControlsBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {ParentalControlsBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {AccountManagerBrowserProxy} */
@@ -164,7 +166,7 @@ suite('AccountManagerTests', function() {
     AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
 
-    accountManager = document.createElement('settings-account-manager');
+    accountManager = document.createElement('settings-account-manager-subpage');
     document.body.appendChild(accountManager);
     accountList = accountManager.shadowRoot.querySelector('#account-list');
     assertTrue(!!accountList);
@@ -340,7 +342,7 @@ suite('AccountManagerUnmanagedAccountTests', function() {
     AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
 
-    accountManager = document.createElement('settings-account-manager');
+    accountManager = document.createElement('settings-account-manager-subpage');
     document.body.appendChild(accountManager);
     accountList = accountManager.shadowRoot.querySelector('#account-list');
     assertTrue(!!accountList);
@@ -378,7 +380,7 @@ suite('AccountManagerAccountAdditionDisabledTests', function() {
     AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
 
-    accountManager = document.createElement('settings-account-manager');
+    accountManager = document.createElement('settings-account-manager-subpage');
     document.body.appendChild(accountManager);
     accountList = accountManager.shadowRoot.querySelector('#account-list');
     assertTrue(!!accountList);
@@ -423,7 +425,7 @@ suite('AccountManagerAccountAdditionDisabledChildAccountTests', function() {
     AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
 
-    accountManager = document.createElement('settings-account-manager');
+    accountManager = document.createElement('settings-account-manager-subpage');
     document.body.appendChild(accountManager);
     accountList = accountManager.shadowRoot.querySelector('#account-list');
     assertTrue(!!accountList);
@@ -460,7 +462,7 @@ suite('AccountManagerAccountChildAccountTests', function() {
         parentalControlsBrowserProxy);
     PolymerTest.clearBody();
 
-    accountManager = document.createElement('settings-account-manager');
+    accountManager = document.createElement('settings-account-manager-subpage');
     document.body.appendChild(accountManager);
 
     Router.getInstance().navigateTo(routes.ACCOUNT_MANAGER);

@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'os-settings-sync-page' is the settings page containing sync settings.
+ * 'os-settings-sync-subpage' is the settings page containing sync settings.
  */
 
 import '//resources/js/util_ts.js';
@@ -42,24 +42,25 @@ import {Router} from '../router.js';
 
 import {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';
 import {OsSettingsSyncEncryptionOptionsElement} from './os_sync_encryption_options.js';
-import {getTemplate} from './os_sync_page.html.js';
+import {getTemplate} from './os_sync_subpage.html.js';
 
 function getSyncRoutes() {
   return Router.getInstance().routes;
 }
 
-export interface OsSettingsSyncPageElement {
+export interface OsSettingsSyncSubpageElement {
   $: {
     encryptionCollapse: IronCollapseElement,
   };
 }
 
-const OsSettingsSyncPageElementBase =
+const OsSettingsSyncSubpageElementBase =
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
-export class OsSettingsSyncPageElement extends OsSettingsSyncPageElementBase {
+export class OsSettingsSyncSubpageElement extends
+    OsSettingsSyncSubpageElementBase {
   static get is() {
-    return 'os-settings-sync-page';
+    return 'os-settings-sync-subpage' as const;
   }
 
   static get template() {
@@ -284,13 +285,13 @@ export class OsSettingsSyncPageElement extends OsSettingsSyncPageElementBase {
   }
 
   getPersonalizationOptions(): OsSettingsPersonalizationOptionsElement|null {
-// <if expr="_google_chrome">
+    // <if expr="_google_chrome">
     return null;
-// </if>
-// <if expr="not _google_chrome">
+    // </if>
+    // <if expr="not _google_chrome">
     return this.shadowRoot!.querySelector(
         'os-settings-personalization-options');
-// </if>
+    // </if>
   }
 
   private shouldShowLacrosSideBySideWarning_(): boolean {
@@ -575,8 +576,9 @@ export class OsSettingsSyncPageElement extends OsSettingsSyncPageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-sync-page': OsSettingsSyncPageElement;
+    [OsSettingsSyncSubpageElement.is]: OsSettingsSyncSubpageElement;
   }
 }
 
-customElements.define(OsSettingsSyncPageElement.is, OsSettingsSyncPageElement);
+customElements.define(
+    OsSettingsSyncSubpageElement.is, OsSettingsSyncSubpageElement);

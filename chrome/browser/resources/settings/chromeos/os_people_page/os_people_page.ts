@@ -13,16 +13,10 @@ import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../controls/settings_toggle_button.js';
+import '../../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
-import '../../settings_shared.css.js';
 import '../parental_controls_page/parental_controls_page.js';
-import './account_manager.js';
-import './fingerprint_list.js';
-import './lock_screen.js';
-import './lock_screen_password_prompt_dialog.js';
-import './os_sync_controls.js';
-import './os_sync_page.js';
 
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
@@ -265,7 +259,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       case Setting.kNonSplitSyncEncryptionOptions:
         this.afterRenderShowDeepLink_(settingId, () => {
           const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-page');
+              this.shadowRoot!.querySelector('os-settings-sync-subpage');
           // Expand the encryption collapse.
           syncPage!.forceEncryptionExpanded = true;
           flush();
@@ -277,7 +271,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       case Setting.kImproveSearchSuggestions:
         this.afterRenderShowDeepLink_(settingId, () => {
           const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-page');
+              this.shadowRoot!.querySelector('os-settings-sync-subpage');
           return syncPage && syncPage.getPersonalizationOptions() &&
               syncPage.getPersonalizationOptions()!.getSearchSuggestToggle();
         });
@@ -286,7 +280,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       case Setting.kMakeSearchesAndBrowsingBetter:
         this.afterRenderShowDeepLink_(settingId, () => {
           const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-page');
+              this.shadowRoot!.querySelector('os-settings-sync-subpage');
           return syncPage && syncPage.getPersonalizationOptions() &&
               syncPage.getPersonalizationOptions()!.getUrlCollectionToggle();
         });
@@ -295,7 +289,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       case Setting.kGoogleDriveSearchSuggestions:
         this.afterRenderShowDeepLink_(settingId, () => {
           const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-page');
+              this.shadowRoot!.querySelector('os-settings-sync-subpage');
           return syncPage && syncPage.getPersonalizationOptions() &&
               syncPage.getPersonalizationOptions()!.getDriveSuggestToggle();
         });
