@@ -43,6 +43,7 @@ class SpeculationCandidate : public GarbageCollected<SpeculationCandidate> {
   mojom::blink::SpeculationTargetHint target_hint() const {
     return target_hint_;
   }
+  mojom::blink::SpeculationEagerness eagerness() const { return eagerness_; }
   SpeculationRuleSet* rule_set() const { return rule_set_; }
   // Only set for candidates derived from a document rule (is null for
   // candidates derived from list rules).

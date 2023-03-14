@@ -545,12 +545,31 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
 
   probe::SpeculationCandidatesUpdated(*GetSupplementable(), candidates);
 
+  using SpeculationEagerness = blink::mojom::SpeculationEagerness;
+  base::EnumSet<SpeculationEagerness, SpeculationEagerness::kMinValue,
+                SpeculationEagerness::kMaxValue>
+      eagerness_set;
+
   Vector<mojom::blink::SpeculationCandidatePtr> mojom_candidates;
   mojom_candidates.ReserveInitialCapacity(candidates.size());
   for (SpeculationCandidate* candidate : candidates) {
+    eagerness_set.Put(candidate->eagerness());
     mojom_candidates.push_back(candidate->ToMojom());
   }
   host->UpdateSpeculationCandidates(std::move(mojom_candidates));
+
+  if (eagerness_set.Has(SpeculationEagerness::kConservative)) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kSpeculationRulesEagernessConservative);
+  }
+  if (eagerness_set.Has(SpeculationEagerness::kModerate)) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kSpeculationRulesEagernessModerate);
+  }
+  if (eagerness_set.Has(SpeculationEagerness::kEager)) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kSpeculationRulesEagernessEager);
+  }
 }
 
 void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(

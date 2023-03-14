@@ -13,11 +13,13 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_features.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -393,7 +395,7 @@ String GetPredicateType(JSONObject* input, String* out_error) {
 DocumentRulePredicate* DocumentRulePredicate::Parse(
     JSONObject* input,
     const KURL& ruleset_base_url,
-    const ExecutionContext* execution_context,
+    ExecutionContext* execution_context,
     ExceptionState& exception_state,
     String* out_error) {
   // If input is not a map, then return null.
@@ -624,6 +626,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       // Append selector to selectors.
       selectors.push_back(std::move(selector));
     }
+    UseCounter::Count(execution_context,
+                      WebFeature::kSpeculationRulesSelectorMatches);
     return MakeGarbageCollected<CSSSelectorPredicate>(std::move(selectors));
   }
 

@@ -42414,6 +42414,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4495" label="DanglingMarkupInTargetNotEndsWithNewLineOrGT"/>
   <int value="4496" label="AttributionFencedFrameReportingBeacon"/>
   <int value="4497" label="IframeBrowsingTopicsAttribute"/>
+  <int value="4498" label="SpeculationRulesSelectorMatches"/>
+  <int value="4499" label="SpeculationRulesExplicitEagerness"/>
+  <int value="4500" label="SpeculationRulesEagernessConservative"/>
+  <int value="4501" label="SpeculationRulesEagernessModerate"/>
+  <int value="4502" label="SpeculationRulesEagernessEager"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
