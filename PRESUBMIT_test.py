@@ -4915,6 +4915,17 @@ class AssertNoJsInIosTest(unittest.TestCase):
         self.assertEqual('warning', results[0].type)
         self.assertEqual(1, len(results[0].items))
 
+    def testMovedScriptWarningOnly(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ios/chrome/feature/resources/script.js', [], action='D'),
+            MockFile('ios/chrome/renamed_feature/resources/script.js', [], action='A'),
+        ]
+        results = PRESUBMIT.CheckNoJsInIos(input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('warning', results[0].type)
+        self.assertEqual(1, len(results[0].items))
+
 class CheckNoAbbreviationInPngFileNameTest(unittest.TestCase):
   def testHasAbbreviation(self):
     """test png file names with abbreviation that fails the check"""

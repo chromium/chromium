@@ -6800,7 +6800,17 @@ def CheckNoJsInIos(input_api, output_api):
                           (r'^ios/third_party/*', r'^third_party/*'),
             files_to_check=[r'^ios/.*\.js$', r'.*/ios/.*\.js$'])
 
+    deleted_files = []
+
+    # Collect filenames of all removed JS files.
+    for f in input_api.AffectedSourceFiles(_FilterFile):
+        local_path = f.LocalPath()
+
+        if input_api.os_path.splitext(local_path)[1] == '.js' and f.Action() == 'D':
+            deleted_files.append(input_api.os_path.basename(local_path))
+
     error_paths = []
+    moved_paths = []
     warning_paths = []
 
     for f in input_api.AffectedSourceFiles(_FilterFile):
@@ -6808,7 +6818,12 @@ def CheckNoJsInIos(input_api, output_api):
 
         if input_api.os_path.splitext(local_path)[1] == '.js':
             if f.Action() == 'A':
-                error_paths.append(local_path)
+                if input_api.os_path.basename(local_path) in deleted_files:
+                    # This script was probably moved rather than newly created.
+                    # Present a warning instead of an error for these cases.
+                    moved_paths.append(local_path)
+                else:
+                    error_paths.append(local_path)
             elif f.Action() != 'D':
                 warning_paths.append(local_path)
 
@@ -6820,6 +6835,13 @@ def CheckNoJsInIos(input_api, output_api):
             'Consider converting JavaScript files to TypeScript. See '
             '//ios/web/public/js_messaging/README.md for more details.',
             warning_paths))
+
+    if moved_paths:
+        results.append(output_api.PresubmitPromptWarning(
+            'Do not use JavaScript on iOS for new files as TypeScript is '
+            'fully supported. (If this is a moved file, you may leave the '
+            'script unconverted.) See //ios/web/public/js_messaging/README.md '
+            'for help using scripts on iOS.', moved_paths))
 
     if error_paths:
         results.append(output_api.PresubmitError(
