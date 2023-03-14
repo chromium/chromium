@@ -627,13 +627,34 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
 
 #if BUILDFLAG(IS_ANDROID)
 bool CreditCardAccessManager::ShouldOfferFidoAuth() const {
-  // We should not display the FIDO opt-in checkbox for virtual cards.
-  if (card_->record_type() == CreditCard::VIRTUAL_CARD)
+  if (!unmask_details_.offer_fido_opt_in) {
+    // If the server thinks FIDO opt-in is not required for this user, then we
+    // won't offer the FIDO opt-in checkbox on the card unmask dialog.
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::
+            kUnmaskDetailsOfferFidoOptInFalse);
     return false;
+  }
 
-  // If the user opted-in through the settings page, do not show checkbox.
-  return unmask_details_.offer_fido_opt_in &&
-         opt_in_intention_ != UserOptInIntention::kIntentToOptIn;
+  if (opt_in_intention_ == UserOptInIntention::kIntentToOptIn) {
+    // If the user opted-in through the settings page, do not show checkbox.
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::
+            kOptedInFromSettings);
+    return false;
+  }
+
+  if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
+    // We should not offer FIDO opt-in for virtual cards.
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::kVirtualCard);
+    return false;
+  }
+
+  // No situations were found where we should not show the checkbox, so we
+  // should return true to indicate that we should display the checkbox to the
+  // user.
+  return true;
 }
 
 bool CreditCardAccessManager::UserOptedInToFidoFromSettingsPageOnMobile()
@@ -856,12 +877,6 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
   // We should not offer FIDO opt-in dialog on mobile.
   return false;
 #else
-  // We should not offer FIDO opt-in for virtual cards.
-  if (!card_ || card_->record_type() == CreditCard::VIRTUAL_CARD) {
-    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
-        autofill_metrics::WebauthnOptInPromoNotOfferedReason::kVirtualCard);
-    return false;
-  }
 
   // If this card is not eligible for offering FIDO opt-in, we should not offer
   // the FIDO opt-in dialog.
@@ -889,6 +904,13 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
     autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
         autofill_metrics::WebauthnOptInPromoNotOfferedReason::
             kBlockedByStrikeDatabase);
+    return false;
+  }
+
+  // We should not offer FIDO opt-in for virtual cards.
+  if (!card_ || card_->record_type() == CreditCard::VIRTUAL_CARD) {
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::kVirtualCard);
     return false;
   }
 

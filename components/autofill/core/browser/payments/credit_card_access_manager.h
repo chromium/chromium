@@ -181,6 +181,10 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
     return ShouldOfferFidoOptInDialog(response);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  bool ShouldOfferFidoAuthForTesting() { return ShouldOfferFidoAuth(); }
+#endif
+
  private:
   // TODO(crbug.com/1249665): Remove FRIEND and change everything to _ForTesting
   // or public.

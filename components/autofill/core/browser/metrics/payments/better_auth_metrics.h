@@ -70,7 +70,9 @@ enum class WebauthnOptInParameters {
   kMaxValue = kWithRequestChallenge,
 };
 
-// The reason that the FIDO opt-in dialog was not offered to the user.
+// On Desktop, this enum represents the reason that the FIDO opt-in dialog was
+// not offered to the user. On Android, it represents whether the checkbox
+// was shown to the user.
 enum class WebauthnOptInPromoNotOfferedReason {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -87,7 +89,10 @@ enum class WebauthnOptInPromoNotOfferedReason {
   kCardAuthorizationTokenEmpty = 3,
   // Not offered because it was blocked by the FidoAuthenticationStrikeDatabase.
   kBlockedByStrikeDatabase = 4,
-  kMaxValue = kBlockedByStrikeDatabase,
+  // Used only on Android. Checkbox not shown to the user because the user has
+  // previously opted-in from Settings.
+  kOptedInFromSettings = 5,
+  kMaxValue = kOptedInFromSettings,
 };
 
 // The user decision for the WebAuthn opt-in promo.
