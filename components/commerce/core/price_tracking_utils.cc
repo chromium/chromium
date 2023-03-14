@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -83,7 +84,7 @@ void UpdateBookmarksForSubscriptionsResult(
                                                 std::move(meta));
 
       if (should_delete_node) {
-        model->Remove(node);
+        model->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
       }
     }
   }

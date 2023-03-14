@@ -9,6 +9,7 @@
 #import "base/test/task_environment.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -923,7 +924,8 @@ TEST_F(KeyCommandsProviderTest, ValidateBookmarkCommand) {
   }
 
   // Remove the bookmark.
-  bookmark_model_->Remove(bookmark);
+  bookmark_model_->Remove(bookmark,
+                          bookmarks::metrics::BookmarkEditSource::kOther);
 
   for (UIKeyCommand* command in provider_.keyCommands) {
     [provider_ validateCommand:command];

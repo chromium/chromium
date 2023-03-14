@@ -91,7 +91,8 @@ TEST_F(BookmarkUndoServiceTest, UndoBookmarkRemove) {
 
   const BookmarkNode* parent = model->other_node();
   model->AddURL(parent, 0, u"foo", GURL("http://www.bar.com"));
-  model->Remove(parent->children().front().get());
+  model->Remove(parent->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther);
 
   EXPECT_EQ(2U, undo_service->undo_manager()->undo_count());
   EXPECT_EQ(0U, undo_service->undo_manager()->redo_count());
@@ -218,7 +219,8 @@ TEST_F(BookmarkUndoServiceTest, UndoBookmarkRenameDelete) {
   model->AddURL(f1, 0, u"foo", GURL("http://www.foo.com"));
   model->SetTitle(f1, u"Renamed",
                   bookmarks::metrics::BookmarkEditSource::kOther);
-  model->Remove(model->other_node()->children().front().get());
+  model->Remove(model->other_node()->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther);
 
   // Undo the folder removal and ensure the folder and bookmark were restored.
   undo_service->undo_manager()->Undo();
@@ -353,7 +355,8 @@ TEST_F(BookmarkUndoServiceTest, UndoRemoveFolderWithBookmarks) {
   new_folder = model->AddFolder(parent, 0, u"folder");
   model->AddURL(new_folder, 0, u"bar", GURL("http://www.bar.com"));
 
-  model->Remove(parent->children().front().get());
+  model->Remove(parent->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther);
 
   // Test that the undo restores the bookmark and folder.
   undo_service->undo_manager()->Undo();
@@ -400,7 +403,8 @@ TEST_F(BookmarkUndoServiceTest, UndoRemoveFolderWithSubfolders) {
       model->AddFolder(new_folder, 1, u"subfolder2");
   model->AddURL(sub_folder2, 0, u"bar", GURL("http://www.bar.com"));
 
-  model->Remove(parent->children()[0].get());
+  model->Remove(parent->children()[0].get(),
+                bookmarks::metrics::BookmarkEditSource::kOther);
 
   // Test that the undo restores the subfolders and their contents.
   undo_service->undo_manager()->Undo();

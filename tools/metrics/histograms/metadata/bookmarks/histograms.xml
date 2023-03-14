@@ -866,6 +866,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.RemovedSource" enum="BookmarkEditSource"
+    expires_after="2023-08-08">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>Records the source when a bookmark is removed.</summary>
+</histogram>
+
 <histogram name="Bookmarks.StarEntryPoint.ClickedAction"
     enum="StarEntryPointAction" expires_after="2022-08-28">
   <owner>corising@chromium.org</owner>

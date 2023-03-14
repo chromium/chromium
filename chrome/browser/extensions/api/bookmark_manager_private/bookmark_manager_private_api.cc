@@ -49,6 +49,7 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -367,7 +368,8 @@ ExtensionFunction::ResponseValue ClipboardBookmarkManagerFunction::CopyOrCut(
     return Error(bookmark_keys::kModifyManagedError);
   if (cut && HasPermanentNodes(nodes))
     return Error(bookmark_keys::kModifySpecialError);
-  bookmarks::CopyToClipboard(model, nodes, cut);
+  bookmarks::CopyToClipboard(
+      model, nodes, cut, bookmarks::metrics::BookmarkEditSource::kExtension);
   return NoArguments();
 }
 

@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -570,7 +571,8 @@ TEST_F(BookmarkEditorViewTest, ConcurrentDeleteDuringConfirmationDialog) {
       base::BindLambdaForTesting([=](const bookmarks::BookmarkNode* node) {
         // Before the user confirms the deletion, something else (e.g.
         // extension) could delete the very same bookmark.
-        this->model_->Remove(f11);
+        this->model_->Remove(f11,
+                             bookmarks::metrics::BookmarkEditSource::kOther);
         // Mimic the user confirming the deletion.
         return true;
       }));

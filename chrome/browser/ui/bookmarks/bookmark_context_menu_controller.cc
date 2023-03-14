@@ -33,6 +33,7 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -308,7 +309,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       RecordBookmarkRemoved(opened_from_);
 
       for (const auto* node : selection_)
-        model_->Remove(node);
+        model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
       selection_.clear();
       break;
     }
@@ -383,11 +384,13 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_CUT:
-      bookmarks::CopyToClipboard(model_, selection_, true);
+      bookmarks::CopyToClipboard(model_, selection_, true,
+                                 bookmarks::metrics::BookmarkEditSource::kUser);
       break;
 
     case IDC_COPY:
-      bookmarks::CopyToClipboard(model_, selection_, false);
+      bookmarks::CopyToClipboard(model_, selection_, false,
+                                 bookmarks::metrics::BookmarkEditSource::kUser);
       break;
 
     case IDC_PASTE: {

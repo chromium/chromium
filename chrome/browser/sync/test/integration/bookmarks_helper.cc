@@ -740,7 +740,8 @@ void Remove(int profile, const BookmarkNode* parent, size_t index) {
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, parent->id()), parent)
       << "Node " << parent->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  model->Remove(parent->children()[index].get());
+  model->Remove(parent->children()[index].get(),
+                bookmarks::metrics::BookmarkEditSource::kOther);
 }
 
 void RemoveAll(int profile) {

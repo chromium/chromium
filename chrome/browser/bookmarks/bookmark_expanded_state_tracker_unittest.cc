@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/common/storage_type.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -84,7 +85,8 @@ TEST_F(BookmarkExpandedStateTrackerTest, SetExpandedNodes) {
   EXPECT_EQ(nodes, tracker_->GetExpandedNodes());
 
   // Remove the folder, which should remove it from the list of expanded nodes.
-  model_->Remove(model_->bookmark_bar_node()->children().front().get());
+  model_->Remove(model_->bookmark_bar_node()->children().front().get(),
+                 bookmarks::metrics::BookmarkEditSource::kOther);
   nodes.erase(n1);
   n1 = nullptr;
   EXPECT_EQ(nodes, tracker_->GetExpandedNodes());

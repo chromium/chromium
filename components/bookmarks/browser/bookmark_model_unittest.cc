@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -499,13 +500,15 @@ class BookmarkModelTest : public testing::Test,
     return managed_node;
   }
 
-  base::HistogramTester* histogram() { return &histogram_; }
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+  base::UserActionTester* user_action_tester() { return &user_action_tester_; }
 
  protected:
   std::unique_ptr<BookmarkModel> model_;
   ObserverDetails observer_details_;
   std::vector<NodeRemovalDetail> node_removal_details_;
-  base::HistogramTester histogram_;
+  base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 
  private:
   int added_count_;
@@ -573,6 +576,7 @@ TEST_F(BookmarkModelTest, AddNewURL) {
   const GURL url("http://foo.com");
 
   const BookmarkNode* new_node = model_->AddNewURL(root, 0, title, url);
+  ASSERT_EQ(1, user_action_tester()->GetActionCount("Bookmarks.Added"));
   AssertObserverCount(1, 0, 0, 0, 0, 0, 0, 0, 0);
   observer_details_.ExpectEquals(root, nullptr, 0, static_cast<size_t>(-1),
                                  true);
@@ -764,8 +768,13 @@ TEST_F(BookmarkModelTest, RemoveURL) {
   model_->AddURL(root, 0, title, url);
   ClearCounts();
 
-  model_->Remove(root->children().front().get());
+  model_->Remove(root->children().front().get(),
+                 bookmarks::metrics::BookmarkEditSource::kOther);
   ASSERT_EQ(0u, root->children().size());
+  histogram_tester()->ExpectTotalCount("Bookmarks.RemovedSource", 1);
+  histogram_tester()->ExpectBucketCount(
+      "Bookmarks.RemovedSource",
+      static_cast<int>(metrics::BookmarkEditSource::kOther), 1);
   AssertObserverCount(0, 0, 1, 0, 0, 1, 0, 0, 0);
   observer_details_.ExpectEquals(root, nullptr, 0, static_cast<size_t>(-1),
                                  false);
@@ -788,8 +797,13 @@ TEST_F(BookmarkModelTest, RemoveFolder) {
   ClearCounts();
 
   // Now remove the folder.
-  model_->Remove(root->children().front().get());
+  model_->Remove(root->children().front().get(),
+                 bookmarks::metrics::BookmarkEditSource::kOther);
   ASSERT_EQ(0u, root->children().size());
+  histogram_tester()->ExpectTotalCount("Bookmarks.RemovedSource", 1);
+  histogram_tester()->ExpectBucketCount(
+      "Bookmarks.RemovedSource",
+      static_cast<int>(metrics::BookmarkEditSource::kOther), 1);
   AssertObserverCount(0, 0, 1, 0, 0, 1, 0, 0, 0);
   observer_details_.ExpectEquals(root, nullptr, 0, static_cast<size_t>(-1),
                                  false);
@@ -856,29 +870,36 @@ TEST_F(BookmarkModelTest, UpdateLastUsedTimeInRange) {
       model_->AddURL(bookmark_bar_node, 0, title, url, nullptr, added_time);
   model_->UpdateLastUsedTime(url_node, used_time_1, /*just_opened=*/true);
   EXPECT_EQ(used_time_1, url_node->date_last_used());
-  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 0);
-  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 1);
-  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2, 1);
+  histogram_tester()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 0);
+  histogram_tester()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 1);
+  histogram_tester()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2,
+                                        1);
 
   base::Time used_time_2 = added_time + base::Days(7);
   model_->UpdateLastUsedTime(url_node, used_time_2, /*just_opened=*/true);
   EXPECT_EQ(used_time_2, url_node->date_last_used());
-  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 1);
-  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceLastUsed", 5, 1);
-  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 2);
-  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2, 1);
-  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 7, 1);
+  histogram_tester()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 1);
+  histogram_tester()->ExpectBucketCount("Bookmarks.Opened.TimeSinceLastUsed", 5,
+                                        1);
+  histogram_tester()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 2);
+  histogram_tester()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2,
+                                        1);
+  histogram_tester()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 7,
+                                        1);
 
   // This update isn't a result of an open, but rather a sync event.
   // The value should update while the histogram count should remain the same.
   base::Time used_time_3 = added_time + base::Days(7);
   model_->UpdateLastUsedTime(url_node, used_time_3, /*just_opened=*/false);
   EXPECT_EQ(used_time_3, url_node->date_last_used());
-  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 1);
-  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceLastUsed", 5, 1);
-  histogram()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 2);
-  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2, 1);
-  histogram()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 7, 1);
+  histogram_tester()->ExpectTotalCount("Bookmarks.Opened.TimeSinceLastUsed", 1);
+  histogram_tester()->ExpectBucketCount("Bookmarks.Opened.TimeSinceLastUsed", 5,
+                                        1);
+  histogram_tester()->ExpectTotalCount("Bookmarks.Opened.TimeSinceAdded", 2);
+  histogram_tester()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 2,
+                                        1);
+  histogram_tester()->ExpectBucketCount("Bookmarks.Opened.TimeSinceAdded", 7,
+                                        1);
 }
 
 TEST_F(BookmarkModelTest, ClearLastUsedTimeInRange) {
@@ -957,8 +978,8 @@ TEST_F(BookmarkModelTest, SetTitle) {
       u"goo", /*max_count=*/1, query_parser::MatchingAlgorithm::DEFAULT);
   ASSERT_EQ(1u, matches.size());
   EXPECT_EQ(url, matches[0].node->GetTitledUrlNodeUrl());
-  histogram()->ExpectBucketCount("Bookmarks.EditTitleSource",
-                                 metrics::BookmarkEditSource::kOther, 1);
+  histogram_tester()->ExpectBucketCount("Bookmarks.EditTitleSource",
+                                        metrics::BookmarkEditSource::kOther, 1);
 }
 
 TEST_F(BookmarkModelTest, SetTitleWithWhitespace) {
@@ -1003,8 +1024,8 @@ TEST_F(BookmarkModelTest, SetFolderTitle) {
   ASSERT_EQ(matches.size(), 1u);
   EXPECT_EQ(matches[0].node, node);
   EXPECT_EQ(matches[0].node->GetTitledUrlNodeUrl(), url);
-  histogram()->ExpectBucketCount("Bookmarks.EditTitleSource",
-                                 metrics::BookmarkEditSource::kOther, 1);
+  histogram_tester()->ExpectBucketCount("Bookmarks.EditTitleSource",
+                                        metrics::BookmarkEditSource::kOther, 1);
 }
 
 TEST_F(BookmarkModelTest, SetURL) {
@@ -1021,8 +1042,8 @@ TEST_F(BookmarkModelTest, SetURL) {
   observer_details_.ExpectEquals(node, nullptr, static_cast<size_t>(-1),
                                  static_cast<size_t>(-1), false);
   EXPECT_EQ(url, node->url());
-  histogram()->ExpectBucketCount("Bookmarks.EditURLSource",
-                                 metrics::BookmarkEditSource::kOther, 1);
+  histogram_tester()->ExpectBucketCount("Bookmarks.EditURLSource",
+                                        metrics::BookmarkEditSource::kOther, 1);
 }
 
 TEST_F(BookmarkModelTest, SetDateAdded) {
@@ -1065,7 +1086,8 @@ TEST_F(BookmarkModelTest, Move) {
 
   // And remove the folder.
   ClearCounts();
-  model_->Remove(root->children().front().get());
+  model_->Remove(root->children().front().get(),
+                 bookmarks::metrics::BookmarkEditSource::kOther);
   AssertObserverCount(0, 0, 1, 0, 0, 1, 0, 0, 0);
   observer_details_.ExpectEquals(root, nullptr, 0, static_cast<size_t>(-1),
                                  false);
@@ -1296,7 +1318,8 @@ TEST_F(BookmarkModelTest, MostRecentlyModifiedFolders) {
 
   // Nuke the folder and do another fetch, making sure folder isn't in the
   // returned list.
-  model_->Remove(folder->parent()->children().front().get());
+  model_->Remove(folder->parent()->children().front().get(),
+                 bookmarks::metrics::BookmarkEditSource::kOther);
   most_recent_folders = GetMostRecentlyModifiedUserFolders(model_.get(), 1);
   ASSERT_EQ(1U, most_recent_folders.size());
   ASSERT_TRUE(most_recent_folders[0] != folder);
@@ -1604,7 +1627,8 @@ TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnRemove) {
                     .size());
 
   // Remove the node and make sure we don't get back any results.
-  model_->Remove(root->children().front().get());
+  model_->Remove(root->children().front().get(),
+                 bookmarks::metrics::BookmarkEditSource::kOther);
   EXPECT_EQ(0U, model_
                     ->GetBookmarksMatching(
                         title, 1, query_parser::MatchingAlgorithm::DEFAULT)
@@ -1939,7 +1963,7 @@ TEST_F(BookmarkModelFaviconTest, ShouldResetFaviconStatusAfterRestore) {
   ASSERT_TRUE(node->is_favicon_loading());
 
   ScopedBookmarkUndoDelegate undo_delegate(model_.get());
-  model_->Remove(node);
+  model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
 
   undo_delegate.RestoreLastRemovedBookmark();
   EXPECT_FALSE(node->is_favicon_loading());

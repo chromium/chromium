@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/model/conflict_resolution.h"
@@ -668,7 +669,7 @@ void BookmarkRemoteUpdatesHandler::ProcessDelete(
   // Remove the entities of |node| and its children.
   RemoveEntityAndChildrenFromTracker(node);
   // Remove the node and its children from the model.
-  bookmark_model_->Remove(node);
+  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
 }
 
 // This method doesn't explicitly handle conflicts as a result of re-encryption:

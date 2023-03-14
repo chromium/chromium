@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +62,7 @@ TEST_F(BookmarkPathCacheTest, TestPathCacheWhenFolderDeleted) {
                                                  topMostRow:topmost_row];
 
   // Delete the folder.
-  bookmark_model_->Remove(f1);
+  bookmark_model_->Remove(f1, bookmarks::metrics::BookmarkEditSource::kOther);
 
   int64_t unused_folder_id;
   int unused_topmost_row;

@@ -10,6 +10,7 @@
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #include "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "url/gurl.h"
 
 using bookmarks::BookmarkModel;
@@ -81,7 +82,8 @@ using bookmarks::BookmarkNode;
   if (!model)
     return;
 
-  model->Remove(_bookmarkNode->children()[position].get());
+  model->Remove(_bookmarkNode->children()[position].get(),
+                bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
 - (NSArray*)bookmarkItems {
@@ -162,7 +164,8 @@ using bookmarks::BookmarkNode;
   if (!model)
     return;
 
-  model->Remove(_bookmarkNode->children()[position].get());
+  model->Remove(_bookmarkNode->children()[position].get(),
+                bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
 - (size_t)calculatePositionOfBookmarkFolderAt:(size_t)index {

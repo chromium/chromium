@@ -77,7 +77,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(url_);
     if (node)
-      model->Remove(node);
+      model->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
   }
 
   void OnWindowClosing() {

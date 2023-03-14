@@ -222,7 +222,8 @@ void BookmarkModel::EndGroupedChanges() {
   }
 }
 
-void BookmarkModel::Remove(const BookmarkNode* node) {
+void BookmarkModel::Remove(const BookmarkNode* node,
+                           metrics::BookmarkEditSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(node);
@@ -256,6 +257,8 @@ void BookmarkModel::Remove(const BookmarkNode* node) {
 
   undo_delegate()->OnBookmarkNodeRemoved(this, parent, index.value(),
                                          std::move(owned_node));
+
+  metrics::RecordBookmarkRemoved(source);
 }
 
 void BookmarkModel::RemoveAllUserBookmarks() {

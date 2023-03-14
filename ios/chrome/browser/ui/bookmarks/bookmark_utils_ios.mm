@@ -169,7 +169,7 @@ void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
   }
 
   if (bookmarks.find(node) != bookmarks.end()) {
-    model->Remove(node);
+    model->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser);
   }
 }
 

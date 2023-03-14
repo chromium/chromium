@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -1293,7 +1294,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   auto* node = entity->bookmark_node();
   tracker()->MarkDeleted(entity);
   tracker()->IncrementSequenceNumber(entity);
-  bookmark_model()->Remove(node);
+  bookmark_model()->Remove(node,
+                           bookmarks::metrics::BookmarkEditSource::kOther);
 
   // Process an update with outdated encryption. This should cause a conflict
   // and the remote version must be applied. Local tombstone entity will be
@@ -1373,7 +1375,8 @@ TEST_F(
   ASSERT_THAT(tracker()->GetEntityForGUID(kGuid)->IsUnsynced(), Eq(true));
 
   // Remove the bookmark from the local bookmark model.
-  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
+  bookmark_model()->Remove(bookmark_bar_node->children().front().get(),
+                           bookmarks::metrics::BookmarkEditSource::kOther);
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
 
   // Push a remote deletion for the same entity with an out of date encryption
@@ -1452,7 +1455,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(entity->IsUnsynced(), Eq(true));
 
   // Remove the bookmark from the local bookmark model.
-  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
+  bookmark_model()->Remove(bookmark_bar_node->children().front().get(),
+                           bookmarks::metrics::BookmarkEditSource::kOther);
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
 
   // Push a remote deletion for the same entity.
@@ -1547,7 +1551,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(entity->IsUnsynced(), Eq(true));
 
   // Remove the bookmark from the local bookmark model.
-  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
+  bookmark_model()->Remove(bookmark_bar_node->children().front().get(),
+                           bookmarks::metrics::BookmarkEditSource::kOther);
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
 
   // Push an update for the same entity.

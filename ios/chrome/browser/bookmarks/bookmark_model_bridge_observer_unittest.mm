@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -93,7 +94,8 @@ TEST_F(BookmarkModelBridgeObserverTest,
         std::make_unique<BookmarkModelBridge>(owner.observer, bookmark_model_);
 
     // Deleting the folder should not cause a crash.
-    bookmark_model_->Remove(folder);
+    bookmark_model_->Remove(folder,
+                            bookmarks::metrics::BookmarkEditSource::kOther);
   }
 }
 

@@ -16,6 +16,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/views/controls/menu/menu_delegate.h"
@@ -238,7 +239,8 @@ TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
   // deleted nodes.
   DestroyDelegate();
   while (model_->other_node()->children().size() > 1)
-    model_->Remove(model_->other_node()->children()[1].get());
+    model_->Remove(model_->other_node()->children()[1].get(),
+                   bookmarks::metrics::BookmarkEditSource::kOther);
 
   NewDelegate();
   bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,

@@ -80,7 +80,8 @@ void BookmarkAddOperation::Undo() {
       bookmarks::GetBookmarkNodeByID(model, parent_id_);
   DCHECK(parent);
 
-  model->Remove(parent->children()[index_].get());
+  model->Remove(parent->children()[index_].get(),
+                bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
 int BookmarkAddOperation::GetUndoLabelId() const {

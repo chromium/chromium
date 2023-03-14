@@ -8,6 +8,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +53,8 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
   // folder to create a two level hierarchy.
 
   // But first we have to remove the URL from |folder1|.
-  model->Remove(folder1->children().front().get());
+  model->Remove(folder1->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther);
 
   const BookmarkNode* subfolder1 = model->AddFolder(folder1, 0, u"Subfolder1");
 
@@ -107,7 +109,8 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
   // folder to create a two level hierarchy.
 
   // But first we have to remove the URL from |folder1|.
-  model->Remove(folder1->children().front().get());
+  model->Remove(folder1->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther);
 
   const BookmarkNode* subfolder1 = model->AddFolder(folder1, 0, u"Subfolder1");
 

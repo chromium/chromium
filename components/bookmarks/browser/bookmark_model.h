@@ -156,10 +156,11 @@ class BookmarkModel : public BookmarkUndoProvider,
   // state during their own initializer, such as the NTP.
   bool IsDoingExtensiveChanges() const { return extensive_changes_ > 0; }
 
-  // Removes |node| from the model and deletes it. Removing a folder node
-  // recursively removes all nodes. Observers are notified immediately. |node|
-  // must not be a permanent node.
-  void Remove(const BookmarkNode* node);
+  // Removes `node` from the model and deletes it. Removing a folder node
+  // recursively removes all nodes. Observers are notified immediately. `node`
+  // must not be a permanent node. The source of the removal is passed through
+  // `source`.
+  void Remove(const BookmarkNode* node, metrics::BookmarkEditSource source);
 
   // Removes all the non-permanent bookmark nodes that are editable by the user.
   // Observers are only notified when all nodes have been removed. There is no

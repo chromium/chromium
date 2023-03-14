@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/titled_url_match.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/query_parser/query_parser.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -177,7 +178,8 @@
   while (iterator.has_next()) {
     const bookmarks::BookmarkNode* bookmark = iterator.Next();
     if (bookmark->GetTitle() == name16) {
-      bookmarkModel->Remove(bookmark);
+      bookmarkModel->Remove(bookmark,
+                            bookmarks::metrics::BookmarkEditSource::kUser);
       return nil;
     }
   }

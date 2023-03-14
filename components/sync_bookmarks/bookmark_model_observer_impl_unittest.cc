@@ -492,7 +492,8 @@ TEST_F(BookmarkModelObserverImplTest,
       bookmark3_entity->metadata().server_id();
   // Delete folder2.
   EXPECT_CALL(*nudge_for_commit_closure(), Run());
-  bookmark_model()->Remove(folder2_node);
+  bookmark_model()->Remove(folder2_node,
+                           bookmarks::metrics::BookmarkEditSource::kOther);
 
   // folder2, bookmark2, and bookmark3 should be marked deleted.
   EXPECT_TRUE(bookmark_tracker()
@@ -539,7 +540,8 @@ TEST_F(BookmarkModelObserverImplTest,
   bookmark_tracker()->MarkCommitMayHaveStarted(entity);
 
   // Remove the folder.
-  bookmark_model()->Remove(folder_node);
+  bookmark_model()->Remove(folder_node,
+                           bookmarks::metrics::BookmarkEditSource::kOther);
 
   // Simulate a commit response for the first commit request (the creation).
   // Don't simulate change in id for simplicity.
@@ -577,7 +579,8 @@ TEST_F(BookmarkModelObserverImplTest,
   ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
 
   // Remove the folder.
-  bookmark_model()->Remove(folder_node);
+  bookmark_model()->Remove(folder_node,
+                           bookmarks::metrics::BookmarkEditSource::kOther);
 
   // Entity should have been dropped.
   EXPECT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 3U);
@@ -684,7 +687,8 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotSyncUnsyncableBookmarks) {
   EXPECT_CALL(*nudge_for_commit_closure(), Run()).Times(0);
   // In the TestBookmarkClient, descendants of managed nodes shouldn't be
   // synced.
-  model->Remove(unsyncable_node);
+  model->Remove(unsyncable_node,
+                bookmarks::metrics::BookmarkEditSource::kOther);
 
   // Only permanent folders should be tracked.
   EXPECT_THAT(bookmark_tracker->TrackedEntitiesCountForTest(), 3U);
@@ -915,7 +919,8 @@ TEST_F(BookmarkModelObserverImplTest,
   // Now delete the entity and restore it with the same bookmark node.
   BookmarkUndoService undo_service;
   undo_service.Start(bookmark_model());
-  bookmark_model()->Remove(folder);
+  bookmark_model()->Remove(folder,
+                           bookmarks::metrics::BookmarkEditSource::kOther);
 
   // The removed bookmark must be saved in the undo service.
   ASSERT_EQ(undo_service.undo_manager()->undo_count(), 1u);

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/prefs/pref_registry_simple.h"
 
 class GURL;
@@ -65,12 +66,14 @@ void CloneBookmarkNode(BookmarkModel* model,
                        size_t index_to_add_at,
                        bool reset_node_times);
 
-// Copies nodes onto the clipboard. If |remove_nodes| is true the nodes are
+// Copies nodes onto the clipboard. If `remove_nodes` is true the nodes are
 // removed after copied to the clipboard. The nodes are copied in such a way
-// that if pasted again copies are made.
+// that if pasted again copies are made. Pass the calling context through as
+// `source`.
 void CopyToClipboard(BookmarkModel* model,
                      const std::vector<const BookmarkNode*>& nodes,
-                     bool remove_nodes);
+                     bool remove_nodes,
+                     metrics::BookmarkEditSource source);
 
 // Pastes from the clipboard. The new nodes are added to |parent|, unless
 // |parent| is null in which case this does nothing. The nodes are inserted

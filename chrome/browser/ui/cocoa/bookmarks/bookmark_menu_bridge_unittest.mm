@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
+#import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 
 #import <AppKit/AppKit.h>
 
-#include <string>
+#import <string>
 
-#include "base/guid.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
-#include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/bookmarks/browser/bookmark_model.h"
+#import "base/guid.h"
+#import "base/strings/string_util.h"
+#import "base/strings/utf_string_conversions.h"
+#import "chrome/app/chrome_command_ids.h"
+#import "chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#import "chrome/test/base/browser_with_test_window_test.h"
+#import "chrome/test/base/testing_profile.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
-#include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
@@ -116,7 +116,8 @@ TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
   EXPECT_EQ(2, [menu_ numberOfItems]);
   // Remove the new bookmark and reload and we should have 0 items again
   // because the separator should have been removed as well.
-  model->Remove(parent->children().front().get());
+  model->Remove(parent->children().front().get(),
+                bookmarks::metrics::BookmarkEditSource::kOther);
   UpdateRootMenu();
   EXPECT_EQ(0, [menu_ numberOfItems]);
 }
@@ -299,7 +300,8 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
 
   const BookmarkNode* removed_node = folder->children()[0].get();
   EXPECT_EQ(2u, folder->children().size());
-  model->Remove(folder->children()[0].get());
+  model->Remove(folder->children()[0].get(),
+                bookmarks::metrics::BookmarkEditSource::kOther);
   EXPECT_EQ(1u, folder->children().size());
 
   EXPECT_FALSE(menu_is_valid());

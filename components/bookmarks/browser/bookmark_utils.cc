@@ -26,7 +26,6 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
-#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -236,7 +235,8 @@ void CloneBookmarkNode(BookmarkModel* model,
 
 void CopyToClipboard(BookmarkModel* model,
                      const std::vector<const BookmarkNode*>& nodes,
-                     bool remove_nodes) {
+                     bool remove_nodes,
+                     metrics::BookmarkEditSource source) {
   if (nodes.empty())
     return;
 
@@ -252,7 +252,7 @@ void CopyToClipboard(BookmarkModel* model,
   if (remove_nodes) {
     ScopedGroupBookmarkActions group_cut(model);
     for (const auto* node : filtered_nodes)
-      model->Remove(node);
+      model->Remove(node, source);
   }
 }
 
@@ -494,7 +494,7 @@ void DeleteBookmarkFolders(BookmarkModel* model,
     const BookmarkNode* node = GetBookmarkNodeByID(model, *iter);
     if (!node)
       continue;
-    model->Remove(node);
+    model->Remove(node, metrics::BookmarkEditSource::kUser);
   }
 }
 
@@ -520,7 +520,7 @@ void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {
   for (size_t i = 0; i < bookmarks.size(); ++i) {
     const BookmarkNode* node = bookmarks[i];
     if (model->client()->CanBeEditedByUser(node))
-      model->Remove(node);
+      model->Remove(node, metrics::BookmarkEditSource::kUser);
   }
 }
 

@@ -475,7 +475,7 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
                       node->date_added(), guid);
   }
 
-  model->Remove(node);
+  model->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
 
   return new_node;
 }

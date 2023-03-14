@@ -28,6 +28,9 @@ enum class BookmarkEditSource {
 // Records when a bookmark is added by the user.
 void RecordBookmarkAdded();
 
+// Records when a bookmark is removed.
+void RecordBookmarkRemoved(BookmarkEditSource source);
+
 // Records when a bookmark is opened by the user.
 void RecordBookmarkOpened(base::Time now,
                           base::Time date_last_used,

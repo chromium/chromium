@@ -293,7 +293,8 @@ TEST_F(BookmarkUtilsTest, MAYBE_CopyPaste) {
   // Copy a node to the clipboard.
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(node);
-  CopyToClipboard(model.get(), nodes, false);
+  CopyToClipboard(model.get(), nodes, false,
+                  metrics::BookmarkEditSource::kOther);
 
   // And make sure we can paste a bookmark from the clipboard.
   EXPECT_TRUE(CanPasteFromClipboard(model.get(), model->bookmark_bar_node()));
@@ -326,7 +327,8 @@ TEST_F(BookmarkUtilsTest, DISABLED_MakeTitleUnique) {
   // Copy a node to the clipboard.
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(node);
-  CopyToClipboard(model.get(), nodes, false);
+  CopyToClipboard(model.get(), nodes, false,
+                  metrics::BookmarkEditSource::kOther);
 
   // Now we should be able to paste from the clipboard.
   EXPECT_TRUE(CanPasteFromClipboard(model.get(), bookmark_bar_node));
@@ -352,7 +354,8 @@ TEST_F(BookmarkUtilsTest, DISABLED_CopyPasteMetaInfo) {
   // Copy a node to the clipboard.
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(node);
-  CopyToClipboard(model.get(), nodes, false);
+  CopyToClipboard(model.get(), nodes, false,
+                  metrics::BookmarkEditSource::kOther);
 
   // Paste node to a different folder.
   const BookmarkNode* folder =
@@ -395,7 +398,8 @@ TEST_F(BookmarkUtilsTest, MAYBE_CutToClipboard) {
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(n1);
   nodes.push_back(n2);
-  CopyToClipboard(model.get(), nodes, true);
+  CopyToClipboard(model.get(), nodes, true,
+                  metrics::BookmarkEditSource::kOther);
 
   // Make sure the nodes were removed.
   EXPECT_EQ(0u, model->other_node()->children().size());
@@ -426,7 +430,8 @@ TEST_F(BookmarkUtilsTest, MAYBE_PasteNonEditableNodes) {
   // Copy a node to the clipboard.
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(node);
-  CopyToClipboard(model.get(), nodes, false);
+  CopyToClipboard(model.get(), nodes, false,
+                  metrics::BookmarkEditSource::kOther);
 
   // And make sure we can paste a bookmark from the clipboard.
   EXPECT_TRUE(CanPasteFromClipboard(model.get(), model->bookmark_bar_node()));

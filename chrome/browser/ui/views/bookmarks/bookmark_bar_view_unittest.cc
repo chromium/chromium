@@ -34,6 +34,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
@@ -331,11 +332,13 @@ TEST_F(BookmarkBarViewTest, RemoveNode) {
   EXPECT_EQ(2u, test_helper_->GetBookmarkButtonCount());
 
   // Remove the 2nd node, should still only have 1 visible.
-  model()->Remove(bookmark_bar_node->children()[1].get());
+  model()->Remove(bookmark_bar_node->children()[1].get(),
+                  bookmarks::metrics::BookmarkEditSource::kOther);
   EXPECT_EQ("a", GetStringForVisibleButtons());
 
   // Remove the first node, should force a new button (for the 'c' node).
-  model()->Remove(bookmark_bar_node->children()[0].get());
+  model()->Remove(bookmark_bar_node->children()[0].get(),
+                  bookmarks::metrics::BookmarkEditSource::kOther);
   ASSERT_EQ("c", GetStringForVisibleButtons());
 }
 
@@ -459,7 +462,8 @@ TEST_F(BookmarkBarViewTest, MutateModelDuringDrag) {
   ASSERT_TRUE(bookmark_bar_view()->CanDrop(drop_data));
   bookmark_bar_view()->OnDragUpdated(target_event);
   EXPECT_NE(-1, test_helper_->GetDropLocationModelIndexForTesting());
-  model()->Remove(model()->bookmark_bar_node()->children()[4].get());
+  model()->Remove(model()->bookmark_bar_node()->children()[4].get(),
+                  bookmarks::metrics::BookmarkEditSource::kOther);
   EXPECT_EQ(-1, test_helper_->GetDropLocationModelIndexForTesting());
 }
 

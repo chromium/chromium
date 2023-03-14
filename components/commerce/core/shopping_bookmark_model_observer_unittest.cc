@@ -61,7 +61,7 @@ TEST_F(ShoppingBookmarkModelObserverTest, TestUnsubscribeOnBookmarkDeletion) {
       Unsubscribe(VectorHasSubscriptionWithId(base::NumberToString(cluster_id)),
                   testing::_))
       .Times(1);
-  bookmark_model_->Remove(node);
+  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -78,7 +78,7 @@ TEST_F(ShoppingBookmarkModelObserverTest,
   shopping_service_->SetIsSubscribedCallbackValue(true);
 
   EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(0);
-  bookmark_model_->Remove(node);
+  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
   base::RunLoop().RunUntilIdle();
 }
 

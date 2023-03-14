@@ -18,6 +18,10 @@ void RecordBookmarkAdded() {
   base::RecordAction(base::UserMetricsAction("Bookmarks.Added"));
 }
 
+void RecordBookmarkRemoved(BookmarkEditSource source) {
+  base::UmaHistogramEnumeration("Bookmarks.RemovedSource", source);
+}
+
 void RecordBookmarkOpened(base::Time now,
                           base::Time date_last_used,
                           base::Time date_added) {

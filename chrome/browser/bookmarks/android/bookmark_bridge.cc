@@ -862,7 +862,8 @@ void BookmarkBridge::DeleteBookmark(
     GURL url(node->url());
     reading_list_manager_->Delete(url);
   } else {
-    bookmark_model_->Remove(node);
+    bookmark_model_->Remove(node,
+                            bookmarks::metrics::BookmarkEditSource::kUser);
   }
 }
 
