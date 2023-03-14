@@ -18,6 +18,7 @@
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/same_origin_observer.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -375,6 +376,12 @@ void TabSharingUIViews::CreateInfobarsForAllTabs() {
 void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(contents);
+
+  // Don't show the info bar in a Picture in Picture window, since it doesn't
+  // typically fit anyway.
+  if (PictureInPictureWindowManager::IsChildWebContents(contents)) {
+    return;
+  }
 
   auto infobars_entry = infobars_.find(contents);
   // Recreate the infobar if it already exists.
