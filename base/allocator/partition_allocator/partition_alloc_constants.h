@@ -179,7 +179,6 @@ constexpr size_t kHighThresholdForAlternateDistribution =
 //     | Guard page (4 KiB)    |
 //     | Metadata page (4 KiB) |
 //     | Guard pages (8 KiB)   |
-//     | TagBitmap             |
 //     | Free Slot Bitmap      |
 //     | *Scan State Bitmap    |
 //     | Slot span             |
@@ -189,8 +188,6 @@ constexpr size_t kHighThresholdForAlternateDistribution =
 //     | Guard pages (16 KiB)  |
 //     +-----------------------+
 //
-// TagBitmap is only present when
-// PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS) is true.
 // Free Slot Bitmap is only present when USE_FREESLOT_BITMAP is true. State
 // Bitmap is inserted for partitions that may have quarantine enabled.
 //

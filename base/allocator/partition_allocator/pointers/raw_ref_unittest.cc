@@ -530,10 +530,8 @@ TEST(RawRef, GreaterThanOrEqual) {
 // `raw_ref` evaluate to nothing. Therefore, death tests relying on
 // these CHECKs firing are disabled in their absence.
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||                        \
-    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||                              \
-    PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS) || \
-    BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) || BUILDFLAG(PA_DCHECK_IS_ON)
 
 TEST(RawRefDeathTest, CopyConstructAfterMove) {
   int i = 1;
@@ -775,7 +773,6 @@ TEST(RawRefDeathTest, GreaterThanOrEqualAfterMove) {
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
         // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||
-        // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS) ||
         // BUILDFLAG(PA_DCHECK_IS_ON)
 
 TEST(RawRef, CTAD) {

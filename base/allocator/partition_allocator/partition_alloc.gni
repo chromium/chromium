@@ -75,9 +75,8 @@ declare_args() {
 }
 
 declare_args() {
-  # Build support for Use-after-Free protection via BackupRefPtr (BRP) or
-  # MTECheckedPtr, and switch the raw_ptr<T> implementation to RawPtrBackupRefImpl
-  # and MTECheckedPtrImp, respectively. They're mutually exclusive.
+  # Build support for Use-after-Free protection via BackupRefPtr (BRP),
+  # making the raw_ptr<T> implementation to RawPtrBackupRefImpl if active.
   #
   # These are effective only for memory allocated from PartitionAlloc, so it is
   # recommended to enable PA-E above, but isn't strictly necessary. Embedders
@@ -88,16 +87,11 @@ declare_args() {
   # partition_alloc::PartitionOptions::BackupRefPtr::kEnabled.
   enable_backup_ref_ptr_support =
       use_partition_alloc && enable_backup_ref_ptr_support_default
-  enable_mte_checked_ptr_support =
-      use_partition_alloc && enable_mte_checked_ptr_support_default
 
   # RAW_PTR_EXCLUSION macro is disabled on official builds because it increased
   # binary size. This flag can be used to enable it for official builds too.
   force_enable_raw_ptr_exclusion = false
 }
-
-assert(!(enable_backup_ref_ptr_support && enable_mte_checked_ptr_support),
-       "MTECheckedPtrSupport conflicts with BRPSupport.")
 
 assert(!enable_pointer_compression_support || glue_core_pools,
        "Pointer compression relies on core pools being contiguous.")
@@ -200,7 +194,6 @@ if (is_nacl) {
 if (!use_partition_alloc) {
   use_partition_alloc_as_malloc = false
   enable_backup_ref_ptr_support = false
-  enable_mte_checked_ptr_support = false
   use_asan_backup_ref_ptr = false
   use_asan_unowned_ptr = false
   use_hookable_raw_ptr = false

@@ -38,8 +38,7 @@ void WontCompile() {
 
 void WontCompile() {
   constexpr auto InvalidRawPtrTrait = ~base::RawPtrTraits::kEmpty;
-  raw_ptr<int, DisableDanglingPtrDetection | InvalidRawPtrTrait |
-                   DegradeToNoOpWhenMTE>
+  raw_ptr<int, DisableDanglingPtrDetection | InvalidRawPtrTrait>
       p;
 }
 

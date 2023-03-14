@@ -31,8 +31,6 @@
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
-#include "base/allocator/partition_allocator/partition_tag.h"
-#include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
@@ -236,10 +234,6 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
   PartitionDirectMapExtent<thread_safe>* map_extent = nullptr;
   PartitionPage<thread_safe>* page = nullptr;
-
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  const PartitionTag tag = root->GetNewPartitionTag();
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
   {
     // Getting memory for direct-mapped allocations doesn't interact with the
@@ -455,10 +449,6 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     map_extent->reservation_size = reservation_size;
     map_extent->padding_for_alignment = padding_for_alignment;
     map_extent->bucket = &metadata->bucket;
-
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-    DirectMapPartitionTagSetValue(slot_start, tag);
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   }
 
   root->lock_.AssertAcquired();
@@ -702,28 +692,6 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
   // span.
   PA_DCHECK(root->next_partition_page <= root->next_partition_page_end);
 
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  PA_DCHECK(root->next_tag_bitmap_page);
-  uintptr_t next_tag_bitmap_page =
-      base::bits::AlignUp(reinterpret_cast<uintptr_t>(
-                              PartitionTagPointer(root->next_partition_page)),
-                          SystemPageSize());
-  if (root->next_tag_bitmap_page < next_tag_bitmap_page) {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
-    uintptr_t super_page =
-        reinterpret_cast<uintptr_t>(slot_span) & kSuperPageBaseMask;
-    uintptr_t tag_bitmap = super_page + PartitionPageSize();
-    PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + ActualTagBitmapSize());
-    PA_DCHECK(next_tag_bitmap_page > tag_bitmap);
-#endif
-    SetSystemPagesAccess(root->next_tag_bitmap_page,
-                         next_tag_bitmap_page - root->next_tag_bitmap_page,
-                         PageAccessibilityConfiguration(
-                             PageAccessibilityConfiguration::kReadWrite));
-    root->next_tag_bitmap_page = next_tag_bitmap_page;
-  }
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-
   return slot_span;
 }
 
@@ -789,9 +757,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
   root->next_super_page = super_page + kSuperPageSize;
   uintptr_t state_bitmap =
       super_page + PartitionPageSize() +
-      (is_direct_mapped()
-           ? 0
-           : ReservedTagBitmapSize() + ReservedFreeSlotBitmapSize());
+      (is_direct_mapped() ? 0 : ReservedFreeSlotBitmapSize());
 #if BUILDFLAG(USE_STARSCAN)
   PA_DCHECK(SuperPageStateBitmapAddr(super_page) == state_bitmap);
   const size_t state_bitmap_reservation_size =
@@ -896,19 +862,6 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
               payload < SuperPagesEndFromExtent(current_extent));
   }
 
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  // `root->next_partition_page` currently points at the start of the
-  // super page payload. We point `root->next_tag_bitmap_page` to the
-  // corresponding point in the tag bitmap and let the caller
-  // (slot span allocation) take care of the rest.
-  root->next_tag_bitmap_page =
-      base::bits::AlignDown(reinterpret_cast<uintptr_t>(
-                                PartitionTagPointer(root->next_partition_page)),
-                            SystemPageSize());
-  PA_DCHECK(root->next_tag_bitmap_page >= super_page + PartitionPageSize())
-      << "tag bitmap can never intrude on metadata partition page";
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-
   // If PCScan is used, commit the state bitmap. Otherwise, leave it uncommitted
   // and let PartitionRoot::RegisterScannableRoot() commit it when needed. Make
   // sure to register the super-page after it has been fully initialized.
@@ -930,8 +883,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   // Commit the pages for freeslot bitmap.
   if (!is_direct_mapped()) {
-    uintptr_t freeslot_bitmap_addr =
-        super_page + PartitionPageSize() + ReservedTagBitmapSize();
+    uintptr_t freeslot_bitmap_addr = super_page + PartitionPageSize();
     PA_DCHECK(SuperPageFreeSlotBitmapAddr(super_page) == freeslot_bitmap_addr);
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(freeslot_bitmap_addr, CommittedFreeSlotBitmapSize(),
@@ -1021,10 +973,6 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
     TagMemoryRangeRandomly(return_slot, slot_size);
   }
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  NormalBucketPartitionTagSetValue(return_slot, slot_size,
-                                   root->GetNewPartitionTag());
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
@@ -1041,10 +989,6 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       // No MTE-tagging for larger slots, just cast.
       next_slot_ptr = reinterpret_cast<void*>(next_slot);
     }
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-    NormalBucketPartitionTagSetValue(next_slot, slot_size,
-                                     root->GetNewPartitionTag());
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
     auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot_ptr);
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);

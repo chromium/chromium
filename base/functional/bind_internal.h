@@ -168,18 +168,6 @@ class UnretainedWrapper {
     return ptr;
   }
 
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  // When `MTECheckedPtr` is enabled as the backing implementation of
-  // `raw_ptr`, there are too many different types that immediately
-  // cause Chrome to crash. Some of these are inutterable as forward
-  // declarations in `raw_ptr.h` (necessary to mark it as not
-  // `IsSupportedType`) - in particular, nested classes
-  // (`Foo::UnsupportedFoo`) cannot be marked as unsupported.
-  //
-  // As a compromise, we decay the wrapper to use `T*` only (rather
-  // than `raw_ptr`) when `raw_ptr` is `MTECheckedPtr`.
-  using StorageType = T*;
-#else   // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // `Unretained()` arguments often dangle by design (a common design pattern
   // is to manage an object's lifetime inside the callback itself, using
   // stateful information), so disable direct dangling pointer detection
@@ -193,7 +181,6 @@ class UnretainedWrapper {
       std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
                          DanglingRawPtrType,
                          T*>;
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // Avoid converting between different `raw_ptr` types when calling `get()`.
   // See the comment by `GetPtrType` describing why this wouldn't be good.
   static_assert(std::is_pointer_v<GetPtrType> ||
@@ -264,18 +251,6 @@ class UnretainedRefWrapper {
     return ref.get();
   }
 
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  // When `MTECheckedPtr` is enabled as the backing implementation of
-  // `raw_ptr`, there are too many different types that immediately
-  // cause Chrome to crash. Some of these are inutterable as forward
-  // declarations in `raw_ptr.h` (necessary to mark it as not
-  // `IsSupportedType`) - in particular, nested classes
-  // (`Foo::UnsupportedFoo`) cannot be marked as unsupported.
-  //
-  // As a compromise, we decay the wrapper to use `T&` only (rather
-  // than `raw_ref`) when `raw_ptr` is `MTECheckedPtr`.
-  using StorageType = T&;
-#else   // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // `Unretained()` arguments often dangle by design (a common design pattern
   // is to manage an object's lifetime inside the callback itself, using
   // stateful information), so disable direct dangling pointer detection
@@ -289,7 +264,6 @@ class UnretainedRefWrapper {
       std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
                          raw_ref<T, DisableDanglingPtrDetection>,
                          T&>;
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
   StorageType ref_;
 };

@@ -943,11 +943,6 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       PA_CHECK(!brp_enabled());
       flags.extras_size += internal::kPartitionRefCountSizeAdjustment;
     }
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-    // Add one extra byte to each slot's end to allow beyond-the-end
-    // pointers (crbug.com/1364476).
-    flags.extras_size += 1;
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
     // Re-confirm the above PA_CHECKs, by making sure there are no

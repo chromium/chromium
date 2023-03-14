@@ -25,15 +25,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
-#include "base/allocator/partition_allocator/partition_address_space.h"
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_tag.h"
-#include "base/allocator/partition_allocator/partition_tag_types.h"
-#include "base/allocator/partition_allocator/tagging.h"
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-
 #if BUILDFLAG(IS_WIN)
 #include "base/allocator/partition_allocator/partition_alloc_base/win/win_handle_types.h"
 #endif
@@ -42,8 +33,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 // Live implementation of MiraclePtr being built.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||       \
-    PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #define PA_RAW_PTR_CHECK(condition) PA_BASE_CHECK(condition)
 #else
 // No-op implementation of MiraclePtr being built.
@@ -51,8 +41,7 @@
 // minimizing impact of generated code.
 #define PA_RAW_PTR_CHECK(condition) PA_BASE_DCHECK(condition)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||
-        // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+        // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #else   // BUILDFLAG(USE_PARTITION_ALLOC)
 // Without PartitionAlloc, there's no `PA_BASE_D?CHECK()` implementation
 // available.
@@ -105,16 +94,6 @@ enum class RawPtrTraits : unsigned {
   // instead.
   kMayDangle = (1 << 0),
 
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  // Disables any protections when MTECheckedPtrImpl is requested, by
-  // switching to NoOpImpl in that case.
-  //
-  // Don't use directly, use DegradeToNoOpWhenMTE instead.
-  kDisableMTECheckedPtr = (1 << 1),
-#else
-  kDisableMTECheckedPtr = kEmpty,
-#endif
-
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   // Disables any hooks, by switching to NoOpImpl in that case.
   //
@@ -166,12 +145,11 @@ constexpr RawPtrTraits Remove(RawPtrTraits a, RawPtrTraits b) {
 }
 
 constexpr bool AreValid(RawPtrTraits traits) {
-  return Remove(traits,
-                RawPtrTraits::kMayDangle | RawPtrTraits::kDisableMTECheckedPtr |
-                    RawPtrTraits::kDisableHooks |
-                    RawPtrTraits::kAllowPtrArithmetic |
-                    RawPtrTraits::kUseCountingWrapperForTest |
-                    RawPtrTraits::kDummyForTest) == RawPtrTraits::kEmpty;
+  return Remove(traits, RawPtrTraits::kMayDangle | RawPtrTraits::kDisableHooks |
+                            RawPtrTraits::kAllowPtrArithmetic |
+                            RawPtrTraits::kUseCountingWrapperForTest |
+                            RawPtrTraits::kDummyForTest) ==
+         RawPtrTraits::kEmpty;
 }
 
 template <RawPtrTraits Traits>
@@ -280,288 +258,6 @@ struct RawPtrNoOpImpl {
   PA_ALWAYS_INLINE constexpr static void
   IncrementPointerToMemberOperatorCountForTest() {}
 };
-
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-
-constexpr int kValidAddressBits = 48;
-constexpr uintptr_t kAddressMask = (1ull << kValidAddressBits) - 1;
-constexpr int kTagBits = sizeof(uintptr_t) * 8 - kValidAddressBits;
-
-// MTECheckedPtr has no business with the topmost bits reserved for the
-// tag used by true ARM MTE, so we strip it out here.
-constexpr uintptr_t kTagMask =
-    ~kAddressMask & partition_alloc::internal::kPtrUntagMask;
-
-constexpr int kTopBitShift = 63;
-constexpr uintptr_t kTopBit = 1ull << kTopBitShift;
-static_assert(kTopBit << 1 == 0, "kTopBit should really be the top bit");
-static_assert((kTopBit & kTagMask) > 0,
-              "kTopBit bit must be inside the tag region");
-
-// This functionality is outside of MTECheckedPtrImpl, so that it can be
-// overridden by tests.
-struct MTECheckedPtrImplPartitionAllocSupport {
-  // Checks if the necessary support is enabled in PartitionAlloc for `ptr`.
-  template <typename T>
-  PA_ALWAYS_INLINE static bool EnabledForPtr(T* ptr) {
-    // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this class
-    // is responsible for handling the software MTE tag.
-    auto addr = partition_alloc::UntagPtr(ptr);
-    return partition_alloc::IsManagedByPartitionAlloc(addr);
-  }
-
-  // Returns pointer to the tag that protects are pointed by |addr|.
-  PA_ALWAYS_INLINE static void* TagPointer(uintptr_t addr) {
-    return partition_alloc::PartitionTagPointer(addr);
-  }
-};
-
-template <typename PartitionAllocSupport>
-struct MTECheckedPtrImpl {
-  // This implementation assumes that pointers are 64 bits long and at least 16
-  // top bits are unused. The latter is harder to verify statically, but this is
-  // true for all currently supported 64-bit architectures (PA_DCHECK when
-  // wrapping will verify that).
-  static_assert(sizeof(void*) >= 8, "Need 64-bit pointers");
-
-  // Wraps a pointer, and returns its uintptr_t representation.
-  template <typename T>
-  PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return ptr;
-    }
-    // Catch the obviously unsupported cases, e.g. `nullptr` or `-1ull`.
-    //
-    // `ExtractPtr(ptr)` should be functionally identical to `ptr` for
-    // the purposes of `EnabledForPtr()`, since we assert that `ptr` is
-    // an untagged raw pointer (there are no tag bits provided by
-    // MTECheckedPtr to strip off). However, something like `-1ull`
-    // looks identical to a fully tagged-up pointer. We'll add a check
-    // here just to make sure there's no difference in the support check
-    // whether extracted or not.
-    const bool extracted_supported =
-        PartitionAllocSupport::EnabledForPtr(ExtractPtr(ptr));
-    const bool raw_supported = PartitionAllocSupport::EnabledForPtr(ptr);
-    PA_BASE_DCHECK(extracted_supported == raw_supported);
-
-    // At the expense of consistency, we use the `raw_supported`
-    // condition. When wrapping a raw pointer, we assert that having set
-    // bits conflatable with the MTECheckedPtr tag disqualifies `ptr`
-    // from support.
-    if (!raw_supported) {
-      return ptr;
-    }
-
-    // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
-    // function is responsible for adding the software MTE tag.
-    uintptr_t addr = partition_alloc::UntagPtr(ptr);
-    PA_BASE_DCHECK(ExtractTag(addr) == 0ull);
-
-    // Read the tag and place it in the top bits of the address.
-    // Even if PartitionAlloc's tag has less than kTagBits, we'll read
-    // what's given and pad the rest with 0s.
-    static_assert(sizeof(partition_alloc::PartitionTag) * 8 <= kTagBits, "");
-    uintptr_t tag = *(static_cast<volatile partition_alloc::PartitionTag*>(
-        PartitionAllocSupport::TagPointer(addr)));
-    PA_BASE_DCHECK(tag);
-
-    tag <<= kValidAddressBits;
-    addr |= tag;
-    // See the disambiguation comment above.
-    // TODO(kdlee): Ensure that ptr's hardware MTE tag is preserved.
-    // TODO(kdlee): Ensure that hardware and software MTE tags don't conflict.
-    return static_cast<T*>(partition_alloc::internal::TagAddr(addr));
-  }
-
-  // Notifies the allocator when a wrapped pointer is being removed or replaced.
-  // No-op for MTECheckedPtrImpl.
-  template <typename T>
-  PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T*) {}
-
-  // Unwraps the pointer's uintptr_t representation, while asserting that memory
-  // hasn't been freed. The function is allowed to crash on nullptr.
-  template <typename T>
-  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
-      T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return wrapped_ptr;
-    }
-    // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
-    // function is responsible for removing the software MTE tag.
-    uintptr_t wrapped_addr = partition_alloc::UntagPtr(wrapped_ptr);
-    uintptr_t tag = ExtractTag(wrapped_addr);
-    if (tag > 0) {
-      // Read the tag provided by PartitionAlloc.
-      //
-      // Cast to volatile to ensure memory is read. E.g. in a tight loop, the
-      // compiler could cache the value in a register and thus could miss that
-      // another thread freed memory and changed tag.
-      uintptr_t read_tag =
-          *static_cast<volatile partition_alloc::PartitionTag*>(
-              PartitionAllocSupport::TagPointer(ExtractAddress(wrapped_addr)));
-      if (PA_UNLIKELY(tag != read_tag)) {
-        PA_IMMEDIATE_CRASH();
-      }
-      // See the disambiguation comment above.
-      // TODO(kdlee): Ensure that ptr's hardware MTE tag is preserved.
-      // TODO(kdlee): Ensure that hardware and software MTE tags don't conflict.
-      return static_cast<T*>(
-          partition_alloc::internal::TagAddr(ExtractAddress(wrapped_addr)));
-    }
-    return wrapped_ptr;
-  }
-
-  // Unwraps the pointer as a T*, without making an assertion on whether
-  // memory was freed or not.
-  template <typename T>
-  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
-      T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return wrapped_ptr;
-    }
-    // Return `wrapped_ptr` straightaway if protection is disabled, e.g.
-    // when `ptr` is `nullptr` or `uintptr_t{-1ull}`.
-    T* extracted_ptr = ExtractPtr(wrapped_ptr);
-    if (!PartitionAllocSupport::EnabledForPtr(extracted_ptr)) {
-      return wrapped_ptr;
-    }
-    return extracted_ptr;
-  }
-
-  // Unwraps the pointer's uintptr_t representation, without making an assertion
-  // on whether memory was freed or not.
-  template <typename T>
-  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
-      T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return wrapped_ptr;
-    }
-    // Return `wrapped_ptr` straightaway if protection is disabled, e.g.
-    // when `ptr` is `nullptr` or `uintptr_t{-1ull}`.
-    T* extracted_ptr = ExtractPtr(wrapped_ptr);
-    if (!PartitionAllocSupport::EnabledForPtr(extracted_ptr)) {
-      return wrapped_ptr;
-    }
-    return extracted_ptr;
-  }
-
-  // Upcasts the wrapped pointer.
-  template <typename To, typename From>
-  PA_ALWAYS_INLINE static constexpr To* Upcast(From* wrapped_ptr) {
-    static_assert(std::is_convertible<From*, To*>::value,
-                  "From must be convertible to To.");
-
-    // The top-bit tag must not affect the result of upcast.
-    return static_cast<To*>(wrapped_ptr);
-  }
-
-  // Advance the wrapped pointer by `delta_elems`.
-  template <
-      typename T,
-      typename Z,
-      typename =
-          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T* Advance(T* wrapped_ptr, Z delta_elems) {
-    return wrapped_ptr + delta_elems;
-  }
-
-  // Retreat the wrapped pointer by `delta_elems`.
-  template <
-      typename T,
-      typename Z,
-      typename =
-          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T* Retreat(T* wrapped_ptr, Z delta_elems) {
-    return wrapped_ptr - delta_elems;
-  }
-
-  template <typename T>
-  PA_ALWAYS_INLINE static constexpr ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
-                                                            T* wrapped_ptr2) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return wrapped_ptr1 - wrapped_ptr2;
-    }
-
-#if BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
-    // Ensure that both pointers come from the same allocation.
-    //
-    // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
-    // class is responsible for handling the software MTE tag.
-    //
-    // MTECheckedPtr doesn't use 0 as a valid tag; depending on which
-    // subtraction operator is called, we may be getting the actual
-    // untagged T* or the wrapped pointer (passed as a T*) in one or
-    // both args. We can only check slot cohabitation when both args
-    // come with tags.
-    const uintptr_t tag1 = ExtractTag(partition_alloc::UntagPtr(wrapped_ptr1));
-    const uintptr_t tag2 = ExtractTag(partition_alloc::UntagPtr(wrapped_ptr2));
-    if (tag1 && tag2) {
-      PA_BASE_CHECK(tag1 == tag2);
-      return wrapped_ptr1 - wrapped_ptr2;
-    }
-#endif  // BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
-
-    // If one or the other arg come untagged, we have to perform the
-    // subtraction entirely without tags.
-    return reinterpret_cast<T*>(
-               ExtractAddress(partition_alloc::UntagPtr(wrapped_ptr1))) -
-           reinterpret_cast<T*>(
-               ExtractAddress(partition_alloc::UntagPtr(wrapped_ptr2)));
-  }
-
-  // Returns a copy of a wrapped pointer, without making an assertion
-  // on whether memory was freed or not.
-  template <typename T>
-  PA_ALWAYS_INLINE static constexpr T* Duplicate(T* wrapped_ptr) {
-    return wrapped_ptr;
-  }
-
-  // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
-  // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
-  template <typename T>
-  PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return ptr;
-    }
-    return WrapRawPtr(ptr);
-  }
-
-  template <typename T>
-  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
-      T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return wrapped_ptr;
-    }
-    return ExtractPtr(wrapped_ptr);
-  }
-
-  // This is for accounting only, used by unit tests.
-  PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}
-  PA_ALWAYS_INLINE static constexpr void IncrementLessCountForTest() {}
-  PA_ALWAYS_INLINE static constexpr void
-  IncrementPointerToMemberOperatorCountForTest() {}
-
- private:
-  PA_ALWAYS_INLINE static uintptr_t ExtractAddress(uintptr_t wrapped_ptr) {
-    return wrapped_ptr & kAddressMask;
-  }
-
-  template <typename T>
-  PA_ALWAYS_INLINE static T* ExtractPtr(T* wrapped_ptr) {
-    // Disambiguation: UntagPtr/TagAddr handle the hardware MTE tag, whereas
-    // this function is responsible for removing the software MTE tag.
-    // TODO(kdlee): Ensure that wrapped_ptr's hardware MTE tag is preserved.
-    // TODO(kdlee): Ensure that hardware and software MTE tags don't conflict.
-    return static_cast<T*>(partition_alloc::internal::TagAddr(
-        ExtractAddress(partition_alloc::UntagPtr(wrapped_ptr))));
-  }
-
-  PA_ALWAYS_INLINE static uintptr_t ExtractTag(uintptr_t wrapped_ptr) {
-    return (wrapped_ptr & kTagMask) >> kValidAddressBits;
-  }
-};
-
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 // Wraps a raw_ptr/raw_ref implementation, with a class of the same interface
 // that provides accounting, for test purposes. raw_ptr/raw_ref that use it
@@ -758,12 +454,6 @@ struct TraitsToImpl {
       internal::RawPtrNoOpImpl,
       internal::RawPtrAsanUnownedImpl<
           Contains(Traits, RawPtrTraits::kAllowPtrArithmetic)>>;
-#elif PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  using UnderlyingImpl =
-      std::conditional_t<Contains(Traits, RawPtrTraits::kDisableMTECheckedPtr),
-                         internal::RawPtrNoOpImpl,
-                         internal::MTECheckedPtrImpl<
-                             internal::MTECheckedPtrImplPartitionAllocSupport>>;
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
   using UnderlyingImpl =
       std::conditional_t<Contains(Traits, RawPtrTraits::kDisableHooks),
@@ -1420,21 +1110,6 @@ constexpr auto DanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // - raw_ptr<T, DisableDanglingPtrDetection>
 template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
 using MayBeDangling = base::raw_ptr<T, Traits | base::RawPtrTraits::kMayDangle>;
-
-// The following template parameters are only meaningful when `raw_ptr`
-// is `MTECheckedPtr` (never the case unless a particular GN arg is set
-// true.) `raw_ptr` users need not worry about this and can refer solely
-// to `DisableDanglingPtrDetection` and `DanglingUntriaged` above.
-//
-// The `raw_ptr` definition allows users to specify an implementation.
-// When `MTECheckedPtr` is in play, we need to augment this
-// implementation setting with another layer that allows the `raw_ptr`
-// to degrade into the no-op version.
-//
-// See `base/memory/raw_ptr_mtecheckedptr.md`
-
-// Direct pass-through to no-op implementation.
-constexpr auto DegradeToNoOpWhenMTE = base::RawPtrTraits::kDisableMTECheckedPtr;
 
 // The use of pointer arithmetic with raw_ptr is strongly discouraged and
 // disabled by default. Usually a container like span<> should be used

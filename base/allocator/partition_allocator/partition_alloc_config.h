@@ -168,21 +168,8 @@ static_assert(sizeof(void*) != 8, "");
 static_assert(sizeof(void*) == 8);
 #endif
 
-// Build MTECheckedPtr code.
-//
-// Only applicable to code with 64-bit pointers. Currently conflicts with true
-// hardware MTE.
-#if BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT) && \
-    BUILDFLAG(HAS_64_BIT_POINTERS) && !PA_CONFIG(HAS_MEMORY_TAGGING)
-static_assert(sizeof(void*) == 8);
-#define PA_CONFIG_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS() 1
-#else
-#define PA_CONFIG_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS() 0
-#endif
-
 // Specifies whether allocation extras need to be added.
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #define PA_CONFIG_EXTRAS_REQUIRED() 1
 #else
 #define PA_CONFIG_EXTRAS_REQUIRED() 0
@@ -327,8 +314,7 @@ constexpr bool kUseLazyCommit = false;
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #error "Dynamically selected pool size is currently not supported"
 #endif
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS) || \
-    PA_CONFIG(HAS_MEMORY_TAGGING)
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
 // TODO(1376980): Address MTE once it's enabled.
 #error "Compressed pointers don't support tag in the upper bits"
 #endif

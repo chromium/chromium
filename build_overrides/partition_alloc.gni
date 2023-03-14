@@ -12,7 +12,6 @@
 # - use_allocator_shim
 # - use_partition_alloc_as_malloc
 # - enable_backup_ref_ptr_support
-# - enable_mte_checked_ptr_support
 # - put_ref_count_in_previous_slot
 # - enable_backup_ref_ptr_slow_checks
 # - enable_dangling_raw_ptr_checks
@@ -76,13 +75,7 @@ use_allocator_shim_default = _default_use_allocator_shim
 _is_brp_supported = (is_win || is_android || is_linux || is_mac ||
                      is_chromeos) && use_partition_alloc_as_malloc_default
 
-_is_mcp_supported = is_win && use_partition_alloc_as_malloc_default
-
 enable_backup_ref_ptr_support_default = _is_brp_supported
-
-# We jam MTECheckedPtr off by default, but can set it to
-# `_is_mcp_supported` to activate it.
-enable_mte_checked_ptr_support_default = false
 
 put_ref_count_in_previous_slot_default = true
 enable_backup_ref_ptr_slow_checks_default = false

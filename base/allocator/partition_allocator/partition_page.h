@@ -25,8 +25,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
-#include "base/allocator/partition_allocator/partition_tag_bitmap.h"
-#include "base/allocator/partition_allocator/partition_tag_types.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
@@ -228,10 +226,6 @@ struct SlotSpanMetadata {
   PA_ALWAYS_INLINE void SetRawSize(size_t raw_size);
   PA_ALWAYS_INLINE size_t GetRawSize() const;
 
-  // Only meaningful when `this` refers to a slot span in a direct map
-  // bucket.
-  PA_ALWAYS_INLINE PartitionTag* DirectMapMTETag();
-
   PA_ALWAYS_INLINE PartitionFreelistEntry* get_freelist_head() const {
     return freelist_head;
   }
@@ -351,13 +345,6 @@ struct SubsequentPageMetadata {
   //   the first one is used to store slot information, but the second one is
   //   available for extra information)
   size_t raw_size;
-
-  // Specific to when `this` is used in a direct map bucket. Since direct
-  // maps don't have as many tags as the typical normal bucket slot span,
-  // we can get away with just hiding the sole tag in here.
-  //
-  // See `//base/memory/mtecheckedptr.md` for details.
-  PartitionTag direct_map_tag;
 };
 
 // Each partition page has metadata associated with it. The metadata of the
@@ -471,9 +458,8 @@ CommittedStateBitmapSize() {
 PA_ALWAYS_INLINE uintptr_t SuperPageStateBitmapAddr(uintptr_t super_page) {
   PA_DCHECK(!(super_page % kSuperPageAlignment));
   return super_page + PartitionPageSize() +
-         (IsManagedByNormalBuckets(super_page)
-              ? ReservedTagBitmapSize() + ReservedFreeSlotBitmapSize()
-              : 0);
+         (IsManagedByNormalBuckets(super_page) ? ReservedFreeSlotBitmapSize()
+                                               : 0);
 }
 
 PA_ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(
@@ -491,21 +477,11 @@ ReservedStateBitmapSize() {
 
 #endif  // BUILDFLAG(USE_STARSCAN)
 
-// Returns the address of the tag bitmap of the `super_page`. Caller must ensure
-// that bitmap exists.
-PA_ALWAYS_INLINE uintptr_t SuperPageTagBitmapAddr(uintptr_t super_page) {
-  PA_DCHECK(IsReservationStart(super_page));
-  // Skip over the guard pages / metadata.
-  return super_page + PartitionPageSize();
-}
-
 PA_ALWAYS_INLINE uintptr_t
 SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets,
                             bool with_quarantine) {
   return PartitionPageSize() +
-         (is_managed_by_normal_buckets
-              ? (ReservedTagBitmapSize() + ReservedFreeSlotBitmapSize())
-              : 0) +
+         (is_managed_by_normal_buckets ? ReservedFreeSlotBitmapSize() : 0) +
          (with_quarantine ? ReservedStateBitmapSize() : 0);
 }
 
@@ -739,15 +715,6 @@ PA_ALWAYS_INLINE size_t SlotSpanMetadata<thread_safe>::GetRawSize() const {
   const auto* subsequent_page_metadata = GetSubsequentPageMetadata(
       reinterpret_cast<const PartitionPage<thread_safe>*>(this));
   return subsequent_page_metadata->raw_size;
-}
-
-template <bool thread_safe>
-PA_ALWAYS_INLINE PartitionTag*
-SlotSpanMetadata<thread_safe>::DirectMapMTETag() {
-  PA_DCHECK(bucket->is_direct_mapped());
-  auto* subsequent_page_metadata = GetSubsequentPageMetadata(
-      reinterpret_cast<PartitionPage<thread_safe>*>(this));
-  return &subsequent_page_metadata->direct_map_tag;
 }
 
 template <bool thread_safe>

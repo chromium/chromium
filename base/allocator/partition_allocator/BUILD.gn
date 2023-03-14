@@ -160,9 +160,6 @@ component("partition_alloc") {
     "partition_root.h",
     "partition_stats.cc",
     "partition_stats.h",
-    "partition_tag.h",
-    "partition_tag_bitmap.h",
-    "partition_tag_types.h",
     "partition_tls.h",
     "pkey.cc",
     "pkey.h",
@@ -442,10 +439,6 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
 
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
-
-    # Not to be used directly - instead use
-    # PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-    "ENABLE_MTE_CHECKED_PTR_SUPPORT=$enable_mte_checked_ptr_support",
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
