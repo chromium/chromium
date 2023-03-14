@@ -101,7 +101,7 @@ public class PolicyService {
     }
 
     /**
-     * Pass the onPolicyServiceInitialized event to the |mObservers|.
+     * Pass the onPolicyUpdated event to the |mObservers|.
      */
     @CalledByNative
     private void onPolicyUpdated(PolicyMap previous, PolicyMap current) {
