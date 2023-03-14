@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -210,11 +211,13 @@ void BookmarkBubbleView::ShowBubble(
     product_image = tab_helper->GetProductImage();
   }
 
+  gfx::Image main_image =
+      product_image.IsEmpty() ? favicon::GetDefaultFavicon() : product_image;
+
   auto dialog_model_builder =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique));
-  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel) &&
-      !product_image.IsEmpty()) {
-    dialog_model_builder.SetMainImage(ui::ImageModel::FromImage(product_image));
+  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+    dialog_model_builder.SetMainImage(ui::ImageModel::FromImage(main_image));
   }
   dialog_model_builder
       .SetTitle(l10n_util::GetStringUTF16(
