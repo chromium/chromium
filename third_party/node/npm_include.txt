@@ -7,7 +7,10 @@
 @types/d3-transition/index.d.ts
 @types/dom-mediacapture-record
 @types/dom-mediacapture-record/*.d.ts
+@types/dom-mediacapture-transform/index.d.ts
 @types/dom-speech-recognition/index.d.ts
+@types/dom-webcodecs
+@types/dom-webcodecs/*.d.ts
 @types/filesystem/index.d.ts
 @types/filewriter/index.d.ts
 @types/google.analytics

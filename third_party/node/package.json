@@ -5,7 +5,9 @@
   "dependencies": {
     "@types/chai": "4.2.22",
     "@types/d3": "5.16.0",
+    "@types/dom-mediacapture-transform": "0.1.4",
     "@types/dom-speech-recognition": "0.0.1",
+    "@types/dom-webcodecs": "0.1.5",
     "@types/filesystem": "0.0.32",
     "@types/filewriter": "0.0.29",
     "@types/google.analytics": "0.0.42",
