@@ -179,7 +179,54 @@ AcceleratorConfigResult AshAcceleratorConfiguration::ReplaceAccelerator(
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
     AcceleratorActionId action_id) {
-  return AcceleratorConfigResult::kActionLocked;
+  const auto& current_accelerators = id_to_accelerators_.find(action_id);
+  if (current_accelerators == id_to_accelerators_.end()) {
+    VLOG(1) << "ResetAction called for ActionID: " << action_id
+            << " returned with error: " << AcceleratorConfigResult::kNotFound;
+    return AcceleratorConfigResult::kNotFound;
+  }
+
+  auto& accelerators_for_id = current_accelerators->second;
+  // Clear reverse mapping first.
+  for (const auto& accelerator : accelerators_for_id) {
+    // There should never be a mismatch between the two maps, `Get()` does an
+    // implicit DCHECK too.
+    auto& found_id = accelerator_to_id_.Get(accelerator);
+    if (found_id != action_id) {
+      VLOG(1) << "ResetAction called for ActionID: " << action_id
+              << " returned with error: " << AcceleratorConfigResult::kNotFound;
+      return AcceleratorConfigResult::kNotFound;
+    }
+
+    accelerator_to_id_.Erase(accelerator);
+  }
+
+  // Clear lookup map.
+  accelerators_for_id.clear();
+
+  // Restore the system default accelerator(s) for this action only if it the
+  // default is not used by another accelerator.
+  // Users will have to manually re-add the default accelerator if there exists
+  // a conflict.
+  const auto& defaults = default_id_to_accelerators_cache_.find(action_id);
+  DCHECK(defaults != default_id_to_accelerators_cache_.end());
+
+  // Iterate through the default and only add back the default if they're not
+  // in use.
+  for (const auto& default_accelerator : defaults->second) {
+    if (!accelerator_to_id_.Find(default_accelerator)) {
+      accelerators_for_id.push_back(default_accelerator);
+      accelerator_to_id_.InsertNew(
+          {default_accelerator, static_cast<AcceleratorAction>(action_id)});
+    }
+  }
+
+  // TODO(jimmyxgong): Update prefs when available.
+  UpdateAndNotifyAccelerators();
+
+  VLOG(1) << "ResetAction called for ActionID: " << action_id
+          << " returned successfully.";
+  return AcceleratorConfigResult::kSuccess;
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
