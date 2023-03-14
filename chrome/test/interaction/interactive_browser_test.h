@@ -74,6 +74,17 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   static WebContentsInteractionTestUtil* AsInstrumentedWebContents(
       ui::TrackedElement* el);
 
+  // Manually enable WebUI code coverage (slightly experimental). Call during
+  // `SetUpOnMainThread()` or in your test body before `RunTestSequence()`.
+  //
+  // Has no effect if the `--devtools-code-coverage` command line flag isn't
+  // set. This will cause tests to run longer (possibly timing out) and is not
+  // compatible with all WebUI pages. Use liberally, but at your own risk.
+  //
+  // TODO(b/273545898, b/273290598): when coverage is more robust, make this
+  // automatic for all tests that touch WebUI.
+  void EnableWebUICodeCoverage();
+
   // Takes a screenshot of the specified element, with name `screenshot_name`
   // (may be empty for tests that take only one screenshot) and `baseline`,
   // which should be set to match the CL number when a screenshot should change.

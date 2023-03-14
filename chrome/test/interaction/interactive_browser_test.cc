@@ -63,6 +63,10 @@ InteractiveBrowserTestApi::AsInstrumentedWebContents(ui::TrackedElement* el) {
   return web_el->owner();
 }
 
+void InteractiveBrowserTestApi::EnableWebUICodeCoverage() {
+  test_impl().MaybeStartWebUICodeCoverage();
+}
+
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::Screenshot(
     ElementSpecifier element,
     const std::string& screenshot_name,

@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/bind.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 
+#include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/test/bind.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/test/base/test_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -257,4 +261,91 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
       InAnyContext(verify_is_at_tab_index(incognito_browser, kIncognito2Id, 1)),
       InAnyContext(
           verify_is_at_tab_index(incognito_browser, kIncognito1Id, 2)));
+}
+
+// Parameter for WebUI coverage tests.
+struct CoverageConfig {
+  // Whether to set the --devtools-code-coverage flag. If it's not set, nothing
+  // should be captured, and the test is simply verifying that no errors are
+  // generated as a result.
+  bool command_line_flag = false;
+
+  // Whether coverage is actively enabled. If the command line flag is also set,
+  // the test will check whether data got written to the code coverage folder.
+  bool enable_coverage = false;
+};
+
+// Test fixture to verify that when EnableWebUICodeCoverage() is called with the
+// correct command-line arguments, coverage data actually gets written out. It
+// also verifies that
+class InteractiveBrowserTestCodeCoverageBrowsertest
+    : public InteractiveBrowserTestBrowsertest,
+      public testing::WithParamInterface<CoverageConfig> {
+ public:
+  void SetUp() override {
+    {
+      // This is required for file IO.
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      CHECK(tmp_dir_.CreateUniqueTempDir());
+      ASSERT_TRUE(base::IsDirectoryEmpty(tmp_dir_.GetPath()));
+    }
+    InteractiveBrowserTestBrowsertest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam().command_line_flag) {
+      command_line->AppendSwitchPath(switches::kDevtoolsCodeCoverage,
+                                     tmp_dir_.GetPath());
+    } else {
+      command_line->RemoveSwitch(switches::kDevtoolsCodeCoverage);
+    }
+    InteractiveBrowserTestBrowsertest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTestBrowsertest::SetUpOnMainThread();
+    if (GetParam().enable_coverage) {
+      EnableWebUICodeCoverage();
+    }
+  }
+
+  // This is where we actually verify that the data has been written out, since
+  // coverage output doesn't happen until teardown.
+  void TearDownOnMainThread() override {
+    InteractiveBrowserTestBrowsertest::TearDownOnMainThread();
+
+    if (GetParam().command_line_flag) {
+      // This is required for file IO.
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      if (GetParam().enable_coverage) {
+        // Scripts and tests are special directories under the WebUI specific
+        // directory, ensure they have been created and are not empty.
+        base::FilePath coverage_dir =
+            tmp_dir_.GetPath().AppendASCII("webui_javascript_code_coverage");
+        EXPECT_FALSE(
+            base::IsDirectoryEmpty(coverage_dir.AppendASCII("scripts")));
+        EXPECT_FALSE(base::IsDirectoryEmpty(coverage_dir.AppendASCII("tests")));
+      } else {
+        EXPECT_TRUE(base::IsDirectoryEmpty(tmp_dir_.GetPath()));
+      }
+    }
+  }
+
+ protected:
+  base::ScopedTempDir tmp_dir_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         InteractiveBrowserTestCodeCoverageBrowsertest,
+                         testing::Values(CoverageConfig{false, false},
+                                         CoverageConfig{false, true},
+                                         CoverageConfig{true, false},
+                                         CoverageConfig{true, true}));
+
+IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestCodeCoverageBrowsertest,
+                       TestCoverageEmits) {
+  // Navigate and load the New Tab Page, which we know works with code coverage.
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, GURL("chrome://history")));
 }

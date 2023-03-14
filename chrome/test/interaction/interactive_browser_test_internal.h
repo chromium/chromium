@@ -22,6 +22,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
 
+class DevToolsAgentCoverageObserver;
 class InteractiveBrowserTestApi;
 
 namespace internal {
@@ -37,6 +38,9 @@ class InteractiveBrowserTestPrivate
 
   // views::test::internal::InteractiveViewsTestPrivate:
   void DoTestTearDown() override;
+
+  // Starts code coverage if the proper configuration is present.
+  void MaybeStartWebUICodeCoverage();
 
   void AddInstrumentedWebContents(
       std::unique_ptr<WebContentsInteractionTestUtil>
@@ -54,6 +58,9 @@ class InteractiveBrowserTestPrivate
 
  private:
   friend InteractiveBrowserTestApi;
+
+  // Optional WebUI code coverage tool.
+  std::unique_ptr<DevToolsAgentCoverageObserver> coverage_observer_;
 
   // Stores instrumented WebContents and WebUI.
   std::vector<std::unique_ptr<WebContentsInteractionTestUtil>>
