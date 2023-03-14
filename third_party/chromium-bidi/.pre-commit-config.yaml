@@ -65,7 +65,8 @@ repos:
     rev: 'v2.2.2'
     hooks:
       - id: codespell
-        args: [--exclude-file=package-lock.json]
+        # skip false positives
+        args: [--skip=package-lock.json, --skip=tests/test_screenshot.py]
   - repo: local
     hooks:
       - id: copyright
