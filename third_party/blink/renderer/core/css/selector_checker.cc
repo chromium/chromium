@@ -372,7 +372,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kDescendant:
       if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
         if (next_context.selector->IsLastInTagHistory()) {
-          if (context.scope->IsDocumentFragment()) {
+          if (context.scope && context.scope->IsDocumentFragment()) {
             return kSelectorMatches;
           }
         }

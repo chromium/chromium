@@ -420,4 +420,30 @@ TEST_F(EasySelectorCheckerTest, SmokeTest) {
   EXPECT_FALSE(Matches("div #a .cls1", "c"));
 }
 
+class SelectorCheckerTest : public PageTestBase {};
+
+TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
+  GetDocument().body()->setInnerHTML("<div id=foo></div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  CSSSelectorList* selector_list =
+      css_test_helpers::ParseSelectorList(":scope #foo");
+  ASSERT_TRUE(selector_list);
+  ASSERT_TRUE(selector_list->First());
+
+  Element* foo = GetDocument().getElementById("foo");
+  ASSERT_TRUE(foo);
+
+  SelectorChecker checker(SelectorChecker::kResolvingStyle);
+  SelectorChecker::SelectorCheckingContext context(foo);
+  context.selector = selector_list->First();
+  // We have a selector with :scope, but no context.scope:
+  context.scope = nullptr;
+
+  SelectorChecker::MatchResult result;
+
+  // Don't crash.
+  EXPECT_FALSE(checker.Match(context, result));
+}
+
 }  // namespace blink
