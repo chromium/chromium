@@ -9,42 +9,67 @@
 
 namespace mojo {
 
-bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
+// static
+bool StructTraits<network::mojom::EmptyNetworkIsolationKeyDataView,
                   net::NetworkIsolationKey>::
-    Read(network::mojom::NetworkIsolationKeyDataView data,
+    Read(network::mojom::EmptyNetworkIsolationKeyDataView data,
          net::NetworkIsolationKey* out) {
-  absl::optional<net::SchemefulSite> top_frame_site, frame_site;
+  *out = net::NetworkIsolationKey();
+  return true;
+}
+
+// static
+bool StructTraits<network::mojom::FrameSiteEnabledNetworkIsolationKeyDataView,
+                  net::NetworkIsolationKey>::
+    Read(network::mojom::FrameSiteEnabledNetworkIsolationKeyDataView data,
+         net::NetworkIsolationKey* out) {
+  net::SchemefulSite top_frame_site;
+  net::SchemefulSite frame_site;
+  absl::optional<base::UnguessableToken> nonce;
 
   if (!data.ReadTopFrameSite(&top_frame_site) ||
-      !data.ReadFrameSite(&frame_site)) {
+      !data.ReadFrameSite(&frame_site) || !data.ReadNonce(&nonce)) {
     return false;
   }
 
-  // A key is either fully empty or fully populated.
+  *out = net::NetworkIsolationKey(
+      net::NetworkIsolationKey::SerializationPasskey(),
+      std::move(top_frame_site), std::move(frame_site), std::move(nonce));
+  return true;
+}
+
+// static
+bool UnionTraits<network::mojom::NetworkIsolationKeyDataView,
+                 net::NetworkIsolationKey>::
+    Read(network::mojom::NetworkIsolationKeyDataView data,
+         net::NetworkIsolationKey* out) {
+  if (data.is_empty()) {
+    return data.ReadEmpty(out);
+  }
+
   switch (net::NetworkIsolationKey::GetMode()) {
     case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-      if (top_frame_site.has_value() != frame_site.has_value()) {
+      if (!data.is_frame_site_enabled()) {
         return false;
       }
-      break;
+      return data.ReadFrameSiteEnabled(out);
   }
+  NOTREACHED_NORETURN();
+}
 
-  absl::optional<base::UnguessableToken> nonce;
-  if (!data.ReadNonce(&nonce))
-    return false;
-
-  if (!top_frame_site.has_value()) {
-    // If there is a nonce, then the sites must be populated.
-    if (nonce.has_value())
-      return false;
-    *out = net::NetworkIsolationKey();
-  } else {
-    *out = net::NetworkIsolationKey(std::move(top_frame_site.value()),
-                                    std::move(frame_site.value()),
-                                    nonce ? &nonce.value() : nullptr);
+// static
+network::mojom::NetworkIsolationKeyDataView::Tag
+UnionTraits<network::mojom::NetworkIsolationKeyDataView,
+            net::NetworkIsolationKey>::GetTag(const net::NetworkIsolationKey&
+                                                  network_isolation_key) {
+  if (network_isolation_key.IsEmpty()) {
+    return network::mojom::NetworkIsolationKeyDataView::Tag::kEmpty;
   }
-
-  return true;
+  switch (net::NetworkIsolationKey::GetMode()) {
+    case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
+      return network::mojom::NetworkIsolationKeyDataView::Tag::
+          kFrameSiteEnabled;
+  }
 }
 
 }  // namespace mojo

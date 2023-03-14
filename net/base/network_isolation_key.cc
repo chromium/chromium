@@ -25,6 +25,17 @@ std::string GetSiteDebugString(const absl::optional<SchemefulSite>& site) {
 
 }  // namespace
 
+NetworkIsolationKey::NetworkIsolationKey(
+    SerializationPasskey,
+    SchemefulSite top_frame_site,
+    SchemefulSite frame_site,
+    absl::optional<base::UnguessableToken> nonce)
+    : top_frame_site_(std::move(top_frame_site)),
+      frame_site_(std::move(frame_site)),
+      nonce_(std::move(nonce)) {
+  CHECK_EQ(GetMode(), Mode::kFrameSiteEnabled);
+}
+
 NetworkIsolationKey::NetworkIsolationKey(const SchemefulSite& top_frame_site,
                                          const SchemefulSite& frame_site,
                                          const base::UnguessableToken* nonce)

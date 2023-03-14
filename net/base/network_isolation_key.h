@@ -18,7 +18,7 @@ class Origin;
 }
 
 namespace network::mojom {
-class NetworkIsolationKeyDataView;
+class FrameSiteEnabledNetworkIsolationKeyDataView;
 }
 
 namespace net {
@@ -27,6 +27,24 @@ namespace net {
 // the context on which they were made.
 class NET_EXPORT NetworkIsolationKey {
  public:
+  class SerializationPasskey {
+   private:
+    friend struct mojo::StructTraits<
+        network::mojom::FrameSiteEnabledNetworkIsolationKeyDataView,
+        NetworkIsolationKey>;
+    SerializationPasskey() = default;
+    ~SerializationPasskey() = default;
+  };
+
+  // This constructor is used for deserialization when `GetMode()` returns
+  // `kFrameSiteEnabled`.
+  // TODO(mmenke): This can be removed once the other constructors that accept a
+  // nonce are updated to accept absl::optionals instead of pointers.
+  NetworkIsolationKey(SerializationPasskey,
+                      SchemefulSite top_frame_site,
+                      SchemefulSite frame_site,
+                      absl::optional<base::UnguessableToken> nonce);
+
   // Full constructor.  When a request is initiated by the top frame, it must
   // also populate the |frame_site| parameter when calling this constructor.
   NetworkIsolationKey(const SchemefulSite& top_frame_site,
@@ -140,15 +158,6 @@ class NET_EXPORT NetworkIsolationKey {
   const absl::optional<SchemefulSite>& GetFrameSiteForTesting() const {
     return frame_site_;
   }
-
-  class SerializationPasskey {
-   private:
-    friend struct mojo::StructTraits<
-        network::mojom::NetworkIsolationKeyDataView,
-        NetworkIsolationKey>;
-    SerializationPasskey() = default;
-    ~SerializationPasskey() = default;
-  };
 
   // When serializing a NIK for sending via mojo we want to access the frame
   // site (or absl::nullopt) regardless of flags. We don't want to expose this
