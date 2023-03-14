@@ -3884,7 +3884,13 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, UserAgent) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, UserAgent_NewWindow) {
+// TODO(crbug.com/1424459): Test is flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserAgent_NewWindow DISABLED_UserAgent_NewWindow
+#else
+#define MAYBE_UserAgent_NewWindow UserAgent_NewWindow
+#endif
+IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, MAYBE_UserAgent_NewWindow) {
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/common",
       {.custom_arg = "useragent_newwindow", .launch_as_platform_app = true}))
