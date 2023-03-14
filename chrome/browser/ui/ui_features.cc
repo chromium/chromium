@@ -153,7 +153,9 @@ const char kScrollableTabStripOverflowModeName[] = "tabScrollOverflow";
 
 // Splits pinned and unpinned tabs into separate TabStrips.
 // https://crbug.com/1346019
-BASE_FEATURE(kSplitTabStrip, "SplitTabStrip", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSplitTabStrip,
+             "SplitTabStrip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables tabs to be frozen when collapsed.
 // https://crbug.com/1110108
