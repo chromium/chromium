@@ -2593,6 +2593,7 @@
                         "BoostUrgent": "60"
                     },
                     "enable_features": [
+                        "CrOSLateBootSchedUtilHints60",
                         "SchedUtilHints"
                     ]
                 }
