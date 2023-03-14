@@ -678,6 +678,8 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
     }
     UpdateImageState(nullptr);
     lazy_image_load_state_ = LazyImageLoadState::kNone;
+  } else {
+    image_complete_ = false;
   }
 
   // Don't load images for inactive documents or active documents without V8
