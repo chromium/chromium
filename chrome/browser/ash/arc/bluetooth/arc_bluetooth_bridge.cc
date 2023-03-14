@@ -1757,9 +1757,9 @@ void ArcBluetoothBridge::WriteGattDescriptor(
 void ArcBluetoothBridge::ExecuteWrite(mojom::BluetoothAddressPtr remote_addr,
                                       bool execute,
                                       ExecuteWriteCallback callback) {
-  bluez::BluetoothDeviceBlueZ* device =
-      static_cast<bluez::BluetoothDeviceBlueZ*>(
-          bluetooth_adapter_->GetDevice(remote_addr->To<std::string>()));
+  device::BluetoothDevice* device =
+      bluetooth_adapter_->GetDevice(remote_addr->To<std::string>());
+
   if (device == nullptr) {
     std::move(callback).Run(mojom::BluetoothGattStatus::GATT_FAILURE);
     return;

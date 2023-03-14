@@ -383,6 +383,16 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   virtual void Disconnect(ResponseCallback<Void> callback,
                           const std::string& remote_device);
 
+  // Start a reliable write for the remote device.
+  virtual void BeginReliableWrite(ResponseCallback<Void> callback,
+                                  const std::string& remote_device);
+
+  // Execute or abort (depending on the value of |execute|) a reliable write for
+  // the remote device.
+  virtual void EndReliableWrite(ResponseCallback<Void> callback,
+                                const std::string& remote_device,
+                                bool execute);
+
   // Clears the attribute cache of a device.
   virtual void Refresh(ResponseCallback<Void> callback,
                        const std::string& remote_device);

@@ -308,6 +308,20 @@ void FlossGattManagerClient::Disconnect(ResponseCallback<Void> callback,
                        remote_device);
 }
 
+void FlossGattManagerClient::BeginReliableWrite(
+    ResponseCallback<Void> callback,
+    const std::string& remote_device) {
+  CallGattMethod<Void>(std::move(callback), gatt::kBeginReliableWrite,
+                       client_id_, remote_device);
+}
+
+void FlossGattManagerClient::EndReliableWrite(ResponseCallback<Void> callback,
+                                              const std::string& remote_device,
+                                              bool execute) {
+  CallGattMethod<Void>(std::move(callback), gatt::kEndReliableWrite, client_id_,
+                       remote_device, execute);
+}
+
 void FlossGattManagerClient::Refresh(ResponseCallback<Void> callback,
                                      const std::string& remote_device) {
   CallGattMethod<Void>(std::move(callback), gatt::kRefreshDevice, client_id_,

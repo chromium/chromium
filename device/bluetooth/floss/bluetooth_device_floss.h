@@ -99,6 +99,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void Pair(device::BluetoothDevice::PairingDelegate* pairing_delegate,
             ConnectCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS)
+  bool UsingReliableWrite() const { return using_reliable_write_; }
+  void BeginReliableWrite();
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;
   void AbortWrite(base::OnceClosure callback,
@@ -142,6 +144,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void GattConfigureMtu(std::string address,
                         int32_t mtu,
                         GattStatus status) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void GattExecuteWrite(std::string address, GattStatus status) override;
+#endif
 
   // Returns the adapter which owns this device instance.
   BluetoothAdapterFloss* adapter() const {
@@ -178,6 +183,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                               ErrorCallback error_callback,
                               DBusResult<Void> ret);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnExecuteWrite(base::OnceClosure callback,
+                      ExecuteWriteErrorCallback error_callback,
+                      DBusResult<Void> ret);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
       absl::nullopt;
 
@@ -187,6 +198,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // Callbacks for a pending |SetConnectionLatency|.
   absl::optional<std::pair<base::OnceClosure, ErrorCallback>>
       pending_set_connection_latency_ = absl::nullopt;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Callbacks for a pending |ExecuteWrite| or |AbortWrite|.
+  absl::optional<std::pair<base::OnceClosure, ExecuteWriteErrorCallback>>
+      pending_execute_write_ = absl::nullopt;
+
+  // Writes are using reliable writes.
+  bool using_reliable_write_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Number of pending device properties to initialize
   int num_pending_properties_ = 0;
