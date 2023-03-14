@@ -94,6 +94,34 @@ TEST(AXNodeDataMojomTraitsTest, IntListAttributes) {
       output.GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds));
 }
 
+TEST(AXNodeDataMojomTraitsTest, IntListAttributesInvalid) {
+  ui::AXNodeData input, output;
+  input.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes, {1, 2});
+  EXPECT_FALSE(SerializeAndDeserialize<ax::mojom::AXNodeData>(input, output));
+  input.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts, {1, 2});
+  EXPECT_FALSE(SerializeAndDeserialize<ax::mojom::AXNodeData>(input, output));
+  input.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                            {1, 2, 3});
+  EXPECT_FALSE(SerializeAndDeserialize<ax::mojom::AXNodeData>(input, output));
+
+  input.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)});
+  input.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts, {1});
+  input.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds, {2});
+  EXPECT_FALSE(SerializeAndDeserialize<ax::mojom::AXNodeData>(input, output));
+
+  // Valid combinations.
+  input.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes, {2});
+  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXNodeData>(input, output));
+
+  input.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kMarkerTypes,
+      {static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)});
+  input.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes, {7});
+  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXNodeData>(input, output));
+}
+
 TEST(AXNodeDataMojomTraitsTest, StringListAttributes) {
   ui::AXNodeData input, output;
   input.AddStringListAttribute(

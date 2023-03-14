@@ -6016,14 +6016,19 @@ void AXPlatformNodeWin::AggregateRangesForMarkerType(
   const std::vector<int>& marker_ends =
       node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
 
+  CHECK_EQ(marker_types.size(), marker_starts.size());
+  CHECK_EQ(marker_types.size(), marker_ends.size());
+
   for (size_t i = 0; i < marker_types.size(); ++i) {
     if (static_cast<ax::mojom::MarkerType>(marker_types[i]) != marker_type)
       continue;
 
-    if (marker_type == ax::mojom::MarkerType::kHighlight &&
-        highlight_type !=
-            static_cast<ax::mojom::HighlightType>(highlight_types[i])) {
-      continue;
+    if (marker_type == ax::mojom::MarkerType::kHighlight) {
+      CHECK_EQ(highlight_types.size(), marker_types.size());
+      if (highlight_type !=
+          static_cast<ax::mojom::HighlightType>(highlight_types[i])) {
+        continue;
+      }
     }
 
     const int marker_start = marker_starts[i] + offset_ranges_amount;

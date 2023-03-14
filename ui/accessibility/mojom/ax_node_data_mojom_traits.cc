@@ -9,6 +9,17 @@
 #include "ui/accessibility/mojom/ax_relative_bounds_mojom_traits.h"
 
 namespace mojo {
+namespace {
+bool HasAnyHighlightEntries(std::vector<int32_t>& marker_types) {
+  for (auto marker : marker_types) {
+    if (marker & static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) {
+      // Can stop looking once we know there is one highlight.
+      return true;
+    }
+  }
+  return false;
+}
+}  // namespace
 
 // static
 bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
@@ -45,6 +56,41 @@ bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
       intlist_attributes;
   if (!data.ReadIntlistAttributes(&intlist_attributes))
     return false;
+  // Enforce some invariants:
+  //  If marker types are present, marker starts and ends must be present.
+  //  If any marker type is a highlight, highlights must be present.
+  if (intlist_attributes.contains(ax::mojom::IntListAttribute::kMarkerTypes)) {
+    if (!intlist_attributes.contains(
+            ax::mojom::IntListAttribute::kMarkerStarts)) {
+      return false;
+    }
+    if (!intlist_attributes.contains(
+            ax::mojom::IntListAttribute::kMarkerEnds)) {
+      return false;
+    }
+    auto& marker_types =
+        intlist_attributes[ax::mojom::IntListAttribute::kMarkerTypes];
+    auto& marker_starts =
+        intlist_attributes[ax::mojom::IntListAttribute::kMarkerStarts];
+    auto& marker_ends =
+        intlist_attributes[ax::mojom::IntListAttribute::kMarkerEnds];
+    if (marker_types.size() != marker_starts.size() ||
+        marker_types.size() != marker_ends.size()) {
+      return false;
+    }
+    if (HasAnyHighlightEntries(marker_types)) {
+      if (!intlist_attributes.contains(
+              ax::mojom::IntListAttribute::kHighlightTypes)) {
+        return false;
+      }
+      auto& highlight_types =
+          intlist_attributes[ax::mojom::IntListAttribute::kHighlightTypes];
+      if (marker_types.size() != highlight_types.size()) {
+        return false;
+      }
+    }
+  }
+
   out->intlist_attributes = std::move(intlist_attributes).extract();
 
   base::flat_map<ax::mojom::StringListAttribute, std::vector<std::string>>
