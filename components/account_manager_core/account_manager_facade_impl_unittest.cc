@@ -16,8 +16,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
@@ -42,7 +42,6 @@ namespace account_manager {
 
 namespace {
 
-using base::MockOnceCallback;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
@@ -309,12 +308,12 @@ class AccountManagerFacadeImplTest : public testing::Test {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   std::unique_ptr<AccountManagerFacadeImpl> CreateFacade() {
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> future;
     auto result = std::make_unique<AccountManagerFacadeImpl>(
         account_manager().CreateRemote(),
         /*remote_version=*/std::numeric_limits<uint32_t>::max(),
-        /*account_manager_for_tests=*/nullptr, run_loop.QuitClosure());
-    run_loop.Run();
+        /*account_manager_for_tests=*/nullptr, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
     return result;
   }
 
@@ -340,11 +339,11 @@ TEST_F(AccountManagerFacadeImplTest, OnTokenUpsertedIsPropagatedToObservers) {
   observation.Observe(account_manager_facade.get());
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   EXPECT_CALL(observer, OnAccountUpserted(AccountEq(account)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
   account_manager().NotifyOnTokenUpsertedObservers(account);
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(AccountManagerFacadeImplTest, OnAccountRemovedIsPropagatedToObservers) {
@@ -356,11 +355,11 @@ TEST_F(AccountManagerFacadeImplTest, OnAccountRemovedIsPropagatedToObservers) {
   observation.Observe(account_manager_facade.get());
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   EXPECT_CALL(observer, OnAccountRemoved(AccountEq(account)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
   account_manager().NotifyOnAccountRemovedObservers(account);
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(
@@ -370,12 +369,9 @@ TEST_F(
       CreateFacade();
   account_manager().SetAccounts({});
 
-  MockOnceCallback<void(const std::vector<Account>&)> callback;
-  base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(testing::IsEmpty()))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  account_manager_facade->GetAccounts(callback.Get());
-  run_loop.Run();
+  base::test::TestFuture<const std::vector<Account>&> future;
+  account_manager_facade->GetAccounts(future.GetCallback());
+  EXPECT_THAT(future.Get(), testing::IsEmpty());
 }
 
 TEST_F(AccountManagerFacadeImplTest, GetAccountsCorrectlyMarshalsTwoAccounts) {
@@ -385,13 +381,10 @@ TEST_F(AccountManagerFacadeImplTest, GetAccountsCorrectlyMarshalsTwoAccounts) {
   Account account2 = CreateTestGaiaAccount(kAnotherTestAccountEmail);
   account_manager().SetAccounts({account1, account2});
 
-  MockOnceCallback<void(const std::vector<Account>&)> callback;
-  base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(testing::ElementsAre(AccountEq(account1),
-                                                 AccountEq(account2))))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  account_manager_facade->GetAccounts(callback.Get());
-  run_loop.Run();
+  base::test::TestFuture<const std::vector<Account>&> future;
+  account_manager_facade->GetAccounts(future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              testing::ElementsAre(AccountEq(account1), AccountEq(account2)));
 }
 
 TEST_F(AccountManagerFacadeImplTest,
@@ -406,12 +399,9 @@ TEST_F(AccountManagerFacadeImplTest,
       /*remote_version=*/std::numeric_limits<uint32_t>::max(),
       /*account_manager_for_tests=*/nullptr);
 
-  MockOnceCallback<void(const std::vector<Account>&)> callback;
-  base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(testing::ElementsAre(AccountEq(account))))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  account_manager_facade->GetAccounts(callback.Get());
-  run_loop.Run();
+  base::test::TestFuture<const std::vector<Account>&> future;
+  account_manager_facade->GetAccounts(future.GetCallback());
+  EXPECT_THAT(future.Get(), testing::ElementsAre(AccountEq(account)));
 }
 
 // Regression test for https://crbug.com/1287297
@@ -450,13 +440,10 @@ TEST_F(AccountManagerFacadeImplTest, GetPersistentErrorMarshalsAuthErrorNone) {
       CreateFacade();
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
 
-  MockOnceCallback<void(const GoogleServiceAuthError&)> callback;
-  base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone()))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  base::test::TestFuture<const GoogleServiceAuthError&> future;
   account_manager_facade->GetPersistentErrorForAccount(account.key,
-                                                       callback.Get());
-  run_loop.Run();
+                                                       future.GetCallback());
+  EXPECT_THAT(future.Get(), Eq(GoogleServiceAuthError::AuthErrorNone()));
 }
 
 TEST_F(AccountManagerFacadeImplTest,
@@ -470,13 +457,10 @@ TEST_F(AccountManagerFacadeImplTest,
               CREDENTIALS_REJECTED_BY_CLIENT);
   account_manager().SetPersistentErrorForAccount(account.key, error);
 
-  MockOnceCallback<void(const GoogleServiceAuthError&)> callback;
-  base::RunLoop run_loop;
-  EXPECT_CALL(callback, Run(error))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  base::test::TestFuture<const GoogleServiceAuthError&> future;
   account_manager_facade->GetPersistentErrorForAccount(account.key,
-                                                       callback.Get());
-  run_loop.Run();
+                                                       future.GetCallback());
+  EXPECT_THAT(future.Get(), Eq(error));
 }
 
 TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogCallsMojo) {
@@ -585,21 +569,15 @@ TEST_F(AccountManagerFacadeImplTest,
       /*remote_version=*/std::numeric_limits<uint32_t>::max(),
       /*account_manager_for_tests=*/nullptr);
 
-  base::RunLoop run_loop;
-  base::OnceCallback<void(const account_manager::AccountAdditionResult&)>
-      callback = base::BindLambdaForTesting(
-          [&run_loop](
-              const account_manager::AccountAdditionResult& result) -> void {
-            EXPECT_EQ(account_manager::AccountAdditionResult::Status::
-                          kMojoRemoteDisconnected,
-                      result.status());
-            run_loop.Quit();
-          });
+  base::test::TestFuture<const account_manager::AccountAdditionResult&> future;
   account_manager_facade->ShowAddAccountDialog(
       account_manager::AccountManagerFacade::AccountAdditionSource::
           kSettingsAddAccountButton,
-      std::move(callback));
-  run_loop.Run();
+      future.GetCallback());
+  account_manager::AccountAdditionResult result = future.Get();
+  EXPECT_EQ(
+      account_manager::AccountAdditionResult::Status::kMojoRemoteDisconnected,
+      result.status());
 }
 
 TEST_F(AccountManagerFacadeImplTest,
@@ -609,21 +587,15 @@ TEST_F(AccountManagerFacadeImplTest,
       /*remote_version=*/1,
       /*account_manager_for_tests=*/nullptr);
 
-  base::RunLoop run_loop;
-  base::OnceCallback<void(const account_manager::AccountAdditionResult&)>
-      callback = base::BindLambdaForTesting(
-          [&run_loop](
-              const account_manager::AccountAdditionResult& result) -> void {
-            EXPECT_EQ(account_manager::AccountAdditionResult::Status::
-                          kIncompatibleMojoVersions,
-                      result.status());
-            run_loop.Quit();
-          });
+  base::test::TestFuture<const account_manager::AccountAdditionResult&> future;
   account_manager_facade->ShowAddAccountDialog(
       account_manager::AccountManagerFacade::AccountAdditionSource::
           kSettingsAddAccountButton,
-      std::move(callback));
-  run_loop.Run();
+      future.GetCallback());
+  account_manager::AccountAdditionResult result = future.Get();
+  EXPECT_EQ(
+      account_manager::AccountAdditionResult::Status::kIncompatibleMojoVersions,
+      result.status());
 }
 
 TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogCallsMojo) {
@@ -950,11 +922,11 @@ TEST_F(AccountManagerFacadeImplTest, ReportAuthError) {
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER);
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   EXPECT_CALL(observer, OnAuthErrorChanged(account.key, error))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
   account_manager_facade->ReportAuthError(account.key, error);
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(AccountManagerFacadeImplTest,
@@ -966,11 +938,11 @@ TEST_F(AccountManagerFacadeImplTest,
       observation{&observer};
   observation.Observe(account_manager_facade.get());
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   EXPECT_CALL(observer, OnSigninDialogClosed)
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
   account_manager_facade->OnSigninDialogClosed();
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 }
 
 }  // namespace account_manager
