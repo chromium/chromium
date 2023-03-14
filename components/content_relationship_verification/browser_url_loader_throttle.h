@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/content_relationship_verification/response_header_verifier.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
@@ -76,9 +77,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
  private:
   explicit BrowserURLLoaderThrottle(OriginVerificationSchedulerBridge* bridge);
 
-  void OnCompleteCheck(std::string url,
-                       bool header_verification_result,
-                       bool dal_verified);
+  void OnDalVerificationComplete(std::string url, bool dal_verified);
 
   bool VerifyHeader(const network::mojom::URLResponseHead& response_head);
 

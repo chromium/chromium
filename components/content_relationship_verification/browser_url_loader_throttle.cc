@@ -47,9 +47,19 @@ bool BrowserURLLoaderThrottle::VerifyHeader(
   std::string header_value;
   response_head.headers->GetNormalizedHeader(kEmbedderAncestorHeader,
                                              &header_value);
-  return content_relationship_verification::ResponseHeaderVerifier::Verify(
-      base::android::BuildInfo::GetInstance()->host_package_name(),
-      header_value);
+  ResponseHeaderVerificationResult header_verification_result =
+      content_relationship_verification::ResponseHeaderVerifier::Verify(
+          base::android::BuildInfo::GetInstance()->host_package_name(),
+          header_value);
+
+  if (header_verification_result == ResponseHeaderVerificationResult::kAllow) {
+    return true;
+  } else if (header_verification_result ==
+             ResponseHeaderVerificationResult::kMissing) {
+    // TODO(crbug.com/1376958): Check for permission.
+    return true;
+  }
+  return false;
 }
 
 void BrowserURLLoaderThrottle::WillStartRequest(
@@ -67,15 +77,21 @@ void BrowserURLLoaderThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
   DCHECK(delegate_);
 
+  GURL originating_url = url_;
+  url_ = redirect_info->new_url;
+
+  if (VerifyHeader(response_head)) {
+    return;
+  }
+
   *defer = true;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&OriginVerificationSchedulerBridge::Verify,
-                     base::Unretained(bridge_), url_.spec(),
-                     base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck,
-                                    weak_factory_.GetWeakPtr(), url_.spec(),
-                                    VerifyHeader(response_head))));
-  url_ = redirect_info->new_url;
+      base::BindOnce(
+          &OriginVerificationSchedulerBridge::Verify, base::Unretained(bridge_),
+          url_.spec(),
+          base::BindOnce(&BrowserURLLoaderThrottle::OnDalVerificationComplete,
+                         weak_factory_.GetWeakPtr(), originating_url.spec())));
 }
 
 void BrowserURLLoaderThrottle::WillProcessResponse(
@@ -85,24 +101,26 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(delegate_);
 
+  if (VerifyHeader(*response_head)) {
+    return;
+  }
+
   *defer = true;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           &OriginVerificationSchedulerBridge::Verify, base::Unretained(bridge_),
           response_url.spec(),
-          base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck,
-                         weak_factory_.GetWeakPtr(), response_url.spec(),
-                         VerifyHeader(*response_head))));
+          base::BindOnce(&BrowserURLLoaderThrottle::OnDalVerificationComplete,
+                         weak_factory_.GetWeakPtr(), response_url.spec())));
 }
 
-void BrowserURLLoaderThrottle::OnCompleteCheck(std::string url,
-                                               bool header_verification_result,
-                                               bool dal_verified) {
+void BrowserURLLoaderThrottle::OnDalVerificationComplete(std::string url,
+                                                         bool dal_verified) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(delegate_);
 
-  if (dal_verified || header_verification_result) {
+  if (dal_verified) {
     delegate_->Resume();
     return;
   }

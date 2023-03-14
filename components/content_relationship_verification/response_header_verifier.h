@@ -9,12 +9,22 @@
 
 namespace content_relationship_verification {
 
+// Verification status for a certain Android package name based on the returned
+// |kEmbedderAncestorHeader|-header.
+enum class ResponseHeaderVerificationResult {
+  kAllow = 0,  // '*', or package_name listed.
+  kDisallow =
+      1,  // 'none', or package name not contained in listed package names.
+  kMissing = 2,  // missing header
+};
+
 class ResponseHeaderVerifier {
  public:
   // Verify if the provided |package_name| is verified via the embedder
   // ancestor header.
-  static bool Verify(const std::string& package_name,
-                     const std::string& embedder_ancestors_header_value);
+  static ResponseHeaderVerificationResult Verify(
+      const std::string& package_name,
+      const std::string& embedder_ancestors_header_value);
 };
 
 extern const char kEmbedderAncestorHeader[];

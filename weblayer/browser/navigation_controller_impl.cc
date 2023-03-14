@@ -562,11 +562,22 @@ void NavigationControllerImpl::DidFinishNavigation(
       navigation_handle->GetNetErrorCode() == net::OK &&
       !navigation_handle->IsErrorPage()) {
     if (!navigation_handle->IsSameDocument()) {
-      navigation->set_consenting_content(
-          content_relationship_verification::ResponseHeaderVerifier::Verify(
-              tab_->browser()->GetPackageName(),
-              navigation->GetNormalizedHeader(
-                  content_relationship_verification::kEmbedderAncestorHeader)));
+      content_relationship_verification::ResponseHeaderVerificationResult
+          header_verification_result =
+              content_relationship_verification::ResponseHeaderVerifier::Verify(
+                  tab_->browser()->GetPackageName(),
+                  navigation->GetNormalizedHeader(
+                      content_relationship_verification::
+                          kEmbedderAncestorHeader));
+
+      bool allowed_or_missing_consent =
+          header_verification_result ==
+              content_relationship_verification::
+                  ResponseHeaderVerificationResult::kAllow ||
+          header_verification_result ==
+              content_relationship_verification::
+                  ResponseHeaderVerificationResult::kMissing;
+      navigation->set_consenting_content(allowed_or_missing_consent);
     }
 #if BUILDFLAG(IS_ANDROID)
     if (java_controller_) {

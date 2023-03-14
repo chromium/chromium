@@ -15,24 +15,28 @@ const char kNormalizedHeaderDelimiter[] = ",";
 
 namespace content_relationship_verification {
 
+// Valid header values:
+//   - '*': All Android packages can displays this website
+//   - 'none': No permissions given to any Android App
+//   -  <List of package names>: package names with access to the web content.
 const char kEmbedderAncestorHeader[] = "X-Embedder-Ancestors";
 
 // TODO(crbug.com/1376958): Also support fingerprints.
-bool ResponseHeaderVerifier::Verify(
+ResponseHeaderVerificationResult ResponseHeaderVerifier::Verify(
     const std::string& package_name,
     const std::string& embedder_ancestors_header_value) {
   // No embedder-ancestor-header defaults to verified.
   if (embedder_ancestors_header_value.empty()) {
     // TODO(crbug.com/1376958): Set to false if undecided content should be
     // treated like explicitly unconsenting content.
-    return true;
+    return ResponseHeaderVerificationResult::kMissing;
   }
 
   if (embedder_ancestors_header_value == "*") {
-    return true;
+    return ResponseHeaderVerificationResult::kAllow;
   }
   if (embedder_ancestors_header_value == "none") {
-    return false;
+    return ResponseHeaderVerificationResult::kDisallow;
   }
 
   std::vector<std::string> allowed_package_names =
@@ -40,10 +44,10 @@ bool ResponseHeaderVerifier::Verify(
                   base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   if (base::Contains(allowed_package_names, package_name)) {
-    return true;
+    return ResponseHeaderVerificationResult::kAllow;
   }
 
-  return false;
+  return ResponseHeaderVerificationResult::kDisallow;
 }
 
 }  // namespace content_relationship_verification
