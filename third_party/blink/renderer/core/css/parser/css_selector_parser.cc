@@ -146,7 +146,9 @@ absl::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
 
   range.ConsumeWhitespace();
   absl::optional<base::span<CSSSelector>> result =
-      parser.ConsumeForgivingComplexSelectorList(range);
+      parser.ConsumeForgivingComplexSelectorList(
+          range,
+          /*in_nested_style_rule=*/nesting_type != CSSNestingType::kNone);
   DCHECK(result.has_value());
   if (!range.AtEnd()) {
     return absl::nullopt;
@@ -387,7 +389,8 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
   }
   ResetVectorAfterScope reset_vector(output_);
   absl::optional<base::span<CSSSelector>> forgiving_list =
-      ConsumeForgivingComplexSelectorList(range);
+      ConsumeForgivingComplexSelectorList(range,
+                                          /*in_nested_style_rule=*/false);
   if (!forgiving_list.has_value()) {
     return nullptr;
   }
@@ -396,11 +399,12 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
 
 absl::optional<base::span<CSSSelector>>
 CSSSelectorParser::ConsumeForgivingComplexSelectorList(
-    CSSParserTokenRange& range) {
+    CSSParserTokenRange& range,
+    bool in_nested_style_rule) {
   if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
       in_supports_parsing_) {
     base::span<CSSSelector> selectors =
-        ConsumeComplexSelectorList(range, /*in_nested_style_rule=*/false);
+        ConsumeComplexSelectorList(range, in_nested_style_rule);
     if (selectors.empty()) {
       return absl::nullopt;
     } else {
@@ -415,16 +419,14 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
   ForgivingParsingContainsMixOfValidAndInvalidCounter valid_and_invalid_counter(
       context_, WebFeature::kCSSPseudoIsWhereContainsMixOfValidAndInvalid);
 
+  bool first_in_complex_selector_list = true;
   while (!range.AtEnd()) {
     valid_and_invalid_counter.SetEmptyAfterLastComma(false);
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenRange argument = ConsumeNestedArgument(range);
     wtf_size_t subpos = output_.size();
-    // NOTE: first_in_complex_selector_list is irrelevant here,
-    // since in_nested_style_rule is false.
-    base::span<CSSSelector> selector =
-        ConsumeComplexSelector(argument, /*in_nested_style_rule=*/false,
-                               /*first_in_complex_selector_list=*/false);
+    base::span<CSSSelector> selector = ConsumeComplexSelector(
+        argument, in_nested_style_rule, first_in_complex_selector_list);
     if (selector.empty() || failed_parsing_ || !argument.AtEnd()) {
       if (in_supports_parsing_) {
         at_supports_drop_invalid_counter.Count();
@@ -440,6 +442,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     }
     range.ConsumeIncludingWhitespace();
     valid_and_invalid_counter.SetEmptyAfterLastComma(true);
+    first_in_complex_selector_list = false;
   }
 
   if (reset_vector.AddedElements().empty()) {
