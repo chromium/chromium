@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/login_database.h"
 
-#include "components/os_crypt/os_crypt.h"
+#include "components/os_crypt/sync/os_crypt.h"
 
 namespace password_manager {
 

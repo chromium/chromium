@@ -18,7 +18,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
-#include "components/os_crypt/os_crypt_switches.h"
+#include "components/os_crypt/sync/os_crypt_switches.h"
 #include "content/public/common/content_switches.h"
 #include "ui/display/display_switches.h"
 

@@ -3,7 +3,7 @@ include_rules = [
   "+components/invalidation",
   "+components/keyed_service/core",
   "+components/metrics",
-  "+components/os_crypt",
+  "+components/os_crypt/sync",
   "+components/policy",
   "+components/pref_registry",
   "+components/prefs",

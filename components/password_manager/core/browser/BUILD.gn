@@ -306,7 +306,7 @@ static_library("browser") {
     "//components/device_reauth",
     "//components/favicon/core",
     "//components/keyed_service/core",
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/leak_detection:leak_detection",
@@ -492,7 +492,7 @@ static_library("hash_password_manager") {
   deps = [
     ":password_hash_data",
     "//base:base",
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//components/password_manager/core/common",
     "//components/prefs",
   ]
@@ -729,8 +729,8 @@ source_set("unit_tests") {
     "//components/device_reauth",
     "//components/device_reauth:test_support",
     "//components/favicon/core/test:test_support",
-    "//components/os_crypt",
-    "//components/os_crypt:test_support",
+    "//components/os_crypt/sync",
+    "//components/os_crypt/sync:test_support",
     "//components/password_manager/core/browser:affiliation_proto",
     "//components/password_manager/core/browser/form_parsing:form_parsing",
     "//components/password_manager/core/browser/form_parsing:unit_tests",

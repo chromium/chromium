@@ -27,7 +27,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "components/os_crypt/os_crypt_switches.h"  // nogncheck
+#include "components/os_crypt/sync/os_crypt_switches.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN)

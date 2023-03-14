@@ -10,7 +10,7 @@ static_library("cookie_config") {
 
   deps = [
     "//base",
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//net",
     "//net:extras",
   ]

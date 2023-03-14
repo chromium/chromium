@@ -56,7 +56,7 @@ static_library("gcm_driver") {
     "//base:i18n",
     "//components/crx_file",
     "//components/keyed_service/core",
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/identity_manager",

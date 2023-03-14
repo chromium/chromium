@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/hash_password_manager.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/os_crypt/os_crypt_mocker.h"
+#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"

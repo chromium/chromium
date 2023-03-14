@@ -1,6 +1,6 @@
 include_rules = [
   "+components/crx_file/id_util.h",
-  "+components/os_crypt",
+  "+components/os_crypt/sync",
   "+components/keyed_service",
   "+components/pref_registry",
   "+components/prefs",

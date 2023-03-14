@@ -5,7 +5,7 @@ include_rules = [
   "+components/google/core",
   "+components/image_fetcher/core",
   "+components/keyed_service/core",
-  "+components/os_crypt",
+  "+components/os_crypt/sync",
   "+components/prefs",
   "+components/sync_preferences",
   # Subdirectories of //components/signin must explicitly allow deps on each

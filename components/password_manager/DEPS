@@ -1,6 +1,6 @@
 include_rules = [
   "+components/autofill/core/common",
-  "+components/os_crypt",
+  "+components/os_crypt/sync",
   "+components/prefs",
   "+components/strings/grit",
   "+components/sync/model",

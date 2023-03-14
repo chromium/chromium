@@ -22,7 +22,7 @@ import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
-import("//components/os_crypt/features.gni")
+import("//components/os_crypt/sync/features.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
@@ -2210,7 +2210,7 @@ static_library("browser") {
     "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//components/page_info/core:proto",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser/observers/ad_metrics",

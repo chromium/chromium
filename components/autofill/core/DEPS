@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/os_crypt",
+  "+components/os_crypt/sync",
   "+components/pref_registry",
   "+components/unified_consent",
   "+components/webauthn/core",

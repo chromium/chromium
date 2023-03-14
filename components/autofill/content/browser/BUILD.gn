@@ -39,7 +39,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//components/prefs",
     "//components/profile_metrics",
     "//components/resources",

@@ -6,7 +6,7 @@
 
 #include "base/lazy_instance.h"
 #include "build/build_config.h"
-#include "components/os_crypt/os_crypt.h"
+#include "components/os_crypt/sync/os_crypt.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
 
 namespace cookie_config {

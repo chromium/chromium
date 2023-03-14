@@ -21,8 +21,8 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/command_line.h"
-#include "components/os_crypt/key_storage_config_linux.h"
-#include "components/os_crypt/os_crypt.h"
+#include "components/os_crypt/sync/key_storage_config_linux.h"
+#include "components/os_crypt/sync/os_crypt.h"
 #include "headless/public/switches.h"
 
 #if defined(USE_DBUS)

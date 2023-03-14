@@ -60,7 +60,7 @@ static_library("browser") {
     "//build:chromeos_buildflags",
     "//components/google/core/common",
     "//components/metrics",
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//components/signin/public/identity_manager",
     "//components/webdata/common",
     "//crypto",

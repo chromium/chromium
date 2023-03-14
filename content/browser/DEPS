@@ -41,7 +41,7 @@ include_rules = [
   "+components/viz",
   "+components/web_package",
   "+components/cbor",
-  "+components/os_crypt/os_crypt_switches.h",
+  "+components/os_crypt/sync/os_crypt_switches.h",
   # *********************************** NOTE ***********************************
   # If adding a new component dependency, email
   # content-owners@chromium.org first.

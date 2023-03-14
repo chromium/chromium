@@ -12,7 +12,7 @@ static_library("webdata") {
   ]
 
   deps = [
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//sql",
   ]
 
@@ -29,7 +29,7 @@ source_set("unit_tests") {
   deps = [
     ":webdata",
     "//base/test:test_support",
-    "//components/os_crypt:test_support",
+    "//components/os_crypt/sync:test_support",
     "//components/webdata/common",
     "//testing/gtest",
   ]

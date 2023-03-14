@@ -9,7 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/time/time.h"
-#include "components/os_crypt/os_crypt_mocker.h"
+#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "sql/database.h"

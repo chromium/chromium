@@ -4,7 +4,7 @@
 
 #include "components/gcm_driver/system_encryptor.h"
 
-#include "components/os_crypt/os_crypt.h"
+#include "components/os_crypt/sync/os_crypt.h"
 
 namespace gcm {
 

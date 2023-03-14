@@ -25,7 +25,7 @@
 #include "services/network/url_request_context_builder_mojo.h"
 
 #if defined(HEADLESS_USE_PREFS)
-#include "components/os_crypt/os_crypt.h"  // nogncheck
+#include "components/os_crypt/sync/os_crypt.h"  // nogncheck
 #include "content/public/common/network_service_util.h"
 #endif
 

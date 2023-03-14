@@ -173,7 +173,7 @@ src:*third_party/vulkan-deps/vulkan-loader/src/loader*
 src:*third_party/vulkan-deps/vulkan-validation-layers/src/layers/*
 src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 
-src:*components/os_crypt/*
+src:*components/os_crypt/sync/*
 
 src:*content/browser/accessibility/browser_accessibility_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_node_auralinux.cc

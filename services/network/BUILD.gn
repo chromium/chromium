@@ -259,7 +259,7 @@ component("network_service") {
     "//components/domain_reliability",
     "//components/network_session_configurator/browser",
     "//components/network_session_configurator/common",
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//components/prefs",
     "//components/url_matcher",
     "//components/web_package",

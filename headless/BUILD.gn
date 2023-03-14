@@ -445,7 +445,7 @@ component("headless_non_renderer") {
     "//components/keyed_service/content:content",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
-    "//components/os_crypt:os_crypt",
+    "//components/os_crypt/sync",
     "//components/policy:generated",
     "//components/policy/content:content",
     "//components/policy/core/common:common_constants",
@@ -554,7 +554,7 @@ component("headless_non_renderer") {
     }
 
     if (headless_use_prefs) {
-      deps += [ "//components/os_crypt" ]
+      deps += [ "//components/os_crypt/sync" ]
     }
   }
 
@@ -957,7 +957,7 @@ static_library("headless_shell_lib") {
   }
 
   if (is_mac) {
-    deps += [ "//components/os_crypt" ]
+    deps += [ "//components/os_crypt/sync" ]
   }
 
   if (is_win || (is_posix && !is_mac)) {

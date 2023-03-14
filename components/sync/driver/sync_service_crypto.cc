@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/os_crypt/os_crypt.h"
+#include "components/os_crypt/sync/os_crypt.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/trusted_vault_histograms.h"

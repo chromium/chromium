@@ -30,7 +30,7 @@ import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
-import("//components/os_crypt/features.gni")
+import("//components/os_crypt/sync/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/signin/features.gni")
@@ -322,7 +322,7 @@ static_library("test_support") {
     "//components/network_time:network_time_test_support",
     "//components/omnibox/browser:test_support",
     "//components/optimization_guide/content/browser:test_support",
-    "//components/os_crypt",
+    "//components/os_crypt/sync",
     "//components/password_manager/core/browser:test_support",
     "//components/payments/core:test_support",
     "//components/performance_manager/test_support",
@@ -6095,7 +6095,7 @@ test("unit_tests") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/optimization_guide/core:test_support",
     "//components/origin_trials:browser",
-    "//components/os_crypt:test_support",
+    "//components/os_crypt/sync:test_support",
     "//components/page_info",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser:test_support",
@@ -9317,7 +9317,7 @@ if (!is_android) {
       "//components/nacl/common:buildflags",
       "//components/nacl/common:switches",
       "//components/omnibox/browser",
-      "//components/os_crypt:test_support",
+      "//components/os_crypt/sync:test_support",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:password_form",
       "//components/password_manager/core/browser:test_support",
@@ -10403,7 +10403,7 @@ source_set("sync_integration_test_support") {
     "//components/favicon/core",
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",
-    "//components/os_crypt:test_support",
+    "//components/os_crypt/sync:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync",
     "//components/sync:test_support",

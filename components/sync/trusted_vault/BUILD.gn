@@ -40,7 +40,7 @@ if (!is_android) {
       "//components/sync/driver",
     ]
     deps = [
-      "//components/os_crypt",
+      "//components/os_crypt/sync",
       "//components/signin/public/identity_manager",
       "//components/sync/base",
       "//components/sync/protocol",
