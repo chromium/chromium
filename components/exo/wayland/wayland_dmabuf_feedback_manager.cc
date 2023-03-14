@@ -141,10 +141,16 @@ class WaylandDmabufFeedback {
       if (base::Contains(display_formats_and_modifiers, format)) {
         base::flat_map<size_t, uint64_t> scanout_modifier_entries;
 
-        for (const auto& [table_index, modifier] : modifier_entries) {
-          if (base::Contains(display_formats_and_modifiers.at(format),
-                             modifier)) {
-            scanout_modifier_entries.emplace(table_index, modifier);
+        if (modifier_entries.size() == 1) {
+          auto it = modifier_entries.begin();
+          DCHECK(it->second == DRM_FORMAT_MOD_INVALID);
+          scanout_modifier_entries.emplace(it->first, it->second);
+        } else {
+          for (const auto& [table_index, modifier] : modifier_entries) {
+            if (base::Contains(display_formats_and_modifiers.at(format),
+                               modifier)) {
+              scanout_modifier_entries.emplace(table_index, modifier);
+            }
           }
         }
 
