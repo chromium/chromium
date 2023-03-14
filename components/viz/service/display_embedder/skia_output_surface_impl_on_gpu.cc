@@ -598,7 +598,9 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ddl);
-  DCHECK(!update_rect.IsEmpty());
+
+  DLOG_IF(WARNING, !update_rect.IsEmpty())
+      << "FinishPaintRenderPass called with empty update_rect.";
 
   if (context_is_lost_)
     return;
