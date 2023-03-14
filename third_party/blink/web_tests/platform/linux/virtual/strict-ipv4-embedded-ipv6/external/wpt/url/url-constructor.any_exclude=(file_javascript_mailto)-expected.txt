@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 632 tests; 486 PASS, 146 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 662 tests; 486 PASS, 176 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -727,6 +727,66 @@ PASS Parsing: <https://a%C2%ADb/> against <about:blank>
 PASS Parsing: <https://­/> against <about:blank>
 PASS Parsing: <https://%C2%AD/> against <about:blank>
 FAIL Parsing: <https://xn--/> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <data://example.com:8080/pathname?search#hash> against <about:blank> assert_equals: host expected "example.com:8080" but got ""
+FAIL Parsing: <data:///test> against <about:blank> assert_equals: pathname expected "/test" but got "///test"
+FAIL Parsing: <data://test/a/../b> against <about:blank> assert_equals: href expected "data://test/b" but got "data://test/a/../b"
+FAIL Parsing: <data://:443> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <data://test:test> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <data://[:1]> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <intent://example.com:8080/pathname?search#hash> against <about:blank> assert_equals: host expected "example.com:8080" but got ""
+FAIL Parsing: <intent:///test> against <about:blank> assert_equals: pathname expected "/test" but got "///test"
+FAIL Parsing: <intent://test/a/../b> against <about:blank> assert_equals: href expected "intent://test/b" but got "intent://test/a/../b"
+FAIL Parsing: <intent://:443> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <intent://test:test> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <intent://[:1]> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <urn://example.com:8080/pathname?search#hash> against <about:blank> assert_equals: host expected "example.com:8080" but got ""
+FAIL Parsing: <urn:///test> against <about:blank> assert_equals: pathname expected "/test" but got "///test"
+FAIL Parsing: <urn://test/a/../b> against <about:blank> assert_equals: href expected "urn://test/b" but got "urn://test/a/../b"
+FAIL Parsing: <urn://:443> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <urn://test:test> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <urn://[:1]> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <turn://example.com:8080/pathname?search#hash> against <about:blank> assert_equals: host expected "example.com:8080" but got ""
+FAIL Parsing: <turn:///test> against <about:blank> assert_equals: pathname expected "/test" but got "///test"
+FAIL Parsing: <turn://test/a/../b> against <about:blank> assert_equals: href expected "turn://test/b" but got "turn://test/a/../b"
+FAIL Parsing: <turn://:443> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <turn://test:test> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <turn://[:1]> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <stun://example.com:8080/pathname?search#hash> against <about:blank> assert_equals: host expected "example.com:8080" but got ""
+FAIL Parsing: <stun:///test> against <about:blank> assert_equals: pathname expected "/test" but got "///test"
+FAIL Parsing: <stun://test/a/../b> against <about:blank> assert_equals: href expected "stun://test/b" but got "stun://test/a/../b"
+FAIL Parsing: <stun://:443> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <stun://test:test> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <stun://[:1]> against <about:blank> assert_throws_js: function "function() {
           bURL(expected.input, expected.base)
         }" did not throw
 Harness: the test ran to completion.

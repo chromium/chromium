@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 332 tests; 321 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 353 tests; 342 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -341,5 +341,26 @@ PASS Origin parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against
 PASS Origin parsing: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
 PASS Origin parsing: <https://example.com/"quoted"> against <about:blank>
 PASS Origin parsing: <https://a%C2%ADb/> against <about:blank>
+PASS Origin parsing: <data://example.com:8080/pathname?search#hash> against <about:blank>
+PASS Origin parsing: <data:///test> against <about:blank>
+PASS Origin parsing: <data://test/a/../b> against <about:blank>
+PASS Origin parsing: <javascript://example.com:8080/pathname?search#hash> against <about:blank>
+PASS Origin parsing: <javascript:///test> against <about:blank>
+PASS Origin parsing: <javascript://test/a/../b> against <about:blank>
+PASS Origin parsing: <mailto://example.com:8080/pathname?search#hash> against <about:blank>
+PASS Origin parsing: <mailto:///test> against <about:blank>
+PASS Origin parsing: <mailto://test/a/../b> against <about:blank>
+PASS Origin parsing: <intent://example.com:8080/pathname?search#hash> against <about:blank>
+PASS Origin parsing: <intent:///test> against <about:blank>
+PASS Origin parsing: <intent://test/a/../b> against <about:blank>
+PASS Origin parsing: <urn://example.com:8080/pathname?search#hash> against <about:blank>
+PASS Origin parsing: <urn:///test> against <about:blank>
+PASS Origin parsing: <urn://test/a/../b> against <about:blank>
+PASS Origin parsing: <turn://example.com:8080/pathname?search#hash> against <about:blank>
+PASS Origin parsing: <turn:///test> against <about:blank>
+PASS Origin parsing: <turn://test/a/../b> against <about:blank>
+PASS Origin parsing: <stun://example.com:8080/pathname?search#hash> against <about:blank>
+PASS Origin parsing: <stun:///test> against <about:blank>
+PASS Origin parsing: <stun://test/a/../b> against <about:blank>
 Harness: the test ran to completion.
 

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1079 tests; 857 PASS, 222 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1205 tests; 878 PASS, 327 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL's constructor's base argument: file://example:1/ should throw
 PASS URL's href: file://example:1/ should throw
@@ -1079,5 +1079,131 @@ FAIL XHR: https://xn--/ should throw assert_throws_dom: function "() => client.o
 FAIL sendBeacon(): https://xn--/ should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
 FAIL Location's href: https://xn--/ should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
 FAIL window.open(): https://xn--/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: data://:443 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: data://:443 should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: data://:443 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): data://:443 should throw
+FAIL Location's href: data://:443 should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): data://:443 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: data://test:test should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: data://test:test should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: data://test:test should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): data://test:test should throw
+FAIL Location's href: data://test:test should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): data://test:test should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: data://[:1] should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: data://[:1] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: data://[:1] should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): data://[:1] should throw
+FAIL Location's href: data://[:1] should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): data://[:1] should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: javascript://:443 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: javascript://:443 should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: javascript://:443 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): javascript://:443 should throw
+FAIL Location's href: javascript://:443 should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): javascript://:443 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: javascript://test:test should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: javascript://test:test should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: javascript://test:test should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): javascript://test:test should throw
+FAIL Location's href: javascript://test:test should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): javascript://test:test should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: javascript://[:1] should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: javascript://[:1] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: javascript://[:1] should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): javascript://[:1] should throw
+FAIL Location's href: javascript://[:1] should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): javascript://[:1] should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: mailto://:443 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: mailto://:443 should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: mailto://:443 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): mailto://:443 should throw
+FAIL Location's href: mailto://:443 should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): mailto://:443 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: mailto://test:test should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: mailto://test:test should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: mailto://test:test should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): mailto://test:test should throw
+FAIL Location's href: mailto://test:test should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): mailto://test:test should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: mailto://[:1] should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: mailto://[:1] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: mailto://[:1] should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): mailto://[:1] should throw
+FAIL Location's href: mailto://[:1] should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): mailto://[:1] should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: intent://:443 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: intent://:443 should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: intent://:443 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): intent://:443 should throw
+FAIL Location's href: intent://:443 should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): intent://:443 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: intent://test:test should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: intent://test:test should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: intent://test:test should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): intent://test:test should throw
+FAIL Location's href: intent://test:test should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): intent://test:test should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: intent://[:1] should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: intent://[:1] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: intent://[:1] should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): intent://[:1] should throw
+FAIL Location's href: intent://[:1] should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): intent://[:1] should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: urn://:443 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: urn://:443 should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: urn://:443 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): urn://:443 should throw
+FAIL Location's href: urn://:443 should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): urn://:443 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: urn://test:test should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: urn://test:test should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: urn://test:test should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): urn://test:test should throw
+FAIL Location's href: urn://test:test should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): urn://test:test should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: urn://[:1] should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: urn://[:1] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: urn://[:1] should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): urn://[:1] should throw
+FAIL Location's href: urn://[:1] should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): urn://[:1] should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: turn://:443 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: turn://:443 should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: turn://:443 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): turn://:443 should throw
+FAIL Location's href: turn://:443 should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): turn://:443 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: turn://test:test should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: turn://test:test should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: turn://test:test should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): turn://test:test should throw
+FAIL Location's href: turn://test:test should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): turn://test:test should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: turn://[:1] should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: turn://[:1] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: turn://[:1] should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): turn://[:1] should throw
+FAIL Location's href: turn://[:1] should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): turn://[:1] should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: stun://:443 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: stun://:443 should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: stun://:443 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): stun://:443 should throw
+FAIL Location's href: stun://:443 should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): stun://:443 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: stun://test:test should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: stun://test:test should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: stun://test:test should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): stun://test:test should throw
+FAIL Location's href: stun://test:test should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): stun://test:test should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: stun://[:1] should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: stun://[:1] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: stun://[:1] should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): stun://[:1] should throw
+FAIL Location's href: stun://[:1] should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): stun://[:1] should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
 Harness: the test ran to completion.
 
