@@ -320,6 +320,7 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
 
 void AcceleratorConfigurationProvider::RestoreAllDefaults(
     RestoreAllDefaultsCallback callback) {
+  CHECK(::features::IsShortcutCustomizationEnabled());
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
   AcceleratorConfigResult result =
       ash_accelerator_configuration_->RestoreAllDefaults();
