@@ -294,6 +294,21 @@ Once it is built, you can simply run the browser:
 $ out/Default/chrome
 ```
 
+If you're using a remote machine that supports Chrome Remote Desktop, you can
+add this to your .bashrc / .bash_profile.
+
+```shell
+if [[ -z "${DISPLAY}" ]]; then
+  export DISPLAY=:$(
+    find /tmp/.X11-unix -maxdepth 1 -mindepth 1 -name 'X*' |
+      grep -o '[0-9]\+$' | head -n 1
+  )
+fi
+```
+
+This means if you launch Chrome from an SSH session, the UI output will be
+available in Chrome Remote Desktop.
+
 ## Running test targets
 
 First build the unit_tests binary by running the command:
