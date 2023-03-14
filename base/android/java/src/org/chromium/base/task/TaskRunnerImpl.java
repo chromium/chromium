@@ -212,16 +212,19 @@ public class TaskRunnerImpl implements TaskRunner {
                 if (mPreNativeTasks == null) return;
                 task = mPreNativeTasks.poll();
             }
-            switch (mTaskTraits.mPriority) {
-                case TaskPriority.USER_VISIBLE:
-                    Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-                    break;
-                case TaskPriority.HIGHEST:
-                    Process.setThreadPriority(Process.THREAD_PRIORITY_MORE_FAVORABLE);
-                    break;
-                default:
-                    Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-                    break;
+            // We don't want to set the Thread Priority of the UI Thread.
+            if (mTaskTraits.mUseThreadPool) {
+                switch (mTaskTraits.mPriority) {
+                    case TaskPriority.USER_VISIBLE:
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+                        break;
+                    case TaskPriority.HIGHEST:
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_MORE_FAVORABLE);
+                        break;
+                    default:
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                        break;
+                }
             }
             task.run();
         }
