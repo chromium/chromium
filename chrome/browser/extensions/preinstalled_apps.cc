@@ -184,7 +184,7 @@ void Provider::SetPrefs(base::Value::Dict prefs) {
       if (!pref.is_dict())
         return false;  // Invalid entry; it'll be ignored later.
       const std::string* web_app_flag =
-          pref.FindStringPath(kWebAppMigrationFlag);
+          pref.GetDict().FindString(kWebAppMigrationFlag);
       if (!web_app_flag)
         return false;  // Isn't migrating.
       if (web_app::IsPreinstalledAppInstallFeatureEnabled(*web_app_flag,

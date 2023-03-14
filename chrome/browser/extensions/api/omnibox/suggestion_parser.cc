@@ -39,8 +39,9 @@ void WalkNode(const base::Value& node, DescriptionAndStyles* result) {
     // Append text nodes to our description.
     if (data_decoder::IsXmlElementOfType(
             child, data_decoder::mojom::XmlParser::kTextNodeType)) {
+      DCHECK(child.is_dict());
       const std::string* text =
-          child.FindStringPath(data_decoder::mojom::XmlParser::kTextKey);
+          child.GetDict().FindString(data_decoder::mojom::XmlParser::kTextKey);
       DCHECK(text);
       std::u16string sanitized_text = base::UTF8ToUTF16(*text);
       // Note: We unfortunately can't just use

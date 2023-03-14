@@ -148,8 +148,8 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     std::unique_ptr<base::Value> result = RunFunctionAndReturnSingleResult(
         function.get(), std::string("[]"), browser());
     EXPECT_TRUE(result->is_dict());
-    ASSERT_TRUE(result->FindDoublePath("options.since"));
-    double since = *result->FindDoublePath("options.since");
+    ASSERT_TRUE(result->GetDict().FindDoubleByDottedPath("options.since"));
+    double since = *result->GetDict().FindDoubleByDottedPath("options.since");
 
     double expected_since = 0;
     if (since_pref != browsing_data::TimePeriod::ALL_TIME) {
