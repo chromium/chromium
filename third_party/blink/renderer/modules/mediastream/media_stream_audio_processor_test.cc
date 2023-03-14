@@ -343,13 +343,7 @@ TEST_F(MediaStreamAudioProcessorTest, StartStopAecDump) {
   // The tempory file is deleted when temp_directory exists scope.
 }
 
-#if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
-#define MAYBE_TestStereoAudio DISABLED_TestStereoAudio
-#else
-#define MAYBE_TestStereoAudio TestStereoAudio
-#endif  // BUILDFLAG(IS_IOS)
-TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_TestStereoAudio) {
+TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
   const bool use_multichannel_processing = GetParam();
   SCOPED_TRACE(testing::Message() << "use_multichannel_processing="
                                   << use_multichannel_processing);
@@ -368,7 +362,15 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_TestStereoAudio) {
   }
 
   // Test without and with audio processing enabled.
-  for (bool use_apm : {false, true}) {
+  constexpr bool kUseApmValues[] =
+#if BUILDFLAG(IS_IOS)
+      // TODO(https://crbug.com/1417474): `false` fails on ios-blink platform
+      // due to a special case for iOS in settings.NeedWebrtcAudioProcessing()
+      {true};
+#else
+      {false, true};
+#endif
+  for (bool use_apm : kUseApmValues) {
     // No need to test stereo with APM if disabled.
     if (use_apm && !use_multichannel_processing) {
       continue;
@@ -728,7 +730,8 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
+// TODO(https://crbug.com/1417474): Remove legacy iOS case in
+// AudioProcessingSettings::NeedWebrtcAudioProcessing().
 #define MAYBE_TrueWhenSoftwareEchoCancellationIsEnabled \
   DISABLED_TrueWhenSoftwareEchoCancellationIsEnabled
 #else
@@ -755,7 +758,8 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
+// TODO(https://crbug.com/1417474): Remove legacy iOS case in
+// AudioProcessingSettings::NeedWebrtcAudioProcessing().
 #define MAYBE_TrueWhenStereoMirroringIsEnabled \
   DISABLED_TrueWhenStereoMirroringIsEnabled
 #else
@@ -779,7 +783,8 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
+// TODO(https://crbug.com/1417474): Remove legacy iOS case in
+// AudioProcessingSettings::NeedWebrtcAudioProcessing().
 #define MAYBE_TrueWhenGainControlIsEnabled DISABLED_TrueWhenGainControlIsEnabled
 #else
 #define MAYBE_TrueWhenGainControlIsEnabled TrueWhenGainControlIsEnabled
@@ -803,7 +808,8 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
+// TODO(https://crbug.com/1417474): Remove legacy iOS case in
+// AudioProcessingSettings::NeedWebrtcAudioProcessing().
 #define MAYBE_TrueWhenExperimentalEchoCancellationIsEnabled \
   DISABLED_TrueWhenExperimentalEchoCancellationIsEnabled
 #else
