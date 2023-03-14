@@ -2000,7 +2000,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Passwords on All Your Devices
       </message>
       <message name="IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_SUBTITLE" desc="Subtitle of the sheet that notifies the user they are saving passwords to their Google Account. [Length: unlimited] [iOS only]">
-        When you're signed in to Chrome, passwords you save will go in your Google Account (<ph name="ACCOUNT">$1<ex>foo@gmail.com</ex></ph>). To turn this off, <ph name="BEGIN_LINK">BEGIN_LINK</ph>go to settings<ph name="END_LINK">END_LINK</ph>.
+        When you're signed in to Chrome, passwords you save will go in your Google Account. To turn this off, <ph name="BEGIN_LINK">BEGIN_LINK</ph>go to settings<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT" desc="Button text for the sheet that notifies the user they are saving passwords to their Google Account. [Length: unlimited] [iOS only]">
         Got It

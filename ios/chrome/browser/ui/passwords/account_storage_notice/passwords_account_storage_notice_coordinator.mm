@@ -4,13 +4,9 @@
 
 #import "ios/chrome/browser/ui/passwords/account_storage_notice/passwords_account_storage_notice_coordinator.h"
 
-#import "base/strings/sys_string_conversions.h"
-#import "components/signin/public/base/consent_level.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/passwords_account_storage_notice_commands.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/passwords/account_storage_notice/passwords_account_storage_notice_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
@@ -52,17 +48,9 @@
 - (void)start {
   [super start];
 
-  const std::string account =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .email;
-  DCHECK(!account.empty()) << "Account storage notice triggered when there "
-                              "was no signed in account";
   self.sheetViewController =
       [[PasswordsAccountStorageNoticeViewController alloc]
-            initWithActionHandler:self
-          accountStoringPasswords:base::SysUTF8ToNSString(account)];
+          initWithActionHandler:self];
   [self.baseViewController presentViewController:self.sheetViewController
                                         animated:YES
                                       completion:nil];

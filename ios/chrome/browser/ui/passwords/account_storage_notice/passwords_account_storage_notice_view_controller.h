@@ -31,9 +31,7 @@
     : ConfirmationAlertViewController
 
 - (instancetype)initWithActionHandler:
-                    (id<PasswordsAccountStorageNoticeActionHandler>)
-                        actionHandler
-              accountStoringPasswords:(NSString*)accountStoringPasswords
+    (id<PasswordsAccountStorageNoticeActionHandler>)actionHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)name

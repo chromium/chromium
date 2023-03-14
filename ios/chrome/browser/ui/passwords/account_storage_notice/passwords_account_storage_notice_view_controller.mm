@@ -19,9 +19,6 @@
 @interface PasswordsAccountStorageNoticeViewController () <
     UIAdaptivePresentationControllerDelegate,
     UITextViewDelegate>
-
-@property(nonatomic, strong, readonly) NSString* accountStoringPasswords;
-
 @end
 
 @implementation PasswordsAccountStorageNoticeViewController
@@ -29,15 +26,12 @@
 @dynamic actionHandler;
 
 - (instancetype)initWithActionHandler:
-                    (id<PasswordsAccountStorageNoticeActionHandler>)
-                        actionHandler
-              accountStoringPasswords:(NSString*)accountStoringPasswords {
+    (id<PasswordsAccountStorageNoticeActionHandler>)actionHandler {
   self = [super initWithNibName:nil bundle:nil];
   if (!self) {
     return nil;
   }
 
-  _accountStoringPasswords = accountStoringPasswords;
   self.actionHandler = actionHandler;
   self.presentationController.delegate = self;
   if (@available(iOS 15, *)) {
@@ -112,9 +106,8 @@
 #pragma mark - Private
 
 - (StringWithTag)subtitleStringWithTag {
-  StringWithTags stringWithTags = ParseStringWithLinks(l10n_util::GetNSStringF(
-      IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_SUBTITLE,
-      base::SysNSStringToUTF16(self.accountStoringPasswords)));
+  StringWithTags stringWithTags = ParseStringWithLinks(l10n_util::GetNSString(
+      IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_SUBTITLE));
   DCHECK_EQ(stringWithTags.ranges.size(), 1u);
   return {stringWithTags.string, stringWithTags.ranges[0]};
 }
