@@ -14,6 +14,7 @@
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/sync/base/model_type.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -248,7 +249,7 @@ BOOL AreCredentialsAtIndexesConnected(
         _webState ? PasswordTabHelper::FromWebState(_webState)
                         ->GetPasswordManagerClient()
                   : nullptr;
-    if (_syncService && _syncService->CanSyncFeatureStart() &&
+    if (_syncService && _syncService->IsDataTypeActive(syncer::PASSWORDS) &&
         passwordManagerClient &&
         passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
         _activeFieldIsPassword) {
