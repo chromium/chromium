@@ -137,9 +137,11 @@ void BluetoothRemoteGattDescriptorFloss::GattDescriptorWrite(
     return;
   }
 
+  // Only handle if there is a write callback pending.
   auto [callback, error_callback, data] = std::move(pending_write_callbacks_);
-  DCHECK(callback);
-  DCHECK(error_callback);
+  if (!callback) {
+    return;
+  }
 
   if (status == GattStatus::kSuccess) {
     cached_data_ = data;
