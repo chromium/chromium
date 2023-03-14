@@ -217,6 +217,9 @@ branches.exec("//generators/cq-builders-md.star")
 
 exec("//generators/sort-consoles.star")
 
+# Execute validators after eveything except the outage file so that we're
+# validating the final non-outages configuration
+exec("//validators/builder-group-triggers.star")
 exec("//validators/builders-in-consoles.star")
 
 # Execute this file last so that any configuration changes needed for handling
