@@ -885,7 +885,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.InitializeOneOffMediumTime" units="ms"
-    expires_after="2023-07-09">
+    expires_after="2023-09-10">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
