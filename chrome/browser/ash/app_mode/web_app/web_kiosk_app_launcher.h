@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
-#include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper.h"
 

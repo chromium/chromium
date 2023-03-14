@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_MOCK_DATA_RETRIEVER_H_
 
 #include "base/containers/flat_set.h"
-#include "chrome/browser/web_applications/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

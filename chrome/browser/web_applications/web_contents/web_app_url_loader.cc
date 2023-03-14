@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 
 #include <memory>
 #include <utility>
@@ -32,8 +32,9 @@ bool EqualsWithComparison(const GURL& a,
                           UrlComparison url_comparison) {
   DCHECK(a.is_valid());
   DCHECK(b.is_valid());
-  if (a == b)
+  if (a == b) {
     return true;
+  }
   GURL::Replacements replace;
   switch (url_comparison) {
     case UrlComparison::kExact:
@@ -126,8 +127,9 @@ class LoaderTask : public content::WebContentsObserver {
     }
 
     // Flush all DidFailLoad events until about:blank loaded.
-    if (url_.IsAboutBlank())
+    if (url_.IsAboutBlank()) {
       return;
+    }
 
     timer_.Stop();
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
@@ -53,8 +53,9 @@ HandleMatchingRequestOrReturnEmptyPage(
     const net::EmbeddedTestServer::HandleRequestCallback& handler,
     const net::test_server::HttpRequest& request) {
   GURL match = request.GetURL().Resolve(relative_url);
-  if (request.GetURL() == match)
+  if (request.GetURL() == match) {
     return handler.Run(request);
+  }
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);

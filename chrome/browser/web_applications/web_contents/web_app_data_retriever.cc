@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 
 #include <memory>
 #include <set>
@@ -139,8 +139,9 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
       base::BindOnce(&WebAppDataRetriever::OnIconsDownloaded,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  if (skip_page_favicons)
+  if (skip_page_favicons) {
     icon_downloader_->SkipPageFavicons();
+  }
 
   icon_downloader_->Start();
 }
@@ -165,8 +166,9 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
     mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent> metadata_agent,
     int last_committed_nav_entry_unique_id,
     webapps::mojom::WebPageMetadataPtr web_page_metadata) {
-  if (ShouldStopRetrieval())
+  if (ShouldStopRetrieval()) {
     return;
+  }
 
   DCHECK(fallback_install_info_);
 
@@ -181,10 +183,12 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
   if (!entry->IsInitialEntry()) {
     if (entry->GetUniqueID() == last_committed_nav_entry_unique_id) {
       info = std::make_unique<WebAppInstallInfo>(*web_page_metadata);
-      if (info->start_url.is_empty())
+      if (info->start_url.is_empty()) {
         info->start_url = std::move(fallback_install_info_->start_url);
-      if (info->title.empty())
+      }
+      if (info->title.empty()) {
         info->title = std::move(fallback_install_info_->title);
+      }
     } else {
       // WebContents navigation state changed during the call. Ignore the mojo
       // request result. Use default initial info instead.
@@ -200,8 +204,9 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
 
 void WebAppDataRetriever::OnDidPerformInstallableCheck(
     const webapps::InstallableData& data) {
-  if (ShouldStopRetrieval())
+  if (ShouldStopRetrieval()) {
     return;
+  }
 
   Observe(nullptr);
 
@@ -209,8 +214,9 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
   DCHECK(!is_installable || data.valid_manifest);
 
   blink::mojom::ManifestPtr opt_manifest;
-  if (!blink::IsEmptyManifest(*data.manifest))
+  if (!blink::IsEmptyManifest(*data.manifest)) {
     opt_manifest = data.manifest->Clone();
+  }
 
   DCHECK(!check_installability_callback_.is_null());
   std::move(check_installability_callback_)
@@ -222,8 +228,9 @@ void WebAppDataRetriever::OnIconsDownloaded(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
-  if (ShouldStopRetrieval())
+  if (ShouldStopRetrieval()) {
     return;
+  }
 
   Observe(nullptr);
   icon_downloader_.reset();
