@@ -4864,9 +4864,6 @@ crbug.com/1197041 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-em
 
 crbug.com/1193979 [ Mac ] fast/events/tabindex-focus-blur-all.html [ Failure Pass ]
 
-# Sheriff 2021-04-13
-crbug.com/1198698 external/wpt/clear-site-data/storage.https.html [ Pass Timeout ]
-
 # Sheriff 2021-04-15
 crbug.com/1196118 plugins/mouse-move-over-plugin-in-frame.html [ Failure Pass ]
 crbug.com/1199528 http/tests/inspector-protocol/css/css-edit-redirected-css.js [ Failure Pass ]

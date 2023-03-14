@@ -1373,7 +1373,6 @@ crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-f
 crbug.com/1361889 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-custom-scrollbar.html [ Slow ]
 
 # Mac11 IDB timeouts
-crbug.com/1195814 [ Mac11 ] external/wpt/clear-site-data/storage.https.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/fire-error-event-exception.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/get-databases.any.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
