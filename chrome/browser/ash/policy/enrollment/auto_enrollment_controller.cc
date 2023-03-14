@@ -19,10 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/psm/construct_rlwe_id.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
@@ -217,9 +214,7 @@ void EnrollmentFwmpHelper::OnGetFirmwareManagementParametersReceived(
 AutoEnrollmentController::AutoEnrollmentController()
     : enrollment_fwmp_helper_(ash::InstallAttributesClient::Get()),
       psm_rlwe_client_factory_(
-          base::BindRepeating(&policy::psm::RlweDmserverClientImpl::Create)),
-      enrollment_state_fetcher_factory_(
-          base::BindRepeating(EnrollmentStateFetcher::Create)) {}
+          base::BindRepeating(&policy::psm::RlweDmserverClientImpl::Create)) {}
 
 AutoEnrollmentController::~AutoEnrollmentController() = default;
 
@@ -242,45 +237,16 @@ void AutoEnrollmentController::Start() {
       break;
   }
 
-  if (AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
-    // If a fetcher has already been created, bail out.
-    if (enrollment_state_fetcher_) {
-      LOG(ERROR) << "Enrollment state fetcher is already running.";
-      return;
-    }
-  } else {
-    // If a client is being created or already existing, bail out.
-    if (client_start_weak_factory_.HasWeakPtrs() || client_) {
-      LOG(ERROR) << "Enrollment state client is already running.";
-      return;
-    }
+  // If a client is being created or already existing, bail out.
+  if (client_start_weak_factory_.HasWeakPtrs() || client_) {
+    LOG(ERROR) << "Auto-enrollment client is already running.";
+    return;
   }
 
   // Arm the belts-and-suspenders timer to avoid hangs.
   safeguard_timer_.Start(FROM_HERE, kSafeguardTimeout,
                          base::BindOnce(&AutoEnrollmentController::Timeout,
                                         weak_ptr_factory_.GetWeakPtr()));
-
-  if (AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
-    // Emulate required FRE to prevent users from skipping enrollment.
-    auto_enrollment_check_type_ = AutoEnrollmentTypeChecker::CheckType::
-        kForcedReEnrollmentExplicitlyRequired;
-    // Set state to kPending since EnrollmentStateFetcher does not invoke update
-    // state callback until final state is available.
-    UpdateState(AutoEnrollmentState::kPending);
-
-    enrollment_state_fetcher_ = enrollment_state_fetcher_factory_.Run(
-        base::BindRepeating(&AutoEnrollmentController::UpdateState,
-                            weak_ptr_factory_.GetWeakPtr()),
-        g_browser_process->local_state(), psm_rlwe_client_factory_,
-        InitializeAndGetDeviceManagementService(),
-        g_browser_process->system_network_context_manager()
-            ->GetSharedURLLoaderFactory(),
-        ash::SystemClockClient::Get());
-    enrollment_state_fetcher_->Start();
-    return;
-  }
-
   request_state_keys_tries_ = 0;
 
   // The system clock sync state is not known yet, and this
@@ -527,6 +493,7 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
                << AutoEnrollmentStateToString(new_state);
   state_ = new_state;
 
+  // Stop the safeguard timer once a result comes in.
   switch (state_) {
     case AutoEnrollmentState::kIdle:
     case AutoEnrollmentState::kPending:
@@ -536,10 +503,7 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
     case AutoEnrollmentState::kEnrollment:
     case AutoEnrollmentState::kNoEnrollment:
     case AutoEnrollmentState::kDisabled:
-      // Stop the safeguard timer once a result comes in.
       safeguard_timer_.Stop();
-      // Reset enrollment state fetcher to allow restarting.
-      enrollment_state_fetcher_.reset();
       ReportTimeoutUMA(
           AutoEnrollmentControllerTimeoutReport::kTimeoutCancelled);
       break;
@@ -630,16 +594,6 @@ void AutoEnrollmentController::OnForcedReEnrollmentVpdCleared(bool reply) {
 }
 
 void AutoEnrollmentController::Timeout() {
-  if (AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
-    // This can actually happen in some cases, for example when state key
-    // generation is waiting for time sync or the server just doesn't reply and
-    // keeps the connection open.
-    LOG(ERROR) << "EnrollmentStateFetcher didn't complete within time limit.";
-    UpdateState(AutoEnrollmentState::kConnectionError);
-    // TODO(b/265923216): Report unified enrollment timeouts to UMA.
-    return;
-  }
-
   // When tightening the FRE flows, as a cautionary measure (to prevent
   // interference with consumer devices) timeout was chosen to only enforce FRE
   // for EXPLICITLY_REQUIRED.
@@ -680,17 +634,6 @@ AutoEnrollmentController::GetAutoEnrollmentClientFactory() {
   }
 
   return default_factory.get();
-}
-
-void AutoEnrollmentController::SetEnrollmentStateFetcherFactoryForTesting(
-    EnrollmentStateFetcher::Factory enrollment_state_fetcher_factory) {
-  CHECK_IS_TEST();
-  if (enrollment_state_fetcher_factory) {
-    enrollment_state_fetcher_factory_ = enrollment_state_fetcher_factory;
-  } else {
-    enrollment_state_fetcher_factory_ =
-        base::BindRepeating(EnrollmentStateFetcher::Create);
-  }
 }
 
 }  // namespace policy

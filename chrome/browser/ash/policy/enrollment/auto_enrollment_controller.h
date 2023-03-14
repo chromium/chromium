@@ -16,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
@@ -123,14 +122,6 @@ class AutoEnrollmentController {
   void SetAutoEnrollmentClientFactoryForTesting(
       AutoEnrollmentClient::Factory* auto_enrollment_client_factory);
 
-  // Sets factory that will be used to create `EnrollmentStateFetcher`.  To use
-  // the default factory again, call with `base::NullCallback()`.
-  void SetEnrollmentStateFetcherFactoryForTesting(
-      EnrollmentStateFetcher::Factory enrollment_state_fetcher_factory);
-
-  // Returns safeguard timer. Used for testing
-  base::OneShotTimer& SafeguardTimerForTesting() { return safeguard_timer_; }
-
  private:
   void OnDevDisableBootDetermined(bool dev_disable_boot);
 
@@ -204,10 +195,6 @@ class AutoEnrollmentController {
   // `AutoEnrollmentClient`.
   AutoEnrollmentClient::Factory* GetAutoEnrollmentClientFactory();
 
-  // Returns the factory that should be used to construct a new
-  // `EnrollmentStateFetcher`.
-  EnrollmentStateFetcher::Factory CreateEnrollmentStateFetcherFactory();
-
   EnrollmentFwmpHelper enrollment_fwmp_helper_;
 
   // Unowned pointer. If not nullptr, this will be used to create the `client_`.
@@ -234,14 +221,6 @@ class AutoEnrollmentController {
   // eventually, which is crucial to not block OOBE forever. See
   // http://crbug.com/433634 for background.
   base::OneShotTimer safeguard_timer_;
-
-  // Enrollment state fetcher. Invokes `UpdateState` on success or failure.
-  std::unique_ptr<EnrollmentStateFetcher> enrollment_state_fetcher_;
-
-  // Factory to create the `enrollment_state_fetcher_`. By default, it is set to
-  // `EnrollmentStateFetcher::Create`, but can be overridden with
-  // `SetEnrollmentStateFetcherFactoryForTesting`.
-  EnrollmentStateFetcher::Factory enrollment_state_fetcher_factory_;
 
   bool dev_disable_boot_ = false;
 
