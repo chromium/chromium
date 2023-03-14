@@ -464,6 +464,7 @@ crbug.com/483282 [ mac nvidia-0xfe9 ] deqp/functional/gles3/fbocolorbuffer/blend
 crbug.com/654187 [ mac nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_28.html [ Failure ]
 crbug.com/654187 [ mac nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_30.html [ Failure ]
 crbug.com/654187 [ mac nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_33.html [ Failure ]
+crbug.com/1424484 [ mac nvidia-0xfe9 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ RetryOnFailure ]
 crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
 crbug.com/1037650 [ mac nvidia-0xfe9 ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
@@ -727,6 +728,7 @@ crbug.com/1215698 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 crbug.com/1215698 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/fborender/resize_03.html [ Failure ]
 crbug.com/1218607 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
+crbug.com/1424483 [ chromeos chromeos-board-amd64-generic ] conformance2/textures/video/tex-3d-rgba8-rgba-unsigned_byte.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 
