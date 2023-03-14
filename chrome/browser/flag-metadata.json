@@ -2957,6 +2957,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "enable-preferences-account-storage",
+    "owners": [ "ankushkush@google.com", "treib" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "enable-preinstalled-web-app-duplication-fixer",
     "owners": [ "alancutter" ],
     "expiry_milestone": 110
