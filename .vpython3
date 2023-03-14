@@ -408,11 +408,6 @@ wheel <
 >
 
 wheel <
-  name: "infra/python/wheels/six-py2_py3"
-  version: "version:1.15.0"
->
-
-wheel <
   name: "infra/python/wheels/more-itertools-py2_py3"
   version: "version:4.1.0"
 >
