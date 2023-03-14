@@ -131,20 +131,6 @@ void MockPrinter::SetDefaultPrintSettings(
   url_ = params.url;
 }
 
-void MockPrinter::UseInvalidSettings() {
-  use_invalid_settings_ = true;
-  printing::mojom::PrintParams empty_param;
-  SetDefaultPrintSettings(empty_param);
-}
-
-void MockPrinter::UseInvalidPageSize() {
-  page_size_.SetSize(0, 0);
-}
-
-void MockPrinter::UseInvalidContentSize() {
-  content_size_.SetSize(0, 0);
-}
-
 void MockPrinter::ScriptedPrint(int cookie,
                                 uint32_t expected_pages_count,
                                 bool has_selection,

@@ -27,29 +27,20 @@ namespace printing {
 namespace {
 
 void OnDidUpdatePrintSettings(
-    std::unique_ptr<PrintSettings>& snooped_settings,
-    scoped_refptr<PrintQueriesQueue> queue,
-    std::unique_ptr<PrinterQuery> printer_query,
-    mojom::PrintManagerHost::UpdatePrintSettingsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(printer_query);
-  auto params = mojom::PrintPagesParams::New();
-  params->params = mojom::PrintParams::New();
-  if (printer_query->last_status() == mojom::ResultCode::kSuccess) {
-    RenderParamsFromPrintSettings(printer_query->settings(),
-                                  params->params.get());
-    params->params->document_cookie = printer_query->cookie();
-    params->pages = printer_query->settings().ranges();
-    snooped_settings =
-        std::make_unique<PrintSettings>(printer_query->settings());
-  }
-  bool canceled = printer_query->last_status() == mojom::ResultCode::kCanceled;
+    mojom::PrintPagesParamsPtr& snooped_params,
+    mojom::PrintManagerHost::UpdatePrintSettingsCallback callback,
+    mojom::PrintPagesParamsPtr settings) {
+  snooped_params = mojom::PrintPagesParams::New();
+  auto params = mojom::PrintParams::New();
 
-  std::move(callback).Run(std::move(params), canceled);
+  // Copy over any relevant fields that we want to snoop.
+  params->dpi = settings->params->dpi;
+  params->page_size = settings->params->page_size;
+  params->content_size = settings->params->content_size;
+  params->printable_area = settings->params->printable_area;
+  snooped_params->params = std::move(params);
 
-  if (printer_query->cookie() && printer_query->settings().dpi()) {
-    queue->QueuePrinterQuery(std::move(printer_query));
-  }
+  std::move(callback).Run(std::move(settings));
 }
 
 }  // namespace
@@ -119,14 +110,10 @@ void TestPrintViewManager::PrintPreviewAllowedForTesting() {
 void TestPrintViewManager::UpdatePrintSettings(
     base::Value::Dict job_settings,
     UpdatePrintSettingsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::unique_ptr<PrinterQuery> printer_query =
-      queue_->CreatePrinterQuery(content::GlobalRenderFrameHostId());
-  auto* printer_query_ptr = printer_query.get();
-  printer_query_ptr->SetSettings(
+  PrintViewManagerBase::UpdatePrintSettings(
       std::move(job_settings),
-      base::BindOnce(&OnDidUpdatePrintSettings, std::ref(snooped_settings_),
-                     queue_, std::move(printer_query), std::move(callback)));
+      base::BindOnce(&OnDidUpdatePrintSettings, std::ref(snooped_params_),
+                     std::move(callback)));
 }
 
 }  // namespace printing

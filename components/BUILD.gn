@@ -949,6 +949,7 @@ if (!is_ios) {
       sources += [ "printing/test/print_render_frame_helper_browsertest.cc" ]
       deps += [
         "//build:chromeos_buildflags",
+        "//components/printing/browser",
         "//components/printing/common:mojo_interfaces",
         "//components/printing/test:test_support",
       ]

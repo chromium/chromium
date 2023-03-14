@@ -34,7 +34,9 @@ class TestPrintViewManager : public PrintViewManager {
 
   void WaitUntilPreviewIsShownOrCancelled();
 
-  PrintSettings* snooped_settings() { return snooped_settings_.get(); }
+  const mojom::PrintPagesParamsPtr& snooped_params() const {
+    return snooped_params_;
+  }
 
   const absl::optional<bool>& print_now_result() const {
     return print_now_result_;
@@ -59,7 +61,7 @@ class TestPrintViewManager : public PrintViewManager {
   void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override;
 
-  std::unique_ptr<PrintSettings> snooped_settings_;
+  mojom::PrintPagesParamsPtr snooped_params_;
   absl::optional<bool> print_now_result_;
   OnDidCreatePrintJobCallback on_did_create_print_job_;
 };

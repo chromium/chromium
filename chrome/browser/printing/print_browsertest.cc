@@ -142,6 +142,20 @@ namespace {
 constexpr int kTestPrinterCapabilitiesMaxCopies = 99;
 constexpr int kDefaultDocumentCookie = 1234;
 
+#if !BUILDFLAG(IS_CHROMEOS)
+constexpr gfx::Size kPhysicalSize = gfx::Size(612, 792);
+constexpr gfx::Rect kPrintableArea = gfx::Rect(0, 0, 612, 792);
+
+// The default margins are set to 1.0cm in //printing/print_settings.cc, which
+// is about 28 printer units. The resulting content size is 556 x 736.
+constexpr gfx::Size kExpectedContentSize = gfx::Size(556, 736);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+const PrinterSemanticCapsAndDefaults::Paper kTestPaper{
+    /*display_name=*/"Letter", /*vendor_id=*/"45",
+    /*size_um=*/gfx::Size(215900, 279400),
+    /*printable_area_um=*/gfx::Rect(0, 0, 215900, 279400)};
+
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 constexpr char kFakeDmToken[] = "fake-dm-token";
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
@@ -759,6 +773,7 @@ class PrintBrowserTest : public InProcessBrowserTest {
     default_caps->copies_max = kTestPrinterCapabilitiesMaxCopies;
     default_caps->dpis = kTestPrinterCapabilitiesDefaultDpis;
     default_caps->default_dpi = kTestPrinterCapabilitiesDpi;
+    default_caps->papers.push_back(kTestPaper);
     test_print_backend_->AddValidPrinter(
         printer_name, std::move(default_caps),
         std::make_unique<PrinterBasicInfo>(printer_info));
@@ -2834,26 +2849,15 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
 
   PrintAndWaitUntilPreviewIsReady();
 
-  EXPECT_EQ(rendered_page_count(), 3u);
+  EXPECT_EQ(3u, rendered_page_count());
 
-  ASSERT_TRUE(print_view_manager.snooped_settings());
-  EXPECT_EQ(print_view_manager.snooped_settings()->copies(),
-            kTestPrintSettingsCopies);
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
-  // Collect just the keys to compare the info options vs. advanced settings.
-  std::vector<std::string> advanced_setting_keys;
-  std::vector<std::string> print_info_options_keys;
-  const PrintSettings::AdvancedSettings& advanced_settings =
-      print_view_manager.snooped_settings()->advanced_settings();
-  for (const auto& advanced_setting : advanced_settings) {
-    advanced_setting_keys.push_back(advanced_setting.first);
-  }
-  for (const auto& option : kTestDummyPrintInfoOptions) {
-    print_info_options_keys.push_back(option.first);
-  }
-  EXPECT_THAT(advanced_setting_keys,
-              testing::UnorderedElementsAreArray(print_info_options_keys));
-#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
+  const mojom::PrintPagesParamsPtr& snooped_params =
+      print_view_manager.snooped_params();
+  ASSERT_TRUE(snooped_params);
+  EXPECT_EQ(kTestPrinterCapabilitiesDpi, snooped_params->params->dpi);
+  EXPECT_EQ(kPhysicalSize, snooped_params->params->page_size);
+  EXPECT_EQ(kPrintableArea, snooped_params->params->printable_area);
+  EXPECT_EQ(kExpectedContentSize, snooped_params->params->content_size);
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -2893,6 +2897,24 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
+  absl::optional<PrintSettings> settings = document_print_settings();
+  ASSERT_TRUE(settings);
+  // Collect just the keys to compare the info options vs. advanced settings.
+  std::vector<std::string> advanced_setting_keys;
+  std::vector<std::string> print_info_options_keys;
+  const PrintSettings::AdvancedSettings& advanced_settings =
+      settings->advanced_settings();
+  for (const auto& advanced_setting : advanced_settings) {
+    advanced_setting_keys.push_back(advanced_setting.first);
+  }
+  for (const auto& option : kTestDummyPrintInfoOptions) {
+    print_info_options_keys.push_back(option.first);
+  }
+  EXPECT_THAT(advanced_setting_keys,
+              testing::UnorderedElementsAreArray(print_info_options_keys));
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS)
 }
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,

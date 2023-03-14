@@ -39,6 +39,12 @@
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_view.h"
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "components/printing/browser/print_manager_utils.h"
+#include "printing/print_settings.h"
+#include "printing/print_settings_conversion.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #include "base/files/file_util.h"
 #include "printing/image.h"
@@ -337,12 +343,10 @@ class TestPrintManagerHost
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override {
-    auto params = printing::mojom::PrintPagesParams::New();
-    params->params = printing::mojom::PrintParams::New();
-    bool canceled = false;
+    mojom::PrintPagesParamsPtr settings = mojom::PrintPagesParams::New();
+    settings->params = mojom::PrintParams::New();
 
     // Check and make sure the required settings are all there.
-    // We don't actually care about the values.
     absl::optional<int> margins_type =
         job_settings.FindInt(kSettingMarginsType);
     if (!margins_type.has_value() ||
@@ -356,66 +360,22 @@ class TestPrintManagerHost
         !job_settings.FindInt(kSettingCopies) ||
         !job_settings.FindInt(kPreviewUIID) ||
         !job_settings.FindInt(kPreviewRequestID)) {
-      std::move(callback).Run(std::move(params), canceled);
+      std::move(callback).Run(std::move(settings));
       return;
     }
 
-    // Just return the default settings.
-    const base::Value::List* page_range =
-        job_settings.FindList(kSettingPageRange);
-    PageRanges new_ranges;
-    if (page_range) {
-      for (const base::Value& value : *page_range) {
-        if (!value.is_dict())
-          continue;
-
-        const auto& dict = value.GetDict();
-        absl::optional<int> range_from = dict.FindInt(kSettingPageRangeFrom);
-        absl::optional<int> range_to = dict.FindInt(kSettingPageRangeTo);
-        if (!range_from || !range_to)
-          continue;
-
-        // Page numbers are 1-based in the dictionary.
-        // Page numbers are 0-based for the printing context.
-        PageRange range;
-        range.from = range_from.value() - 1;
-        range.to = range_to.value() - 1;
-        new_ranges.push_back(range);
-      }
+    std::unique_ptr<PrintSettings> print_settings =
+        PrintSettingsFromJobSettings(job_settings);
+    if (!print_settings) {
+      std::move(callback).Run(std::move(settings));
+      return;
     }
 
-    // Get media size
-    const base::Value::Dict* media_size_value =
-        job_settings.FindDict(kSettingMediaSize);
-    gfx::Size page_size;
-    if (media_size_value) {
-      absl::optional<int> width_microns =
-          media_size_value->FindInt(kSettingMediaSizeWidthMicrons);
-      absl::optional<int> height_microns =
-          media_size_value->FindInt(kSettingMediaSizeHeightMicrons);
+    settings->pages = GetPageRangesFromJobSettings(job_settings);
+    RenderParamsFromPrintSettings(*print_settings, settings->params.get());
+    settings->params->document_cookie = PrintSettings::NewCookie();
 
-      if (width_microns && height_microns) {
-        float device_microns_per_unit =
-            static_cast<float>(kMicronsPerInch) / kDefaultPdfDpi;
-        page_size = gfx::Size(width_microns.value() / device_microns_per_unit,
-                              height_microns.value() / device_microns_per_unit);
-      }
-    }
-
-    // Get scaling
-    absl::optional<int> setting_scale_factor =
-        job_settings.FindInt(kSettingScaleFactor);
-    int scale_factor = setting_scale_factor.value_or(100);
-
-    printer_->UpdateSettings(params.get(), new_ranges, margins_type.value(),
-                             page_size, scale_factor);
-    absl::optional<bool> selection_only =
-        job_settings.FindBool(kSettingShouldPrintSelectionOnly);
-    absl::optional<bool> should_print_backgrounds =
-        job_settings.FindBool(kSettingShouldPrintBackgrounds);
-    params->params->selection_only = selection_only.value();
-    params->params->should_print_backgrounds = should_print_backgrounds.value();
-    std::move(callback).Run(std::move(params), canceled);
+    std::move(callback).Run(std::move(settings));
   }
   void SetupScriptedPrintPreview(
       SetupScriptedPrintPreviewCallback callback) override {
@@ -1116,13 +1076,6 @@ class PrintRenderFrameHelperPreviewTest
               preview_ui()->has_custom_page_size_style());
   }
 
-  void SetLetterMediaSize() {
-    base::Value::Dict media_size;
-    media_size.Set(kSettingMediaSizeWidthMicrons, 215900);
-    media_size.Set(kSettingMediaSizeHeightMicrons, 279400);
-    print_settings().Set(kSettingMediaSize, std::move(media_size));
-  }
-
   base::Value::Dict& print_settings() { return print_settings_; }
 
  private:
@@ -1138,16 +1091,31 @@ class PrintRenderFrameHelperPreviewTest
                         static_cast<int>(mojom::DuplexMode::kSimplex));
     print_settings_.Set(kSettingCopies, 1);
     print_settings_.Set(kSettingDeviceName, "dummy");
+    print_settings_.Set(kSettingDpiHorizontal, 72);
+    print_settings_.Set(kSettingDpiVertical, 72);
     print_settings_.Set(kPreviewUIID, 4);
+    print_settings_.Set(kSettingRasterizePdf, false);
     print_settings_.Set(kPreviewRequestID, 12345);
+    print_settings_.Set(kSettingScaleFactor, 100);
     print_settings_.Set(kIsFirstRequest, true);
     print_settings_.Set(kSettingMarginsType,
                         static_cast<int>(mojom::MarginType::kDefaultMargins));
+    print_settings_.Set(kSettingPagesPerSheet, 1);
     print_settings_.Set(kSettingPreviewModifiable, true);
     print_settings_.Set(kSettingPreviewIsFromArc, false);
     print_settings_.Set(kSettingHeaderFooterEnabled, false);
     print_settings_.Set(kSettingShouldPrintBackgrounds, false);
     print_settings_.Set(kSettingShouldPrintSelectionOnly, false);
+
+    // Using a media size with realistic dimensions for a Letter paper.
+    base::Value::Dict media_size;
+    media_size.Set(kSettingMediaSizeWidthMicrons, 215900);
+    media_size.Set(kSettingMediaSizeHeightMicrons, 279400);
+    media_size.Set(kSettingsImageableAreaLeftMicrons, 12700);
+    media_size.Set(kSettingsImageableAreaBottomMicrons, 0);
+    media_size.Set(kSettingsImageableAreaRightMicrons, 209550);
+    media_size.Set(kSettingsImageableAreaTopMicrons, 254000);
+    print_settings_.Set(kSettingMediaSize, std::move(media_size));
   }
 
   base::Value::Dict print_settings_;
@@ -1189,7 +1157,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, OnPrintPreview) {
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
+  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
@@ -1265,7 +1233,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintToPDFSelectedHonorPrintCss) {
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   // Since PRINT_TO_PDF is selected, pdf page size is equal to print media page
   // size.
-  VerifyDefaultPageLayout(252, 252, 18, 18, 18, 18, true);
+  VerifyDefaultPageLayout(234, 216, 72, 0, 36, 18, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1441,7 +1409,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewCenterToFitPage) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(216, 216, 288, 288, 198, 198, true);
+  VerifyDefaultPageLayout(224, 188, 324, 280, 198, 190, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1473,7 +1441,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(571, 653, 69, 70, 20, 21, true);
+  VerifyDefaultPageLayout(576, 637, 89, 66, 20, 16, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1513,8 +1481,15 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
        PrintToPDFSelectedHonorOrientationCss) {
   LoadHTML(kHTMLWithLandscapePageCss);
 
+  base::Value::Dict custom_margins;
+  custom_margins.Set(kSettingMarginTop, 21);
+  custom_margins.Set(kSettingMarginBottom, 23);
+  custom_margins.Set(kSettingMarginLeft, 21);
+  custom_margins.Set(kSettingMarginRight, 23);
+
   print_settings().Set(kSettingMarginsType,
                        static_cast<int>(mojom::MarginType::kCustomMargins));
+  print_settings().Set(kSettingMarginsCustom, std::move(custom_margins));
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
@@ -1649,8 +1624,6 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText2) {
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForManyLinesOfText) {
   LoadHTML(kHTMLWithManyLinesOfText);
 
-  SetLetterMediaSize();
-
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
@@ -1668,7 +1641,6 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
        PrintPreviewForManyLinesOfTextWithScaling) {
   LoadHTML(kHTMLWithManyLinesOfText);
 
-  SetLetterMediaSize();
   print_settings().Set(kSettingScaleFactor, 200);
 
   OnPrintPreview();
@@ -1691,7 +1663,6 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   LoadHTML(kHTMLWithManyLinesOfText);
   GetMainFrame()->ExecuteCommand("SelectAll");
 
-  SetLetterMediaSize();
   print_settings().Set(kSettingShouldPrintSelectionOnly, true);
 
   OnPrintPreview();
@@ -1712,7 +1683,6 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   LoadHTML(kHTMLWithManyLinesOfText);
   GetMainFrame()->ExecuteCommand("SelectAll");
 
-  SetLetterMediaSize();
   print_settings().Set(kSettingShouldPrintSelectionOnly, true);
   print_settings().Set(kSettingScaleFactor, 200);
 
@@ -1756,7 +1726,8 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   LoadHTML(kPrintPreviewHTML);
 
   // Set mock printer to provide invalid settings.
-  printer()->UseInvalidSettings();
+  // A missing color entry is invalid.
+  print_settings().Remove(kSettingColor);
 
   OnPrintPreview();
 
@@ -1771,32 +1742,12 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   OnClosePrintPreviewDialog();
 }
 
-// Tests that when the selected printer has invalid page settings, print preview
+// Tests that when the selected printer has an invalid media size, print preview
 // receives error message.
-TEST_F(PrintRenderFrameHelperPreviewTest, OnPrintPreviewUsingInvalidPageSize) {
+TEST_F(PrintRenderFrameHelperPreviewTest, OnPrintPreviewUsingInvalidMediaSize) {
   LoadHTML(kPrintPreviewHTML);
 
-  printer()->UseInvalidPageSize();
-
-  OnPrintPreview();
-
-  VerifyPrintPreviewInvalidPrinterSettings(true);
-  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-
-  // It should receive the invalid printer settings message only.
-  VerifyPrintPreviewFailed(false);
-  VerifyPrintPreviewGenerated(false);
-
-  OnClosePrintPreviewDialog();
-}
-
-// Tests that when the selected printer has invalid content settings, print
-// preview receives error message.
-TEST_F(PrintRenderFrameHelperPreviewTest,
-       OnPrintPreviewUsingInvalidContentSize) {
-  LoadHTML(kPrintPreviewHTML);
-
-  printer()->UseInvalidContentSize();
+  print_settings().Set(kSettingMediaSize, base::Value::Dict());
 
   OnPrintPreview();
 
@@ -1819,7 +1770,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, BasicBeforePrintAfterPrint) {
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
+  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
@@ -1876,7 +1827,7 @@ TEST_P(PrintRenderFrameHelperTaggedPreviewTest,
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
+  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
@@ -1894,7 +1845,7 @@ TEST_P(PrintRenderFrameHelperTaggedPreviewTest,
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
+  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);

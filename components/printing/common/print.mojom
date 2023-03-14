@@ -391,7 +391,7 @@ interface PrintManagerHost {
   [EnableIf=enable_print_preview, Sync]
   UpdatePrintSettings(
       mojo_base.mojom.DictionaryValue job_settings)
-      => (PrintPagesParams current_settings, bool canceled);
+      => (PrintPagesParams current_settings);
 
   // Tells the browser to set up the print preview requested by the script. It
   // runs a nested run loop in the renderer until print preview for

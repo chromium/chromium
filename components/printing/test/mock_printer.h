@@ -69,9 +69,6 @@ class MockPrinter {
   // Functions that changes settings of a pseudo printer.
   void ResetPrinter();
   void SetDefaultPrintSettings(const printing::mojom::PrintParams& params);
-  void UseInvalidSettings();
-  void UseInvalidPageSize();
-  void UseInvalidContentSize();
 
   // Functions that handle mojo messages.
   printing::mojom::PrintParamsPtr GetDefaultPrintSettings();
