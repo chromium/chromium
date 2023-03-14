@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/eol_notification.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_notification_builder.h"
@@ -74,7 +75,12 @@ bool EolNotification::ShouldShowEolNotification() {
 }
 
 EolNotification::EolNotification(Profile* profile)
-    : clock_(base::DefaultClock::GetInstance()), profile_(profile) {}
+    : clock_(base::DefaultClock::GetInstance()), profile_(profile) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEolResetDismissedPrefs)) {
+    ResetDismissedPrefs();
+  }
+}
 
 EolNotification::~EolNotification() = default;
 
@@ -98,15 +104,7 @@ void EolNotification::OnEolInfo(UpdateEngineClient::EolInfo eol_info) {
 
   if (!now.is_null() && eol_date != prev_eol_date && now < eol_date) {
     // Reset showed warning prefs if the Eol date changed.
-    profile_->GetPrefs()->SetBoolean(prefs::kFirstEolWarningDismissed, false);
-    profile_->GetPrefs()->SetBoolean(prefs::kSecondEolWarningDismissed, false);
-    profile_->GetPrefs()->SetBoolean(prefs::kEolNotificationDismissed, false);
-    profile_->GetPrefs()->SetBoolean(
-        prefs::kEolApproachingIncentiveNotificationDismissed, false);
-    profile_->GetPrefs()->SetBoolean(prefs::kEolPassedFinalIncentiveDismissed,
-                                     false);
-    profile_->GetPrefs()->SetBoolean(prefs::kEolIncentiveNotificationSilenced,
-                                     false);
+    ResetDismissedPrefs();
   }
 
   if (features::IsEOLIncentiveEnabled()) {
@@ -300,6 +298,18 @@ void EolNotification::ShowIncentiveNotification() {
                   weak_ptr_factory_.GetWeakPtr()))
           .Build(),
       /*metadata=*/nullptr);
+}
+
+void EolNotification::ResetDismissedPrefs() {
+  profile_->GetPrefs()->SetBoolean(prefs::kFirstEolWarningDismissed, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kSecondEolWarningDismissed, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kEolNotificationDismissed, false);
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kEolApproachingIncentiveNotificationDismissed, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kEolPassedFinalIncentiveDismissed,
+                                   false);
+  profile_->GetPrefs()->SetBoolean(prefs::kEolIncentiveNotificationSilenced,
+                                   false);
 }
 
 }  // namespace ash

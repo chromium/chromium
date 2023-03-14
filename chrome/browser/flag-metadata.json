@@ -2299,6 +2299,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "enable-eol-notification-reset-dismissed-prefs",
+    "owners": [ "mmourgos", "tbarzic"],
+    "expiry_milestone": 116
+  },
+  {
     "name": "enable-experimental-accessibility-color-enhancement-settings",
     "owners": [ "katie", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120

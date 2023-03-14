@@ -72,6 +72,9 @@ class EolNotification final : public message_center::NotificationObserver {
   // Creates the EOL incentive notification.
   void ShowIncentiveNotification();
 
+  // Resets all notification dismissed prefs back to false.
+  void ResetDismissedPrefs();
+
   // Overridden for testing pending EOL notifications.
   base::Clock* clock_;
 

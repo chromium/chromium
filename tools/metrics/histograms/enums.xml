@@ -61548,6 +61548,7 @@ from previous Chrome versions.
   <int value="-257251583" label="CrOSLateBootArcVmAAudioMMAP:disabled"/>
   <int value="-256940675" label="HelpAppSearchServiceIntegration:disabled"/>
   <int value="-256923848" label="ProfilesUIRevamp:disabled"/>
+  <int value="-255869867" label="eol-reset-dismissed-prefs:disabled"/>
   <int value="-255264176" label="OmniboxSearchEngineLogo:disabled"/>
   <int value="-255157394" label="ButtonARCNetworkDiagnostics:enabled"/>
   <int value="-254887599" label="google-profile-info"/>
@@ -64828,6 +64829,7 @@ from previous Chrome versions.
   <int value="1604335827"
       label="AutofillUpstreamAllowAdditionalEmailDomains:enabled"/>
   <int value="1604893983" label="VizForWebView:disabled"/>
+  <int value="1604914671" label="eol-reset-dismissed-prefs"/>
   <int value="1605398303" label="MacSystemMediaPermissionsInfoUI:enabled"/>
   <int value="1605611615" label="enable-webrtc-srtp-aes-gcm"/>
   <int value="1607541874" label="SettingsLandingPageRedesign:enabled"/>
@@ -65366,6 +65368,7 @@ from previous Chrome versions.
       label="AutofillTouchToFillForCreditCardsAndroid:disabled"/>
   <int value="1888812860" label="ChromeModernAlternateCardLayout:enabled"/>
   <int value="1889038381" label="AppManagementAppDetails:disabled"/>
+  <int value="1889051856" label="eol-reset-dismissed-prefs:enabled"/>
   <int value="1889076955" label="disable-app-link"/>
   <int value="1889198874" label="TabSwitcherOnReturn:disabled"/>
   <int value="1889885696" label="ZeroSuggestPrefetching:disabled"/>

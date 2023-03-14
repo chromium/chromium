@@ -9583,6 +9583,13 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnableMerchantOptOutClientSideUrlFiltering)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-eol-notification-reset-dismissed-prefs",
+     flag_descriptions::kEolResetDismissedPrefsName,
+     flag_descriptions::kEolResetDismissedPrefsDescription, kOsCrOS,
+     SINGLE_VALUE_TYPE(ash::switches::kEolResetDismissedPrefs)},
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
     {"password-generation-bottom-sheet",
      flag_descriptions::kPasswordGenerationBottomSheetName,

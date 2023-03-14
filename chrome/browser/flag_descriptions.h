@@ -3155,6 +3155,9 @@ extern const char kEnableViewPpdDescription[];
 extern const char kEnforceAshExtensionKeeplistName[];
 extern const char kEnforceAshExtensionKeeplistDescription[];
 
+extern const char kEolResetDismissedPrefsName[];
+extern const char kEolResetDismissedPrefsDescription[];
+
 extern const char kExoGamepadVibrationName[];
 extern const char kExoGamepadVibrationDescription[];
 

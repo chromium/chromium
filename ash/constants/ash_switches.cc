@@ -528,6 +528,10 @@ const char kEnterpriseEnrollmentModulusLimit[] =
 // This is only usable on test builds.
 const char kDisallowPolicyBlockDevMode[] = "disallow-policy-block-dev-mode";
 
+// Reset the end of life notification prefs to their default value, at the
+// start of the user session. This is meant to make manual testing easier.
+const char kEolResetDismissedPrefs[] = "eol-reset-dismissed-prefs";
+
 // Write extension install events to chrome log for integration test.
 const char kExtensionInstallEventChromeLogForTests[] =
     "extension-install-event-chrome-log-for-tests";

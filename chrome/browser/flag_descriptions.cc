@@ -5497,6 +5497,12 @@ const char kEnforceAshExtensionKeeplistDescription[] =
     "Enforce the Ash extension keeplist. Only the extensions and Chrome apps on"
     " the keeplist are enabled in Ash.";
 
+const char kEolResetDismissedPrefsName[] =
+    "Reset end of life notification prefs";
+const char kEolResetDismissedPrefsDescription[] =
+    "Reset the end of life notification prefs to their default value, at the "
+    "start of the user session. This is meant to make manual testing easier.";
+
 const char kExoGamepadVibrationName[] = "Gamepad Vibration for Exo Clients";
 const char kExoGamepadVibrationDescription[] =
     "Allow Exo clients like Android to request vibration events for gamepads "
