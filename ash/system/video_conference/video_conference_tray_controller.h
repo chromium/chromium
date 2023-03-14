@@ -170,6 +170,11 @@ class ASH_EXPORT VideoConferenceTrayController
   bool camera_muted_by_hardware_switch_ = false;
   bool camera_muted_by_software_switch_ = false;
 
+  // True if microphone is muted by the hardware switch, false if the microphone
+  // is muted through software. If the microphone is not muted, disregards this
+  // value.
+  bool microphone_muted_by_hardware_switch_ = false;
+
   // Used by the views to construct and lay out effects in the bubble.
   VideoConferenceTrayEffectsManager effects_manager_;
 

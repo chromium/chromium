@@ -228,6 +228,11 @@ void ToastManagerImpl::OnSessionStateChanged(
   }
 }
 
+const ToastData& ToastManagerImpl::GetCurrentToastDataForTesting() const {
+  DCHECK(current_toast_data_);
+  return current_toast_data_.value();
+}
+
 void ToastManagerImpl::ShowLatest() {
   DCHECK(!HasActiveToasts());
   DCHECK(!current_toast_data_);

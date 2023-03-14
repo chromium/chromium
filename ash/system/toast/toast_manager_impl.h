@@ -57,6 +57,8 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
+  const ToastData& GetCurrentToastDataForTesting() const;
+
  private:
   class PausableTimer;
   friend class AutoConnectNotifierTest;

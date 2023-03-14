@@ -88,6 +88,8 @@ void FakeVideoConferenceTrayController::ReturnToApp(
 void FakeVideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
+  VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(device,
+                                                               app_name);
   device_used_while_disabled_records_.emplace_back(device, app_name);
 }
 
