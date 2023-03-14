@@ -942,6 +942,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8492972329130824181">Domáca sieť nie je k dispozícii. Ak sa chcete pripojiť, musíte zapnúť mobilný dátový roaming.</translation>
 <translation id="8499098729323186194">Extrahujú sa položky (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivovať po nastavení zariadenia, ovláda váš správca</translation>
+<translation id="8512483403832814140">Kedykoľvek</translation>
 <translation id="8521441079177373948">Anglická klávesnica</translation>
 <translation id="853494022971700746">Francúzska (Francúzsko) klávesnica</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>

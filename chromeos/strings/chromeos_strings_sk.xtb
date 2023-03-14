@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
+<translation id="1082009148392559545">Sťahuje sa šetrič obrazovky</translation>
 <translation id="1094693127011229778">Adresa IP nie je k dispozícii</translation>
 <translation id="1113892970288677790">Vyberte plagáty a obrázky</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Spravujú <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Menné servery</translation>
 <translation id="1731082422893354635">Touchpad s rozhraním Bluetooth</translation>
+<translation id="1738949837603788263">Zóna <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Obrázky sa nepodarilo načítať. Skontrolujte pripojenie k sieti alebo ich skúste načítať znova.</translation>
 <translation id="1751249301761991853">Osobné</translation>
 <translation id="1753496554272155572">Ukončiť ukážku tapety</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Registrácia podniku</translation>
 <translation id="6379086450106841622">Dotyková obrazovka</translation>
 <translation id="6381741036071372448">Test klávesnice</translation>
+<translation id="6382182670717268353">Ukážka šetriča obrazovky</translation>
 <translation id="6388847657025262518">Podávač dokumentov skenera je zaseknutý. Skontrolujte ho a skúste to znova.</translation>
 <translation id="6394634179843537518">Pridajte súbor</translation>
 <translation id="6410257289063177456">Súbory obrázkov</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7180865173735832675">Prispôsobiť</translation>
+<translation id="7184043045742675738">Ak chcete tlačidlo prispôsobiť, kliknite na ľubovoľný kláves. Presuňte kláves myšou alebo klávesmi so šípkami.</translation>
 <translation id="7212734716605298123">Aktualizácie firmvéru pre externé zariadenia</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
 <translation id="725133483556299729">Vybrať e‑mail</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Dotyková obrazovka USB</translation>
 <translation id="7595982850646262331">Zostáva <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Premiestnenie myšou alebo klávesmi so šípkami.</translation>
 <translation id="7620771111601174153">Ďalšie informácie v centre pomoci</translation>
 <translation id="763165478673169849">Čas posledného resetovania</translation>
 <translation id="7648838807254605802">Vysoká latencia protokolu HTTPS</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Názov poskytovateľa</translation>
 <translation id="8814190375133053267">Wi‑Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>
+<translation id="8820457400746201697">Presuňte modrý dotykový bod na akciu. Vyberte priradený kláves na prispôsobenie.</translation>
 <translation id="8834539327799336565">Aktuálne pripojené</translation>
 <translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8855781559874488009">Prostredníctvom brány firewall sa nedá pripojiť k webom HTTP</translation>

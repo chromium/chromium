@@ -152,6 +152,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="132301787627749051">Hľadať obrázok v schránke</translation>
 <translation id="1323433172918577554">Zobraziť viac</translation>
 <translation id="132390688737681464">Ukladať a dopĺňať adresy</translation>
+<translation id="1329916999021038454">Podať hlásenie</translation>
 <translation id="1330449323196174374">Obojstranná fazóna s otváraním doľava</translation>
 <translation id="1333745675627230582">Hrať hru Chrome Dino</translation>
 <translation id="1333989956347591814">Vašu aktivitu <ph name="BEGIN_EMPHASIS" />stále môžu vidieť<ph name="END_EMPHASIS" />:
@@ -527,6 +528,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="219906046732893612">Domáci majstri</translation>
 <translation id="2202020181578195191">Zadajte platný rok vypršania platnosti</translation>
 <translation id="2202627062836089804">zadnej strany karty</translation>
+<translation id="2204482073374652408">Aktualizácia bola dokončená.</translation>
 <translation id="22081806969704220">Priehradka č. 3</translation>
 <translation id="2210794033760923560">Nahrať prehľad</translation>
 <translation id="2212579473415663542">Táto adresa je uložená vo vašom účte Google (<ph name="ACCOUNT" />). Adresu môžete používať v službách Googlu v ľubovoľnom zariadení.</translation>
@@ -615,6 +617,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2441854154602066476">Spôsoby platby, ktoré sa dajú vyplniť po klepnutí. Klávesnica je skrytá.</translation>
 <translation id="2448295565072560657">Periférie pripojené k tomuto zariadeniu počas vášho prihlásenia</translation>
 <translation id="2450021089947420533">Cesty</translation>
+<translation id="2456755709261364512">Batéria musí byť nabitá aspoň na <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2463739503403862330">Vyplniť</translation>
 <translation id="2465655957518002998">Zvoliť spôsob doručenia</translation>
 <translation id="2465688316154986572">Zošiť spinkou</translation>
@@ -661,6 +664,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Odteraz potvrdzovať karty zámkou obrazovky</translation>
 <translation id="2553853292994445426">Skontrolujte svoje nastavenia zabezpečeného servera DNS. Možno ste nakonfigurovali zabezpečený server DNS, ku ktorému sa nedá pripojiť.</translation>
+<translation id="255497580849974774">Počas aktualizácie majte zariadenie pripojené k nabíjačke.</translation>
 <translation id="2556876185419854533">&amp;Vrátiť späť úpravu</translation>
 <translation id="2557417190997681027">Služobné cesty</translation>
 <translation id="2562087035394240049">Ako na to, majstrovanie a obsah pre expertov</translation>
@@ -889,6 +893,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="320323717674993345">Zrušiť platbu</translation>
 <translation id="3203366800380907218">Z webu</translation>
 <translation id="3207960819495026254">Pridané medzi záložky</translation>
+<translation id="3208701679386778924">Pošlite nám spätnú väzbu, aby sme mohli aktualizácie systému ChromeOS ďalej zlepšovať.</translation>
 <translation id="3209034400446768650">Stránka môže účtovať peniaze</translation>
 <translation id="3212581601480735796">Vaša aktivita v zariadení <ph name="HOSTNAME" /> je sledovaná</translation>
 <translation id="3215092763954878852">WebAuthn sa nepodarilo použiť</translation>
@@ -1113,6 +1118,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3715545959749027023">Pri nahlásení bezpečnostných udalostí Chromom sa vášmu správcovi odošlú relevantné údaje o príslušných udalostiach. Môžu zahŕňať webové adresy navštívených stránok v Chrome, názvy súborov alebo metadáta, pády prehliadača alebo kariet a používateľské meno, ktorým sa prihlasujete do internetových aplikácií, zariadenia aj Chromu.</translation>
 <translation id="3715597595485130451">Pripojenie k sieti Wi‑Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Skontrolovať proxy server, bránu firewall a konfiguráciu DNS<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Počas aktualizácie nebudete môcť zariadenie desať minút používať.</translation>
 <translation id="372429172604983730">Medzi aplikácie, ktoré môžu túto chybu spôsobiť, patria okrem iných antivírusové programy, brány firewall, softvér na filtrovanie webu alebo proxy softvér.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter vytvoríte rýchlym spôsobom novú prezentáciu Google v Prezentáciách</translation>
 <translation id="3733139489341305600">Autonómne vozidlá</translation>
@@ -1150,6 +1156,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3807366285948165054">Posun obrázka na osi X</translation>
 <translation id="3807873520724684969">Škodlivý obsah bol zablokovaný.</translation>
 <translation id="3810973564298564668">Spravovať</translation>
+<translation id="3812398568375898177">Ide o kľúčovú aktualizáciu, ktorá zlepší výkon aplikácií pre Android v systéme ChromeOS.</translation>
 <translation id="3815434930383843058">8 × 12 palcov</translation>
 <translation id="3816482573645936981">Hodnota (nahradená)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1254,6 +1261,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4110652170750985508">Kontrola platby</translation>
 <translation id="4111546256784973544">Paintbal</translation>
 <translation id="4112140312785995938">Pretočiť dozadu</translation>
+<translation id="4113354056388982663">Kľúčová aktualizácia výkonu Androidu</translation>
 <translation id="4114146879518089587">Pokračovať na web</translation>
 <translation id="4116663294526079822">Vždy povoliť na tomto webe</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1434,6 +1442,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter preložte túto stránku pomocou Prekladača Google</translation>
 <translation id="4514308731478712184">Vypnúť Journeys</translation>
 <translation id="4515275063822566619">Karty a adresy pochádzajú z Chromu a účtu Google (<ph name="ACCOUNT_EMAIL" />). Môžete ich spravovať v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">Počas aktualizácie bolo spojenie so zariadením prerušené.</translation>
 <translation id="4520048001084013693">Sťahovanie tohto súboru je blokované pravidlami správcu</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Obálka Monarch</translation>
@@ -1523,6 +1532,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4738601419177586157">Návrh vyhľadávania <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Spravovať heslá…</translation>
+<translation id="4743275772928623722">Systém bol aktualizovaný, ale niektoré aplikácie a súbory sa nepodarilo obnoviť. Aplikácie sa znova stiahnu automaticky.</translation>
 <translation id="4744514002166662487">Vytvoriť prezentáciu</translation>
 <translation id="4744603770635761495">Spustiteľná cesta</translation>
 <translation id="4749011317274908093">Ste v režime inkognito</translation>
@@ -2223,6 +2233,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="646793340882508547">Dobrodružné hry</translation>
 <translation id="6468485451923838994">Písma</translation>
 <translation id="647261751007945333">Pravidlá zariadenia</translation>
+<translation id="647330291963761005">Inštalujú sa aktualizácie</translation>
 <translation id="6475672344094591109">Weby, ktoré navštívite, môžu požiadať Chrome o informácie, ktoré im pomôžu merať výkonnosť ich reklám. Chrome ochráni vaše súkromie tým, že obmedzuje informácie, ktoré môžu weby medzi sebou zdieľať.</translation>
 <translation id="6476284679642588870">Spravovať spôsoby platby</translation>
 <translation id="6486200200930923183">Dokumentárne filmy</translation>
@@ -2296,6 +2307,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6688775486821967877">Virtuálna karta nie je momentálne k dispozícii. Skúste to neskôr.</translation>
 <translation id="6689249931105087298">Relatívne s kompresiou čierneho bodu</translation>
 <translation id="6689271823431384964">Chrome poskytuje možnosť uložiť karty v účte Google, pretože ste sa prihlásili. Toto správanie môžete zmeniť v nastaveniach. Toto meno majiteľa karty pochádza z vášho účtu.</translation>
+<translation id="6691397311652656001">Uvoľnite minimálne <ph name="REQUIRED_FREE_DISK_SPACE" /> priestoru</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter nájdite svoje zariadenie v účte Google</translation>
 <translation id="6696588630955820014">Tlačidlo na zdieľanie tejto karty, stlačením klávesa Enter zdieľajte túto kartu prostredníctvom odkazu, vytvorením QR kódu, prenosom a ďalšími spôsobmi</translation>
 <translation id="6698381487523150993">Vytvorené:</translation>
@@ -2359,6 +2371,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6864189428899665393">267 × 389 mm</translation>
 <translation id="686485648936420384">Zdroje informácií pre spotrebiteľov</translation>
 <translation id="6865412394715372076">Táto karta sa momentálne nedá overiť</translation>
+<translation id="6868573634057275953">Obnovenie aktualizácie</translation>
 <translation id="6869334554832814367">Osobné úvery</translation>
 <translation id="6873456682041376666">Horný zásobník</translation>
 <translation id="6874604403660855544">&amp;Znova pridať</translation>
@@ -2515,9 +2528,11 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="722454870747268814">Nová karta inkognito</translation>
 <translation id="7233592378249864828">Vytlačiť potvrdzovací hárok</translation>
 <translation id="7234638337680728591">Ceny benzínu a pohonné hmoty</translation>
+<translation id="7236417832106250253">Dokončené: <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Túto správu už pre tento web nezobrazovať</translation>
 <translation id="7238585580608191973">Odtlačok SHA-256</translation>
 <translation id="7240120331469437312">Alternatívny názov subjektu certifikátu</translation>
+<translation id="7241863998525879494">Čo môžete očakávať</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# zhoda}few{# zhody}many{# matches}other{# zhôd}}</translation>
@@ -2738,6 +2753,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7698864304447945242">Chcete aktualizovať Služby Google Play pre RR?</translation>
 <translation id="7699293099605015246">Články nie sú momentálne k dispozícii</translation>
 <translation id="7701040980221191251">Žiadne</translation>
+<translation id="7701544340847569275">Aktualizácia bola dokončená s chybami</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Prejsť na stránky <ph name="SITE" /> (nebezpečné)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Lyžovanie a snowboarding</translation>
 <translation id="7706689436519265630">Súbory, ktoré skopírujete alebo presuniete, sa odošlú službe Google Cloud alebo tretím stranám na analýzu. V rámci toho môžu byť napríklad podrobené kontrole prítomnosti citlivých údajov alebo malvéru a podľa firemných pravidiel môžu byť uložené.</translation>
