@@ -896,6 +896,7 @@ static_library("ui") {
       "//chrome/android:jni_headers",
       "//chrome/android/features/dev_ui:buildflags",
       "//chrome/app:chromium_strings",
+      "//chrome/browser/android/webapk",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/image_decoder",
       "//chrome/browser/notifications/scheduler/public",
