@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 
@@ -39,18 +40,19 @@ class BrowserList {
   using const_reverse_iterator = BrowserVector::const_reverse_iterator;
 
   struct BrowsersOrderedByActivationRange {
-    // Stack allocated only to reduce risk of out of bounds lifetime with
-    // |browser_list|.
-    void* operator new(size_t) = delete;
-    void* operator new(size_t, void*) = delete;
-
     const raw_ref<const BrowserList> browser_list;
+
     const_reverse_iterator begin() const {
       return browser_list->begin_browsers_ordered_by_activation();
     }
     const_reverse_iterator end() const {
       return browser_list->end_browsers_ordered_by_activation();
     }
+
+   private:
+    // Stack allocated only to reduce risk of out of bounds lifetime with
+    // |browser_list|.
+    STACK_ALLOCATED();
   };
 
   BrowserList(const BrowserList&) = delete;
