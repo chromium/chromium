@@ -25,8 +25,7 @@ feature to UseCounter, simply:
 + Usage can be measured via:
     * MeasureAs=\<enum value\> in the feature's IDL definition; Or
     * blink::UseCounter::Count() for blink side features; Or
-    * page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage()
-      for browser side features.
+    * content::ContentBrowserClient::LogWebFeatureForCurrentPage() for browser side features.
 
 Example:
 ```c++
@@ -55,7 +54,7 @@ OR
 ```c++
   MyBrowserSideFunction() {
     ...
-    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       render_frame_host, blink::mojom::WebFeature::kMyFeature);
     ...
   }
