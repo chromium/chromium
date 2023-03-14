@@ -11,6 +11,7 @@
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/presenter.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/common/gl_ozone_egl.h"
 #include "ui/ozone/common/native_pixmap_egl_binding.h"
