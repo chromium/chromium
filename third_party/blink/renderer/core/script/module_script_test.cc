@@ -142,11 +142,8 @@ class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
 };
 
 // Test expectations depends on heuristics in V8CodeCache and therefore these
-// tests should be updated if necessary when V8CodeCache is modified. The
-// version without code cache discarding.
-TEST_F(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
-  feature_list_.InitAndDisableFeature(
-      blink::features::kDiscardCodeCacheAfterFirstUse);
+// tests should be updated if necessary when V8CodeCache is modified.
+TEST_F(ModuleScriptTest, V8CodeCache) {
   using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
 
   V8TestingScope scope;
@@ -261,140 +258,6 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
   EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
 }
 
-// Test expectations depends on heuristics in V8CodeCache and therefore these
-// tests should be updated if necessary when V8CodeCache is modified. The
-// version with code cache discarding.
-TEST_F(ModuleScriptTest, V8CodeCacheWithDiscarding) {
-  feature_list_.InitAndEnableFeature(
-      blink::features::kDiscardCodeCacheAfterFirstUse);
-  using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
-
-  V8TestingScope scope;
-  Modulator* modulator =
-      MakeGarbageCollected<ModuleScriptTestModulator>(scope.GetScriptState());
-  Modulator::SetModulator(scope.GetScriptState(), modulator);
-
-  auto sender = std::make_unique<MockCachedMetadataSender>();
-  MockCachedMetadataSender* sender_ptr = sender.get();
-  CachedMetadataHandler* cache_handler =
-      MakeGarbageCollected<ScriptCachedMetadataHandler>(UTF8Encoding(),
-                                                        std::move(sender));
-  const uint32_t kTimeStampTag = V8CodeCache::TagForTimeStamp(cache_handler);
-  const uint32_t kCodeTag = V8CodeCache::TagForCodeCache(cache_handler);
-
-  // Tests the main code path: simply produce and consume code cache.
-  for (int nth_load = 0; nth_load < 4; ++nth_load) {
-    // Compile a module script.
-    JSModuleScript* module_script =
-        CreateJSModuleScript(modulator, LargeSourceText(), cache_handler);
-    ASSERT_TRUE(module_script);
-
-    // Check that the module script is instantiated/evaluated correctly.
-    ASSERT_TRUE(ModuleRecord::Instantiate(scope.GetScriptState(),
-                                          module_script->V8Module(),
-                                          module_script->SourceUrl())
-                    .IsEmpty());
-    ASSERT_EQ(module_script
-                  ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState())
-                  .GetResultType(),
-              ScriptEvaluationResult::ResultType::kSuccess);
-    TestFoo(scope);
-
-    Checkpoint checkpoint;
-    ::testing::InSequence s;
-
-    switch (nth_load) {
-      case 0:
-        // For the first time, the cache handler doesn't contain any data, and
-        // we'll set timestamp in ProduceCache() below.
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
-        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
-                  GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
-        break;
-
-      case 1:
-        // For the second time, as timestamp is already set, we'll produce code
-        // cache in ProduceCache() below.
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
-        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
-                  GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _, _));
-        break;
-
-      case 2:
-        // For the third time, the code cache is already there, we've
-        // consumed and discarded the code cache.
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
-        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kNoProduceCache,
-                  GetProduceCacheOptions(module_script));
-        break;
-
-      case 3:
-        // The script is recompiled from source and wants to set the timestamp,
-        // but having cleared the CachedMetadata in the |cache_handler| prevents
-        // further code caching.
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
-        EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
-                  GetProduceCacheOptions(module_script));
-        EXPECT_TRUE(HandlerCachedMetadataWasDiscarded(cache_handler));
-        break;
-    }
-
-    EXPECT_CALL(checkpoint, Call(4));
-
-    module_script->ProduceCache();
-
-    checkpoint.Call(4);
-
-    switch (nth_load) {
-      case 0:
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
-        break;
-
-      case 1:
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_TRUE(cache_handler->GetCachedMetadata(kCodeTag));
-        break;
-
-      case 2:
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
-        break;
-
-      case 3:
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-        EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
-        break;
-    }
-  }
-
-  // Tests nothing wrong occurs when module script code cache is consumed by a
-  // classic script.
-
-  Checkpoint checkpoint;
-  ::testing::InSequence s;
-
-  // Not expecting Send() because the |cache_handler| prevents updating the
-  // CachedMetadata after it has been cleared.
-  EXPECT_CALL(checkpoint, Call(4));
-
-  CreateClassicScript(LargeSourceText(), cache_handler)
-      ->RunScript(&scope.GetWindow());
-  checkpoint.Call(4);
-
-  TestFoo(scope);
-
-  // Still in the cleared state.
-  EXPECT_FALSE(cache_handler->GetCachedMetadata(kTimeStampTag));
-  EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
-}
-
 TEST_F(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
   V8TestingScope scope;
   v8::Local<v8::Value> local_value(v8::Number::New(scope.GetIsolate(), 1234));
@@ -406,12 +269,6 @@ TEST_F(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
 }
 
 TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
-  // The order of steps below is chosen so that only the last step's behavior
-  // differs based on this flag. The important tests that verify rejection of
-  // cache data on content mismatches occur before that point.
-  feature_list_.InitAndDisableFeature(
-      blink::features::kDiscardCodeCacheAfterFirstUse);
-
   using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
 
   V8TestingScope scope;

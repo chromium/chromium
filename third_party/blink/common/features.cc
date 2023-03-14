@@ -707,12 +707,6 @@ BASE_FEATURE(kCreateImageBitmapOrientationNone,
              "CreateImageBitmapOrientationNone",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, frees up CachedMetadata after consumption by script resources
-// and modules. Needed for the experiment in http://crbug.com/1045052.
-BASE_FEATURE(kDiscardCodeCacheAfterFirstUse,
-             "DiscardCodeCacheAfterFirstUse",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, code cache is produced asynchronously from the script execution
 // (https://crbug.com/1260908).
 BASE_FEATURE(kCacheCodeOnIdle,

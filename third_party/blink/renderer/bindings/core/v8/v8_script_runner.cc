@@ -70,11 +70,6 @@ namespace {
 // This limit was arrived at arbitrarily. crbug.com/449744
 const int kMaxRecursionDepth = 44;
 
-bool InDiscardExperiment() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kDiscardCodeCacheAfterFirstUse);
-}
-
 // In order to make sure all pending messages to be processed in
 // v8::Function::Call, we don't call throwStackOverflowException
 // directly. Instead, we create a v8::Function of
@@ -194,13 +189,6 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
             ExecutionContext::GetCodeCacheHostFromContext(
                 ExecutionContext::From(script_state)),
             CachedMetadataHandler::kClearPersistentStorage);
-      } else if (InDiscardExperiment()) {
-        // Experimentally free code cache from memory after first use. See
-        // http://crbug.com/1045052.
-        cache_handler->ClearCachedMetadata(
-            ExecutionContext::GetCodeCacheHostFromContext(
-                ExecutionContext::From(script_state)),
-            CachedMetadataHandler::kDiscardLocally);
       }
       if (cache_result) {
         *cache_result = absl::make_optional(
@@ -345,12 +333,6 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
           cache_handler->ClearCachedMetadata(
               ExecutionContext::GetCodeCacheHostFromContext(execution_context),
               CachedMetadataHandler::kClearPersistentStorage);
-        } else if (InDiscardExperiment()) {
-          // Experimentally free code cache from memory after first use. See
-          // http://crbug.com/1045052.
-          cache_handler->ClearCachedMetadata(
-              ExecutionContext::GetCodeCacheHostFromContext(execution_context),
-              CachedMetadataHandler::kDiscardLocally);
         }
         cache_result = absl::make_optional(
             inspector_compile_script_event::V8ConsumeCacheResult(
