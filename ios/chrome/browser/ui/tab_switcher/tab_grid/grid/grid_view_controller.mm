@@ -179,6 +179,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     _selectedEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
     _selectedSharableEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
     _showsSelectionUpdates = YES;
+    _dropAnimationInProgress = NO;
     _notSelectedTabCellOpacity = 1.0;
     _mode = TabGridModeNormal;
 
@@ -826,6 +827,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   DragDropTabs dragEvent = self.dragEndAtNewIndex
                                ? DragDropTabs::kDragEndAtNewIndex
                                : DragDropTabs::kDragEndAtSameIndex;
+  // If a drop animation is in progress and the drag didn't end at a new index,
+  // that means the item has been dropped outside of its collection view.
+  if (_dropAnimationInProgress && !_dragEndAtNewIndex) {
+    dragEvent = DragDropTabs::kDragEndInOtherCollection;
+  }
   base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs, dragEvent);
 
   // Used to let the Taptic Engine return to its idle state.
@@ -973,10 +979,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // Drop synchronously if local object is available.
     if (item.dragItem.localObject) {
       __weak __typeof(self) weakSelf = self;
+      _dropAnimationInProgress = YES;
       [self.delegate gridViewControllerDropAnimationWillBegin:weakSelf];
       [[coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath]
           addCompletion:^(UIViewAnimatingPosition finalPosition) {
             [weakSelf.delegate gridViewControllerDropAnimationDidEnd:weakSelf];
+            weakSelf.dropAnimationInProgress = NO;
           }];
       // The sourceIndexPath is non-nil if the drop item is from this same
       // collection view.

@@ -2449,6 +2449,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setCurrentIdlePageStatus:NO];
 }
 
+- (void)pinnedViewControllerDropAnimationWillBegin:
+    (PinnedTabsViewController*)pinnedTabsViewController {
+  self.regularTabsViewController.dropAnimationInProgress = YES;
+}
+
+- (void)pinnedViewControllerDropAnimationDidEnd:
+    (PinnedTabsViewController*)pinnedTabsViewController {
+  self.regularTabsViewController.dropAnimationInProgress = NO;
+}
+
 #pragma mark - GridViewControllerDelegate
 
 - (void)gridViewController:(GridViewController*)gridViewController

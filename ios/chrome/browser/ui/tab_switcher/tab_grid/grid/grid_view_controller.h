@@ -124,6 +124,8 @@
 @property(nonatomic, weak) id<GridViewControllerDelegate> delegate;
 // Handles drag and drop interactions that involved the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler> dragDropHandler;
+// Tracks if a drop animation is in progress.
+@property(nonatomic, assign) BOOL dropAnimationInProgress;
 // Data source for images.
 @property(nonatomic, weak) id<GridImageDataSource> imageDataSource;
 // Data source for acquiring data to power PriceCardView

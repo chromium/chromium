@@ -45,6 +45,14 @@
 - (void)pinnedTabsViewControllerVisibilityDidChange:
     (PinnedTabsViewController*)pinnedTabsViewController;
 
+// Tells the delegate that a drop animation will begin.
+- (void)pinnedViewControllerDropAnimationWillBegin:
+    (PinnedTabsViewController*)pinnedTabsViewController;
+
+// Tells the delegate that a drop animation did end.
+- (void)pinnedViewControllerDropAnimationDidEnd:
+    (PinnedTabsViewController*)pinnedTabsViewController;
+
 @end
 
 // UICollectionViewController used to display pinned tabs.

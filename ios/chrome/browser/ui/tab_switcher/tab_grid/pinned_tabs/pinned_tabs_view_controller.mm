@@ -519,6 +519,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
      dropSessionDidEnd:(id<UIDropSession>)session {
+  [self.delegate pinnedViewControllerDropAnimationDidEnd:self];
+
   // Reset the background if the drop cames from another app.
   [self resetViewBackgrounds];
 }
@@ -561,7 +563,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // Drop synchronously if local object is available.
     if (item.dragItem.localObject) {
       _dropAnimationInProgress = YES;
-
+      [self.delegate pinnedViewControllerDropAnimationWillBegin:self];
       if (_localDragActionInProgress) {
         __weak __typeof(self) weakSelf = self;
         [[coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath]
