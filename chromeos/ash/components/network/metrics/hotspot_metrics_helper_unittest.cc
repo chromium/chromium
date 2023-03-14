@@ -158,4 +158,40 @@ TEST_F(HotspotMetricsHelperTest, HotspotUsageConfigHistogram) {
       HotspotMetricsHelper::kHotspotUsageConfigCompatibilityMode, false, 1);
 }
 
+TEST_F(HotspotMetricsHelperTest, HotspotUsageDurationHistogram) {
+  const base::TimeDelta kHotspotUsageTime = base::Seconds(123);
+  SetHotspotAllowStatus(hotspot_config::mojom::HotspotAllowStatus::kAllowed);
+  network_state_test_helper_.manager_test()
+      ->SetSimulateCheckTetheringReadinessResult(
+          FakeShillSimulatedResult::kSuccess, shill::kTetheringReadinessReady);
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  hotspot_controller_->EnableHotspot(base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(kHotspotUsageTime);
+
+  hotspot_controller_->DisableHotspot(
+      base::DoNothing(), hotspot_config::mojom::DisableReason::kUserInitiated);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectTimeBucketCount(
+      HotspotMetricsHelper::kHotspotUsageDuration, kHotspotUsageTime, 1);
+
+  // Verifies that the usage duration is logged if hotspot is torn down by
+  // internal error.
+  hotspot_controller_->EnableHotspot(base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  task_environment_.FastForwardBy(kHotspotUsageTime);
+
+  base::Value::Dict status_dict;
+  status_dict.Set(shill::kTetheringStatusStateProperty,
+                  shill::kTetheringStateIdle);
+  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
+                  shill::kTetheringIdleReasonError);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectTimeBucketCount(
+      HotspotMetricsHelper::kHotspotUsageDuration, kHotspotUsageTime, 2);
+}
+
 }  // namespace ash

@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
@@ -54,6 +55,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
                            HotspotAllowStatusHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
                            HotspotUsageConfigHistogram);
+  FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
+                           HotspotUsageDurationHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, EnableTetheringSuccess);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
                            EnableTetheringReadinessCheckFailure);
@@ -77,6 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   static const char kHotspotUsageConfigAutoDisable[];
   static const char kHotspotUsageConfigMAR[];
   static const char kHotspotUsageConfigCompatibilityMode[];
+  static const char kHotspotUsageDuration[];
   static const base::TimeDelta kLogAllowStatusAtLoginTimeout;
 
   static HotspotMetricsCheckReadinessResult GetCheckReadinessMetricsResult(
@@ -149,11 +153,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
 
   // hotspot_config::mojom::HotspotEnabledStateObserver:
   void OnHotspotTurnedOn(bool wifi_turned_off) override;
-  void OnHotspotTurnedOff(
-      hotspot_config::mojom::DisableReason reason) override {}
+  void OnHotspotTurnedOff(hotspot_config::mojom::DisableReason reason) override;
 
   void LogAllowStatus();
   void LogAllowStatusAtLogin();
+  void LogUsageConfig();
+  void LogUsageDuration();
 
   // Retrieves the latest hotspot allow status and converts to
   // HotspotMetricsAllowStatus enum. Return absl::nullopt if it is disallowed
@@ -170,8 +175,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // Tracks whether the metrics are already logged for this session.
   bool is_metrics_logged_ = false;
 
+  // Tracks whether the hotspot is active.
+  bool is_hotspot_active_ = false;
+
+  // Tracks the usage time for each hotspot session.
+  absl::optional<base::ElapsedTimer> usage_timer_;
+
   mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
-      hostpot_enabled_state_observer_receiver_{this};
+      hotspot_state_enabled_state_observer_receiver_{this};
+  mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
+      hotspot_controller_enabled_state_observer_receiver_{this};
 };
 
 }  // namespace ash

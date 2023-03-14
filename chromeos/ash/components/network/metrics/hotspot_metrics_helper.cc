@@ -52,6 +52,10 @@ const char HotspotMetricsHelper::kHotspotUsageConfigCompatibilityMode[] =
     "Network.Ash.Hotspot.Upstream.Cellular.Usage.Config.CompatibilityMode";
 
 // static
+const char HotspotMetricsHelper::kHotspotUsageDuration[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.Usage.Duration";
+
+// static
 void HotspotMetricsHelper::RecordSetTetheringEnabledResult(
     bool enabled,
     hotspot_config::mojom::HotspotControlResult result) {
@@ -148,6 +152,11 @@ HotspotMetricsHelper::GetSetConfigMetricsResult(
 HotspotMetricsHelper::HotspotMetricsHelper() = default;
 
 HotspotMetricsHelper::~HotspotMetricsHelper() {
+  // Log related metrics, namely usage duration and max connected client count
+  // if the user logout while hotspot is active.
+  if (is_hotspot_active_) {
+    LogUsageDuration();
+  }
   if (hotspot_capabilities_provider_ &&
       hotspot_capabilities_provider_->HasObserver(this)) {
     hotspot_capabilities_provider_->RemoveObserver(this);
@@ -170,8 +179,12 @@ void HotspotMetricsHelper::Init(
     LoggedInStateChanged();
   }
 
+  hotspot_state_handler_->ObserveEnabledStateChanges(
+      hotspot_state_enabled_state_observer_receiver_
+          .BindNewPipeAndPassRemote());
   hotspot_controller->ObserveEnabledStateChanges(
-      hostpot_enabled_state_observer_receiver_.BindNewPipeAndPassRemote());
+      hotspot_controller_enabled_state_observer_receiver_
+          .BindNewPipeAndPassRemote());
 }
 
 void HotspotMetricsHelper::OnHotspotCapabilitiesChanged() {
@@ -243,7 +256,7 @@ HotspotMetricsHelper::GetMetricsAllowStatus() {
   }
 }
 
-void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
+void HotspotMetricsHelper::LogUsageConfig() {
   auto hotspot_config = hotspot_state_handler_->GetHotspotConfig();
   if (!hotspot_config) {
     NET_LOG(ERROR) << "Error getting hotspot config when hotspot is turned on.";
@@ -256,6 +269,28 @@ void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
       hotspot_config->band == hotspot_config::mojom::WiFiBand::k2_4GHz);
   base::UmaHistogramBoolean(kHotspotUsageConfigMAR,
                             hotspot_config->bssid_randomization);
+}
+
+void HotspotMetricsHelper::LogUsageDuration() {
+  if (!usage_timer_) {
+    NET_LOG(ERROR) << "Hotspot usage timer has not been started.";
+    return;
+  }
+  const base::TimeDelta usage_duration = usage_timer_->Elapsed();
+  base::UmaHistogramLongTimes(kHotspotUsageDuration, usage_duration);
+}
+
+void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
+  is_hotspot_active_ = true;
+  LogUsageConfig();
+
+  usage_timer_ = base::ElapsedTimer();
+}
+
+void HotspotMetricsHelper::OnHotspotTurnedOff(
+    hotspot_config::mojom::DisableReason reason) {
+  is_hotspot_active_ = false;
+  LogUsageDuration();
 }
 
 }  // namespace ash
