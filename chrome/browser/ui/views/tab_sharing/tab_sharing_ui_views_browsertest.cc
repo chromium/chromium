@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -162,8 +163,13 @@ class TabSharingUIViewsBrowserTest
  public:
   TabSharingUIViewsBrowserTest()
       : favicons_used_for_switch_to_tab_button_(GetParam()) {
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable kHttpsUpgrades feature.
 #if BUILDFLAG(IS_CHROMEOS)
-    features_.InitAndEnableFeature(features::kTabCaptureBlueBorderCrOS);
+    features_.InitWithFeatures({features::kTabCaptureBlueBorderCrOS},
+                               {features::kHttpsUpgrades});
+#else
+    features_.InitAndDisableFeature(features::kHttpsUpgrades);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -355,9 +361,7 @@ class TabSharingUIViewsBrowserTest
         std::vector<content::DesktopMediaID>{});
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList features_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const bool favicons_used_for_switch_to_tab_button_;
 
