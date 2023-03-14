@@ -274,6 +274,96 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   }
 }
 
+void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
+    LogManager* log_manager) {
+  // Credit card numbers are 8 to 19 digits in length.
+  // [Ref: http://en.wikipedia.org/wiki/Bank_card_number]
+  constexpr size_t kMinValidCardNumberSize = 8;
+  constexpr size_t kMaxValidCardNumberSize = 19;
+  constexpr size_t kMaxGroupElementLength = 8;
+  using Group = base::span<const std::unique_ptr<AutofillField>>;
+
+  // `may_be_group({f, f + 1}) && ... && may_be_group({f, f + N + 1})` is true
+  // iff all fields in the range
+  // 1. `{f, f + N + 1}` are credit card number fields, and
+  // 2. `{f, f + N + 1}` originate from the same form in the same frame, and
+  // 3. `{f, f + N + 1}` are all focuseable or all unfocusable,
+  // 4. `{f, f + N}` have the same `FormFieldData::max_length <
+  //    kMaxGroupElementLength`.
+  //
+  // `may_be_group({f, f + N + 1})` is valid only if `may_be_group({f, f + N})`
+  // is true. This is because each call only looks at the first and last
+  // element.
+  auto may_be_group = [](Group group) {
+    DCHECK_GE(group.size(), 1u);
+    DCHECK(base::ranges::all_of(
+        group.subspan(0, group.size() - 1), [](const auto& f) {
+          return f->ComputedType().GetStorableType() == CREDIT_CARD_NUMBER;
+        }));
+    size_t last = group.size() - 1;
+    return group[0]->max_length <= kMaxGroupElementLength &&
+           group[last]->ComputedType().GetStorableType() ==
+               CREDIT_CARD_NUMBER &&
+           group[last]->renderer_form_id() == group[0]->renderer_form_id() &&
+           group[last]->IsFocusable() == group[0]->IsFocusable() &&
+           (group[last]->max_length == group[0]->max_length ||
+            (last >= 1 && group[last - 1]->max_length == group[0]->max_length));
+  };
+
+  // `has_reasonable_length({f, f + N + 1})` is true iff
+  // 1. the cumulative FormFieldData::max_length
+  //    (a) is long enough for the shortest credit cards, and
+  //    (b) minus the overflow field (if present) isn't longer than the longest
+  //        credit card, and
+  // 2. there are at least 2 non-overflow fields.
+  auto has_reasonable_length = [](Group group) {
+    DCHECK(!group.empty());
+    DCHECK(base::ranges::all_of(group.subspan(0, group.size() - 1),
+                                [group](const auto& f) {
+                                  return f->max_length == group[0]->max_length;
+                                }));
+    size_t size = group.size();
+    size_t last = group.size() - 1;
+    bool last_is_overflow = group[last]->max_length > kMaxGroupElementLength;
+    size_t length = group[0]->max_length * (size - 1) + group[last]->max_length;
+    size_t length_without_overflow =
+        length - last_is_overflow * group[last]->max_length;
+    return length >= kMinValidCardNumberSize &&
+           length_without_overflow < kMaxValidCardNumberSize &&
+           size >= 2 + last_is_overflow;
+  };
+
+  // Returns the end (exclusive) of the credit card number field group starting
+  // with `begin`.
+  auto find_end_of_group = [&](auto begin) {
+    auto end = begin;
+    while (end != fields_->end() && may_be_group({begin, end + 1})) {
+      ++end;
+    }
+    return end;
+  };
+
+  for (const auto& field : *fields_) {
+    field->set_credit_card_number_offset(0);
+  }
+  for (auto begin = fields_->begin(); begin != fields_->end();) {
+    auto end = find_end_of_group(begin);
+    if (begin == end) {
+      begin = end + 1;
+      continue;
+    }
+    if (has_reasonable_length({begin, end})) {
+      size_t offset = 0;
+      for (auto& field : Group{begin, end}) {
+        field->set_credit_card_number_offset(offset);
+        offset += field->max_length;
+      }
+    }
+    DCHECK(begin != end);
+    begin = end;
+  }
+}
+
 void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
     LogManager* log_manager) {
   if (fields_->size() < 2)
@@ -696,6 +786,10 @@ void FormStructureRationalizer::RationalizeRepeatedFields(
 void FormStructureRationalizer::RationalizeFieldTypePredictions(
     LogManager* log_manager) {
   RationalizeCreditCardFieldPredictions(log_manager);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSplitCreditCardNumbersCautiously)) {
+    RationalizeCreditCardNumberOffsets(log_manager);
+  }
   RationalizeStreetAddressAndAddressLine(log_manager);
   RationalizeStreetAddressAndHouseNumber(log_manager);
   RationalizePhoneNumberTrunkTypes(log_manager);

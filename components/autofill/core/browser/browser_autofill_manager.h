@@ -676,7 +676,7 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Checks whether JavaScript cleared an autofilled value within
   // kLimitBeforeRefill after the filling and records metrics for this. This
-  // method should be called after we learend that JavaScript modified an
+  // method should be called after we learned that JavaScript modified an
   // autofilled field. It's responsible for assessing the nature of the
   // modification.
   void AnalyzeJavaScriptChangedAutofilledValue(const FormData& form,

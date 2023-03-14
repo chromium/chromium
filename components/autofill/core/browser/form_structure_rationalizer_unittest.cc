@@ -16,8 +16,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::Matcher;
+using ::testing::Pointee;
+using ::testing::Property;
 
 namespace autofill {
 namespace {
@@ -45,7 +49,9 @@ struct FieldTemplate {
   base::StringPiece section = "";
   base::StringPiece form_control_type = "text";
   bool is_focusable = true;
+  size_t max_length = std::numeric_limits<int>::max();
   FormFieldData::RoleAttribute role = FormFieldData::RoleAttribute::kOther;
+  FormGlobalId host_form;
 };
 
 // These are helper functions that set a special flag in a field_template.
@@ -83,7 +89,10 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     }
     field.form_control_type = std::string(field_template.form_control_type);
     field.is_focusable = field_template.is_focusable;
+    field.max_length = field_template.max_length;
     field.role = field_template.role;
+    field.host_frame = field_template.host_form.frame_token;
+    field.host_form_id = field_template.host_form.renderer_id;
     field.unique_renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(std::move(field));
   }
@@ -134,6 +143,36 @@ std::vector<ServerFieldType> GetTypes(const FormStructure& form_structure) {
         form_structure.field(i)->Type().GetStorableType());
   }
   return server_types;
+}
+
+Matcher<AutofillField> HasType(ServerFieldType type) {
+  return Property("AutofillField::Type", &AutofillField::Type,
+                  Property("AutofillType::GetStorableType",
+                           &AutofillType::GetStorableType, type));
+}
+
+Matcher<AutofillField> HasOffset(size_t offset) {
+  return Property("AutofillField::credit_card_number_offset",
+                  &AutofillField::credit_card_number_offset, offset);
+}
+
+Matcher<AutofillField> HasTypeAndOffset(ServerFieldType type, size_t offset) {
+  return AllOf(HasType(type), HasOffset(offset));
+}
+
+Matcher<FormStructure> AreFieldsArray(
+    const std::vector<Matcher<AutofillField>>& matchers) {
+  std::vector<Matcher<std::unique_ptr<AutofillField>>> lifted_matchers;
+  for (const auto& matcher : matchers) {
+    lifted_matchers.push_back(Pointee(matcher));
+  }
+  return Property("FormStructure::fields", &FormStructure::fields,
+                  ElementsAreArray(std::move(lifted_matchers)));
+}
+
+template <typename... Matchers>
+Matcher<FormStructure> AreFields(Matchers... matchers) {
+  return AreFieldsArray(std::vector<Matcher<AutofillField>>{matchers...});
 }
 
 FormStructureTestApi test_api(FormStructure& form_structure) {
@@ -677,6 +716,204 @@ TEST_F(FormStructureRationalizerTest,
               ElementsAre(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
                           ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
                           ADDRESS_HOME_STATE));
+}
+
+// Tests that the offset of a cc-number field is not affected by non-adjacent
+// <input maxlength=1>.
+TEST_F(
+    FormStructureRationalizerTest,
+    RationalizeCreditCardNumberOffsets_DoNotSplitForNonAdjacentMaxlength1Field) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillSplitCreditCardNumbersCautiously);
+  EXPECT_THAT(
+      *BuildFormStructure(
+          CreateFormAndServerClassification({
+              {.field_type = CREDIT_CARD_NUMBER, .max_length = 1},
+              {.field_type = CREDIT_CARD_NAME_FULL},
+              {.field_type = CREDIT_CARD_NUMBER},
+              {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+          }),
+          /*run_heuristics=*/false),
+      AreFields(HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                HasTypeAndOffset(CREDIT_CARD_NAME_FULL, 0),
+                HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                HasTypeAndOffset(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0)));
+}
+
+// Tests that the offset of a cc-number field is not affected by a single
+// adjacent <input maxlength=1>.
+TEST_F(
+    FormStructureRationalizerTest,
+    RationalizeCreditCardNumberOffsets_DoNotSplitForAdjacentMaxlength1Field) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillSplitCreditCardNumbersCautiously);
+  EXPECT_THAT(*BuildFormStructure(
+                  CreateFormAndServerClassification({
+                      {.field_type = CREDIT_CARD_NAME_FULL},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 1},
+                      {.field_type = CREDIT_CARD_NUMBER},
+                      {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                      {.field_type = CREDIT_CARD_NUMBER},
+                  }),
+                  /*run_heuristics=*/false),
+              AreFields(HasTypeAndOffset(CREDIT_CARD_NAME_FULL, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0)));
+}
+
+// Tests the offsets of four adjacent <input maxlength=4> cc-number fields
+// grow by 4.
+TEST_F(FormStructureRationalizerTest,
+       RationalizeCreditCardNumberOffsets_SplitGroupOfFours) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillSplitCreditCardNumbersCautiously);
+  EXPECT_THAT(*BuildFormStructure(
+                  CreateFormAndServerClassification({
+                      {.field_type = CREDIT_CARD_NAME_FULL},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                      {.field_type = CREDIT_CARD_NUMBER},
+                  }),
+                  /*run_heuristics=*/false),
+              AreFields(HasTypeAndOffset(CREDIT_CARD_NAME_FULL, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 4),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 8),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 12),
+                        HasTypeAndOffset(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0)));
+}
+
+// Tests fields of different focusability are not in the same group.
+TEST_F(FormStructureRationalizerTest,
+       RationalizeCreditCardNumberOffsets_FocusabilityStartNewGroups) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillSplitCreditCardNumbersCautiously);
+  EXPECT_THAT(*BuildFormStructure(
+                  CreateFormAndServerClassification({
+                      {.field_type = CREDIT_CARD_NAME_FULL},
+                      {.field_type = CREDIT_CARD_NUMBER,
+                       .is_focusable = false,
+                       .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER,
+                       .is_focusable = false,
+                       .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                      {.field_type = CREDIT_CARD_NUMBER},
+                  }),
+                  /*run_heuristics=*/false),
+              AreFields(HasTypeAndOffset(CREDIT_CARD_NAME_FULL, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 4),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 4),
+                        HasTypeAndOffset(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0)));
+}
+
+// Tests fields from different host forms are not in the same group.
+TEST_F(FormStructureRationalizerTest,
+       RationalizeCreditCardNumberOffsets_RendererFormsStartNewGroups) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillSplitCreditCardNumbersCautiously);
+  FormGlobalId other_host_form = test::MakeFormGlobalId();
+  EXPECT_THAT(*BuildFormStructure(
+                  CreateFormAndServerClassification({
+                      {.field_type = CREDIT_CARD_NAME_FULL},
+                      {.field_type = CREDIT_CARD_NUMBER,
+                       .max_length = 4,
+                       .host_form = other_host_form},
+                      {.field_type = CREDIT_CARD_NUMBER,
+                       .max_length = 4,
+                       .host_form = other_host_form},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                      {.field_type = CREDIT_CARD_NUMBER},
+                  }),
+                  /*run_heuristics=*/false),
+              AreFields(HasTypeAndOffset(CREDIT_CARD_NAME_FULL, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 4),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 4),
+                        HasTypeAndOffset(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0)));
+}
+
+// Tests the offsets of three adjacent <input maxlength=4> cc-number fields
+// followed by an overflow field grow by 4.
+TEST_F(FormStructureRationalizerTest,
+       RationalizeCreditCardNumberOffsets_SplitGroupOfFoursFollodeByOverflow) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillSplitCreditCardNumbersCautiously);
+  EXPECT_THAT(*BuildFormStructure(
+                  CreateFormAndServerClassification({
+                      {.field_type = CREDIT_CARD_NAME_FULL},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER},
+                      {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                      {.field_type = CREDIT_CARD_NUMBER},
+                  }),
+                  /*run_heuristics=*/false),
+              AreFields(HasTypeAndOffset(CREDIT_CARD_NAME_FULL, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 4),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 8),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 12),
+                        HasTypeAndOffset(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0)));
+}
+
+// Tests the offsets of seven adjacent <input maxlength=1> cc-number fields
+// followed by an overflow <input maxlength=N> grow by 1.
+// A subsequent ninth cc-number field with different maxlength is in a separate
+// group.
+TEST_F(FormStructureRationalizerTest,
+       RationalizeCreditCardNumberOffsets_SplitGroupOfOnes) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillSplitCreditCardNumbersCautiously);
+  EXPECT_THAT(*BuildFormStructure(
+                  CreateFormAndServerClassification({
+                      {.field_type = CREDIT_CARD_NUMBER},
+                      {.field_type = CREDIT_CARD_NAME_FULL},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 1},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 1},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 1},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 1},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 1},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 1},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 1},
+                      {.field_type = CREDIT_CARD_NUMBER,
+                       .max_length = 19 - 7},  // 19 is the maximum length of a
+                                               // credit card number.
+                      {.field_type = CREDIT_CARD_NUMBER},
+                      {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                      {.field_type = CREDIT_CARD_NUMBER},
+                  }),
+                  /*run_heuristics=*/false),
+              AreFields(HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NAME_FULL, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 1),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 2),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 3),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 4),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 5),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 6),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 7),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0)));
 }
 
 struct RationalizationTypeRelationshipsTestParams {

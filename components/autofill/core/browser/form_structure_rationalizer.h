@@ -55,10 +55,16 @@ class FormStructureRationalizer {
   // vector belong to the same group.
   class SectionedFieldsIndexes;
 
-  // A function to fine tune the credit cards related predictions. For example:
-  // lone credit card fields in an otherwise non-credit-card related form is
-  // unlikely to be correct, the function will override that prediction.
+  // Fine-tunes the credit cards related predictions. For example: lone credit
+  // card fields in an otherwise non-credit-card related form is unlikely to be
+  // correct, the function will override that prediction.
   void RationalizeCreditCardFieldPredictions(LogManager* log_manager);
+
+  // Sets the offsets of adjacent credit card number fields. For example:
+  // four adjacent card fields with `FormFieldData::max_length == 4` should
+  // likely be filled with the the first, second, third, and fourth,
+  // respectively, block of four digits.
+  void RationalizeCreditCardNumberOffsets(LogManager* log_manager);
 
   // Rewrites sequences of (street address, address_line2) into (address_line1,
   // address_line2) as server predictions sometimes introduce wrong street

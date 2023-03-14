@@ -511,6 +511,12 @@ BASE_FEATURE(kAutofillSkipComparingInferredLabels,
              "AutofillSkipComparingInferredLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Stronger conditions for splitting credit card numbers across multiple fields.
+// TODO(crbug.com/1419578): Remove when launched.
+BASE_FEATURE(kAutofillSplitCreditCardNumbersCautiously,
+             "AutofillSplitCreditCardNumbersCautiously",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables support for artificial placeholders, implemented by placing text on
 // top of the input field using CSS.
 // TODO(crbug.com/1396374): Remove when launched.

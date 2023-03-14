@@ -34,7 +34,7 @@ namespace {
 
 // Credit card numbers are at most 19 digits in length.
 // [Ref: http://en.wikipedia.org/wiki/Bank_card_number]
-const size_t kMaxValidCardNumberSize = 19;
+constexpr size_t kMaxValidCardNumberSize = 19;
 
 // Returns true if a field that has |max_length| can fit the data for a field of
 // |type|.
