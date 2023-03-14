@@ -443,19 +443,7 @@ SafeBrowsingLookupMechanismExperimenter::DelayInformation
 SafeBrowsingLookupMechanismExperimenter::GetDelayInformation(
     MechanismResults& results) const {
   DelayInformation delay_information;
-  if (will_process_response_reached_time_.has_value()) {
-    DCHECK(first_check_start_time_.has_value());
-    auto mechanism_completion_time =
-        first_check_start_time_.value() + results.time_taken;
-    auto process_response_time = will_process_response_reached_time_.value();
-    bool delayed_response = mechanism_completion_time > process_response_time;
-    delay_information.delayed_response =
-        delayed_response ? ExperimentUnknownNoYesResult::kYes
-                         : ExperimentUnknownNoYesResult::kNo;
-    delay_information.delayed_response_amount =
-        delayed_response ? mechanism_completion_time - process_response_time
-                         : base::TimeDelta();
-  } else {
+  if (!will_process_response_reached_time_.has_value()) {
     // If the URL real-time check results in a warning, there might never
     // be a call to WillProcessResponse. In these cases, we log "Unknown"
     // because we don't know if the other mechanisms would have delayed
@@ -468,7 +456,20 @@ SafeBrowsingLookupMechanismExperimenter::GetDelayInformation(
     // BrowserUrlLoaderThrottle before the page has loaded, but after the
     // lookups have completed.
     delay_information.delayed_response = ExperimentUnknownNoYesResult::kUnknown;
+    return delay_information;
   }
+
+  DCHECK(first_check_start_time_.has_value());
+  auto mechanism_completion_time =
+      first_check_start_time_.value() + results.time_taken;
+  auto process_response_time = will_process_response_reached_time_.value();
+  bool delayed_response = mechanism_completion_time > process_response_time;
+  delay_information.delayed_response = delayed_response
+                                           ? ExperimentUnknownNoYesResult::kYes
+                                           : ExperimentUnknownNoYesResult::kNo;
+  delay_information.delayed_response_amount =
+      delayed_response ? mechanism_completion_time - process_response_time
+                       : base::TimeDelta();
   return delay_information;
 }
 SafeBrowsingLookupMechanismExperimenter::MechanismResults
