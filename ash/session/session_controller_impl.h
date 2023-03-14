@@ -31,7 +31,6 @@ class FullscreenController;
 class ScopedScreenLockBlocker;
 class SessionControllerClient;
 class SessionObserver;
-class SignoutScreenshotHandler;
 class TestSessionControllerClient;
 
 // Implements mojom::SessionController to cache session related info such as
@@ -228,8 +227,6 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   // Test helpers.
   void ClearUserSessionsForTest();
-  void SetSignoutScreenshotHandlerForTest(
-      std::unique_ptr<SignoutScreenshotHandler> handler);
 
  private:
   friend class TestSessionControllerClient;
@@ -275,13 +272,6 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // Called when IsUserSessionBlocked() becomes true. If there isn't an active
   // window, tries to activate one.
   void EnsureActiveWindowAfterUnblockingUserSession();
-
-  // Proceeds with signout after the (optional) signout screenshot is taken.
-  void ProceedWithSignOut();
-
-  // Proceeds with restart to update after the (optional) signout screenshot is
-  // taken.
-  void ProceedWithRestartToUpdate();
 
   // Called when an object of `ScopedScreenLockBlockerImpl` is destroyed.
   void RemoveScopedScreenLockBlocker();
@@ -344,9 +334,6 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   PrefService* last_active_user_prefs_ = nullptr;
 
   std::unique_ptr<FullscreenController> fullscreen_controller_;
-
-  // May be null if glanceables are not enabled.
-  std::unique_ptr<SignoutScreenshotHandler> signout_screenshot_handler_;
 
   int scoped_screen_lock_blocker_count_ = 0;
 

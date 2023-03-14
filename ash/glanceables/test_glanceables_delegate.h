@@ -20,7 +20,6 @@ class TestGlanceablesDelegate : public GlanceablesDelegate {
   // GlanceablesDelegate:
   void RestoreSession() override;
   void OnGlanceablesClosed() override;
-  bool ShouldTakeSignoutScreenshot() override;
 
   int restore_session_count() { return restore_session_count_; }
   int on_glanceables_closed_count() { return on_glanceables_closed_count_; }

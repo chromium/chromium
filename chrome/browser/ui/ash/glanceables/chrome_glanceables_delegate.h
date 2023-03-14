@@ -34,7 +34,6 @@ class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate,
   // ash::GlanceablesDelegate:
   void RestoreSession() override;
   void OnGlanceablesClosed() override;
-  bool ShouldTakeSignoutScreenshot() override;
 
   // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(

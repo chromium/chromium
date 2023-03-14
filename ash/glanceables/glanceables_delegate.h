@@ -21,12 +21,6 @@ class ASH_EXPORT GlanceablesDelegate {
 
   // Called after the glanceables UI is closed.
   virtual void OnGlanceablesClosed() = 0;
-
-  // Returns true if a signout screenshot should be taken for this session. This
-  // method exists to avoid taking screenshots for account types that don't
-  // support glanceables (e.g. forced app mode) and to avoid screenshots in
-  // tests.
-  virtual bool ShouldTakeSignoutScreenshot() = 0;
 };
 
 }  // namespace ash

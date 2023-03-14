@@ -18,8 +18,4 @@ void TestGlanceablesDelegate::OnGlanceablesClosed() {
   ++on_glanceables_closed_count_;
 }
 
-bool TestGlanceablesDelegate::ShouldTakeSignoutScreenshot() {
-  return should_take_signout_screenshot_;
-}
-
 }  // namespace ash

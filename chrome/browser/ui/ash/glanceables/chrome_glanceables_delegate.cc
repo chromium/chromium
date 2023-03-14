@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -80,23 +79,6 @@ void ChromeGlanceablesDelegate::OnGlanceablesClosed() {
     // start the full restore state save timer.
     ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
   }
-}
-
-bool ChromeGlanceablesDelegate::ShouldTakeSignoutScreenshot() {
-  // Don't take a screenshot if the user hasn't signed in. This can happen
-  // in the emulator, where "Shut down" on the login screen runs the signout
-  // code path.
-  if (!primary_profile_)
-    return false;
-
-  // Only take a screenshot if the user is on the primary profile desktop.
-  if (ProfileManager::GetActiveUserProfile() != primary_profile_)
-    return false;
-
-  // Only take a screenshot if this session type would use it on the next login.
-  // This also avoids taking screenshots in browser tests (because they pass
-  // --no-first-run and skip glanceables).
-  return ShouldShowOnLogin();
 }
 
 void ChromeGlanceablesDelegate::OnRefreshTokenUpdatedForAccount(

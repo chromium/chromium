@@ -48,9 +48,6 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
   // Triggers a session restore.
   void RestoreSession();
 
-  // Returns true if a signout screenshot should be taken for this session.
-  bool ShouldTakeSignoutScreenshot() const;
-
   // wm::ActivationChangeObserver:
   void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
                          aura::Window* gained_focus,
