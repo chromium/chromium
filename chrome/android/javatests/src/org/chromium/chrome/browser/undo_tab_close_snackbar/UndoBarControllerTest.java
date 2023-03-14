@@ -145,11 +145,16 @@ public class UndoBarControllerTest {
     // When both START_SURFACE_ANDROID and TAB_GROUPS_CONTINUATION_ANDROID are enabled, changing
     // accessibility status won't recreate ChromeTabbedActivity.
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
     // clang-format off
-    public void testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
-        // clang-format on
+    @CommandLineFlags.Add({
+            "enable-features=" + ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:gts-low-end-support/true" +
+                                               "/gts-accessibility-support/true"})
+    // clang-format on
+    public void
+    testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
         ChromeTabUtils.newTabFromMenu(
@@ -168,10 +173,16 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug/1199248
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-            ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
+    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
     // clang-format off
-    public void testUndoSnackbarEnabled_AccessibilityEnabledWithGroupM5() throws Exception {
+    @CommandLineFlags.Add({
+            "enable-features=" + ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:gts-low-end-support/true" +
+                                               "/gts-accessibility-support/true"})
+    // clang-format on
+    public void
+    testUndoSnackbarEnabled_AccessibilityEnabledWithGroupM5() throws Exception {
         // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));

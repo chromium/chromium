@@ -84,6 +84,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -94,6 +95,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -114,6 +116,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -126,6 +129,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -146,6 +150,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -158,6 +163,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -178,6 +184,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -190,6 +197,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -210,6 +218,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -221,6 +230,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -241,6 +251,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -252,6 +263,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -272,6 +284,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -283,6 +296,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -297,12 +311,17 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(false);
+
         assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -314,6 +333,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -336,6 +356,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -349,6 +370,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -363,6 +385,10 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(false);
+
         assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
@@ -371,6 +397,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -384,6 +411,48 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+    }
+
+    @Test
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                                ChromeFeatureList.TAB_GROUPS_ANDROID,
+                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
+    public void testCacheGridTabSwitcher_HighEnd_AllFlags_AccessibilityListMode() {
+        // clang-format on
+        cacheFeatureFlags();
+
+        CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(true);
+
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
+                ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
+                ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+
+        setAccessibilityEnabledForTesting(true);
+        DeviceClassManager.resetForTesting();
+        cacheFeatureFlags();
+
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
+                ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
+                ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
+                ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -398,6 +467,10 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(true);
+
         assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
@@ -406,6 +479,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -419,6 +493,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -433,12 +508,17 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(true);
+
         assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -450,6 +530,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -464,12 +545,17 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(false);
+
         assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -481,6 +567,7 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -495,12 +582,17 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(false);
+
         assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -512,6 +604,44 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+    }
+
+    @Test
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
+    public void testCacheGridTabSwitcher_HighEnd_GroupContinuation_NoAccessibility() {
+        // clang-format on
+        cacheFeatureFlags();
+
+        CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(false);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(true);
+
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
+                ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
+                ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+
+        setAccessibilityEnabledForTesting(true);
+        DeviceClassManager.resetForTesting();
+        cacheFeatureFlags();
+
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -526,12 +656,17 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(false);
+
         assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -543,6 +678,44 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+    }
+
+    @Test
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    public void testCacheGridTabSwitcher_LowEnd_GroupContinuation_NoLowEnd() {
+        // clang-format on
+        cacheFeatureFlags();
+
+        CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(false);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(false);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(false);
+
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
+
+        setAccessibilityEnabledForTesting(true);
+        DeviceClassManager.resetForTesting();
+        cacheFeatureFlags();
+
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -557,12 +730,17 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
+        DeviceClassManager.GTS_LOW_END_SUPPORT.setForTesting(true);
+        DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.setForTesting(true);
+        TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE.setForTesting(false);
+
         assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
 
         CachedFeatureFlags.resetFlagsForTesting();
         // Pretend that we've flipped the continuation flag.
@@ -573,5 +751,6 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
     }
 }

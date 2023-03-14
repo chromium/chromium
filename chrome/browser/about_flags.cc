@@ -2119,6 +2119,39 @@ const FeatureEntry::FeatureVariation kFilteringPredictionFeatureVariations[] = {
      std::size(kFilteringPredictionOneEuroFilterEnabled), nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kTabGroupsContinuationAndroid_LowEndSupport[] =
+    {
+        {"gts-low-end-support", "true"},
+        {"gts-accessibility-support", "false"},
+        {"gts-accessibility-list-mode", "false"},
+};
+const FeatureEntry::FeatureParam
+    kTabGroupsContinuationAndroid_LowEndAndAccessibilitySupport[] = {
+        {"gts-low-end-support", "true"},
+        {"gts-accessibility-support", "true"},
+        {"gts-accessibility-list-mode", "false"},
+};
+const FeatureEntry::FeatureParam
+    kTabGroupsContinuationAndroid_LowEndAndAccessibilityListSupport[] = {
+        {"gts-low-end-support", "true"},
+        {"gts-accessibility-support", "true"},
+        {"gts-accessibility-list-mode", "true"},
+};
+const FeatureEntry::FeatureVariation kTabGroupsContinuationAndroidVariations[] =
+    {
+        {"Low-end device support", kTabGroupsContinuationAndroid_LowEndSupport,
+         std::size(kTabGroupsContinuationAndroid_LowEndSupport), nullptr},
+        {"Low-end & Accessibility Grid or List support",
+         kTabGroupsContinuationAndroid_LowEndAndAccessibilitySupport,
+         std::size(kTabGroupsContinuationAndroid_LowEndAndAccessibilitySupport),
+         nullptr},
+        {"Low-end & Accessibility List-only support",
+         kTabGroupsContinuationAndroid_LowEndAndAccessibilityListSupport,
+         std::size(
+             kTabGroupsContinuationAndroid_LowEndAndAccessibilityListSupport),
+         nullptr},
+};
+
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_Immediate[] = {
     {"start_surface_return_time_seconds", "0"}};
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_10Seconds[] = {
@@ -6224,7 +6257,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-tab-groups-continuation",
      flag_descriptions::kTabGroupsContinuationAndroidName,
      flag_descriptions::kTabGroupsContinuationAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabGroupsContinuationAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kTabGroupsContinuationAndroid,
+         kTabGroupsContinuationAndroidVariations,
+         "TabGroupsContinuationAndroid")},
 
     {"enable-start-surface-return-time",
      flag_descriptions::kStartSurfaceReturnTimeName,

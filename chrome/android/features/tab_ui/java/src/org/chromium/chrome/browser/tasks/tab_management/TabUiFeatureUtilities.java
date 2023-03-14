@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.device.DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT;
+import static org.chromium.chrome.browser.device.DeviceClassManager.GTS_LOW_END_SUPPORT;
+
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -16,6 +19,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.DoubleCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -29,6 +33,11 @@ public class TabUiFeatureUtilities {
     public static final BooleanCachedFieldTrialParameter SKIP_SLOW_ZOOMING =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, SKIP_SLOW_ZOOMING_PARAM, true);
+
+    private static final String GTS_ACCESSIBILITY_LIST_MODE_PARAM = "gts-accessibility-list-mode";
+    public static final BooleanCachedFieldTrialParameter GTS_ACCESSIBILITY_LIST_MODE =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                    GTS_ACCESSIBILITY_LIST_MODE_PARAM, false);
 
     public static final String THUMBNAIL_ASPECT_RATIO_PARAM = "thumbnail_aspect_ratio";
     public static final DoubleCachedFieldTrialParameter THUMBNAIL_ASPECT_RATIO =
@@ -117,6 +126,25 @@ public class TabUiFeatureUtilities {
         // Having Tab Groups or Start implies Grid Tab Switcher.
         return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled(context)
                 || ReturnToChromeUtil.isStartSurfaceEnabled(context);
+    }
+
+    /**
+     * @return Whether the Grid Tab Switcher UI should use list mode.
+     * @param context The activity context.
+     */
+    public static boolean shouldUseListMode(Context context) {
+        if (!isTabGroupsAndroidContinuationEnabled(context)) {
+            return false;
+        }
+        // Low-end forces list mode regardless of accessibility behavior.
+        if (GTS_LOW_END_SUPPORT.getValue() && SysUtils.isLowEndDevice()) {
+            return true;
+        }
+        if (GTS_ACCESSIBILITY_SUPPORT.getValue()
+                && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+            return GTS_ACCESSIBILITY_LIST_MODE.getValue();
+        }
+        return false;
     }
 
     /**

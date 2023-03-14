@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -86,8 +85,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.
             mTabListCoordinator = new TabListCoordinator(
-                    TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)
-                                    && SysUtils.isLowEndDevice()
+                    TabUiFeatureUtilities.shouldUseListMode(mActivity)
                             ? TabListCoordinator.TabListMode.LIST
                             : TabListCoordinator.TabListMode.GRID,
                     activity, tabModelSelector,
@@ -140,8 +138,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
         if (mTabSelectionEditorCoordinator == null) {
             @TabListCoordinator.TabListMode
-            int mode = SysUtils.isLowEndDevice() ? TabListCoordinator.TabListMode.LIST
-                                                 : TabListCoordinator.TabListMode.GRID;
+            int mode = TabUiFeatureUtilities.shouldUseListMode(mActivity)
+                    ? TabListCoordinator.TabListMode.LIST
+                    : TabListCoordinator.TabListMode.GRID;
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(mActivity,
                     mDialogView.findViewById(R.id.dialog_container_view), mTabModelSelector,
                     mTabContentManager, mTabListCoordinator::setRecyclerViewPosition, mode,
