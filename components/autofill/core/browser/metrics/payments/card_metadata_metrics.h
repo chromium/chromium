@@ -9,14 +9,19 @@
 
 namespace autofill::autofill_metrics {
 
+// The below issuer names are used for logging purposes, and they thus must be
+// consistent with the Autofill.CreditCardIssuerId in the
+// autofill/histograms.xml file.
 constexpr char kAmericanExpress[] = "Amex";
 constexpr char kCapitalOne[] = "CapitalOne";
+constexpr char kChase[] = "Chase";
+constexpr char kMarqeta[] = "Marqeta";
 
 constexpr char kProductNameAndArtImageBothShownSuffix[] =
-    ".ProductDescriptionAndArtImageShown";
-constexpr char kProductNameShownOnlySuffix[] = ".ProductDescriptionShown";
-constexpr char kArtImageShownOnlySuffix[] = ".ArtImageShown";
-constexpr char kProductNameAndArtImageNotShownSuffix[] = ".MetadataNotShown";
+    "ProductDescriptionAndArtImageShown";
+constexpr char kProductNameShownOnlySuffix[] = "ProductDescriptionShown";
+constexpr char kArtImageShownOnlySuffix[] = "ArtImageShown";
+constexpr char kProductNameAndArtImageNotShownSuffix[] = "MetadataNotShown";
 
 // Struct that groups some metadata related information together. Used for
 // metrics logging.
@@ -35,7 +40,8 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
     const std::vector<CreditCard>& cards);
 
 // Log the latency between suggestions being shown and a suggestion was
-// selected, in milliseconds.
+// selected, in milliseconds, and it is broken down by metadata availability
+// provided by the `suggestion_context`.
 void LogAcceptanceLatency(base::TimeDelta latency,
                           const CardMetadataLoggingContext& suggestion_context,
                           const CreditCard& selected_card);

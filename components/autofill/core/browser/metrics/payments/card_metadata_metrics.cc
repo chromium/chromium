@@ -5,26 +5,54 @@
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill::autofill_metrics {
 
 namespace {
-std::string GetHistogramSuffix(const CardMetadataLoggingContext& context) {
+
+std::string GetMetadataAvailabilitySuffix(
+    const CardMetadataLoggingContext& context) {
   if (context.card_product_description_shown && context.card_art_image_shown) {
     return kProductNameAndArtImageBothShownSuffix;
   }
-
   if (context.card_product_description_shown) {
     return kProductNameShownOnlySuffix;
   }
-
   if (context.card_art_image_shown) {
     return kArtImageShownOnlySuffix;
   }
-
   return kProductNameAndArtImageNotShownSuffix;
 }
+
+std::string GetCardIssuerIdSuffix(const std::string& card_issuer_id) {
+  if (!card_issuer_id.empty()) {
+    if (card_issuer_id == kAmexCardIssuerId) {
+      return kAmericanExpress;
+    }
+    if (card_issuer_id == kCapitalOneCardIssuerId) {
+      return kCapitalOne;
+    }
+    if (card_issuer_id == kChaseCardIssuerId) {
+      return kChase;
+    }
+    if (card_issuer_id == kMarqetaCardIssuerId) {
+      return kMarqeta;
+    }
+
+    // Found an unknown issuer id.
+    DLOG(WARNING) << "It seems a new issuer was added, but the suggestion "
+                     "acceptance latency logging logic was not updated. Please "
+                     "update this logging if this issuer should be included in "
+                     "this logging. Ignore if you have already updated it and "
+                     "this is from older versions or you don't care about the "
+                     "newly added issuer.";
+  }
+
+  return std::string();
+}
+
 }  // namespace
 
 CardMetadataLoggingContext GetMetadataLoggingContext(
@@ -70,40 +98,24 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
 void LogAcceptanceLatency(base::TimeDelta latency,
                           const CardMetadataLoggingContext& suggestion_context,
                           const CreditCard& selected_card) {
-  if (!suggestion_context.card_metadata_available) {
-    return;
-  }
   std::string histogram_name_prefix =
-      "Autofill.CreditCard.SelectionLatencySinceShown";
-  base::UmaHistogramMediumTimes(histogram_name_prefix + ".AnyCardWithMetadata" +
-                                    GetHistogramSuffix(suggestion_context),
-                                latency);
+      "Autofill.CreditCard.SelectionLatencySinceShown.";
+  base::UmaHistogramMediumTimes(
+      histogram_name_prefix + GetMetadataAvailabilitySuffix(suggestion_context),
+      latency);
 
-  auto selected_card_context = GetMetadataLoggingContext({selected_card});
-  if (!selected_card_context.card_metadata_available) {
+  std::string issuer_id_suffix =
+      GetCardIssuerIdSuffix(selected_card.issuer_id());
+  if (issuer_id_suffix.empty()) {
     return;
   }
 
-  base::UmaHistogramMediumTimes(histogram_name_prefix +
-                                    ".SelectedCardWithMetadata" +
-                                    GetHistogramSuffix(selected_card_context),
-                                latency);
-
-  if (!selected_card.issuer_id().empty()) {
-    std::string issuer_id_string;
-    if (selected_card.issuer_id() == "amex") {
-      issuer_id_string = kAmericanExpress;
-    } else if (selected_card.issuer_id() == "capitalone") {
-      issuer_id_string = kCapitalOne;
-    } else {
-      NOTREACHED() << "Update logic when adding new issuers.";
-      return;
-    }
-    base::UmaHistogramMediumTimes(
-        histogram_name_prefix + ".SelectedCardWithMetadata" +
-            GetHistogramSuffix(selected_card_context) + "." + issuer_id_string,
-        latency);
-  }
+  base::UmaHistogramMediumTimes(
+      histogram_name_prefix + "CardWithIssuerId." +
+          GetMetadataAvailabilitySuffix(GetMetadataLoggingContext(
+              std::vector<CreditCard>{selected_card})) +
+          "." + issuer_id_suffix,
+      latency);
 }
 
 }  // namespace autofill::autofill_metrics

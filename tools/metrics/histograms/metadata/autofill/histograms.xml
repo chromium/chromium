@@ -63,8 +63,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.CreditCardIssuerId">
-  <variant name=".Amex" summary="American Express."/>
-  <variant name=".CapitalOne" summary="Capital One."/>
+  <variant name="Amex" summary="Card issued by American Express."/>
+  <variant name="CapitalOne" summary="Card issued by Capital One."/>
+  <variant name="Chase" summary="Card issued by Chase."/>
+  <variant name="Marqeta" summary="Card issued by Marqeta."/>
 </variants>
 
 <variants name="Autofill.DialogError">
@@ -1139,38 +1141,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.CreditCard.SelectionLatencySinceShown.AnyCardWithMetadata.{CardMetadataVisible}"
-    units="ms" expires_after="2023-05-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    The latency between Autofill credit card suggestion dropdown being shown,
-    and when a suggestion was selected, in milliseconds. Logged immediately when
-    a card suggestion is selected by the user, on the condition that any card
-    (not necessarily the selected card) in the suggestion list has card metadata
-    available (even if the metadata is not shown). This helps identify whether
-    showing the card metadata has potential impact on assisting card selection
-    in general.
-  </summary>
-  <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
-</histogram>
-
-<histogram
-    name="Autofill.CreditCard.SelectionLatencySinceShown.SelectedCardWithMetadata.{CardMetadataVisible}{CardIssuerId}"
-    units="ms" expires_after="2023-05-01">
+    name="Autofill.CreditCard.SelectionLatencySinceShown.CardWithIssuerId.{CardMetadataVisible}.{CardIssuerId}"
+    units="ms" expires_after="2024-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The latency between an Autofill credit card suggestion being shown, and when
     it was selected, in milliseconds. Logged immediately when a card is selected
-    by the user, on the condition that the selected card has card metadata
-    available (even if the metadata is not shown). This is also broken down by
-    card issuer id if it is available. This helps identify whether showing the
-    card metadata has potential impact on latency for selecting a particular
-    card.
+    by the user if the card has an issuer id, and it is broken down by whether
+    the selected card has card metadata available. This is also broken down by
+    card issuer id. This helps identify whether showing the card metadata has
+    potential impact on latency for selecting a particular card.
   </summary>
   <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
   <token key="CardIssuerId" variants="Autofill.CreditCardIssuerId"/>
+</histogram>
+
+<histogram
+    name="Autofill.CreditCard.SelectionLatencySinceShown.{CardMetadataVisible}"
+    units="ms" expires_after="2024-03-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The latency between Autofill credit card suggestion dropdown being shown,
+    and when a suggestion was selected, in milliseconds. Logged immediately when
+    a card suggestion is selected by the user. Broken down by whether any card
+    (not necessarily the selected card) in the suggestion list has card metadata
+    available. This helps identify whether showing the card metadata has
+    potential impact on assisting card selection in general.
+  </summary>
+  <token key="CardMetadataVisible" variants="Autofill.CardMetadataVisible"/>
 </histogram>
 
 <histogram
