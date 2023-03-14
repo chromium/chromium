@@ -10,6 +10,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -94,19 +95,14 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
   void GetSecondaryGoogleAccountUsageBlocking(
       UserCloudSigninRestrictionPolicyFetcher* restriction_fetcher,
       std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher) {
-    base::RunLoop run_loop;
+    base::test::TestFuture<UserCloudSigninRestrictionPolicyFetcher::Status,
+                           absl::optional<std::string>, const std::string&>
+        future;
     restriction_fetcher->GetSecondaryGoogleAccountUsage(
-        std::move(access_token_fetcher),
-        base::BindLambdaForTesting(
-            [this, &run_loop](
-                UserCloudSigninRestrictionPolicyFetcher::Status st,
-                absl::optional<std::string> res, const std::string& hd) {
-              this->policy_result_ = res;
-              this->status_ = st;
-              this->hosted_domain_ = hd;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+        std::move(access_token_fetcher), future.GetCallback());
+    this->status_ = future.Get<0>();
+    this->policy_result_ = future.Get<1>();
+    this->hosted_domain_ = future.Get<2>();
   }
 
   const std::string& oauth_user_info_url() const {
