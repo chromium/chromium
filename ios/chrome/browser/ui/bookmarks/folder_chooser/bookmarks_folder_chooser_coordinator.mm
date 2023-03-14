@@ -14,6 +14,8 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_mediator.h"
@@ -108,12 +110,16 @@
 
 - (void)start {
   [super start];
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   bookmarks::BookmarkModel* model =
-      ios::BookmarkModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::BookmarkModelFactory::GetForBrowserState(browserState);
   _mediator = [[BookmarksFolderChooserMediator alloc]
       initWithBookmarkModel:model
-                editedNodes:std::move(_hiddenNodes)];
+                editedNodes:std::move(_hiddenNodes)
+           syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
+                                browserState)
+                syncService:SyncServiceFactory::GetForBrowserState(
+                                browserState)];
   _hiddenNodes.clear();
   _mediator.delegate = self;
   _mediator.selectedFolder = _selectedFolder;

@@ -30,6 +30,8 @@ class BookmarkNode;
 - (const bookmarks::BookmarkNode*)rootFolder;
 // The folder that should have a blue check mark beside it in the UI.
 - (const bookmarks::BookmarkNode*)selectedFolder;
+// Whether to display the cloud slashed icon beside the folders.
+- (BOOL)shouldDisplayCloudIconForProfileBookmarks;
 // The list of visible folders to show in the folder chooser UI.
 - (std::vector<const bookmarks::BookmarkNode*>)visibleFolders;
 

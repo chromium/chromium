@@ -7,6 +7,8 @@
 #import "base/containers/contains.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_consumer.h"
@@ -21,7 +23,8 @@ using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 @interface BookmarksFolderChooserMediator () <BookmarksFolderChooserMutator,
-                                              BookmarkModelBridgeObserver>
+                                              BookmarkModelBridgeObserver,
+                                              SyncObserverModelBridge>
 @end
 
 @implementation BookmarksFolderChooserMediator {
@@ -33,10 +36,16 @@ using bookmarks::BookmarkNode;
   // folder inside a child folder. These are also the list of nodes that are
   // being edited (moved to a folder).
   std::set<const BookmarkNode*> _editedNodes;
+  // Sync setup service indicates if the cloud slashed icon should be shown.
+  SyncSetupService* _syncSetupService;
+  // Observer for sync service status changes.
+  std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
 }
 
 - (instancetype)initWithBookmarkModel:(BookmarkModel*)model
-                          editedNodes:(std::set<const BookmarkNode*>)nodes {
+                          editedNodes:(std::set<const BookmarkNode*>)nodes
+                     syncSetupService:(SyncSetupService*)syncSetupService
+                          syncService:(syncer::SyncService*)syncService {
   DCHECK(model);
   DCHECK(model->loaded());
 
@@ -45,6 +54,8 @@ using bookmarks::BookmarkNode;
     _bookmarkModel = model;
     _modelBridge.reset(new BookmarkModelBridge(self, _bookmarkModel));
     _editedNodes = std::move(nodes);
+    _syncSetupService = syncSetupService;
+    _syncObserverBridge.reset(new SyncObserverBridge(self, syncService));
   }
   return self;
 }
@@ -53,6 +64,8 @@ using bookmarks::BookmarkNode;
   _bookmarkModel = nullptr;
   _modelBridge = nil;
   _editedNodes.clear();
+  _syncSetupService = nullptr;
+  _syncObserverBridge = nullptr;
 }
 
 - (const std::set<const BookmarkNode*>&)editedNodes {
@@ -63,6 +76,10 @@ using bookmarks::BookmarkNode;
 
 - (const BookmarkNode*)rootFolder {
   return _bookmarkModel->root_node();
+}
+
+- (BOOL)shouldDisplayCloudIconForProfileBookmarks {
+  return bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
 }
 
 - (std::vector<const BookmarkNode*>)visibleFolders {
@@ -134,6 +151,12 @@ using bookmarks::BookmarkNode;
   // The selected folder is no longer valid. Fallback on the Mobile Bookmarks
   // node.
   _selectedFolder = _bookmarkModel->mobile_node();
+  [_consumer notifyModelUpdated];
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
   [_consumer notifyModelUpdated];
 }
 

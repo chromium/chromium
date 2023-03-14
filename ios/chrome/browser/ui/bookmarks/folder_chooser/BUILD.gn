@@ -39,7 +39,7 @@ source_set("coordinator_impl") {
     "//components/bookmarks/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/sync:sync",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/bookmarks/folder_editor:coordinator_headers",
   ]
@@ -68,6 +68,7 @@ source_set("ui") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/sync:sync",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/bookmarks/cells",

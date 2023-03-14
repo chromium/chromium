@@ -197,6 +197,8 @@ using bookmarks::BookmarkNode;
         [[TableViewBookmarksFolderItem alloc]
             initWithType:ItemTypeCreateNewFolder
                    style:BookmarksFolderStyleNewFolder];
+    createFolderItem.shouldDisplayCloudSlashIcon =
+        [_dataSource shouldDisplayCloudIconForProfileBookmarks];
     // Add the "New Folder" Item to the same section as the rest of the folder
     // entries.
     [self.tableViewModel addItem:createFolderItem
@@ -214,6 +216,8 @@ using bookmarks::BookmarkNode;
                    style:BookmarksFolderStyleFolderEntry];
     folderItem.title = bookmark_utils_ios::TitleForBookmarkNode(folderNode);
     folderItem.currentFolder = ([_dataSource selectedFolder] == folderNode);
+    folderItem.shouldDisplayCloudSlashIcon =
+        [_dataSource shouldDisplayCloudIconForProfileBookmarks];
 
     // Indentation level.
     NSInteger level = 0;

@@ -12,11 +12,16 @@
 #import <set>
 
 @protocol BookmarksFolderChooserMediatorDelegate;
+class SyncSetupService;
 
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 // A mediator class to encapsulate BookmarkModel from the view controller.
 @interface BookmarksFolderChooserMediator
@@ -36,6 +41,8 @@ class BookmarkNode;
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)model
                           editedNodes:
                               (std::set<const bookmarks::BookmarkNode*>)nodes
+                     syncSetupService:(SyncSetupService*)syncSetupService
+                          syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
