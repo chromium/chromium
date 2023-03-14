@@ -7,6 +7,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/side_panel_shared_resources.h"
+#include "chrome/grit/side_panel_shared_resources_map.h"
 #include "chrome/grit/webui_gallery_resources.h"
 #include "chrome/grit/webui_gallery_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -34,6 +36,9 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
   source->AddString(
       "chromeRefresh2023Attribute",
       features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
+
+  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
+                                           kSidePanelSharedResourcesSize));
 }
 
 }  // namespace

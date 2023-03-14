@@ -33,6 +33,7 @@ build_webui("build") {
     "demos/progress_indicator_nonpolymer_demo.html",
     "demos/progress_indicator_polymer_demo.html",
     "demos/scroll_view/index.html",
+    "demos/side_panel/index.html",
     "webui_gallery.html",
   ]
 
@@ -55,6 +56,7 @@ build_webui("build") {
     "demos/nav_menu/nav_menu_demo.ts",
     "demos/nav_menu/nav_menu.ts",
     "demos/scroll_view/scroll_view_demo.ts",
+    "demos/side_panel/sp_components_demo.ts",
     "demos/cr_tab_box/cr_tab_box_demo.ts",
     "demos/cr_tree/cr_tree_demo.ts",
   ]
@@ -62,8 +64,15 @@ build_webui("build") {
   html_to_wrapper_template = "detect"
 
   ts_deps = [
+    "//chrome/browser/resources/side_panel/shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  ts_path_mappings =
+      [ "chrome://webui-gallery/shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
+            target_gen_dir) ]
 }
