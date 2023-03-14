@@ -14,6 +14,10 @@ namespace ash {
 // full-screen resolution.
 ASH_EXPORT AmbientPhotoConfig CreateAmbientSlideshowPhotoConfig();
 
+// For the UI that iterates through an admin provided slideshow of images and
+// displays them at full-screen resolution.
+ASH_EXPORT AmbientPhotoConfig CreateAmbientManagedSlideshowPhotoConfig();
+
 }  // namespace ash
 
 #endif  // ASH_AMBIENT_MODEL_AMBIENT_SLIDESHOW_PHOTO_CONFIG_H_

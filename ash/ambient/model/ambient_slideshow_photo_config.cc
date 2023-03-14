@@ -30,4 +30,14 @@ AmbientPhotoConfig CreateAmbientSlideshowPhotoConfig() {
   return config;
 }
 
+AmbientPhotoConfig CreateAmbientManagedSlideshowPhotoConfig() {
+  AmbientPhotoConfig config = CreateAmbientSlideshowPhotoConfig();
+  // Note: This isn't used by the managed code path right now, but for the
+  // sake of consistency this is being set to the correct value as we
+  // don't want image pairing in the managed screensaver code path.
+  config.should_split_topics = true;
+
+  return config;
+}
+
 }  // namespace ash

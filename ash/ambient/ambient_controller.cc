@@ -692,10 +692,9 @@ void AmbientController::OnEnabledPrefChanged() {
 
     if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
       // TODO (b/269576509) : Integrate with managed screensaver policy
-      // TODO (b/269576821) : Use a new PhotoConfig.
       ambient_managed_photo_controller_ =
           std::make_unique<AmbientManagedPhotoController>(
-              delegate_, CreateAmbientSlideshowPhotoConfig());
+              delegate_, CreateAmbientManagedSlideshowPhotoConfig());
     } else {
       DCHECK(AmbientClient::Get());
       ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(

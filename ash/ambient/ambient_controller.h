@@ -56,6 +56,7 @@ class AmbientAnimationFrameRateController;
 class AmbientAnimationProgressTracker;
 class AmbientBackendController;
 class AmbientContainerView;
+class AmbientManagedPhotoController;
 class AmbientMultiScreenMetricsRecorder;
 class AmbientPhotoController;
 class AmbientWeatherController;

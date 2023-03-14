@@ -93,7 +93,7 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
     AmbientAshTestBase::SetUp();
     CreateTestData();
     managed_photo_controller()->ambient_backend_model()->SetPhotoConfig(
-        CreateAmbientSlideshowPhotoConfig());
+        CreateAmbientManagedSlideshowPhotoConfig());
   }
 
   void TearDown() override {
@@ -425,6 +425,16 @@ TEST_F(AmbientManagedPhotoControllerTest, InvalidAndValidFileTest) {
       &third_image, &fourth_image);
   EXPECT_FALSE(AreImagesEqual(gfx::Image(third_image.photo),
                               gfx::Image(fourth_image.photo)));
+}
+
+TEST_F(AmbientManagedPhotoControllerTest, PhotoConfigTest) {
+  const AmbientPhotoConfig& config =
+      managed_photo_controller()->ambient_backend_model()->photo_config();
+  EXPECT_EQ(2u, config.GetNumDecodedTopicsToBuffer());
+  EXPECT_TRUE(config.should_split_topics);
+  EXPECT_EQ(1u, config.refresh_topic_markers.size());
+  EXPECT_TRUE(config.refresh_topic_markers.contains(
+      AmbientPhotoConfig::Marker::kUiCycleEnded));
 }
 
 TEST_F(AmbientManagedPhotoControllerTest, AddingEmptyImagesIsANoOP) {
