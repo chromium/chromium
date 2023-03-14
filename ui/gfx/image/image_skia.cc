@@ -45,17 +45,6 @@ std::vector<float>* g_supported_scales = NULL;
 // the image to 1.25.
 const float kFallbackToSmallerScaleDiff = 0.20f;
 
-// Maps to the closest supported scale. Returns an exact match, a smaller
-// scale within 0.2 units, the nearest larger scale, or the min/max
-// supported scale.
-float MapToSupportedScale(float scale) {
-  for (float supported_scale : *g_supported_scales) {
-    if (supported_scale + kFallbackToSmallerScaleDiff >= scale)
-      return supported_scale;
-  }
-  return g_supported_scales->back();
-}
-
 }  // namespace
 
 namespace internal {
@@ -236,7 +225,6 @@ std::vector<ImageSkiaRep>::const_iterator ImageSkiaStorage::FindRepresentation(
       smallest_diff = diff;
     }
   }
-
   if (fetch_new_image && source_) {
     DCHECK(sequence_checker_.CalledOnValidSequence())
         << "An ImageSkia with the source must be accessed by the same "
@@ -250,7 +238,7 @@ std::vector<ImageSkiaRep>::const_iterator ImageSkiaStorage::FindRepresentation(
     ImageSkiaRep image;
     float resource_scale = scale;
     if (!HasRepresentationAtAllScales() && g_supported_scales)
-      resource_scale = MapToSupportedScale(scale);
+      resource_scale = ImageSkia::MapToResourceScale(scale);
     if (scale != resource_scale) {
       auto iter = FindRepresentation(resource_scale, fetch_new_image);
       CHECK(iter != image_reps_.end());
@@ -338,6 +326,18 @@ const std::vector<float>& ImageSkia::GetSupportedScales() {
 
 // static
 float ImageSkia::GetMaxSupportedScale() {
+  return g_supported_scales->back();
+}
+
+// static
+float ImageSkia::MapToResourceScale(float scale) {
+  // Returns an exact match, a smaller scale within 0.2 units, the nearest
+  // larger scale, or the min/max supported scale.
+  for (float supported_scale : *g_supported_scales) {
+    if (supported_scale + kFallbackToSmallerScaleDiff >= scale) {
+      return supported_scale;
+    }
+  }
   return g_supported_scales->back();
 }
 
@@ -507,8 +507,10 @@ void ImageSkia::EnsureRepsForSupportedScales() const {
 void ImageSkia::RemoveUnsupportedRepresentationsForScale(float scale) {
   for (const ImageSkiaRep& image_rep_to_test : image_reps()) {
     const float test_scale = image_rep_to_test.scale();
-    if (test_scale != scale && MapToSupportedScale(test_scale) == scale)
+    if (test_scale != scale &&
+        ImageSkia::MapToResourceScale(test_scale) == scale) {
       RemoveRepresentation(test_scale);
+    }
   }
 }
 

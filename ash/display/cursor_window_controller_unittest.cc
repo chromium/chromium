@@ -13,16 +13,24 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/layout.h"
+#include "ui/base/resource/mock_resource_bundle_delegate.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/image/image_skia_source.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -172,25 +180,75 @@ TEST_F(CursorWindowControllerTest, VisibilityTest) {
   EXPECT_TRUE(GetCursorWindow()->IsVisible());
 }
 
-// Make sure that composition cursor stays big even when
-// the DSF becomes 1x as a result of zooming out.
-TEST_F(CursorWindowControllerTest, DSF) {
-  UpdateDisplay("1000x500*2");
-  int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+namespace {
 
-  display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
-                                                         primary_id);
+// Emulates the behavior of BitmapImageSource used in ResourceBundle.
+class TestCursorImageSource : public gfx::ImageSkiaSource {
+ public:
+  TestCursorImageSource() = default;
+  TestCursorImageSource(const TestCursorImageSource&) = delete;
+  TestCursorImageSource operator=(const TestCursorImageSource&) = delete;
+  ~TestCursorImageSource() override = default;
+
+  // gfx::ImageSkiaSource:
+  gfx::ImageSkiaRep GetImageForScale(float scale) override {
+    float resource_scale = ui::GetSupportedResourceScaleFactor(scale);
+    if (resource_scale == 1.f) {
+      return rep_1x_;
+    } else if (resource_scale == 2.f) {
+      return rep_2x_;
+    }
+    NOTREACHED();
+    return rep_1x_;
+  }
+
+ private:
+  static SkBitmap CreateSolidColorBitmap(SkColor color, int size) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(size, size);
+    bitmap.eraseColor(color);
+    return bitmap;
+  }
+  gfx::ImageSkiaRep rep_1x_ =
+      gfx::ImageSkiaRep(CreateSolidColorBitmap(SK_ColorBLACK, 25), 1.f);
+  gfx::ImageSkiaRep rep_2x_ =
+      gfx::ImageSkiaRep(CreateSolidColorBitmap(SK_ColorWHITE, 50), 2.f);
+};
+
+}  // namespace
+
+// Make sure that composition cursor uses correct assets with various scales.
+TEST_F(CursorWindowControllerTest, ScaleUsesCorrectAssets) {
+  testing::NiceMock<ui::MockResourceBundleDelegate> mock_delegate;
+  gfx::ImageSkia image_skia(std::make_unique<TestCursorImageSource>(),
+                            gfx::Size(25, 25));
+
+  auto get_pixel_value = [&](float scale) {
+    uint32_t* data = static_cast<uint32_t*>(
+        GetCursorImage().GetRepresentation(scale).GetBitmap().getPixels());
+    return data[0];
+  };
+
+  EXPECT_CALL(mock_delegate, GetImageNamed(testing::_))
+      .WillOnce(testing::Return(gfx::Image(image_skia)));
+
+  ui::ResourceBundle test_bundle(&mock_delegate);
+  auto* original =
+      ui::ResourceBundle::SwapSharedInstanceForTesting(&test_bundle);
+  // Force re-create composited cursor.
+  SetCursorCompositionEnabled(false);
   SetCursorCompositionEnabled(true);
-  ASSERT_EQ(
-      2.0f,
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor());
-  EXPECT_TRUE(GetCursorImage().HasRepresentation(2.0f));
 
-  display_manager()->UpdateZoomFactor(primary_id, 0.5f);
-  ASSERT_EQ(
-      1.0f,
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor());
-  EXPECT_TRUE(GetCursorImage().HasRepresentation(2.0f));
+  // The cursor should use 2x resources when dsf > 1.2.
+  EXPECT_EQ(SK_ColorWHITE, get_pixel_value(2.4f));
+  EXPECT_EQ(SK_ColorWHITE, get_pixel_value(2.f));
+  EXPECT_EQ(SK_ColorWHITE, get_pixel_value(1.25f));
+  EXPECT_EQ(SK_ColorBLACK, get_pixel_value(1.20f));
+  EXPECT_EQ(SK_ColorBLACK, get_pixel_value(1.15f));
+  EXPECT_EQ(SK_ColorBLACK, get_pixel_value(1.f));
+  EXPECT_EQ(SK_ColorBLACK, get_pixel_value(0.8f));
+
+  ui::ResourceBundle::SwapSharedInstanceForTesting(original);
 }
 
 // Test that cursor compositing is enabled if at least one of the features that

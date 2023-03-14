@@ -20,7 +20,6 @@
 
 namespace gfx {
 class ImageSkia;
-class ImageSkiaRep;
 }  // namespace gfx
 
 namespace ash {
@@ -112,9 +111,6 @@ class ASH_EXPORT CursorWindowController {
 
   // Updates cursor view based on current cursor state.
   void UpdateCursorView();
-
-  // Gets the bitmap representing the cursor, adjusting as needed for color.
-  SkBitmap GetAdjustedBitmap(const gfx::ImageSkiaRep& image_rep) const;
 
   const gfx::ImageSkia& GetCursorImageForTest() const;
 
