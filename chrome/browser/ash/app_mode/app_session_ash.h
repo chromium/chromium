@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_ASH_H_
 #define CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_ASH_H_
 
+#include <memory>
+
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/metrics/low_disk_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
@@ -30,6 +32,8 @@ class AppSessionAsh : public chromeos::AppSession {
   void ShuttingDown();
 
  private:
+  class LacrosWatcher;
+
   void InitForChromeAppKiosk();
   void InitForWebKiosk(const absl::optional<std::string>& app_name);
 
@@ -49,6 +53,7 @@ class AppSessionAsh : public chromeos::AppSession {
   std::unique_ptr<NetworkConnectivityMetricsService> network_metrics_service_;
 
   const std::unique_ptr<PeriodicMetricsService> periodic_metrics_service_;
+  std::unique_ptr<LacrosWatcher> lacros_watcher_;
 
   // Tracks low disk notifications.
   LowDiskMetricsService low_disk_metrics_service_;

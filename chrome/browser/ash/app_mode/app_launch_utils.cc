@@ -48,8 +48,12 @@ std::vector<std::string>* test_prefs_to_reset = nullptr;
 class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
                          public KioskAppLauncher::Observer {
  public:
-  AppLaunchManager(Profile* profile, const KioskAppId& kiosk_app_id)
-      : kiosk_app_id_(kiosk_app_id), profile_(profile) {
+  AppLaunchManager(Profile* profile,
+                   const KioskAppId& kiosk_app_id,
+                   bool should_start_app_session_ash)
+      : kiosk_app_id_(kiosk_app_id),
+        profile_(profile),
+        should_start_app_session_ash_(should_start_app_session_ash) {
     CHECK(kiosk_app_id.type != KioskAppType::kArcApp);
 
     if (kiosk_app_id.type == KioskAppType::kChromeApp) {
@@ -94,7 +98,11 @@ class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
   void OnAppLaunched() override {}
   void OnAppWindowCreated(
       const absl::optional<std::string>& app_name) override {
-    CreateAppSession(kiosk_app_id_, profile_, app_name);
+    if (should_start_app_session_ash_) {
+      // Only create a new `AppSessionAsh` if this is an Ash recovery flow. Do
+      // not create it during a Lacros recovery flow.
+      CreateAppSession(kiosk_app_id_, profile_, app_name);
+    }
     Cleanup();
   }
   void OnLaunchFailed(KioskAppLaunchError::Error error) override {
@@ -105,15 +113,19 @@ class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
 
   const KioskAppId kiosk_app_id_;
   const raw_ptr<Profile> profile_;
+  const bool should_start_app_session_ash_;
 
   std::unique_ptr<KioskAppLauncher> app_launcher_;
   base::ScopedObservation<KioskAppLauncher, KioskAppLauncher::Observer>
       observation_{this};
 };
 
-void LaunchAppOrDie(Profile* profile, const KioskAppId& kiosk_app_id) {
+void LaunchAppOrDie(Profile* profile,
+                    const KioskAppId& kiosk_app_id,
+                    bool should_start_app_session_ash) {
   // AppLaunchManager manages its own lifetime.
-  (new AppLaunchManager(profile, kiosk_app_id))->Start();
+  (new AppLaunchManager(profile, kiosk_app_id, should_start_app_session_ash))
+      ->Start();
 }
 
 void ResetEphemeralKioskPreferences(PrefService* prefs) {
