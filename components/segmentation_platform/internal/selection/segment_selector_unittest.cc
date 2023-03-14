@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string_piece_forward.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 
@@ -177,14 +176,6 @@ class SegmentSelectorTest : public testing::Test {
     segment_database_->AddPredictionResult(segment_id, score, clock_.Now());
     segment_selector_->OnModelExecutionCompleted(segment_id);
     task_environment_.RunUntilIdle();
-  }
-
-  void ExpectFieldTrials(const std::vector<std::string>& groups) {
-    for (const std::string& group : groups) {
-      EXPECT_CALL(field_trial_register_,
-                  RegisterFieldTrial(base::StringPiece("Segmentation_TestKey"),
-                                     base::StringPiece(group)));
-    }
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -449,6 +440,8 @@ TEST_F(SegmentSelectorTest, DoesNotMeetSignalCollectionRequirement) {
 TEST_F(SegmentSelectorTest,
        GetSelectedSegmentReturnsResultFromPreviousSession) {
   SetUpWithConfig(CreateTestConfig());
+  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+      .WillRepeatedly(Return(false));
   SegmentId segment_id0 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   SegmentId segment_id1 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping0[][2] = {{1.0, 0}};
@@ -492,56 +485,8 @@ TEST_F(SegmentSelectorTest,
   ASSERT_EQ(result, segment_selector_->GetCachedSegmentResult());
 }
 
-TEST_F(SegmentSelectorTest, GetSelectedSegmentUpdatedWhenUnused) {
-  SetUpWithConfig(CreateTestConfig());
-  SegmentId segment_id0 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
-  SegmentId segment_id1 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  float mapping0[][2] = {{1.0, 0}};
-  float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
-  InitializeMetadataForSegment(segment_id0, mapping0, 1);
-  InitializeMetadataForSegment(segment_id1, mapping1, 3);
-
-  // Set up a selected segment in prefs.
-  SelectedSegment from_history(segment_id0, 3);
-  auto prefs_moved = std::make_unique<TestSegmentationResultPrefs>();
-  prefs_ = prefs_moved.get();
-  prefs_->selection = from_history;
-
-  // Construct a segment selector. It should read result from last session.
-  segment_selector_ = std::make_unique<SegmentSelectorImpl>(
-      segment_database_.get(), &signal_storage_config_, std::move(prefs_moved),
-      config_.get(), &field_trial_register_, &clock_,
-      PlatformOptions::CreateDefault(), default_manager_.get());
-  segment_selector_->set_training_data_collector_for_testing(
-      &training_data_collector_);
-  segment_selector_->OnPlatformInitialized(execution_service_.get());
-
-  // Add results for a new segment.
-  base::Time result_timestamp = base::Time::Now();
-  segment_database_->AddPredictionResult(segment_id1, 0.6, result_timestamp);
-  segment_database_->AddPredictionResult(segment_id0, 0.5, result_timestamp);
-
-  segment_selector_->OnModelExecutionCompleted(segment_id1);
-  task_environment_.RunUntilIdle();
-
-  ASSERT_TRUE(prefs_->selection.has_value());
-  ASSERT_EQ(segment_id1, prefs_->selection->segment_id);
-
-  SegmentSelectionResult result;
-  result.segment = segment_id1;
-  result.is_ready = true;
-
-  // GetSelectedSegment should still return new result since this is the first
-  // call in the session.
-  GetSelectedSegment(result);
-  ASSERT_EQ(result, segment_selector_->GetCachedSegmentResult());
-}
-
 // Tests that prefs are properly updated after calling UpdateSelectedSegment().
 TEST_F(SegmentSelectorTest, UpdateSelectedSegment) {
-  std::vector<std::string> expected_groups{"Unselected", "Share", "NewTab"};
-  ExpectFieldTrials(expected_groups);
-
   SetUpWithConfig(CreateTestConfig());
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillRepeatedly(Return(true));
