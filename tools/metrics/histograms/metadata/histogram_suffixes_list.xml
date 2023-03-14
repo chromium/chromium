@@ -258,8 +258,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.FrameCounts.AdFrames.Total"/>
   <affected-histogram name="PageLoad.HeavyAds.ComputedTypeWithThresholdNoise"/>
   <affected-histogram name="PageLoad.HeavyAds.InterventionType2"/>
-  <affected-histogram name="PageLoad.Memory.Aggregate.Max"/>
-  <affected-histogram name="PageLoad.Memory.PerFrame.Max"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AnchorElementMetrics" separator="." ordering="prefix">

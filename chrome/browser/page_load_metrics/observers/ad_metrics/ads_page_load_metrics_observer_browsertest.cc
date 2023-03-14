@@ -101,12 +101,6 @@ const char kMaxAdDensityByHeightHistogramId[] =
 const char kMaxAdDensityRecordedHistogramId[] =
     "PageLoad.Clients.Ads.AdDensity.Recorded";
 
-const char kMemoryPerFrameMaxHistogramId[] =
-    "PageLoad.Clients.Ads.Memory.PerFrame.Max";
-
-const char kMemoryAggregateMaxHistogramId[] =
-    "PageLoad.Clients.Ads.Memory.Aggregate.Max";
-
 const char kMemoryMainFrameMaxHistogramId[] =
     "PageLoad.Clients.Ads.Memory.MainFrame.Max";
 
@@ -2570,14 +2564,6 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
   // Navigate away to force the histogram recording.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-  histogram_tester.ExpectTotalCount(kMemoryPerFrameMaxHistogramId, 1);
-  EXPECT_GT(
-      histogram_tester.GetAllSamples(kMemoryPerFrameMaxHistogramId)[0].min, 0);
-
-  histogram_tester.ExpectTotalCount(kMemoryAggregateMaxHistogramId, 1);
-  EXPECT_GT(
-      histogram_tester.GetAllSamples(kMemoryAggregateMaxHistogramId)[0].min, 0);
 
   histogram_tester.ExpectTotalCount(kMemoryMainFrameMaxHistogramId, 1);
   EXPECT_GT(

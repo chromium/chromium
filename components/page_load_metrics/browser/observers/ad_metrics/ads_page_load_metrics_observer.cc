@@ -1072,10 +1072,6 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
                 visibility, visibility_data.bytes);
   ADS_HISTOGRAM("Bytes.AdFrames.Aggregate.Network", PAGE_BYTES_HISTOGRAM,
                 visibility, visibility_data.network_bytes);
-  if (base::FeatureList::IsEnabled(::features::kV8PerFrameMemoryMonitoring)) {
-    ADS_HISTOGRAM("Memory.Aggregate.Max", PAGE_BYTES_HISTOGRAM, visibility,
-                  visibility_data.memory.max_bytes_used());
-  }
 
   // Only record same origin and main frame totals for the AnyVisibility suffix
   // as these numbers do not change for different visibility types.
@@ -1184,10 +1180,6 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
                   visibility, resource_data.bytes());
     ADS_HISTOGRAM("Bytes.AdFrames.PerFrame.Network", PAGE_BYTES_HISTOGRAM,
                   visibility, resource_data.network_bytes());
-    if (base::FeatureList::IsEnabled(::features::kV8PerFrameMemoryMonitoring)) {
-      ADS_HISTOGRAM("Memory.PerFrame.Max", PAGE_BYTES_HISTOGRAM, visibility,
-                    ad_frame_data.v8_max_memory_bytes_used());
-    }
     ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.OriginStatus",
                   UMA_HISTOGRAM_ENUMERATION, visibility,
                   ad_frame_data.origin_status());

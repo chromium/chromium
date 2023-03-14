@@ -2790,42 +2790,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Memory.Aggregate.Max" units="KiB"
-    expires_after="2021-09-30">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    The maximum reported aggregate number of kilobytes of memory used by V8 by
-    ad frames in this pageload. The value recorded is the maximum simultaneous
-    usage by ad frames during this pageload.
-
-    Only recorded if the page has at least one identified ad frame. Recorded in
-    PageLoadMetrics when the page is destroyed. An ad frame consists of the
-    identified ad frame and all of its children (which may also be ads, but are
-    counted as part of the ancestor ad frame).
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Memory.PerFrame.Max" units="KiB"
-    expires_after="2021-09-30">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    The maximum reported number of kilobytes of memory used by V8 by frames in
-    the ad frame tree in this pageload. The value recorded is the maximum
-    simultaneous usage by ad frames in this ad frame tree.
-
-    Only recorded if the page has at least one identified ad frame. Recorded in
-    PageLoadMetrics when the page is destroyed. An ad frame consists of the
-    identified ad frame and all of its children (which may also be ads, but are
-    counted as part of the ancestor ad frame).
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.PageTiming.ForegroundDuration" units="ms"
     expires_after="2023-09-10">
   <owner>bmcquade@chromium.org</owner>
