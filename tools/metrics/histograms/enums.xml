@@ -22475,14 +22475,18 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="New migration succeeded"/>
   <int value="3" label="Resumed migration failed (generic failure)"/>
   <int value="4" label="Resumed migration succeeded"/>
-  <int value="5" label="New migration failed (low disk space)"/>
-  <int value="6" label="Resumed migration failed (low disk space)"/>
+  <int value="5" label="New migration failed (low initial disk space)"/>
+  <int value="6" label="Resumed migration failed (low initial disk space)"/>
   <int value="7" label="New migration failed (file error)"/>
   <int value="8" label="Resumed migration failed (file error)"/>
   <int value="9" label="New migration failed (file error EIO on open)"/>
   <int value="10" label="Resumed migration failed (file error EIO on open)"/>
   <int value="11" label="New migration cancelled"/>
   <int value="12" label="Resumed migration cancelled"/>
+  <int value="13"
+      label="New migration failed (low disk space during migration)"/>
+  <int value="14"
+      label="Resumed migration failed (low disk space during migration)"/>
 </enum>
 
 <enum name="CrOSFileSystemMigrationStartStatus">
