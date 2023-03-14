@@ -1353,25 +1353,9 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::BuildPacketImpl(
         quic::QuicPacketCreator::MinPlaintextPacketSize(
             version_, header_.packet_number_length);
     if (frames_size < min_plaintext_packet_size) {
-      if (GetQuicRestartFlag(quic_allow_smaller_packets)) {
-        frames_copy.insert(frames_copy.begin(),
-                           quic::QuicFrame(quic::QuicPaddingFrame(
-                               min_plaintext_packet_size - frames_size)));
-      } else {
-        const size_t expansion_on_new_frame =
-            frames.empty()
-                ? 0
-                : quic::QuicPacketCreator::ExpansionOnNewFrameWithLastFrame(
-                      frames.back(), version_.transport_version);
-        const size_t padding_length =
-            std::max(1 + expansion_on_new_frame,
-                     min_plaintext_packet_size - frames_size) -
-            expansion_on_new_frame;
-        CHECK_LE(padding_length + packet_size + expansion_on_new_frame,
-                 max_plaintext_size);
-        frames_copy.push_back(
-            quic::QuicFrame(quic::QuicPaddingFrame(padding_length)));
-      }
+      frames_copy.insert(frames_copy.begin(),
+                         quic::QuicFrame(quic::QuicPaddingFrame(
+                             min_plaintext_packet_size - frames_size)));
     }
   }
   std::unique_ptr<quic::QuicPacket> packet(quic::test::BuildUnsizedDataPacket(
