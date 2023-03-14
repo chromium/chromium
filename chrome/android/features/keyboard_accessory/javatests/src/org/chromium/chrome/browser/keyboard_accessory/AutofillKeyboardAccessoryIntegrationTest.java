@@ -37,7 +37,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -255,7 +254,6 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1420520")
     public void testSheetHasMinimumSizeWhenTriggeredBySuggestion() throws TimeoutException {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         loadTestPage(MultiWindowKeyboard::new);
@@ -266,15 +264,13 @@ public class AutofillKeyboardAccessoryIntegrationTest {
                 .perform(scrollTo(isKeyboardAccessoryTabLayout()),
                         actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
 
-        CriteriaHelper.pollUiThread(() -> {
-            View sheetView = mActivityTestRule.getActivity().findViewById(
-                    R.id.keyboard_accessory_sheet_frame);
-            return sheetView.isShown() && sheetView.getHeight() > 0;
+        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame)).check((sheetView, exception) -> {
+            assertTrue(sheetView.isShown() && sheetView.getHeight() > 0);
         });
 
         // Click the back arrow.
         whenDisplayed(withId(R.id.show_keyboard)).perform(click());
-        waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
+        waitToBeHidden(withId(R.id.keyboard_accessory_sheet_container));
 
         CriteriaHelper.pollUiThread(() -> {
             View sheetView = mActivityTestRule.getActivity().findViewById(

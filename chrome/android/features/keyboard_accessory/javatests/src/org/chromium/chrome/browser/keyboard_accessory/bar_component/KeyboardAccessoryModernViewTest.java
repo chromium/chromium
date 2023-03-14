@@ -27,10 +27,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.KEYBOARD_TOGGLE_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -295,19 +293,13 @@ public class KeyboardAccessoryModernViewTest {
     public void testUpdatesKeyPaddingAfterRotation() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
-            mModel.set(KEYBOARD_TOGGLE_VISIBLE, false);
-            mModel.set(SHEET_TITLE, "Sheet title");
             mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
         });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
         CriteriaHelper.pollUiThread(view.mBarItemsView::isShown);
         CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(KEYBOARD_TOGGLE_VISIBLE, true));
-        CriteriaHelper.pollUiThread(() -> !view.mBarItemsView.isShown());
-
         rotateActivityToLandscape();
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(KEYBOARD_TOGGLE_VISIBLE, false));
 
         CriteriaHelper.pollUiThread(view.mBarItemsView::isShown);
         CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));

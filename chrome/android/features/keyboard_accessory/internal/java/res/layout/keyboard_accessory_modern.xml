@@ -37,8 +37,6 @@ found in the LICENSE file.
         android:orientation="horizontal"
         android:background="@macro/default_bg_color">
 
-        <include layout="@layout/accessory_sheet_header"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bar_items_view"
             android:layout_width="match_parent"

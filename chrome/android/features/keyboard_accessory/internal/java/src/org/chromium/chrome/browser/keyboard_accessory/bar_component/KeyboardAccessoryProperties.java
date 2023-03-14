@@ -39,14 +39,8 @@ class KeyboardAccessoryProperties {
     static final WritableBooleanPropertyKey SKIP_CLOSING_ANIMATION =
             new WritableBooleanPropertyKey("skip_closing_animation");
     static final WritableIntPropertyKey BOTTOM_OFFSET_PX = new WritableIntPropertyKey("offset");
-    static final WritableObjectPropertyKey<String> SHEET_TITLE =
-            new WritableObjectPropertyKey<>("sheet_title");
-    static final WritableBooleanPropertyKey KEYBOARD_TOGGLE_VISIBLE =
-            new WritableBooleanPropertyKey("toggle_visible");
     static final WritableObjectPropertyKey<SheetOpenerBarItem> SHEET_OPENER_ITEM =
             new WritableObjectPropertyKey<>("sheet_opener_item");
-    static final WritableObjectPropertyKey<Runnable> SHOW_KEYBOARD_CALLBACK =
-            new WritableObjectPropertyKey<>("keyboard_callback");
     static final ReadableBooleanPropertyKey DISABLE_ANIMATIONS_FOR_TESTING =
             new ReadableBooleanPropertyKey("skip_all_animations_for_testing");
     static final WritableObjectPropertyKey<Callback<Integer>> OBFUSCATED_CHILD_AT_CALLBACK =
@@ -62,13 +56,11 @@ class KeyboardAccessoryProperties {
     static PropertyModel.Builder defaultModelBuilder() {
         return new PropertyModel
                 .Builder(DISABLE_ANIMATIONS_FOR_TESTING, BAR_ITEMS, VISIBLE, SKIP_CLOSING_ANIMATION,
-                        BOTTOM_OFFSET_PX, SHEET_OPENER_ITEM, KEYBOARD_TOGGLE_VISIBLE, SHEET_TITLE,
-                        SHOW_KEYBOARD_CALLBACK, OBFUSCATED_CHILD_AT_CALLBACK, SHOW_SWIPING_IPH,
-                        HAS_SUGGESTIONS, ANIMATION_LISTENER)
+                        BOTTOM_OFFSET_PX, SHEET_OPENER_ITEM, OBFUSCATED_CHILD_AT_CALLBACK,
+                        SHOW_SWIPING_IPH, HAS_SUGGESTIONS, ANIMATION_LISTENER)
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)
                 .with(SKIP_CLOSING_ANIMATION, false)
-                .with(KEYBOARD_TOGGLE_VISIBLE, false)
                 .with(DISABLE_ANIMATIONS_FOR_TESTING, false)
                 .with(SHOW_SWIPING_IPH, false)
                 .with(HAS_SUGGESTIONS, false);

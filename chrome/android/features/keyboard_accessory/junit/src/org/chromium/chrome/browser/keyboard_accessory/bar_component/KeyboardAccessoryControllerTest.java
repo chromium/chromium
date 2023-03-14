@@ -10,7 +10,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,8 +22,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_TITLE;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
@@ -337,20 +334,6 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testShowsTitleForActiveTabs() {
-        // Add an inactive tab and ensure the sheet title isn't already set.
-        mCoordinator.show();
-        setTabs(new KeyboardAccessoryData.Tab[] {mTestTab});
-        mModel.set(SHEET_TITLE, "");
-        assertThat(mCoordinator.hasActiveTab(), is(false));
-
-        // Changing the active tab should also change the title.
-        setActiveTab(mTestTab);
-        assertThat(mModel.get(SHEET_TITLE), equalTo("Passwords"));
-        assertThat(mCoordinator.hasActiveTab(), is(true));
-    }
-
-    @Test
     public void testCreatesAddressItemWithIPH() {
         PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
@@ -595,22 +578,6 @@ public class KeyboardAccessoryControllerTest {
     public void testFowardsAnimationEventsToVisibilityDelegate() {
         mModel.get(ANIMATION_LISTENER).onFadeInEnd();
         verify(mMockBarVisibilityDelegate).onBarFadeInAnimationEnd();
-    }
-
-    @Test
-    public void testDoubleTappingCloseButtonHasNoEffect() {
-        setTabs(new KeyboardAccessoryData.Tab[] {mTestTab});
-        setActiveTab(mTestTab);
-
-        // First click should dismiss.
-        mModel.get(SHOW_KEYBOARD_CALLBACK).run();
-        setActiveTab(null); // Simulate the tab was reset by the click.
-        verify(mMockSheetVisibilityDelegate, atLeast(1)).onChangeAccessorySheet(0);
-        verify(mMockSheetVisibilityDelegate).onCloseAccessorySheet();
-
-        // Second click should not crash but be noop.
-        verifyNoMoreInteractions(mMockSheetVisibilityDelegate);
-        mModel.get(SHOW_KEYBOARD_CALLBACK).run();
     }
 
     private int getGenerationImpressionCount() {

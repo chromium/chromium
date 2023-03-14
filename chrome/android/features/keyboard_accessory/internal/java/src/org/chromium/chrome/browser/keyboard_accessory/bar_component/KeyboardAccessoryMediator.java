@@ -9,11 +9,8 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BOTTOM_OFFSET_PX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.KEYBOARD_TOGGLE_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_TITLE;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
@@ -76,7 +73,6 @@ class KeyboardAccessoryMediator
 
         // Add mediator as observer so it can use model changes as signal for accessory visibility.
         mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, this::onSuggestionObfuscatedAt);
-        mModel.set(SHOW_KEYBOARD_CALLBACK, this::onKeyboardRequested);
         mModel.set(SHEET_OPENER_ITEM, new SheetOpenerBarItem(sheetOpenerCallbacks));
         mModel.set(ANIMATION_LISTENER, mBarVisibilityDelegate::onBarFadeInAnimationEnd);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
@@ -271,13 +267,7 @@ class KeyboardAccessoryMediator
             }
             return;
         }
-        if (propertyKey == KEYBOARD_TOGGLE_VISIBLE) {
-            KeyboardAccessoryData.Tab activeTab = mTabSwitcher.getActiveTab();
-            if (activeTab != null) mModel.set(SHEET_TITLE, activeTab.getTitle());
-            return;
-        }
-        if (propertyKey == BOTTOM_OFFSET_PX || propertyKey == SHOW_KEYBOARD_CALLBACK
-                || propertyKey == SHEET_OPENER_ITEM || propertyKey == SHEET_TITLE
+        if (propertyKey == BOTTOM_OFFSET_PX || propertyKey == SHEET_OPENER_ITEM
                 || propertyKey == SKIP_CLOSING_ANIMATION
                 || propertyKey == DISABLE_ANIMATIONS_FOR_TESTING
                 || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK || propertyKey == SHOW_SWIPING_IPH
@@ -289,7 +279,6 @@ class KeyboardAccessoryMediator
 
     @Override
     public void onActiveTabChanged(Integer activeTab) {
-        mModel.set(KEYBOARD_TOGGLE_VISIBLE, activeTab != null);
         if (activeTab == null) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) return;
             mSheetVisibilityDelegate.onCloseAccessorySheet();
@@ -303,19 +292,12 @@ class KeyboardAccessoryMediator
         closeSheet();
     }
 
-    private void onKeyboardRequested() {
-        // Return early if the button was clicked twice and the active tab was already reset.
-        if (mTabSwitcher.getActiveTab() == null) return;
-        closeSheet();
-    }
-
     private void closeSheet() {
         assert !ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
             : "The bar cannot close the sheet when AUTOFILL_KEYBOARD_ACCESSORY is enabled. It must be closed by the sheet.";
         assert mTabSwitcher.getActiveTab() != null;
         ManualFillingMetricsRecorder.recordSheetTrigger(
                 mTabSwitcher.getActiveTab().getRecordingType(), AccessorySheetTrigger.MANUAL_CLOSE);
-        mModel.set(KEYBOARD_TOGGLE_VISIBLE, false);
         mSheetVisibilityDelegate.onCloseAccessorySheet();
     }
 

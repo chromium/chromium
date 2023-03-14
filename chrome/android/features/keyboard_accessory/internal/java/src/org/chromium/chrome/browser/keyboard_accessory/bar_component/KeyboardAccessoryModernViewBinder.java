@@ -7,10 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIPHUtils.hasShownAnyAutofillIphBefore;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIPHUtils.showHelpBubble;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.KEYBOARD_TOGGLE_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_TITLE;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 
 import android.content.res.Resources;
@@ -182,13 +179,7 @@ class KeyboardAccessoryModernViewBinder {
         assert view instanceof KeyboardAccessoryModernView;
         KeyboardAccessoryModernView modernView = (KeyboardAccessoryModernView) view;
         boolean wasBound = KeyboardAccessoryViewBinder.bindInternal(model, modernView, propertyKey);
-        if (propertyKey == KEYBOARD_TOGGLE_VISIBLE) {
-            modernView.setKeyboardToggleVisibility(model.get(KEYBOARD_TOGGLE_VISIBLE));
-        } else if (propertyKey == SHOW_KEYBOARD_CALLBACK) {
-            modernView.setShowKeyboardCallback(model.get(SHOW_KEYBOARD_CALLBACK));
-        } else if (propertyKey == SHEET_TITLE) {
-            modernView.setSheetTitle(model.get(SHEET_TITLE));
-        } else if (propertyKey == OBFUSCATED_CHILD_AT_CALLBACK) {
+        if (propertyKey == OBFUSCATED_CHILD_AT_CALLBACK) {
             modernView.setObfuscatedLastChildAt(model.get(OBFUSCATED_CHILD_AT_CALLBACK));
         } else if (propertyKey == SHOW_SWIPING_IPH) {
             RectProvider swipingIphRectProvider = modernView.getSwipingIphRect();

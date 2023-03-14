@@ -10,12 +10,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,8 +30,6 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     private static final float ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP = 200f;
     private static final float ARRIVAL_ANIMATION_TENSION = 1f;
 
-    private ImageView mKeyboardToggle;
-    private TextView mSheetTitle;
     private Callback<Integer> mObfuscatedLastChildAt;
     private ObjectAnimator mAnimator;
     private float mLastBarItemsViewPosition;
@@ -128,10 +123,6 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mSheetTitle = findViewById(R.id.sheet_title);
-        mKeyboardToggle = findViewById(R.id.show_keyboard);
-        mKeyboardToggle.setImageDrawable(
-                AppCompatResources.getDrawable(getContext(), R.drawable.ic_arrow_back_24dp));
 
         int pad = getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding);
         // Ensure the last element (although scrollable) is always end-aligned.
@@ -197,24 +188,6 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
             return lastChild;
         }
         return null;
-    }
-
-    void setKeyboardToggleVisibility(boolean hasActiveTab) {
-        TraceEvent.begin("KeyboardAccessoryModernView#setKeyboardToggleVisibility");
-        mKeyboardToggle.setVisibility(hasActiveTab ? VISIBLE : GONE);
-        mSheetTitle.setVisibility(hasActiveTab ? VISIBLE : GONE);
-        mBarItemsView.setVisibility(hasActiveTab ? GONE : VISIBLE);
-        if (!hasActiveTab) mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
-        TraceEvent.end("KeyboardAccessoryModernView#setKeyboardToggleVisibility");
-    }
-
-    void setSheetTitle(String title) {
-        mSheetTitle.setText(title);
-    }
-
-    void setShowKeyboardCallback(Runnable showKeyboardCallback) {
-        mKeyboardToggle.setOnClickListener(
-                showKeyboardCallback == null ? null : view -> showKeyboardCallback.run());
     }
 
     void setObfuscatedLastChildAt(Callback<Integer> obfuscatedLastChildAt) {
