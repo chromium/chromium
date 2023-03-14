@@ -347,6 +347,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.ImageDebugEntrySize" units="KB"
+    expires_after="2023-09-06">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the size of the image debug entry that is extracted from a
+    downloaded executable. This is recorded on executable downloads on Windows.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.MalwareDeepScanResult.{trigger}"
     enum="SBClientDownloadCheckResult" expires_after="2023-04-28">
   <owner>drubery@chromium.org</owner>
