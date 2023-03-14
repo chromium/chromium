@@ -353,7 +353,7 @@
 <translation id="1307559529304613120">Системе не удалось сохранить токен доступа для API на этом устройстве.</translation>
 <translation id="131112695174432497">Данные, влияющие на персонализацию рекламы, будут удалены.</translation>
 <translation id="1312811472299082263">Добавьте сценарий Ansible или файл резервной копии Crostini</translation>
-<translation id="1313264149528821971">Отозваны разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />"</translation>
+<translation id="1313264149528821971">Отозваны разрешения: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="1313405956111467313">Автоматическая настройка прокси-сервера</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Вы автоматически выйдете из аккаунтов на всех сайтах, в том числе на открытых вкладках.</translation>
@@ -667,7 +667,7 @@
 <translation id="15916883652754430">Настройки голоса по умолчанию</translation>
 <translation id="1592074621872221573">Администратор (<ph name="MANAGER" />) отключил отладку с помощью ADB, поэтому настройки устройства <ph name="DEVICE_TYPE" /> будут сброшены. Прежде чем перезапускать его, выполните резервное копирование файлов.</translation>
 <translation id="1592126057537046434">Перевод с помощью функции "Быстрые ответы"</translation>
-<translation id="1593327942193951498">{NUM_SITES,plural, =1{Разрешения отозваны у <ph name="BEGIN_BOLD" />1 сайта<ph name="END_BOLD" />, который вы давно не посещали}one{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, которые вы давно не посещали}few{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайтов<ph name="END_BOLD" />, которые вы давно не посещали}many{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайтов<ph name="END_BOLD" />, которые вы давно не посещали}other{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, которые вы давно не посещали}}</translation>
+<translation id="1593327942193951498">{NUM_SITES,plural, =1{Разрешения отозваны у <ph name="BEGIN_BOLD" />1 сайта<ph name="END_BOLD" />, который вы давно не посещали.}one{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, которые вы давно не посещали.}few{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайтов<ph name="END_BOLD" />, которые вы давно не посещали.}many{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайтов<ph name="END_BOLD" />, которые вы давно не посещали.}other{Разрешения отозваны у <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, которые вы давно не посещали.}}</translation>
 <translation id="1593594475886691512">Форматирование...</translation>
 <translation id="159359590073980872">Кеш изображений</translation>
 <translation id="1593926297800505364">Сохранить способ оплаты</translation>
@@ -1291,7 +1291,7 @@
 <translation id="2119349053129246860">Открыть в приложении "<ph name="APP" />"</translation>
 <translation id="2119461801241504254">Безопасный просмотр включен. Он защищает вас от вредоносных сайтов и файлов.</translation>
 <translation id="2120297377148151361">Действия в браузере</translation>
-<translation id="2120639962942052471">Отключено разрешение "<ph name="PERMISSION" />"</translation>
+<translation id="2120639962942052471">Отключено разрешение: <ph name="PERMISSION" /></translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Файлы cookie заблокированы.}=1{Файлы cookie заблокированы (есть 1 исключение).}one{Файлы cookie заблокированы (есть {COUNT} исключение).}few{Файлы cookie заблокированы (есть {COUNT} исключения).}many{Файлы cookie заблокированы (есть {COUNT} исключений).}other{Файлы cookie заблокированы (есть {COUNT} исключения).}}</translation>
 <translation id="2121825465123208577">Изменить размер</translation>
 <translation id="2123766928840368256">Выбрать другой файл</translation>
@@ -1796,7 +1796,7 @@
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
 <translation id="2546302722632337735">Запретить сайтам использовать идентификаторы для воспроизведения защищенного контента</translation>
 <translation id="2546991196809436099">Увеличивать объекты на экране. Включайте и выключайте режим лупы с помощью сочетания клавиш Поиск + Ctrl + M.</translation>
-<translation id="2548347166720081527">Предоставлено разрешение "<ph name="PERMISSION" />"</translation>
+<translation id="2548347166720081527">Предоставлено разрешение: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Сбросить кеш профиля eSIM</translation>
 <translation id="2549985041256363841">Начать запись</translation>
 <translation id="2550212893339833758">Память подкачки</translation>
@@ -2299,7 +2299,7 @@
 <translation id="2996722619877761919">Переплет по длинному краю</translation>
 <translation id="2996932914629936323">Удаление истории на всех синхронизированных устройствах</translation>
 <translation id="2998267783395280091">Найдена сеть</translation>
-<translation id="3000378525979847272">Предоставлены разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />"</translation>
+<translation id="3000378525979847272">Предоставлены разрешения: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Монофонический звук</translation>
 <translation id="3001144475369593262">Детские аккаунты</translation>
 <translation id="3001835006423291524">Приложите палец к сканеру отпечатков в правом нижнем углу клавиатуры. Данные отпечатков пальцев надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
@@ -4879,7 +4879,7 @@
 <translation id="5376169624176189338">Нажмите, чтобы вернуться. Удерживайте, чтобы просмотреть историю.</translation>
 <translation id="5376931455988532197">Слишком большой файл</translation>
 <translation id="5379140238605961210">Всегда блокировать доступ к микрофону</translation>
-<translation id="5380424552031517043">Отозвано разрешение "<ph name="PERMISSION" />"</translation>
+<translation id="5380424552031517043">Отозвано разрешение: <ph name="PERMISSION" /></translation>
 <translation id="5382591305415226340">Управление поддерживаемыми ссылками</translation>
 <translation id="5383377866517186886">Камера отключена в системных настройках macOS</translation>
 <translation id="5383740867328871413">Группа без названия: <ph name="GROUP_CONTENTS" />, <ph name="COLLAPSED_STATE" /></translation>
@@ -4968,7 +4968,7 @@
 <translation id="5463856536939868464">Меню со скрытыми закладками</translation>
 <translation id="5464660706533281090">Значение этого параметра может изменить только взрослый пользователь.</translation>
 <translation id="5466374726908360271">Вст&amp;авить и найти "<ph name="SEARCH_TERMS" />"</translation>
-<translation id="5467207440419968613">Отключены разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />"</translation>
+<translation id="5467207440419968613">Отключены разрешения: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Поиск общих папок…</translation>
 <translation id="5468330507528805311">Статус режима модема</translation>
 <translation id="5469852975082458401">Вы сможете использовать курсор для навигации по страницам. Нажмите F7, чтобы отключить эту функцию.</translation>
@@ -5566,7 +5566,7 @@
 <translation id="6003143259071779217">Удалить мобильную сеть eSIM</translation>
 <translation id="6003479444341796444">Строка заголовка теперь видна.</translation>
 <translation id="6003582434972667631">Тема задана вашей организацией</translation>
-<translation id="6006392003290068688">Отозваны разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />"</translation>
+<translation id="6006392003290068688">Отозваны разрешения: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6006484371116297560">Классическая</translation>
 <translation id="6007240208646052708">Голосовой поиск на вашем языке недоступен.</translation>
 <translation id="6010651352520077187">Если параметр включен, Google Переводчик предлагает переводить сайты на предпочтительный язык. Он также может переводить сайты автоматически.</translation>
@@ -6728,7 +6728,7 @@
 <translation id="7039326228527141150">Доступ к USB-устройствам от <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Вход по смарт-карте Microsoft</translation>
 <translation id="7039951224110875196">Создать аккаунт Google для ребенка</translation>
-<translation id="7041405817194720353">Отозваны разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и ещё <ph name="COUNT" /></translation>
+<translation id="7041405817194720353">Отозваны разрешения: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="COUNT" /></translation>
 <translation id="7042116641003232070">Разрешено сохранять данные на этом устройстве</translation>
 <translation id="7043108582968290193">Готово! Несовместимых приложений не обнаружено.</translation>
 <translation id="7044124535091449260">Подробнее о доступе для сайта…</translation>
@@ -8228,7 +8228,7 @@
 <translation id="8408270600235826886">Вы сами решаете, какие сведения будут доступны Google. Этот параметр можно в любой момент изменить в настройках. Данные будут использоваться в соответствии с <ph name="BEGIN_LINK" />Политикой конфиденциальности Google<ph name="END_LINK" />.</translation>
 <translation id="84098433273647700">Тема, которая у вас установлена</translation>
 <translation id="8410775397654368139">Google Play</translation>
-<translation id="8412136526970428322">Предоставлено разрешение "<ph name="PERMISSION" />" и ещё <ph name="COUNT" /></translation>
+<translation id="8412136526970428322">Предоставлены разрешения: <ph name="PERMISSION" /> и ещё <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Всегда спрашивать (рекомендуется)</translation>
 <translation id="8413956290606243087">Включить встроенную в Chrome OS программу чтения с экрана ChromeVox?</translation>
 <translation id="8414249071344507766">Воспоминания скрыты на два дня.</translation>
@@ -8680,7 +8680,7 @@
 <translation id="8823963789776061136">Вы также можете выбрать PPD-файл для принтера. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Добавить &amp;страницу</translation>
 <translation id="8827083388261088094">Нажмите, чтобы управлять разрешениями расширения "<ph name="EXTENSION" />".</translation>
-<translation id="8827125715368568315">Отключено разрешение "<ph name="PERMISSION" />" и ещё <ph name="COUNT" /></translation>
+<translation id="8827125715368568315">Отключены разрешения: <ph name="PERMISSION" /> и ещё <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Закрепить расширение</translation>
 <translation id="8827752199525959199">Пароль для аккаунта <ph name="USERNAME" /> на сайте <ph name="DOMAIN" /></translation>
 <translation id="8828933418460119530">DNS-имя</translation>
