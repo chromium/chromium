@@ -36,7 +36,8 @@ function assertModuleHeaderTitle(headerElement: HTMLElement, title: string) {
 
 function createVisit(
     visitId: bigint, normalizedUrl: string, urlForDisplay: string,
-    pageTitle: string, hasUrlKeyedImage: boolean): URLVisit {
+    pageTitle: string, hasUrlKeyedImage: boolean,
+    relativeDate: string = ''): URLVisit {
   return {
     visitId: visitId,
     normalizedUrl: {url: normalizedUrl},
@@ -45,7 +46,7 @@ function createVisit(
     titleMatchPositions: [],
     urlForDisplayMatchPositions: [],
     duplicates: [],
-    relativeDate: '',
+    relativeDate: relativeDate,
     annotations: [],
     debugInfo: {},
     rawVisitData: {
@@ -297,20 +298,39 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
   });
 
   test('Tile element populated with correct data', async () => {
+    const visits: URLVisit[] = [];
+    visits.push(createVisit(
+        BigInt(0), 'https://www.google.com/', 'www.google.com', 'SRP', false));
+
+    // Create general visits.
+    for (let i = 1; i <= 3; i++) {
+      visits.push(createVisit(
+          BigInt(i), `https://www.foo.com/${i}`, `www.foo.com/${i}`,
+          `Test Title ${i}`, i <= 3, '1 min ago'));
+    }
+
     handler.setResultFor(
-        'getCluster', Promise.resolve({cluster: createSampleCluster()}));
+        'getCluster',
+        Promise.resolve({cluster: createSampleCluster({visits: visits})}));
 
     const moduleElement = await historyClustersDescriptor.initialize(0) as
         HistoryClustersModuleElement;
 
     document.body.append(moduleElement);
     assertTrue(!!moduleElement);
+
     await handler.whenCalled('getCluster');
     await waitAfterNextRender(moduleElement);
 
     const tileElement = $$(moduleElement, 'ntp-history-clusters-tile');
     assertTrue(!!tileElement);
-    assertEquals($$(tileElement, '#title')!.innerHTML, 'Test Title 1');
+
+    assertEquals('Test Title 1', $$(tileElement, '#title')!.innerHTML);
+    assertEquals('1 min ago', $$(tileElement, '#date')!.innerHTML);
+    assertTrue(
+        !!window.getComputedStyle($$<HTMLImageElement>(tileElement, '#icon')!)
+              .getPropertyValue('background-image')
+              .trim());
   });
 
   test('Related searches element populated with correct data', async () => {
@@ -358,6 +378,30 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
         headerElement.querySelector('#showAllButton')!.innerHTML.trim());
     assertModuleHeaderTitle(
         headerElement, `Resume your journey for ${sampleClusterLabel}`);
+  });
+
+  test('Header info button click opens info dialog', async () => {
+    const sampleClusterLabel = '"Sample Journey"';
+    handler.setResultFor('getCluster', Promise.resolve({
+      cluster: createSampleCluster({label: sampleClusterLabel}),
+    }));
+
+    const moduleElement = await historyClustersDescriptor.initialize(0) as
+        HistoryClustersModuleElement;
+
+    document.body.append(moduleElement);
+    assertTrue(!!moduleElement);
+    await handler.whenCalled('getCluster');
+    await waitAfterNextRender(moduleElement);
+
+    const headerElement = $$(moduleElement, 'ntp-module-header');
+    assertTrue(!!headerElement);
+
+    // Act.
+    headerElement!.dispatchEvent(new Event('info-button-click'));
+
+    // Assert.
+    assertTrue(!!$$(moduleElement, 'ntp-info-dialog'));
   });
 
   test('Header title falls back to Visit title', async () => {
