@@ -135,4 +135,11 @@ TEST_F(DownloadBubblePrefsTest, V2FeatureFlagDisabled_NoMVP_YesV2) {
   ExpectFeatureFlagV2EnabledStatus(/*expect_enabled=*/false);
 }
 
+TEST_F(DownloadBubblePrefsTest, ShouldSuppressIph) {
+  // Test default value.
+  EXPECT_FALSE(ShouldSuppressDownloadBubbleIph(profile_));
+  SetShouldSuppressDownloadBubbleIph(profile_, true);
+  EXPECT_TRUE(ShouldSuppressDownloadBubbleIph(profile_));
+}
+
 }  // namespace download

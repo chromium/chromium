@@ -611,6 +611,7 @@ void DownloadBubbleRowView::Layout() {
 }
 
 void DownloadBubbleRowView::OnMainButtonPressed() {
+  bubble_controller_->RecordDownloadBubbleInteraction();
   if (ui_info_.has_subpage) {
     DownloadItemWarningData::AddWarningActionEvent(
         model_->GetDownloadItem(),

@@ -31,6 +31,7 @@ extern const char kSafeBrowsingForTrustedSourcesEnabled[];
 extern const char kDisableScreenshots[];
 extern const char kDownloadRestrictions[];
 extern const char kDownloadBubbleEnabled[];
+extern const char kDownloadBubbleIphSuppression[];
 extern const char kDownloadDuplicateFilePromptEnabled[];
 extern const char kForceEphemeralProfiles[];
 extern const char kHomePageIsNewTabPage[];

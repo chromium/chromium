@@ -128,6 +128,7 @@ void DownloadBubbleUIController::HideDownloadUi() {
 }
 
 void DownloadBubbleUIController::HandleButtonPressed() {
+  RecordDownloadBubbleInteraction();
   display_controller_->HandleButtonPressed();
 }
 
@@ -439,6 +440,7 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     DownloadUIModel* model,
     DownloadCommands::Command command,
     bool is_main_view) {
+  RecordDownloadBubbleInteraction();
   DownloadCommands commands(model->GetWeakPtr());
   base::UmaHistogramExactLinear("Download.Bubble.ProcessedCommand", command,
                                 DownloadCommands::MAX + 1);
@@ -530,4 +532,9 @@ void DownloadBubbleUIController::ScheduleCancelForEphemeralWarning(
       download_core_service->GetDownloadManagerDelegate();
   if (delegate)
     delegate->ScheduleCancelForEphemeralWarning(guid);
+}
+
+void DownloadBubbleUIController::RecordDownloadBubbleInteraction() {
+  download::SetShouldSuppressDownloadBubbleIph(
+      browser_->profile()->GetOriginalProfile(), true);
 }
