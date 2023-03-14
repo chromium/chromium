@@ -69,7 +69,10 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
       },
       title: String,
       url: String,
-      imageUrl: String,
+      imageUrls: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -83,7 +86,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   size: CrUrlListItemSize;
   override title: string;
   url?: string;
-  imageUrl: string;
+  imageUrls: string[];
 
   override ready() {
     super.ready();
@@ -122,6 +125,10 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     return getFaviconForPageURL(this.url || '', false);
   }
 
+  private shouldShowImageUrl_(_url: string, index: number) {
+    return index <= 2;
+  }
+
   private onBadgesSlotChange_() {
     this.hasBadges_ =
         this.$.badges.assignedElements({flatten: true}).length > 0;
@@ -137,12 +144,14 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
 
   private shouldShowFavicon_(): boolean {
     return this.url !== undefined &&
-        (this.size === CrUrlListItemSize.COMPACT || !this.imageUrl);
+        (this.size === CrUrlListItemSize.COMPACT ||
+         this.imageUrls.length === 0);
   }
 
   private shouldShowUrlImage_(): boolean {
     return this.url !== undefined &&
-        !(this.size === CrUrlListItemSize.COMPACT || !this.imageUrl);
+        !(this.size === CrUrlListItemSize.COMPACT ||
+          this.imageUrls.length === 0);
   }
 
   private shouldShowFolderCount_(): boolean {

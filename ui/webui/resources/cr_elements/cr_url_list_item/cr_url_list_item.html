@@ -116,11 +116,34 @@
   :host([size=large]) .folder-and-count {
     align-items: center;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 50%);
+    grid-template-rows: repeat(2, 50%);
     height: 100%;
     justify-items: center;
     width: 100%;
+  }
+
+  .folder-and-count .image-container {
+    height: 100%;
+    width: 100%;
+  }
+
+  .folder-and-count .image-container img {
+    height: 100%;
+    object-fit: cover;
+    opacity: 95%;
+    width: 100%;
+  }
+
+  /* If there is only 1 img, span the entire grid. */
+  .folder-and-count .image-container:first-of-type:not(:has(~ .image-container:nth-child(2))) {
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 2;
+  }
+
+  /* If there is only 2 imgs, span the 1st image across both rows. */
+  .folder-and-count .image-container:first-of-type:not(:has(~ .image-container:nth-of-type(3))) {
+    grid-row: 1 / span 2;
   }
 
   .folder {
@@ -136,12 +159,51 @@
 
   :host([size=large]) .count {
     align-items: center;
+    background: var(--google-grey-50);
+    border-radius: 4px 0 0 0;
     display: flex;
     grid-column: 2;
     grid-row: 2;
     height: 100%;
     justify-content: center;
     width: 100%;
+    z-index: 1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host([size=large]) .count {
+      background: rgba(var(--google-grey-200-rgb), .11);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]):host([size=large]) .count {
+    background: var(--color-list-item-folder-icon-background,
+        var(--cr-fallback-color-primary-container));
+  }
+
+  .image-container {
+    /*
+     * Acts as an overlay to images with some transparency, to ensure contrast
+     * against the row background.
+     */
+    background: black;
+    /* Intentionally 1px higher than the inherited border radius to avoid
+     * anti-aliasing issues.
+     */
+    border-radius: 5px;
+    height: 100%;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .image-container {
+      background: transparent;
+    }
+  }
+
+  :host-context([chrome-refresh-2023]):host([size=medium]) .image-container,
+  :host-context([chrome-refresh-2023]):host([size=large]) .image-container {
+    border-radius: 9px;
   }
 
   .metadata {
@@ -270,20 +332,26 @@
     height: 100%;
     object-fit: cover;
     object-position: center center;
+    opacity: 95%;
     width: 100%;
   }
 </style>
 
 <slot name="prefix"></slot>
 <div id="iconContainer">
-  <div class="favicon" hidden$="[[!shouldShowFavicon_(url, size, imageUrl, count)]]"
+  <div class="favicon" hidden$="[[!shouldShowFavicon_(url, size, imageUrls, count)]]"
       style$="background-image: [[getFavicon_(url)]];">
   </div>
-  <img class="url-image" is="cr-auto-img"
-      hidden$="[[!shouldShowUrlImage_(url, size, imageUrl)]]"
-      auto-src="[[imageUrl]]">
+  <div class="image-container" hidden$="[[!shouldShowUrlImage_(url, size, imageUrls)]]">
+    <img class="url-image" is="cr-auto-img" auto-src="[[imageUrls.0]]">
+  </div>
   <div class="folder-and-count" hidden$="[[!shouldShowFolderCount_(url, count)]]">
-    <div class="folder cr-icon icon-folder-open"></div>
+    <template is="dom-repeat" items="[[imageUrls]]" filter="shouldShowImageUrl_">
+      <div class="image-container">
+        <img is="cr-auto-img" auto-src="[[item]]">
+      </div>
+    </template>
+    <div class="folder cr-icon icon-folder-open" hidden$="[[imageUrls.0]]"></div>
     <div class="count">[[getDisplayedCount_(count)]]</div>
   </div>
 </div>

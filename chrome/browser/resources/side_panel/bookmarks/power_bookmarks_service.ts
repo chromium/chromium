@@ -214,7 +214,7 @@ export class PowerBookmarksService {
    */
   refreshDataForBookmarks(bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
     bookmarks.forEach(
-        (bookmark) => this.findBookmarkImageUrls_(bookmark, false));
+        (bookmark) => this.findBookmarkImageUrls_(bookmark, true, false));
   }
 
   /**
@@ -258,7 +258,7 @@ export class PowerBookmarksService {
     const bookmark = this.findBookmarkWithId(id)!;
     Object.assign(bookmark, changedInfo);
     this.findBookmarkDescriptions_(bookmark, false);
-    this.findBookmarkImageUrls_(bookmark, false);
+    this.findBookmarkImageUrls_(bookmark, false, true);
     this.delegate_.onBookmarkChanged(id, changedInfo);
   }
 
@@ -273,7 +273,7 @@ export class PowerBookmarksService {
     this.delegate_.onBookmarkCreated(node, parent);
     this.findBookmarkDescriptions_(parent, false);
     this.findBookmarkDescriptions_(node, false);
-    this.findBookmarkImageUrls_(node, false);
+    this.findBookmarkImageUrls_(node, false, false);
   }
 
   private onMoved_(movedInfo: chrome.bookmarks.MoveInfo) {
@@ -372,13 +372,14 @@ export class PowerBookmarksService {
 
   /**
    * Assigns an image url for the given bookmark. Also assigns an image url to
-   * all descendants if recurse is true.
+   * all children if recurse is true.
    */
   private async findBookmarkImageUrls_(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, recurse: boolean) {
+      bookmark: chrome.bookmarks.BookmarkTreeNode, recurse: boolean,
+      forceUpdate: boolean) {
     const hasImage =
         this.bookmarksWithCachedImages_.has(bookmark.id.toString());
-    if (!hasImage) {
+    if (forceUpdate || !hasImage) {
       // Reset image url to ensure old images don't persist while the new image
       // is being fetched.
       this.delegate_.setImageUrl(bookmark, '');
@@ -392,7 +393,7 @@ export class PowerBookmarksService {
     }
     if (recurse && bookmark.children) {
       bookmark.children.forEach(
-          child => this.findBookmarkImageUrls_(child, recurse));
+          child => this.findBookmarkImageUrls_(child, false, forceUpdate));
     }
   }
 

@@ -425,9 +425,24 @@ export class PowerBookmarksListElement extends PolymerElement {
     return description;
   }
 
-  private getBookmarkImageUrl_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      string {
-    return this.get(`imageUrls_.${bookmark.id.toString()}`);
+  private getBookmarkImageUrls_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string[] {
+    const imageUrls: string[] = [];
+    if (bookmark.url) {
+      const imageUrl = this.get(`imageUrls_.${bookmark.id.toString()}`);
+      if (imageUrl) {
+        imageUrls.push(imageUrl);
+      }
+    } else if (bookmark.children) {
+      bookmark.children.forEach((child) => {
+        const childImageUrl: string =
+            this.get(`imageUrls_.${child.id.toString()}`);
+        if (childImageUrl) {
+          imageUrls.push(childImageUrl);
+        }
+      });
+    }
+    return imageUrls;
   }
 
   private getActiveFolderLabel_(): string {
