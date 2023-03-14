@@ -240,7 +240,10 @@ void ManagePasswordsView::RecreateLayout() {
         ManagePasswordsListView::CreateTitleView(controller_.GetTitle()));
     frame_view->SetFootnoteView(CreateFooterView());
     page_container_->SwitchToPage(CreatePasswordListView());
-    page_container_->SetProperty(views::kMarginsKey, gfx::Insets());
+    page_container_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets().set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
     password_details_view_ = nullptr;
   }
   PreferredSizeChanged();
