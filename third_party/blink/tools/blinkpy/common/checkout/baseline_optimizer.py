@@ -109,21 +109,21 @@ class BaselineOptimizer:
         self._host = host
         self._ports = []
         for port_name in port_names:
-            self._ports.append(host.port_factory.get(port_name))
-        for flag_specific in host.builders.all_flag_specific_options():
-            port_name = host.builders.port_name_for_flag_specific_option(
-                flag_specific)
-            if port_name in port_names:
-                self._ports.append(
-                    self._make_flag_spec_port(host, flag_specific))
+            self._ports.append(self.port(port_name))
+            flag_spec_options = (
+                host.builders.flag_specific_options_for_port_name(port_name))
+            self._ports.extend(
+                self.port(port_name, flag_specific)
+                for flag_specific in flag_spec_options)
         self._exp_cache = exp_cache or TestExpectationsCache()
 
-    def _make_flag_spec_port(self, host: Host,
-                             flag_specific_config: str) -> Port:
-        port_name = host.builders.port_name_for_flag_specific_option(
-            flag_specific_config)
-        port = host.port_factory.get(port_name)
-        port.set_option_default('flag_specific', flag_specific_config)
+    @memoized
+    def port(self,
+             port_name: str,
+             flag_specific: Optional[str] = None) -> Port:
+        port = self._host.port_factory.get(port_name)
+        if flag_specific:
+            port.set_option_default('flag_specific', flag_specific)
         return port
 
     def optimize(self, test_name: str, suffix: str) -> bool:

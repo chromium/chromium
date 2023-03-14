@@ -36,10 +36,10 @@ import logging
 import optparse
 import sys
 
+# pylint: disable=cyclic-import; `rebaseline_cl -> rebaseline` false positive
 from blinkpy.common.host import Host
 from blinkpy.tool.commands.analyze_baselines import AnalyzeBaselines
 from blinkpy.tool.commands.command import HelpPrintingOptionParser
-from blinkpy.tool.commands.copy_existing_baselines import CopyExistingBaselines
 from blinkpy.tool.commands.flaky_tests import FlakyTests
 from blinkpy.tool.commands.help_command import HelpCommand
 from blinkpy.tool.commands.optimize_baselines import OptimizeBaselines
@@ -74,7 +74,6 @@ class BlinkTool(Host):
         self._path = path
         self.commands = [
             AnalyzeBaselines(),
-            CopyExistingBaselines(self),
             CrashLog(),
             FlakyTests(),
             OptimizeBaselines(),

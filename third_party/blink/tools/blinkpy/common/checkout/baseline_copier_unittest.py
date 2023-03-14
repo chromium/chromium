@@ -8,6 +8,8 @@ from unittest import mock
 
 from blinkpy.common.checkout.baseline_copier import BaselineCopier
 from blinkpy.common.checkout.baseline_optimizer_unittest import BaselineTest
+from blinkpy.common.net.rpc import Build
+from blinkpy.tool.commands.rebaseline import TestBaselineSet
 from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.port.base import VirtualTestSuite
 
@@ -58,14 +60,16 @@ class BaselineCopierTest(BaselineTest):
                 'name': 'fake-flag',
                 'args': []
             }]))
-        self.default_port = self._port('linux-trusty')
+        self.default_port = self.host.port_factory.get('test-linux-trusty')
         self.copier = BaselineCopier(self.host, self.default_port)
 
-    def _port(self, name, flag_specific=None):
-        port = self.host.port_factory.get(port_name=('test-%s' % name))
-        if flag_specific:
-            port.set_option_default('flag_specific', flag_specific)
-        return port
+    def _baseline_set(self, runs):
+        baseline_set = TestBaselineSet(self.host.builders)
+        for test, builder_name, step_name in runs:
+            build = Build(builder_name, 1000)
+            baseline_set.add(test, build, step_name
+                             or 'blink_web_tests (with patch)')
+        return baseline_set
 
     def test_demote(self):
         """Verify that generic baselines are copied down.
@@ -96,10 +100,12 @@ class BaselineCopierTest(BaselineTest):
                 'platform/test-win-win10/virtual/virtual_failures/': None,
                 'platform/test-mac-mac10.11/virtual/virtual_failures/': None,
             })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK win10-rel', None),
+        ])
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',
-                                               'txt',
-                                               [self._port('win-win10')]))
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt',
             {
@@ -127,11 +133,13 @@ class BaselineCopierTest(BaselineTest):
                 'platform/test-mac-mac10.11/virtual/virtual_failures/': None,
                 'platform/test-mac-mac10.10/virtual/virtual_failures/': None,
             })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK mac10.11-rel', None),
+            ('failures/expected/image.html', 'MOCK mac10.10-rel', None),
+        ])
         self.copier.write_copies(
-            self.copier.find_baselines_to_copy(
-                'failures/expected/image.html', 'txt',
-                [self._port('mac-mac10.11'),
-                 self._port('mac-mac10.10')]))
+            self.copier.find_baselines_to_copy('failures/expected/image.html',
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'platform/test-mac-mac10.11/':
@@ -149,17 +157,19 @@ class BaselineCopierTest(BaselineTest):
         self._write_baselines('failures/expected/image-expected.txt', {
             '': 'do not copy',
         })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK mac10.11-rel', None),
+            ('failures/expected/image.html', 'MOCK mac10.10-rel', None),
+            ('failures/expected/image.html', 'MOCK win10-rel', None),
+            ('failures/expected/image.html', 'MOCK win7-rel', None),
+            ('failures/expected/image.html', 'MOCK linux-trusty-rel', None),
+            ('failures/expected/image.html', 'MOCK linux-trusty-rel',
+             'fake_flag_blink_web_tests (with patch)'),
+            ('failures/expected/image.html', 'MOCK linux-precise-rel', None),
+        ])
         self.copier.write_copies(
-            self.copier.find_baselines_to_copy(
-                'failures/expected/image.html', 'txt', [
-                    self._port('mac-mac10.11'),
-                    self._port('mac-mac10.10'),
-                    self._port('win-win10'),
-                    self._port('win-win7'),
-                    self._port('linux-trusty'),
-                    self._port('linux-trusty', flag_specific='fake-flag'),
-                    self._port('linux-precise')
-                ]))
+            self.copier.find_baselines_to_copy('failures/expected/image.html',
+                                               'txt', baseline_set))
         # For simplicity, only consider the nonvirtual tree for this test.
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
@@ -182,10 +192,12 @@ class BaselineCopierTest(BaselineTest):
                 'platform/test-mac-mac10.10/': None,
                 'platform/test-mac-mac10.11/virtual/virtual_failures/': None,
             })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK mac10.11-rel', None),
+        ])
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',
-                                               'txt',
-                                               [self._port('mac-mac10.11')]))
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'platform/test-mac-mac10.11/':
@@ -206,10 +218,12 @@ class BaselineCopierTest(BaselineTest):
                 'platform/test-linux-precise/': None,
                 'flag-specific/fake-flag/': None,
             })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK linux-trusty-rel', None),
+        ])
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',
-                                               'txt',
-                                               [self._port('linux-trusty')]))
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'platform/test-linux-trusty/': 'test-linux-trusty result',
@@ -224,11 +238,13 @@ class BaselineCopierTest(BaselineTest):
         self._assert_baselines('failures/expected/image-expected.txt', {
             'platform/test-linux-precise/': None,
         })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK linux-trusty-rel', None),
+        ])
         # Verify that copying works across multiple levels.
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',
-                                               'txt',
-                                               [self._port('linux-trusty')]))
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'platform/test-linux-trusty/': None,
@@ -244,10 +260,13 @@ class BaselineCopierTest(BaselineTest):
                 'platform/test-linux-trusty/virtual/virtual_failures/': None,
                 'flag-specific/fake-flag/virtual/virtual_failures/': None,
             })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK linux-trusty-rel',
+             'fake_flag_blink_web_tests (with patch)'),
+        ])
         self.copier.write_copies(
-            self.copier.find_baselines_to_copy(
-                'failures/expected/image.html', 'txt',
-                [self._port('linux-trusty', flag_specific='fake-flag')]))
+            self.copier.find_baselines_to_copy('failures/expected/image.html',
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'flag-specific/fake-flag/virtual/virtual_failures/':
@@ -269,10 +288,13 @@ class BaselineCopierTest(BaselineTest):
         # Virtual trusty supplies the baseline for virtual `fake-flag`, so
         # nonvirtual `fake-flag` should not be copied into its virtual
         # counterpart.
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK linux-trusty-rel',
+             'fake_flag_blink_web_tests (with patch)'),
+        ])
         self.copier.write_copies(
-            self.copier.find_baselines_to_copy(
-                'failures/expected/image.html', 'txt',
-                [self._port('linux-trusty', flag_specific='fake-flag')]))
+            self.copier.find_baselines_to_copy('failures/expected/image.html',
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'flag-specific/fake-flag/virtual/virtual_failures/': None,
@@ -292,10 +314,12 @@ class BaselineCopierTest(BaselineTest):
             })
         # Virtual mac10.11 supplies the baseline for virtual mac10.10, so
         # nonvirtual mac10.10 should not be copied into its virtual counterpart.
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK mac10.10-rel', None),
+        ])
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',
-                                               'txt',
-                                               [self._port('mac-mac10.10')]))
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'platform/test-mac-mac10.10/virtual/virtual_failures/': None,
@@ -310,10 +334,12 @@ class BaselineCopierTest(BaselineTest):
             'platform/test-win-win7/': None,
             'platform/test-linux-trusty/': None,
         })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK win10-rel', None),
+        ])
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',
-                                               'txt',
-                                               [self._port('win-win10')]))
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'platform/test-win-win10/': 'test-win-win10 result',
@@ -327,10 +353,12 @@ class BaselineCopierTest(BaselineTest):
                 'platform/test-win-win10/': 'test-win-win10 result',
                 'platform/test-linux-trusty/': 'test-linux-trusty result',
             })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK win10-rel', None),
+        ])
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',
-                                               'txt',
-                                               [self._port('win-win10')]))
+                                               'txt', baseline_set))
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'platform/test-win-win10/': 'test-win-win10 result',
@@ -351,10 +379,12 @@ class BaselineCopierTest(BaselineTest):
                 [ Win ] failures/expected/image.html [ Failure ]
                 [ Linux ] failures/expected/image.html [ Skip ]
                 """))
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK win10-rel', None),
+        ])
         self.copier.write_copies(
             self.copier.find_baselines_to_copy('failures/expected/image.html',
-                                               'txt',
-                                               [self._port('win-win10')]))
+                                               'txt', baseline_set))
         self._assert_baselines('failures/expected/image-expected.txt', {
             'platform/test-linux-trusty/': None,
         })
@@ -369,16 +399,104 @@ class BaselineCopierTest(BaselineTest):
             'failures/expected/image-expected.txt', {
                 'platform/test-win-win10/': 'test-win-win10 result',
             })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK win10-rel', None),
+        ])
         with mock.patch(
                 'blinkpy.web_tests.port.test.TestPort.virtual_test_suites',
                 return_value=[linux_only_suite]):
             self.copier.write_copies(
                 self.copier.find_baselines_to_copy(
-                    'failures/expected/image.html', 'txt',
-                    [self._port('win-win10')]))
+                    'failures/expected/image.html', 'txt', baseline_set))
 
         self._assert_baselines(
             'failures/expected/image-expected.txt', {
                 'platform/test-linux-trusty/': 'test-win-win10 result',
                 'platform/test-win-win10/virtual/linux-only/': None,
+            })
+
+    def test_copy_for_virtual_only_rebaseline(self):
+        """Verify that nonvirtual baselines are not copied unnecessarily."""
+        self._write_baselines('failures/expected/image-expected.txt', {
+            'platform/test-mac-mac10.11/': 'mac10.11 result',
+        })
+        baseline_set = self._baseline_set([
+            ('virtual/virtual_failures/failures/expected/image.html',
+             'MOCK mac10.11-rel', None),
+        ])
+        self.copier.write_copies(
+            self.copier.find_baselines_to_copy(
+                'virtual/virtual_failures/failures/expected/image.html', 'txt',
+                baseline_set))
+        self._assert_baselines(
+            'failures/expected/image-expected.txt', {
+                'platform/test-mac-mac10.10/':
+                None,
+                'platform/test-mac-mac10.11/virtual/virtual_failures/':
+                None,
+                'platform/test-mac-mac10.10/virtual/virtual_failures/':
+                'mac10.11 result',
+            })
+
+    def test_no_copy_when_virtual_test_also_fails(self):
+        self._write_baselines('failures/expected/image-expected.txt', {
+            'platform/test-mac-mac10.11/': 'mac10.11 result',
+        })
+        baseline_set = self._baseline_set([
+            ('failures/expected/image.html', 'MOCK mac10.11-rel', None),
+            ('virtual/virtual_failures/failures/expected/image.html',
+             'MOCK mac10.11-rel', None),
+        ])
+        self.copier.write_copies(
+            self.copier.find_baselines_to_copy('failures/expected/image.html',
+                                               'txt', baseline_set))
+        self._assert_baselines(
+            'failures/expected/image-expected.txt', {
+                'platform/test-mac-mac10.11/virtual/virtual_failures/': None,
+            })
+
+    def test_copy_for_platform_failures_different_across_virtual_suites(self):
+        self._write_baselines(
+            'failures/expected/image-expected.txt', {
+                'platform/test-mac-mac10.11/virtual/virtual_failures/':
+                'virtual mac10.11 result',
+                'platform/test-win-win10/virtual/other_virtual/':
+                'virtual win10 result',
+            })
+        suites = [
+            VirtualTestSuite(prefix='virtual_failures',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             bases=['failures/expected'],
+                             args=['--flag-causing-mac-fail']),
+            VirtualTestSuite(prefix='other_virtual',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             bases=['failures/expected'],
+                             args=['--flag-causing-win-fail']),
+        ]
+        baseline_set = self._baseline_set([
+            ('virtual/virtual_failures/failures/expected/image.html',
+             'MOCK mac10.11-rel', None),
+            ('virtual/other_virtual/failures/expected/image.html',
+             'MOCK win10-rel', None),
+        ])
+        with mock.patch(
+                'blinkpy.web_tests.port.test.TestPort.virtual_test_suites',
+                return_value=suites):
+            self.copier.write_copies(
+                self.copier.find_baselines_to_copy(
+                    'failures/expected/image.html', 'txt', baseline_set))
+        self._assert_baselines(
+            'failures/expected/image-expected.txt', {
+                'platform/test-mac-mac10.10/':
+                None,
+                'platform/test-mac-mac10.10/virtual/virtual_failures/':
+                'virtual mac10.11 result',
+                'platform/test-mac-mac10.10/virtual/other_virtual/':
+                None,
+                'platform/test-win-win7/':
+                None,
+                'platform/test-win-win7/virtual/virtual_failures/':
+                None,
+                'platform/test-win-win7/virtual/other_virtual/':
+                'virtual win10 result',
             })

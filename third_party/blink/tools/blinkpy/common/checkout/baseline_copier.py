@@ -23,6 +23,7 @@ CopyOperation = Tuple[Optional[str], str]
 
 class BaselineCopier:
     def __init__(self, host: Host, default_port: Optional[Port] = None):
+        self._host = host
         self._fs = host.filesystem
         self._default_port = default_port or host.port_factory.get()
         self._optimizer = BaselineOptimizer(host, self._default_port,
@@ -32,19 +33,30 @@ class BaselineCopier:
         self,
         test_name: str,
         suffix: str,
-        ports_to_rebaseline: List[Port],
+        baseline_set: 'TestBaselineSet',
     ) -> Iterator[CopyOperation]:
         """Find the minimal set of copied baselines to preserve expectations.
 
         When new baselines are downloaded for only some platforms or virtual
         suites, other platforms or virtual suites that fell back to the old
-        baselines will inherit the new baselines as well.
+        baselines may incorrectly inherit the new baselines as well.
 
-        This method finds baselines to copy so that rebaselining `test_name` on
-        `ports_to_rebaseline` does not clobber any other expectations. At a high
-        level, this is accomplished by simulating giving every location a copy
-        of its resolved baseline, then excluding copies that would be redundant
-        even after a "worst-case" rebaseline.
+        This method finds baselines to preserve so that rebaselining does not
+        clobber any other expectations. At a high level, this is accomplished by
+        simulating giving every location a copy of its resolved baseline, then
+        excluding copies that would be redundant even after a "worst-case"
+        rebaseline.
+
+        Arguments:
+            test_name: Either a virtual or nonvirtual test name, with behavior
+                matching `BaselineOptimizer.get_tests_to_optimize`. The
+                nonvirtual test's baselines are always copied. If the given test
+                was virtual, only that virtual suite's baselines will be copied;
+                otherwise, all virtual baselines associated with the nonvirtual
+                test will be copied.
+            suffix: A file extension without a leading dot '.'.
+            baseline_set: Contains information about which tests should be
+                rebaselined for which platforms.
 
         Example:
 
@@ -96,12 +108,11 @@ class BaselineCopier:
         #     step [1], copies that would become necessary after the
         #     "worst-case" rebaseline are not considered redundant by the
         #     optimizer.
-        for port in ports_to_rebaseline:
-            location_to_rebaseline = self._optimizer.location(
-                self._fs.join(port.baseline_version_dir(), test_name))
-            # Provides its own physical file.
-            sources[location_to_rebaseline] = location_to_rebaseline
-            digests[location_to_rebaseline] = self._random_digest()
+        for test in (nonvirtual_test, *virtual_tests):
+            for location in self._locations_to_rebaseline(test, baseline_set):
+                # Provides its own physical file.
+                sources[location] = location
+                digests[location] = self._random_digest()
         redundant_copies = find_redundant_locations(paths, digests)
 
         # Find destinations to copy to. These are locations that:
@@ -116,6 +127,20 @@ class BaselineCopier:
                     source_path = self._optimizer.path(source, baseline_name)
                 dest_path = self._optimizer.path(location, baseline_name)
                 yield source_path, dest_path
+
+    def _locations_to_rebaseline(
+        self,
+        test: str,
+        baseline_set: 'TestBaselineSet',
+    ) -> Iterator[BaselineLocation]:
+        for build, step_name, port_name in baseline_set.runs_for_test(test):
+            flag_specific = None
+            if step_name:
+                flag_specific = self._host.builders.flag_specific_option(
+                    build.builder_name, step_name)
+            port = self._optimizer.port(port_name, flag_specific)
+            yield self._optimizer.location(
+                self._fs.join(port.baseline_version_dir(), test))
 
     def _resolve_sources(
         self,
@@ -161,11 +186,9 @@ class BaselineCopier:
 
     def write_copies(self, copies: Iterable[CopyOperation]) -> None:
         for source, dest in copies:
-            # TODO(crbug.com/1324638): Handle the implicit all-pass case.
-            if not source:
-                continue
-            self._fs.maybe_make_directory(self._fs.dirname(dest))
-            self._fs.copyfile(source, dest)
+            if source:
+                self._fs.maybe_make_directory(self._fs.dirname(dest))
+                self._fs.copyfile(source, dest)
 
     def _random_digest(self) -> ResultDigest:
         """Synthesize a digest that is guaranteed to not equal any other.

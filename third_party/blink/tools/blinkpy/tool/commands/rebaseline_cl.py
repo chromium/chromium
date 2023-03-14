@@ -202,8 +202,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if options.fill_missing:
             self.fill_in_missing_results(test_baseline_set)
 
-        self.rebaseline(options, test_baseline_set)
-        return 0
+        return self.rebaseline(options, test_baseline_set)
 
     def check_ok_to_run(self):
         unstaged_baselines = self.unstaged_baselines()

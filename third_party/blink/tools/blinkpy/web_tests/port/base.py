@@ -2289,7 +2289,7 @@ class Port(object):
                     # Strings are treated as comments.
                     if isinstance(json_config, str):
                         continue
-                    expires = json_config.get("expires")
+                    expires = json_config.get('expires', 'never')
                     if (expires.lower() != 'never' and datetime.strptime(
                             expires, '%b %d, %Y') <= current_time):
                         # do not load expired virtual suites
