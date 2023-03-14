@@ -224,7 +224,12 @@ void ButtonExample::CreateExampleView(View* container) {
                                    .SetIsDefault(true),
                                Builder<MdTextButton>()
                                    .CopyAddressTo(&md_tonal_button_)
+                                   .SetStyle(MdTextButton::Style::kTonal)
                                    .SetText(u"Tonal"),
+                               Builder<MdTextButton>()
+                                   .CopyAddressTo(&md_text_button_)
+                                   .SetStyle(MdTextButton::Style::kText)
+                                   .SetText(u"Material Text"),
                                Builder<ImageButton>()
                                    .CopyAddressTo(&image_button_)
                                    .SetAccessibleName(l10n_util::GetStringUTF16(
@@ -252,7 +257,6 @@ void ButtonExample::CreateExampleView(View* container) {
   image_button_->SetImage(ImageButton::STATE_PRESSED,
                           rb.GetImageNamed(IDR_CLOSE_P).ToImageSkia());
 
-  md_tonal_button_->SetStyle(MdTextButton::Style::kTonal);
   container->AddChildView(std::move(view));
 }
 

@@ -19,13 +19,15 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
  public:
   // MdTextButton has various button styles that can change the button's
   // background and text color.
-  // kDefault: white background with a blue text and a solid outline.
-  // kProminent: blue background with white text.
+  // kDefault: White background with blue text and a solid outline.
+  // kProminent: Blue background with white text.
   // kTonal: Cyan background with black text.
+  // kText: White background with blue text but no outline.
   enum class Style {
     kDefault = 0,
     kProminent = 1,
     kTonal = 2,
+    kText = 3,
   };
 
   METADATA_HEADER(MdTextButton);

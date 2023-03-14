@@ -289,7 +289,7 @@ void MdTextButton::UpdateBackgroundColor() {
 
   SkColor stroke_color = color_provider->GetColor(
       is_disabled ? ui::kColorButtonBorderDisabled : ui::kColorButtonBorder);
-  if (style_ == Style::kProminent) {
+  if (style_ == Style::kProminent || style_ == Style::kText) {
     stroke_color = SK_ColorTRANSPARENT;
   }
 
