@@ -33,8 +33,6 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const std::set<int> GetContentResourceIds() {
   return std::set<int>{
-      IDR_ORIGIN_MOJO_JS,
-      IDR_UI_WINDOW_OPEN_DISPOSITION_MOJO_JS,
       IDR_UNGUESSABLE_TOKEN_MOJO_JS,
       IDR_URL_MOJO_JS,
   };
