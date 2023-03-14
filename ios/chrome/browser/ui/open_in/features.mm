@@ -14,7 +14,7 @@
 
 BASE_FEATURE(kEnableOpenInDownload,
              "EnableOpenInDownload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kOpenInDownloadParameterName[] = "default";
 
@@ -23,8 +23,7 @@ const char kOpenInDownloadWithWKDownloadParam[] = "variant_with_wkdownload";
 const char kOpenInDownloadWithV2Param[] = "variant_with_v2";
 
 std::string GetFeatureParameter() {
-  return base::GetFieldTrialParamValueByFeature(kEnableOpenInDownload,
-                                                kOpenInDownloadParameterName);
+  return kOpenInDownloadWithWKDownloadParam;
 }
 
 bool IsOpenInDownloadInShareButton() {

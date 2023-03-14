@@ -71,7 +71,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "open_in_controller_unittest.mm",
     "open_in_mediator_unittest.mm",
     "open_in_toolbar_unittest.mm",
   ]
@@ -102,20 +101,12 @@ source_set("eg2_tests") {
   ]
   testonly = true
 
-  sources = [
-    "open_in_controller_egtest.h",
-    "open_in_controller_egtest.mm",
-  ]
+  sources = [ "open_in_controller_egtest.mm" ]
   deps = [
-    ":features",
-    "//base",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/test:eg_test_support+eg2",
+    "//base/test:test_support",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
     "//net:test_support",
-    "//ui/base",
   ]
 
   frameworks = [ "UIKit.framework" ]
