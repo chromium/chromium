@@ -37,27 +37,37 @@ suite('KeyboardBacklightTest', function() {
     keyboardBacklightElement = initElement(KeyboardBacklight);
     const labelContainer = keyboardBacklightElement.shadowRoot!.getElementById(
         'keyboardBacklightLabel');
-    assertTrue(!!labelContainer);
-    const text = labelContainer.querySelector('p');
+    assertTrue(!!labelContainer, 'keyboard backlight label should be shown.');
+    const text = labelContainer!.querySelector('p');
     assertTrue(!!text);
     assertEquals(
         keyboardBacklightElement.i18n('keyboardBacklightTitle'),
         text.textContent);
-
+    const colorSelectorElement =
+        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
+        HTMLElement;
+    assertTrue(
+        !!colorSelectorElement, 'color-selector element should be displayed.');
     const selectorContainer =
-        keyboardBacklightElement.shadowRoot!.getElementById('selector');
+        colorSelectorElement.shadowRoot!.getElementById('selector');
     assertTrue(!!selectorContainer);
-    const colorContainers = selectorContainer.querySelectorAll('.selectable');
+    const colorContainers = selectorContainer!.querySelectorAll('.selectable');
     assertEquals(9, colorContainers!.length);
   });
 
   test('sets backlight color when a color preset is clicked', async () => {
     keyboardBacklightElement = initElement(KeyboardBacklight);
+    const colorSelectorElement =
+        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
+        HTMLElement;
+    assertTrue(
+        !!colorSelectorElement, 'color-selector element should be displayed.');
     const selectorContainer =
-        keyboardBacklightElement.shadowRoot!.getElementById('selector');
+        colorSelectorElement.shadowRoot!.getElementById('selector');
     assertTrue(!!selectorContainer);
-    const colorContainers = selectorContainer.querySelectorAll('.selectable');
+    const colorContainers = selectorContainer!.querySelectorAll('.selectable');
     assertEquals(9, colorContainers!.length);
+
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(
         KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE);
@@ -124,11 +134,16 @@ suite('KeyboardBacklightTest', function() {
     personalizationStore.expectAction(
         KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE);
     keyboardBacklightElement = initElement(KeyboardBacklight);
+    const colorSelectorElement =
+        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
+        HTMLElement;
+    assertTrue(
+        !!colorSelectorElement, 'color-selector element should be displayed.');
     const action = await personalizationStore.waitForAction(
                        KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE) as
         SetShouldShowNudgeAction;
     assertTrue(action.shouldShowNudge);
-    assertTrue(!!keyboardBacklightElement.shadowRoot!.querySelector('#toast'));
+    assertTrue(!!colorSelectorElement.shadowRoot!.querySelector('#toast'));
   });
 
   test('automatically dismisses toast after 3 seconds', async () => {
@@ -143,6 +158,12 @@ suite('KeyboardBacklightTest', function() {
         };
 
     keyboardBacklightElement = initElement(KeyboardBacklight);
+    const colorSelectorElement =
+        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
+        HTMLElement;
+    assertTrue(
+        !!colorSelectorElement, 'color-selector element should be displayed.');
+
     // Create and render the toast.
     personalizationStore.data.keyboardBacklight.shouldShowNudge = true;
     personalizationStore.notifyObservers();
@@ -204,16 +225,21 @@ suite('KeyboardBacklightTest', function() {
         {keyboardBacklightZoneCount: keyboardBacklightProvider.zoneCount});
 
     keyboardBacklightElement = initElement(KeyboardBacklight);
+    const colorSelectorElement =
+        keyboardBacklightElement.shadowRoot!.querySelector('color-selector') as
+        HTMLElement;
+    assertTrue(
+        !!colorSelectorElement, 'color-selector element should be displayed.');
 
     const selectorContainer =
-        keyboardBacklightElement.shadowRoot!.getElementById('selector');
+        colorSelectorElement.shadowRoot!.getElementById('selector');
     assertTrue(!!selectorContainer);
-    const colorContainers = selectorContainer.querySelectorAll('.selectable');
+    const colorContainers = selectorContainer!.querySelectorAll('.selectable');
     assertEquals(9, colorContainers!.length);
     assertEquals(
         'Wallpaper color', (colorContainers[8] as HTMLElement).ariaLabel);
-    assertEquals(0, selectorContainer.querySelectorAll('.divider').length);
-    assertTrue(!!keyboardBacklightElement?.shadowRoot!.getElementById(
+    assertEquals(0, selectorContainer!.querySelectorAll('.divider').length);
+    assertTrue(!!colorSelectorElement?.shadowRoot!.getElementById(
         'wallpaperColorDescription'));
   });
 
@@ -223,17 +249,45 @@ suite('KeyboardBacklightTest', function() {
         loadTimeData.overrideValues({keyboardBacklightZoneCount: 0});
 
         keyboardBacklightElement = initElement(KeyboardBacklight);
+        const colorSelectorElement =
+            keyboardBacklightElement.shadowRoot!.querySelector(
+                'color-selector') as HTMLElement;
+        assertTrue(
+            !!colorSelectorElement,
+            'color-selector element should be displayed.');
 
         const selectorContainer =
-            keyboardBacklightElement.shadowRoot!.getElementById('selector');
+            colorSelectorElement.shadowRoot!.getElementById('selector');
         assertTrue(!!selectorContainer);
         const colorContainers =
-            selectorContainer.querySelectorAll('.selectable');
+            selectorContainer!.querySelectorAll('.selectable');
         assertEquals(9, colorContainers!.length);
         assertEquals(
             'Wallpaper color', (colorContainers[0] as HTMLElement).ariaLabel);
-        assertEquals(1, selectorContainer.querySelectorAll('.divider').length);
+        assertEquals(1, selectorContainer!.querySelectorAll('.divider').length);
         assertFalse(!!keyboardBacklightElement?.shadowRoot!.getElementById(
             'wallpaperColorDescription'));
       });
+
+  test('displays zone selector in customization dialog', async () => {
+    loadTimeData.overrideValues(
+        {keyboardBacklightZoneCount: keyboardBacklightProvider.zoneCount});
+    keyboardBacklightElement = initElement(KeyboardBacklight);
+    personalizationStore.notifyObservers();
+    const customizationButton =
+        keyboardBacklightElement.shadowRoot!.getElementById(
+            'zoneCustomizationButton');
+    assertTrue(!!customizationButton);
+    customizationButton!.click();
+    await waitAfterNextRender(keyboardBacklightElement);
+    const zoneCustomizationElement =
+        keyboardBacklightElement.shadowRoot!.querySelector(
+            'zone-customization');
+    assertTrue(!!zoneCustomizationElement);
+    const zoneButtons =
+        zoneCustomizationElement.shadowRoot!.querySelectorAll('.zone-button');
+    assertEquals(
+        5, zoneButtons!.length,
+        '5 zones should display in customization dialog');
+  });
 });

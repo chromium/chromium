@@ -23,6 +23,7 @@ import './ambient/topic_source_item_element.js';
 import './ambient/topic_source_list_element.js';
 import './ambient/zero_state_element.js';
 import './keyboard_backlight/color_icon_element.js';
+import './keyboard_backlight/color_selector_element.js';
 import './keyboard_backlight/keyboard_backlight_element.js';
 import './keyboard_backlight/zone_customization_element.js';
 import './personalization_router_element.js';

@@ -56,6 +56,7 @@ build_webui("build") {
     "js/keyboard_backlight/keyboard_backlight_element.ts",
     "js/keyboard_backlight/zone_customization_element.ts",
     "js/keyboard_backlight/color_icon_element.ts",
+    "js/keyboard_backlight/color_selector_element.ts",
     "js/personalization_main_element.ts",
     "js/personalization_router_element.ts",
     "js/personalization_toast_element.ts",

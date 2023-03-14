@@ -64,7 +64,7 @@ export class ColorIcon extends WithPersonalizationStore {
   }
 
   private getColorInnerContainerStyle_(colorId: string|null): string {
-    if (colorId === null) {
+    if (!colorId) {
       return '';
     }
     const colors = getPresetColors();
