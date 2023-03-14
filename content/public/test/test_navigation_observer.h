@@ -144,6 +144,10 @@ class TestNavigationObserver {
 
   // Protected so that subclasses can retrieve extra information from the
   // |navigation_handle|.
+  virtual void OnDidStartNavigation(NavigationHandle* navigation_handle);
+
+  // Protected so that subclasses can retrieve extra information from the
+  // |navigation_handle|.
   virtual void OnDidFinishNavigation(NavigationHandle* navigation_handle);
 
   // NavigationOfInterestDidFinish is called by OnDidFinishNavigation if it was
@@ -199,7 +203,6 @@ class TestNavigationObserver {
       const LoadCommittedDetails& load_details);
   void OnDidStartLoading(WebContents* web_contents);
   void OnDidStopLoading(WebContents* web_contents);
-  void OnDidStartNavigation(NavigationHandle* navigation_handle);
   void EventTriggered(WebContentsState* web_contents_state);
 
   // Returns true of |expected_initial_url_| is missing, or if it matches the

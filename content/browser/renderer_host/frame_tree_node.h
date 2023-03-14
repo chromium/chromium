@@ -276,6 +276,10 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   const network::mojom::ContentSecurityPolicy* csp_attribute() const {
     return attributes_->parsed_csp_attribute.get();
   }
+  // Tracks iframe's 'browsingtopics' attribute, indicating whether the
+  // navigation requests on this frame should calculate and send the
+  // `Sec-Browsing-Topics` header.
+  bool browsing_topics() const { return attributes_->browsing_topics; }
   const absl::optional<std::string> html_id() const { return attributes_->id; }
   // This tracks iframe's 'name' attribute instead of window.name, which is
   // tracked in FrameReplicationState. See the comment for frame_name() for

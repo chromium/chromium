@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/browsing_topics/test_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -23,6 +24,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -273,6 +275,169 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
 
   EXPECT_FALSE(last_request_is_topics_request());
   EXPECT_FALSE(last_topics_header());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       EmbedderOptInStatus_StaticIframe_NoBrowsingTopicsAttr) {
+  base::StringPairs topics_attribute_replacement;
+  topics_attribute_replacement.emplace_back(
+      "{{MAYBE_BROWSING_TOPICS_ATTRIBUTE}}", "");
+
+  GURL iframe_url = https_server_.GetURL("b.test", "/title1.html");
+  topics_attribute_replacement.emplace_back("{{SRC_URL}}", iframe_url.spec());
+
+  GURL main_frame_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/page_with_iframe.html",
+                    topics_attribute_replacement));
+
+  // Wait for the main page and the iframe navigation.
+  IframeBrowsingTopicsAttributeWatcher navigation_observer(
+      shell()->web_contents(),
+      /*expected_number_of_navigations=*/2);
+
+  NavigationController::LoadURLParams params(main_frame_url);
+  shell()->web_contents()->GetController().LoadURLWithParams(params);
+
+  navigation_observer.WaitForNavigationFinished();
+
+  EXPECT_EQ(navigation_observer.last_navigation_url(), iframe_url);
+  EXPECT_FALSE(navigation_observer
+                   .last_navigation_has_iframe_browsing_topics_attribute());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       EmbedderOptInStatus_StaticIframe_HasBrowsingTopicsAttr) {
+  base::StringPairs topics_attribute_replacement;
+  topics_attribute_replacement.emplace_back(
+      "{{MAYBE_BROWSING_TOPICS_ATTRIBUTE}}", "browsingtopics");
+
+  GURL iframe_url = https_server_.GetURL("b.test", "/title1.html");
+  topics_attribute_replacement.emplace_back("{{SRC_URL}}", iframe_url.spec());
+
+  GURL main_frame_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/page_with_iframe.html",
+                    topics_attribute_replacement));
+
+  // Wait for the main page and the iframe navigation.
+  IframeBrowsingTopicsAttributeWatcher navigation_observer(
+      shell()->web_contents(),
+      /*expected_number_of_navigations=*/2);
+
+  NavigationController::LoadURLParams params(main_frame_url);
+  shell()->web_contents()->GetController().LoadURLWithParams(params);
+
+  navigation_observer.WaitForNavigationFinished();
+
+  EXPECT_EQ(navigation_observer.last_navigation_url(), iframe_url);
+  EXPECT_TRUE(navigation_observer
+                  .last_navigation_has_iframe_browsing_topics_attribute());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowsingTopicsBrowserTest,
+    EmbedderOptInStatus_AppendIframeElement_BrowsingTopicsAttrIsFalse) {
+  GURL main_frame_url = https_server_.GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  GURL iframe_url = https_server_.GetURL("b.test", "/title1.html");
+
+  // Wait for the iframe navigation.
+  IframeBrowsingTopicsAttributeWatcher navigation_observer(
+      shell()->web_contents());
+
+  ExecuteScriptAsync(shell()->web_contents(), content::JsReplace(R"(
+    const iframe = document.createElement("iframe");
+    iframe.browsingTopics = false;
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+              )",
+                                                                 iframe_url));
+
+  navigation_observer.WaitForNavigationFinished();
+
+  EXPECT_EQ(navigation_observer.last_navigation_url(), iframe_url);
+  EXPECT_FALSE(navigation_observer
+                   .last_navigation_has_iframe_browsing_topics_attribute());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowsingTopicsBrowserTest,
+    EmbedderOptInStatus_AppendIframeElement_BrowsingTopicsAttrIsTrue) {
+  GURL main_frame_url = https_server_.GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  GURL iframe_url = https_server_.GetURL("b.test", "/title1.html");
+
+  // Wait for the iframe navigation.
+  IframeBrowsingTopicsAttributeWatcher navigation_observer(
+      shell()->web_contents());
+
+  ExecuteScriptAsync(shell()->web_contents(), content::JsReplace(R"(
+    const iframe = document.createElement("iframe");
+    iframe.browsingTopics = true;
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+              )",
+                                                                 iframe_url));
+
+  navigation_observer.WaitForNavigationFinished();
+
+  EXPECT_EQ(navigation_observer.last_navigation_url(), iframe_url);
+  EXPECT_TRUE(navigation_observer
+                  .last_navigation_has_iframe_browsing_topics_attribute());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
+                       EmbedderOptInStatus_BrowsingTopicsAttrUpdated) {
+  GURL main_frame_url = https_server_.GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  // Append a frame without a `browsingTopics` attribute. Expect that the
+  // navigation doesn't see the flag.
+  {
+    GURL iframe_url = https_server_.GetURL("b.test", "/title1.html");
+
+    // Wait for the iframe navigation.
+    IframeBrowsingTopicsAttributeWatcher navigation_observer(
+        shell()->web_contents());
+
+    ExecuteScriptAsync(shell()->web_contents(), content::JsReplace(R"(
+      const iframe0 = document.createElement("iframe");
+      iframe0.src = $1;
+      document.body.appendChild(iframe0);
+                )",
+                                                                   iframe_url));
+
+    navigation_observer.WaitForNavigationFinished();
+
+    EXPECT_EQ(navigation_observer.last_navigation_url(), iframe_url);
+    EXPECT_FALSE(navigation_observer
+                     .last_navigation_has_iframe_browsing_topics_attribute());
+  }
+
+  // Set the `browsingTopics` attribute to true. Expect that the next navigation
+  // sees the flag.
+  {
+    GURL iframe_url = https_server_.GetURL("c.test", "/title1.html");
+
+    // Wait for the iframe navigation.
+    IframeBrowsingTopicsAttributeWatcher navigation_observer(
+        shell()->web_contents());
+
+    ExecuteScriptAsync(shell()->web_contents(), content::JsReplace(R"(
+      iframe0.browsingTopics = true;
+      iframe0.src = $1;
+                )",
+                                                                   iframe_url));
+
+    navigation_observer.WaitForNavigationFinished();
+
+    EXPECT_EQ(navigation_observer.last_navigation_url(), iframe_url);
+    EXPECT_TRUE(navigation_observer
+                    .last_navigation_has_iframe_browsing_topics_attribute());
+  }
 }
 
 }  // namespace content

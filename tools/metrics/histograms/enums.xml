@@ -10821,6 +10821,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="297"
       label="BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="298" label="RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN"/>
+  <int value="299" label="RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -42403,6 +42404,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4494" label="DanglingMarkupInTargetNotEndsWithGT"/>
   <int value="4495" label="DanglingMarkupInTargetNotEndsWithNewLineOrGT"/>
   <int value="4496" label="AttributionFencedFrameReportingBeacon"/>
+  <int value="4497" label="IframeBrowsingTopicsAttribute"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

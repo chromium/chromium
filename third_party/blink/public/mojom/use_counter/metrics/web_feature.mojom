@@ -3835,6 +3835,7 @@ enum WebFeature {
   kDanglingMarkupInTargetNotEndsWithGT = 4494,
   kDanglingMarkupInTargetNotEndsWithNewLineOrGT = 4495,
   kAttributionFencedFrameReportingBeacon = 4496,
+  kIframeBrowsingTopicsAttribute = 4497,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

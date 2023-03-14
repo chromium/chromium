@@ -56,6 +56,9 @@
     // Trust Tokens request parameters (https://github.com/wicg/trust-token-api)
     [RuntimeEnabled=PrivateStateTokens, SecureContext, Reflect, MeasureAs=TrustTokenIframe] attribute DOMString privateToken;
 
+    // Topics API (https://github.com/patcg-individual-drafts/topics)
+    [RuntimeEnabled=TopicsAPI, SecureContext, CEReactions, Reflect] attribute boolean browsingTopics;
+
     // Iframes credentialless
     // https://github.com/WICG/anonymous-iframe
     [CEReactions, Reflect, RuntimeEnabled=AnonymousIframe] attribute boolean credentialless;
