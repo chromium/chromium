@@ -485,8 +485,8 @@ Status ConfigureHeadlessSession(Session* session,
     download_directory = capabilities.prefs->FindStringByDottedPath(
         "download.default_directory");
     if (!download_directory) {
-      download_directory = capabilities.prefs->FindStringByDottedPath(
-          "download.default_directory");
+      download_directory =
+          capabilities.prefs->FindString("download.default_directory");
     }
   }
   session->headless_download_directory = std::make_unique<std::string>(
