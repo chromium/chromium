@@ -547,6 +547,7 @@ component("skia") {
   if (skia_use_dawn) {
     public += skia_gpu_dawn_public
     sources += skia_gpu_dawn_private
+    sources += skia_shared_dawn_sources
   }
 
   if (is_fuchsia) {
