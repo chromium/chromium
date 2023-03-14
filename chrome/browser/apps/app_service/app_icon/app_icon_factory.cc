@@ -7,6 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,6 +23,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/app_icon_resources.h"
@@ -28,6 +32,8 @@
 #include "extensions/common/constants.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/layout.h"
@@ -224,8 +230,34 @@ SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size) {
   return decoded;
 }
 
-gfx::ImageSkia SkBitmapToImageSkia(SkBitmap bitmap, float icon_scale) {
-  return gfx::ImageSkia::CreateFromBitmap(bitmap, icon_scale);
+void CompressedDataToSkBitmap(
+    base::span<const uint8_t> compressed_data,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  if (compressed_data.empty()) {
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
+
+  data_decoder::DecodeImage(
+      &GetIconDataDecoder(), compressed_data,
+      data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
+}
+
+void CompressedDataToImageSkia(
+    base::span<const uint8_t> compressed_data,
+    float icon_scale,
+    base::OnceCallback<void(gfx::ImageSkia)> callback) {
+  CompressedDataToSkBitmap(
+      compressed_data,
+      base::BindOnce(
+          [](base::OnceCallback<void(gfx::ImageSkia)> inner_callback,
+             float icon_scale, const SkBitmap& bitmap) {
+            std::move(inner_callback)
+                .Run(SkBitmapToImageSkia(bitmap, icon_scale));
+          },
+          std::move(callback), icon_scale));
 }
 
 base::OnceCallback<void(std::vector<uint8_t> compressed_data)>
@@ -233,47 +265,16 @@ CompressedDataToImageSkiaCallback(
     base::OnceCallback<void(gfx::ImageSkia)> callback,
     float icon_scale) {
   return base::BindOnce(
-      [](base::OnceCallback<void(gfx::ImageSkia)> callback, float icon_scale,
-         std::vector<uint8_t> compressed_data) {
-        if (compressed_data.empty()) {
-          std::move(callback).Run(gfx::ImageSkia());
-          return;
-        }
-        // DecompressToSkBitmap is a CPU intensive task that must not run on the
-        // UI thread, so post the processing over to the thread pool.
-        base::ThreadPool::PostTaskAndReplyWithResult(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-            base::BindOnce(
-                [](std::vector<uint8_t> compressed_data, float icon_scale) {
-                  return SkBitmapToImageSkia(
-                      DecompressToSkBitmap(compressed_data.data(),
-                                           compressed_data.size()),
-                      icon_scale);
-                },
-                std::move(compressed_data), icon_scale),
-            std::move(callback));
+      [](base::OnceCallback<void(gfx::ImageSkia)> inner_callback,
+         float icon_scale, std::vector<uint8_t> compressed_data) {
+        CompressedDataToImageSkia(compressed_data, icon_scale,
+                                  std::move(inner_callback));
       },
       std::move(callback), icon_scale);
 }
 
-void CompressedDataToSkBitmap(std::vector<uint8_t> compressed_data,
-                              base::OnceCallback<void(SkBitmap)> callback) {
-  if (compressed_data.empty()) {
-    std::move(callback).Run(SkBitmap());
-    return;
-  }
-
-  // DecompressToSkBitmap is a CPU intensive task that must not run on the
-  // UI thread, so post the processing over to the thread pool.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(
-          [](std::vector<uint8_t> compressed_data) {
-            return DecompressToSkBitmap(compressed_data.data(),
-                                        compressed_data.size());
-          },
-          std::move(compressed_data)),
-      std::move(callback));
+gfx::ImageSkia SkBitmapToImageSkia(const SkBitmap& bitmap, float icon_scale) {
+  return gfx::ImageSkia::CreateFromBitmap(bitmap, icon_scale);
 }
 
 std::vector<uint8_t> EncodeImageToPngBytes(const gfx::ImageSkia image,

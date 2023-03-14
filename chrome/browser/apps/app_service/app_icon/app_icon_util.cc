@@ -6,9 +6,11 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -26,6 +28,11 @@ constexpr char kBackgroundIconNameTemplate[] = "background_%d.png";
 }  // namespace
 
 namespace apps {
+
+data_decoder::DataDecoder& GetIconDataDecoder() {
+  static base::NoDestructor<data_decoder::DataDecoder> data_decoder;
+  return *data_decoder;
+}
 
 base::FilePath GetIconFolderPath(const base::FilePath& base_path,
                                  const std::string& app_id) {

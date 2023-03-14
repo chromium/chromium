@@ -203,7 +203,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
                                          std::map<int, SkBitmap> icon_bitmaps);
 
   void OnGetCompressedIconDataWithSkBitmap(bool is_maskable_icon,
-                                           SkBitmap bitmap);
+                                           const SkBitmap& bitmap);
 
   void OnReadChromeAppForCompressedIconData(gfx::ImageSkia image);
 

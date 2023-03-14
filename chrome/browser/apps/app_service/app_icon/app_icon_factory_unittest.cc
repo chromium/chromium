@@ -28,6 +28,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -52,7 +53,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "components/services/app_service/public/cpp/features.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #endif
 
 namespace apps {
@@ -170,8 +170,9 @@ class AppIconFactoryTest : public testing::Test {
 #endif
 
  protected:
-  content::BrowserTaskEnvironment task_env_{};
-  base::ScopedTempDir tmp_dir_{};
+  content::BrowserTaskEnvironment task_env_;
+  base::ScopedTempDir tmp_dir_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(AppIconFactoryTest, LoadFromFileSuccess) {
@@ -441,7 +442,6 @@ class AppServiceAppIconTest : public AppIconFactoryTest {
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<AppServiceProxy> proxy_;
   std::unique_ptr<apps::FakePublisherForIconTest> fake_publisher_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   std::unique_ptr<crostini::CrostiniTestHelper> crostini_test_helper_;
 

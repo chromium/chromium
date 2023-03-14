@@ -16,15 +16,6 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-namespace {
-
-data_decoder::DataDecoder& GetDataDecoder() {
-  static base::NoDestructor<data_decoder::DataDecoder> data_decoder;
-  return *data_decoder;
-}
-
-}  // namespace
-
 namespace apps {
 
 AppIconDecoder::ImageSource::ImageSource(int32_t size_in_dip)
@@ -46,7 +37,7 @@ AppIconDecoder::DecodeRequest::DecodeRequest(
     AppIconDecoder& host,
     gfx::ImageSkia& image_skia,
     std::set<ui::ResourceScaleFactor>& incomplete_scale_factors)
-    : ImageRequest(&GetDataDecoder()),
+    : ImageRequest(&GetIconDataDecoder()),
       scale_factor_(scale_factor),
       host_(host),
       image_skia_(image_skia),

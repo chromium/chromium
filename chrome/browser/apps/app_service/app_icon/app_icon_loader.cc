@@ -8,17 +8,20 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
@@ -148,14 +151,9 @@ FaviconResultToImageSkia(base::OnceCallback<void(gfx::ImageSkia)> callback,
           std::move(callback).Run(gfx::ImageSkia());
           return;
         }
-        // It would be nice to not do a memory copy here, but
-        // DecodeImageIsolated requires a std::vector, and RefCountedMemory
-        // doesn't supply that.
-        std::move(apps::CompressedDataToImageSkiaCallback(std::move(callback),
-                                                          icon_scale))
-            .Run(std::vector<uint8_t>(
-                result.bitmap_data->front(),
-                result.bitmap_data->front() + result.bitmap_data->size()));
+
+        apps::CompressedDataToImageSkia(*result.bitmap_data, icon_scale,
+                                        std::move(callback));
       },
       std::move(callback), icon_scale);
 }
@@ -497,13 +495,13 @@ void AppIconLoader::LoadIconFromCompressedData(
   // used to decode the icon.
   icon_scale_for_compressed_response_ = icon_scale_;
 
-  std::vector<uint8_t> data(compressed_icon_data.begin(),
-                            compressed_icon_data.end());
-  apps::CompressedDataToImageSkiaCallback(
+  base::span<const uint8_t> data_span =
+      base::as_bytes(base::make_span(compressed_icon_data));
+
+  apps::CompressedDataToImageSkia(
+      data_span, icon_scale_,
       base::BindOnce(&AppIconLoader::MaybeApplyEffectsAndComplete,
-                     base::WrapRefCounted(this)),
-      icon_scale_)
-      .Run(std::move(data));
+                     base::WrapRefCounted(this)));
 }
 
 void AppIconLoader::LoadIconFromResource(int icon_resource) {
@@ -784,7 +782,7 @@ void AppIconLoader::OnGetGuestOSAppCompressedIconData(base::FilePath png_path,
   if (!icon_data.empty()) {
     std::vector<uint8_t> data(icon_data.begin(), icon_data.end());
     CompressedDataToSkBitmap(
-        std::move(data),
+        data,
         base::BindOnce(&AppIconLoader::OnGetCompressedIconDataWithSkBitmap,
                        base::WrapRefCounted(this), /*is_maskable_icon=*/false));
     return;
@@ -1019,8 +1017,9 @@ void AppIconLoader::OnReadWebAppForCompressedIconData(
                                       std::move(icon_bitmaps.begin()->second));
 }
 
-void AppIconLoader::OnGetCompressedIconDataWithSkBitmap(bool is_maskable_icon,
-                                                        SkBitmap bitmap) {
+void AppIconLoader::OnGetCompressedIconDataWithSkBitmap(
+    bool is_maskable_icon,
+    const SkBitmap& bitmap) {
   if (bitmap.drawsNothing()) {
     // The bitmap will be empty if decoding fails, in which case we propagate
     // the empty result to the caller.
@@ -1029,14 +1028,15 @@ void AppIconLoader::OnGetCompressedIconDataWithSkBitmap(bool is_maskable_icon,
   }
 
   // Resize `bitmap` to match `icon_scale_`.
+  SkBitmap resized_bitmap = bitmap;
   if (bitmap.width() != icon_size_in_px_) {
-    bitmap = skia::ImageOperations::Resize(
+    resized_bitmap = skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_LANCZOS3, icon_size_in_px_,
         icon_size_in_px_);
   }
 
   gfx::ImageSkia image_skia =
-      gfx::ImageSkia::CreateFromBitmap(bitmap, icon_scale_);
+      gfx::ImageSkia::CreateFromBitmap(resized_bitmap, icon_scale_);
   image_skia.MakeThreadSafe();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},

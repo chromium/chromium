@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "build/chromeos_buildflags.h"
@@ -52,18 +53,28 @@ apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia);
 // done with trusted data. Returns an empty bitmap if decoding fails.
 SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size);
 
-// Creates an ImageSkia for the given `bitmap` and `icon_scale`;
-gfx::ImageSkia SkBitmapToImageSkia(SkBitmap bitmap, float icon_scale);
+// Converts compressed image data to a SkBitmap. Decoding happens in an isolated
+// process.
+void CompressedDataToSkBitmap(
+    base::span<const uint8_t> compressed_data,
+    base::OnceCallback<void(const SkBitmap&)> callback);
 
-// Returns a callback that converts compressed data to an ImageSkia.
+// Converts compressed image data to an ImageSkia. Decoding happens in an
+// isolated process.
+void CompressedDataToImageSkia(
+    base::span<const uint8_t> compressed_data,
+    float icon_scale,
+    base::OnceCallback<void(gfx::ImageSkia)> callback);
+
+// Returns a callback that converts compressed image data to an ImageSkia.
+// Decoding happens in an isolated process.
 base::OnceCallback<void(std::vector<uint8_t> compressed_data)>
 CompressedDataToImageSkiaCallback(
     base::OnceCallback<void(gfx::ImageSkia)> callback,
     float icon_scale);
 
-// Converts compressed data to a SkBitmap.
-void CompressedDataToSkBitmap(std::vector<uint8_t> compressed_data,
-                              base::OnceCallback<void(SkBitmap)> callback);
+// Creates an ImageSkia for the given `bitmap` and `icon_scale`.
+gfx::ImageSkia SkBitmapToImageSkia(const SkBitmap& bitmap, float icon_scale);
 
 // Encodes a single SkBitmap representation from the given ImageSkia to the
 // compressed PNG data. |rep_icon_scale| argument denotes, which ImageSkiaRep to

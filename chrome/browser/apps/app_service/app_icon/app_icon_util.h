@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace apps {
@@ -63,6 +64,9 @@ inline IconEffects operator&=(IconEffects& a, uint32_t b) {
   a = a & b;
   return a;
 }
+
+// Returns a shared Data Decoder instance to be used for decoding app icons.
+data_decoder::DataDecoder& GetIconDataDecoder();
 
 // Constructs the path to an app icon folder for the given `app_id`.
 base::FilePath GetIconFolderPath(const base::FilePath& base_path,
