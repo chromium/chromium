@@ -361,7 +361,7 @@ class NetworkEventsObserverConnectionStateTest
                              NetworkConnectionState expected_connection_state) {
     ASSERT_TRUE(result_metric_data.has_event_data());
     EXPECT_THAT(result_metric_data.event_data().type(),
-                Eq(MetricEventType::NETWORK_STATE_CHANGE));
+                Eq(MetricEventType::DEPRECATED_NETWORK_STATE_CHANGE));
     ASSERT_TRUE(result_metric_data.telemetry_data()
                     .networks_telemetry()
                     .has_network_connection_change_event_data());
@@ -502,7 +502,7 @@ TEST_P(NetworkEventsObserverConnectionStateTest, Default) {
   ASSERT_TRUE(event_reported);
   ASSERT_TRUE(result_metric_data.has_event_data());
   EXPECT_THAT(result_metric_data.event_data().type(),
-              Eq(MetricEventType::NETWORK_STATE_CHANGE));
+              Eq(MetricEventType::DEPRECATED_NETWORK_STATE_CHANGE));
   ASSERT_TRUE(result_metric_data.has_telemetry_data());
   ASSERT_TRUE(result_metric_data.telemetry_data().has_networks_telemetry());
   ASSERT_TRUE(result_metric_data.telemetry_data()

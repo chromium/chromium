@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
   // Testing event found successfully.
   EXPECT_THAT(record_data.event_data().type(),
-              Eq(MetricEventType::NETWORK_STATE_CHANGE));
+              Eq(MetricEventType::DEPRECATED_NETWORK_STATE_CHANGE));
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
