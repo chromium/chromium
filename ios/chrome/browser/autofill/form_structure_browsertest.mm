@@ -280,7 +280,10 @@ bool FormStructureBrowserTest::LoadHtmlWithoutSubresourcesAndInitRendererIds(
 
   __block web::WebFrame* main_frame = nullptr;
   success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    main_frame = web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
+    web::WebFramesManager* frames_manager =
+        autofill::FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            web_state());
+    main_frame = frames_manager->GetMainWebFrame();
     return main_frame != nullptr;
   });
   if (!success) {

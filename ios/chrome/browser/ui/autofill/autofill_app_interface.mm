@@ -14,6 +14,7 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/credit_card_save_manager_test_observer_bridge.h"
 #import "components/autofill/ios/browser/ios_test_event_waiter.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -195,8 +196,10 @@ class SaveCardInfobarEGTestHelper
   // Access the CreditCardSaveManager.
   static CreditCardSaveManager* GetCreditCardSaveManager() {
     web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-    web::WebFrame* main_frame =
-        web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
+    web::WebFramesManager* frames_manager =
+        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            web_state);
+    web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->autofill_manager()
         ->client()

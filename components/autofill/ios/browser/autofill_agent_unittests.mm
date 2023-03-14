@@ -39,6 +39,7 @@
 #error "This file requires ARC support."
 #endif
 
+using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
@@ -83,7 +84,10 @@ class AutofillAgentTests : public web::WebTest {
     fake_web_state_.SetContentIsHTML(true);
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     fake_web_frames_manager_ = frames_manager.get();
-    fake_web_state_.SetWebFramesManager(std::move(frames_manager));
+    web::ContentWorld content_world =
+        AutofillJavaScriptFeature::GetInstance()->GetSupportedContentWorld();
+    fake_web_state_.SetWebFramesManager(content_world,
+                                        std::move(frames_manager));
 
     GURL url("https://example.com");
     fake_web_state_.SetCurrentURL(url);
@@ -175,8 +179,7 @@ TEST_F(AutofillAgentTests,
   field.unique_renderer_id = FieldRendererId(5);
   form.fields.push_back(field);
   [autofill_agent_ fillFormData:form
-                        inFrame:fake_web_state_.GetPageWorldWebFramesManager()
-                                    ->GetMainWebFrame()];
+                        inFrame:fake_web_frames_manager_->GetMainWebFrame()];
   fake_web_state_.WasShown();
   EXPECT_EQ(u"__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"section\":\"-"
             u"default\",\"value\":\"number_value\"},\"3\":{\"section\":\"-"

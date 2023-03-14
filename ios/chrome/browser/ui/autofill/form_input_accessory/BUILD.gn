@@ -85,6 +85,7 @@ source_set("unit_tests") {
     ":form_input_accessory",
     "//base/test:test_support",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",

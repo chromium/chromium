@@ -96,8 +96,7 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
 
     __block web::WebFrame* main_frame = nullptr;
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      main_frame =
-          web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
+      main_frame = main_web_frame();
       return main_frame != nullptr;
     }));
     ASSERT_TRUE(main_frame);
@@ -115,7 +114,11 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
   }
 
   web::WebFrame* main_web_frame() {
-    return web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
+    web::WebFramesManager* frames_manager =
+        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            web_state());
+
+    return frames_manager->GetMainWebFrame();
   }
 
   // Scans the page for forms and fields and sets unique renderer IDs.

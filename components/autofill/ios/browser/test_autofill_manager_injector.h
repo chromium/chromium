@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -40,8 +41,10 @@ class TestAutofillManagerInjector : public web::WebStateObserver {
   explicit TestAutofillManagerInjector(web::WebState* web_state)
       : web_state_(web_state) {
     observation_.Observe(web_state);
-    if (web::WebFrame* main_frame =
-            web_state->GetPageWorldWebFramesManager()->GetMainWebFrame()) {
+    web::WebFramesManager* frames_manager =
+        AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            web_state);
+    if (web::WebFrame* main_frame = frames_manager->GetMainWebFrame()) {
       Inject(main_frame);
     }
   }
@@ -49,8 +52,10 @@ class TestAutofillManagerInjector : public web::WebStateObserver {
   ~TestAutofillManagerInjector() override = default;
 
   T* GetForMainFrame() {
-    return GetForFrame(
-        web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame());
+    web::WebFramesManager* frames_manager =
+        AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            web_state_);
+    return GetForFrame(frames_manager->GetMainWebFrame());
   }
 
   T* GetForFrame(web::WebFrame* web_frame) {

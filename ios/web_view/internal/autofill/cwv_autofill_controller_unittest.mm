@@ -93,7 +93,10 @@ class CWVAutofillControllerTest : public web::WebTest {
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_frames_manager_ = frames_manager.get();
-    web_state_.SetWebFramesManager(std::move(frames_manager));
+    web::ContentWorld content_world =
+        autofill::AutofillJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state_.SetWebFramesManager(content_world, std::move(frames_manager));
 
     auto password_manager_client =
         std::make_unique<WebViewPasswordManagerClient>(

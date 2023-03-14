@@ -702,12 +702,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
   }
   // Check that the main frame has already been processed.
-  if (!webState->GetPageWorldWebFramesManager()->GetMainWebFrame()) {
+  web::WebFramesManager* frames_manager =
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          webState);
+  if (!frames_manager->GetMainWebFrame()) {
     return;
   }
   if (!autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-           webState,
-           webState->GetPageWorldWebFramesManager()->GetMainWebFrame())
+           webState, frames_manager->GetMainWebFrame())
            ->is_processed()) {
     return;
   }
@@ -737,13 +739,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 #pragma mark - Private methods
 
 - (void)processPage:(web::WebState*)webState {
-  web::WebFramesManager* framesManager =
-      webState->GetPageWorldWebFramesManager();
-  if (!framesManager->GetMainWebFrame()) {
+  web::WebFramesManager* frames_manager =
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          webState);
+  if (!frames_manager->GetMainWebFrame()) {
     return;
   }
-  [self processFrame:framesManager->GetMainWebFrame() inWebState:webState];
-  for (auto* frame : framesManager->GetAllWebFrames()) {
+  [self processFrame:frames_manager->GetMainWebFrame() inWebState:webState];
+  for (auto* frame : frames_manager->GetAllWebFrames()) {
     if (frame->IsMainFrame()) {
       continue;
     }
@@ -1020,9 +1023,12 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   if (!_webState)
     return;
 
-  DCHECK(_webState->GetPageWorldWebFramesManager());
-  web::WebFrame* webFrame =
-      _webState->GetPageWorldWebFramesManager()->GetFrameWithId(webFrameId);
+  web::WebFramesManager* frames_manager =
+      autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          _webState);
+
+  DCHECK(frames_manager);
+  web::WebFrame* webFrame = frames_manager->GetFrameWithId(webFrameId);
   if (!webFrame)
     return;
 
