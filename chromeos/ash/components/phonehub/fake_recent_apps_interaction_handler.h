@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
+#include "ash/webui/eche_app_ui/eche_connection_status_observer.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
  public:
@@ -35,11 +35,18 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
     return recent_app_click_observer_count_;
   }
 
+  size_t eche_connection_status_observer_count() const {
+    return eche_connection_status_observer_count_;
+  }
+
   void NotifyRecentAppClicked(
       const Notification::AppMetadata& app_metadata,
       eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) override;
   void AddRecentAppClickObserver(RecentAppClickObserver* observer) override;
   void RemoveRecentAppClickObserver(RecentAppClickObserver* observer) override;
+  void SetConnectionStatusObserver(
+      eche_app::EcheConnectionStatusObserver* eche_connection_status_observer)
+      override;
   void NotifyRecentAppAddedOrUpdated(
       const Notification::AppMetadata& app_metadata,
       base::Time last_accessed_timestamp) override;
@@ -52,6 +59,7 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
   void ComputeAndUpdateUiState();
 
   size_t recent_app_click_observer_count_ = 0;
+  size_t eche_connection_status_observer_count_ = 0;
   multidevice_setup::mojom::FeatureState feature_state_ =
       multidevice_setup::mojom::FeatureState::kDisabledByUser;
 
@@ -60,7 +68,6 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
   std::map<std::string, size_t> package_name_to_click_count_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_RECENT_APPS_INTERACTION_HANDLER_H_

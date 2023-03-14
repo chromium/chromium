@@ -14,11 +14,11 @@ EcheConnectionStatusObserver::EcheConnectionStatusObserver() = default;
 EcheConnectionStatusObserver::~EcheConnectionStatusObserver() = default;
 
 void EcheConnectionStatusObserver::OnConnectionStatusChanged(
-    mojom::ConnectionStatus connectionStatus) {
+    mojom::ConnectionStatus connection_status) {
   if (features::IsEcheNetworkConnectionStateEnabled()) {
     PA_LOG(INFO) << "echeapi EcheConnectionStatusObserver "
-                 << " OnConnectionStatusChanged " << connectionStatus;
-    NotifyConnectionStatusChanged(connectionStatus);
+                 << " OnConnectionStatusChanged " << connection_status;
+    NotifyConnectionStatusChanged(connection_status);
   }
 }
 
@@ -37,9 +37,9 @@ void EcheConnectionStatusObserver::Bind(
 }
 
 void EcheConnectionStatusObserver::NotifyConnectionStatusChanged(
-    mojom::ConnectionStatus connectionStatus) {
+    mojom::ConnectionStatus connection_status) {
   for (auto& observer : observer_list_) {
-    observer.OnConnectionStatusChanged(connectionStatus);
+    observer.OnConnectionStatusChanged(connection_status);
   }
 }
 

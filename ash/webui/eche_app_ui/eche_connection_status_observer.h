@@ -21,7 +21,8 @@ class EcheConnectionStatusObserver : public mojom::ConnectionStatusObserver {
    public:
     ~Observer() override = default;
 
-    virtual void OnConnectionStatusChanged(mojom::ConnectionStatus status) = 0;
+    virtual void OnConnectionStatusChanged(
+        mojom::ConnectionStatus connection_status) = 0;
   };
 
   EcheConnectionStatusObserver();
@@ -32,7 +33,8 @@ class EcheConnectionStatusObserver : public mojom::ConnectionStatusObserver {
       delete;
 
   // mojom::ConnectionStatusObserver:
-  void OnConnectionStatusChanged(mojom::ConnectionStatus status) override;
+  void OnConnectionStatusChanged(
+      mojom::ConnectionStatus connection_status) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -40,7 +42,7 @@ class EcheConnectionStatusObserver : public mojom::ConnectionStatusObserver {
   void Bind(mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver);
 
  protected:
-  void NotifyConnectionStatusChanged(mojom::ConnectionStatus status);
+  void NotifyConnectionStatusChanged(mojom::ConnectionStatus connection_status);
 
  private:
   mojo::Receiver<mojom::ConnectionStatusObserver> connection_status_receiver_{

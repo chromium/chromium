@@ -5,8 +5,7 @@
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 RecentAppsInteractionHandler::RecentAppsInteractionHandler() = default;
 
@@ -36,5 +35,4 @@ void RecentAppsInteractionHandler::NotifyRecentAppsViewUiStateUpdated() {
   }
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -9,8 +9,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 using FeatureState = multidevice_setup::mojom::FeatureState;
 
@@ -36,6 +35,11 @@ void FakeRecentAppsInteractionHandler::AddRecentAppClickObserver(
 void FakeRecentAppsInteractionHandler::RemoveRecentAppClickObserver(
     RecentAppClickObserver* observer) {
   recent_app_click_observer_count_--;
+}
+
+void FakeRecentAppsInteractionHandler::SetConnectionStatusObserver(
+    eche_app::EcheConnectionStatusObserver* eche_connection_status_observer) {
+  eche_connection_status_observer_count_++;
 }
 
 void FakeRecentAppsInteractionHandler::OnFeatureStateChanged(
@@ -90,5 +94,4 @@ void FakeRecentAppsInteractionHandler::ComputeAndUpdateUiState() {
                   : RecentAppsUiState::ITEMS_VISIBLE;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

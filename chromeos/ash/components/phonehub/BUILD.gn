@@ -138,6 +138,7 @@ static_library("phonehub") {
     "//ash/constants",
     "//ash/resources/vector_icons",
     "//ash/webui/eche_app_ui:eche_app_ui_pref",
+    "//ash/webui/eche_app_ui:eche_connection_status",
     "//ash/webui/eche_app_ui/mojom:mojom",
     "//base",
     "//chromeos/ash/components/multidevice",
@@ -206,6 +207,7 @@ static_library("debug") {
 
   deps = [
     "//ash/constants",
+    "//ash/webui/eche_app_ui:eche_connection_status",
     "//base",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/phonehub/proto",
@@ -289,6 +291,7 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/constants",
     "//ash/webui/eche_app_ui:eche_app_ui_pref",
+    "//ash/webui/eche_app_ui:eche_connection_status",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/multidevice",

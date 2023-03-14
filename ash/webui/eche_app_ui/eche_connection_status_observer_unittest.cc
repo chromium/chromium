@@ -28,9 +28,9 @@ class FakeObserver : public EcheConnectionStatusObserver::Observer {
 
   // EcheConnectionStatusObserver::Observer:
   void OnConnectionStatusChanged(
-      mojom::ConnectionStatus connectionStatus) override {
+      mojom::ConnectionStatus connection_status) override {
     ++num_connection_status_changed_calls_;
-    last_connection_changed_status_ = connectionStatus;
+    last_connection_changed_status_ = connection_status;
   }
 
  private:
@@ -66,8 +66,9 @@ class EcheConnectionStatusObserverTest : public testing::Test {
     observer_.reset();
   }
 
-  void NotifyConnectionStatusChanged(mojom::ConnectionStatus status) {
-    observer_->OnConnectionStatusChanged(status);
+  void NotifyConnectionStatusChanged(
+      mojom::ConnectionStatus connection_status) {
+    observer_->OnConnectionStatusChanged(connection_status);
   }
 
   size_t GetNumConnectionStatusChangedCalls() const {

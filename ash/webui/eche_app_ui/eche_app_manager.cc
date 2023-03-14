@@ -120,6 +120,11 @@ EcheAppManager::EcheAppManager(
       std::move(system_info), remote_cros_network_config_.get());
   // assign system_info_provider_ to eche signaler
   signaler_->SetSystemInfoProvider(system_info_provider_.get());
+
+  if (features::IsEcheNetworkConnectionStateEnabled()) {
+    phone_hub_manager->GetRecentAppsInteractionHandler()
+        ->SetConnectionStatusObserver(eche_connection_status_observer_.get());
+  }
 }
 
 EcheAppManager::~EcheAppManager() = default;

@@ -264,6 +264,13 @@ void PhoneHubRecentAppsView::Update() {
       placeholder_view_->SetVisible(false);
       SetVisible(false);
       break;
+    case RecentAppsUiState::LOADING:
+      // TODO(b/271478560): Handle the Loading and Error UI states correctly.
+      // Instead of setting the PlaceholderView to visible, these states will
+      // use the LoadingView and other error states.
+      [[fallthrough]];
+    case RecentAppsUiState::CONNECTION_FAILED:
+      [[fallthrough]];
     case RecentAppsUiState::PLACEHOLDER_VIEW:
       recent_app_buttons_view_->SetVisible(false);
       placeholder_view_->SetVisible(true);

@@ -22,14 +22,14 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // The handler that exposes APIs to interact with Phone Hub Recent Apps.
 class RecentAppsInteractionHandlerImpl
     : public RecentAppsInteractionHandler,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
-      public MultideviceFeatureAccessManager::Observer {
+      public MultideviceFeatureAccessManager::Observer,
+      public eche_app::EcheConnectionStatusObserver::Observer {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -49,6 +49,9 @@ class RecentAppsInteractionHandlerImpl
       const Notification::AppMetadata& app_metadata,
       base::Time last_accessed_timestamp) override;
   std::vector<Notification::AppMetadata> FetchRecentAppMetadataList() override;
+  void SetConnectionStatusObserver(
+      eche_app::EcheConnectionStatusObserver* eche_connection_status_observer)
+      override;
 
   // MultiDeviceSetupClient::Observer:
   void OnFeatureStatesChanged(
@@ -62,6 +65,10 @@ class RecentAppsInteractionHandlerImpl
   void OnNotificationAccessChanged() override;
   void OnAppsAccessChanged() override;
 
+  // eche_app::EcheConnectionStatusObserver::Observer:
+  void OnConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus connection_status) override;
+
   void SetStreamableApps(
       const std::vector<Notification::AppMetadata>& streamable_apps) override;
 
@@ -70,6 +77,10 @@ class RecentAppsInteractionHandlerImpl
   std::vector<std::pair<Notification::AppMetadata, base::Time>>*
   recent_app_metadata_list_for_testing() {
     return &recent_app_metadata_list_;
+  }
+
+  eche_app::mojom::ConnectionStatus connection_status_for_testing() {
+    return connection_status_;
   }
 
  private:
@@ -85,18 +96,21 @@ class RecentAppsInteractionHandlerImpl
   // pref.
   bool has_loaded_prefs_ = false;
 
+  eche_app::mojom::ConnectionStatus connection_status_ =
+      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected;
   base::ObserverList<RecentAppClickObserver> observer_list_;
   std::vector<std::pair<Notification::AppMetadata, base::Time>>
       recent_app_metadata_list_;
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
+  eche_app::EcheConnectionStatusObserver* eche_connection_status_observer_ =
+      nullptr;
 
   base::WeakPtrFactory<RecentAppsInteractionHandlerImpl> weak_ptr_factory_{
       this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_RECENT_APPS_INTERACTION_HANDLER_IMPL_H_

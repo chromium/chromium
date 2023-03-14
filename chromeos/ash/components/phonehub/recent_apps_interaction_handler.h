@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "ash/webui/eche_app_ui/eche_connection_status_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -14,8 +15,7 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/components/phonehub/recent_app_click_observer.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // The handler that exposes APIs to interact with Phone Hub Recent Apps.
 // TODO(paulzchen): Implement Eche's RecentAppClickObserver and add/remove
@@ -36,6 +36,10 @@ class RecentAppsInteractionHandler {
     HIDDEN,
     // Feature is supported and enabled but no recent app has been added yet.
     PLACEHOLDER_VIEW,
+    // A bootstrap connection with the phone is being attempted.
+    LOADING,
+    // The bootstrap connection has failed.
+    CONNECTION_FAILED,
     // We have recent app that can be displayed.
     ITEMS_VISIBLE,
   };
@@ -63,6 +67,10 @@ class RecentAppsInteractionHandler {
   virtual void AddRecentAppClickObserver(RecentAppClickObserver* observer);
   virtual void RemoveRecentAppClickObserver(RecentAppClickObserver* observer);
 
+  virtual void SetConnectionStatusObserver(
+      eche_app::EcheConnectionStatusObserver*
+          eche_connection_status_observer) = 0;
+
   virtual void NotifyRecentAppClicked(
       const Notification::AppMetadata& app_metadata,
       eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) = 0;
@@ -87,7 +95,6 @@ class RecentAppsInteractionHandler {
   std::vector<UserState> user_states_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_RECENT_APPS_INTERACTION_HANDLER_H_

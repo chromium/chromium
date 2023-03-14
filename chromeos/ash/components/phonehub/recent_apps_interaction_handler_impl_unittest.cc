@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_observer.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/notification.h"
@@ -17,8 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -63,8 +63,10 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
+        /*enabled_features=*/{features::kEcheSWA,
+                              features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
+
     RecentAppsInteractionHandlerImpl::RegisterPrefs(pref_service_.registry());
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
@@ -72,6 +74,12 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
         &pref_service_, fake_multidevice_setup_client_.get(),
         &fake_multidevice_feature_access_manager_);
     interaction_handler_->AddRecentAppClickObserver(&fake_click_handler_);
+
+    eche_connection_status_observer_ =
+        std::make_unique<eche_app::EcheConnectionStatusObserver>();
+
+    interaction_handler_->SetConnectionStatusObserver(
+        eche_connection_status_observer_.get());
   }
 
   void TearDown() override {
@@ -232,15 +240,23 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     handler().NotifyRecentAppAddedOrUpdated(app_metadata2, now);
   }
 
+  void NotifyConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus connection_status) {
+    eche_connection_status_observer_->OnConnectionStatusChanged(
+        connection_status);
+  }
+
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   FakeClickHandler fake_click_handler_;
+  std::unique_ptr<eche_app::EcheConnectionStatusObserver>
+      eche_connection_status_observer_;
   std::unique_ptr<RecentAppsInteractionHandlerImpl> interaction_handler_;
   TestingPrefServiceSimple pref_service_;
   FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {
@@ -821,5 +837,63 @@ TEST_F(RecentAppsInteractionHandlerTest, GetUserIdSet) {
   EXPECT_EQ(1, recent_apps_metadata_result[1].user_id);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+TEST_F(RecentAppsInteractionHandlerTest, OnConnectionStatusChanged) {
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+
+  // Start in the Disconnected state.
+  NotifyConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusConnecting);
+
+  NotifyConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusConnected);
+
+  NotifyConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
+
+  NotifyConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       OnConnectionStatusChangedFlagDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheSWA},
+      /*disabled_features=*/{features::kEcheNetworkConnectionState});
+
+  // Start in the Disconnected state. When flag is disabled, the state should
+  // never change.
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+
+  NotifyConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+
+  NotifyConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+
+  NotifyConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+
+  NotifyConnectionStatusChanged(
+      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+}
+
+}  // namespace ash::phonehub
