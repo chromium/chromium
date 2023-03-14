@@ -178,7 +178,7 @@ export class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
     this.extensions = [];
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     // Populate the preview text with textToSpeechPreviewInput. Users can change

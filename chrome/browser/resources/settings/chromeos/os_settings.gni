@@ -346,6 +346,7 @@ non_web_component_files = [
   "chromeos/os_a11y_page/switch_access_types.ts",
   "chromeos/os_a11y_page/text_to_speech_page_browser_proxy.ts",
   "chromeos/os_a11y_page/tts_subpage_browser_proxy.ts",
+  "chromeos/os_a11y_page/chromevox_subpage_browser_proxy.ts",
   "chromeos/os_a11y_page/select_to_speak_subpage_browser_proxy.ts",
   "chromeos/os_about_page/about_page_browser_proxy.ts",
   "chromeos/os_about_page/device_name_browser_proxy.ts",

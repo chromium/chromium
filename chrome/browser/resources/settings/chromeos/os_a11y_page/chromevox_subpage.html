@@ -121,6 +121,29 @@ found in the LICENSE file.
   </div>
 </div>
 <h2>$i18n{chromeVoxVoicesLabel}</h2>
+<div class="sub-item">
+  <div class="settings-box continuation">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxVoice}
+    </div>
+    <settings-dropdown-menu id="voiceDropdown"
+        label="$i18n{chromeVoxVoice}"
+        pref="{{prefs.settings.a11y.chromevox.voice_name}}"
+        menu-options="[[voiceOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <settings-toggle-button
+      id="languageSwitchingToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.language_switching}}"
+      label="$i18n{chromeVoxLanguageSwitching}">
+  </settings-toggle-button>
+  <cr-link-row class="settings-box"
+      label="$i18n{chromeVoxTtsSettingsLink}"
+      sub-label="$i18n{chromeVoxTtsSettingsDescription}"
+      on-click="onTtsSettingsTap_" external embedded>
+  </cr-link-row>
+</div>
 <h2>$i18n{chromeVoxBrailleLabel}</h2>
 <h2>$i18n{chromeVoxDeveloperOptionsLabel}</h2>
 

@@ -296,6 +296,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.js'],
  [
+   'ChromeVoxSubpage',
+   'chromevox_subpage_tests.js',
+   {enabled: ['features::kAccessibilityChromeVoxPageMigration']},
+ ],
+ [
    'DictationChangeLanguageLocaleDialogTest',
    'change_dictation_locale_dialog_test.js',
  ],

@@ -1100,6 +1100,21 @@
   <message name="IDS_SETTINGS_CHROMEVOX_AUDIO_SUSPEND" desc="In the ChromeVox settings subpage, the label for an option to pause audio playback when ChromeVox is speaking (use audio suspension).">
     Pause playback when ChromeVox is speaking
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_VOICE" desc="In the ChromeVox settings subpage, the label for the dropdown to select ChromeVox's text-to-speech voice.">
+    Select current voice:
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_SYSTEM_VOICE" desc="In the ChromeVox settings subpage, the label for the default system text-to-speech voice.">
+    System Text-to-Speech voice
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_TTS_SETTINGS_LINK" desc="In the ChromeVox settings subpage, the label for the link to the Text-to-Speech settings page.">
+    Open text-to-speech settings
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_TTS_SETTINGS_DESCRIPTION" desc="In the ChromeVox settings subpage, the description sub-label for the link to the Text-to-Speech settings page, used to illustrate the keyboard shortcut for the Text-to-Speech settings page, and a description telling users that they can use the Text-to-speech settings page to Install, Manage, and Customize their text-to-speech voices.">
+    Search + O, then S. Use to install, manage, and customize voices.
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_LANGUAGE_SWITCHING" desc="In the ChromeVox settings subpage, the label for the toggle to enable ChromeVox language switching.">
+    Automatically switch ChromeVox voice based on language
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
     Full-screen magnifier
   </message>

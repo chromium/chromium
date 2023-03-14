@@ -92,6 +92,7 @@ void TtsHandler::OnVoicesChanged() {
               language_code, g_browser_process->GetApplicationLocale(), true));
     }
     response.Set("name", voice.name);
+    response.Set("remote", voice.remote);
     response.Set("languageCode", language_code);
     response.Set("fullLanguageCode", voice.lang);
     response.Set("languageScore", language_score);
