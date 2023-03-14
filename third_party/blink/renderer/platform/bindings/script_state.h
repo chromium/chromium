@@ -151,21 +151,33 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
 
   static ScriptState* ForRelevantRealm(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
-    return From(info.Holder()->GetCreationContextChecked());
+    return ForRelevantRealm(info.Holder());
   }
 
   static ScriptState* ForRelevantRealm(const V8CrossOriginCallbackInfo& info) {
-    return From(info.Holder()->GetCreationContextChecked());
+    return ForRelevantRealm(info.Holder());
   }
 
   static ScriptState* ForRelevantRealm(
       const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return From(info.Holder()->GetCreationContextChecked());
+    return ForRelevantRealm(info.Holder());
   }
 
   static ScriptState* ForRelevantRealm(
       const v8::PropertyCallbackInfo<void>& info) {
-    return From(info.Holder()->GetCreationContextChecked());
+    return ForRelevantRealm(info.Holder());
+  }
+
+  static ScriptState* ForRelevantRealm(v8::Local<v8::Object> object) {
+    DCHECK(!object.IsEmpty());
+    ScriptState* script_state = static_cast<ScriptState*>(
+        object->GetAlignedPointerFromEmbedderDataInCreationContext(
+            kV8ContextPerContextDataIndex));
+    // ScriptState::ForRelevantRealm() must be called only for objects having a
+    // creation context while the context must have a valid embedder data in
+    // the embedder field.
+    SECURITY_CHECK(script_state);
+    return script_state;
   }
 
   static ScriptState* From(v8::Local<v8::Context> context) {
@@ -173,7 +185,7 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
     ScriptState* script_state =
         static_cast<ScriptState*>(context->GetAlignedPointerFromEmbedderData(
             kV8ContextPerContextDataIndex));
-    // ScriptState::from() must not be called for a context that does not have
+    // ScriptState::From() must not be called for a context that does not have
     // valid embedder data in the embedder field.
     SECURITY_CHECK(script_state);
     SECURITY_CHECK(script_state->context_ == context);
