@@ -45,7 +45,7 @@ class App : public base::RefCountedThreadSafe<App> {
   // will exit with the specified code.
   void Shutdown(int exit_code);
 
-  UpdaterScope updater_scope() const;
+  virtual UpdaterScope updater_scope() const;
 
  private:
   // Implementations of App can override this to perform work on the main
