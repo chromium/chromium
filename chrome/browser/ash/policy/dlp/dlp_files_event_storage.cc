@@ -80,28 +80,6 @@ void DlpFilesEventStorage::SetTaskRunnerForTesting(
   task_runner_ = task_runner;
 }
 
-void DlpFilesEventStorage::SimulateElapsedTimeForTesting(base::TimeDelta time) {
-  std::vector<std::pair<ino64_t, const DlpFilesController::DlpFileDestination&>>
-      expired_entries;
-  for (auto& [inode, destinations] : events_) {
-    for (auto& [dst, event_value] : destinations) {
-      event_value.eviction_timer.Stop();
-      if (time >= cooldown_delta_) {
-        expired_entries.emplace_back(inode, dst);
-      } else {
-        const base::TimeDelta remaining = cooldown_delta_ - time;
-        event_value.eviction_timer.Start(
-            FROM_HERE, remaining,
-            base::BindOnce(&DlpFilesEventStorage::OnEvictionTimerUp,
-                           base::Unretained(this), inode, dst));
-      }
-    }
-  }
-  for (const auto& [inode, dst] : expired_entries) {
-    OnEvictionTimerUp(inode, dst);
-  }
-}
-
 void DlpFilesEventStorage::AddDestinationToInode(
     EventsMap::iterator inode_it,
     ino64_t inode,

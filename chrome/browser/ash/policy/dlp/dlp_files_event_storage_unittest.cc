@@ -78,7 +78,7 @@ TEST_F(DlpFilesEventStorageTest, UpsertEvents) {
 
   ASSERT_THAT(storage.GetSizeForTesting(), 4);
 
-  storage.SimulateElapsedTimeForTesting(kCooldownTimeout / 2);
+  task_runner->FastForwardBy(kCooldownTimeout / 2);
 
   // Update
   ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(kInode1, dst1));
@@ -89,7 +89,7 @@ TEST_F(DlpFilesEventStorageTest, UpsertEvents) {
   ASSERT_THAT(storage.GetSizeForTesting(), 4);
 
   // Automatic removal
-  storage.SimulateElapsedTimeForTesting(kCooldownTimeout);
+  task_runner->FastForwardBy(kCooldownTimeout);
   ASSERT_THAT(storage.GetSizeForTesting(), 0);
 
   histogram_tester_.ExpectBucketCount(

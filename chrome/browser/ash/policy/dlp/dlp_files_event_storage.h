@@ -46,9 +46,6 @@ class DlpFilesEventStorage {
   // Returns the number of events that are no more than `cooldown_delta_` old.
   size_t GetSizeForTesting() const;
 
-  // Moves events timestamp back in time to simulate elapsed time.
-  void SimulateElapsedTimeForTesting(base::TimeDelta time);
-
   // Used in tests to inject a task runner for time control.
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);

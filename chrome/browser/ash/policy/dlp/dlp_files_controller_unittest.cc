@@ -256,9 +256,8 @@ class DlpFilesControllerTest : public testing::Test {
     event_storage_ = files_controller_->GetEventStorageForTesting();
     DCHECK(event_storage_);
 
-    scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
-        base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-    event_storage_->SetTaskRunnerForTesting(task_runner);
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    event_storage_->SetTaskRunnerForTesting(task_runner_);
 
     reporting_manager_ = std::make_unique<DlpReportingManager>();
     SetReportQueueForReportingManager(
@@ -308,6 +307,7 @@ class DlpFilesControllerTest : public testing::Test {
   std::unique_ptr<DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events;
   DlpFilesEventStorage* event_storage_ = nullptr;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
@@ -1180,14 +1180,14 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file3));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file4));
 
-  event_storage_->SimulateElapsedTimeForTesting(cooldown_time);
+  task_runner_->FastForwardBy(cooldown_time);
 
   // Report `event1`, `event2`, and `event3` after these calls.
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file2));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(file3));
 
-  event_storage_->SimulateElapsedTimeForTesting(cooldown_time / 2);
+  task_runner_->FastForwardBy(cooldown_time / 2);
 
   // Do not report after these calls.
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
@@ -1346,7 +1346,7 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsFilesTransferRestricted) {
         DlpFilesController::DlpFileDestination(dst_path.path().value()),
         DlpFilesController::FileAction::kTransfer, cb.Get());
 
-    event_storage_->SimulateElapsedTimeForTesting(delay);
+    task_runner_->FastForwardBy(delay);
   }
 
   const auto expected_events =
