@@ -9,7 +9,7 @@
 
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
-#include "android_webview/browser/gfx/hardware_renderer_viz.h"
+#include "android_webview/browser/gfx/hardware_renderer.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
 #include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/common/aw_features.h"
@@ -83,7 +83,7 @@ std::unique_ptr<ChildFrame> RenderThreadManager::SetFrameOnUI(
   std::unique_ptr<ChildFrame> uncommitted_frame;
   DCHECK_LE(child_frames_.size(), 2u);
   ChildFrameQueue pruned_frames =
-      HardwareRendererViz::WaitAndPruneFrameQueue(&child_frames_);
+      HardwareRenderer::WaitAndPruneFrameQueue(&child_frames_);
   DCHECK_LE(pruned_frames.size(), 1u);
   if (pruned_frames.size())
     uncommitted_frame = std::move(pruned_frames.front());
@@ -210,7 +210,7 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
       getter = root_frame_sink_getter_;
     }
     DCHECK(getter);
-    hardware_renderer_ = std::make_unique<HardwareRendererViz>(
+    hardware_renderer_ = std::make_unique<HardwareRenderer>(
         this, std::move(getter), vulkan_context_provider_);
     hardware_renderer_->CommitFrame();
   }
