@@ -14,7 +14,7 @@
 
 BASE_FEATURE(kKeyboardShortcutsMenu,
              "KeyboardShortcutsMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable the keyboard shortcuts menu. This is used because building the

@@ -6346,21 +6346,6 @@
             ]
         }
     ],
-    "IOSKeyboardShortcutsMenu": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "KeyboardShortcutsMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSMediaPermissionsControl": [
         {
             "platforms": [
