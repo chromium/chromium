@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "build/branding_buildflags.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
@@ -145,11 +146,20 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
       break;
     case SigninPromoViewStyleCompactHorizontal:
     case SigninPromoViewStyleCompactVertical:
-      // TODO(crbug.com/1412758): Hide title when implementing these styles.
-      signinPromoView.titleLabel.hidden = NO;
+      signinPromoView.titleLabel.hidden = YES;
       [signinPromoView.primaryButton
-          setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
+          setTitle:GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)
           forState:UIControlStateNormal];
+      switch (self.signinPromoViewMode) {
+        case SigninPromoViewModeNoAccounts:
+          DCHECK(!self.userImage);
+          [self assignNonProfileImageToSigninPromoView:signinPromoView];
+          break;
+        case SigninPromoViewModeSigninWithAccount:
+        case SigninPromoViewModeSyncWithPrimaryAccount:
+          [self assignProfileImageToSigninPromoView:signinPromoView];
+          break;
+      }
   }
 }
 
@@ -162,6 +172,19 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
   DCHECK_EQ(avatarSize.width, image.size.width);
   DCHECK_EQ(avatarSize.height, image.size.height);
   [signinPromoView setProfileImage:image];
+}
+
+// Sets non-profile image to a given `signinPromoView`.
+- (void)assignNonProfileImageToSigninPromoView:
+    (SigninPromoView*)signinPromoView {
+  UIImage* logo = nil;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  logo = [UIImage imageNamed:@"signin_promo_logo_chrome_color"];
+#else
+  logo = [UIImage imageNamed:@"signin_promo_logo_chromium_color"];
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  DCHECK(logo);
+  [signinPromoView setNonProfileImage:logo];
 }
 
 @end
