@@ -60,9 +60,9 @@ def _SubstituteSchemaRefNames(node, child_key, common_schema, parent_refs,
       node[child_key]['id'] = ref_name
     refs_seen.add(ref_name)
 
-  for ck in node[child_key].keys():
-    # Copy parents ref so that parents are unique for each child branch and do not mix with sibling
-    # nodes.
+  for ck in sorted(node[child_key].keys()):
+    # Copy parents ref so that parents are unique for each child branch and do
+    # not mix with sibling nodes.
     _SubstituteSchemaRefNames(node[child_key], ck, common_schema,
                               parent_refs.copy(), refs_seen)
 
@@ -71,16 +71,15 @@ def _SubstituteSchemaRefs(policies, common_schema):
   '''Converts objects with the key '$ref' into their actual schema.
 
     Args:
-      policies: List of policiesal.
+      policies: List of policies.
       common_schema: Dictionary of schemas by their ref names.'''
-  list_dict_policies = [policy for policy in policies if 'schema' in policy]
+  policy_list = [policy for policy in policies if 'schema' in policy]
 
   refs_seen = set()
-  for policy in list_dict_policies:
+  for policy in sorted(policy_list, key=lambda policy: policy['id']):
     parent_refs = set()
     _SubstituteSchemaRefNames(policy, 'schema', common_schema, parent_refs,
                               refs_seen)
-  for policy in list_dict_policies:
     parent_refs = set()
     _SubstituteSchemaRefNames(policy, 'validation_schema', common_schema,
                               parent_refs, refs_seen)
