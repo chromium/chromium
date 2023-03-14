@@ -1321,7 +1321,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
                                                  &line_opportunity);
     }
 
-    STACK_UNINITIALIZED NGLineInfo line_info;
+    NGLineInfo line_info;
     NGLineBreaker line_breaker(
         Node(), NGLineBreakerMode::kContent, ConstraintSpace(),
         line_opportunity, leading_floats, handled_leading_floats_index,
