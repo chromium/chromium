@@ -8,6 +8,10 @@
  * `home-url-input`.
  */
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
+// <if expr="chromeos_ash">
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
+
+// </if>
 
 import {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

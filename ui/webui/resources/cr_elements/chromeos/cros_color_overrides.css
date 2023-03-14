@@ -116,8 +116,9 @@ To get Chrome OS System Colors, an element must:
   --cr-icon-button-fill-color: var(--cros-sys-secondary);
 }
 
-/* Input */
-:host-context(body.jelly-enabled) cr-input {
+/* Input and Textarea */
+:host-context(body.jelly-enabled) cr-input,
+:host-context(body.jelly-enabled) cr-textarea {
   --cr-input-background-color: var(--cros-sys-input_field_dark);
   --cr-input-error-color: var(--cros-sys-error);
   --cr-input-focus-color: var(--cros-sys-primary);

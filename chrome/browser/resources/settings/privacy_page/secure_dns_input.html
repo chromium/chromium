@@ -1,4 +1,8 @@
-    <style>
+    <style
+    <if expr='chromeos_ash'>
+      include="cros-color-overrides"
+    </if>
+    >
       :host {
         cursor: auto;
         display: block;
