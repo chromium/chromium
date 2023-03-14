@@ -305,6 +305,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcSessionRunner* GetArcSessionRunnerForTesting();
   void SetAttemptUserExitCallbackForTesting(
       const base::RepeatingClosure& callback);
+  void SetAttemptRestartCallbackForTesting(
+      const base::RepeatingClosure& callback);
   void SetAndroidManagementCheckerFactoryForTesting(
       ArcRequirementChecker::AndroidManagementCheckerFactory
           android_management_checker_factory) {
@@ -506,6 +508,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<base::ElapsedTimer> activation_delay_elapsed_timer_;
 
   base::RepeatingClosure attempt_user_exit_callback_;
+
+  base::RepeatingClosure attempt_restart_callback_;
 
   ArcAppIdProviderImpl app_id_provider_;
 

@@ -394,6 +394,15 @@ void ReportProvisioningStartTime(const base::TimeTicks& start_time,
   }
 }
 
+// Returns whether ARCVM /data migration is in progress and should be resumed.
+bool ArcVmDataMigrationIsInProgress(PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
+    return false;
+  }
+  return GetArcVmDataMigrationStatus(prefs) ==
+         ArcVmDataMigrationStatus::kStarted;
+}
+
 }  // namespace
 
 // This class is used to track statuses on OptIn flow. It is created in case ARC
@@ -462,8 +471,8 @@ ArcSessionManager::ArcSessionManager(
           std::move(adb_sideloading_availability_delegate)),
       android_management_checker_factory_(
           ArcRequirementChecker::GetDefaultAndroidManagementCheckerFactory()),
-      attempt_user_exit_callback_(
-          base::BindRepeating(chrome::AttemptUserExit)) {
+      attempt_user_exit_callback_(base::BindRepeating(chrome::AttemptUserExit)),
+      attempt_restart_callback_(base::BindRepeating(chrome::AttemptRestart)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!g_arc_session_manager);
   g_arc_session_manager = this;
@@ -770,6 +779,14 @@ void ArcSessionManager::Initialize() {
       multi_user_util::GetAccountIdFromProfile(profile_));
   data_remover_ = std::make_unique<ArcDataRemover>(prefs, cryptohome_id);
 
+  if (ArcVmDataMigrationIsInProgress(prefs)) {
+    VLOG(1) << "ARCVM /data migration is in progress. Restarting Chrome "
+               "session to resume the migration";
+    // TODO(b/272151802): Count the number of resumes and report to UMA.
+    attempt_restart_callback_.Run();
+    return;
+  }
+
   // Chrome may be shut down before completing ARC data removal.
   // For such a case, start removing the data now, if necessary.
   MaybeStartArcDataRemoval();
@@ -1027,6 +1044,12 @@ bool ArcSessionManager::RequestEnableImpl() {
     return false;
   }
 
+  if (ArcVmDataMigrationIsInProgress(prefs)) {
+    VLOG(1) << "Skipping request to enable ARC because ARCVM /data migration "
+               "is in progress";
+    return false;
+  }
+
   // When ARC is blocked because of powerwash request, do not proceed
   // to starting ARC nor follow further state transitions. Applications are
   // still visible but replaced with notification requesting powerwash.
@@ -1154,9 +1177,16 @@ void ArcSessionManager::RequestArcDataRemoval() {
   // TODO(hidehiko): Think a way to get rid of 1), too.
 
   data_remover_->Schedule();
-  profile_->GetPrefs()->SetInteger(
-      prefs::kArcManagementTransition,
-      static_cast<int>(ArcManagementTransition::NO_TRANSITION));
+  auto* prefs = profile_->GetPrefs();
+  prefs->SetInteger(prefs::kArcManagementTransition,
+                    static_cast<int>(ArcManagementTransition::NO_TRANSITION));
+
+  if (ArcVmDataMigrationIsInProgress(prefs)) {
+    VLOG(1) << "Skipping ARC /data removal because ARCVM /data migration is "
+               "in progress";
+    return;
+  }
+
   // To support 1) case above, maybe start data removal.
   if (state_ == State::STOPPED)
     MaybeStartArcDataRemoval();
@@ -1466,14 +1496,6 @@ void ArcSessionManager::OnArcDataRemoved(absl::optional<bool> result) {
     return;
   }
 
-  if (GetArcVmDataMigrationStatus(profile_->GetPrefs()) ==
-      ArcVmDataMigrationStatus::kStarted) {
-    VLOG(1) << "ARCVM /data migration is in progress. Restarting Chrome session"
-            << " to resume the migration";
-    chrome::AttemptRestart();
-    return;
-  }
-
   CheckArcVmDataMigrationNecessity(base::BindOnce(
       &ArcSessionManager::MaybeReenableArc, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1654,6 +1676,12 @@ void ArcSessionManager::SetAttemptUserExitCallbackForTesting(
     const base::RepeatingClosure& callback) {
   DCHECK(!callback.is_null());
   attempt_user_exit_callback_ = callback;
+}
+
+void ArcSessionManager::SetAttemptRestartCallbackForTesting(
+    const base::RepeatingClosure& callback) {
+  DCHECK(!callback.is_null());
+  attempt_restart_callback_ = callback;
 }
 
 void ArcSessionManager::ShowArcSupportHostError(

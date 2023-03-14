@@ -859,6 +859,63 @@ TEST_F(ArcSessionManagerTest, RemoveDataDir_Restart) {
   arc_session_manager()->Shutdown();
 }
 
+TEST_F(ArcSessionManagerTest, ArcVmDataMigrationInProgress_RequestEnable) {
+  int restart_count = 0;
+  // Replace chrome::AttemptRestart() for testing.
+  arc_session_manager()->SetAttemptRestartCallbackForTesting(
+      base::BindLambdaForTesting([&restart_count]() { ++restart_count; }));
+
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+  SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kStarted);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(restart_count, 1);
+
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(arc_session_manager()->state(), ArcSessionManager::State::STOPPED);
+  EXPECT_EQ(restart_count, 1);
+
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest,
+       ArcVmDataMigrationInProgress_RequestArcDataRemoval) {
+  int restart_count = 0;
+  // Replace chrome::AttemptRestart() for testing.
+  arc_session_manager()->SetAttemptRestartCallbackForTesting(
+      base::BindLambdaForTesting([&restart_count]() { ++restart_count; }));
+
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+  SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kStarted);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(restart_count, 1);
+
+  arc_session_manager()->RequestArcDataRemoval();
+  base::RunLoop().RunUntilIdle();
+  // /data removal request should persist, i.e., /data should not be removed.
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kArcDataRemoveRequested));
+  EXPECT_EQ(arc_session_manager()->state(), ArcSessionManager::State::STOPPED);
+  EXPECT_EQ(restart_count, 1);
+
+  arc_session_manager()->Shutdown();
+}
+
 TEST_F(ArcSessionManagerTest, ArcVmDataMigrationNecessityChecker_Necessary) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
