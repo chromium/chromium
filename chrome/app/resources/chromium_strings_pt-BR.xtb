@@ -97,7 +97,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Alternar para perfil existente do Chromium?</translation>
 <translation id="3412460710772753638">No Gerenciador de senhas neste dispositivo</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{O administrador configurou o Chromium para fechar se ficar inativo por mais de 1 minuto.}one{O administrador configurou o Chromium para fechar se ficar inativo por mais de # minuto.}other{O administrador configurou o Chromium para fechar se ficar inativo por mais de # minutos.}}</translation>
 <translation id="3430503420100763906">Você pode usar os perfis do Chromium para separar todos seus dados nele. Crie perfis para amigos e familiares ou separe trabalho e lazer.</translation>
 <translation id="347328004046849135">O Chromium enviará uma notificação quando você fizer login com uma senha comprometida</translation>
 <translation id="3474745554856756813">Essa ação excluirá <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar seus dados mais tarde, faça login no Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -179,7 +178,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="538767207339317086">Permitir login no Chromium</translation>
 <translation id="5398878173008909840">Há uma nova versão do Chromium disponível.</translation>
 <translation id="5405650547142096840">Remover do Chromium</translation>
-<translation id="5421879995290576427">{0,plural, =0{O Chromium vai ser fechado agora.}=1{O Chromium vai ser fechado em 1 segundo.}one{O Chromium vai ser fechado em # segundo.}other{O Chromium vai ser fechado em # segundos.}}</translation>
 <translation id="5427571867875391349">Definir o Chromium como seu navegador padrão</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" />: Chromium Beta</translation>
 <translation id="5473971139929175403">É possível que o Chromium não funcione corretamente, porque esta distribuição do Linux não tem mais suporte a ele</translation>
@@ -269,7 +267,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6964305034639999644">Abrir link na janela &amp;sem rastros do Chromium</translation>
 <translation id="6978145336957848883">Senhas fracas são fáceis de adivinhar. Deixe o Chromium <ph name="BEGIN_LINK" />criar e guardar senhas fortes para você<ph name="END_LINK" />.</translation>
 <translation id="6981396265751285733">Quando essa opção está ativada, o Chromium libera memória das guias inativas. Isso permite que guias ativas e outros apps usem mais recursos do computador e mantém o Chromium rápido. Suas guias inativas são reativadas automaticamente quando você volta para elas.</translation>
-<translation id="6984667024406244807">O Chromium está inativo</translation>
 <translation id="6985329841647292029">Termos do ChromiumOS</translation>
 <translation id="6990124437352146030">O Chromium precisa de permissão para este site acessar seu microfone</translation>
 <translation id="7025789849649390912">Instalação interrompida.</translation>

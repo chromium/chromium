@@ -1286,7 +1286,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2105809836724866556">Skryté: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefónne číslo}few{# telefónne čísla}many{# phone numbers}other{# telefónnych čísiel}}</translation>
 <translation id="2110941575868943054">Môžu vyhľadávať zariadenia s rozhraním Bluetooth</translation>
-<translation id="2111158890826137380">Ľutujeme, niečo sa pokazilo. V opise odošlite spätnú väzbu s hashtagom #bruschetta. Kód chyby je <ph name="ERROR" />.</translation>
 <translation id="211144231511833662">Vymazať typy</translation>
 <translation id="2111670510994270194">Nová karta vpravo</translation>
 <translation id="2112554630428445878">Vitajte, <ph name="USERNAME" /></translation>
@@ -2469,7 +2468,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3129215702932019810">Pri spustení aplikácie sa vyskytla chyba</translation>
 <translation id="3130528281680948470">Vaše zariadenie sa obnoví a všetky používateľské účty a miestne údaje budú odstránené. Túto akciu nie je možné vrátiť späť.</translation>
 <translation id="3130863904455712965">História a ďalšie nastavenia</translation>
-<translation id="3130966412954727147">Weby, ktoré navštevujete, môžu overiť, že ste skutočný používateľ a nie robot.</translation>
 <translation id="313205617302240621">Zabudli ste heslo?</translation>
 <translation id="3132277757485842847">Nepodarilo sa udržať pripojenie k vášmu telefónu. Uistite sa, že je telefón nablízku, odomknutý a má zapnuté rozhranie Bluetooth a pripojenie Wi‑Fi.</translation>
 <translation id="3132896062549112541">Pravidlo</translation>
@@ -3018,7 +3016,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3647654707956482440">Tento odkaz sa nedá použiť. Skontrolujte, či v ňom nie sú preklepy, alebo to skúste pomocou iného odkazu.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Zo zariadenia <ph name="DEVICE_NAME" /> boli prijaté prílohy (<ph name="ATTACHMENTS" />)}few{Zo zariadenia <ph name="DEVICE_NAME" /> boli prijaté prílohy (<ph name="ATTACHMENTS" />)}many{Zo zariadenia <ph name="DEVICE_NAME" /> boli prijaté prílohy (<ph name="ATTACHMENTS" />)}other{Zo zariadenia <ph name="DEVICE_NAME" /> boli prijaté prílohy (<ph name="ATTACHMENTS" />)}}</translation>
 <translation id="3648348069317717750">Rozpoznané zariadenie: <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3649190289964910441">Web, ktorý navštívite, môže pomocou Chromu uložiť informácie potvrdzujúce, že ste skutočný používateľ. Pri ďalšom prehliadaní môžu weby pomocou Chromu overovať informácie z prvého webu, že ste zrejme dôveryhodný používateľ.</translation>
 <translation id="3650753875413052677">Chyba registrácie</translation>
 <translation id="3650845953328929506">Čaká sa na nahranie do denníka.</translation>
 <translation id="3650952250015018111">Povoľte aplikácii "<ph name="APP_NAME" />" prístup do zariadenia:</translation>
@@ -4269,7 +4266,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="477647109558161443">Vytvoriť odkaz na pracovnej ploche</translation>
 <translation id="4776594120007763294">Ak chcete pridať stránku na čítanie neskôr, kliknite na tlačidlo</translation>
 <translation id="4777458362738635055">Ostatní používatelia tohto zariadenia môžu túto sieť používať</translation>
-<translation id="477781522763920796">Toto nastavenie funguje bez identifikácie vašej totožnosti, pričom weby neuvidia vašu históriu prehliadania.</translation>
 <translation id="4777825441726637019">Obchod Play</translation>
 <translation id="4777943778632837590">Konfigurovať servery s názvami siete</translation>
 <translation id="4779083564647765204">Lupa</translation>
@@ -4960,7 +4956,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5432145523462851548">Zobraziť <ph name="FILE_NAME" /> v priečinku</translation>
 <translation id="543338862236136125">Upraviť heslo</translation>
 <translation id="5434065355175441495">Štandard PKCS #1 so šifrovaním RSA</translation>
-<translation id="5434294721803750644">Sledované pripojenie</translation>
 <translation id="5435779377906857208">Vždy povoliť webu <ph name="HOST" /> prístup k polohe</translation>
 <translation id="5436492226391861498">Čaká sa na tunelové prepojenie servera proxy...</translation>
 <translation id="5436510242972373446">Prehľadať webovú stránku <ph name="SITE_NAME" />:</translation>
@@ -6249,7 +6244,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6597331566371766302">Váš správca zablokoval nasledujúce rozšírenia:</translation>
 <translation id="6601262427770154296">Spravovať používateľské slovníky</translation>
 <translation id="6601612474695404578">Niektoré weby načítavajú svoje stránky pomocou súborov cookie tretích strán. Ak web nefunguje, môžete skúsiť povoliť súbory cookie.</translation>
-<translation id="6602581642873576447">Redukcia spamu a podvodov je vypnutá</translation>
 <translation id="6602937173026466876">Prístup k vašim tlačiarňam</translation>
 <translation id="6602956230557165253">Navigujte pomocou klávesov doľava a doprava.</translation>
 <translation id="6603185457265641428">Vyberte, či chcete synchronizovať históriu</translation>
@@ -6770,7 +6764,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7047059339731138197">Vyberte pozadie</translation>
 <translation id="7049293980323620022">Ponechať súbor?</translation>
 <translation id="7050037487872780845">Neplatná konfigurácia hotspotu</translation>
-<translation id="7050519587566342213">Ako používateľ sa pre weby stanete dôveryhodnejší, takže prehliadanie bude plynulejšie.</translation>
 <translation id="7051551856857948729">Skryť hodnotu IBAN</translation>
 <translation id="7052237160939977163">Odosielať údaje sledovania výkonnosti</translation>
 <translation id="7053983685419859001">Blokovať</translation>
@@ -6989,7 +6982,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7271278495464744706">Povoliť podrobné popisy</translation>
 <translation id="7272674038937250585">Popis nie je k dispozícii</translation>
 <translation id="7273110280511444812">naposledy pripojené dňa <ph name="DATE" /></translation>
-<translation id="7273921429569738933">Redukcia spamu a podvodov je zapnutá</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> do úplného nabitia</translation>
 <translation id="727952162645687754">Chyba sťahovania</translation>
 <translation id="7280041992884344566">Pri hľadaní škodlivého softvéru sa v Chrome vyskytla chyba</translation>

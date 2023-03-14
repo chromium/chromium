@@ -277,7 +277,6 @@
 <translation id="3595596368722241419">Batteriet er fullt</translation>
 <translation id="3600339377155080675">Skjermspeiling</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
-<translation id="360282891121575443">Bilder i delte album kan oppdateres av andre brukere. Endring daglig kan vise bakgrunner som ikke er i albumet for øyeblikket.</translation>
 <translation id="3603829704940252505">Brukerbilde</translation>
 <translation id="3604713164406837697">Endre bakgrunn</translation>
 <translation id="360565022852130722">Wifi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
@@ -637,7 +636,6 @@
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659594942844771486">Fane</translation>
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
-<translation id="6698459586333070823">Delte album kan oppdateres av andre brukere</translation>
 <translation id="6704062477274546131">DNS-konvertering</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6723847290197874913">Bakgrunnsbelysning for tastatur</translation>
@@ -793,7 +791,6 @@
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
 <translation id="8227119283605456246">Legg ved fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
-<translation id="8242426110754782860">Gå videre</translation>
 <translation id="8246209727385807362">Ukjent operatør</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Koble til et nettverk og last inn siden på nytt for å se bakgrunnsbildet.</translation>

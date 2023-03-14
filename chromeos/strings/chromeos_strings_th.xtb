@@ -277,7 +277,6 @@
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="3600339377155080675">มิเรอร์หน้าจอ</translation>
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
-<translation id="360282891121575443">ผู้ใช้รายอื่นสามารถอัปเดตรูปภาพในอัลบั้มที่แชร์ได้ การเปลี่ยนแปลงรายวันอาจแสดงวอลเปเปอร์ที่ไม่ได้อยู่ในอัลบั้ม</translation>
 <translation id="3603829704940252505">รูปโปรไฟล์</translation>
 <translation id="3604713164406837697">เปลี่ยนวอลเปเปอร์</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
@@ -637,7 +636,6 @@
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6659594942844771486">แท็บ</translation>
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
-<translation id="6698459586333070823">ผู้ใช้รายอื่นสามารถอัปเดตอัลบั้มที่แชร์ได้</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="6723847290197874913">ไฟแบ็กไลต์ของแป้นพิมพ์</translation>
@@ -793,7 +791,6 @@
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>
 <translation id="8227119283605456246">แนบไฟล์</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
-<translation id="8242426110754782860">ดำเนินการต่อ</translation>
 <translation id="8246209727385807362">ผู้ให้บริการที่ไม่รู้จัก</translation>
 <translation id="827422111966801947">สีคราม</translation>
 <translation id="8286154143153872371">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าซ้ำเพื่อดูวอลเปเปอร์</translation>

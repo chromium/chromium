@@ -21,6 +21,7 @@
 <translation id="1640672724030957280">جارٍ التنزيل...</translation>
 <translation id="1708666629004767631">‏يتوفر إصدار جديد وأكثر أمانًا Chromium.</translation>
 <translation id="17264556997921157">‏يمكنك الاطّلاع على المواضيع التي تهمّك وتستخدمها المواقع الإلكترونية لعرض الإعلانات لك، وبإمكانك كذلك إزالة ما تشاء من هذه المواضيع. ويعمل Chromium على تقديم تقديرات حول اهتماماتك بناءً على سجل التصفّح الأخير.</translation>
+<translation id="1745121272106313518">‏ستتم إعادة تشغيل Chromium خلال <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">‏دع Chromium يعمل في الخلفية</translation>
 <translation id="1779356040007214683">‏لجعل Chromium أكثر أمانًا، تم إيقاف بعض الإضافات غير المدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> والتي ربما تمت إضافتها بدون علمك.</translation>
 <translation id="1808667845054772817">‏إعادة تثبيت Chromium</translation>
@@ -95,7 +96,6 @@
 <translation id="3387527074123400161">‏نظام التشغيل Chromium</translation>
 <translation id="3406848076815591792">‏هل تريد الانتقال إلى الملف الشخصي الحالي على Chromium؟</translation>
 <translation id="3412460710772753638">في "مدير كلمات المرور" على هذا الجهاز</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{‏ضبط المشرف إعدادات Chromium ليغلق تلقائيًا في حال لم يتم استخدامه لأكثر من دقيقة واحدة.}zero{‏ضبط المشرف إعدادات Chromium ليغلق تلقائيًا في حال لم يتم استخدامه لأكثر من # دقيقة.}two{‏ضبط المشرف إعدادات Chromium ليغلق تلقائيًا في حال لم يتم استخدامه لأكثر من دقيقتَين.}few{‏ضبط المشرف إعدادات Chromium ليغلق تلقائيًا في حال لم يتم استخدامه لأكثر من # دقائق.}many{‏ضبط المشرف إعدادات Chromium ليغلق تلقائيًا في حال لم يتم استخدامه لأكثر من # دقيقة.}other{‏ضبط المشرف إعدادات Chromium ليغلق تلقائيًا في حال لم يتم استخدامه لأكثر من # دقيقة.}}</translation>
 <translation id="3430503420100763906">‏باستخدام الملفات الشخصية على Chromium، يمكنك الفصل بين جميع بيانات Chromium. ويمكنك إنشاء ملفات شخصية للأصدقاء والعائلة أو تقسيمها للعمل وأغراض الترفيه.</translation>
 <translation id="347328004046849135">‏في حال تسجيل الدخول باستخدام كلمة مرور محتمَل تعرّضها للاختراق، سيرسل Chromium إشعارًا إليك.</translation>
 <translation id="3474745554856756813">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chromium كـ <ph name="USER_EMAIL" />.</translation>
@@ -177,7 +177,6 @@
 <translation id="538767207339317086">‏السماح بتسجيل الدخول إلى Chromium</translation>
 <translation id="5398878173008909840">‏يتوفر إصدار جديد من Chromium.</translation>
 <translation id="5405650547142096840">‏إزالة من Chromium</translation>
-<translation id="5421879995290576427">{0,plural, =0{‏سيتم الآن إغلاق متصفِّح Chromium.}=1{‏سيتم إغلاق متصفِّح Chromium بعد ثانية واحدة.}two{‏سيتم إغلاق متصفِّح Chromium بعد ثانيتَين.}few{‏سيتم إغلاق متصفِّح Chromium بعد # ثوانٍ.}many{‏سيتم إغلاق متصفِّح Chromium بعد # ثانيةً.}other{‏سيتم إغلاق متصفِّح Chromium بعد # ثانية.}}</translation>
 <translation id="5427571867875391349">‏تعيين Chromium المتصفح التلقائي</translation>
 <translation id="5438241569118040789">‏<ph name="PAGE_TITLE" /> - الإصدار التجريبي من Chromium</translation>
 <translation id="5473971139929175403">‏قد لا يعمل Chromium بشكل صحيح لأنّه لم يعد متاحًا على توزيع Linux هذا.</translation>
@@ -269,7 +268,6 @@
 <translation id="6964305034639999644">‏فتح الرابط في نافذة تصفح متخفٍ في Chromium</translation>
 <translation id="6978145336957848883">‏من السهل تخمين كلمات المرور الضعيفة. يمكنك السماح لمتصفِّح Chromium <ph name="BEGIN_LINK" />بإنشاء كلمات مرور قوية وتذكُّرها نيابة عنك<ph name="END_LINK" />.</translation>
 <translation id="6981396265751285733">‏عند تفعيل هذا الوضع، يعمل Chromium على تفريغ الذاكرة من علامات التبويب غير النشطة. يوفّر ذلك لعلامات التبويب النشطة والتطبيقات الأخرى مزيدًا من موارد الكمبيوتر للحفاظ على أداء Chromium السريع. وسيُعاد تلقائيًا تنشيط علامات التبويب غير النشطة عند رجوعك إليها.</translation>
-<translation id="6984667024406244807">‏Chromium غير نشط</translation>
 <translation id="6985329841647292029">‏بنود نظام التشغيل Chromium</translation>
 <translation id="6990124437352146030">‏يحتاج Chromium إلى إذن للوصول إلى الميكروفون من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="7025789849649390912">تم إيقاف التثبيت.</translation>

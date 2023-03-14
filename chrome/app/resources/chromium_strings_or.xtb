@@ -101,7 +101,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">ପୂର୍ବରୁ ଥିବା Chromium ପ୍ରୋଫାଇଲକୁ ସ୍ୱିଚ୍ କରିବେ?</translation>
 <translation id="3412460710772753638">ଏହି ଡିଭାଇସରେ Password Managerରେ</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{ଯଦି Chromium 1 ମିନିଟରୁ ଅଧିକ ସମୟ ପାଇଁ ନିଷ୍କ୍ରିୟ ଥାଏ ତେବେ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହାକୁ ବନ୍ଦ କରିବା ପାଇଁ କନଫିଗର କରିଛନ୍ତି।}other{ଯଦି Chromium # ମିନିଟରୁ ଅଧିକ ସମୟ ପାଇଁ ନିଷ୍କ୍ରିୟ ଥାଏ ତେବେ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହାକୁ ବନ୍ଦ କରିବା ପାଇଁ କନଫିଗର କରିଛନ୍ତି।}}</translation>
 <translation id="3430503420100763906">Chromium ପ୍ରୋଫାଇଲ୍ ସାହାଯ୍ୟରେ ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ ସାମଗ୍ରୀକୁ Chromiumରେ ଅଲଗା କରିପାରିବେ। ଆପଣଙ୍କ ସାଙ୍ଗ ଏବଂ ପରିବାର ପାଇଁ ପ୍ରୋଫାଇଲ୍ ତିଆରି କରନ୍ତୁ କିମ୍ବା କାର୍ଯ୍ୟ ଏବଂ ମଜା ମଧ୍ୟରେ ବିଭାଜିତ କରନ୍ତୁ।</translation>
 <translation id="347328004046849135">ଆପଣ ଏକ ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କଲେ Chromium ଆପଣଙ୍କୁ ସୂଚିତ କରିବ</translation>
 <translation id="3474745554856756813">ଏହା, ଏହି ଡିଭାଇସ୍‍ରୁ <ph name="ITEMS_COUNT" />ଟି ଆଇଟମ୍‍କୁ ଡିଲିଟ୍ କରିଦେବ। ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣଙ୍କର ଡାଟାକୁ ପୁନରୁଦ୍ଧାର କରିବା ପାଇଁ <ph name="USER_EMAIL" /> ଭାବେ Chromium‍ରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
@@ -183,7 +182,6 @@
 <translation id="538767207339317086">Chromiumରେ ସାଇନ୍-ଇନ୍‌ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="5398878173008909840">Chromiumର ଏକ ନୂଆ ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଟେ।</translation>
 <translation id="5405650547142096840">Chromiumରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
-<translation id="5421879995290576427">{0,plural, =0{ବର୍ତ୍ତମାନ Chromium ବନ୍ଦ ହୋଇଯିବ।}=1{1 ସେକେଣ୍ଡରେ Chromium ବନ୍ଦ ହୋଇଯିବ।}other{# ସେକେଣ୍ଡରେ Chromium ବନ୍ଦ ହୋଇଯିବ।}}</translation>
 <translation id="5427571867875391349">Chromiumକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଭାବରେ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium ବିଟା</translation>
 <translation id="5473971139929175403">ଏହି Linux ଡିଷ୍ଟ୍ରିବ୍ୟୁସନରେ Chromium ଆଉ ସମର୍ଥିତ ନଥିବା ଯୋଗୁଁ ଏହା ସଠିକ୍ ଭାବରେ କାମ କରିନପାରେ</translation>
@@ -274,7 +272,6 @@
 <translation id="6964305034639999644">Chromium ଇନ୍‍କ&amp;ଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6978145336957848883">ଦୁର୍ବଳ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଅନୁମାନ କରିବା ସହଜ ଅଟେ। Chromiumକୁ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ପାଇଁ ଜଟିଳ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ତିଆରି କରି ମନେ ରଖିବାକୁ ଦିଅନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="6981396265751285733">ଚାଲୁ ଥିବା ସମୟରେ, Chromium ନିଷ୍କ୍ରିୟ ଟାବଗୁଡ଼ିକରୁ ମେମୋରୀ ଖାଲି କରେ। ଏହା ସକ୍ରିୟ ଟାବ ଏବଂ ଅନ୍ୟ ଆପ୍ସକୁ ଅଧିକ କମ୍ପ୍ୟୁଟର ରିସୋର୍ସ ଦେଇ Chromiumକୁ ଦ୍ରୁତ ଭାବେ କାର୍ଯ୍ୟ କରିବାକୁ ଦିଏ। ଯେତେବେଳେ ଆପଣ ଆପଣଙ୍କ ନିଷ୍କ୍ରିୟ ଟାବଗୁଡ଼ିକୁ ପୁଣି ଫେରି ଆସନ୍ତି ସେତେବେଳେ ସେଗୁଡ଼ିକ ସ୍ଵତଃ ସକ୍ରିୟ ହୋଇଯାଏ।</translation>
-<translation id="6984667024406244807">Chromium ନିଷ୍କ୍ରିୟ ଅଛି</translation>
 <translation id="6985329841647292029">ChromiumOS ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="6990124437352146030">ଏହି ସାଇଟ୍ ପାଇଁ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍‌କୁ ଆକ୍ସେସ୍ କରିବାକୁ Chromium ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି</translation>
 <translation id="7025789849649390912">ଇନଷ୍ଟଲେସନ ବନ୍ଦ ହୋଇଯାଇଛି।</translation>

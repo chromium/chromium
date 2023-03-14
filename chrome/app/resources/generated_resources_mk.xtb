@@ -1297,7 +1297,6 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> е сокриен</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
 <translation id="2110941575868943054">Дозволено да се бараат уреди со Bluetooth</translation>
-<translation id="2111158890826137380">Нешто не е во ред. Испратете повратни информации на #bruschetta во описот. Кодот за грешката е <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Избриши ги типовите</translation>
 <translation id="2111670510994270194">Нова картичка надесно</translation>
 <translation id="2112554630428445878">Добре дојдовте, <ph name="USERNAME" /></translation>
@@ -2482,7 +2481,6 @@
 <translation id="3129215702932019810">Грешка при стартувањето на апликацијата</translation>
 <translation id="3130528281680948470">Уредот ќе се ресетира и сите кориснички сметки и локални податоци ќе се отстранат. Ова не може да се врати назад.</translation>
 <translation id="3130863904455712965">Историја и друго</translation>
-<translation id="3130966412954727147">Сајтовите што ги отворате може да потврдат дека сте вистински корисник, а не бот.</translation>
 <translation id="313205617302240621">Ја заборавивте лозинката?</translation>
 <translation id="3132277757485842847">Не можевме да ја одржиме врската со вашиот телефон. Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi.</translation>
 <translation id="3132896062549112541">Правило</translation>
@@ -3031,7 +3029,6 @@
 <translation id="3647654707956482440">Не може да се користи линков. Проверете за печатни грешки или пробајте пак со друг линк.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Преземавте <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}one{Преземавте <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}other{Преземавте <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Откриен е <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3649190289964910441">Даден сајт што ќе го отворите може да зачува податоци со Chrome што ќе потврдат дека сте вистински корисник. Додека прелистувате, сајтовите може да проверат со Chrome и да потврдат од првата страница дека најверојатно сте доверлив корисник.</translation>
 <translation id="3650753875413052677">Грешка при регистрацијата</translation>
 <translation id="3650845953328929506">Прикачувањето на евиденцијата чека на ред.</translation>
 <translation id="3650952250015018111">Дозволете ѝ пристап на "<ph name="APP_NAME" />" до:</translation>
@@ -4283,7 +4280,6 @@
 <translation id="477647109558161443">Создајте кратенка за работна површина</translation>
 <translation id="4776594120007763294">За да додадете страница за читање подоцна, кликнете на копчето</translation>
 <translation id="4777458362738635055">Другите корисници на уредов може да ја користат мрежава</translation>
-<translation id="477781522763920796">Поставкава функционира без да ве идентификува или да дозволи сајтовите да ја гледаат вашата историја на прелистувањето.</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Конфигурирање сервери за име на мрежа</translation>
 <translation id="4779083564647765204">Зумирај</translation>
@@ -4974,7 +4970,6 @@
 <translation id="5432145523462851548">Прикажи ја <ph name="FILE_NAME" /> во папка</translation>
 <translation id="543338862236136125">Измени ја лозинката</translation>
 <translation id="5434065355175441495">PKCS #1 RSA шифрирање</translation>
-<translation id="5434294721803750644">Надгледувана врска</translation>
 <translation id="5435779377906857208">Секогаш дозволувај <ph name="HOST" /> да пристапува до локацијата</translation>
 <translation id="5436492226391861498">Се чека прокси тунел…</translation>
 <translation id="5436510242972373446">Барај <ph name="SITE_NAME" />:</translation>
@@ -6261,7 +6256,6 @@
 <translation id="6597331566371766302">Следниве екстензии се блокирани од администраторот:</translation>
 <translation id="6601262427770154296">Управувајте со речниците на корисникот</translation>
 <translation id="6601612474695404578">Некои сајтови користат колачиња од трети страни за вчитување на нивните страници. Ако сајтот не работи, обидете се да дозволите колачиња.</translation>
-<translation id="6602581642873576447">Намалувањето спам и измами е исклучено</translation>
 <translation id="6602937173026466876">Пристапувајте до печатачите</translation>
 <translation id="6602956230557165253">За навигација користете ги левото и десното копче со стрелка.</translation>
 <translation id="6603185457265641428">Изберете дали да се синхронизира историјата</translation>
@@ -6782,7 +6776,6 @@
 <translation id="7047059339731138197">Изберете заднина</translation>
 <translation id="7049293980323620022">Да се задржи датотеката?</translation>
 <translation id="7050037487872780845">Погрешна конфигурација на точка на пристап</translation>
-<translation id="7050519587566342213">Прелистувањето е полесно затоа што е поголема веројатноста да ви се верува од еден сајт до друг.</translation>
 <translation id="7051551856857948729">Сокриј ја вредноста за IBAN</translation>
 <translation id="7052237160939977163">Испрати податоци во траги за учинок</translation>
 <translation id="7053983685419859001">Блокирај</translation>
@@ -7001,7 +6994,6 @@
 <translation id="7271278495464744706">Овозможете опширни описи</translation>
 <translation id="7272674038937250585">Не е даден опис</translation>
 <translation id="7273110280511444812">последно прикачување на <ph name="DATE" /></translation>
-<translation id="7273921429569738933">Намалувањето спам и измами е вклучено</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> до полна</translation>
 <translation id="727952162645687754">Грешка при преземање</translation>
 <translation id="7280041992884344566">Грешка додека Chrome пребаруваше штетен софтвер</translation>

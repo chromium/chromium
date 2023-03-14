@@ -2704,7 +2704,6 @@ Manylion ychwanegol:
 <translation id="7630470133768862132">Statws cydsyniad:</translation>
 <translation id="7631444403134069754">Trac a maes</translation>
 <translation id="7633909222644580952">Data perfformiad ac adroddiadau toriadau</translation>
-<translation id="7634280112532283638">Lleihau sothach a thwyll</translation>
 <translation id="7637571805876720304">Tynnu'r cerdyn credyd o Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Dim}=1{Mae 1 cyfrinair yn eich cyfrif (ar gyfer <ph name="DOMAIN_LIST" />)}two{Mae # gyfrinair yn eich cyfrif (ar gyfer <ph name="DOMAIN_LIST" />)}few{Mae # chyfrinair yn eich cyfrif (ar gyfer <ph name="DOMAIN_LIST" />)}many{Mae # chyfrinair yn eich cyfrif (ar gyfer <ph name="DOMAIN_LIST" />)}other{Mae # cyfrinair yn eich cyfrif (ar gyfer <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Pyrth cyfresol</translation>

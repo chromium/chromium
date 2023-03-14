@@ -99,7 +99,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Chromium-н одоо байгаа профайл руу сэлгэх үү?</translation>
 <translation id="3412460710772753638">Энэ төхөөрөмж дээрх Нууц үгний менежерт</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{Таны администратор Chromium-г 1 минутаас дээш хугацаагаар идэвхгүй байсан тохиолдолд хаахаар тохируулсан.}other{Таны администратор Chromium-г # минутаас дээш хугацаагаар идэвхгүй байсан тохиолдолд хаахаар тохируулсан.}}</translation>
 <translation id="3430503420100763906">Та Chromium профайлаар Chromium-н бүх зүйлээ тусгаарлах боломжтой. Найзууд, гэр бүлдээ профайл үүсгэх эсвэл ажил болон дуртай зүйлээ хооронд нь хуваагаарай.</translation>
 <translation id="347328004046849135">Таныг алдагдсан нууц үгээр нэвтрэх үед Chromium танд мэдэгдэнэ</translation>
 <translation id="3474745554856756813">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйл устгана. Өгөгдлөө дараа сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
@@ -181,7 +180,6 @@
 <translation id="538767207339317086">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="5398878173008909840">Ашиглах боломжтой Chromium-ийн шинэ хувилбар байна.</translation>
 <translation id="5405650547142096840">Chromium-аас устга</translation>
-<translation id="5421879995290576427">{0,plural, =0{Chromium-г одоо хаана.}=1{Chromium-г 1 секундийн дараа хаана.}other{Chromium-г # секундийн дараа хаана.}}</translation>
 <translation id="5427571867875391349">Chromium-ыг өөрийн анхдагч веб хөтөч болгон тохируулах</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Бета</translation>
 <translation id="5473971139929175403">Үүнийг Linux дистрибьютер дээр цаашид дэмжихгүй тул Chromium буруу ажиллаж болзошгүй</translation>
@@ -273,7 +271,6 @@
 <translation id="6964305034639999644">Холбоосыг Chromium-н нууцлалтай цонхонд нээх</translation>
 <translation id="6978145336957848883">Сул нууц үгийг таахад хялбар байдаг. Chromium-д <ph name="BEGIN_LINK" />танд зориулан сайн нууц үг үүсгэж, санах<ph name="END_LINK" /> боломж олгоорой.</translation>
 <translation id="6981396265751285733">Асаалттай үед Chromium идэвхгүй табуудаас санах ойг чөлөөлнө. Энэ нь идэвхтэй табууд болон бусад аппад компьютерын илүү их нөөцийг өгч, Chromium-г хурдан байлгана. Таныг идэвхгүй табууд руугаа буцахад тэдгээр нь автоматаар дахин идэвхтэй болно.</translation>
-<translation id="6984667024406244807">Chromium идэвхгүй байна</translation>
 <translation id="6985329841647292029">ChromiumOS-н нөхцөл</translation>
 <translation id="6990124437352146030">Энэ сайтыг ашиглахын тулд Chromium-д таны микрофонд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="7025789849649390912">Суулгахыг зогсоосон.</translation>

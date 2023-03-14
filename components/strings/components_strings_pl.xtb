@@ -2705,7 +2705,6 @@ Dodatkowe informacje:
 <translation id="7630470133768862132">Stan zgody:</translation>
 <translation id="7631444403134069754">Lekkoatletyka</translation>
 <translation id="7633909222644580952">Dane o wydajności i raporty o awariach</translation>
-<translation id="7634280112532283638">Ograniczenie spamu i oszustw</translation>
 <translation id="7637571805876720304">Usunąć tę kartę kredytową z Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Brak}=1{Na Twoim koncie zapisane jest 1 hasło (dla domen <ph name="DOMAIN_LIST" />)}few{Na Twoim koncie zapisane są # hasła (dla domen <ph name="DOMAIN_LIST" />)}many{Na Twoim koncie zapisanych jest # haseł (dla domen <ph name="DOMAIN_LIST" />)}other{Na Twoim koncie zapisane jest # hasła (dla domen <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Porty szeregowe</translation>
@@ -3124,7 +3123,7 @@ Dodatkowe informacje:
 <translation id="8705331520020532516">Numer seryjny</translation>
 <translation id="8708134712139312373">Może prosić o zgodę na połączenie z urządzeniami Bluetooth</translation>
 <translation id="8710842507289500830">Styl czcionki</translation>
-<translation id="8712637175834984815">Rozumiem</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8713438021996895321">Poezja</translation>
 <translation id="8715502133575042727">Literatura dziecięca</translation>
 <translation id="8718314106902482036">Płatność nie została zrealizowana</translation>

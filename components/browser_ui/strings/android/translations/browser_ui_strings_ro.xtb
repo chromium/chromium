@@ -145,8 +145,6 @@
 <translation id="3600792891314830896">Dezactivează sunetul pentru site-urile care îl redau</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3628308229821498208">Căutări sugerate</translation>
-<translation id="3636279694100170143">Site-urile pe care le accesezi pot confirma că ești un utilizator real, nu o aplicație bot</translation>
-<translation id="3649190289964910441">Un site pe care îl accesezi poate salva informații în Chrome care validează faptul că ești un utilizator real. În timp ce navighezi, site-urile pot să solicite informații de la Chrome și să confirme cu primul site că ești utilizator de încredere.</translation>
 <translation id="3721953990244350188">Închide și afișează următoarea acțiune disponibilă</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3763247130972274048">Atinge de două ori videoclipul spre stânga sau spre dreapta pentru a derula cu 10 secunde</translation>
@@ -199,7 +197,6 @@
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
 <translation id="4751476147751820511">Senzori de mișcare sau de lumină</translation>
-<translation id="477781522763920796">Această setare funcționează fără să te identifice sau să permită site-urilor să îți vadă istoricul de navigare.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Află despre sursă și subiect</translation>
 <translation id="4836046166855586901">Anunță-mă dacă un site vrea să afle când folosesc activ dispozitivul</translation>
@@ -329,7 +326,6 @@
 <translation id="7016516562562142042">Se permite pentru motorul de căutare actual</translation>
 <translation id="702275896380648118">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri. În plus, site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante.</translation>
 <translation id="702463548815491781">Recomandat atunci când este activată opțiunea TalkBack sau Acces prin comutare</translation>
-<translation id="7050519587566342213">Navigarea este mai lină deoarece există mai multe șanse ca site-urile să te considere utilizator de încredere.</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selectat}few{# selectate}other{# selectate}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selectate.  Opțiunile sunt disponibile în partea de sus a ecranului</translation>
@@ -354,7 +350,6 @@
 <translation id="757524316907819857">Împiedică site-urile să redea conținutul protejat</translation>
 <translation id="7577900504646297215">Gestionează interesele</translation>
 <translation id="7594634374516752650">Conectat la un dispozitiv Bluetooth</translation>
-<translation id="7634280112532283638">Reducerea spamului și a fraudei</translation>
 <translation id="7641339528570811325">Șterge datele de navigare…</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7658239707568436148">Anulează</translation>

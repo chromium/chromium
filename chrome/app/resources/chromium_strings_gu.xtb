@@ -101,7 +101,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">વર્તમાન Chromium પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
 <translation id="3412460710772753638">આ ડિવાઇસ પર Password Managerમાં</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{તમારા ઍડમિનિસ્ટ્રેટરે Chromiumની એ રીતે ગોઠવણી કરી છે કે જો તે 1 મિનિટ કરતાં વધારે સમય સુધી નિષ્ક્રિય રહે, તો બંધ થઈ જશે.}one{તમારા ઍડમિનિસ્ટ્રેટરે Chromiumની એ રીતે ગોઠવણી કરી છે કે જો તે # મિનિટ કરતાં વધારે સમય સુધી નિષ્ક્રિય રહે, તો બંધ થઈ જશે.}other{તમારા ઍડમિનિસ્ટ્રેટરે Chromiumની એ રીતે ગોઠવણી કરી છે કે જો તે # મિનિટ કરતાં વધારે સમય સુધી નિષ્ક્રિય રહે, તો બંધ થઈ જશે.}}</translation>
 <translation id="3430503420100763906">Chromium પ્રોફાઇલ વડે તમે તમારી બધી વસ્તુઓ Chromium પર અલગ-અલગ રાખી શકો છો. મિત્રો અને કુટુંબ માટે પ્રોફાઇલ બનાવો અથવા તેને ઑફિસ અને મનોરંજન વચ્ચે વિભાજિત કરો.</translation>
 <translation id="347328004046849135">જ્યારે તમે ચેડાં કરવામાં આવેલા પાસવર્ડ વડે સાઇન ઇન કરશો ત્યારે Chromium તમને સૂચિત કરશે</translation>
 <translation id="3474745554856756813">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromium માં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
@@ -183,7 +182,6 @@
 <translation id="538767207339317086">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="5398878173008909840">Chromiumનું નવું વર્ઝન ઉપલબ્ધ છે.</translation>
 <translation id="5405650547142096840">Chromium માંથી દૂર કરો</translation>
-<translation id="5421879995290576427">{0,plural, =0{Chromium હમણાં બંધ થશે.}=1{Chromium 1 સેકન્ડમાં બંધ થશે.}one{Chromium # સેકન્ડમાં બંધ થશે.}other{Chromium # સેકન્ડમાં બંધ થશે.}}</translation>
 <translation id="5427571867875391349">Chromium ને તમારા ડિફોલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium બીટા</translation>
 <translation id="5473971139929175403">આ Linux વિતરણ સિસ્ટમ પર Chromium હવે સપોર્ટ કરતું ન હોવાથી કદાચ તે યોગ્ય રીતે કાર્ય ન કરે</translation>
@@ -275,7 +273,6 @@
 <translation id="6964305034639999644">Chromium છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="6978145336957848883">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. Chromiumને <ph name="BEGIN_LINK" />તમારા માટે સશક્ત પાસવર્ડ બનાવવા અને યાદ રાખવા<ph name="END_LINK" />ની મંજૂરી આપો.</translation>
 <translation id="6981396265751285733">જ્યારે ચાલુ હોય, ત્યારે Chromium નિષ્ક્રિય ટૅબમાંથી મેમરી ખાલી કરે છે. આ સક્રિય ટૅબ અને અન્ય ઍપને કમ્પ્યુટરના વધુ સંસાધનો આપે છે અને Chromiumને ઝડપી રાખે છે. તમે તમારા નિષ્ક્રિય ટૅબ પર પાછા જાઓ ત્યારે તે ઑટોમૅટિક રીતે ફરી સક્રિય થાય છે.</translation>
-<translation id="6984667024406244807">Chromium નિષ્ક્રિય છે</translation>
 <translation id="6985329841647292029">ChromiumOSની શરતો</translation>
 <translation id="6990124437352146030">Chromiumને આ સાઇટ માટે તમારા માઇક્રોફોનના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
 <translation id="7025789849649390912">ઇન્સ્ટૉલેશનની પ્રક્રિયા રોકી.</translation>

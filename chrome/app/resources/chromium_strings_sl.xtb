@@ -101,7 +101,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Želite preklopiti na obstoječi profil v Chromiumu?</translation>
 <translation id="3412460710772753638">V Upravitelju gesel v tej napravi</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{Skrbnik je Chromium konfiguriral tako, da se zapre, če je nedejaven več kot 1 minuto.}one{Skrbnik je Chromium konfiguriral tako, da se zapre, če je nedejaven več kot # minuto.}two{Skrbnik je Chromium konfiguriral tako, da se zapre, če je nedejaven več kot # minuti.}few{Skrbnik je Chromium konfiguriral tako, da se zapre, če je nedejaven več kot # minute.}other{Skrbnik je Chromium konfiguriral tako, da se zapre, če je nedejaven več kot # minut.}}</translation>
 <translation id="3430503420100763906">S profili v Chromiumu lahko ločite vse stvari v Chromiumu. Ustvarite profile za prijatelje in svojce ali ustvarite ločene za delo in zabavo.</translation>
 <translation id="347328004046849135">Chromium vas bo obvestil, če se prijavite z ogroženim geslom</translation>
 <translation id="3474745554856756813">S tem bo iz te naprave izbrisanih več elementov (<ph name="ITEMS_COUNT" />). Če želite pozneje prenesti podatke, se v Chromium prijavite kot <ph name="USER_EMAIL" />.</translation>
@@ -183,7 +182,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="538767207339317086">Omogočanje prijave v Chromium</translation>
 <translation id="5398878173008909840">Na voljo je nova različica Chromiuma.</translation>
 <translation id="5405650547142096840">Odstrani iz Chromiuma</translation>
-<translation id="5421879995290576427">{0,plural, =0{Chromium se bo zdaj zaprl.}=1{Chromium se bo zaprl čez 1 sekundo.}one{Chromium se bo zaprl čez # sekundo.}two{Chromium se bo zaprl čez # sekundi.}few{Chromium se bo zaprl čez # sekunde.}other{Chromium se bo zaprl čez # sekund.}}</translation>
 <translation id="5427571867875391349">Nastavitev Chromiuma za privzeti brskalnik</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – različica beta Chromiuma</translation>
 <translation id="5473971139929175403">Chromium morda ne bo deloval pravilno, ker ni več podprt v tej distribuciji Linuxa.</translation>
@@ -275,7 +273,6 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="6964305034639999644">Odpri povezavo v Chromiumovem oknu brez bele&amp;ženja zgodovine</translation>
 <translation id="6978145336957848883">Šibka gesla je preprosto ugotoviti. Chromiumu omogočite, da <ph name="BEGIN_LINK" />ustvari zapletena gesla za vas in jih shrani<ph name="END_LINK" />.</translation>
 <translation id="6981396265751285733">Če je vklopljeno, Chromium sprosti pomnilnik z neaktivnih zavihkov. Tako imajo aktivni zavihki in druge aplikacije več računalniških sredstev, Chromium pa je še naprej hiter. Neaktivni zavihki znova postanejo aktivni, ko se vrnete nanje.</translation>
-<translation id="6984667024406244807">Chromium ni aktiven</translation>
 <translation id="6985329841647292029">Pogoji za Chromium OS</translation>
 <translation id="6990124437352146030">Chromium potrebuje dovoljenje za dostop do mikrofona za to spletno mesto</translation>
 <translation id="7025789849649390912">Namestitev je prekinjena.</translation>

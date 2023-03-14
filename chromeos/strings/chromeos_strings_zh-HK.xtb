@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">偵測到防火牆</translation>
 <translation id="1075811647922107217">頁面大小</translation>
+<translation id="1082009148392559545">下載緊螢幕保護程式</translation>
 <translation id="1094693127011229778">缺少 IP 位址</translation>
 <translation id="1113892970288677790">選取精選藝術品和圖片</translation>
 <translation id="1119447706177454957">內部錯誤</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">由 <ph name="FIRST_MANAGER" /> 和 <ph name="SECOND_MANAGER" /> 管理</translation>
 <translation id="1726100011689679555">名稱伺服器</translation>
 <translation id="1731082422893354635">藍牙觸控板</translation>
+<translation id="1738949837603788263">第 <ph name="ZONE_NUMBER" /> 區</translation>
 <translation id="1745577949879301685">無法載入圖片。請檢查網絡連線，或者嘗試再次載入圖片。</translation>
 <translation id="1751249301761991853">個人化</translation>
 <translation id="1753496554272155572">結束桌布預覽</translation>
@@ -277,7 +279,6 @@
 <translation id="3595596368722241419">電池已滿</translation>
 <translation id="3600339377155080675">螢幕鏡像</translation>
 <translation id="3602290021589620013">預覽</translation>
-<translation id="360282891121575443">其他使用者可更新共享相簿中的相片。「每日變更」選項可能會顯示目前不在相簿中的桌布。</translation>
 <translation id="3603829704940252505">顯示圖片</translation>
 <translation id="3604713164406837697">變更桌布</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
@@ -599,6 +600,7 @@
 <translation id="636850387210749493">企業註冊</translation>
 <translation id="6379086450106841622">觸控螢幕</translation>
 <translation id="6381741036071372448">測試鍵盤</translation>
+<translation id="6382182670717268353">螢幕保護程式預覽</translation>
 <translation id="6388847657025262518">掃瞄器的文件送紙器卡住了。請檢查送紙器，然後再試一次。</translation>
 <translation id="6394634179843537518">新增檔案</translation>
 <translation id="6410257289063177456">圖片檔</translation>
@@ -637,7 +639,6 @@
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659594942844771486">分頁</translation>
 <translation id="6692996468359469499">取得您選取項目相關資料</translation>
-<translation id="6698459586333070823">其他使用者可更新共享相簿</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723847290197874913">鍵盤背光</translation>
@@ -689,6 +690,7 @@
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理員可能會遠端設定裝置。</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
+<translation id="7184043045742675738">按一下任何鍵即可自訂按鈕。使用滑鼠或方向鍵以調整位置。</translation>
 <translation id="7212734716605298123">外部裝置適用的韌體更新</translation>
 <translation id="7216409898977639127">流動服務供應商</translation>
 <translation id="725133483556299729">揀電郵地址</translation>
@@ -730,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 觸控螢幕</translation>
 <translation id="7595982850646262331">剩餘 <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">用滑鼠或者方向鍵調整位置。</translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
 <translation id="763165478673169849">上次重設時間</translation>
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>
@@ -793,7 +796,6 @@
 <translation id="8226628635270268143">選擇喜愛的相片和相簿</translation>
 <translation id="8227119283605456246">附加檔案</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
-<translation id="8242426110754782860">繼續</translation>
 <translation id="8246209727385807362">不明流動網絡供應商</translation>
 <translation id="827422111966801947">靛藍色</translation>
 <translation id="8286154143153872371">如要查看桌布，請連線至網絡，然後重新整理頁面。</translation>
@@ -853,6 +855,7 @@
 <translation id="8798441408945964110">供應商名稱</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">桌布</translation>
+<translation id="8820457400746201697">將藍色接觸點移至所需動作，選取關聯的鍵即可自訂。</translation>
 <translation id="8834539327799336565">目前已連接的裝置</translation>
 <translation id="8845001906332463065">取得說明</translation>
 <translation id="8855781559874488009">無法透過防火牆連線至 HTTP 網站</translation>

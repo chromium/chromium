@@ -1299,7 +1299,6 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> сховано</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
 <translation id="2110941575868943054">Дозволено шукати пристрої з Bluetooth</translation>
-<translation id="2111158890826137380">Сталася помилка. Надішліть відгук і додайте в його опис хештег #bruschetta. Код помилки: <ph name="ERROR" />.</translation>
 <translation id="211144231511833662">Очистити типи</translation>
 <translation id="2111670510994270194">Нова вкладка праворуч</translation>
 <translation id="2112554630428445878">Вітаємо, <ph name="USERNAME" /></translation>
@@ -2485,7 +2484,6 @@
 <translation id="3129215702932019810">Не вдалося запустити додаток</translation>
 <translation id="3130528281680948470">Параметри вашого пристрою буде скинуто, а всі облікові записи користувачів і локальні дані видалено. Цю дію неможливо відмінити.</translation>
 <translation id="3130863904455712965">Історія та інші переваги</translation>
-<translation id="3130966412954727147">Сайти, які ви відвідуєте, можуть використовувати певну інформацію, щоб переконатися, що ви реальна людина, а не бот.</translation>
 <translation id="313205617302240621">Забули пароль?</translation>
 <translation id="3132277757485842847">Зв'язок із телефоном утрачено. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
 <translation id="3132896062549112541">Правило</translation>
@@ -3034,7 +3032,6 @@
 <translation id="3647654707956482440">Не вдалося використати це посилання. Перевірте, чи правильно ви ввели посилання або спробуйте вказати інше.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Виявлено пристрій <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3649190289964910441">Сайт, який ви відвідуєте, може зберігати в Chrome інформацію, яка підтверджує, що ви реальна людина. Завдяки цьому інші відвідувані вами сайти зможуть перевіряти в Chrome, чи є ви надійним користувачем.</translation>
 <translation id="3650753875413052677">Помилка реєстрації</translation>
 <translation id="3650845953328929506">Очікується завантаження журналу.</translation>
 <translation id="3650952250015018111">Надати додатку "<ph name="APP_NAME" />" доступ:</translation>
@@ -4286,7 +4283,6 @@
 <translation id="477647109558161443">Створити ярлик на робочому столі</translation>
 <translation id="4776594120007763294">Щоб додати сторінку в список читання, натисніть цю кнопку</translation>
 <translation id="4777458362738635055">Інші користувачі цього пристрою мають доступ до цієї мережі</translation>
-<translation id="477781522763920796">Це налаштування не передбачає вашу ідентифікацію і дозвіл для сайтів на доступ до історії веб-перегляду.</translation>
 <translation id="4777825441726637019">Play Маркет</translation>
 <translation id="4777943778632837590">Налаштувати мережеві сервери імен</translation>
 <translation id="4779083564647765204">Збільшити</translation>
@@ -4977,7 +4973,6 @@
 <translation id="5432145523462851548">Показати файл "<ph name="FILE_NAME" />" у папці</translation>
 <translation id="543338862236136125">Змінити пароль</translation>
 <translation id="5434065355175441495">PKCS #1 шифрування RSA</translation>
-<translation id="5434294721803750644">Відстежуване з’єднання</translation>
 <translation id="5435779377906857208">Завжди надавати сайту <ph name="HOST" /> доступ до ваших геоданих</translation>
 <translation id="5436492226391861498">Очікування тунелю проксі-сервера...</translation>
 <translation id="5436510242972373446">Пошук <ph name="SITE_NAME" />:</translation>
@@ -6265,7 +6260,6 @@
 <translation id="6597331566371766302">Адміністратор заблокував такі розширення:</translation>
 <translation id="6601262427770154296">Керування словниками користувача</translation>
 <translation id="6601612474695404578">Деякі сайти використовують файли cookie третіх сторін для завантаження сторінок. Якщо сайт не працює, дозвольте файли cookie.</translation>
-<translation id="6602581642873576447">Налаштування "Боротьба зі спамом і шахрайством" вимкнено</translation>
 <translation id="6602937173026466876">Доступ до принтерів</translation>
 <translation id="6602956230557165253">Використовуйте ліву та праву клавіші зі стрілками для навігації.</translation>
 <translation id="6603185457265641428">Укажіть, чи потрібно синхронізувати історію</translation>
@@ -6786,7 +6780,6 @@
 <translation id="7047059339731138197">Виберіть фон</translation>
 <translation id="7049293980323620022">Завантажити файл?</translation>
 <translation id="7050037487872780845">Недійсна конфігурація точки доступу</translation>
-<translation id="7050519587566342213">Підтвердження особи на одному сайті означає, що інші відвідувані вами сайти з більшою ймовірністю розпізнаватимуть вас як людину.</translation>
 <translation id="7051551856857948729">Сховати номер IBAN</translation>
 <translation id="7052237160939977163">Надсилати дані відстеження ефективності</translation>
 <translation id="7053983685419859001">Блокувати</translation>
@@ -7005,7 +6998,6 @@
 <translation id="7271278495464744706">Увімкнути докладні описи</translation>
 <translation id="7272674038937250585">Немає опису</translation>
 <translation id="7273110280511444812">останнє підключення: <ph name="DATE" /></translation>
-<translation id="7273921429569738933">Налаштування "Боротьба зі спамом і шахрайством" увімкнено</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> до повного зарядження</translation>
 <translation id="727952162645687754">Помилка завантаження</translation>
 <translation id="7280041992884344566">Під час пошуку шкідливих програм у Chrome сталася помилка</translation>

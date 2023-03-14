@@ -145,8 +145,6 @@
 <translation id="3600792891314830896">Silenciar sites com áudio</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3628308229821498208">Pesquisas sugeridas</translation>
-<translation id="3636279694100170143">Os sites que você visita podem validar que você é um usuário real e não um bot</translation>
-<translation id="3649190289964910441">Os sites que você visitar podem salvar informações com o Chrome que validam que você é um usuário real. Conforme você navega, os sites podem verificar com o Chrome,. desde o primeiro site, que você provavelmente é um usuário confiável.</translation>
 <translation id="3721953990244350188">Dispensar e mostrar a próxima ação disponível</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no lado esquerdo ou direito do vídeo para pular 10 s</translation>
@@ -199,7 +197,6 @@
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4751476147751820511">Sensores de luz ou movimento</translation>
-<translation id="477781522763920796">Essa configuração funciona sem identificar você ou permitir que sites acessem seu histórico de navegação.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Saiba mais sobre a fonte e o tema</translation>
 <translation id="4836046166855586901">Perguntar quando um site quiser saber os momentos em que você está usando este dispositivo</translation>
@@ -329,7 +326,6 @@
 <translation id="7016516562562142042">Permitido para o mecanismo de pesquisa atual</translation>
 <translation id="702275896380648118">Este site determina seus interesses e sugere anúncios para outros sites. Ele também usa seus temas de anúncios do Chrome para mostrar anúncios mais relevantes.</translation>
 <translation id="702463548815491781">Recomendado quando o TalkBack ou o acesso com interruptor estão ativados</translation>
-<translation id="7050519587566342213">A navegação é mais suave porque, ao passar de um site para outro, é mais provável que eles confiem em você.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selecionado}one{# selecionado}other{# selecionados}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> itens selecionados. Opções disponíveis perto da parte superior da tela</translation>
@@ -354,7 +350,6 @@
 <translation id="757524316907819857">Impedir que sites mostrem conteúdo protegido</translation>
 <translation id="7577900504646297215">Gerenciar interesses</translation>
 <translation id="7594634374516752650">Conectado a um dispositivo Bluetooth</translation>
-<translation id="7634280112532283638">Redução de spam e fraudes</translation>
 <translation id="7641339528570811325">Remover dados de navegação…</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>

@@ -277,7 +277,6 @@
 <translation id="3595596368722241419">Baterie încărcată</translation>
 <translation id="3600339377155080675">Oglindirea ecranului</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
-<translation id="360282891121575443">Fotografiile din albumele comune pot fi actualizate de alți utilizatori. Schimbarea zilnică poate afișa imagini de fundal care nu se află în album.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Schimbă imaginea de fundal</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
@@ -637,7 +636,6 @@
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6659594942844771486">Filă</translation>
 <translation id="6692996468359469499">Obține informații despre selecție</translation>
-<translation id="6698459586333070823">Albumele comune pot fi actualizate de alți utilizatori</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6723839937902243910">Alimentare</translation>
 <translation id="6723847290197874913">Retroiluminarea tastaturii</translation>
@@ -793,7 +791,6 @@
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>
 <translation id="8227119283605456246">Atașează un fișier</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
-<translation id="8242426110754782860">Continuă</translation>
 <translation id="8246209727385807362">Operator necunoscut</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Conectează-te la o rețea și reîncarcă pagina pentru a vedea imaginea de fundal.</translation>

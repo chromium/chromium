@@ -101,7 +101,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="3387527074123400161">„Chromium“ OS</translation>
 <translation id="3406848076815591792">Perjungti į esamą „Chromium“ profilį?</translation>
 <translation id="3412460710772753638">Slaptažodžių tvarkyklėje šiame įrenginyje</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{Administratorius sukonfigūravo, kad „Chromium“ būtų uždaryta, jei yra neaktyvi ilgiau nei vieną minutę.}one{Administratorius sukonfigūravo, kad „Chromium“ būtų uždaryta, jei yra neaktyvi ilgiau nei # minutę.}few{Administratorius sukonfigūravo, kad „Chromium“ būtų uždaryta, jei yra neaktyvi ilgiau nei # minutes.}many{Administratorius sukonfigūravo, kad „Chromium“ būtų uždaryta, jei yra neaktyvi ilgiau nei # minutės.}other{Administratorius sukonfigūravo, kad „Chromium“ būtų uždaryta, jei yra neaktyvi ilgiau nei # minučių.}}</translation>
 <translation id="3430503420100763906">Naudodami „Chromium“ profilius galite atskirti visus savo „Chromium“ duomenis. Sukurkite profilius draugams ir šeimos nariams arba atskirkite darbą ir pramogas</translation>
 <translation id="347328004046849135">„Chromium“ praneš jums, kai prisijungsite naudodami pažeistą slaptažodį</translation>
 <translation id="3474745554856756813">Atlikus šį veiksmą iš šio įrenginio bus ištrinti elementai (<ph name="ITEMS_COUNT" />). Jei vėliau norėsite gauti duomenis, prisijunkite prie „Chromium“ kaip <ph name="USER_EMAIL" />.</translation>
@@ -183,7 +182,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="538767207339317086">Leisti „Chromium“ prisijungti</translation>
 <translation id="5398878173008909840">Pasiekiama nauja „Chromium“ versija.</translation>
 <translation id="5405650547142096840">Pašalinti iš „Chromium“</translation>
-<translation id="5421879995290576427">{0,plural, =0{Dabar „Chromium“ bus uždaryta.}=1{„Chromium“ bus uždaryta po vienos sekundės.}one{„Chromium“ bus uždaryta po # sekundės.}few{„Chromium“ bus uždaryta po # sekundžių.}many{„Chromium“ bus uždaryta po # sekundės.}other{„Chromium“ bus uždaryta po # sekundžių.}}</translation>
 <translation id="5427571867875391349">Nustatyti „Chromium“ kaip numatytąją naršyklę</translation>
 <translation id="5438241569118040789">„<ph name="PAGE_TITLE" />“ – „Chromium Beta“</translation>
 <translation id="5473971139929175403">„Chromium“ gali tinkamai neveikti, nes ji nebepalaikoma naudojant šią „Linux“ versiją</translation>
@@ -275,7 +273,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6964305034639999644">Atidaryti nuorodą „Chromium“ inko&amp;gnito lange</translation>
 <translation id="6978145336957848883">Nesudėtingus slaptažodžius lengva atspėti. Leiskite „Chromium“ <ph name="BEGIN_LINK" />jums sukurti ir įsiminti sudėtingus slaptažodžius<ph name="END_LINK" />.</translation>
 <translation id="6981396265751285733">Įjungus, „Chromium“ atlaisvina atminties iš neaktyvių skirtukų. Taip aktyviems skirtukams ir kitoms programoms suteikiama daugiau kompiuterio išteklių ir „Chromium“ veikia sparčiai. Neaktyvūs skirtukai automatiškai vėl tampa aktyvūs, kai grįžtate į juos.</translation>
-<translation id="6984667024406244807">„Chromium“ neaktyvi</translation>
 <translation id="6985329841647292029">„Chromium“ OS sąlygos</translation>
 <translation id="6990124437352146030">„Chromium“ reikia leidimo, kad galėtų naudoti mikrofoną šioje svetainėje</translation>
 <translation id="7025789849649390912">Diegimas sustabdytas.</translation>

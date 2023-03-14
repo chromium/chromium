@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Εντοπίστηκε τείχος προστασίας</translation>
 <translation id="1075811647922107217">Μέγεθος σελίδας</translation>
+<translation id="1082009148392559545">Λήψη προφύλαξης οθόνης</translation>
 <translation id="1094693127011229778">Η διεύθυνση IP δεν είναι διαθέσιμη.</translation>
 <translation id="1113892970288677790">Επιλέξτε οργανωμένα έργα τέχνης και εικόνες.</translation>
 <translation id="1119447706177454957">Εσωτερικό σφάλμα</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Διαχειρίζεται από <ph name="FIRST_MANAGER" /> και <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Διακομιστές ονομάτων</translation>
 <translation id="1731082422893354635">Επιφάνεια αφής Bluetooth</translation>
+<translation id="1738949837603788263">Ζώνη <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Δεν ήταν δυνατή η φόρτωση των εικόνων. Ελέγξτε τη σύνδεση δικτύου ή δοκιμάστε να φορτώσετε ξανά τις εικόνες.</translation>
 <translation id="1751249301761991853">Προσωπικές</translation>
 <translation id="1753496554272155572">Έξοδος από προεπισκόπηση ταπετσαρίας</translation>
@@ -277,7 +279,6 @@
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
 <translation id="3600339377155080675">Κατοπτρισμός οθόνης</translation>
 <translation id="3602290021589620013">Προεπισκόπηση</translation>
-<translation id="360282891121575443">Οι φωτογραφίες σε κοινόχρηστα λευκώματα μπορούν να ενημερωθούν από άλλους χρήστες. Η ημερήσια αλλαγή ενδέχεται να έχει ως αποτέλεσμα την εμφάνιση ταπετσαριών που δεν βρίσκονται αυτήν τη στιγμή στο λεύκωμα.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Αλλαγή ταπετσαρίας</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
@@ -599,6 +600,7 @@
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
 <translation id="6379086450106841622">Οθόνη αφής</translation>
 <translation id="6381741036071372448">Έλεγχος του πληκτρολογίου σας</translation>
+<translation id="6382182670717268353">Προεπισκόπηση προφύλαξης οθόνης</translation>
 <translation id="6388847657025262518">Ο τροφοδότης εγγράφων του σαρωτή έχει κολλήσει. Ελέγξτε τον τροφοδότη και δοκιμάστε ξανά.</translation>
 <translation id="6394634179843537518">Προσθήκη αρχείου</translation>
 <translation id="6410257289063177456">Αρχεία εικόνας</translation>
@@ -637,7 +639,6 @@
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
-<translation id="6698459586333070823">Τα κοινόχρηστα λευκώματα μπορούν να ενημερωθούν από άλλους χρήστες</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6723839937902243910">Ενεργοποίηση</translation>
 <translation id="6723847290197874913">Οπίσθιος φωτισμός πληκτρολογίου</translation>
@@ -689,6 +690,7 @@
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7180865173735832675">Προσαρμογή</translation>
+<translation id="7184043045742675738">Κάντε κλικ σε οποιοδήποτε πλήκτρο για να προσαρμόσετε το κουμπί. Επανατοποθετήστε το πλήκτρο χρησιμοποιώντας το ποντίκι ή τα πλήκτρα βέλους.</translation>
 <translation id="7212734716605298123">Ενημερώσεις υλικολογισμικού για εξωτερικές συσκευές</translation>
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
 <translation id="725133483556299729">Επιλογή διεύθυνσης ηλεκτρονικού ταχυδρομείου</translation>
@@ -730,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Επιφάνεια αφής USB</translation>
 <translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Επανατοποθετήστε χρησιμοποιώντας το ποντίκι ή τα πλήκτρα βέλους.</translation>
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
 <translation id="763165478673169849">Ώρα τελευταίας ενημέρωσης</translation>
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
@@ -793,7 +796,6 @@
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
 <translation id="8227119283605456246">Επισύναψη αρχείου</translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
-<translation id="8242426110754782860">Συνέχεια</translation>
 <translation id="8246209727385807362">Άγνωστη εταιρεία κινητής τηλεφωνίας</translation>
 <translation id="827422111966801947">Λουλάκι</translation>
 <translation id="8286154143153872371">Συνδεθείτε σε ένα δίκτυο και επαναφορτώστε τη σελίδα για να δείτε την ταπετσαρία.</translation>
@@ -853,6 +855,7 @@
 <translation id="8798441408945964110">Όνομα παρόχου</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Ταπετσαρία</translation>
+<translation id="8820457400746201697">Μετακινήστε το μπλε σημείο επαφής σε μια ενέργεια. Επιλέξτε το συσχετισμένο πλήκτρο για προσαρμογή.</translation>
 <translation id="8834539327799336565">Συνδεδεμένες αυτήν τη στιγμή</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8855781559874488009">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP.</translation>

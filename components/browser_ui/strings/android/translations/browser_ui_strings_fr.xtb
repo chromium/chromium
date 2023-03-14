@@ -145,8 +145,6 @@
 <translation id="3600792891314830896">Couper le son des sites</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3628308229821498208">Recherches suggérées</translation>
-<translation id="3636279694100170143">Les sites que vous consultez peuvent confirmer que vous êtes un vrai utilisateur et non un robot</translation>
-<translation id="3649190289964910441">Un site que vous auquel vous accédez peut enregistrer des informations auprès de Chrome pour confirmer que vous êtes un vrai utilisateur. À mesure que vous naviguez, les sites peuvent vérifier auprès de Chrome et à partir des données du premier site auquel vous avez accédé que vous êtes probablement un utilisateur de confiance.</translation>
 <translation id="3721953990244350188">Ignorer et afficher la prochaine action disponible</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Appuyez deux fois à gauche/droite de la vidéo pour reculer/avancer de 10 s</translation>
@@ -199,7 +197,6 @@
 <translation id="4645575059429386691">Géré par ton papa/ta maman</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de lumière</translation>
-<translation id="477781522763920796">Ce paramètre ne permet pas de vous identifier ni d'autoriser les sites à consulter votre historique de navigation.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">En savoir plus sur sa source et son thème</translation>
 <translation id="4836046166855586901">Demander lorsqu'un site souhaite savoir si vous utilisez activement cet appareil</translation>
@@ -329,7 +326,6 @@
 <translation id="7016516562562142042">Autorisé pour le moteur de recherche actuel</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires via Chrome pour vous présenter des annonces plus pertinentes.</translation>
 <translation id="702463548815491781">Recommandé quand TalkBack ou Switch Access sont activés</translation>
-<translation id="7050519587566342213">La navigation est plus fluide, car votre profil est plus susceptible d'être considéré comme fiable d'un site à l'autre.</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
 <translation id="7087918508125750058">Nombre d'éléments sélectionnés : <ph name="ITEM_COUNT" />. Options disponibles dans la partie supérieure de l'écran</translation>
@@ -354,7 +350,6 @@
 <translation id="757524316907819857">Empêcher les sites de lire les contenus protégés</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="7594634374516752650">Connecté à un appareil Bluetooth</translation>
-<translation id="7634280112532283638">Réduction du spam et de la fraude</translation>
 <translation id="7641339528570811325">Effacer les données de navigation</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>

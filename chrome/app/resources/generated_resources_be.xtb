@@ -1287,7 +1287,6 @@
 <translation id="2105809836724866556">Схавана: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Нумар тэлефона}one{# нумар тэлефона}few{# нумары тэлефонаў}many{# нумароў тэлефонаў}other{# нумара тэлефона}}</translation>
 <translation id="2110941575868943054">Дазволена шукаць прылады з Bluetooth</translation>
-<translation id="2111158890826137380">На жаль, нешта пайшло не так. Адпраўце нам водгук, дадаўшы слова #bruschetta у яго апісанне. Код памылкі: <ph name="ERROR" />.</translation>
 <translation id="211144231511833662">Скасаваць выбар тыпаў прылад</translation>
 <translation id="2111670510994270194">Новая ўкладка справа</translation>
 <translation id="2112554630428445878">Вітаем, <ph name="USERNAME" /></translation>
@@ -2469,7 +2468,6 @@
 <translation id="3129215702932019810">Памылка пры запуску праграмы</translation>
 <translation id="3130528281680948470">Налады вашай прылады будуць скінуты, а ўліковыя запісы карыстальнікаў і іх даныя будуць выдалены. Адрабіць гэта дзеянне нельга.</translation>
 <translation id="3130863904455712965">Гісторыя і іншыя даныя</translation>
-<translation id="3130966412954727147">Сайты, якія вы наведваеце, могуць пацвердзіць, што вы сапраўдны карыстальнік, а не бот.</translation>
 <translation id="313205617302240621">Забылі пароль?</translation>
 <translation id="3132277757485842847">Нам не ўдалося захаваць падключэнне да вашага тэлефона. Упэўніцеся, што ён разблакіраваны, знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi.</translation>
 <translation id="3132896062549112541">Правіла</translation>
@@ -3018,7 +3016,6 @@
 <translation id="3647654707956482440">Не ўдалося выкарыстаць спасылку. Праверце яе на наяўнасць памылак або паўтарыце спробу, выкарыстаўшы іншую спасылку.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}one{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}few{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}many{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}other{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}}</translation>
 <translation id="3648348069317717750">Выяўлена прылада: <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3649190289964910441">Наведаны вамі сайт можа захаваць у Chrome інфармацыю, якая пацвярджае, што вы сапраўдны чалавек. Гэта дазваляе іншым сайтам, якія вы наведваеце, правяраць праз Chrome, ці з'яўляецеся вы давераным карыстальнікам.</translation>
 <translation id="3650753875413052677">Памылка рэгістрацыі</translation>
 <translation id="3650845953328929506">Чакаецца запампоўванне журнала.</translation>
 <translation id="3650952250015018111">Дазволіць праграме "<ph name="APP_NAME" />" доступ да наступнага:</translation>
@@ -4267,7 +4264,6 @@
 <translation id="477647109558161443">Стварыць ярлык на працоўным стале</translation>
 <translation id="4776594120007763294">Націсніце кнопку, каб дадаць старонку ў спіс на прагляд</translation>
 <translation id="4777458362738635055">Іншыя карыстальнікі прылады могуць выкарыстоўваць гэту сетку</translation>
-<translation id="477781522763920796">Вашы персанальныя даныя не раскрываюцца, а сайты не маюць доступу да вашай гісторыі прагляду.</translation>
 <translation id="4777825441726637019">Крама Play</translation>
 <translation id="4777943778632837590">Наладзіць серверы даменных імён</translation>
 <translation id="4779083564647765204">Маштаб</translation>
@@ -4958,7 +4954,6 @@
 <translation id="5432145523462851548">Файл "<ph name="FILE_NAME" />": паказаць у папцы</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
 <translation id="5434065355175441495">Шыфраванне PKCS #1 RSA</translation>
-<translation id="5434294721803750644">Падключэнне знаходзіцца пад маніторынгам</translation>
 <translation id="5435779377906857208">Заўсёды даваць сайту <ph name="HOST" /> доступ да даных пра ваша месцазнаходжанне</translation>
 <translation id="5436492226391861498">Чакаецца проксі-тунэль...</translation>
 <translation id="5436510242972373446">Пошук на сайце <ph name="SITE_NAME" />:</translation>
@@ -6249,7 +6244,6 @@
 <translation id="6597331566371766302">Наступныя пашырэнні заблакіраваны адміністратарам:</translation>
 <translation id="6601262427770154296">Кіраванне карыстальнiцкiмi слоўнікамі</translation>
 <translation id="6601612474695404578">Некаторыя сайты выкарыстоўваюць староннія файлы cookie для загрузкі сваіх старонак. Калі сайт не працуе, паспрабуйце дазволіць файлы cookie.</translation>
-<translation id="6602581642873576447">Процідзеянне спаму і махлярству адключана</translation>
 <translation id="6602937173026466876">Доступ да прынтараў</translation>
 <translation id="6602956230557165253">Для пераходу выкарыстоўвайце клавішы са стрэлкамі ўлева і ўправа.</translation>
 <translation id="6603185457265641428">Выберыце, ці трэба сінхранізаваць гісторыю</translation>
@@ -6770,7 +6764,6 @@
 <translation id="7047059339731138197">Выбар фону</translation>
 <translation id="7049293980323620022">Захаваць файл?</translation>
 <translation id="7050037487872780845">Няправільная канфігурацыя хот-спота</translation>
-<translation id="7050519587566342213">Сайты, якія вы наведваеце, з большай імавернасцю ўспрымаюць вас як чалавека.</translation>
 <translation id="7051551856857948729">Схаваць нумар IBAN</translation>
 <translation id="7052237160939977163">Адпраўляць даныя трасіроўкі прадукцыйнасці</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
@@ -6989,7 +6982,6 @@
 <translation id="7271278495464744706">Уключыць падрабязныя апісанні</translation>
 <translation id="7272674038937250585">Няма апісання</translation>
 <translation id="7273110280511444812">апошняе падключэнне: <ph name="DATE" /></translation>
-<translation id="7273921429569738933">Процідзеянне спаму і махлярству ўключана</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> да поўнай зарадкі</translation>
 <translation id="727952162645687754">Памылка спампоўкі</translation>
 <translation id="7280041992884344566">Падчас пошуку браўзерам Chrome шкоднага праграмнага забеспячэння адбылася памылка</translation>

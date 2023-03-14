@@ -2705,7 +2705,6 @@ Additional details:
 <translation id="7630470133768862132">Consent status:</translation>
 <translation id="7631444403134069754">Track and field</translation>
 <translation id="7633909222644580952">Performance data and crash reports</translation>
-<translation id="7634280112532283638">Spam and fraud reduction</translation>
 <translation id="7637571805876720304">Remove credit card from Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{None}=1{1 password in your account (for <ph name="DOMAIN_LIST" />)}other{# passwords in your account (for <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serial ports</translation>

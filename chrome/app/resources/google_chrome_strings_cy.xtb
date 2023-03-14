@@ -42,7 +42,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="1682634494516646069">Ni all Google Chrome ddarllen nac ysgrifennu i'w gyfeiriadur data:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="1691802391966922744">{COUNT,plural, =1{Mae eich gweinyddwr wedi ffurfweddu Chrome i gau os yw'n segur am fwy nag 1 funud.}zero{Mae eich gweinyddwr wedi ffurfweddu Chrome i gau os yw'n segur am fwy na # munud.}two{Mae eich gweinyddwr wedi ffurfweddu Chrome i gau os yw'n segur am fwy na # funud.}few{Mae eich gweinyddwr wedi ffurfweddu Chrome i gau os yw'n segur am fwy na # munud.}many{Mae eich gweinyddwr wedi ffurfweddu Chrome i gau os yw'n segur am fwy na # munud.}other{Mae eich gweinyddwr wedi ffurfweddu Chrome i gau os yw'n segur am fwy na # munud.}}</translation>
 <translation id="1698376642261615901">Porwr gwe yw Google Chrome sy'n rhedeg tudalennau gwe a rhaglenni mewn chwinciad. Mae'n gyflym, sefydlog ac yn hawdd ei ddefnyddio. Porwch y we'n fwy diogel gyda diogelwch rhag maleiswedd a gwe-rwydo pwrpasol yn Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Bydd Chrome yn ail-lansio mewn awr}zero{Bydd Chrome yn ail-lansio mewn # awr}two{Bydd Chrome yn ail-lansio mewn # awr}few{Bydd Chrome yn ail-lansio mewn # awr}many{Bydd Chrome yn ail-lansio mewn # awr}other{Bydd Chrome yn ail-lansio mewn # awr}}</translation>
 <translation id="1734234790201236882">Bydd Chrome yn cadw'r cyfrinair hwn yn eich Cyfrif Google. Ni fydd yn rhaid i chi ei gofio.</translation>
@@ -259,7 +258,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5941830788786076944">Gwneud Google Chrome y porwr diofyn</translation>
 <translation id="6003112304606738118">Wrthi'n lawrlwytho... Mae <ph name="HOURS" /> awr ar ôl</translation>
 <translation id="6010556343189461180">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen macOS 10.15 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 10.14.</translation>
-<translation id="6022388122721048220">{0,plural, =0{Bydd Chrome yn cau nawr.}=1{Bydd Chrome yn cau ymhen 1 eiliad.}two{Bydd Chrome yn cau ymhen # eiliad.}few{Bydd Chrome yn cau ymhen # eiliad.}many{Bydd Chrome yn cau ymhen # eiliad.}other{Bydd Chrome yn cau ymhen # eiliad.}}</translation>
 <translation id="6022659036123304283">Personoleiddio Chrome</translation>
 <translation id="6025087594896450715">Bydd Google Chrome yn ailddechrau mewn <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Cau</translation>
@@ -400,7 +398,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8825634023950448068">Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Ac os yw Chrome yn ei chael yn anghywir neu os nad ydych am weld rhai hysbysebion, gallwch ddileu diddordeb.</translation>
 <translation id="8834965163890861871">Mae Google Chrome yn ceisio golygu cyfrineiriau. Rhowch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="884296878221830158">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chrome neu'n clicio'r botwm Hafan.</translation>
-<translation id="8847000024471094355">Mae Chrome yn anweithredol</translation>
 <translation id="8862326446509486874">Nid oes gennych yr hawliau priodol ar gyfer gosod ar lefel system. Rhowch gynnig arall ar redeg y gosodwr fel Gweinyddwr.</translation>
 <translation id="8914504000324227558">Ail-lansio Chrome</translation>
 <translation id="8922193594870374009">I anfon rhif o <ph name="ORIGIN" /> i'ch ffôn Android, mewngofnodwch i Chrome ar y ddwy ddyfais.</translation>

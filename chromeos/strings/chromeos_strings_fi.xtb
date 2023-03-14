@@ -277,7 +277,6 @@
 <translation id="3595596368722241419">Akku täynnä</translation>
 <translation id="3600339377155080675">Näytön peilaus</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
-<translation id="360282891121575443">Muut käyttäjät voivat päivittää kuvia jaetuissa albumeissa. Päiväkohtainen muutos saattaa näyttää taustakuvia, jotka eivät ole tällä hetkellä albumissa.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Vaihda taustakuva</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
@@ -637,7 +636,6 @@
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6659594942844771486">Välilehti</translation>
 <translation id="6692996468359469499">Tietoja valinnastasi</translation>
-<translation id="6698459586333070823">Muut käyttäjät voivat päivittää jaettuja albumeita</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>
 <translation id="6723839937902243910">Virta</translation>
 <translation id="6723847290197874913">Näppämistön taustavalo</translation>
@@ -793,7 +791,6 @@
 <translation id="8226628635270268143">Valitse suosikkikuvat ja ‑albumit</translation>
 <translation id="8227119283605456246">Liitä tiedosto</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
-<translation id="8242426110754782860">Jatka</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Yhdistä verkkoon ja päivitä sivu nähdäksesi taustakuvan.</translation>

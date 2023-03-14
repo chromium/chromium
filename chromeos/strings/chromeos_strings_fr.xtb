@@ -277,7 +277,6 @@
 <translation id="3595596368722241419">Batterie pleine</translation>
 <translation id="3600339377155080675">Duplication d'écran</translation>
 <translation id="3602290021589620013">Aperçu</translation>
-<translation id="360282891121575443">Les photos des albums partagés peuvent être mises à jour par d'autres utilisateurs. La fonctionnalité Modifier tous les jours peut afficher les fonds d'écran qui ne figurent pas dans l'album.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
@@ -637,7 +636,6 @@
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659594942844771486">Onglet</translation>
 <translation id="6692996468359469499">Obtenir des informations sur votre sélection</translation>
-<translation id="6698459586333070823">Les albums partagés peuvent être mis à jour par d'autres utilisateurs</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6723847290197874913">Rétroéclairage du clavier</translation>
@@ -793,7 +791,6 @@
 <translation id="8226628635270268143">Choisir vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
-<translation id="8242426110754782860">Continuer</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Connectez-vous à un réseau et actualisez la page pour voir le fond d'écran.</translation>

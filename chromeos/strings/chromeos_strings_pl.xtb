@@ -277,7 +277,6 @@
 <translation id="3595596368722241419">Bateria naładowana</translation>
 <translation id="3600339377155080675">Odbicie lustrzane ekranu</translation>
 <translation id="3602290021589620013">Podgląd</translation>
-<translation id="360282891121575443">Inni użytkownicy mogą aktualizować zdjęcia w albumach udostępnionych Opcja codziennej zmiany może powodować wyświetlanie tapet, których nie ma teraz w albumie.</translation>
 <translation id="3603829704940252505">Awatar</translation>
 <translation id="3604713164406837697">Zmień tapetę</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
@@ -637,7 +636,6 @@
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="6692996468359469499">Uzyskiwanie informacji związanych z zaznaczoną treścią</translation>
-<translation id="6698459586333070823">Inni użytkownicy mogą aktualizować albumy udostępnione</translation>
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
 <translation id="6723847290197874913">Podświetlenie klawiatury</translation>
@@ -793,7 +791,6 @@
 <translation id="8226628635270268143">Wybierz ulubione zdjęcia i albumy</translation>
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
-<translation id="8242426110754782860">Dalej</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
 <translation id="827422111966801947">Indygo</translation>
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>
@@ -838,7 +835,7 @@
 <translation id="8675354002693747642">Klucz wstępny</translation>
 <translation id="8677859815076891398">Brak albumów. Utwórz album w <ph name="LINK_BEGIN" />Zdjęciach Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Aby zarządzać tą funkcją, naciskaj klawisze strzałek w lewo lub w prawo.</translation>
-<translation id="8712637175834984815">Rozumiem</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Niepowodzenie – brak tuszu</translation>
 <translation id="8723108084122415655">Sieć inna niż domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>

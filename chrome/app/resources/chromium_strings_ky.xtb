@@ -101,7 +101,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Учурдагы Chromium профилине өтөсүзбү?</translation>
 <translation id="3412460710772753638">Ушул түзмөктөгү Сырсөздөр бөлүмүндө</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{Администраторуңуз Chromium 1 мүнөттөн ашуун убакыт күтүү режиминде болгондо жабылгыдай кылып конфигурациялады.}other{Администраторуңуз Chromium # мүнөттөн ашуун убакыт күтүү режиминде болгондо жабылгыдай кылып конфигурациялады.}}</translation>
 <translation id="3430503420100763906">Chromium профилдери менен Chromium'дагы маалыматты өзүнчө сактай аласыз. Досторуңуз менен үй-бүлөңүз үчүн профилдерди түзүңүз же жумуш менен эс алууну бири-бири менен аралаштырбаңыз.</translation>
 <translation id="347328004046849135">Chromium уурдалган сырсөз менен киргениңизде эскертет</translation>
 <translation id="3474745554856756813">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chromium'га <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
@@ -183,7 +182,6 @@
 <translation id="538767207339317086">Chromium'га кирүүгө уруксат берүү</translation>
 <translation id="5398878173008909840">Chromium'дун жаңы версиясы бар.</translation>
 <translation id="5405650547142096840">Chromium'дан чыгарып салуу</translation>
-<translation id="5421879995290576427">{0,plural, =0{Chromium азыр жабылат.}=1{Chromium 1 секунддан кийин жабылат.}other{Chromium # секунддан кийин жабылат.}}</translation>
 <translation id="5427571867875391349">Chromium'ду демейки серепчи катары коюп алыңыз</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium бета сынамык версиясы</translation>
 <translation id="5473971139929175403">Chromium туура эмес иштеши мүмкүн, анткени ал Linux тутумунун бул версиясында колдоого алынбай калган</translation>
@@ -275,7 +273,6 @@
 <translation id="6964305034639999644">Шилтемени Chromium'дун жашы&amp;руун терезесинде ачуу</translation>
 <translation id="6978145336957848883">Начар сырсөздөрдү билип алуу оңой. Chromium'га <ph name="BEGIN_LINK" />сиз үчүн татаал сырсөздөрдү түзүп, эстеп калууга<ph name="END_LINK" /> уруксат бериңиз.</translation>
 <translation id="6981396265751285733">Күйүп турганда Chromium эстутумду ээлеп турган жигерсиз өтмөктөрдү өчүрөт. Андыктан компьютерде жигердүү өтмөктөр жана башка колдонмолор үчүн көбүрөөк орун болуп, Chromium тезирээк иштейт. Жигерсиз өтмөктөрдү кайрадан ачканда алар автоматтык түрдө жигердүү болуп калат.</translation>
-<translation id="6984667024406244807">Chromium жигерсиз</translation>
 <translation id="6985329841647292029">ChromiumOS шарттары</translation>
 <translation id="6990124437352146030">Бул сайтта иштөө үчүн Chromium микрофонуңузду колдонушу керек</translation>
 <translation id="7025789849649390912">Орнотуу токтотулду.</translation>

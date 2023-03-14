@@ -99,7 +99,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">বর্তমান Chromium প্রোফাইলে পাল্টাতে চান?</translation>
 <translation id="3412460710772753638">এই ডিভাইসের Password Manager-এ</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{Chromium ১ মিনিটের বেশি নিষ্ক্রিয় থাকলে আপনার অ্যাডমিনিস্ট্রেটর সেটি বন্ধ করার জন্য কনফিগার করেছেন।}one{Chromium # মিনিটের বেশি নিষ্ক্রিয় থাকলে আপনার অ্যাডমিনিস্ট্রেটর সেটি বন্ধ করার জন্য কনফিগার করেছেন।}other{Chromium # মিনিটের বেশি নিষ্ক্রিয় থাকলে আপনার অ্যাডমিনিস্ট্রেটর সেটি বন্ধ করার জন্য কনফিগার করেছেন।}}</translation>
 <translation id="3430503420100763906">Chromium প্রোফাইল থেকে আপনার সব Chromium স্টাফ আলাদা করতে পারবেন। বন্ধু এবং পরিবারের জন্য প্রোফাইল তৈরি করুন অথবা অফিস এবং বিনোদনের প্রোফাইল আলাদা আলাদা রাখুন।</translation>
 <translation id="347328004046849135">কোনও চুরি হয়ে যাওয়া পাসওয়ার্ড দিয়ে আপনি সাইন-ইন করলে আপনাকে Chromium বিজ্ঞপ্তি দিয়ে জানাবে</translation>
 <translation id="3474745554856756813">এটি এই ডিভাইস থেকে <ph name="ITEMS_COUNT" />টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chromium-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
@@ -181,7 +180,6 @@
 <translation id="538767207339317086">Chromium-এ সাইন-ইন করতে দিন</translation>
 <translation id="5398878173008909840">Chromium-এর একটি নতুন ভার্সন উপলব্ধ আছে৷</translation>
 <translation id="5405650547142096840">Chromium থেকে সরান</translation>
-<translation id="5421879995290576427">{0,plural, =0{Chromium এখন বন্ধ হয়ে যাবে।}=1{Chromium ১ সেকেন্ডের মধ্যে বন্ধ হয়ে যাবে।}one{Chromium # সেকেন্ডের মধ্যে বন্ধ হয়ে যাবে।}other{Chromium # সেকেন্ডের মধ্যে বন্ধ হয়ে যাবে।}}</translation>
 <translation id="5427571867875391349">Chromium-কে আপনার ডিফল্ট ব্রাউজার হিসাবে সেট করুন</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium বিটা</translation>
 <translation id="5473971139929175403">Chromium সঠিকভাবে কাজ নাও করতে পারে কারণ এটি এখন আর Linux ডিস্ট্রিবিউশনে সমর্থিত নয়</translation>
@@ -271,7 +269,6 @@
 <translation id="6964305034639999644">Chromium ছদ্মবেশী উইন্ডোতে লিঙ্কটি খুলুন</translation>
 <translation id="6978145336957848883">দুর্বল পাসওয়ার্ড সহজেই অনুমান করা যায়। Chromium-কে <ph name="BEGIN_LINK" />আপনার জন্য শক্তিশালী পাসওয়ার্ড তৈরি করার ও সেটি মনে রাখার<ph name="END_LINK" /> অনুমতি দিন।</translation>
 <translation id="6981396265751285733">চালু থাকাকালীন, Chromium ইনঅ্যাক্টিভ ট্যাব থেকে মেমরি খালি করে। এটি অ্যাক্টিভ ট্যাব এবং অন্যান্য অ্যাপ্লিকেশনের জন্য আরও কম্পিউটার রিসোর্স প্রদান করে এবং Chromium-এর স্পিড বেশি রাখে। আপনার ইনঅ্যাক্টিভ ট্যাবগুলি আবার ব্যবহার করা শুরু করলে অটোমেটিক সেগুলি অ্যাক্টিভ হয়ে যাবে।</translation>
-<translation id="6984667024406244807">Chromium বন্ধ করা আছে</translation>
 <translation id="6985329841647292029">ChromiumOS-এর শর্তাবলী</translation>
 <translation id="6990124437352146030">এই সাইটটির জন্য Chromium কে আপনার মাইক্রোফোনে অ্যাক্সেস দিতে হবে</translation>
 <translation id="7025789849649390912">ইনস্টলেশন বন্ধ হয়ে গেছে।</translation>

@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tembok api dikesan</translation>
 <translation id="1075811647922107217">Saiz halaman</translation>
+<translation id="1082009148392559545">Memuat turun penyelamat skrin</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
 <translation id="1113892970288677790">Pilih kerja seni dan imej yang dipilih susun</translation>
 <translation id="1119447706177454957">Ralat dalaman</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Diurus oleh <ph name="FIRST_MANAGER" /> dan <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Pelayan nama</translation>
 <translation id="1731082422893354635">Pad sentuh Bluetooth</translation>
+<translation id="1738949837603788263">Zon <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Tidak dapat memuatkan imej. Semak sambungan rangkaian anda atau cuba muatkan imej sekali lagi.</translation>
 <translation id="1751249301761991853">Peribadi</translation>
 <translation id="1753496554272155572">Keluar pratonton kertas dinding</translation>
@@ -277,7 +279,6 @@
 <translation id="3595596368722241419">Bateri penuh</translation>
 <translation id="3600339377155080675">Cermin skrin</translation>
 <translation id="3602290021589620013">Pratonton</translation>
-<translation id="360282891121575443">Foto dalam album kongsi boleh dikemaskinikan oleh pengguna lain. Penukaran setiap hari mungkin menunjukkan hiasan latar yang tiada dalam album pada masa ini.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Tukar kertas dinding</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
@@ -599,6 +600,7 @@
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="6379086450106841622">Skrin sentuh</translation>
 <translation id="6381741036071372448">Uji papan kekunci anda</translation>
+<translation id="6382182670717268353">Pratonton penyelamat skrin</translation>
 <translation id="6388847657025262518">Penyuap dokumen pengimbas tersekat. Semak penyuap dan cuba lagi.</translation>
 <translation id="6394634179843537518">Tambah fail</translation>
 <translation id="6410257289063177456">Fail Imej</translation>
@@ -637,7 +639,6 @@
 <translation id="6657585470893396449">Kata laluan</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan maklumat yang berkaitan dengan pilihan anda</translation>
-<translation id="6698459586333070823">Album kongsi boleh dikemaskinikan oleh pengguna lain</translation>
 <translation id="6704062477274546131">Peleraian DNS</translation>
 <translation id="6723839937902243910">Kuasa</translation>
 <translation id="6723847290197874913">Lampu latar papan kekunci</translation>
@@ -689,6 +690,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />. Pentadbir boleh mengkonfigurasikan peranti dari jauh.</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7180865173735832675">Peribadikan</translation>
+<translation id="7184043045742675738">Klik sebarang kekunci untuk menyesuaikan butang anda. Ubah kedudukan kekunci dengan tetikus atau kekunci anak panah.</translation>
 <translation id="7212734716605298123">Kemaskinian perisian tegar untuk peranti luaran</translation>
 <translation id="7216409898977639127">Penyedia selular</translation>
 <translation id="725133483556299729">Pilih e-mel</translation>
@@ -730,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Skrin sentuh USB</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
+<translation id="7613724632293948900">Ubah kedudukan dengan tetikus atau kekunci anak panah.</translation>
 <translation id="7620771111601174153">Ketahui lebih lanjut dalam Pusat Bantuan</translation>
 <translation id="763165478673169849">Masa Terakhir Ditetapkan Semula</translation>
 <translation id="7648838807254605802">Kependaman HTTPS tinggi</translation>
@@ -793,7 +796,6 @@
 <translation id="8226628635270268143">Pilih foto dan album kegemaran anda</translation>
 <translation id="8227119283605456246">Lampirkan fail</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
-<translation id="8242426110754782860">Teruskan</translation>
 <translation id="8246209727385807362">Pembawa tidak diketahui</translation>
 <translation id="827422111966801947">Biru Nila</translation>
 <translation id="8286154143153872371">Sila sambung kepada rangkaian dan muatkan semula halaman untuk melihat kertas dinding.</translation>
@@ -853,6 +855,7 @@
 <translation id="8798441408945964110">Nama penyedia</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Kertas dinding</translation>
+<translation id="8820457400746201697">Gerakkan titik sentuh biru kepada tindakan. Pilih kekunci yang berkaitan untuk disesuaikan.</translation>
 <translation id="8834539327799336565">Tersambung pada masa ini</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8855781559874488009">Tidak dapat menyambung melalui tembok api ke laman web HTTP</translation>

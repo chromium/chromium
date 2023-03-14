@@ -2705,7 +2705,6 @@
 <translation id="7630470133768862132">Статус згоди:</translation>
 <translation id="7631444403134069754">Легка атлетика</translation>
 <translation id="7633909222644580952">Дані про ефективність і звіти про збої</translation>
-<translation id="7634280112532283638">Боротьба зі спамом і шахрайством</translation>
 <translation id="7637571805876720304">Видалити дані кредитної картки з Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Немає}=1{У вашому обліковому записі збережено 1 пароль (для <ph name="DOMAIN_LIST" />)}one{У вашому обліковому записі збережено # пароль (для <ph name="DOMAIN_LIST" />)}few{У вашому обліковому записі збережено # паролі (для <ph name="DOMAIN_LIST" />)}many{У вашому обліковому записі збережено # паролів (для <ph name="DOMAIN_LIST" />)}other{У вашому обліковому записі збережено # пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Послідовні порти</translation>

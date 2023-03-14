@@ -2700,7 +2700,6 @@
 <translation id="7630470133768862132">用户意见征求状态：</translation>
 <translation id="7631444403134069754">田径</translation>
 <translation id="7633909222644580952">性能数据和崩溃报告</translation>
-<translation id="7634280112532283638">垃圾内容和欺诈行为削减</translation>
 <translation id="7637571805876720304">要从 Chromium 中移除信用卡吗？</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{无}=1{您的帐号中保存了 1 个密码（关联的网域：<ph name="DOMAIN_LIST" />）}other{您的帐号中保存了 # 个密码（关联的网域：<ph name="DOMAIN_LIST" />）}}</translation>
 <translation id="7638605456503525968">串行端口</translation>

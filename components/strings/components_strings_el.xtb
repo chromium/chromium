@@ -152,6 +152,7 @@
 <translation id="132301787627749051">Αναζήτηση εικόνας στο πρόχειρο</translation>
 <translation id="1323433172918577554">Εμφάνιση περισσότερων</translation>
 <translation id="132390688737681464">Αποθήκευση και συμπλήρωση διευθύνσεων</translation>
+<translation id="1329916999021038454">Αποστολή αναφοράς</translation>
 <translation id="1330449323196174374">Αριστερή δίπλωση παράθυρο</translation>
 <translation id="1333745675627230582">Παιχνίδι Chrome Dino</translation>
 <translation id="1333989956347591814">Η δραστηριότητά σας <ph name="BEGIN_EMPHASIS" />μπορεί να εξακολουθήσει να είναι ορατή<ph name="END_EMPHASIS" />:
@@ -527,6 +528,7 @@
 <translation id="219906046732893612">Ανακαίνιση σπιτιού</translation>
 <translation id="2202020181578195191">Εισαγάγετε ένα έγκυρο έτος λήξης</translation>
 <translation id="2202627062836089804">πίσω μέρος της κάρτας σας</translation>
+<translation id="2204482073374652408">Η ενημέρωση ολοκληρώθηκε!</translation>
 <translation id="22081806969704220">Δίσκος 3</translation>
 <translation id="2210794033760923560">Μεταφόρτωση αναφοράς</translation>
 <translation id="2212579473415663542">Η συγκεκριμένη διεύθυνση έχει αποθηκευτεί στον Λογαριασμό σας Google (<ph name="ACCOUNT" />). Μπορείτε να χρησιμοποιήσετε τη διεύθυνση σε όλα τα προϊόντα Google σε οποιαδήποτε συσκευή.</translation>
@@ -615,6 +617,7 @@
 <translation id="2441854154602066476">Τρόποι πληρωμής που είναι διαθέσιμοι για συμπλήρωση μέσω αφής. Έχει γίνει απόκρυψη του πληκτρολογίου.</translation>
 <translation id="2448295565072560657">Περιφερειακά που έχουν συνδεθεί σε αυτήν τη συσκευή ενώ είστε συνδεδεμένοι</translation>
 <translation id="2450021089947420533">Διαδρομές</translation>
+<translation id="2456755709261364512">Το επίπεδο φόρτισης της μπαταρίας σας πρέπει να είναι πάνω από <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">Συμπλήρωση</translation>
 <translation id="2465655957518002998">Επιλογή τρόπου παράδοσης</translation>
 <translation id="2465688316154986572">Συρραφή</translation>
@@ -661,6 +664,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Χρησιμοποιήστε το κλείδωμα οθόνης για επιβεβαίωση καρτών στο εξής</translation>
 <translation id="2553853292994445426">Ελέγξτε τις ρυθμίσεις ασφαλούς DNS. Μπορεί να έχετε διαμορφώσει έναν ασφαλή διακομιστή DNS στον οποίο οι συνδέσεις αποτυγχάνουν.</translation>
+<translation id="255497580849974774">Διατηρήστε τη συσκευή συνδεδεμένη σε έναν φορτιστή κατά τη διάρκεια της ενημέρωσης.</translation>
 <translation id="2556876185419854533">&amp;Αναίρεση επεξεργασίας</translation>
 <translation id="2557417190997681027">Επιχειρηματικά ταξίδια</translation>
 <translation id="2562087035394240049">Οδηγίες, DIY και περιεχόμενο από ειδικούς</translation>
@@ -892,6 +896,7 @@
 <translation id="320323717674993345">Ακύρωση πληρωμής</translation>
 <translation id="3203366800380907218">Από τον ιστό</translation>
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
+<translation id="3208701679386778924">Στείλτε μια αναφορά για να μπορέσουμε να βελτιώσουμε περισσότερο τις ενημερώσεις του ChromeOS.</translation>
 <translation id="3209034400446768650">Η σελίδα ενδέχεται να σας χρεώσει</translation>
 <translation id="3212581601480735796">Η δραστηριότητά σας στο <ph name="HOSTNAME" /> παρακολουθείται</translation>
 <translation id="3215092763954878852">Δεν ήταν δυνατή η χρήση του WebAuthn</translation>
@@ -1118,6 +1123,7 @@
 <translation id="3715545959749027023">Όταν επισημαίνονται συμβάντα ασφαλείας από το Chrome, σχετικά δεδομένα για τα συμβάντα αποστέλλονται στον διαχειριστή σας. Σε αυτά ενδέχεται να περιλαμβάνονται τα URL των σελίδων που επισκέπτεστε στο Chrome, ονόματα αρχείων ή μεταδεδομένα, σφάλματα προγραμμάτων περιήγησης ή καρτελών και το όνομα χρήστη που χρησιμοποιείτε για τη σύνδεση στη συσκευή σας, στο Chrome και σε εφαρμογές που βασίζονται στον ιστό.</translation>
 <translation id="3715597595485130451">Σύνδεση σε Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Ελέγξτε το διακομιστή μεσολάβησης, το τείχος προστασίας και τη διαμόρφωση DNS<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Κατά τη διάρκεια της ενημέρωσης, δεν θα μπορείτε να χρησιμοποιήσετε τη συσκευή σας για έως και 10 λεπτά.</translation>
 <translation id="372429172604983730">Οι εφαρμογές που μπορούν να προκαλέσουν αυτό το σφάλμα περιλαμβάνουν λογισμικό προστασίας από ιούς, τείχος προστασίας και λογισμικό φιλτραρίσματος ιστού ή λογισμικό διακομιστή μεσολάβησης.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα μια νέα παρουσίαση Google στις Παρουσιάσεις</translation>
 <translation id="3733139489341305600">Αυτόνομα οχήματα</translation>
@@ -1155,6 +1161,7 @@
 <translation id="3807366285948165054">Μετατόπιση εικόνας στον άξονα X</translation>
 <translation id="3807873520724684969">Το επιβλαβές περιεχόμενο αποκλείστηκε.</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
+<translation id="3812398568375898177">Αυτή είναι μια σημαντική ενημέρωση που βελτιώνει την απόδοση των εφαρμογών Android στο ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 ίντσες</translation>
 <translation id="3816482573645936981">Τιμή (αντικαταστάθηκε)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1259,6 +1266,7 @@
 <translation id="4110652170750985508">Έλεγχος πληρωμής</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Αναζήτηση προς τα πίσω</translation>
+<translation id="4113354056388982663">Σημαντική ενημέρωση απόδοσης Android</translation>
 <translation id="4114146879518089587">Συνέχεια στον ιστότοπο</translation>
 <translation id="4116663294526079822">Να επιτρέπεται πάντα σε αυτόν τον ιστότοπο</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1440,6 +1448,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για μετάφραση αυτής της σελίδας με τη Μετάφραση Google.</translation>
 <translation id="4514308731478712184">Απενεργοποίηση διαδρομών</translation>
 <translation id="4515275063822566619">Οι κάρτες και οι διευθύνσεις προέρχονται από το Chrome και τον Λογαριασμό σας Google (<ph name="ACCOUNT_EMAIL" />). Μπορείτε να τις διαχειριστείτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">Η συσκευή διακόπηκε κατά τη διάρκεια της διαδικασίας ενημέρωσης.</translation>
 <translation id="4520048001084013693">Η λήψη αυτού του αρχείου έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> χιλ. (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Φάκελος Monarch</translation>
@@ -1529,6 +1538,7 @@
 <translation id="473775607612524610">Ενημέρωση</translation>
 <translation id="4738601419177586157">Πρόταση αναζήτησης <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Διαχείριση κωδικών πρόσβασης…</translation>
+<translation id="4743275772928623722">Το σύστημά σας ενημερώθηκε αλλά δεν ήταν δυνατή η ανάκτηση ορισμένων εφαρμογών και αρχείων. Η λήψη των εφαρμογών θα επαναληφθεί αυτόματα.</translation>
 <translation id="4744514002166662487">Δημιουργία παρουσίασης</translation>
 <translation id="4744603770635761495">Διαδρομή εκτελέσιμου</translation>
 <translation id="4749011317274908093">Είστε σε κατάσταση ανώνυμης περιήγησης.</translation>
@@ -2232,6 +2242,7 @@
 <translation id="646793340882508547">Παιχνίδια περιπέτειας</translation>
 <translation id="6468485451923838994">Γραμματοσειρές</translation>
 <translation id="647261751007945333">Πολιτικές συσκευών </translation>
+<translation id="647330291963761005">Εγκατάσταση ενημερώσεων</translation>
 <translation id="6475672344094591109">Οι ιστότοποι που επισκέπτεστε μπορούν να ζητήσουν από το Chrome πληροφορίες που θα τους βοηθήσουν να μετρήσουν την απόδοση των διαφημίσεών τους. Το Chrome προστατεύει το απόρρητό σας περιορίζοντας τις πληροφορίες που μπορούν να κοινοποιούν οι ιστότοποι μεταξύ τους.</translation>
 <translation id="6476284679642588870">Διαχείριση τρόπων πληρωμής</translation>
 <translation id="6486200200930923183">Ντοκιμαντέρ</translation>
@@ -2305,6 +2316,7 @@
 <translation id="6688775486821967877">Η εικονική κάρτα δεν είναι διαθέσιμη αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="6689249931105087298">Σχετική με τη συμπίεση μαύρου σημείου</translation>
 <translation id="6689271823431384964">Το Chrome προσφέρεται να αποθηκεύσει τις κάρτες σας στον Λογαριασμό σας Google, επειδή έχετε συνδεθεί. Μπορείτε να αλλάξετε αυτήν τη συμπεριφορά στις ρυθμίσεις. Το όνομα του κατόχου κάρτας προέρχεται από τον λογαριασμό σας.</translation>
+<translation id="6691397311652656001">Απελευθερώστε περισσότερο από <ph name="REQUIRED_FREE_DISK_SPACE" /> χώρου</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να βρείτε τη συσκευή σας στον Λογαριασμό Google.</translation>
 <translation id="6696588630955820014">Κουμπί Κοινοποίηση αυτής της καρτέλας, πατήστε το πλήκτρο Enter για να μοιραστείτε αυτήν την καρτέλα μέσω κοινοποίησης του συνδέσμου, δημιουργίας κωδικού QR, μετάδοσης κ.ά.</translation>
 <translation id="6698381487523150993">Δημιουργήθηκε:</translation>
@@ -2368,6 +2380,7 @@
 <translation id="6864189428899665393">267 x 389 χλστ.</translation>
 <translation id="686485648936420384">Πόροι καταναλωτών</translation>
 <translation id="6865412394715372076">Δεν είναι δυνατή η επαλήθευση της κάρτας αυτήν τη στιγμή</translation>
+<translation id="6868573634057275953">Συνέχιση ενημέρωσης</translation>
 <translation id="6869334554832814367">Προσωπικά δάνεια</translation>
 <translation id="6873456682041376666">Επάνω τροφοδότης χαρτιού</translation>
 <translation id="6874604403660855544">&amp;Επανάληψη προσθήκης</translation>
@@ -2524,9 +2537,11 @@
 <translation id="722454870747268814">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="7233592378249864828">Εκτύπωση φύλλου επιβεβαίωσης</translation>
 <translation id="7234638337680728591">Τιμές βενζίνης και καύσιμα οχημάτων</translation>
+<translation id="7236417832106250253">Ολοκλήρωση κατά <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Να μην εμφανιστεί ξανά αυτό το μήνυμα για αυτόν τον ιστότοπο</translation>
 <translation id="7238585580608191973">Αποτύπωμα SHA-256</translation>
 <translation id="7240120331469437312">Εναλλακτικό όνομα υποκειμένου πιστοποιητικού</translation>
+<translation id="7241863998525879494">Τι μπορείτε να περιμένετε</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />, <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# αντιστοίχιση}other{# αντιστοιχίσεις}}</translation>
@@ -2709,7 +2724,6 @@
 <translation id="7630470133768862132">Κατάσταση συναίνεσης:</translation>
 <translation id="7631444403134069754">Στίβος</translation>
 <translation id="7633909222644580952">Δεδομένα απόδοσης και αναφορές σφαλμάτων</translation>
-<translation id="7634280112532283638">Μείωση ανεπιθύμητου περιεχομένου και απάτης</translation>
 <translation id="7637571805876720304">Να καταργηθεί η πιστωτική κάρτα από το Chromium;</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Κανένας}=1{1 κωδικός πρόσβασης στον λογαριασμό σας (για <ph name="DOMAIN_LIST" />)}other{# κωδικοί πρόσβασης στον λογαριασμό σας (για <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Σειριακές θύρες</translation>
@@ -2748,6 +2762,7 @@
 <translation id="7698864304447945242">Ενημέρωση των Υπηρεσιών Google Play για AR;</translation>
 <translation id="7699293099605015246">Δεν υπάρχουν διαθέσιμα άρθρα αυτήν τη στιγμή</translation>
 <translation id="7701040980221191251">Καμία</translation>
+<translation id="7701544340847569275">Η ενημέρωση ολοκληρώθηκε με σφάλματα</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Μετάβαση στον ιστότοπο <ph name="SITE" /> (μη ασφαλής)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Σκι και χιονοσανίδα</translation>
 <translation id="7706689436519265630">Τα αρχεία που αντιγράφετε ή μετακινείτε αποστέλλονται στο Google Cloud ή σε τρίτα μέρη για ανάλυση. Για παράδειγμα, ενδέχεται να σαρώνονται για ευαίσθητα δεδομένα ή κακόβουλα προγράμματα και μπορεί να αποθηκεύονται με βάση τις πολιτικές της εταιρείας.</translation>

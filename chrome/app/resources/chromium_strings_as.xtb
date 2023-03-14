@@ -101,7 +101,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">পূৰ্বে থকা Chromium প্ৰ'ফাইলটোলৈ যাব নেকি?</translation>
 <translation id="3412460710772753638">এই ডিভাইচটোত Password Managerত</translation>
-<translation id="3420193029125244288">{COUNT,plural, =1{আপোনাৰ প্ৰশাসকে Chromium ১ মিনিটতকৈ অধিক সময়ৰ বাবে নিষ্ক্ৰিয় হৈ থাকিলে সেয়া বন্ধ হোৱাকৈ কনফিগাৰ কৰিছে।}one{আপোনাৰ প্ৰশাসকে Chromium # মিনিটতকৈ অধিক সময়ৰ বাবে নিষ্ক্ৰিয় হৈ থাকিলে সেয়া বন্ধ হোৱাকৈ কনফিগাৰ কৰিছে।}other{আপোনাৰ প্ৰশাসকে Chromium # মিনিটতকৈ অধিক সময়ৰ বাবে নিষ্ক্ৰিয় হৈ থাকিলে সেয়া বন্ধ হোৱাকৈ কনফিগাৰ কৰিছে।}}</translation>
 <translation id="3430503420100763906">Chromiumৰ প্ৰ’ফাইলৰ জৰিয়তে আপুনি নিজৰ আটাইবোৰ Chromiumৰ বস্তু পৃথক কৰিব পাৰে। বন্ধুবৰ্গ আৰু পৰিয়ালৰ বাবে প্ৰ’ফাইল সৃষ্টি কৰক অথবা কৰ্মস্থান আৰু মনোৰঞ্জনৰ মাজত বিভাজন কৰক।</translation>
 <translation id="347328004046849135">আপুনি কোনো হেক কৰা পাছৱৰ্ডৰ জৰিয়তে ছাইন ইন কৰিলে Chromiumএ আপোনাক জাননী দিব</translation>
 <translation id="3474745554856756813">ইয়ে এই ডিভাইচটোৰ পৰা <ph name="ITEMS_COUNT" />টা বস্তু মচিব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromiumত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
@@ -183,7 +182,6 @@
 <translation id="538767207339317086">Chromiumত ছাইন ইন কৰাৰ অনুমতি দিয়ক</translation>
 <translation id="5398878173008909840">Chromiumৰ এটা নতুন সংস্কৰণ উপলব্ধ।</translation>
 <translation id="5405650547142096840">Chromiumৰ পৰা আঁতৰাওক</translation>
-<translation id="5421879995290576427">{0,plural, =0{এতিয়া Chromium বন্ধ হ’ব।}=1{১ ছেকেণ্ডত Chromium বন্ধ হ’ব।}one{# ছেকেণ্ডত Chromium বন্ধ হ’ব।}other{# ছেকেণ্ডত Chromium বন্ধ হ’ব।}}</translation>
 <translation id="5427571867875391349">আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ হিচাপে Chromiumক ছেট কৰক</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium বিটা</translation>
 <translation id="5473971139929175403">Chromiumএ সঠিকভাৱে কাম নকৰিবও পাৰে কাৰণ এইটো আৰু Linux বিতৰণত সমৰ্থিত নহয়</translation>
@@ -275,7 +273,6 @@
 <translation id="6964305034639999644">Chromium ইন&amp;ক’গনিট’ ৱিণ্ড’ত লিংকটো খোলক</translation>
 <translation id="6978145336957848883">দুৰ্বল পাছৱৰ্ডসমূহ অনুমান কৰিবলৈ সহজ। Chromiumক <ph name="BEGIN_LINK" />আপোনাৰ বাবে শক্তিশালী পাছৱৰ্ড সৃষ্টি কৰিবলৈ আৰু মনত ৰাখিবলৈ দিয়ক<ph name="END_LINK" />।</translation>
 <translation id="6981396265751285733">অন কৰি থোৱা থাকিলে, Chromiumএ নিষ্ক্ৰিয় টেবসমূহৰ পৰা মেম’ৰী খালী কৰে। এইটোৱে সক্ৰিয় টেব আৰু অন্য এপক কম্পিউটাৰৰ অধিক সম্পদ দিয়ে আৰু Chromiumক দ্ৰুত কৰি ৰাখে। আপুনি নিজৰ নিষ্ক্ৰিয় টেবসমূহলৈ উভতি গ’লে সেইবোৰ স্বয়ংক্ৰিয়ভাৱে পুনৰ সক্ৰিয় হয়।</translation>
-<translation id="6984667024406244807">Chromium নিষ্ক্ৰিয় হৈ আছে</translation>
 <translation id="6985329841647292029">ChromiumOSৰ চৰ্তাৱলী</translation>
 <translation id="6990124437352146030">এই ছাইটটোৰ বাবে মাইক্ৰ'ফ'ন এক্সেছ কৰিবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>
 <translation id="7025789849649390912">ইনষ্টল কৰাটো বন্ধ হৈছে।</translation>

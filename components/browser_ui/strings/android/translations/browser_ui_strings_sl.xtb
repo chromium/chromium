@@ -145,8 +145,6 @@
 <translation id="3600792891314830896">Izklop zvoka na spletnih mestih, ki predvajajo zvok</translation>
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3628308229821498208">Predlagane iskalne poizvedbe</translation>
-<translation id="3636279694100170143">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resničen uporabnik, ne pa bot.</translation>
-<translation id="3649190289964910441">Spletno mesto, ki ga obiščete, lahko v Chromu shrani podatke, ki potrjujejo, da ste resničen uporabnik. Med brskanjem se lahko spletna mesta obrnejo na Chrome in na prvem spletnem mestu potrdijo, da ste verjetno zaupanja vreden uporabnik.</translation>
 <translation id="3721953990244350188">Opustitev in prikaz naslednjega razpoložljivega dejanja.</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3763247130972274048">Dvakrat se dotaknite videoposnetka levo ali desno, da preskočite 10 s</translation>
@@ -199,7 +197,6 @@
 <translation id="4645575059429386691">Upravlja starš</translation>
 <translation id="4670064810192446073">Navidezna resničnost</translation>
 <translation id="4751476147751820511">Tipala za gibanje in svetlobo</translation>
-<translation id="477781522763920796">Ta nastavitev deluje, ne da bi prišlo do vaše osebne prepoznave ali da bi bil spletnim mestom omogočen ogled vaše zgodovine brskanja.</translation>
 <translation id="4779083564647765204">Povečaj</translation>
 <translation id="4811450222531576619">Preberite več o njenem viru in temi</translation>
 <translation id="4836046166855586901">Vprašaj, ko želi spletno mesto vedeti, kdaj aktivno uporabljate to napravo.</translation>
@@ -329,7 +326,6 @@
 <translation id="7016516562562142042">Dovoljeno za trenutni iskalnik</translation>
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="702463548815491781">Priporočljivo, ko je vklopljena aplikacija TalkBack ali funkcija dostopa s stikalom</translation>
-<translation id="7050519587566342213">Brskanje se manj zatika, saj ste za spletna mesta bolj zaupanja vredni.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 izbran}one{# izbran}two{# izbrana}few{# izbrani}other{# izbranih}}</translation>
 <translation id="7087918508125750058">Št. izbranih: <ph name="ITEM_COUNT" />. Možnosti so na voljo na zgornjem delu zaslona.</translation>
@@ -354,7 +350,6 @@
 <translation id="757524316907819857">Prepreči spletnim mestom predvajanje zaščitene vsebine</translation>
 <translation id="7577900504646297215">Upravljanje zanimanj</translation>
 <translation id="7594634374516752650">Povezano z napravo Bluetooth</translation>
-<translation id="7634280112532283638">Zmanjšanje vsiljene vsebine in prevar</translation>
 <translation id="7641339528570811325">Izbris podatkov brskanja …</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7658239707568436148">Prekliči</translation>

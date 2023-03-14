@@ -2704,7 +2704,6 @@
 <translation id="7630470133768862132">동의 상태:</translation>
 <translation id="7631444403134069754">육상</translation>
 <translation id="7633909222644580952">성능 데이터 및 비정상 종료 보고서</translation>
-<translation id="7634280112532283638">스팸 및 사기 근절</translation>
 <translation id="7637571805876720304">Chromium에서 신용카드를 삭제하시겠습니까?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{없음}=1{계정에 비밀번호가 1개 저장되어 있음(<ph name="DOMAIN_LIST" />)}other{계정에 비밀번호가 #개 저장되어 있음(<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">직렬 포트</translation>
