@@ -4,7 +4,9 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -104,6 +106,33 @@ class TestRebootObserver : public chromeos::PowerManagerClient::Observer {
   base::test::TestFuture<power_manager::RequestRestartReason> reboot_future_;
 };
 
+class TestAudioObserver : public ash::CrasAudioHandler::AudioObserver {
+ public:
+  explicit TestAudioObserver(ash::CrasAudioHandler& handler)
+      : observation_(this) {
+    observation_.Observe(&handler);
+  }
+  TestAudioObserver(const TestAudioObserver&) = delete;
+  TestAudioObserver& operator=(const TestAudioObserver&) = delete;
+  ~TestAudioObserver() override = default;
+
+  // `ash::CrasAudioHandler::AudioObserver` implementation:
+  void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override {
+    waiter_.AddValue(volume);
+  }
+
+  void WaitForVolumeChange() {
+    EXPECT_TRUE(waiter_.Wait()) << "Never received a volume changed event";
+    waiter_.Take();
+  }
+
+ private:
+  base::test::RepeatingTestFuture<int> waiter_;
+  base::ScopedObservation<ash::CrasAudioHandler,
+                          ash::CrasAudioHandler::AudioObserver>
+      observation_;
+};
+
 }  // namespace
 
 // Kiosk tests with a fake device owner setup and a fake remote command client.
@@ -132,6 +161,11 @@ class KioskRemoteCommandTest : public KioskBaseTest {
                                          remote_command_server_.get()),
                                      connector->GetInstallAttributes());
     SetPublicKeyAndDeviceId();
+
+    // On real hardware volume change events are reported asynchronous, so
+    // ensure the test behaves similar so they are realistic (and catch the
+    // timing issues this can cause).
+    ash::FakeCrasAudioClient::Get()->send_volume_change_events_asynchronous();
   }
 
  protected:
@@ -229,7 +263,9 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
 
   // Set audio handler and initial volume
   ash::CrasAudioHandler* audio_handler = ash::CrasAudioHandler::Get();
+  TestAudioObserver audio_observer(*audio_handler);
   audio_handler->SetOutputVolumePercent(kInitVolumePercent);
+  audio_observer.WaitForVolumeChange();
   ASSERT_EQ(kInitVolumePercent, audio_handler->GetOutputVolumePercent());
 
   // Launch kiosk app
@@ -248,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
   // Check that remote command passed and the new volume level was set
   EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
             response.result());
+  audio_observer.WaitForVolumeChange();
   EXPECT_EQ(kExpectedVolumePercent, audio_handler->GetOutputVolumePercent());
 }
 

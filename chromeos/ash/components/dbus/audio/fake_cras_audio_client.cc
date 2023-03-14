@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ash {
 
@@ -204,7 +206,15 @@ void FakeCrasAudioClient::GetSpeakOnMuteDetectionEnabled(
 void FakeCrasAudioClient::SetOutputNodeVolume(uint64_t node_id,
                                               int32_t volume) {
   if (enable_volume_change_events_) {
-    NotifyOutputNodeVolumeChangedForTesting(node_id, volume);
+    if (send_volume_change_events_synchronous_) {
+      NotifyOutputNodeVolumeChangedForTesting(node_id, volume);
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &FakeCrasAudioClient::NotifyOutputNodeVolumeChangedForTesting,
+              weak_ptr_factory_.GetWeakPtr(), node_id, volume));
+    }
   }
 }
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/syslog_logging.h"
@@ -17,6 +18,19 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
+
+namespace {
+
+bool ShouldMute(const ash::CrasAudioHandler& audio_handler,
+                int new_output_volume) {
+  // Note that the new output volume only takes effect asynchronously,
+  // so we can not use `CrasAudioHandler::IsOutputVolumeBelowDefaultMuteLevel()`
+  // as it will return an answer based on the old output volume.
+  return new_output_volume <
+         audio_handler.GetOutputDefaultVolumeMuteThreshold();
+}
+
+}  // namespace
 
 constexpr char DeviceCommandSetVolumeJob::kVolumeFieldName[] = "volume";
 
@@ -49,10 +63,10 @@ bool DeviceCommandSetVolumeJob::ParseCommandPayload(
 
 void DeviceCommandSetVolumeJob::RunImpl(CallbackWithResult result_callback) {
   SYSLOG(INFO) << "Running set volume command, volume = " << volume_;
-  auto* audio_handler = ash::CrasAudioHandler::Get();
-  audio_handler->SetOutputVolumePercent(volume_);
-  bool mute = audio_handler->IsOutputVolumeBelowDefaultMuteLevel();
-  audio_handler->SetOutputMute(mute);
+  auto& audio_handler = CHECK_DEREF(ash::CrasAudioHandler::Get());
+
+  audio_handler.SetOutputVolumePercent(volume_);
+  audio_handler.SetOutputMute(ShouldMute(audio_handler, volume_));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_callback),

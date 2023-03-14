@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 
@@ -139,6 +140,13 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // invoked. This disables that. You can then manually invoke the observers by
   // calling `NotifyOutputNodeVolumeChangedForTesting`.
   void disable_volume_change_events() { enable_volume_change_events_ = false; }
+
+  // The real `CrasAudioClient` sends the volume change events asynchronously,
+  // so this method instructs our fake to do the same.
+  void send_volume_change_events_asynchronous() {
+    send_volume_change_events_synchronous_ = false;
+  }
+
   // By default the observers are informed when `SetInputGain` is
   // invoked. This disables that. You can then manually invoke the observers by
   // calling `NotifyInputNodeGainChangedForTesting`.
@@ -157,6 +165,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   uint64_t active_input_node_id_ = 0;
   uint64_t active_output_node_id_ = 0;
   bool enable_volume_change_events_ = true;
+  // TODO(b/273520282): Change default behavior to send events asynchronously.
+  bool send_volume_change_events_synchronous_ = true;
   bool enable_gain_change_events_ = true;
   bool noise_cancellation_supported_ = false;
   uint32_t battery_level_ = 0;
@@ -168,6 +178,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   ClientTypeToInputStreamCount active_input_streams_;
 
   base::ObserverList<Observer>::Unchecked observers_;
+
+  base::WeakPtrFactory<FakeCrasAudioClient> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
