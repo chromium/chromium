@@ -361,7 +361,6 @@ int CertVerifyProcAndroid::VerifyInternal(
   GetChainDEREncodedBytes(cert, &cert_bytes);
   if (!VerifyFromAndroidTrustManager(cert_bytes, hostname, cert_net_fetcher_,
                                      verify_result)) {
-    NOTREACHED();
     return ERR_FAILED;
   }
 
