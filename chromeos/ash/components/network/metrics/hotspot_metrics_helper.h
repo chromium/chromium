@@ -51,7 +51,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
 
   void Init(HotspotCapabilitiesProvider* hotspot_capabilities_provider,
             HotspotStateHandler* hotspot_state_handler,
-            HotspotController* hotspot_controller);
+            HotspotController* hotspot_controller,
+            NetworkStateHandler* network_state_handler);
 
   void set_is_enterprise_managed(bool is_enterprise_managed) {
     is_enterprise_managed_ = is_enterprise_managed;
@@ -69,6 +70,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
                            HotspotMaxClientCountHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
                            HotspotIsDeviceManagedHistogram);
+  FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
+                           HotspotEnabledUpstreamStatusHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, EnableTetheringSuccess);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
                            EnableTetheringReadinessCheckFailure);
@@ -96,6 +99,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   static const char kHotspotMaxClientCount[];
   static const char kHotspotIsDeviceManaged[];
   static const char kHotspotEnableLatency[];
+  static const char kHotspotUpstreamStatusWhenEnabled[];
   static const base::TimeDelta kLogAllowStatusAtLoginTimeout;
 
   static HotspotMetricsCheckReadinessResult GetCheckReadinessMetricsResult(
@@ -111,12 +115,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // adding the bucket. These values are persisted to logs. Entries should not
   // be renumbered and numeric values should never be reused.
   enum class HotspotMetricsAllowStatus {
-    kAllowed,
-    kDisallowedWiFiDownstreamNotSupported,
-    kDisallowedNoWiFiSecurityModes,
-    kDisallowedNoMobileData,
-    kDisallowedReadinessCheckFail,
-    kDisallowedByPolicy,
+    kAllowed = 0,
+    kDisallowedWiFiDownstreamNotSupported = 1,
+    kDisallowedNoWiFiSecurityModes = 2,
+    kDisallowedNoMobileData = 3,
+    kDisallowedReadinessCheckFail = 4,
+    kDisallowedByPolicy = 5,
     kMaxValue = kDisallowedByPolicy,
   };
 
@@ -124,9 +128,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // related UMA histogram. These values are persisted to logs. Entries should
   // not be renumbered and numeric values should never be reused.
   enum class HotspotMetricsSetConfigResult {
-    kSuccess,
-    kFailedNotLogin,
-    kFailedInvalidConfiguration,
+    kSuccess = 0,
+    kFailedNotLogin = 1,
+    kFailedInvalidConfiguration = 2,
     kMaxValue = kFailedInvalidConfiguration,
   };
 
@@ -146,18 +150,27 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // UMA histograms. These values are persisted to logs. Entries should not be
   // renumbered and numeric values should never be reused.
   enum class HotspotMetricsSetEnabledResult {
-    kSuccess,
-    kNotAllowed,
-    kReadinessCheckFailure,
-    kDisableWifiFailure,
-    kInvalidConfiguration,
-    kUpstreamNotAvailable,
-    kNetworkSetupFailure,
-    kWifiDriverFailure,
-    kCellularAttachFailure,
-    kShillOperationFailure,
-    kUnknownFailure,
+    kSuccess = 0,
+    kNotAllowed = 1,
+    kReadinessCheckFailure = 2,
+    kDisableWifiFailure = 3,
+    kInvalidConfiguration = 4,
+    kUpstreamNotAvailable = 5,
+    kNetworkSetupFailure = 6,
+    kWifiDriverFailure = 7,
+    kCellularAttachFailure = 8,
+    kShillOperationFailure = 9,
+    kUnknownFailure = 10,
     kMaxValue = kUnknownFailure,
+  };
+
+  // Represents the upstream status when hotspot is enabled. These values are
+  // persisted to logs. Entries should not be renumbered and numeric values
+  // should never be reused.
+  enum class HotspotMetricsUpstreamStatus {
+    kWifiWithCellularConnected = 0,
+    kWifiWithCellularNotConnected = 1,
+    kMaxValue = kWifiWithCellularNotConnected,
   };
 
   // HotspotCapabilitiesProvider::Observer:
@@ -179,6 +192,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   void LogUsageDuration();
   void LogMaxClientCount();
   void LogIsDeviceManaged();
+  void LogUpstreamStatus();
 
   // Retrieves the latest hotspot allow status and converts to
   // HotspotMetricsAllowStatus enum. Return absl::nullopt if it is disallowed
@@ -187,6 +201,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
 
   HotspotCapabilitiesProvider* hotspot_capabilities_provider_ = nullptr;
   HotspotStateHandler* hotspot_state_handler_ = nullptr;
+  NetworkStateHandler* network_state_handler_ = nullptr;
 
   // A timer to wait for user connecting to their upstream cellular network
   // after login.

@@ -22,6 +22,14 @@
 
 namespace ash {
 
+namespace {
+
+const char kCellularServicePath[] = "/service/cellular0";
+const char kCellularServiceGuid[] = "cellular_guid0";
+const char kCellularServiceName[] = "cellular_name0";
+
+}  // namespace
+
 class HotspotMetricsHelperTest : public testing::Test {
  public:
   HotspotMetricsHelperTest() = default;
@@ -47,9 +55,10 @@ class HotspotMetricsHelperTest : public testing::Test {
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
     hotspot_metrics_helper_ = std::make_unique<HotspotMetricsHelper>();
-    hotspot_metrics_helper_->Init(hotspot_capabilities_provider_.get(),
-                                  hotspot_state_handler_.get(),
-                                  hotspot_controller_.get());
+    hotspot_metrics_helper_->Init(
+        hotspot_capabilities_provider_.get(), hotspot_state_handler_.get(),
+        hotspot_controller_.get(),
+        network_state_test_helper_.network_state_handler());
 
     base::RunLoop().RunUntilIdle();
   }
@@ -270,6 +279,36 @@ TEST_F(HotspotMetricsHelperTest, HotspotIsDeviceManagedHistogram) {
   base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotIsDeviceManaged, true,
+      /*expected_count=*/1);
+}
+
+TEST_F(HotspotMetricsHelperTest, HotspotEnabledUpstreamStatusHistogram) {
+  ShillServiceClient::TestInterface* service_test =
+      network_state_test_helper_.service_test();
+  service_test->AddService(kCellularServicePath, kCellularServiceGuid,
+                           kCellularServiceName, shill::kTypeCellular,
+                           shill::kStateOnline, /*visible=*/true);
+  PrepareEnableHotspotForTesting();
+  hotspot_controller_->EnableHotspot(base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotUpstreamStatusWhenEnabled,
+      HotspotMetricsHelper::HotspotMetricsUpstreamStatus::
+          kWifiWithCellularConnected,
+      /*expected_count=*/1);
+  hotspot_controller_->DisableHotspot(
+      base::DoNothing(), hotspot_config::mojom::DisableReason::kUserInitiated);
+  base::RunLoop().RunUntilIdle();
+
+  // Bring the cellular network down.
+  service_test->RemoveService(kCellularServicePath);
+  base::RunLoop().RunUntilIdle();
+  hotspot_controller_->EnableHotspot(base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotUpstreamStatusWhenEnabled,
+      HotspotMetricsHelper::HotspotMetricsUpstreamStatus::
+          kWifiWithCellularNotConnected,
       /*expected_count=*/1);
 }
 

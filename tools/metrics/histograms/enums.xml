@@ -50228,6 +50228,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Version 3"/>
 </enum>
 
+<enum name="HotspotUpstreamStatus">
+  <int value="0" label="kWifiWithCellularConnected"/>
+  <int value="1" label="kWifiWithCellularNotConnected"/>
+</enum>
+
 <enum name="HotwordAvailability">
   <int value="0" label="Unavailable -- reason may be unknown"/>
   <int value="1" label="Available"/>

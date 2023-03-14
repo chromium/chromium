@@ -69,6 +69,10 @@ const char HotspotMetricsHelper::kHotspotEnableLatency[] =
     "Network.Ash.Hotspot.Upstream.Cellular.EnableHotspot.Latency";
 
 // static
+const char HotspotMetricsHelper::kHotspotUpstreamStatusWhenEnabled[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.Enabled.UpstreamStatus";
+
+// static
 void HotspotMetricsHelper::RecordSetTetheringEnabledResult(
     bool enabled,
     hotspot_config::mojom::HotspotControlResult result) {
@@ -193,11 +197,14 @@ HotspotMetricsHelper::~HotspotMetricsHelper() {
 void HotspotMetricsHelper::Init(
     HotspotCapabilitiesProvider* hotspot_capabilities_provider,
     HotspotStateHandler* hotspot_state_handler,
-    HotspotController* hotspot_controller) {
+    HotspotController* hotspot_controller,
+    NetworkStateHandler* network_state_handler) {
   hotspot_state_handler_ = hotspot_state_handler;
   hotspot_state_handler_->AddObserver(this);
   hotspot_capabilities_provider_ = hotspot_capabilities_provider;
   hotspot_capabilities_provider_->AddObserver(this);
+  network_state_handler_ = network_state_handler;
+
   if (LoginState::IsInitialized()) {
     LoginState::Get()->AddObserver(this);
     LoggedInStateChanged();
@@ -312,8 +319,24 @@ void HotspotMetricsHelper::LogIsDeviceManaged() {
   base::UmaHistogramBoolean(kHotspotIsDeviceManaged, is_enterprise_managed_);
 }
 
+void HotspotMetricsHelper::LogUpstreamStatus() {
+  const NetworkState* connected_cellular_network =
+      network_state_handler_->ConnectedNetworkByType(
+          NetworkTypePattern::Cellular());
+  if (!connected_cellular_network) {
+    base::UmaHistogramEnumeration(
+        kHotspotUpstreamStatusWhenEnabled,
+        HotspotMetricsUpstreamStatus::kWifiWithCellularNotConnected);
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      kHotspotUpstreamStatusWhenEnabled,
+      HotspotMetricsUpstreamStatus::kWifiWithCellularConnected);
+}
+
 void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
   is_hotspot_active_ = true;
+  LogUpstreamStatus();
   LogUsageConfig();
   LogIsDeviceManaged();
 

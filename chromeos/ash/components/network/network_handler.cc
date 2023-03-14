@@ -151,9 +151,9 @@ void NetworkHandler::Init() {
     hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
-    hotspot_metrics_helper_->Init(hotspot_capabilities_provider_.get(),
-                                  hotspot_state_handler_.get(),
-                                  hotspot_controller_.get());
+    hotspot_metrics_helper_->Init(
+        hotspot_capabilities_provider_.get(), hotspot_state_handler_.get(),
+        hotspot_controller_.get(), network_state_handler_.get());
   }
   managed_cellular_pref_handler_->Init(network_state_handler_.get());
   esim_policy_login_metrics_logger_->Init(
