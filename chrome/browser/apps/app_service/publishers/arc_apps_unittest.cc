@@ -11,6 +11,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_file_system_instance.h"
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -32,6 +34,7 @@
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "content/public/test/browser_task_environment.h"
@@ -520,4 +523,25 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
             kTestIntentText);
   ASSERT_EQ(url_request->extras.value()["android.intent.extra.SUBJECT"],
             kTestIntentTitle);
+}
+
+TEST_F(ArcAppsPublisherTest, OnInstallationStarted_RegistersPromiseApp) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+
+  std::string package_name = "com.example.this";
+  apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, package_name);
+
+  // Verify that the promise app is not yet registered.
+  const apps::PromiseApp* promise_app_before =
+      app_service_proxy()->PromiseAppRegistryCache().GetPromiseApp(package_id);
+  EXPECT_FALSE(promise_app_before);
+
+  arc_test()->app_instance()->SendInstallationStarted(package_name);
+
+  // Verify that the promise app is now registered.
+  const apps::PromiseApp* promise_app_after =
+      app_service_proxy()->PromiseAppRegistryCache().GetPromiseApp(package_id);
+  EXPECT_TRUE(promise_app_after);
 }
