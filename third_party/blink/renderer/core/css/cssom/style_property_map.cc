@@ -365,6 +365,17 @@ void StylePropertyMap::append(
 
   CSSValueList* current_value = nullptr;
   if (const CSSValue* css_value = GetProperty(property_id)) {
+    if (!css_value->IsValueList()) {
+      // The standard doesn't seem to cover this explicitly
+      // (https://github.com/w3c/css-houdini-drafts/issues/823),
+      // but the only really reasonable solution seems to be
+      // to throw a TypeError.
+      //
+      // This covers e.g. system-wide CSS keywords, like inherit.
+      exception_state.ThrowTypeError(
+          "Cannot append to something that is not a list");
+      return;
+    }
     current_value = To<CSSValueList>(css_value)->Copy();
   } else {
     current_value = CssValueListForPropertyID(property_id);
