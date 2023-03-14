@@ -34,6 +34,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -61,10 +62,11 @@ enum class AboutThisSiteSeconaryIcon {
   kNewTabIcon = 0,
   kArrowIcon = 1,
   kSidePanelIcon = 2,
+  kNoIcon = 3,
 };
 
 // Return a secondary icon for the AboutThisSite row based on finch parameters.
-ui::ImageModel GetAboutThisSiteSecondaryIcon() {
+absl::optional<ui::ImageModel> GetAboutThisSiteSecondaryIcon() {
   AboutThisSiteSeconaryIcon icon_id = static_cast<AboutThisSiteSeconaryIcon>(
       page_info::kAboutThisSiteSecondaryIconId.Get());
   switch (icon_id) {
@@ -74,6 +76,8 @@ ui::ImageModel GetAboutThisSiteSecondaryIcon() {
       return PageInfoViewFactory::GetOpenSubpageIcon();
     case AboutThisSiteSeconaryIcon::kSidePanelIcon:
       return PageInfoViewFactory::GetSidePanelIcon();
+    case AboutThisSiteSeconaryIcon::kNoIcon:
+      return absl::nullopt;
   }
   return PageInfoViewFactory::GetLaunchIcon();
 }
