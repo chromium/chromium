@@ -173,9 +173,6 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
     } else {
       last_hit_test_data_ = *hit_test_region_list;
     }
-
-    UMA_HISTOGRAM_BOOLEAN("Event.VizHitTest.HitTestDataIsEqualAccuracy",
-                          !hit_test_region_list);
   } else {
     last_hit_test_data_ = *hit_test_region_list;
   }
