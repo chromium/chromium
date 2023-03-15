@@ -981,7 +981,9 @@ const char kTabGridRecencySortDescription[] =
 const char kTabInactivityThresholdName[] = "Change Tab inactivity threshold";
 const char kTabInactivityThresholdDescription[] =
     "When enabled, the tabs older than the threshold are considered inactive "
-    "and set aside in the Inactive Tabs section of the TabGrid.";
+    "and set aside in the Inactive Tabs section of the TabGrid."
+    "IMPORTANT: If you ever used the in-app settings for Inactive Tabs, this "
+    "flag is never read again.";
 
 const char kUseLoadSimulatedRequestForOfflinePageName[] =
     "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
