@@ -143,14 +143,6 @@ enum class SetReadyCallbackStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class OnDismissedStatus {
-  kSuccess = 0,
-  kGetDismissalReasonFailed = 1,
-  kMaxValue = kGetDismissalReasonFailed,
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class OnFailedStatus {
   kSuccess = 0,
   kGetErrorCodeFailed = 1,
@@ -172,7 +164,6 @@ void LogGetSettingStatusStartup(GetSettingStatus status);
 void LogHandleEventStatus(HandleEventStatus status);
 void LogActivationStatus(ActivationStatus status);
 void LogSetReadyCallbackStatus(SetReadyCallbackStatus status);
-void LogOnDismissedStatus(OnDismissedStatus status);
 void LogOnFailedStatus(OnFailedStatus status);
 
 }  // namespace notifications_uma

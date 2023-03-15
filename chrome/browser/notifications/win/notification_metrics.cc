@@ -70,11 +70,6 @@ void LogSetReadyCallbackStatus(SetReadyCallbackStatus status) {
                                 status);
 }
 
-void LogOnDismissedStatus(OnDismissedStatus status) {
-  base::UmaHistogramEnumeration("Notifications.Windows.OnDismissedStatus",
-                                status);
-}
-
 void LogOnFailedStatus(OnFailedStatus status) {
   base::UmaHistogramEnumeration("Notifications.Windows.OnFailedStatus", status);
 }
