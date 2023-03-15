@@ -16,6 +16,7 @@
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/commands/thumb_strip_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tabs/features.h"
@@ -145,27 +146,23 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // the transition. Is used to avoid cancelling again during enabling/disabling
 // of the thumbstrip.
 @property(nonatomic, assign) BOOL transitionLayoutIsFinishing;
-
 // Tap gesture recognizer to dismiss the thumb strip.
 @property(nonatomic, strong)
     UITapGestureRecognizer* thumbStripDismissRecognizer;
-
 // Swipe up gesture recognizer to dismiss the thumb strip.
 @property(nonatomic, strong)
     UISwipeGestureRecognizer* thumbStripSwipeUpDismissRecognizer;
-
 // YES while batch updates and the batch update completion are being performed.
 @property(nonatomic) BOOL updating;
-
 // YES while the grid has the suggested actions section.
 @property(nonatomic) BOOL showingSuggestedActions;
-
 // YES if the dragged tab moved to a new index.
 @property(nonatomic, assign) BOOL dragEndAtNewIndex;
-
 // Whether there are inactive tabs to consider. If there are and the grid is in
 // TabGridModeNormal, a button is displayed at the top, advertizing them.
 @property(nonatomic, assign) NSUInteger inactiveTabsCount;
+// Tracks if a drop action initiated in this grid is in progress.
+@property(nonatomic) BOOL localDragActionInProgress;
 
 @end
 
@@ -180,6 +177,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     _selectedSharableEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
     _showsSelectionUpdates = YES;
     _dropAnimationInProgress = NO;
+    _localDragActionInProgress = NO;
     _notSelectedTabCellOpacity = 1.0;
     _mode = TabGridModeNormal;
 
@@ -816,6 +814,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
   self.dragEndAtNewIndex = NO;
+  self.localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs,
                                 DragDropTabs::kDragBegin);
 
@@ -824,6 +823,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
      dragSessionDidEnd:(id<UIDragSession>)session {
+  self.localDragActionInProgress = NO;
+
   DragDropTabs dragEvent = self.dragEndAtNewIndex
                                ? DragDropTabs::kDragEndAtNewIndex
                                : DragDropTabs::kDragEndAtSameIndex;
@@ -923,6 +924,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     canHandleDropSession:(id<UIDropSession>)session {
   if (self.dragDropHandler == nil) {
     // Don't support dropping items if the drag&drop handler is not set.
+    return NO;
+  }
+  if (IsTabGridSortedByRecency() && self.localDragActionInProgress) {
+    // Don't support dropping local items when sorting by recency.
     return NO;
   }
   // Prevent dropping tabs into grid while displaying search results.
