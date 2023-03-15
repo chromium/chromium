@@ -814,27 +814,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ProfilePicker.NewProfileCreateShortcut" enum="BooleanCreated"
-    expires_after="M90">
-  <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Whether the user picked to create a desktop shortcut for the new profile
-    created through the local profile creation in the profile picker. Recorded
-    on platforms where desktop shortcut is enabled.
-  </summary>
-</histogram>
-
-<histogram name="ProfilePicker.NewProfileTheme" enum="ChromeColorsInfo"
-    expires_after="2021-10-25">
-  <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the theme color of a new profile just created through the profile
-    picker local profile creation.
-  </summary>
-</histogram>
-
 <histogram name="ProfilePicker.Shown" enum="ProfilePickerEntryPoint"
     expires_after="2023-08-08">
   <owner>msalama@chromium.org</owner>
