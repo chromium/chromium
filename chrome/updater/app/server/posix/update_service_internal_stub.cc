@@ -29,7 +29,7 @@ UpdateServiceInternalStub::UpdateServiceInternalStub(
           base::BindRepeating(
               [](mojom::UpdateServiceInternal* interface,
                  std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {
-                return IsConnectionTrusted(*info) ? interface : nullptr;
+                return interface;
               },
               this)),
       impl_(impl),
