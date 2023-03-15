@@ -177,16 +177,10 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
 
 std::unique_ptr<views::View> CreateNoteLabel(
     const password_manager::PasswordForm& form) {
+  std::u16string note = form.GetNoteWithEmptyUniqueDisplayName();
   std::u16string note_to_display =
-      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EMPTY_NOTE);
-  absl::optional<std::u16string> note =
-      form.GetNoteWithEmptyUniqueDisplayName();
-  // TODO(crbug.com/1408790): Consider adding another API to the password form
-  // that returns the value directly instead of having to check whether a value
-  // is set or not in all UI surfaces.
-  if (note.has_value() && !note.value().empty()) {
-    note_to_display = note.value();
-  }
+      note.empty() ? l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EMPTY_NOTE)
+                   : note;
 
   auto note_label = std::make_unique<views::Label>(
       std::move(note_to_display), views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -259,8 +253,7 @@ std::unique_ptr<views::View> CreateEditNoteRow(
   row->AddChildView(CreateWrappedView(CreateIconView(kNotesIcon)));
 
   *textarea = row->AddChildView(std::make_unique<views::Textarea>());
-  (*textarea)->SetText(
-      form.GetNoteWithEmptyUniqueDisplayName().value_or(std::u16string()));
+  (*textarea)->SetText(form.GetNoteWithEmptyUniqueDisplayName());
   // TODO(crbug.com/1382017): use internationalized string.
   (*textarea)->SetAccessibleName(u"Password Note");
   int line_height = views::style::GetLineHeight(views::style::CONTEXT_TEXTFIELD,

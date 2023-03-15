@@ -463,9 +463,9 @@ struct PasswordForm {
   // Returns true when |password_value| or |new_password_value| are non-empty.
   bool HasNonEmptyPasswordValue() const;
 
-  // Returns the value of the note with an empty `unique_display_name`,
-  // otherwise returns an nullopt.
-  absl::optional<std::u16string> GetNoteWithEmptyUniqueDisplayName() const;
+  // Returns the value of the note with an empty `unique_display_name`, returns
+  // an empty string if none exists.
+  std::u16string GetNoteWithEmptyUniqueDisplayName() const;
 
   // Updates the note with an empty `unique_display_name`.
   void SetNoteWithEmptyUniqueDisplayName(const std::u16string& new_note_value);

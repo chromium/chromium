@@ -315,12 +315,10 @@ bool PasswordForm::HasNonEmptyPasswordValue() const {
   return !password_value.empty() || !new_password_value.empty();
 }
 
-absl::optional<std::u16string> PasswordForm::GetNoteWithEmptyUniqueDisplayName()
-    const {
+std::u16string PasswordForm::GetNoteWithEmptyUniqueDisplayName() const {
   const auto& note_itr = base::ranges::find_if(
       notes, &std::u16string::empty, &PasswordNote::unique_display_name);
-  return note_itr != notes.end() ? absl::make_optional(note_itr->value)
-                                 : absl::nullopt;
+  return note_itr != notes.end() ? note_itr->value : std::u16string();
 }
 
 void PasswordForm::SetNoteWithEmptyUniqueDisplayName(
