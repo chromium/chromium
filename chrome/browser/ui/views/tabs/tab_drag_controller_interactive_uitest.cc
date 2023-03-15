@@ -1096,14 +1096,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // Creates a browser with four tabs with third and fourth in a group.
 // Selecting and  dragging the second and third tabs towards left out
 // of the group will result in the tabs being ungrouped.
-// TODO(crbug.com/1342795): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DragUngroupedTabGroupedTabOutsideGroup DISABLED_DragUngroupedTabGroupedTabOutsideGroup
-#else
-#define MAYBE_DragUngroupedTabGroupedTabOutsideGroup DragUngroupedTabGroupedTabOutsideGroup
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DragUngroupedTabGroupedTabOutsideGroup) {
+                       DragUngroupedTabGroupedTabOutsideGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
