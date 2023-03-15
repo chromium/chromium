@@ -16,6 +16,15 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestChromeVoxSubpageBrowserProxy} from './test_chromevox_subpage_browser_proxy.js';
 
+/**
+ * Control types for pref-based settings.
+ * @enum {string}
+ */
+export const ControlType = {
+  DROPDOWN: 'dropdown',
+  TOGGLE: 'toggle',
+};
+
 suite('ChromeVoxSubpageTests', function() {
   /** @type {SettingsChromeVoxSubpageElement} */
   let page = null;
@@ -41,6 +50,55 @@ suite('ChromeVoxSubpageTests', function() {
     page.remove();
   });
 
+  const settingsControls = [
+    {
+      id: 'voiceDropdown',
+      prefKey: 'settings.a11y.chromevox.voice_name',
+      defaultValue: 'chromeos_system_voice',
+      secondaryValue: 'Chrome OS US English',
+      type: ControlType.DROPDOWN,
+    },
+    {
+      id: 'languageSwitchingToggle',
+      prefKey: 'settings.a11y.chromevox.language_switching',
+      defaultValue: false,
+      secondaryValue: true,
+      type: ControlType.TOGGLE,
+    },
+  ];
+
+  settingsControls.forEach(control => {
+    const {id, prefKey, defaultValue, secondaryValue, type} = control;
+
+    test(`ChromeVox ${type} ${id} syncs to Pref: ${prefKey}`, async () => {
+      // Make sure control exists.
+      const control = page.shadowRoot.querySelector(`#${id}`);
+      assertTrue(!!control);
+
+      // Make sure pref is set to the default value.
+      let pref = page.getPref(prefKey);
+      assertEquals(defaultValue, pref.value);
+
+      // Update control to secondary value.
+      switch (type) {
+        case ControlType.TOGGLE:
+          control.click();
+          break;
+        case ControlType.DROPDOWN:
+          await waitAfterNextRender(control);
+          const controlElement = control.shadowRoot.querySelector('select');
+          controlElement.value = secondaryValue;
+          controlElement.dispatchEvent(
+              new CustomEvent('change', {bubbles: true, composed: true}));
+          break;
+      }
+
+      // Make sure pref is set to secondary value.
+      pref = page.getPref(prefKey);
+      assertEquals(secondaryValue, pref.value);
+    });
+  });
+
   test('voices are ordered', async function() {
     // Make sure voices are ordered with the system default voice first, then
     // Google voices, then eSpeak, then local, then remote.
@@ -55,34 +113,5 @@ suite('ChromeVoxSubpageTests', function() {
       {name: 'bnx', value: 'bnx'},
     ];
     assertDeepEquals(expectedMenuOptions, voiceDropdown.menuOptions);
-  });
-
-  test('voice pref and dropdown synced', async function() {
-    // Make sure voice dropdown is system voice, matching default pref state.
-    const voiceDropdown = page.shadowRoot.querySelector('#voiceDropdown');
-    await waitAfterNextRender(voiceDropdown);
-    const voiceSelectElement = voiceDropdown.shadowRoot.querySelector('select');
-    assertEquals('chromeos_system_voice', voiceSelectElement.value);
-
-    // Change voice to Chrome OS US English, and verify pref is also changed.
-    voiceSelectElement.value = 'Chrome OS US English';
-    voiceSelectElement.dispatchEvent(new CustomEvent('change'));
-    flush();
-    const voicePref = page.getPref('settings.a11y.chromevox.voice_name');
-    assertEquals('Chrome OS US English', voicePref.value);
-  });
-
-  test('language switching pref and toggle synced', function() {
-    // Make sure language switching toggle is off, matching default pref state.
-    const languageSwitchingToggle =
-        page.shadowRoot.querySelector('#languageSwitchingToggle');
-    assertFalse(languageSwitchingToggle.checked);
-
-    // Toggle language switching on, and verify language_switching pref is
-    // enabled.
-    languageSwitchingToggle.click();
-    const languageSwitchingPref =
-        page.getPref('settings.a11y.chromevox.language_switching');
-    assertTrue(languageSwitchingPref.value);
   });
 });
