@@ -372,6 +372,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CONSISTENCY_PROMO_CHOOSE_ACCOUNT" desc="Presents the list of account on the device and invites the user to choose an account to sign-in.">
         Choose an Account
       </message>
+      <message name="IDS_IOS_CONSISTENCY_PROMO_SIGN_IN" desc="Button to sign in from the consistency menu when there is no Google account on the device.">
+        Sign In…
+      </message>
       <message name="IDS_IOS_CONSISTENCY_PROMO_SKIP" desc="Dismisses the sign-in promo on the web.">
         Skip
       </message>
