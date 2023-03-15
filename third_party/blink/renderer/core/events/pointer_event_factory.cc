@@ -197,6 +197,10 @@ HeapVector<Member<PointerEvent>> PointerEventFactory::CreateEventSequence(
 
       last_global_position = event.PositionInScreen();
 
+      if (pointer_event_init->hasDeviceId()) {
+        new_event_init->setDeviceId(pointer_event_init->deviceId());
+      }
+
       PointerEvent* pointer_event =
           PointerEvent::Create(type, new_event_init, event.TimeStamp());
       // Set the trusted flag for these events at the creation time as oppose to
@@ -352,6 +356,7 @@ PointerEvent* PointerEventFactory::Create(
 
   SetLastPosition(pointer_event_init->pointerId(),
                   web_pointer_event.PositionInScreen(), event_type);
+
   return PointerEvent::Create(type, pointer_event_init,
                               web_pointer_event.TimeStamp());
 }
@@ -388,7 +393,8 @@ gfx::PointF PointerEventFactory::GetLastPointerPosition(
 
 PointerEvent* PointerEventFactory::CreatePointerCancelEvent(
     const int pointer_id,
-    base::TimeTicks platfrom_time_stamp) {
+    base::TimeTicks platfrom_time_stamp,
+    const int32_t device_id) {
   DCHECK(pointer_id_mapping_.Contains(pointer_id));
   pointer_id_mapping_.Set(
       pointer_id,
@@ -403,6 +409,8 @@ PointerEvent* PointerEventFactory::CreatePointerCancelEvent(
   pointer_event_init->setIsPrimary(IsPrimary(pointer_id));
 
   SetEventSpecificFields(pointer_event_init, event_type_names::kPointercancel);
+
+  pointer_event_init->setDeviceId(device_id);
 
   return PointerEvent::Create(event_type_names::kPointercancel,
                               pointer_event_init, platfrom_time_stamp);
@@ -432,6 +440,7 @@ PointerEvent* PointerEventFactory::CreatePointerEventFrom(
       pointer_event->tangentialPressure());
   pointer_event_init->setTwist(pointer_event->twist());
   pointer_event_init->setView(pointer_event->view());
+  pointer_event_init->setDeviceId(pointer_event->deviceId());
 
   SetEventSpecificFields(pointer_event_init, type);
 

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<div id="console"></div>
+
+<!-- This test verifies that if the kPointerEventDeviceId flag is enabled,
+     pointerEvent.deviceId can be set via PointerEventInit. If not, it is
+     undefined. -->
+<script>
+    function CheckDeviceId(event) {
+        if (internals.runtimeFlags.pointerEventDeviceIdEnabled)
+          assert_equals(event.deviceId, 1001, "deviceId is populated");
+        else
+          assert_equals(event.deviceId, undefined, "deviceId is undefined");
+    }
+
+    promise_test(async () => {
+        if (!window.internals)
+          return;
+        var downEvent = new PointerEvent("pointerdown",
+          {pointerId: 1,
+            bubbles: true,
+            cancelable: true,
+            pointerType: "pen",
+            width: 100,
+            height: 100,
+            isPrimary: true,
+            deviceId: 1001
+          });
+        CheckDeviceId(downEvent);
+        var moveEvent = new PointerEvent("pointermove",
+          {pointerId: 1,
+            bubbles: true,
+            cancelable: true,
+            pointerType: "pen",
+            width: 100,
+            height: 100,
+            isPrimary: true,
+            deviceId: 1001
+          });
+        CheckDeviceId(moveEvent);
+        var upEvent = new PointerEvent("pointeup",
+          {pointerId: 1,
+            bubbles: true,
+            cancelable: true,
+            pointerType: "pen",
+            width: 100,
+            height: 100,
+            isPrimary: true,
+            deviceId: 1001
+          });
+        CheckDeviceId(upEvent);
+    }, 'PointerEvent.deviceId via PointerEventInit');
+</script>

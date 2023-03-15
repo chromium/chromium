@@ -109,6 +109,9 @@ class WebPointerProperties {
   // TODO(crbug.com/982379): Figure out how to avoid using this boolean.
   bool is_raw_movement_event = false;
 
+  // Contains unique device id for pen on supported devices.
+  int32_t device_id = -1;
+
  protected:
   // Widget coordinate, which is relative to the bound of current RenderWidget
   // (e.g. a plugin or OOPIF inside a RenderView). Similar to viewport

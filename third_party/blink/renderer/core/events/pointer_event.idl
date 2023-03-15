@@ -20,6 +20,7 @@
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute long      twist;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute DOMString pointerType;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute boolean   isPrimary;
+    [MeasureAs=PointerEventAttributeCount, RuntimeEnabled=PointerEventDeviceId]   readonly    attribute long deviceId;
 
     // https://w3c.github.io/pointerevents/extension.html#extensions-to-the-pointerevent-interface
     sequence<PointerEvent> getCoalescedEvents();

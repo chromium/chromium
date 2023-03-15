@@ -318,7 +318,8 @@ void PointerEventManager::HandlePointerInterruption(
       WebPointerProperties::PointerType::kMouse) {
     canceled_pointer_events.push_back(
         pointer_event_factory_.CreatePointerCancelEvent(
-            PointerEventFactory::kMouseId, web_pointer_event.TimeStamp()));
+            PointerEventFactory::kMouseId, web_pointer_event.TimeStamp(),
+            web_pointer_event.device_id));
   } else {
     // TODO(nzolghadr): Maybe canceling all the non-hovering pointers is not
     // the best strategy here. See the github issue for more details:
@@ -332,7 +333,8 @@ void PointerEventManager::HandlePointerInterruption(
       for (PointerId pointer_id : non_hovering_pointer_ids) {
         canceled_pointer_events.push_back(
             pointer_event_factory_.CreatePointerCancelEvent(
-                pointer_id, web_pointer_event.TimeStamp()));
+                pointer_id, web_pointer_event.TimeStamp(),
+                web_pointer_event.device_id));
       }
 
       non_hovering_pointers_canceled_ = true;
@@ -691,7 +693,8 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
       SendTouchPointerEvent(
           pointer_event_target.target_element,
           pointer_event_factory_.CreatePointerCancelEvent(
-              core_pointer_event->pointerId(), event.TimeStamp()),
+              core_pointer_event->pointerId(), event.TimeStamp(),
+              core_pointer_event->deviceId()),
           event.hovering);
     }
 

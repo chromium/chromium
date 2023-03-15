@@ -103,6 +103,8 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
 
   Document* GetDocument() const;
 
+  int32_t deviceId() const { return device_id_; }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -127,6 +129,8 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
   HeapVector<Member<PointerEvent>> coalesced_events_;
 
   HeapVector<Member<PointerEvent>> predicted_events_;
+
+  int32_t device_id_;
 };
 
 template <>

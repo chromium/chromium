@@ -1863,6 +1863,15 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "disable-device-id-pointer-event",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["fast/events/pointerevents/device-id"],
+    "args": [
+      "--disable-blink-features=PointerEventDeviceId"
+    ],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "webrtc-legacy-stats-trial-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

@@ -129,7 +129,8 @@ PointerEvent* PointerEventFactoryTest::CreateAndCheckPointerCancel(
     int unique_id,
     bool is_primary) {
   PointerEvent* pointer_event = pointer_event_factory_.CreatePointerCancelEvent(
-      unique_id, WebInputEvent::GetStaticTimeStampForTests());
+      unique_id, WebInputEvent::GetStaticTimeStampForTests(),
+      /* deviceId */ -1);
   EXPECT_EQ("pointercancel", pointer_event->type());
   EXPECT_EQ(unique_id, pointer_event->pointerId());
   EXPECT_EQ(is_primary, pointer_event->isPrimary());

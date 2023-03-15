@@ -36,7 +36,7 @@ blink::mojom::PointerDataPtr PointerDataFromPointerProperties(
       pointer.tangential_pressure, pointer.twist, pointer.button,
       pointer.pointer_type, pointer.movement_x, pointer.movement_y,
       pointer.is_raw_movement_event, pointer.PositionInWidget(),
-      pointer.PositionInScreen(), std::move(mouse_data));
+      pointer.PositionInScreen(), std::move(mouse_data), pointer.device_id);
 }
 
 void PointerPropertiesFromPointerData(
@@ -54,6 +54,7 @@ void PointerPropertiesFromPointerData(
   pointer_properties->movement_y = pointer_data->movement_y;
   pointer_properties->is_raw_movement_event =
       pointer_data->is_raw_movement_event;
+  pointer_properties->device_id = pointer_data->device_id;
 }
 
 void TouchPointPropertiesFromPointerData(

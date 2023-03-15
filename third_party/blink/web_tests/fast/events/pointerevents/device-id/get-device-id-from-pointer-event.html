@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<style>
+  div {
+    user-select: none; // Prevents text selection on drag.
+  }
+</style>
+<div id="logger" draggable="false"></div>
+<div id="console"></div>
+<!-- This test verifies that if the PointerEventDeviceId flag is enabled,
+     pointerEvent.deviceId is null. If not, it is undefined. -->
+<script>
+    function sendPenDragAt(x, y) {
+        return new Promise(function(resolve, reject) {
+            if (window.chrome && chrome.gpuBenchmarking) {
+              var pointerActions =
+                  [{source: "pen",
+                    actions: [
+                      { name: "pointerDown", x: x, y: y },
+                      { name: "pointerMove", x: x + 3, y: y + 3},
+                      { name: "pointerUp" },
+                  ]}];
+              chrome.gpuBenchmarking.pointerActionSequence(pointerActions, resolve);
+            }
+            else {
+                reject();
+            }
+        });
+    }
+
+    function CheckDeviceId(event) {
+        eventFired++;
+        if (self.internals.runtimeFlags.pointerEventDeviceIdEnabled)
+          assert_equals(event.deviceId, -1, "deviceId is -1");
+        else
+          assert_equals(event.deviceId, undefined, "deviceId is undefined")
+    }
+
+    window.addEventListener("pointerdown", CheckDeviceId, false);
+    window.addEventListener("pointermove", CheckDeviceId, false);
+
+    promise_test(async () => {
+        if (!window.internals)
+          return;
+        eventFired = 0;
+        await sendPenDragAt(100, 100);
+        assert_true(eventFired == 2);
+    }, 'PointerEvent.deviceId');
+</script>

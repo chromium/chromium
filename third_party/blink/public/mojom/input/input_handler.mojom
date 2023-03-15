@@ -63,6 +63,7 @@ struct PointerData {
   gfx.mojom.PointF widget_position;
   gfx.mojom.PointF screen_position;
   MouseData? mouse_data;
+  int32 device_id;
 };
 
 struct WheelData {

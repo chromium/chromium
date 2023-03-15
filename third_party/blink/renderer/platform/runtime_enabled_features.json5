@@ -2564,6 +2564,10 @@
       origin_trial_feature_name: "PNaCl",
     },
     {
+      name: "PointerEventDeviceId",
+      status: "test",
+    },
+    {
       name: "PointerLockOptions",
       origin_trial_feature_name: "PointerLockOptions",
       public: true,

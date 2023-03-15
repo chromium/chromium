@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POINTER_EVENT_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_POINTER_EVENT_FACTORY_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -42,7 +43,8 @@ class CORE_EXPORT PointerEventFactory {
                        LocalDOMWindow* view);
 
   PointerEvent* CreatePointerCancelEvent(const PointerId pointer_id,
-                                         base::TimeTicks platfrom_time_stamp);
+                                         base::TimeTicks platfrom_time_stamp,
+                                         const int32_t device_id);
 
   // For creating raw update events in chorded button case.
   PointerEvent* CreatePointerRawUpdateEvent(PointerEvent*);
