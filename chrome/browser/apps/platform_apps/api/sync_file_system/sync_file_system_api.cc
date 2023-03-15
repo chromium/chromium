@@ -404,7 +404,7 @@ SyncFileSystemSetConflictResolutionPolicyFunction::Run() {
 ExtensionFunction::ResponseAction
 SyncFileSystemGetConflictResolutionPolicyFunction::Run() {
   return RespondNow(WithArguments(sync_file_system::ToString(
-      sync_file_system::CONFLICT_RESOLUTION_POLICY_LAST_WRITE_WIN)));
+      sync_file_system::ConflictResolutionPolicy::kLastWriteWin)));
 }
 
 ExtensionFunction::ResponseAction
