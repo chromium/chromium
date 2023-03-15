@@ -259,6 +259,10 @@ ReadingListEntry* ReadingListModelImpl::SyncMergeEntry(
   ReadingListEntry* existing_entry = GetMutableEntryFromURL(url);
   DCHECK(existing_entry);
 
+  // TODO(crbug.com/1424750): ReadingList(Will|Did)MoveEntry() in this context
+  // is quite meaningless and the observer API should merge it with
+  // ReadingList(Will|Did)UpdateEntry().
+
   for (auto& observer : observers_)
     observer.ReadingListWillMoveEntry(this, url);
 

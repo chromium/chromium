@@ -526,6 +526,26 @@ void DualReadingListModel::ReadingListDidRemoveEntry(
   NotifyObserversWithDidRemoveEntry(url);
 }
 
+void DualReadingListModel::ReadingListWillMoveEntry(
+    const ReadingListModel* model,
+    const GURL& url) {
+  if (!suppress_observer_notifications_) {
+    // Only expected for changes received via sync.
+    DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
+    NotifyObserversWithWillMoveEntry(url);
+  }
+}
+
+void DualReadingListModel::ReadingListDidMoveEntry(
+    const ReadingListModel* model,
+    const GURL& url) {
+  if (!suppress_observer_notifications_) {
+    // Only expected for changes received via sync.
+    DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
+    NotifyObserversWithDidMoveEntry(url);
+  }
+}
+
 void DualReadingListModel::ReadingListWillAddEntry(
     const ReadingListModel* model,
     const ReadingListEntry& entry) {
@@ -563,6 +583,26 @@ void DualReadingListModel::ReadingListDidAddEntry(
 
   for (auto& observer : observers_) {
     observer.ReadingListDidAddEntry(this, url, source);
+  }
+}
+
+void DualReadingListModel::ReadingListWillUpdateEntry(
+    const ReadingListModel* model,
+    const GURL& url) {
+  if (!suppress_observer_notifications_) {
+    // TODO(crbug.com/1424750): This should be reached via sync after merging
+    // ReadingList(Will|Did)MoveEntry() with ReadingList(Will|Did)UpdateEntry().
+    NOTREACHED();
+  }
+}
+
+void DualReadingListModel::ReadingListDidUpdateEntry(
+    const ReadingListModel* model,
+    const GURL& url) {
+  if (!suppress_observer_notifications_) {
+    // TODO(crbug.com/1424750): This should be reached via sync after merging
+    // ReadingList(Will|Did)MoveEntry() with ReadingList(Will|Did)UpdateEntry().
+    NOTREACHED();
   }
 }
 

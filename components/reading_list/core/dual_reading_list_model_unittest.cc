@@ -974,6 +974,71 @@ TEST_F(DualReadingListModelTest, AddLocalExistingEntryFromSync) {
             StorageStateForTesting::kExistsInBothModels);
 }
 
+TEST_F(DualReadingListModelTest, SyncMergeEntryWhenSyncEnabled) {
+  ASSERT_TRUE(
+      ResetStorageAndMimicSyncEnabled(/*initial_syncable_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())
+              .SetTitle("current_title")
+              .SetRead(clock_.Now() + base::Seconds(1))}));
+
+  scoped_refptr<ReadingListEntry> sync_entry =
+      TestEntryBuilder(kUrl, clock_.Now())
+          .SetTitle("title_comes_from_sync", clock_.Now() + base::Seconds(1))
+          .Build();
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = local_or_syncable_model_ptr_->BeginBatchUpdates();
+  scoped_refptr<const ReadingListEntry> merged_entry =
+      local_or_syncable_model_ptr_->SyncMergeEntry(sync_entry);
+
+  EXPECT_THAT(merged_entry, MatchesEntry(kUrl, "title_comes_from_sync"));
+  EXPECT_TRUE(merged_entry->IsRead());
+
+  scoped_refptr<const ReadingListEntry> entry =
+      dual_model_->GetEntryByURL(kUrl);
+
+  EXPECT_THAT(entry, MatchesEntry(kUrl, "title_comes_from_sync"));
+  EXPECT_TRUE(entry->IsRead());
+}
+
+TEST_F(DualReadingListModelTest, SyncMergeEntryWhenSignedInSyncDisabled) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())
+              .SetTitle("current_title")
+              .SetRead(clock_.Now() + base::Seconds(1))}));
+
+  scoped_refptr<ReadingListEntry> sync_entry =
+      TestEntryBuilder(kUrl, clock_.Now())
+          .SetTitle("title_comes_from_sync", clock_.Now() + base::Seconds(1))
+          .Build();
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidMoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = account_model_ptr_->BeginBatchUpdates();
+  scoped_refptr<const ReadingListEntry> merged_entry =
+      account_model_ptr_->SyncMergeEntry(sync_entry);
+
+  EXPECT_THAT(merged_entry, MatchesEntry(kUrl, "title_comes_from_sync"));
+  EXPECT_TRUE(merged_entry->IsRead());
+
+  scoped_refptr<const ReadingListEntry> entry =
+      dual_model_->GetEntryByURL(kUrl);
+
+  EXPECT_THAT(entry, MatchesEntry(kUrl, "title_comes_from_sync"));
+  EXPECT_TRUE(entry->IsRead());
+}
+
 TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForNonExistingEntry) {
   ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
 
