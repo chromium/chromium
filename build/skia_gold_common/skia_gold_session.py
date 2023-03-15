@@ -106,7 +106,6 @@ class SkiaGoldSession():
                     output_manager: Any,
                     inexact_matching_args: Optional[List[str]] = None,
                     use_luci: bool = True,
-                    disable_auth: bool = False,
                     service_account: Optional[str] = None,
                     optional_keys: Optional[Dict[str, str]] = None,
                     force_dryrun: bool = False) -> StepRetVal:
@@ -128,8 +127,6 @@ class SkiaGoldSession():
       use_luci: If true, authentication will use the service account provided by
           the LUCI context. If false, will attempt to use whatever is set up in
           gsutil, which is only supported for local runs.
-      disable_auth: If true, goldctl will be explicitly told not to try to
-          authenticate instead of using LUCI or gsutil.
       service_account: If set, uses the provided service account instead of
           LUCI_CONTEXT or whatever is set in gsutil.
       optional_keys: A dict containing optional key/value pairs to pass to Gold
@@ -145,7 +142,6 @@ class SkiaGoldSession():
       |error| is an error message describing the status if not successful.
     """
     auth_rc, auth_stdout = self.Authenticate(use_luci=use_luci,
-                                             disable_auth=disable_auth,
                                              service_account=service_account)
     if auth_rc:
       return self.StatusCodes.AUTH_FAILURE, auth_stdout
@@ -180,7 +176,6 @@ class SkiaGoldSession():
 
   def Authenticate(self,
                    use_luci: bool = True,
-                   disable_auth: bool = False,
                    service_account: Optional[str] = None) -> StepRetVal:
     """Authenticates with Skia Gold for this session.
 
@@ -188,8 +183,6 @@ class SkiaGoldSession():
       use_luci: If true, authentication will use the service account provided
           by the LUCI context. If false, will attempt to use whatever is set up
           in gsutil, which is only supported for local runs.
-      disable_auth: If true, goldctl will be explicitly told not to try to
-          authenticate instead of using LUCI or gsutil.
       service_account: If set, uses the provided service account instead of
           LUCI_CONTEXT or whatever is set in gsutil.
 
@@ -207,9 +200,7 @@ class SkiaGoldSession():
     assert not (use_luci and service_account)
 
     auth_cmd = [GOLDCTL_BINARY, 'auth', '--work-dir', self._working_dir]
-    if disable_auth:
-      auth_cmd.append('--no-auth')
-    elif use_luci:
+    if use_luci:
       auth_cmd.append('--luci')
     elif service_account:
       auth_cmd.extend(['--service-account', service_account])
