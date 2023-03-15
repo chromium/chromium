@@ -206,4 +206,13 @@ HRESULT GetAacAudioType(const AudioDecoderConfig decoder_config,
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
+// MFTIME defines units of 100 nanoseconds.
+MFTIME TimeDeltaToMfTime(base::TimeDelta time) {
+  return time.InNanoseconds() / 100;
+}
+
+base::TimeDelta MfTimeToTimeDelta(MFTIME mf_time) {
+  return base::Nanoseconds(mf_time * 100);
+}
+
 }  // namespace media

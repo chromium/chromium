@@ -16,6 +16,7 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/filters/win/media_foundation_utils.h"
 
 namespace media {
 

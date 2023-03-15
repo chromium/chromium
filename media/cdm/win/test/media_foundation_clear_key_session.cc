@@ -87,14 +87,14 @@ class MediaFoundationSimpleCdmPromise : public SimpleCdmPromise {
   ~MediaFoundationSimpleCdmPromise() override { DVLOG_FUNC(1); }
 
   void resolve() override {
-    DVLOG(1);
+    DVLOG_FUNC(1);
 
     *promise_state_ = PromiseState::kResolved;
     MarkPromiseSettled();
   }
 
   void reject(CdmPromise::Exception, uint32_t, const std::string&) override {
-    DVLOG(1);
+    DVLOG_FUNC(1);
 
     *promise_state_ = PromiseState::kRejected;
     MarkPromiseSettled();

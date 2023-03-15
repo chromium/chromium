@@ -25,14 +25,6 @@ namespace media {
 
 namespace {
 
-struct MediaFoundationSubsampleEntry {
-  MediaFoundationSubsampleEntry(SubsampleEntry entry)
-      : clear_bytes(entry.clear_bytes), cipher_bytes(entry.cypher_bytes) {}
-  MediaFoundationSubsampleEntry() = default;
-  DWORD clear_bytes = 0;
-  DWORD cipher_bytes = 0;
-};
-
 struct PendingInputBuffer {
   PendingInputBuffer(DemuxerStream::Status status,
                      scoped_refptr<media::DecoderBuffer> buffer);

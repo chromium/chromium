@@ -32,25 +32,6 @@ class MediaFoundationClearKeySession final
           IMFContentDecryptionModuleSession,
           Microsoft::WRL::FtmBase> {
  public:
-  struct SessionCallbacks {
-    SessionCallbacks();
-    SessionCallbacks(const SessionMessageCB& session_message_cb,
-                     const SessionClosedCB& session_closed_cb,
-                     const SessionKeysChangeCB& session_keys_change_cb);
-    SessionCallbacks(SessionCallbacks&&);
-
-    SessionCallbacks(const SessionCallbacks&) = delete;
-    SessionCallbacks& operator=(const SessionCallbacks&) = delete;
-
-    ~SessionCallbacks();
-
-    SessionCallbacks& operator=(SessionCallbacks&&);
-
-    SessionMessageCB message_cb;
-    SessionClosedCB closed_cb;
-    SessionKeysChangeCB keys_change_cb;
-  };
-
   MediaFoundationClearKeySession();
   MediaFoundationClearKeySession(const MediaFoundationClearKeySession&) =
       delete;

@@ -12,6 +12,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/filters/win/media_foundation_utils.h"
 #include "media/renderers/win/media_foundation_audio_stream.h"
 #include "media/renderers/win/media_foundation_source_wrapper.h"
 #include "media/renderers/win/media_foundation_video_stream.h"
@@ -109,11 +110,6 @@ HRESULT AddEncryptAttributes(const DecryptConfig& decrypt_config,
       mf_sample_entries_size));
 
   return S_OK;
-}
-
-// MFTIME defines units of 100 nanoseconds.
-MFTIME TimeDeltaToMfTime(base::TimeDelta time) {
-  return time.InNanoseconds() / 100;
 }
 
 PendingInputBuffer::PendingInputBuffer(DemuxerStream::Status status,
