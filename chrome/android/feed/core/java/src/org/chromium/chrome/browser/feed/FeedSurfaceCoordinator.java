@@ -133,7 +133,7 @@ public class FeedSurfaceCoordinator
     private @Nullable PropertyModelChangeProcessor<PropertyModel, SectionHeaderView, PropertyKey>
             mStickySectionHeaderModelChangeProcessor;
     // Feed RecyclerView/xSurface fields.
-    private @Nullable NtpListContentManager mContentManager;
+    private @Nullable FeedListContentManager mContentManager;
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable SurfaceScope mSurfaceScope;
     private @Nullable FeedSurfaceScopeDependencyProvider mDependencyProvider;
@@ -676,7 +676,7 @@ public class FeedSurfaceCoordinator
     }
 
     private RecyclerView setUpView() {
-        mContentManager = new NtpListContentManager();
+        mContentManager = new FeedListContentManager();
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
             mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
@@ -746,8 +746,8 @@ public class FeedSurfaceCoordinator
         return mHybridListRenderer;
     }
 
-    /** @return The {@link NtpListContentManager} managing the contents of this feed. */
-    NtpListContentManager getContentManager() {
+    /** @return The {@link FeedListContentManager} managing the contents of this feed. */
+    FeedListContentManager getContentManager() {
         return mContentManager;
     }
 
@@ -808,7 +808,7 @@ public class FeedSurfaceCoordinator
 
     private void setHeaders(List<View> headerViews) {
         // Build the list of headers we want, and then replace existing headers.
-        List<NtpListContentManager.FeedContent> headerList = new ArrayList<>();
+        List<FeedListContentManager.FeedContent> headerList = new ArrayList<>();
         for (View header : headerViews) {
             // Feed header view in multi does not need padding added.
             int lateralPaddingsPx = getLateralPaddingsPx();
@@ -816,8 +816,8 @@ public class FeedSurfaceCoordinator
                 lateralPaddingsPx = 0;
             }
 
-            NtpListContentManager.NativeViewContent content =
-                    new NtpListContentManager.NativeViewContent(
+            FeedListContentManager.NativeViewContent content =
+                    new FeedListContentManager.NativeViewContent(
                             lateralPaddingsPx, "Header" + header.hashCode(), header);
             headerList.add(content);
         }

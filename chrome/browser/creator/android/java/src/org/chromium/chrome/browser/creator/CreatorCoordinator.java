@@ -24,12 +24,12 @@ import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedAutoplaySettingsDelegate;
 import org.chromium.chrome.browser.feed.FeedContentFirstLoadWatcher;
+import org.chromium.chrome.browser.feed.FeedListContentManager;
+import org.chromium.chrome.browser.feed.FeedListContentManager.FeedContent;
 import org.chromium.chrome.browser.feed.FeedStream;
 import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.NativeViewListRenderer;
-import org.chromium.chrome.browser.feed.NtpListContentManager;
-import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.SingleWebFeedParameters;
 import org.chromium.chrome.browser.feed.Stream;
@@ -86,7 +86,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private CreatorMediator mMediator;
     private CreatorTabMediator mTabMediator;
     private Activity mActivity;
-    private NtpListContentManager mContentManager;
+    private FeedListContentManager mContentManager;
     private RecyclerView mRecyclerView;
     private View mProfileView;
     private ViewGroup mLayoutView;
@@ -160,8 +160,8 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
 
         mProfileView =
                 (View) LayoutInflater.from(mActivity).inflate(R.layout.creator_profile, null);
-        List<NtpListContentManager.FeedContent> contentPreviewsList = new ArrayList<>();
-        contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
+        List<FeedListContentManager.FeedContent> contentPreviewsList = new ArrayList<>();
+        contentPreviewsList.add(new FeedListContentManager.NativeViewContent(
                 getContentPreviewsPaddingPx(), CREATOR_PROFILE_ID, mProfileView));
         mContentManager.addContents(0, contentPreviewsList);
         mHeaderCount = 1;
@@ -284,7 +284,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
 
     private RecyclerView setUpView() {
         // TODO(crbug.com/1374744): Refactor NTP naming out of the general Feed code.
-        mContentManager = new NtpListContentManager();
+        mContentManager = new FeedListContentManager();
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
 
         if (processScope != null) {
@@ -565,7 +565,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                 List<FeedContent> privacyList = new ArrayList<>();
                 View privacyView =
                         LayoutInflater.from(mActivity).inflate(R.layout.creator_privacy, null);
-                privacyList.add(new NtpListContentManager.NativeViewContent(
+                privacyList.add(new FeedListContentManager.NativeViewContent(
                         getContentPreviewsPaddingPx(), CREATOR_PRIVACY_ID, privacyView));
                 mContentManager.addContents(mHeaderCount, privacyList);
                 mHeaderCount += privacyList.size();

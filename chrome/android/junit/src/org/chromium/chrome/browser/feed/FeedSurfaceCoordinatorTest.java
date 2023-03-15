@@ -195,7 +195,7 @@ public class FeedSurfaceCoordinatorTest {
     @Mock
     private HybridListRenderer mRenderer;
     @Captor
-    private ArgumentCaptor<NtpListContentManager> mContentManagerCaptor;
+    private ArgumentCaptor<FeedListContentManager> mContentManagerCaptor;
 
     // Mocked indirect dependencies.
     @Rule

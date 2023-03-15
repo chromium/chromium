@@ -606,7 +606,7 @@ public class FeedStream implements Stream {
 
     // Things valid only when bound.
     private @Nullable RecyclerView mRecyclerView;
-    private @Nullable NtpListContentManager mContentManager;
+    private @Nullable FeedListContentManager mContentManager;
     private @Nullable SurfaceScope mSurfaceScope;
     private @Nullable HybridListRenderer mRenderer;
     private FeedScrollState mScrollStateToRestore;
@@ -616,7 +616,7 @@ public class FeedStream implements Stream {
     private ArrayList<SnackbarManager.SnackbarController> mSnackbarControllers = new ArrayList<>();
 
     // Placeholder view that simply takes up space.
-    private NtpListContentManager.NativeViewContent mSpacerViewContent;
+    private FeedListContentManager.NativeViewContent mSpacerViewContent;
 
     // Bottomsheet.
     private final BottomSheetController mBottomSheetController;
@@ -746,7 +746,7 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public void bind(RecyclerView rootView, NtpListContentManager manager,
+    public void bind(RecyclerView rootView, FeedListContentManager manager,
             FeedScrollState savedInstanceState, SurfaceScope surfaceScope,
             HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger,
             int headerCount) {
@@ -810,7 +810,7 @@ public class FeedStream implements Stream {
         mScrollReporter.onUnbind();
 
         // Remove Feed content from the content manager. Add spacer if needed.
-        ArrayList<NtpListContentManager.FeedContent> list = new ArrayList<>();
+        ArrayList<FeedListContentManager.FeedContent> list = new ArrayList<>();
         if (shouldPlaceSpacer) {
             addSpacer(list);
         }
@@ -1005,7 +1005,7 @@ public class FeedStream implements Stream {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             FrameLayout spacerView = new FrameLayout(mActivity);
-            mSpacerViewContent = new NtpListContentManager.NativeViewContent(
+            mSpacerViewContent = new FeedListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), SPACER_KEY, spacerView);
             spacerView.setLayoutParams(new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, displayMetrics.heightPixels));
@@ -1051,11 +1051,11 @@ public class FeedStream implements Stream {
         // Builds the new list containing:
         // * existing headers
         // * both new and existing contents
-        ArrayList<NtpListContentManager.FeedContent> newContentList = new ArrayList<>();
+        ArrayList<FeedListContentManager.FeedContent> newContentList = new ArrayList<>();
         for (FeedUiProto.StreamUpdate.SliceUpdate sliceUpdate :
                 streamUpdate.getUpdatedSlicesList()) {
             if (sliceUpdate.hasSlice()) {
-                NtpListContentManager.FeedContent content =
+                FeedListContentManager.FeedContent content =
                         createContentFromSlice(sliceUpdate.getSlice(), loggingParameters);
                 if (content != null) {
                     newContentList.add(content);
@@ -1093,11 +1093,11 @@ public class FeedStream implements Stream {
         maybeLoadMore(/*lookaheadTrigger=*/0);
     }
 
-    private NtpListContentManager.FeedContent createContentFromSlice(
+    private FeedListContentManager.FeedContent createContentFromSlice(
             FeedUiProto.Slice slice, LoggingParameters loggingParameters) {
         String sliceId = slice.getSliceId();
         if (slice.hasXsurfaceSlice()) {
-            return new NtpListContentManager.ExternalViewContent(sliceId,
+            return new FeedListContentManager.ExternalViewContent(sliceId,
                     slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray(), loggingParameters);
         } else if (slice.hasLoadingSpinnerSlice()) {
             // If the placeholder is shown, spinner is not needed.
@@ -1106,15 +1106,15 @@ public class FeedStream implements Stream {
             }
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
                     && slice.getLoadingSpinnerSlice().getIsAtTop()) {
-                return new NtpListContentManager.NativeViewContent(
+                return new FeedListContentManager.NativeViewContent(
                         getLateralPaddingsPx(), sliceId, R.layout.feed_placeholder_layout);
             }
-            return new NtpListContentManager.NativeViewContent(
+            return new FeedListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), sliceId, R.layout.feed_spinner);
         }
         assert slice.hasZeroStateSlice();
         if (mStreamKind == StreamKind.FOLLOWING) {
-            return new NtpListContentManager.NativeViewContent(
+            return new FeedListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), sliceId, R.layout.following_empty_state);
         }
         if (mStreamKind == StreamKind.SINGLE_WEB_FEED) {
@@ -1138,11 +1138,11 @@ public class FeedStream implements Stream {
             marginParams.setMargins(0, displayMetrics.heightPixels / 4, 0,
                     mActivity.getResources().getDimensionPixelSize(
                             R.dimen.creator_error_margin_bottom));
-            return new NtpListContentManager.NativeViewContent(
+            return new FeedListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), sliceId, creatorErrorCard);
         }
         if (slice.getZeroStateSlice().getType() == FeedUiProto.ZeroStateSlice.Type.CANT_REFRESH) {
-            return new NtpListContentManager.NativeViewContent(
+            return new FeedListContentManager.NativeViewContent(
                     getLateralPaddingsPx(), sliceId, R.layout.no_connection);
         }
         // TODO(crbug/1152592): Add new UI for NO_WEB_FEED_SUBSCRIPTIONS.
@@ -1150,12 +1150,12 @@ public class FeedStream implements Stream {
                         == FeedUiProto.ZeroStateSlice.Type.NO_CARDS_AVAILABLE
                 || slice.getZeroStateSlice().getType()
                         == FeedUiProto.ZeroStateSlice.Type.NO_WEB_FEED_SUBSCRIPTIONS;
-        return new NtpListContentManager.NativeViewContent(
+        return new FeedListContentManager.NativeViewContent(
                 getLateralPaddingsPx(), sliceId, R.layout.no_content_v2);
     }
 
     private void updateContentsInPlace(
-            ArrayList<NtpListContentManager.FeedContent> newContentList) {
+            ArrayList<FeedListContentManager.FeedContent> newContentList) {
         assert mHeaderCount <= mContentManager.getItemCount();
         if (mContentManager.replaceRange(
                     mHeaderCount, mContentManager.getItemCount() - mHeaderCount, newContentList)) {

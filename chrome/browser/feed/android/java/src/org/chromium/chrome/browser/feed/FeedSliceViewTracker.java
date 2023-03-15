@@ -45,7 +45,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     @Nullable
     private RecyclerView mRootView;
     @Nullable
-    private NtpListContentManager mContentManager;
+    private FeedListContentManager mContentManager;
     private ListLayoutHelper mLayoutHelper;
     // The set of content keys already reported as visible.
     private HashSet<String> mContentKeysVisible = new HashSet<String>();
@@ -72,7 +72,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     }
 
     public FeedSliceViewTracker(@NonNull RecyclerView rootView, @NonNull Activity activity,
-            @NonNull NtpListContentManager contentManager, @Nullable ListLayoutHelper layoutHelper,
+            @NonNull FeedListContentManager contentManager, @Nullable ListLayoutHelper layoutHelper,
             @NonNull Observer observer) {
         mActivity = activity;
         mRootView = rootView;

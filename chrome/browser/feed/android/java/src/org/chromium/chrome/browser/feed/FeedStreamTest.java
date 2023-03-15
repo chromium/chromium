@@ -108,7 +108,7 @@ public class FeedStreamTest {
     private RecyclerView mRecyclerView;
     private FakeLinearLayoutManager mLayoutManager;
     private FeedStream mFeedStream;
-    private NtpListContentManager mContentManager;
+    private FeedListContentManager mContentManager;
 
     @Mock
     private FeedStream.Natives mFeedStreamJniMock;
@@ -200,7 +200,7 @@ public class FeedStreamTest {
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
-        mContentManager = new NtpListContentManager();
+        mContentManager = new FeedListContentManager();
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
         when(mRenderer.getListLayoutHelper()).thenReturn(mLayoutManager);
@@ -1025,11 +1025,11 @@ public class FeedStreamTest {
         mFeedStream.onStreamUpdated(update.toByteArray());
         assertEquals(2, mContentManager.getItemCount());
         assertEquals("a", mContentManager.getContent(1).getKey());
-        NtpListContentManager.FeedContent content = mContentManager.getContent(1);
+        FeedListContentManager.FeedContent content = mContentManager.getContent(1);
         assertThat(mContentManager.getContent(1),
-                instanceOf(NtpListContentManager.NativeViewContent.class));
-        NtpListContentManager.NativeViewContent nativeViewContent =
-                (NtpListContentManager.NativeViewContent) mContentManager.getContent(1);
+                instanceOf(FeedListContentManager.NativeViewContent.class));
+        FeedListContentManager.NativeViewContent nativeViewContent =
+                (FeedListContentManager.NativeViewContent) mContentManager.getContent(1);
 
         FrameLayout layout = new FrameLayout(mActivity);
 
@@ -1050,11 +1050,11 @@ public class FeedStreamTest {
         mFeedStream.onStreamUpdated(update.toByteArray());
         assertEquals(2, mContentManager.getItemCount());
         assertEquals("a", mContentManager.getContent(1).getKey());
-        NtpListContentManager.FeedContent content = mContentManager.getContent(1);
+        FeedListContentManager.FeedContent content = mContentManager.getContent(1);
         assertThat(mContentManager.getContent(1),
-                instanceOf(NtpListContentManager.NativeViewContent.class));
-        NtpListContentManager.NativeViewContent nativeViewContent =
-                (NtpListContentManager.NativeViewContent) mContentManager.getContent(1);
+                instanceOf(FeedListContentManager.NativeViewContent.class));
+        FeedListContentManager.NativeViewContent nativeViewContent =
+                (FeedListContentManager.NativeViewContent) mContentManager.getContent(1);
 
         FrameLayout layout = new FrameLayout(mActivity);
 
@@ -1215,9 +1215,9 @@ public class FeedStreamTest {
     }
 
     private void createHeaderContent(int number) {
-        List<NtpListContentManager.FeedContent> contentList = new ArrayList<>();
+        List<FeedListContentManager.FeedContent> contentList = new ArrayList<>();
         for (int i = 0; i < number; i++) {
-            contentList.add(new NtpListContentManager.NativeViewContent(
+            contentList.add(new FeedListContentManager.NativeViewContent(
                     0, HEADER_PREFIX + i, new AppCompatTextView(mActivity)));
         }
         mContentManager.addContents(0, contentList);

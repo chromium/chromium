@@ -610,7 +610,7 @@ public class FeedSurfaceMediator
                 mainFeedStream.addOnContentChangedListener(new ContentChangedListener() {
                     @Override
                     public void onContentChanged(
-                            List<NtpListContentManager.FeedContent> feedContents) {
+                            List<FeedListContentManager.FeedContent> feedContents) {
                         if (feedContents.size() > mHeaderCount + 1) {
                             followingHeaderModel.set(
                                     SectionHeaderProperties.ANIMATION_START_KEY, true);
@@ -624,7 +624,7 @@ public class FeedSurfaceMediator
     }
 
     /**
-     * Binds a stream to the {@link NtpListContentManager}. Unbinds currently active stream if
+     * Binds a stream to the {@link FeedListContentManager}. Unbinds currently active stream if
      * different from new stream. Once bound, the stream can add/remove contents.
      */
     @VisibleForTesting

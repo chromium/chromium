@@ -30,7 +30,7 @@ import java.util.Map;
  * Implementation of ListContentManager that manages a list of feed contents that are supported by
  * either native view or external surface controlled view.
  */
-public class NtpListContentManager implements ListContentManager {
+public class FeedListContentManager implements ListContentManager {
     /**
      * Encapsulates the content of an item stored and managed by ListContentManager.
      */
