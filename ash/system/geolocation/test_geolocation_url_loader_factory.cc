@@ -19,15 +19,15 @@ std::string CreateResponseBody(const Geoposition& position) {
     value.Set("accuracy", position.accuracy);
 
   if (position.latitude && position.longitude) {
-    base::Value location(base::Value::Type::DICT);
-    location.SetDoubleKey("lat", position.latitude);
-    location.SetDoubleKey("lng", position.longitude);
+    base::Value::Dict location;
+    location.Set("lat", position.latitude);
+    location.Set("lng", position.longitude);
     value.Set("location", std::move(location));
   }
 
   if (position.error_code) {
-    base::Value error(base::Value::Type::DICT);
-    error.SetIntKey("error_code", position.error_code);
+    base::Value::Dict error;
+    error.Set("error_code", position.error_code);
     value.Set("error", std::move(error));
   }
 
