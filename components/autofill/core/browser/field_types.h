@@ -356,7 +356,7 @@ enum ServerFieldType {
   // One-time code used for verifying user identity.
   ONE_TIME_CODE = 129,
 
-  // Reserved for a server-side-only use: 130-134
+  // Reserved for a server-side-only use: 130-136
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
@@ -365,7 +365,7 @@ enum ServerFieldType {
   // - `AutofillServerFieldType`
   // - `AutofilledFieldUserEditingStatusByFieldType` (16 * type + x)
   // - `AutofillPredictionsComparisonResult` (6 * type + x)
-  MAX_VALID_FIELD_TYPE = 135,
+  MAX_VALID_FIELD_TYPE = 137,
 };
 
 enum class FieldTypeGroup {
