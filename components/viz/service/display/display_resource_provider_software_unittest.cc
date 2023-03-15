@@ -69,14 +69,11 @@ static SharedBitmapId CreateAndFillSharedBitmap(SharedBitmapManager* manager,
 
 class DisplayResourceProviderSoftwareTest : public testing::Test {
  public:
-  DisplayResourceProviderSoftwareTest() {
-    shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
-
-    resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        shared_bitmap_manager_.get());
-
-    child_resource_provider_ = std::make_unique<ClientResourceProvider>();
-  }
+  DisplayResourceProviderSoftwareTest()
+      : shared_bitmap_manager_(std::make_unique<TestSharedBitmapManager>()),
+        resource_provider_(std::make_unique<DisplayResourceProviderSoftware>(
+            shared_bitmap_manager_.get())),
+        child_resource_provider_(std::make_unique<ClientResourceProvider>()) {}
 
   ~DisplayResourceProviderSoftwareTest() override {
     child_resource_provider_->ShutdownAndReleaseAllResources();
@@ -91,9 +88,9 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
-  std::unique_ptr<ClientResourceProvider> child_resource_provider_;
-  std::unique_ptr<TestSharedBitmapManager> shared_bitmap_manager_;
+  const std::unique_ptr<TestSharedBitmapManager> shared_bitmap_manager_;
+  const std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
+  const std::unique_ptr<ClientResourceProvider> child_resource_provider_;
 };
 
 TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
