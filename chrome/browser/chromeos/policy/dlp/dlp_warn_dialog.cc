@@ -187,14 +187,14 @@ const std::u16string GetMessageForFiles(
       message_id = IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kCopy:
-      DCHECK(!options.destination_pattern->empty());
+      // TODO(b/273521961): Handle urls.
       destination = GetDestinationComponentForFiles(
           options.destination_component.value());
       num_files = options.confidential_files.size();
       message_id = IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE;
       break;
     case DlpFilesController::FileAction::kMove:
-      DCHECK(!options.destination_pattern->empty());
+      // TODO(b/273521961): Handle urls.
       destination = GetDestinationComponentForFiles(
           options.destination_component.value());
       num_files = options.confidential_files.size();

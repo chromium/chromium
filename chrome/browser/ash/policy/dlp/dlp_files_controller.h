@@ -259,6 +259,8 @@ class DlpFilesController {
   void SetFileSystemContextForTesting(
       storage::FileSystemContext* file_system_context);
 
+  base::WeakPtr<views::Widget> GetWarnDialogForTesting();
+
  private:
   // Called back from warning dialog. Passes blocked files sources along
   // to |callback|. In case |should_proceed| is true, passes only

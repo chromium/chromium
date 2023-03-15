@@ -1211,6 +1211,10 @@ void DlpFilesController::SetFileSystemContextForTesting(
   g_file_system_context_for_testing = file_system_context;
 }
 
+base::WeakPtr<views::Widget> DlpFilesController::GetWarnDialogForTesting() {
+  return warn_dialog_widget_;
+}
+
 void DlpFilesController::OnDlpWarnDialogReply(
     std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>>
         files_levels,
