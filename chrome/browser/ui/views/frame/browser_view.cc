@@ -1865,14 +1865,6 @@ void BrowserView::EnterFullscreen(const GURL& url,
     // Nothing to do.
     return;
   }
-
-  if (unified_side_panel_ && unified_side_panel_->GetVisible() &&
-      GetExclusiveAccessManager()
-          ->fullscreen_controller()
-          ->IsWindowFullscreenForTabOrPending()) {
-    toolbar_button_provider_->GetSidePanelButton()->HideSidePanel();
-  }
-
   ProcessFullscreen(true, url, bubble_type, display_id);
 }
 
@@ -3726,18 +3718,6 @@ void BrowserView::CreateTabSearchBubble() {
 void BrowserView::CloseTabSearchBubble() {
   if (auto* tab_search_host = GetTabSearchBubbleHost())
     tab_search_host->CloseTabSearchBubble();
-}
-
-bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_side_search) {
-  // Check if any side panels are open before closing side panels.
-  if (!side_panel_visibility_controller_ ||
-      !side_panel_visibility_controller_->IsManagedSidePanelVisible()) {
-    return false;
-  }
-
-  toolbar()->side_panel_button()->HideSidePanel();
-
-  return true;
 }
 
 void BrowserView::RevealTabStripIfNeeded() {

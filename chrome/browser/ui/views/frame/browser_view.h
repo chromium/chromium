@@ -767,10 +767,6 @@ class BrowserView : public BrowserWindow,
     return accessibility_focus_highlight_.get();
   }
 
-  // Closes an opened right aligned side panel, returns true if there is an open
-  // side panel being closed.
-  bool CloseOpenRightAlignedSidePanel(bool exclude_side_search = false);
-
   bool should_show_window_controls_overlay_toggle() const {
     return should_show_window_controls_overlay_toggle_;
   }

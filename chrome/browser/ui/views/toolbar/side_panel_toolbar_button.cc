@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/read_later_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/pref_names.h"
@@ -48,37 +47,8 @@ void SidePanelToolbarButton::ButtonPressed() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
   DCHECK(browser_view->unified_side_panel());
-
-  if (browser_view->side_panel_coordinator()) {
-    browser_view->side_panel_coordinator()->Toggle();
-    return;
-  }
-
-  if (browser_view->CloseOpenRightAlignedSidePanel()) {
-    return;
-  }
-
-  if (!side_panel_webview_) {
-    // Using base::Unretained(this) is safe here because the side panel (and the
-    // web view as its child) will be destroyed before the toolbar which will
-    // destroy the SidePanelToolbarButton.
-    auto webview = std::make_unique<ReadLaterSidePanelWebView>(
-        browser_, base::BindRepeating(&SidePanelToolbarButton::ButtonPressed,
-                                      base::Unretained(this)));
-    side_panel_webview_ =
-        browser_view->unified_side_panel()->AddChildView(std::move(webview));
-  }
-}
-
-void SidePanelToolbarButton::HideSidePanel() {
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_);
-  DCHECK(browser_view->unified_side_panel());
-  if (side_panel_webview_) {
-    browser_view->unified_side_panel()->RemoveChildViewT(
-        side_panel_webview_.get());
-    side_panel_webview_ = nullptr;
-  }
+  DCHECK(browser_view->side_panel_coordinator());
+  browser_view->side_panel_coordinator()->Toggle();
 }
 
 void SidePanelToolbarButton::UpdateToolbarButtonIcon() {
