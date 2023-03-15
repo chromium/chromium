@@ -21,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/buildflags.h"
@@ -233,8 +234,15 @@ bool IOSurfaceImageBackingFactory::IsSupported(
   if (thread_safe) {
     return false;
   }
+
   // Never used with shared memory GMBs.
-  if (gmb_type == gfx::SHARED_MEMORY_BUFFER) {
+  if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::IO_SURFACE_BUFFER) {
+    return false;
+  }
+
+  if (usage & SHARED_IMAGE_USAGE_CPU_WRITE &&
+      gmb_type != gfx::IO_SURFACE_BUFFER) {
+    // Only CPU writable when the client provides a IOSurface.
     return false;
   }
 

@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -201,8 +202,15 @@ bool ExternalVkImageBackingFactory::IsSupported(
   }
 #endif
 
-  if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
-    return false;
+  if (gmb_type == gfx::EMPTY_BUFFER) {
+    if (usage & SHARED_IMAGE_USAGE_CPU_WRITE) {
+      // Only CPU writable when the client provides a NativePixmap.
+      return false;
+    }
+  } else {
+    if (!CanImportGpuMemoryBuffer(gmb_type)) {
+      return false;
+    }
   }
 
   if (thread_safe) {

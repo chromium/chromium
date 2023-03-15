@@ -237,6 +237,11 @@ bool OzoneImageBackingFactory::IsSupported(
     return false;
   }
 
+  if (usage & SHARED_IMAGE_USAGE_CPU_WRITE && gmb_type != gfx::NATIVE_PIXMAP) {
+    // Only CPU writable when the client provides a NativePixmap.
+    return false;
+  }
+
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
