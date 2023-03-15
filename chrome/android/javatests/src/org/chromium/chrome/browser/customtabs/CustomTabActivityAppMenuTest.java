@@ -22,6 +22,16 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
+
 import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -29,6 +39,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -49,15 +60,6 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeoutException;
 
@@ -364,8 +366,10 @@ public class CustomTabActivityAppMenuTest {
      * Test whether the custom menu is correctly shown and clicking it sends the right
      * {@link PendingIntent}.
      */
+    // TODO(crbug.com/1420991): Re-enable this test after fixing/diagnosing flakiness.
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1420991")
     public void testCustomMenuEntry() throws TimeoutException {
         Intent customTabIntent = createMinimalCustomTabIntent();
         Intent baseCallbackIntent = new Intent();
