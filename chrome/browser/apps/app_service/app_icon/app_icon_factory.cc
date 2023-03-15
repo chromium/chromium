@@ -222,14 +222,6 @@ apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia) {
   return scale_to_size;
 }
 
-SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size) {
-  base::AssertLongCPUWorkAllowed();
-  SkBitmap decoded;
-  bool success = gfx::PNGCodec::Decode(data, size, &decoded);
-  LOG_IF(ERROR, !success) << "Failed to decode icon data as PNG";
-  return decoded;
-}
-
 void CompressedDataToSkBitmap(
     base::span<const uint8_t> compressed_data,
     base::OnceCallback<void(const SkBitmap&)> callback) {
