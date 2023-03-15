@@ -96,7 +96,7 @@ promise_test (async () => {
   await smoothScroll(fullyScrolled + 50, gestureX, gestureY,
       GestureSourceType.TOUCH_INPUT, "down");
   await scrollEndPromise;
-  assert_approx_equals(fullyScrolled + 50, container.scrollTop, 2,
+  assert_approx_equals(container.scrollTop, fullyScrolled + 50, 2,
     "container should scroll to approx. " + (fullyScrolled + 50));
 }, "gesture scroll on a list box");
 
