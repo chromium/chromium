@@ -18,10 +18,16 @@ namespace apps {
 
 using ShortcutId = base::StrongAlias<class ShortcutIdTag, std::string>;
 
-struct COMPONENT_EXPORT(APP_TYPES) Shortcut {
-  Shortcut(const ShortcutId& shortcut_id,
-           const std::string& name,
-           uint8_t position = 0);
+// Where the shortcut was created from.
+ENUM_FOR_COMPONENT(SHORTCUT,
+                   ShortcutSource,
+                   kUnknown = 0,
+                   kUser = 1,      // Created by the user.
+                   kDeveloper = 2  // Created by the developer. e.g. jumplist
+)
+
+struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
+  explicit Shortcut(const ShortcutId& shortcut_id);
 
   Shortcut(const Shortcut&) = delete;
   Shortcut& operator=(const Shortcut&) = delete;
@@ -30,16 +36,15 @@ struct COMPONENT_EXPORT(APP_TYPES) Shortcut {
 
   ~Shortcut();
 
-  bool operator==(const Shortcut& other) const;
-  bool operator!=(const Shortcut& other) const;
-
   std::unique_ptr<Shortcut> Clone() const;
 
   // Example output:
   //
   // shortcut_id: 2
   // - shortcut_name: Launch
-  // - position: 0
+  // - source: Source::kUser
+  // - host_app_id: app_1
+  // - local_id: shortcut_1
   std::string ToString() const;
 
   // Represents the unique identifier for a shortcut. This identifier should be
@@ -47,20 +52,21 @@ struct COMPONENT_EXPORT(APP_TYPES) Shortcut {
   ShortcutId shortcut_id;
   // Name of the shortcut.
   std::string name;
-  // "Position" of a shortcut, which is a non-negative, sequential
-  // value. If position is 0, no position was specified.
-  uint8_t position;
+  // Shortcut creation source.
+  ShortcutSource shortcut_source;
+  // The host app of the shortcut.
+  std::string host_app_id;
+  // The locally unique identifier for the shortcut within an app. This id would
+  // be used to launch the shortcut or load shortcut icon from the app.
+  std::string local_id;
 };
 
 using ShortcutPtr = std::unique_ptr<Shortcut>;
 using Shortcuts = std::vector<ShortcutPtr>;
 
 // Creates a deep copy of `source_shortcuts`.
-COMPONENT_EXPORT(APP_TYPES)
+COMPONENT_EXPORT(SHORTCUT)
 Shortcuts CloneShortcuts(const Shortcuts& source_shortcuts);
-
-COMPONENT_EXPORT(APP_TYPES)
-bool IsEqual(const Shortcuts& source, const Shortcuts& target);
 
 }  // namespace apps
 

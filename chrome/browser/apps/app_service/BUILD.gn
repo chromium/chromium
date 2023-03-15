@@ -242,6 +242,7 @@ source_set("app_service") {
       "//components/resources:components_resources",
       "//components/services/app_service/public/cpp:crosapi_utils",
       "//components/services/app_service/public/cpp:instance_update",
+      "//components/services/app_service/public/cpp:macros",
       "//components/ukm",
       "//components/webapps/browser",
       "//services/metrics/public/cpp:ukm_builders",

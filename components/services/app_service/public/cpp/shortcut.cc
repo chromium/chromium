@@ -10,34 +10,33 @@
 
 namespace apps {
 
-Shortcut::Shortcut(const ShortcutId& shortcut_id,
-                   const std::string& name,
-                   uint8_t position)
-    : shortcut_id(shortcut_id), name(name), position(position) {}
+APP_ENUM_TO_STRING(ShortcutSource, kUnknown, kUser, kDeveloper)
+
+Shortcut::Shortcut(const ShortcutId& shortcut_id) : shortcut_id(shortcut_id) {}
 
 Shortcut::~Shortcut() = default;
 
 Shortcut::Shortcut(Shortcut&&) = default;
 Shortcut& Shortcut::operator=(Shortcut&&) = default;
 
-bool Shortcut::operator==(const Shortcut& other) const {
-  return shortcut_id == other.shortcut_id && name == other.name &&
-         position == other.position;
-}
-
-bool Shortcut::operator!=(const Shortcut& other) const {
-  return !(*this == other);
-}
-
 std::unique_ptr<Shortcut> Shortcut::Clone() const {
-  return std::make_unique<Shortcut>(shortcut_id, name, position);
+  auto shortcut = std::make_unique<Shortcut>(shortcut_id);
+
+  shortcut->name = name;
+  shortcut->shortcut_source = shortcut_source;
+  shortcut->host_app_id = host_app_id;
+  shortcut->local_id = local_id;
+
+  return shortcut;
 }
 
 std::string Shortcut::ToString() const {
   std::stringstream out;
   out << "shortcut_id: " << shortcut_id << std::endl;
   out << "- name: " << name << std::endl;
-  out << "- position: " << position << std::endl;
+  out << "- shortcut_source: " << EnumToString(shortcut_source) << std::endl;
+  out << "- host_app_id: " << host_app_id << std::endl;
+  out << "- local_id: " << local_id << std::endl;
   return out.str();
 }
 
@@ -48,20 +47,6 @@ Shortcuts CloneShortcuts(const Shortcuts& source_shortcuts) {
     shortcuts.push_back(shortcut->Clone());
   }
   return shortcuts;
-}
-
-bool IsEqual(const Shortcuts& source, const Shortcuts& target) {
-  if (source.size() != target.size()) {
-    return false;
-  }
-
-  for (int i = 0; i < static_cast<int>(source.size()); i++) {
-    if (*source[i] != *target[i]) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 }  // namespace apps
