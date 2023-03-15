@@ -17,6 +17,7 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
       'onBookmarkMoved',
       'onBookmarkRemoved',
       'isPriceTracked',
+      'getProductImageUrl',
     ]);
   }
 
@@ -66,5 +67,10 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
   isPriceTracked(bookmark: chrome.bookmarks.BookmarkTreeNode) {
     this.methodCalled('isPriceTracked', bookmark);
     return false;
+  }
+
+  getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    this.methodCalled('getProductImageUrl', bookmark);
+    return '';
   }
 }

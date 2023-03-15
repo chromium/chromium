@@ -36,6 +36,7 @@ interface PowerBookmarksDelegate {
       newParent: chrome.bookmarks.BookmarkTreeNode): void;
   onBookmarkRemoved(bookmark: chrome.bookmarks.BookmarkTreeNode): void;
   isPriceTracked(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean;
+  getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode): string;
 }
 
 export function editingDisabledByPolicy(
@@ -384,10 +385,16 @@ export class PowerBookmarksService {
       // is being fetched.
       this.delegate_.setImageUrl(bookmark, '');
       if (bookmark.url) {
-        const imageUrl = await this.findBookmarkImageUrl_(bookmark.url);
-        if (imageUrl) {
-          this.delegate_.setImageUrl(bookmark, imageUrl);
+        const productImageUrl = this.delegate_.getProductImageUrl(bookmark);
+        if (productImageUrl) {
+          this.delegate_.setImageUrl(bookmark, productImageUrl);
           this.bookmarksWithCachedImages_.add(bookmark.id.toString());
+        } else {
+          const imageUrl = await this.findBookmarkImageUrl_(bookmark.url);
+          if (imageUrl) {
+            this.delegate_.setImageUrl(bookmark, imageUrl);
+            this.bookmarksWithCachedImages_.add(bookmark.id.toString());
+          }
         }
       }
     }

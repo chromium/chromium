@@ -333,6 +333,15 @@ export class PowerBookmarksListElement extends PolymerElement {
     return !!this.get(`trackedProductInfos_.${bookmark.id}`);
   }
 
+  getProductImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
+    const bookmarkProductInfo = this.availableProductInfos_.get(bookmark.id);
+    if (bookmarkProductInfo) {
+      return bookmarkProductInfo.info.imageUrl.url;
+    } else {
+      return '';
+    }
+  }
+
   private isPriceTrackingEligible_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       boolean {
     return !!this.availableProductInfos_.get(bookmark.id);
