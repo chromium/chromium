@@ -544,13 +544,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds3{Phase}"
-    units="janks" expires_after="never">
-<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
-
+    units="janks" expires_after="M111">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
+    Replaced by Browser.MainThreadsCongestion as a guardrail metric.
+
     This metric is emitted every 30 seconds after main message loop start, when
     there is user activity. Each 30 second duration is divided into 100ms
     intervals. This metric counts the number of these intervals that were
@@ -576,12 +576,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds{Phase}"
     units="janks" expires_after="M111">
-<!-- to be replaced by Browser.MainThreadsCongestion as a go/chrome-browser-guiding-metrics) -->
-
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
+    Replaced by Browser.MainThreadsCongestion as a guardrail metric.
+    Browser.MainThreadsCongestion.RunningOnly still represents what this used
+    to.
+
     This metric is emitted every 30 seconds [when there is user activity]. Each
     30 second duration is divided into 100ms intervals. This metric counts the
     number of these intervals that were &quot;janky&quot;. See

@@ -164,21 +164,6 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
             "Browser.MainThreadsCongestion.RunningOnly.Periodic",
             num_congested_slices);
       }
-      // Emit the old name until M107.
-      UMA_HISTOGRAM_COUNTS_1000(
-          "Browser.Responsiveness.JankyIntervalsPerThirtySeconds",
-          num_congested_slices);
-      // Only kFirstInterval and kPeriodic are reported with a suffix, stages
-      // in between are only part of the unsuffixed histogram.
-      if (startup_stage_ == StartupStage::kFirstInterval) {
-        UMA_HISTOGRAM_COUNTS_1000(
-            "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial",
-            num_congested_slices);
-      } else if (startup_stage_ == StartupStage::kPeriodic) {
-        UMA_HISTOGRAM_COUNTS_1000(
-            "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic",
-            num_congested_slices);
-      }
       break;
     }
     case CongestionType::kQueueAndExecution: {
@@ -198,19 +183,6 @@ void Calculator::EmitResponsiveness(CongestionType congestion_type,
         UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion.Periodic",
                                     num_congested_slices, 1,
                                     kMaxCongestedSlices, 50);
-      }
-      // Emit the old name until M107.
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3",
-          num_congested_slices, 1, kMaxCongestedSlices, 50);
-      if (startup_stage_ == StartupStage::kFirstIntervalAfterFirstIdle) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial",
-            num_congested_slices, 1, kMaxCongestedSlices, 50);
-      } else if (startup_stage_ == StartupStage::kPeriodic) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic",
-            num_congested_slices, 1, kMaxCongestedSlices, 50);
       }
       break;
     }
