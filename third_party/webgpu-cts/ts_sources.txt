@@ -468,10 +468,12 @@ src/webgpu/shader/execution/expression/unary/u32_complement.spec.ts
 src/webgpu/shader/execution/expression/unary/u32_conversion.spec.ts
 src/webgpu/shader/execution/flow_control/harness.ts
 src/webgpu/shader/execution/flow_control/call.spec.ts
+src/webgpu/shader/execution/flow_control/complex.spec.ts
 src/webgpu/shader/execution/flow_control/eval_order.spec.ts
 src/webgpu/shader/execution/flow_control/for.spec.ts
 src/webgpu/shader/execution/flow_control/if.spec.ts
 src/webgpu/shader/execution/flow_control/loop.spec.ts
+src/webgpu/shader/execution/flow_control/phony.spec.ts
 src/webgpu/shader/execution/flow_control/return.spec.ts
 src/webgpu/shader/execution/flow_control/switch.spec.ts
 src/webgpu/shader/execution/flow_control/while.spec.ts
