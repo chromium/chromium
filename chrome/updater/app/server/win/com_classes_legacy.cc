@@ -342,9 +342,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   AppWebImpl(const AppWebImpl&) = delete;
   AppWebImpl& operator=(const AppWebImpl&) = delete;
 
-  HRESULT RuntimeClassInitialize(const std::wstring& app_id) {
+  HRESULT RuntimeClassInitialize(
+      const std::wstring& app_id,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update) {
     app_id_ = base::WideToASCII(app_id);
-
+    policy_same_version_update_ = policy_same_version_update;
     return S_OK;
   }
 
@@ -359,7 +361,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
             [](scoped_refptr<UpdateService> update_service, AppWebImplPtr obj) {
               update_service->CheckForUpdate(
                   obj->app_id_, UpdateService::Priority::kForeground,
-                  UpdateService::PolicySameVersionUpdate::kNotAllowed,
+                  obj->policy_same_version_update_,
                   base::BindRepeating(
                       [](AppWebImplPtr obj,
                          const UpdateService::UpdateState& state_update) {
@@ -391,7 +393,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
             [](scoped_refptr<UpdateService> update_service, AppWebImplPtr obj) {
               update_service->Update(
                   obj->app_id_, "", UpdateService::Priority::kForeground,
-                  UpdateService::PolicySameVersionUpdate::kNotAllowed,
+                  obj->policy_same_version_update_,
                   base::BindRepeating(
                       [](AppWebImplPtr obj,
                          const UpdateService::UpdateState& state_update) {
@@ -624,6 +626,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::string app_id_;
+  UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
+      UpdateService::PolicySameVersionUpdate::kNotAllowed;
 
   // Access to `state_update_` and `result_` must be serialized by using the
   // lock.
@@ -647,8 +651,14 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
                            BSTR brand_code,
                            BSTR language,
                            BSTR ap) override {
-    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-    return E_NOTIMPL;
+    base::AutoLock lock{lock_};
+
+    if (app_web_) {
+      return E_UNEXPECTED;
+    }
+
+    return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(
+        &app_web_, app_id, UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
   IFACEMETHODIMP createInstalledApp(BSTR app_id) override {
@@ -658,7 +668,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
       return E_UNEXPECTED;
     }
 
-    return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(&app_web_, app_id);
+    return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(
+        &app_web_, app_id, UpdateService::PolicySameVersionUpdate::kNotAllowed);
   }
 
   IFACEMETHODIMP createAllInstalledApps() override {

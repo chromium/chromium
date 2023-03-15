@@ -30,6 +30,11 @@ enum class UpdaterScope;
 
 namespace updater::test {
 
+enum class AppBundleWebCreateMode {
+  kCreateApp = 0,
+  kCreateInstalledApp = 1,
+};
+
 class ScopedServer;
 
 // Returns the path to the updater installer program (in the build output
@@ -183,10 +188,12 @@ void RegisterApp(UpdaterScope scope, const std::string& app_id);
 #if BUILDFLAG(IS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);
 void ExpectMarshalInterfaceSucceeds(UpdaterScope scope);
-void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
-                                    const std::string& app_id,
-                                    int expected_final_state,
-                                    int expected_error_code);
+void ExpectLegacyUpdate3WebSucceeds(
+    UpdaterScope scope,
+    const std::string& app_id,
+    AppBundleWebCreateMode app_bundle_web_create_mode,
+    int expected_final_state,
+    int expected_error_code);
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope);
 void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const std::string& app_id,

@@ -93,6 +93,7 @@ class IntegrationTestCommands
   virtual void ExpectMarshalInterfaceSucceeds() const = 0;
   virtual void ExpectLegacyUpdate3WebSucceeds(
       const std::string& app_id,
+      AppBundleWebCreateMode app_bundle_web_create_mode,
       int expected_final_state,
       int expected_error_code) const = 0;
   virtual void ExpectLegacyProcessLauncherSucceeds() const = 0;

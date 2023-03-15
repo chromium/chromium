@@ -214,11 +214,14 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectMarshalInterfaceSucceeds(updater_scope_);
   }
 
-  void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id,
-                                      int expected_final_state,
-                                      int expected_error_code) const override {
+  void ExpectLegacyUpdate3WebSucceeds(
+      const std::string& app_id,
+      AppBundleWebCreateMode app_bundle_web_create_mode,
+      int expected_final_state,
+      int expected_error_code) const override {
     updater::test::ExpectLegacyUpdate3WebSucceeds(
-        updater_scope_, app_id, expected_final_state, expected_error_code);
+        updater_scope_, app_id, app_bundle_web_create_mode,
+        expected_final_state, expected_error_code);
   }
 
   void ExpectLegacyProcessLauncherSucceeds() const override {

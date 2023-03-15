@@ -236,11 +236,16 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_marshal_interface_succeeds");
   }
 
-  void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id,
-                                      int expected_final_state,
-                                      int expected_error_code) const override {
+  void ExpectLegacyUpdate3WebSucceeds(
+      const std::string& app_id,
+      AppBundleWebCreateMode app_bundle_web_create_mode,
+      int expected_final_state,
+      int expected_error_code) const override {
     RunCommand("expect_legacy_update3web_succeeds",
                {Param("app_id", app_id),
+                Param("app_bundle_web_create_mode",
+                      base::NumberToString(
+                          static_cast<int>(app_bundle_web_create_mode))),
                 Param("expected_final_state",
                       base::NumberToString(expected_final_state)),
                 Param("expected_error_code",

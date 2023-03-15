@@ -183,11 +183,14 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectMarshalInterfaceSucceeds();
   }
 
-  void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id,
-                                      int expected_final_state,
-                                      int expected_error_code) {
-    test_commands_->ExpectLegacyUpdate3WebSucceeds(app_id, expected_final_state,
-                                                   expected_error_code);
+  void ExpectLegacyUpdate3WebSucceeds(
+      const std::string& app_id,
+      AppBundleWebCreateMode app_bundle_web_create_mode,
+      int expected_final_state,
+      int expected_error_code) {
+    test_commands_->ExpectLegacyUpdate3WebSucceeds(
+        app_id, app_bundle_web_create_mode, expected_final_state,
+        expected_error_code);
   }
 
   void ExpectLegacyProcessLauncherSucceeds() {
@@ -1121,8 +1124,9 @@ class IntegrationTestLegacyUpdate3Web : public IntegrationTest {
 
 TEST_F(IntegrationTestLegacyUpdate3Web, NoUpdate) {
   ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(test_server_.get(), kAppId));
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_NO_UPDATE, S_OK));
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
+      kAppId, AppBundleWebCreateMode::kCreateInstalledApp, STATE_NO_UPDATE,
+      S_OK));
 }
 
 TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicyManual) {
@@ -1130,23 +1134,26 @@ TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicyManual) {
   group_policies.Set("Updatetest1", kPolicyAutomaticUpdatesOnly);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
-      kAppId, STATE_ERROR, GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL));
+      kAppId, AppBundleWebCreateMode::kCreateInstalledApp, STATE_ERROR,
+      GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL));
 }
 
 TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicy) {
   base::Value::Dict group_policies;
   group_policies.Set("Updatetest1", kPolicyDisabled);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
-  ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_ERROR,
-                                 GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
+  ExpectLegacyUpdate3WebSucceeds(
+      kAppId, AppBundleWebCreateMode::kCreateInstalledApp, STATE_ERROR,
+      GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
 }
 
 TEST_F(IntegrationTestLegacyUpdate3Web, CheckForUpdate) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
       test_server_.get(), kAppId, UpdateService::Priority::kForeground,
       base::Version("0.1"), base::Version("0.2")));
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_UPDATE_AVAILABLE, S_OK));
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
+      kAppId, AppBundleWebCreateMode::kCreateInstalledApp,
+      STATE_UPDATE_AVAILABLE, S_OK));
 }
 
 TEST_F(IntegrationTestLegacyUpdate3Web, Update) {
@@ -1156,8 +1163,30 @@ TEST_F(IntegrationTestLegacyUpdate3Web, Update) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
       base::Version("0.1"), base::Version("0.2")));
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
+      kAppId, AppBundleWebCreateMode::kCreateInstalledApp,
+      STATE_INSTALL_COMPLETE, S_OK));
+}
+
+TEST_F(IntegrationTestLegacyUpdate3Web, CheckForInstall) {
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
+      test_server_.get(), kAppId, UpdateService::Priority::kForeground,
+      base::Version("0.1"), base::Version("0.1")));
   ASSERT_NO_FATAL_FAILURE(
-      ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_INSTALL_COMPLETE, S_OK));
+      ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
+                                     STATE_UPDATE_AVAILABLE, S_OK));
+}
+
+TEST_F(IntegrationTestLegacyUpdate3Web, Install) {
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(
+      test_server_.get(), kAppId, UpdateService::Priority::kForeground,
+      base::Version("0.1"), base::Version("0.1")));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
+      base::Version("0.1"), base::Version("0.1")));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
+                                     STATE_INSTALL_COMPLETE, S_OK));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

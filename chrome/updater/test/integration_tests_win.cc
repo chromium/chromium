@@ -903,12 +903,19 @@ void InitializeBundle(UpdaterScope scope,
 
 HRESULT DoUpdate(UpdaterScope scope,
                  const base::win::ScopedBstr& appid,
+                 AppBundleWebCreateMode app_bundle_web_create_mode,
                  int expected_final_state,
                  HRESULT expected_error_code) {
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
   InitializeBundle(scope, bundle);
   EXPECT_TRUE(bundle);
-  EXPECT_HRESULT_SUCCEEDED(bundle->createInstalledApp(appid.Get()));
+  EXPECT_HRESULT_SUCCEEDED(
+      app_bundle_web_create_mode == AppBundleWebCreateMode::kCreateInstalledApp
+          ? bundle->createInstalledApp(appid.Get())
+          : bundle->createApp(appid.Get(),
+                              base::win::ScopedBstr(L"brand").Get(),
+                              base::win::ScopedBstr(L"en").Get(),
+                              base::win::ScopedBstr(L"ap").Get()));
   EXPECT_HRESULT_SUCCEEDED(bundle->checkForUpdate());
   bool done = false;
   static const base::TimeDelta kExpirationTimeout =
@@ -1059,13 +1066,15 @@ HRESULT DoUpdate(UpdaterScope scope,
   return S_OK;
 }
 
-void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
-                                    const std::string& app_id,
-                                    int expected_final_state,
-                                    int expected_error_code) {
-  EXPECT_HRESULT_SUCCEEDED(
-      DoUpdate(scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str()),
-               expected_final_state, expected_error_code));
+void ExpectLegacyUpdate3WebSucceeds(
+    UpdaterScope scope,
+    const std::string& app_id,
+    AppBundleWebCreateMode app_bundle_web_create_mode,
+    int expected_final_state,
+    int expected_error_code) {
+  EXPECT_HRESULT_SUCCEEDED(DoUpdate(
+      scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str()),
+      app_bundle_web_create_mode, expected_final_state, expected_error_code));
 }
 
 void SetupLaunchCommandElevated(const std::wstring& app_id,
