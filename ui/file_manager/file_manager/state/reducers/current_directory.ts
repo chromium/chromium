@@ -116,19 +116,26 @@ export function updateSelection(
     currentState: State, action: ChangeSelectionAction): State {
   if (!currentState.currentDirectory) {
     console.warn('Missing `currentDirectory`');
+    console.debug('Dropping action:', action);
     return currentState;
   }
 
   if (!currentState.currentDirectory.content) {
     console.warn('Missing `currentDirectory.content`');
+    console.debug('Dropping action:', action);
     return currentState;
   }
 
   const selectedKeys = action.payload.selectedKeys;
   const contentKeys = new Set(currentState.currentDirectory!.content!.keys);
-  if (!selectedKeys.every(key => contentKeys.has(key))) {
-    console.warn('Got selected keys that are not in current directory');
-    return currentState;
+  const missingKeys = selectedKeys.filter(k => !contentKeys.has(k));
+
+  if (missingKeys.length > 0) {
+    console.warn(
+        'Got selected keys that are not in current directory, ' +
+        'continuing anyway');
+    console.debug(`Missing keys: ${missingKeys.join('\n')} \nexisting keys:\n ${
+        (currentState.currentDirectory?.content?.keys ?? []).join('\n')}`);
   }
 
   const selection = getEmptySelection(selectedKeys);
