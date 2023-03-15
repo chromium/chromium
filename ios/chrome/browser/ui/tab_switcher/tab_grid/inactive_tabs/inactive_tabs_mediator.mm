@@ -124,6 +124,14 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
   [_snapshotCache removeObserver:self];
 }
 
+- (void)closeItemWithID:(NSString*)itemID {
+  // TODO(crbug.com/1418021): Add metrics when the user closes an inactive tab.
+  int index = GetTabIndex(_webStateList, itemID, /*pinned=*/NO);
+  if (index != WebStateList::kInvalidIndex) {
+    _webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+  }
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {

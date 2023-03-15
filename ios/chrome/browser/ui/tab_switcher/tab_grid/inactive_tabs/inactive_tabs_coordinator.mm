@@ -126,7 +126,7 @@ const NSTimeInterval kDuration = 0.2;
 
 - (void)gridViewController:(GridViewController*)gridViewController
         didCloseItemWithID:(NSString*)itemID {
-  // TODO(crbug.com/1408053): Close the tab.
+  [self.mediator closeItemWithID:itemID];
 }
 
 - (void)didTapPlusSignInGridViewController:
