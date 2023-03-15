@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
@@ -149,10 +148,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     @Override
     public int[] getExperimentIds() {
-        // TODO(iwells): figure out why this is being called from another thread right after FRE
-        if (!ThreadUtils.runningOnUiThread()) {
-            return new int[0];
-        }
         return FeedProcessScopeDependencyProviderJni.get().getExperimentIds();
     }
 
