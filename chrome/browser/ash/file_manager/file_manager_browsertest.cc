@@ -953,6 +953,7 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
           /*result*/
           expected_results,
           /*username*/ kUserName,
+          /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
           /*scan_ids*/ expected_scan_ids);
 
       return true;

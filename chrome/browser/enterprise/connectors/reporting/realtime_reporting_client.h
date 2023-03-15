@@ -53,6 +53,8 @@ namespace enterprise_connectors {
 class RealtimeReportingClient : public KeyedService,
                                 public policy::CloudPolicyClient::Observer {
  public:
+  static const char kKeyProfileIdentifier[];
+
   explicit RealtimeReportingClient(content::BrowserContext* context);
 
   RealtimeReportingClient(const RealtimeReportingClient&) = delete;
@@ -115,6 +117,10 @@ class RealtimeReportingClient : public KeyedService,
       const enterprise_connectors::ReportingSettings& settings,
       base::Value::Dict event,
       const base::Time& time);
+
+  // Returns the profile identifier which is the path to the current profile on
+  // managed browsers or the globally unique profile identifier otherwise.
+  std::string GetProfileIdentifier() const;
 
   // Sub-methods called by InitRealtimeReportingClient to make appropriate
   // verifications and initialize the corresponding client. Returns a policy

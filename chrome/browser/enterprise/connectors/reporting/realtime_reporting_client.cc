@@ -17,11 +17,14 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -67,6 +70,9 @@ bool IsClientValid(const std::string& dm_token,
 }  // namespace
 
 namespace enterprise_connectors {
+
+const char RealtimeReportingClient::kKeyProfileIdentifier[] =
+    "profileIdentifier";
 
 RealtimeReportingClient::RealtimeReportingClient(
     content::BrowserContext* context)
@@ -374,6 +380,8 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
       settings.per_profile ? profile_client_.get() : browser_client_.get();
   base::Value::Dict wrapper;
   wrapper.Set("time", time_str);
+  event.Set(kKeyProfileIdentifier, GetProfileIdentifier());
+  // TODO(b/270589536): also move other common field setting here.
   wrapper.Set(name, std::move(event));
 
   auto upload_callback = base::BindOnce(
@@ -407,6 +415,20 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
 
 std::string RealtimeReportingClient::GetProfileUserName() const {
   return safe_browsing::GetProfileEmail(identity_manager_);
+}
+
+std::string RealtimeReportingClient::GetProfileIdentifier() const {
+  if (profile_client_) {
+    auto* profile_id_service =
+        enterprise::ProfileIdServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(context_));
+    if (profile_id_service && profile_id_service->GetProfileId().has_value()) {
+      return profile_id_service->GetProfileId().value();
+    }
+    return std::string();
+  }
+
+  return Profile::FromBrowserContext(context_)->GetPath().AsUTF8Unsafe();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

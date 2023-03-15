@@ -678,6 +678,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*size*/ std::string("download contents").size(),
         /*result*/ EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ kScanId);
 
     request.Start();
@@ -748,6 +749,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*size*/ std::string("download contents").size(),
         /*result*/ EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ kScanId);
 
     request.Start();
@@ -808,6 +810,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*size*/ std::string("download contents").size(),
         EventResultToString(EventResult::BLOCKED),
         /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ kScanId);
 
     request.Start();
@@ -868,6 +871,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*size*/ std::string("download contents").size(),
         EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ kScanId);
 
     request.Start();
@@ -931,7 +935,9 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         EventResultToString(EventResult::BLOCKED),
-        /*username*/ kUserName, /*scan_id*/ kScanId);
+        /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id*/ kScanId);
 
     request.Start();
 
@@ -986,7 +992,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*size*/ std::string("download contents").size(),
         /*result*/
         EventResultToString(EventResult::ALLOWED),
-        /*username*/ kUserName);
+        /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
 
     request.Start();
 
@@ -1041,7 +1048,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*size*/ std::string("download contents").size(),
         /*result*/
         EventResultToString(EventResult::ALLOWED),
-        /*username*/ kUserName);
+        /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
 
     request.Start();
 
@@ -1101,7 +1109,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*size*/ std::string("download contents").size(),
         /*result*/
         EventResultToString(EventResult::WARNED),
-        /*username*/ kUserName);
+        /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
 
     request.Start();
 
@@ -1245,7 +1254,8 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
         /*mimetypes*/ TxtMimeTypes(),
         /*size*/ std::string("foo.exe").size(),
         /*result*/ EventResultToString(EventResult::ALLOWED),
-        /*username*/ kUserName);
+        /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
 
     request.Start();
     run_loop.Run();
@@ -1349,6 +1359,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
         {EventResultToString(EventResult::BLOCKED),
          EventResultToString(EventResult::BLOCKED)},
         /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan IDs*/
         {
             kScanId + std::string("0"),
@@ -1404,7 +1415,8 @@ TEST_F(DeepScanningReportingTest, Timeout) {
       /*size*/ std::string("download contents").size(),
       /*result*/
       EventResultToString(EventResult::ALLOWED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
 
   request.Start();
 
@@ -1528,7 +1540,9 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/ EventResultToString(expected_event_result_for_malware()),
-        /*username*/ kUserName, /*scan_id*/ kScanId);
+        /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id*/ kScanId);
 
     request.Start();
 
@@ -1587,7 +1601,9 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/ EventResultToString(EventResult::WARNED),
-        /*username*/ kUserName, /*scan_id*/ kScanId);
+        /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+        /*scan_id*/ kScanId);
 
     request.Start();
 
@@ -1638,7 +1654,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         /*size*/ std::string("download contents").size(),
         /*result*/
         EventResultToString(expected_event_result_for_safe_large_file()),
-        /*username*/ kUserName);
+        /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
 
     request.Start();
 
@@ -1694,7 +1711,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/ EventResultToString(expected_event_result_for_malware()),
-        /*username*/ kUserName);
+        /*username*/ kUserName,
+        /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
 
     request.Start();
 

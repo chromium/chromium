@@ -2893,7 +2893,8 @@ TEST_F(DownloadProtectionServiceTest,
       0,  // expected_content_size
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
-      ""                                          // expected_username
+      "",                                         // expected_username
+      profile()->GetPath().AsUTF8Unsafe()         // expected_profile_identifier
   );
 
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
@@ -2961,6 +2962,7 @@ TEST_F(DownloadProtectionServiceTest,
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
       "",                                         // expected_username
+      profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
       {} /* expected_scan_id */);
 
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
@@ -3011,7 +3013,8 @@ TEST_F(DownloadProtectionServiceTest,
       0,  // expected_content_size
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
-      ""                                          // expected_username
+      "",                                         // expected_username
+      profile()->GetPath().AsUTF8Unsafe()         // expected_profile_identifier
   );
 
   download_service_->ReportDelayedBypassEvent(
@@ -3073,6 +3076,7 @@ TEST_F(DownloadProtectionServiceTest,
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
       "",                                         // expected_username
+      profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
       {} /* expected_scan_id */);
 
   download_service_->ReportDelayedBypassEvent(
@@ -3134,6 +3138,7 @@ TEST_F(DownloadProtectionServiceTest,
       safe_browsing::EventResultToString(
           safe_browsing::EventResult::BYPASSED),  // expected_result
       "",                                         // expected_username
+      profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
       {} /* expected_scan_id */);
 
   download_service_->ReportDelayedBypassEvent(

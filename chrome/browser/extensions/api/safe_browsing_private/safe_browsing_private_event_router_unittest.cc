@@ -309,6 +309,10 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
                        enabled_event_names, enabled_opt_in_events);
   }
 
+  std::string GetProfileIdentifier() const {
+    return profile_->GetPath().AsUTF8Unsafe();
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
@@ -814,7 +818,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEvent) {
 
   safe_browsing::EventReportValidator validator(client_.get());
   validator.ExpectLoginEvent("https://www.example.com/", false, "",
-                             profile_->GetProfileUserName(), u"*****");
+                             profile_->GetProfileUserName(),
+                             GetProfileIdentifier(), u"*****");
 
   TriggerOnLoginEvent(GURL("https://www.example.com/"), u"login-username");
 }
@@ -858,7 +863,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   safe_browsing::EventReportValidator validator(client_.get());
   validator.ExpectLoginEvent("https://www.example.com/", false, "",
                              profile_->GetProfileUserName(),
-                             u"*****@example.com");
+                             GetProfileIdentifier(), u"*****@example.com");
 
   TriggerOnLoginEvent(GURL("https://www.example.com/"),
                       u"login-username@example.com");
@@ -879,9 +884,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEventFederated) {
       profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
 
   safe_browsing::EventReportValidator validator(client_.get());
-  validator.ExpectLoginEvent("https://www.example.com/", true,
-                             "https://www.google.com",
-                             profile_->GetProfileUserName(), u"*****");
+  validator.ExpectLoginEvent(
+      "https://www.example.com/", true, "https://www.google.com",
+      profile_->GetProfileUserName(), GetProfileIdentifier(), u"*****");
 
   TriggerOnLoginEvent(GURL("https://www.example.com/"), u"login-username",
                       url::Origin::Create(GURL("https://www.google.com")));
@@ -908,7 +913,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordBreach) {
           {"https://first.example.com/", u"*****"},
           {"https://second.example.com/", u"*****@gmail.com"},
       },
-      profile_->GetProfileUserName());
+      profile_->GetProfileUserName(), GetProfileIdentifier());
 
   TriggerOnPasswordBreachEvent(
       "SAFETY_CHECK",
@@ -968,7 +973,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       {
           {"https://secondexample.com/", u"*****"},
       },
-      profile_->GetProfileUserName());
+      profile_->GetProfileUserName(), GetProfileIdentifier());
 
   TriggerOnPasswordBreachEvent(
       "SAFETY_CHECK",

@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -324,6 +326,23 @@ class ContentAnalysisDelegateBrowserTestBase
 
   policy::MockCloudPolicyClient* client() { return client_.get(); }
 
+  std::string GetProfileIdentifier() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    return browser()->profile()->GetPath().AsUTF8Unsafe();
+#else
+    if (machine_scope_) {
+      return browser()->profile()->GetPath().AsUTF8Unsafe();
+    }
+    auto* profile_id_service =
+        enterprise::ProfileIdServiceFactory::GetForProfile(
+            browser()->profile());
+    if (profile_id_service && profile_id_service->GetProfileId().has_value()) {
+      return profile_id_service->GetProfileId().value();
+    }
+    return std::string();
+#endif
+  }
+
  private:
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
@@ -429,7 +448,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
       /*size*/ std::string("bad file content").size(),
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
-      /*username*/ kUserName, /*scan_id*/ kScanId2);
+      /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ kScanId2);
 
   ContentAnalysisResponse ok_response;
   ok_response.set_request_token(kScanId1);
@@ -538,6 +559,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId1);
 
   bool called = false;
@@ -619,7 +641,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
       /*size*/ 9,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier());
 
   // While only one file should reach the upload part and get a
   // TOO_MANY_REQUEST result, it can be any of them depending on how quickly
@@ -754,7 +777,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
                               safe_browsing::EventResult::ALLOWED)
                         : safe_browsing::EventResultToString(
                               safe_browsing::EventResult::BLOCKED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier());
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
@@ -837,7 +861,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
                               safe_browsing::EventResult::ALLOWED)
                         : safe_browsing::EventResultToString(
                               safe_browsing::EventResult::BLOCKED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier());
 
   bool called = false;
   base::RunLoop run_loop;
@@ -1003,6 +1028,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
           expected_result() ? safe_browsing::EventResult::ALLOWED
                             : safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId1);
 
   bool called = false;

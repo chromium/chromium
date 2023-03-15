@@ -24,6 +24,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -46,6 +47,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_features.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
@@ -365,6 +367,23 @@ class DownloadDeepScanningBrowserTestBase
   }
 
   bool connectors_machine_scope() const { return connectors_machine_scope_; }
+
+  std::string GetProfileIdentifier() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    return browser()->profile()->GetPath().AsUTF8Unsafe();
+#else
+    if (connectors_machine_scope_) {
+      return browser()->profile()->GetPath().AsUTF8Unsafe();
+    }
+    auto* profile_id_service =
+        enterprise::ProfileIdServiceFactory::GetForProfile(
+            browser()->profile());
+    if (profile_id_service && profile_id_service->GetProfileId().has_value()) {
+      return profile_id_service->GetProfileId().value();
+    }
+    return std::string();
+#endif
+  }
 
  private:
   std::unique_ptr<KeyedService> CreateBinaryUploadService(
@@ -777,6 +796,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
       /*size*/ 276,
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ last_request().request_token());
 
   // The DLP scan finishes asynchronously, and finds nothing. The malware result
@@ -870,6 +890,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       /*size*/ 276,
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ last_request().request_token());
   WaitForDownloadToFinish();
 
@@ -957,7 +978,8 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
       /*result*/ EventResultToString(EventResult::BLOCKED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier());
 
   WaitForDownloadToFinish();
 
@@ -1326,6 +1348,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
       /*size*/ 54,
       /*result*/ EventResultToString(EventResult::BLOCKED),
       /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ last_request().request_token());
 
   SendFcmMessage(response);
@@ -1392,6 +1415,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
       /*size*/ 54,
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ last_request().request_token());
 
   SendFcmMessage(response);
@@ -1427,6 +1451,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
       /*size*/ 54,
       /*result*/ EventResultToString(EventResult::BYPASSED),
       /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ last_request().request_token());
 
   DownloadItemModel model(item);
@@ -1493,6 +1518,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
       /*size*/ 54,
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ last_request().request_token());
 
   SendFcmMessage(response);
@@ -1590,6 +1616,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
       /*size*/ 54,
       /*result*/ EventResultToString(EventResult::BLOCKED),
       /*username*/ kUserName,
+      /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ last_request().request_token());
 
   SendFcmMessage(response);

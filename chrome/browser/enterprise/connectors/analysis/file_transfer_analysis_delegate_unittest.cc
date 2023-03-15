@@ -1006,6 +1006,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id);
 
   ScanUpload(source_url, destination_directory_url_);
@@ -1061,6 +1062,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
       /*username*/ kUserName,
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id);
 
   ScanUpload(source_url, destination_url);
@@ -1112,6 +1114,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id);
 
   ScanUpload(source_url, destination_directory_url_);
@@ -1166,7 +1169,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncrypted) {
       /*size*/ 20015,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe());
 
   ScanUpload(source_url, destination_directory_url_);
 
@@ -1234,6 +1238,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
       /*username*/ kUserName,
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
@@ -1312,6 +1317,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
        safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
        safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED)},
       /*username*/ kUserName,
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ {scan_id, scan_id, scan_id});
 
   ScanUpload(source_directory_url_, destination_directory_url_);
@@ -1374,6 +1380,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       {safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
        safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED)},
       /*username*/ kUserName,
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ {scan_id, scan_id});
 
   ScanUpload(source_directory_url_, destination_directory_url_);
@@ -1460,6 +1467,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
       /*result*/
       expected_results,
       /*username*/ kUserName,
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ expected_scan_ids);
 
   ScanUpload(source_directory_url_, destination_directory_url_);

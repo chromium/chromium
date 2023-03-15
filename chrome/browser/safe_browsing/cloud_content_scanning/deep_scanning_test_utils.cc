@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -51,7 +52,8 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     const std::set<std::string>* expected_mimetypes,
     int64_t expected_content_size,
     const std::string& expected_result,
-    const std::string& expected_username) {
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
   source_ = expected_source;
@@ -62,7 +64,8 @@ void EventReportValidator::ExpectUnscannedFileEvent(
   unscanned_reason_ = expected_reason;
   content_size_ = expected_content_size;
   results_[expected_filename] = expected_result;
-  username_ = expected_username;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
           [this](content::BrowserContext* context, bool include_device_info,
@@ -87,7 +90,8 @@ void EventReportValidator::ExpectUnscannedFileEvents(
     const std::set<std::string>* expected_mimetypes,
     int64_t expected_content_size,
     const std::string& expected_result,
-    const std::string& expected_username) {
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier) {
   DCHECK_EQ(expected_filenames.size(), expected_sha256s.size());
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes_[expected_filenames[i]] = expected_sha256s[i];
@@ -102,7 +106,8 @@ void EventReportValidator::ExpectUnscannedFileEvents(
   trigger_ = expected_trigger;
   unscanned_reason_ = expected_reason;
   content_size_ = expected_content_size;
-  username_ = expected_username;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
       .WillRepeatedly(
@@ -123,7 +128,8 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::set<std::string>* expected_mimetypes,
     int64_t expected_content_size,
     const std::string& expected_result,
-    const std::string& expected_username,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
     const absl::optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
@@ -135,7 +141,8 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
   trigger_ = expected_trigger;
   content_size_ = expected_content_size;
   results_[expected_filename] = expected_result;
-  username_ = expected_username;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
   if (expected_scan_id.has_value()) {
     scan_ids_[expected_filename] = expected_scan_id.value();
   }
@@ -164,7 +171,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::set<std::string>* expected_mimetypes,
     int64_t expected_content_size,
     const std::string& expected_result,
-    const std::string& expected_username,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
     const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
@@ -176,7 +184,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
   trigger_ = expected_trigger;
   content_size_ = expected_content_size;
   results_[expected_filename] = expected_result;
-  username_ = expected_username;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
   scan_ids_[expected_filename] = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
@@ -203,7 +212,8 @@ void EventReportValidator::ExpectSensitiveDataEvents(
     const std::set<std::string>* expected_mimetypes,
     int64_t expected_content_size,
     const std::vector<std::string>& expected_results,
-    const std::string& expected_username,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
     const std::vector<std::string>& expected_scan_ids) {
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes_[expected_filenames[i]] = expected_sha256s[i];
@@ -219,7 +229,8 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   mimetypes_ = expected_mimetypes;
   trigger_ = expected_trigger;
   content_size_ = expected_content_size;
-  username_ = expected_username;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
 
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
@@ -244,7 +255,8 @@ void EventReportValidator::
         const std::set<std::string>* expected_mimetypes,
         int64_t expected_content_size,
         const std::string& expected_result,
-        const std::string& expected_username,
+        const std::string& expected_profile_username,
+        const std::string& expected_profile_identifier,
         const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
@@ -256,7 +268,8 @@ void EventReportValidator::
   mimetypes_ = expected_mimetypes;
   content_size_ = expected_content_size;
   results_[expected_filename] = expected_result;
-  username_ = expected_username;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
   scan_ids_[expected_filename] = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
@@ -293,7 +306,8 @@ void EventReportValidator::
         const std::set<std::string>* expected_mimetypes,
         int64_t expected_content_size,
         const std::string& expected_result,
-        const std::string& expected_username,
+        const std::string& expected_profile_username,
+        const std::string& expected_profile_identifier,
         const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
@@ -305,7 +319,8 @@ void EventReportValidator::
   content_size_ = expected_content_size;
   results_[expected_filename] = expected_result;
   dlp_verdicts_[expected_filename] = expected_dlp_verdict;
-  username_ = expected_username;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
   scan_ids_[expected_filename] = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
@@ -337,7 +352,8 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::set<std::string>* expected_mimetypes,
     int64_t expected_content_size,
     const std::string& expected_result,
-    const std::string& expected_username) {
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -346,7 +362,8 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
   trigger_ = expected_trigger;
   content_size_ = expected_content_size;
   results_[expected_filename] = expected_result;
-  username_ = expected_username;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
           [this](content::BrowserContext* context, bool include_device_info,
@@ -365,12 +382,14 @@ void EventReportValidator::ExpectLoginEvent(
     const bool expected_is_federated,
     const std::string& expected_federated_origin,
     const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
     const std::u16string& expected_login_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyLoginEvent;
   url_ = expected_url;
   is_federated_ = expected_is_federated;
   federated_origin_ = expected_federated_origin;
   username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
   login_user_name_ = expected_login_username;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
@@ -389,11 +408,13 @@ void EventReportValidator::ExpectPasswordBreachEvent(
     const std::string& expected_trigger,
     const std::vector<std::pair<std::string, std::u16string>>&
         expected_identities,
-    const std::string& expected_username) {
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent;
   trigger_ = expected_trigger;
   password_breach_identities_ = expected_identities;
-  username_ = expected_username;
+  username_ = expected_profile_username;
+  profile_identifier_ = expected_profile_identifier;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
           [this](content::BrowserContext* context, bool include_device_info,
@@ -440,6 +461,10 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
                 unscanned_reason_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyProfileUserName,
                 username_);
+  ValidateField(
+      event,
+      enterprise_connectors::RealtimeReportingClient::kKeyProfileIdentifier,
+      profile_identifier_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyIsFederated,
                 is_federated_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyLoginUserName,
