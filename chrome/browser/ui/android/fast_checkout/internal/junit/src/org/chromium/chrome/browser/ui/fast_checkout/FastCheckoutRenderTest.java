@@ -31,6 +31,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -54,6 +55,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisabledTest(message = "Flaky - http://crbug.com/1424888")
 public class FastCheckoutRenderTest {
     private static final FastCheckoutAutofillProfile AUTOFILL_PROFILE =
             FastCheckoutTestUtils.createDetailedProfile(
