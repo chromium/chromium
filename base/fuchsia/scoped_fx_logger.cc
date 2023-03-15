@@ -4,11 +4,13 @@
 
 #include "base/fuchsia/scoped_fx_logger.h"
 
+#include <lib/component/incoming/cpp/protocol.h>
 #include <lib/fdio/directory.h>
 #include <stdio.h>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/process/process.h"
 #include "base/strings/string_piece.h"
@@ -28,12 +30,9 @@ ScopedFxLogger ScopedFxLogger::CreateForProcess(
   // CHECK()ing or LOG()ing inside this function is safe, since it is only
   // called to initialize logging, not during individual logging operations.
 
-  fuchsia::logger::LogSinkHandle log_sink;
-  zx_status_t status =
-      fdio_service_connect("/svc/fuchsia.logger.LogSink",
-                           log_sink.NewRequest().TakeChannel().release());
-  if (status != ZX_OK) {
-    ZX_LOG(ERROR, status) << "connect(LogSink) failed";
+  auto log_sink_client_end = component::Connect<fuchsia_logger::LogSink>();
+  if (log_sink_client_end.is_error()) {
+    LOG(ERROR) << FidlConnectionErrorMessage(log_sink_client_end);
     return {};
   }
 
@@ -47,27 +46,31 @@ ScopedFxLogger ScopedFxLogger::CreateForProcess(
                                  .AsUTF8Unsafe();
   tags.insert(tags.begin(), program_name);
 
-  return CreateFromLogSink(std::move(log_sink), std::move(tags));
+  return CreateFromLogSink(std::move(log_sink_client_end.value()),
+                           std::move(tags));
 }
 
 // static
 ScopedFxLogger ScopedFxLogger::CreateFromLogSink(
-    fuchsia::logger::LogSinkHandle log_sink_handle,
+    fidl::ClientEnd<fuchsia_logger::LogSink> log_sink_client_end,
     std::vector<base::StringPiece> tags) {
   // CHECK()ing or LOG()ing inside this function is safe, since it is only
   // called to initialize logging, not during individual logging operations.
 
   // Attempts to create a kernel socket object should never fail.
   zx::socket local, remote;
-  zx_status_t status = zx::socket::create(ZX_SOCKET_DATAGRAM, &local, &remote);
-  ZX_CHECK(status == ZX_OK, status) << "zx_socket_create() failed";
+  zx_status_t socket_status =
+      zx::socket::create(ZX_SOCKET_DATAGRAM, &local, &remote);
+  ZX_CHECK(socket_status == ZX_OK, socket_status)
+      << "zx_socket_create() failed";
 
   // ConnectStructured() may fail if e.g. the LogSink has disconnected already.
-  fuchsia::logger::LogSinkSyncPtr log_sink;
-  log_sink.Bind(std::move(log_sink_handle));
-  status = log_sink->ConnectStructured(std::move(remote));
-  if (status != ZX_OK) {
-    ZX_LOG(ERROR, status) << "ConnectStructured() failed";
+  fidl::SyncClient log_sink(std::move(log_sink_client_end));
+  auto connect_structured_result =
+      log_sink->ConnectStructured(std::move(remote));
+  if (connect_structured_result.is_error()) {
+    ZX_LOG(ERROR, connect_structured_result.error_value().status())
+        << "ConnectStructured() failed";
     return {};
   }
 

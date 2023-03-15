@@ -5,7 +5,7 @@
 #ifndef BASE_FUCHSIA_TEST_LOG_LISTENER_SAFE_H_
 #define BASE_FUCHSIA_TEST_LOG_LISTENER_SAFE_H_
 
-#include <fuchsia/logger/cpp/fidl_test_base.h>
+#include <fidl/fuchsia.logger/cpp/fidl.h>
 
 #include <lib/fidl/cpp/binding.h>
 #include <lib/zx/time.h>
@@ -27,10 +27,10 @@ namespace base {
 // cached, i.e. including messages that may pre-date this log-listener being
 // created.
 class TestLogListenerSafe final
-    : public fuchsia::logger::testing::LogListenerSafe_TestBase {
+    : public fidl::Server<fuchsia_logger::LogListenerSafe> {
  public:
   using OnLogMessageCallback =
-      base::RepeatingCallback<void(const fuchsia::logger::LogMessage&)>;
+      base::RepeatingCallback<void(const fuchsia_logger::LogMessage&)>;
 
   TestLogListenerSafe();
   ~TestLogListenerSafe() override;
@@ -43,11 +43,10 @@ class TestLogListenerSafe final
 
  private:
   // LogListenerSafe implementation.
-  void Log(fuchsia::logger::LogMessage message, LogCallback callback) override;
-  void LogMany(std::vector<fuchsia::logger::LogMessage> messages,
-               LogManyCallback callback) override;
-  void Done() override;
-  void NotImplemented_(const std::string& name) override;
+  void Log(LogRequest& request, LogCompleter::Sync& completer) override;
+  void LogMany(LogManyRequest& request,
+               LogManyCompleter::Sync& completer) override;
+  void Done(DoneCompleter::Sync& completer) override;
 
   OnLogMessageCallback on_log_message_;
 };
@@ -64,27 +63,27 @@ class SimpleTestLogListener {
   SimpleTestLogListener(const SimpleTestLogListener&) = delete;
   SimpleTestLogListener& operator=(const SimpleTestLogListener&) = delete;
 
-  // Attaches this instance to receive data matching |options|, from |log|.
-  void ListenToLog(fuchsia::logger::Log* log,
-                   std::unique_ptr<fuchsia::logger::LogFilterOptions> options);
+  // Attaches this instance to receive data matching `options`, from `log`.
+  void ListenToLog(const fidl::Client<fuchsia_logger::Log>& log,
+                   std::unique_ptr<fuchsia_logger::LogFilterOptions> options);
 
-  // Runs the message loop until a log message containing |expected_string| is
-  // received, and returns it. Returns |absl::nullopt| if |binding_| disconnects
-  // without the |expected_string| having been logged.
-  absl::optional<fuchsia::logger::LogMessage> RunUntilMessageReceived(
+  // Runs the message loop until a log message containing `expected_string` is
+  // received, and returns it. Returns `absl::nullopt` if `binding_` disconnects
+  // without the `expected_string` having been logged.
+  absl::optional<fuchsia_logger::LogMessage> RunUntilMessageReceived(
       base::StringPiece expected_string);
 
  private:
-  // Pushes |message| to the |logged_messages_| queue, or to |on_log_message_|.
-  void PushLoggedMessage(const fuchsia::logger::LogMessage& message);
+  // Pushes `message` to the `logged_messages_` queue, or to `on_log_message_`.
+  void PushLoggedMessage(const fuchsia_logger::LogMessage& message);
 
   // Used to ignore messages with timestamps prior to this listener's creation.
   zx::time ignore_before_;
 
   TestLogListenerSafe listener_;
-  fidl::Binding<fuchsia::logger::LogListenerSafe> binding_;
+  absl::optional<fidl::ServerBinding<fuchsia_logger::LogListenerSafe>> binding_;
 
-  base::circular_deque<fuchsia::logger::LogMessage> logged_messages_;
+  base::circular_deque<fuchsia_logger::LogMessage> logged_messages_;
   TestLogListenerSafe::OnLogMessageCallback on_log_message_;
 };
 

@@ -5,7 +5,7 @@
 #ifndef BASE_FUCHSIA_SCOPED_FX_LOGGER_H_
 #define BASE_FUCHSIA_SCOPED_FX_LOGGER_H_
 
-#include <fuchsia/logger/cpp/fidl.h>
+#include <fidl/fuchsia.logger/cpp/fidl.h>
 #include <lib/syslog/structured_backend/cpp/fuchsia_syslog.h>
 #include <lib/zx/socket.h>
 
@@ -32,13 +32,13 @@ class BASE_EXPORT ScopedFxLogger {
   // Returns an instance connected to the process' incoming LogSink service.
   // The returned instance has a single tag attributing the calling process in
   // some way (e.g. by Component or process name).
-  // Additional tags may optionally be specified via |tags|.
+  // Additional tags may optionally be specified via `tags`.
   static ScopedFxLogger CreateForProcess(
       std::vector<base::StringPiece> tags = {});
 
   // Returns an instance connected to the specified LogSink.
   static ScopedFxLogger CreateFromLogSink(
-      fuchsia::logger::LogSinkHandle,
+      fidl::ClientEnd<fuchsia_logger::LogSink> client_end,
       std::vector<base::StringPiece> tags = {});
 
   void LogMessage(base::StringPiece file,

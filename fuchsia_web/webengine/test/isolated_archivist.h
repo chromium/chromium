@@ -5,30 +5,30 @@
 #ifndef FUCHSIA_WEB_WEBENGINE_TEST_ISOLATED_ARCHIVIST_H_
 #define FUCHSIA_WEB_WEBENGINE_TEST_ISOLATED_ARCHIVIST_H_
 
-#include <fuchsia/logger/cpp/fidl.h>
+#include <fidl/fuchsia.logger/cpp/fidl.h>
 #include <lib/sys/cpp/outgoing_directory.h>
 
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Runs an isolated archivist-without-attribution, publishing its
-// fuchsia::logger::LogSink into a given OutgoingDirectory, and providing access
+// fuchsia_logger::LogSink into a given OutgoingDirectory, and providing access
 // to its fuchsia.logger.Log. Consumers of this class must use
 // `//build/config/fuchsia/test/archivist.shard.test-cml` in their component
 // manifest.
 class IsolatedArchivist {
  public:
-  explicit IsolatedArchivist(::sys::OutgoingDirectory& outgoing_directory);
+  explicit IsolatedArchivist(sys::OutgoingDirectory& outgoing_directory);
   IsolatedArchivist(const IsolatedArchivist&) = delete;
   IsolatedArchivist& operator=(const IsolatedArchivist&) = delete;
   ~IsolatedArchivist();
 
-  ::fuchsia::logger::Log& log() { return *log_; }
+  fidl::Client<fuchsia_logger::Log>& log() { return log_; }
 
  private:
-  absl::optional<base::ScopedServicePublisher<fuchsia::logger::LogSink>>
+  absl::optional<base::ScopedNaturalServicePublisher<fuchsia_logger::LogSink>>
       log_sink_publisher_;
-  ::fuchsia::logger::LogPtr log_;
+  fidl::Client<fuchsia_logger::Log> log_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_TEST_ISOLATED_ARCHIVIST_H_

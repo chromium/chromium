@@ -24,6 +24,16 @@ namespace base::fuchsia_component {
 
 template <typename Protocol,
           typename = std::enable_if_t<fidl::IsProtocolV<Protocol>>>
+BASE_EXPORT zx::result<> Connect(
+    fidl::ServerEnd<Protocol> server_end,
+    std::string name = fidl::DiscoverableProtocolName<Protocol>) {
+  return component::ConnectAt<Protocol>(
+      base::BorrowIncomingServiceDirectoryForProcess(), std::move(server_end),
+      name);
+}
+
+template <typename Protocol,
+          typename = std::enable_if_t<fidl::IsProtocolV<Protocol>>>
 BASE_EXPORT zx::result<fidl::ClientEnd<Protocol>> Connect(
     std::string name = fidl::DiscoverableProtocolName<Protocol>) {
   return component::ConnectAt<Protocol>(

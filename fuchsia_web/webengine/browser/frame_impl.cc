@@ -4,6 +4,8 @@
 
 #include "fuchsia_web/webengine/browser/frame_impl.h"
 
+#include <fidl/fuchsia.logger/cpp/fidl.h>
+#include <fidl/fuchsia.logger/cpp/hlcpp_conversion.h>
 #include <fuchsia/ui/gfx/cpp/fidl.h>
 #include <lib/fpromise/result.h>
 #include <lib/sys/cpp/component_context.h>
@@ -13,6 +15,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/process_context.h"
@@ -1065,7 +1068,7 @@ void FrameImpl::SetConsoleLogSink(fuchsia::logger::LogSinkHandle sink) {
 
   if (sink) {
     console_logger_ = base::ScopedFxLogger::CreateFromLogSink(
-        std::move(sink), {console_log_tag_});
+        fidl::HLCPPToNatural(sink), {console_log_tag_});
   } else {
     console_logger_ = {};
   }
@@ -1429,11 +1432,14 @@ bool FrameImpl::DidAddMessageToConsole(
     // Log via the process' LogSink service if none was set on the Frame.
     // Connect on-demand, so that embedders need not provide a LogSink in the
     // CreateContextParams services, unless they actually enable logging.
+    auto log_sink_client_end =
+        base::fuchsia_component::Connect<fuchsia_logger::LogSink>();
+    if (log_sink_client_end.is_error()) {
+      DLOG(ERROR) << base::FidlConnectionErrorMessage(log_sink_client_end);
+      return false;
+    }
     console_logger_ = base::ScopedFxLogger::CreateFromLogSink(
-        base::ComponentContextForProcess()
-            ->svc()
-            ->Connect<fuchsia::logger::LogSink>(),
-        {console_log_tag_});
+        std::move(log_sink_client_end.value()), {console_log_tag_});
 
     if (!console_logger_.is_valid())
       return false;
