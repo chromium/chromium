@@ -19,6 +19,7 @@ source_set("pinned_tabs") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/tabs:features",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_collection_commands",

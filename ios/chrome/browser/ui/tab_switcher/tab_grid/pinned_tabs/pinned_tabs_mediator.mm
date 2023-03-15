@@ -20,8 +20,10 @@
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/url/url_util.h"
@@ -318,8 +320,11 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
     return;
   }
 
-  // NTP tabs get no favicon.
+  // NTP tabs get the Chrome product favicon.
   if (IsURLNtp(webState->GetVisibleURL())) {
+    UIImage* chromeProductIcon = CustomSymbolWithPointSize(
+        kChromeProductSymbol, kPinnedCellFaviconSymbolPointSize);
+    completion(chromeProductIcon);
     return;
   }
 

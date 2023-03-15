@@ -159,8 +159,12 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   if (icon) {
     _faviconView.image = icon;
   } else {
-    _faviconView.image = CustomSymbolWithPointSize(
-        kChromeProductSymbol, kPinnedCellFaviconSymbolPointSize);
+    NSString* symbolName = kGlobeSymbol;
+    if (@available(iOS 15, *)) {
+      symbolName = kGlobeAmericasSymbol;
+    }
+    _faviconView.image = DefaultSymbolWithPointSize(
+        symbolName, kPinnedCellFaviconSymbolPointSize);
   }
 }
 
@@ -216,9 +220,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   selectedBackgroundBorderView.layer.borderWidth =
       kPinnedCellSelectionRingTintWidth;
   selectedBackgroundBorderView.layer.borderColor =
-      UseSymbols()
-          ? [UIColor colorNamed:kStaticBlue400Color].CGColor
-          : [UIColor colorNamed:@"grid_theme_selection_tint_color"].CGColor;
+      [UIColor colorNamed:kStaticBlue400Color].CGColor;
 
   UIView* selectedBackgroundView = [[UIView alloc] init];
   [selectedBackgroundView addSubview:selectedBackgroundBorderView];
@@ -342,6 +344,8 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   ]];
 
   _faviconView = faviconView;
+  // Set the default icon.
+  self.icon = nil;
 }
 
 - (void)setupActivityIndicator {
