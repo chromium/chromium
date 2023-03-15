@@ -205,18 +205,26 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   virtual void setTimeline(AnimationTimeline* timeline);
 
   // Animation options for ViewTimelines.
-  // TODO(kevers): Add web-animation-API methods once specced.
-  const absl::optional<TimelineOffset>& GetRangeStart() const {
+  using RangeBoundary = V8UnionStringOrTimelineRangeOffset;
+  const RangeBoundary* rangeStart();
+  const RangeBoundary* rangeEnd();
+  void setRangeStart(const RangeBoundary* range_start,
+                     ExceptionState& exception_state);
+  void setRangeEnd(const RangeBoundary* range_end,
+                   ExceptionState& exception_state);
+
+  const absl::optional<TimelineOffset>& GetRangeStartInternal() const {
     return range_start_;
   }
-  const absl::optional<TimelineOffset>& GetRangeEnd() const {
+  const absl::optional<TimelineOffset>& GetRangeEndInternal() const {
     return range_end_;
   }
-  void SetRangeStart(const absl::optional<TimelineOffset>& range_start) {
+  void SetRangeStartInternal(
+      const absl::optional<TimelineOffset>& range_start) {
     range_start_ = range_start;
     OnRangeUpdate();
   }
-  void SetRangeEnd(const absl::optional<TimelineOffset>& range_end) {
+  void SetRangeEndInternal(const absl::optional<TimelineOffset>& range_end) {
     range_end_ = range_end;
     OnRangeUpdate();
   }
@@ -434,6 +442,14 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // notified that the animation is ready. The start time must also be updated
   // if changing the animation range on a running or finished animation.
   void UpdateStartTimeForViewTimeline();
+
+  // Conversion between V8 representation of an animation range boundary and the
+  // internal representation.
+  absl::optional<TimelineOffset> GetEffectiveTimelineOffset(
+      const RangeBoundary* boundary,
+      double default_percent,
+      ExceptionState& exception_state);
+  static RangeBoundary* ToRangeBoundary(absl::optional<TimelineOffset> offset);
 
   String id_;
 

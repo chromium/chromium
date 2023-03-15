@@ -37,6 +37,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
@@ -2218,6 +2219,54 @@ void Animation::SetCompositorPending(bool effect_changed) {
   }
 }
 
+const Animation::RangeBoundary* Animation::rangeStart() {
+  return ToRangeBoundary(range_start_);
+}
+
+const Animation::RangeBoundary* Animation::rangeEnd() {
+  return ToRangeBoundary(range_end_);
+}
+
+void Animation::setRangeStart(const Animation::RangeBoundary* range_start,
+                              ExceptionState& exception_state) {
+  SetRangeStartInternal(
+      GetEffectiveTimelineOffset(range_start, 0, exception_state));
+}
+
+void Animation::setRangeEnd(const Animation::RangeBoundary* range_end,
+                            ExceptionState& exception_state) {
+  SetRangeEndInternal(
+      GetEffectiveTimelineOffset(range_end, 1, exception_state));
+}
+
+absl::optional<TimelineOffset> Animation::GetEffectiveTimelineOffset(
+    const Animation::RangeBoundary* boundary,
+    double default_percent,
+    ExceptionState& exception_state) {
+  KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(effect());
+  Element* element = keyframe_effect ? keyframe_effect->target() : nullptr;
+
+  return TimelineOffset::Create(element, boundary, default_percent,
+                                exception_state);
+}
+
+/* static */
+Animation::RangeBoundary* Animation::ToRangeBoundary(
+    absl::optional<TimelineOffset> timeline_offset) {
+  if (!timeline_offset) {
+    return MakeGarbageCollected<RangeBoundary>("auto");
+  }
+
+  TimelineRangeOffset* timeline_range_offset =
+      MakeGarbageCollected<TimelineRangeOffset>();
+  timeline_range_offset->setRangeName(timeline_offset->name);
+  CSSPrimitiveValue* value =
+      CSSPrimitiveValue::CreateFromLength(timeline_offset->offset, 1);
+  CSSNumericValue* offset = CSSNumericValue::FromCSSValue(*value);
+  timeline_range_offset->setOffset(offset);
+  return MakeGarbageCollected<RangeBoundary>(timeline_range_offset);
+}
+
 void Animation::UpdateStartTimeForViewTimeline() {
   auto* view_timeline = DynamicTo<ViewTimeline>(timeline_.Get());
   if (!view_timeline || !effect()) {
@@ -2227,10 +2276,10 @@ void Animation::UpdateStartTimeForViewTimeline() {
   absl::optional<TimelineOffset> boundary;
   double default_offset;
   if (EffectivePlaybackRate() >= 0) {
-    boundary = GetRangeStart();
+    boundary = GetRangeStartInternal();
     default_offset = 0;
   } else {
-    boundary = GetRangeEnd();
+    boundary = GetRangeEndInternal();
     default_offset = 1;
   }
 

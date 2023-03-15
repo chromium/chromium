@@ -44,6 +44,8 @@ enum ReplaceState { "active", "removed", "persisted" };
     [Measure, RaisesException=Setter] attribute CSSNumberish? startTime;
     [Measure, RaisesException=Setter] attribute CSSNumberish? currentTime;
     [Measure, RaisesException=Setter] attribute double playbackRate;
+    [RuntimeEnabled=ScrollTimeline, Measure, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) rangeStart;
+    [RuntimeEnabled=ScrollTimeline, Measure, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) rangeEnd;
     [Measure] readonly attribute AnimationPlayState playState;
     [RuntimeEnabled=WebAnimationsAPI, Measure] readonly attribute ReplaceState replaceState;
     [Measure] readonly attribute boolean pending;

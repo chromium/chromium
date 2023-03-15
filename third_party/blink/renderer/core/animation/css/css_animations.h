@@ -159,10 +159,10 @@ class CORE_EXPORT CSSAnimations final {
 
     AnimationTimeline* Timeline() const { return animation->timeline(); }
     const absl::optional<TimelineOffset>& RangeStart() const {
-      return animation->GetRangeStart();
+      return animation->GetRangeStartInternal();
     }
     const absl::optional<TimelineOffset>& RangeEnd() const {
-      return animation->GetRangeEnd();
+      return animation->GetRangeEndInternal();
     }
 
     void Update(UpdatedCSSAnimation update) {

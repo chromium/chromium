@@ -258,12 +258,14 @@ AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
   if (duration && timing.iteration_count > 0) {
     double active_interval = 1;
 
-    double start = animation->GetRangeStart()
-                       ? ToFractionalOffset(animation->GetRangeStart().value())
-                       : 0;
-    double end = animation->GetRangeEnd()
-                     ? ToFractionalOffset(animation->GetRangeEnd().value())
-                     : 1;
+    double start =
+        animation->GetRangeStartInternal()
+            ? ToFractionalOffset(animation->GetRangeStartInternal().value())
+            : 0;
+    double end =
+        animation->GetRangeEndInternal()
+            ? ToFractionalOffset(animation->GetRangeEndInternal().value())
+            : 1;
 
     active_interval -= start;
     active_interval -= (1 - end);
@@ -533,12 +535,12 @@ bool ViewTimeline::ResolveTimelineOffsets(bool invalidate_effect) const {
   for (Animation* animation : GetAnimations()) {
     if (auto* effect = DynamicTo<KeyframeEffect>(animation->effect())) {
       double range_start =
-          animation->GetRangeStart()
-              ? ToFractionalOffset(animation->GetRangeStart().value())
+          animation->GetRangeStartInternal()
+              ? ToFractionalOffset(animation->GetRangeStartInternal().value())
               : 0;
       double range_end =
-          animation->GetRangeEnd()
-              ? ToFractionalOffset(animation->GetRangeEnd().value())
+          animation->GetRangeEndInternal()
+              ? ToFractionalOffset(animation->GetRangeEndInternal().value())
               : 1;
       if (effect->Model()->ResolveTimelineOffsets(range_start, range_end)) {
         has_keyframe_update = true;

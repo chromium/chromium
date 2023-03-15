@@ -189,6 +189,8 @@ interface Animation : EventTarget
     getter pending
     getter playState
     getter playbackRate
+    getter rangeEnd
+    getter rangeStart
     getter ready
     getter replaceState
     getter startTime
@@ -209,6 +211,8 @@ interface Animation : EventTarget
     setter onfinish
     setter onremove
     setter playbackRate
+    setter rangeEnd
+    setter rangeStart
     setter startTime
     setter timeline
 interface AnimationEffect

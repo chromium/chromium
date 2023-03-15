@@ -70,55 +70,6 @@ V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
   return nullptr;
 }
 
-TimelineOffset ConvertRangeOffset(
-    Element* element,
-    const V8UnionStringOrTimelineRangeOffset* range_offset,
-    double default_percent,
-    ExceptionState& exception_state) {
-  TimelineOffset result;
-  if (range_offset->IsString()) {
-    absl::optional<TimelineOffset> parsed_timeline_offset =
-        TimelineOffset::Create(element, range_offset->GetAsString(),
-                               exception_state);
-    if (parsed_timeline_offset) {
-      // TODO(kevers): Keep track of style dependent value in order to
-      // re-resolve on a style update.
-      return parsed_timeline_offset.value();
-    }
-    result.name = TimelineOffset::NamedRange::kNone;
-    result.offset = Length(default_percent, Length::Type::kPercent);
-  } else {
-    TimelineRangeOffset* value = range_offset->GetAsTimelineRangeOffset();
-    result.name = value->hasRangeName() ? value->rangeName().AsEnum()
-                                        : TimelineOffset::NamedRange::kNone;
-    if (value->hasOffset()) {
-      CSSNumericValue* offset = value->offset();
-      const CSSPrimitiveValue* css_value =
-          DynamicTo<CSSPrimitiveValue>(offset->ToCSSValue());
-
-      if (!css_value || (!css_value->IsPx() && !css_value->IsPercentage() &&
-                         !css_value->IsCalculatedPercentageWithLength())) {
-        exception_state.ThrowTypeError(
-            "CSSNumericValue must be a length or percentage for animation "
-            "range.");
-        return result;
-      }
-
-      if (css_value->IsPx()) {
-        result.offset = Length::Fixed(css_value->GetDoubleValue());
-      } else if (css_value->IsPercentage()) {
-        result.offset = Length::Percent(css_value->GetDoubleValue());
-      } else {
-        DCHECK(css_value->IsCalculatedPercentageWithLength());
-        result.offset = TimelineOffset::ResolveLength(element, css_value);
-      }
-    } else {
-      result.offset = Length::Percent(default_percent);
-    }
-  }
-  return result;
-}
-
 }  // namespace
 
 // https://w3.org/TR/web-animations-1/#dom-animatable-animate
@@ -168,13 +119,13 @@ Animation* Animatable::animate(
   // ViewTimeline options.
   if (options_dict->hasRangeStart() &&
       RuntimeEnabledFeatures::CSSScrollTimelineEnabled()) {
-    animation->SetRangeStart(ConvertRangeOffset(
+    animation->SetRangeStartInternal(TimelineOffset::Create(
         element, options_dict->rangeStart(), 0, exception_state));
   }
   if (options_dict->hasRangeEnd() &&
       RuntimeEnabledFeatures::CSSScrollTimelineEnabled()) {
-    animation->SetRangeEnd(ConvertRangeOffset(element, options_dict->rangeEnd(),
-                                              100, exception_state));
+    animation->SetRangeEndInternal(TimelineOffset::Create(
+        element, options_dict->rangeEnd(), 100, exception_state));
   }
   return animation;
 }

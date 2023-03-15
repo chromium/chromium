@@ -3842,6 +3842,10 @@ enum WebFeature {
   kSpeculationRulesEagernessModerate = 4501,
   kSpeculationRulesEagernessEager = 4502,
   kURLSetPortCheckOverflow = 4503,
+  kV8Animation_RangeStart_AttributeGetter = 4504,
+  kV8Animation_RangeStart_AttributeSetter = 4505,
+  kV8Animation_RangeEnd_AttributeGetter = 4506,
+  kV8Animation_RangeEnd_AttributeSetter = 4507,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
