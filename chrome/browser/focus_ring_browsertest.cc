@@ -62,6 +62,9 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
 
     // This is required to allow dark mode to be used on some platforms.
     command_line->AppendSwitch(switches::kForceDarkMode);
+
+    // Force the CPU backend to use AAA. (https://crbug.com/1421297)
+    command_line->AppendSwitch(switches::kForceSkiaAnalyticAntialiasing);
   }
 
   void RunTest(const std::string& screenshot_filename,
