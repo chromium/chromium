@@ -816,15 +816,27 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
                       ? viz::ResourceFormat::RGBA_8888
                       : viz::ResourceFormat::BGRA_8888;
 
+#if BUILDFLAG(IS_APPLE)
+    // The Apple hardware encoder properly sets output color spaces, so we can
+    // round trip through the encoder and decoder w/o downgrading to BT.601.
+    constexpr auto kDstColorSpace = gfx::ColorSpace::CreateREC709();
+#else
     // When doing RGBA to YUVA conversion using `accelerated_frame_pool_`, use
     // sRGB primaries and the 601 YUV matrix. Note that this is subtly
     // different from the 601 gfx::ColorSpace because the 601 gfx::ColorSpace
     // has different (non-sRGB) primaries.
-    // https://crbug.com/1258245
+    //
+    // This is necessary for our tests to pass since encoders will default to
+    // BT.601 when the color space information isn't told to the encoder. When
+    // coming back through the decoder it pulls out the embedded color space
+    // information instead of what's provided in the config.
+    //
+    // https://crbug.com/1258245, https://crbug.com/1377842
     constexpr gfx::ColorSpace kDstColorSpace(
         gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
         gfx::ColorSpace::MatrixID::SMPTE170M,
         gfx::ColorSpace::RangeID::LIMITED);
+#endif
 
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CopyRGBATextureToVideoFrame",
                                       this, "timestamp", frame->timestamp());

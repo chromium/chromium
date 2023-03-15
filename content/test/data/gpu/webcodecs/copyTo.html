@@ -7,10 +7,17 @@ Take frames coming from various sources and read them using copyTo().
 <script type="text/javascript">
   'use strict';
 
-  function yuv_to_rgb(y, u, v) {
+  function yuv_to_rgb601(y, u, v) {
     let b = 1.164 * (y - 16) + 2.018 * (u - 128);
     let g = 1.164 * (y - 16) - 0.813 * (v - 128) - 0.391 * (u - 128);
     let r = 1.164 * (y - 16) + 1.596 * (v - 128);
+    return { r: r, g: g, b: b };
+  }
+
+  function yuv_to_rgb709(y, u, v) {
+    let b = 1.164 * (y - 16) + 2.113 * (u - 128);
+    let g = 1.164 * (y - 16) - 0.533 * (v - 128) - 0.213 * (u - 128);
+    let r = 1.164 * (y - 16) + 1.793 * (v - 128);
     return { r: r, g: g, b: b };
   }
 
@@ -39,12 +46,16 @@ Take frames coming from various sources and read them using copyTo().
       let view = new DataView(buffer);
       let rgb = null;
 
+      let yuv_to_rgb = yuv_to_rgb601;
+      if (frame.colorSpace.matrix == "bt709")
+        yuv_to_rgb = yuv_to_rgb709;
+
       switch (frame.format) {
         case "I420":
         case "I420A":
           rgb = yuv_to_rgb(view.getUint8(layout[0].offset),   // Y
-            view.getUint8(layout[1].offset),   // U
-            view.getUint8(layout[2].offset));  // V
+            view.getUint8(layout[1].offset),                  // U
+            view.getUint8(layout[2].offset));                 // V
           break;
         case "NV12":
           rgb = yuv_to_rgb(view.getUint8(layout[0].offset),   // Y
