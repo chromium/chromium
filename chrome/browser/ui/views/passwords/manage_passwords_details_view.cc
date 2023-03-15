@@ -87,13 +87,9 @@ std::unique_ptr<views::View> CreateWrappedView(
   return wrapper;
 }
 
-std::unique_ptr<views::View> CreateDetailsRow(
+std::unique_ptr<views::FlexLayoutView> CreateDetailsRow(
     const gfx::VectorIcon& row_icon,
-    std::unique_ptr<views::View> detail_view,
-    const gfx::VectorIcon& action_icon,
-    const std::u16string& action_button_tooltip_text,
-    views::Button::PressedCallback action_button_callback,
-    ManagePasswordsViewIDs action_button_id) {
+    std::unique_ptr<views::View> detail_view) {
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
   row->SetDefault(
@@ -110,6 +106,18 @@ std::unique_ptr<views::View> CreateDetailsRow(
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
   row->AddChildView(std::move(detail_view));
+  return row;
+}
+
+std::unique_ptr<views::View> CreateDetailsRowWithActionButton(
+    const gfx::VectorIcon& row_icon,
+    std::unique_ptr<views::View> detail_view,
+    const gfx::VectorIcon& action_icon,
+    const std::u16string& action_button_tooltip_text,
+    views::Button::PressedCallback action_button_callback,
+    ManagePasswordsViewIDs action_button_id) {
+  std::unique_ptr<views::FlexLayoutView> row =
+      CreateDetailsRow(row_icon, std::move(detail_view));
 
   std::unique_ptr<views::ImageButton> action_button =
       CreateVectorImageButtonWithNativeTheme(std::move(action_button_callback),
@@ -318,14 +326,14 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                     LogUserInteractionsInPasswordManagementBubble,
                 PasswordManagementBubbleInteractions::
                     kUsernameCopyButtonClicked));
-    AddChildView(CreateDetailsRow(
+    AddChildView(CreateDetailsRowWithActionButton(
         kAccountCircleIcon, std::move(username_label),
         vector_icons::kContentCopyIcon,
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
         std::move(copy_username_button_callback),
         ManagePasswordsViewIDs::kCopyUsernameButton));
   } else {
-    read_username_row_ = AddChildView(CreateDetailsRow(
+    read_username_row_ = AddChildView(CreateDetailsRowWithActionButton(
         kAccountCircleIcon, std::move(username_label), vector_icons::kEditIcon,
         l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_USERNAME_TOOLTIP),
         base::BindRepeating(
@@ -345,6 +353,11 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       CreatePasswordLabel(password_form);
   password_label->SetID(
       static_cast<int>(ManagePasswordsViewIDs::kPasswordLabel));
+  if (!password_form.federation_origin.opaque()) {
+    // Federated credentials, there is no note and no copy password button.
+    AddChildView(CreateDetailsRow(kKeyIcon, std::move(password_label)));
+    return;
+  }
   auto copy_password_button_callback =
       base::BindRepeating(&WriteToClipboard, password_form.password_value)
           .Then(on_activity_callback_)
@@ -353,12 +366,10 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                   LogUserInteractionsInPasswordManagementBubble,
               PasswordManagementBubbleInteractions::
                   kPasswordCopyButtonClicked));
-  AddChildView(CreateDetailsRow(
+  AddChildView(CreateDetailsRowWithActionButton(
       kKeyIcon,
-      password_form.federation_origin.opaque()
-          ? CreatePasswordLabelWithEyeIconView(std::move(password_label),
-                                               on_activity_callback_)
-          : std::move(password_label),
+      CreatePasswordLabelWithEyeIconView(std::move(password_label),
+                                         on_activity_callback_),
       vector_icons::kContentCopyIcon,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD),
       std::move(copy_password_button_callback),
@@ -367,7 +378,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
   // Add two rows: one for reading the note which is visible by default, and
   // another to edit the note, which is hidden by default. Clicking the Edit
   // icon next to the note row will hide the read row, and show the edit row.
-  read_note_row_ = AddChildView(CreateDetailsRow(
+  read_note_row_ = AddChildView(CreateDetailsRowWithActionButton(
       kNotesIcon, CreateNoteLabel(password_form), vector_icons::kEditIcon,
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_NOTE_TOOLTIP),
       base::BindRepeating(&ManagePasswordsDetailsView::SwitchToEditNoteMode,

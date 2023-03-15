@@ -61,9 +61,6 @@ ManagePasswordsListView::ManagePasswordsListView(
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
           gfx::kPlaceholderColor, gfx::kFaviconSize);
     }
-
-    // TODO(crbug.com/1382017): Make sure the alignment works for different use
-    // cases. (e.g. long username, federated credentials)
     // TODO(crbug.com/1382017): Add a tooltip if needed.
     AddChildView(std::make_unique<RichHoverButton>(
         base::BindRepeating(
