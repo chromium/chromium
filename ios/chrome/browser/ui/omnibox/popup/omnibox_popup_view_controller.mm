@@ -41,6 +41,7 @@
 #endif
 
 namespace {
+const CGFloat kTopPadding = 8.0;
 const CGFloat kBottomPadding = 8.0;
 const CGFloat kFooterHeight = 12.0;
 /// Percentage of the suggestion height that needs to be visible in order to
@@ -254,6 +255,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
       UIScrollViewContentInsetAdjustmentAutomatic;
   [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
                                                   0, 0, kBottomPadding, 0)];
+  self.tableView.contentInset = UIEdgeInsetsMake(kTopPadding, 0, 0, 0);
 
   self.tableView.sectionHeaderHeight = 0.1;
   self.tableView.estimatedRowHeight = 0;
@@ -889,9 +891,10 @@ BOOL ShouldDismissKeyboardOnScroll() {
   CGFloat windowHeight = CGRectGetHeight(currentWindow.bounds);
   CGFloat bottomInset = windowHeight - self.tableView.visibleSize.height -
                         self.keyboardHeight - absoluteRect.origin.y -
-                        kBottomPadding;
+                        kBottomPadding - kTopPadding;
   bottomInset = MAX(kBottomPadding, -bottomInset);
-  self.tableView.contentInset = UIEdgeInsetsMake(0, 0, bottomInset, 0);
+  self.tableView.contentInset =
+      UIEdgeInsetsMake(kTopPadding, 0, bottomInset, 0);
   self.tableView.scrollIndicatorInsets = self.tableView.contentInset;
 }
 
