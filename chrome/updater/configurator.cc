@@ -56,7 +56,14 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
       unzip_factory_(
           base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
       patch_factory_(
-          base::MakeRefCounted<update_client::InProcessPatcherFactory>()) {
+          base::MakeRefCounted<update_client::InProcessPatcherFactory>()),
+      is_managed_device_([]() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+        return base::IsManagedOrEnterpriseDevice();
+#else
+        return absl::nullopt;
+#endif
+      }()) {
 #if BUILDFLAG(IS_LINUX)
   // On Linux creating the NetworkFetcherFactory requires performing blocking IO
   // to load an external library. This should be done when the configurator is
@@ -186,23 +193,7 @@ Configurator::GetProtocolHandlerFactory() const {
 }
 
 absl::optional<bool> Configurator::IsMachineExternallyManaged() const {
-#if BUILDFLAG(IS_WIN)
-  // TODO (crbug.com/1320776): For legacy compatibility, this uses
-  // base::IsEnrolledToDomain(). It cannot use IsEnterpriseDevice() because
-  // checking for AAD-join status involves a potentially blocking which is
-  // currently not allowed in this method.
-  // Consider whether this should use IsManagedDevice() instead.
-  return base::win::IsEnrolledToDomain();
-#elif BUILDFLAG(IS_MAC)
-  // TODO (crbug.com/1320776): For legacy compatibility, this uses
-  // IsEnterpriseDevice() which effectively equates to a domain join check.
-  // IsManagedDevice() involves potentially blocking calls which are currently
-  // not allowed in this method.
-  // Consider whether this should use IsManagedDevice() instead.
-  return base::IsEnterpriseDevice();
-#else
-  return absl::nullopt;
-#endif
+  return is_managed_device_;
 }
 
 scoped_refptr<PolicyService> Configurator::GetPolicyService() const {

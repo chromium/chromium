@@ -105,6 +105,7 @@ class Configurator : public update_client::Configurator {
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
+  const absl::optional<bool> is_managed_device_;
 };
 
 }  // namespace updater
