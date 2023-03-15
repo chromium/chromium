@@ -154,7 +154,7 @@
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg_reclient',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_reclient',
-      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
+      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks_reclient',
       'chromeos-jacuzzi-rel': 'chromeos_jacuzzi_dchecks_reclient',
       'chromeos-octopus-rel': 'chromeos_octopus_dchecks_reclient',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
@@ -2148,6 +2148,10 @@
 
     'chromeos_arm64-generic_dchecks': [
       'chromeos_device', 'arm64-generic', 'dcheck_always_on',
+    ],
+
+    'chromeos_arm64-generic_dchecks_reclient': [
+      'chromeos_device_reclient', 'arm64-generic', 'dcheck_always_on',
     ],
 
     'chromeos_arm64-generic_lacros_official': [
