@@ -563,10 +563,14 @@ void AttributionManagerImpl::HandleSource(
   MaybeEnqueueEvent(std::move(source));
 }
 
-void AttributionManagerImpl::StoreSource(
-    StorableSource source,
-    absl::optional<uint64_t> cleared_debug_key,
-    bool is_debug_cookie_set) {
+void AttributionManagerImpl::StoreSource(StorableSource source,
+                                         bool is_debug_cookie_set) {
+  absl::optional<uint64_t> cleared_debug_key;
+  if (!is_debug_cookie_set) {
+    cleared_debug_key =
+        std::exchange(source.registration().debug_key, absl::nullopt);
+  }
+
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
       .WithArgs(source)
       .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
@@ -633,10 +637,14 @@ void AttributionManagerImpl::HandleTrigger(
   MaybeEnqueueEvent(std::move(trigger));
 }
 
-void AttributionManagerImpl::StoreTrigger(
-    AttributionTrigger trigger,
-    absl::optional<uint64_t> cleared_debug_key,
-    bool is_debug_cookie_set) {
+void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
+                                          bool is_debug_cookie_set) {
+  absl::optional<uint64_t> cleared_debug_key;
+  if (!is_debug_cookie_set) {
+    cleared_debug_key =
+        std::exchange(trigger.registration().debug_key, absl::nullopt);
+  }
+
   attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReport)
       .WithArgs(trigger)
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
@@ -708,33 +716,17 @@ void AttributionManagerImpl::ProcessEvents() {
 void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
   DCHECK(!pending_events_.empty());
 
-  SourceOrTrigger event = std::move(pending_events_.front());
+  absl::visit(base::Overloaded{
+                  [&](StorableSource& source) {
+                    StoreSource(std::move(source), is_debug_cookie_set);
+                  },
+                  [&](AttributionTrigger& trigger) {
+                    StoreTrigger(std::move(trigger), is_debug_cookie_set);
+                  },
+              },
+              pending_events_.front());
+
   pending_events_.pop_front();
-
-  absl::visit(
-      base::Overloaded{
-          [&](StorableSource source) {
-            absl::optional<uint64_t> cleared_debug_key;
-            if (!is_debug_cookie_set) {
-              cleared_debug_key =
-                  std::exchange(source.registration().debug_key, absl::nullopt);
-            }
-
-            this->StoreSource(std::move(source), cleared_debug_key,
-                              is_debug_cookie_set);
-          },
-          [&](AttributionTrigger trigger) {
-            absl::optional<uint64_t> cleared_debug_key;
-            if (!is_debug_cookie_set) {
-              cleared_debug_key = std::exchange(
-                  trigger.registration().debug_key, absl::nullopt);
-            }
-
-            this->StoreTrigger(std::move(trigger), cleared_debug_key,
-                               is_debug_cookie_set);
-          },
-      },
-      std::move(event));
 }
 
 void AttributionManagerImpl::AddPendingAggregatableReportTiming(

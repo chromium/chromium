@@ -202,12 +202,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void MaybeEnqueueEvent(SourceOrTrigger);
   void ProcessEvents();
   void ProcessNextEvent(bool is_debug_cookie_set);
-  void StoreSource(StorableSource source,
-                   absl::optional<uint64_t> cleared_debug_key,
-                   bool is_debug_cookie_set);
-  void StoreTrigger(AttributionTrigger trigger,
-                    absl::optional<uint64_t> cleared_debug_key,
-                    bool is_debug_cookie_set);
+  void StoreSource(StorableSource source, bool is_debug_cookie_set);
+  void StoreTrigger(AttributionTrigger trigger, bool is_debug_cookie_set);
 
   void GetReportsToSend();
 
