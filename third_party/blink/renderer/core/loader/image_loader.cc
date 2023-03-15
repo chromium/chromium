@@ -676,8 +676,14 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
     if (image) {
       image->RemoveObserver(this);
     }
-    UpdateImageState(nullptr);
-    lazy_image_load_state_ = LazyImageLoadState::kNone;
+    image_content_ = nullptr;
+    image_complete_ = true;
+    image_content_for_image_document_ = nullptr;
+    delay_until_image_notify_finished_ = nullptr;
+    if (lazy_image_load_state_ != LazyImageLoadState::kNone) {
+      LazyImageHelper::StopMonitoring(GetElement());
+      lazy_image_load_state_ = LazyImageLoadState::kNone;
+    }
   } else {
     image_complete_ = false;
   }
@@ -950,7 +956,6 @@ void ImageLoader::LoadDeferredImage(bool force_blocking,
   if (lazy_image_load_state_ != LazyImageLoadState::kDeferred)
     return;
   DCHECK(!image_complete_);
-  LazyImageHelper::StopMonitoring(GetElement());
   lazy_image_load_state_ = LazyImageLoadState::kFullImage;
 
   // If the image has been fully deferred (no placeholder fetch), report it as
