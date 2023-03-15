@@ -25,6 +25,11 @@ const char kNotificationTypeFastPair[] = "FastPairNotificationType";
 const char kNotificationTypeFastPairOne[] = "FastPairOneNotificationType";
 const char kNotificationTypeUnspecified[] = "UnspecifiedNotificationType";
 
+// If RSSI or TxPower are unknown, we emit -129, which is out of range of
+// the real return values [-128, 127].
+const int kUnknownRSSI = -129;
+const int kUnknownTxPower = -129;
+
 // Error strings should be kept in sync with the strings reflected in
 // device/bluetooth/bluez/bluetooth_socket_bluez.cc.
 const char kAcceptFailedString[] = "Failed to accept connection.";
@@ -1557,49 +1562,91 @@ int ConvertFastPairVersionToInt(absl::optional<DeviceFastPairVersion> version) {
   }
 }
 
+int GetRSSI(const device::BluetoothDevice* bt_device) {
+  int rssi = kUnknownRSSI;
+  if (bt_device) {
+    if (bt_device->GetInquiryRSSI().has_value()) {
+      rssi = bt_device->GetInquiryRSSI().value();
+    }
+  }
+  return rssi;
+}
+
+int GetTxPower(const device::BluetoothDevice* bt_device) {
+  int tx_power = kUnknownTxPower;
+  if (bt_device) {
+    if (bt_device->GetInquiryTxPower().has_value()) {
+      tx_power = bt_device->GetInquiryTxPower().value();
+    }
+  }
+  return tx_power;
+}
+
 // TODO(b/266739400): There is currently no way to properly unittest these
 // changes. The metrics team plans on implementing a way to mock out the
 // structured metrics client in the near future. We should follow up and
 // implement proper tests for these functions once that is available.
-void RecordStructuredDiscoveryNotificationShown(const Device& device) {
+void RecordStructuredDiscoveryNotificationShown(
+    const Device& device,
+    const device::BluetoothDevice* bt_device) {
   QP_LOG(INFO) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
     return;
   }
   int version = ConvertFastPairVersionToInt(device.version());
+  int rssi = GetRSSI(bt_device);
+  int tx_power = GetTxPower(bt_device);
+  QP_LOG(VERBOSE) << __func__ << ": RSSI: " << rssi
+                  << ", TxPower: " << tx_power;
   metrics::structured::events::v2::fast_pair::DiscoveryNotificationShown()
       .SetProtocol(static_cast<int>(device.protocol()))
       .SetModelId(model_id)
       .SetFastPairVersion(version)
+      .SetRSSI(rssi)
+      .SetTxPower(tx_power)
       .Record();
 }
 
-void RecordStructuredPairingStarted(const Device& device) {
+void RecordStructuredPairingStarted(const Device& device,
+                                    const device::BluetoothDevice* bt_device) {
   QP_LOG(INFO) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
     return;
   }
   int version = ConvertFastPairVersionToInt(device.version());
+  int rssi = GetRSSI(bt_device);
+  int tx_power = GetTxPower(bt_device);
+  QP_LOG(VERBOSE) << __func__ << ": RSSI: " << rssi
+                  << ", TxPower: " << tx_power;
   metrics::structured::events::v2::fast_pair::PairingStart()
       .SetProtocol(static_cast<int>(device.protocol()))
       .SetModelId(model_id)
       .SetFastPairVersion(version)
+      .SetRSSI(rssi)
+      .SetTxPower(tx_power)
       .Record();
 }
 
-void RecordStructuredPairingComplete(const Device& device) {
+void RecordStructuredPairingComplete(const Device& device,
+                                     const device::BluetoothDevice* bt_device) {
   QP_LOG(INFO) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
     return;
   }
   int version = ConvertFastPairVersionToInt(device.version());
+  int rssi = GetRSSI(bt_device);
+  int tx_power = GetTxPower(bt_device);
+  QP_LOG(VERBOSE) << __func__ << ": RSSI: " << rssi
+                  << ", TxPower: " << tx_power;
   metrics::structured::events::v2::fast_pair::PairingComplete()
       .SetProtocol(static_cast<int>(device.protocol()))
       .SetModelId(model_id)
       .SetFastPairVersion(version)
+      .SetRSSI(rssi)
+      .SetTxPower(tx_power)
       .Record();
 }
 

@@ -476,13 +476,17 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordSavedDevicesCount(int num_devices);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordStructuredDiscoveryNotificationShown(const Device& device);
+void RecordStructuredDiscoveryNotificationShown(
+    const Device& device,
+    const device::BluetoothDevice* bt_device);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordStructuredPairingStarted(const Device& device);
+void RecordStructuredPairingStarted(const Device& device,
+                                    const device::BluetoothDevice* bt_device);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordStructuredPairingComplete(const Device& device);
+void RecordStructuredPairingComplete(const Device& device,
+                                     const device::BluetoothDevice* bt_device);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordStructuredPairFailure(const Device& device, PairFailure failure);

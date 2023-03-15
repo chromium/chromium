@@ -76,6 +76,12 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
   // object.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
+  // Helper function called to get the Bluetooth Device that corresponds with
+  // the address saved in |device|. Returns nullptr if the adapter_ is not
+  // initialized or the device is not found.
+  const device::BluetoothDevice* GetBluetoothDevice(
+      scoped_refptr<Device> device) const;
+
   // Map of devices to the time at which a pairing was initiated. This is used
   // to calculate the time between the user electing to pair the device and
   // the pairing entering a terminal state (success or failure).

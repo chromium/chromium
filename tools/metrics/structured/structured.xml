@@ -29,6 +29,20 @@
         The model ID of the discovered device.
       </summary>
     </metric>
+    <metric name="RSSI" type="int">
+      <summary>
+        The inquiry RSSI of the discovered device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry RSSI is unknown,
+        we report -129.
+      </summary>
+    </metric>
+    <metric name="TxPower" type="int">
+      <summary>
+        The inquiry TxPower of the discovered device, recorded at the time of
+        metrics emission, with a range of -128 to 127. If inquiry TxPower is
+        unknown, we report -129.
+      </summary>
+    </metric>
   </event>
 
   <event name="PairingStart">
@@ -50,6 +64,20 @@
         The model ID of the device being paired.
       </summary>
     </metric>
+    <metric name="RSSI" type="int">
+      <summary>
+        The inquiry RSSI of the pairing device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry RSSI is unknown,
+        we report -129.
+      </summary>
+    </metric>
+    <metric name="TxPower" type="int">
+      <summary>
+        The inquiry TxPower of the pairing device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry TxPower is
+        unknown, we report -129.
+      </summary>
+    </metric>
   </event>
 
   <event name="PairingComplete">
@@ -69,6 +97,20 @@
     <metric name="ModelId" type="int">
       <summary>
         The model ID of the device being paired.
+      </summary>
+    </metric>
+    <metric name="RSSI" type="int">
+      <summary>
+        The inquiry RSSI of the paired device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry RSSI is unknown,
+        we report -129.
+      </summary>
+    </metric>
+    <metric name="TxPower" type="int">
+      <summary>
+        The inquiry TxPower of the paired device, recorded at the time of metrics
+        emission, with a range of -128 to 127. If inquiry TxPower is
+        unknown, we report -129.
       </summary>
     </metric>
   </event>
