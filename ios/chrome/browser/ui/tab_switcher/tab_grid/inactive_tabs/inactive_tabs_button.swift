@@ -111,11 +111,13 @@ struct InactiveTabsButton: View {
       Image(systemName: "chevron.right")
         .foregroundColor(.textTertiary)
         .fontWeight(.semibold)
+        .flipsForRightToLeftLayoutDirection(true)
     } else {
       // fontWeight is not available on Image. Wrap it in a Text.
       Text(Image(systemName: "chevron.right"))
         .foregroundColor(.textTertiary)
         .fontWeight(.semibold)
+        .flipsForRightToLeftLayoutDirection(true)
     }
   }
 
