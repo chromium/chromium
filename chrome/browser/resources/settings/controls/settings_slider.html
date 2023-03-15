@@ -1,4 +1,8 @@
-<style>
+<style
+  <if expr='chromeos_ash'>
+    include="cros-color-overrides"
+  </if>
+>
   :host {
     display: inline-flex;
   }
@@ -17,6 +21,12 @@
       color: var(--google-grey-500);
     }
   }
+
+  <if expr='chromeos_ash'>
+  :host-context(body.jelly-enabled) #labels[disabled] {
+    color: var(--cros-sys-disabled);
+  }
+  </if>
 
   div.outer {
     align-items: stretch;

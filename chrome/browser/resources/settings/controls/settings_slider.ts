@@ -10,6 +10,10 @@
  */
 import '../settings_vars.css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
+// <if expr='chromeos_ash'>
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
+
+// </if>
 
 import {CrSliderElement, SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {assert} from '//resources/js/assert_ts.js';

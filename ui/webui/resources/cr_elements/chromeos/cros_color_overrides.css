@@ -150,6 +150,33 @@ To get Chrome OS System Colors, an element must:
   border-radius: 4px;
 }
 
+/* Slider */
+:host-context(body.jelly-enabled) cr-slider {
+  --cr-slider-active-color: var(--cros-sys-primary);
+  --cr-slider-container-color: var(--cros-sys-primary_container);
+  --cr-slider-container-disabled-color: var(--cros-sys-disabled_container);
+  --cr-slider-disabled-color: var(--cros-sys-disabled);
+  --cr-slider-knob-active-color: var(--cros-sys-primary);
+  --cr-slider-knob-disabled-color: var(--cros-sys-disabled);
+  --cr-slider-marker-active-color: var(--cros-sys-primary_container);
+  --cr-slider-marker-color: var(--cros-sys-primary);
+  --cr-slider-marker-disabled-color: var(--cros-sys-disabled);
+  --cr-slider-ripple-color: var(--cros-sys-hover_on_prominent);
+}
+
+:host-context(body.jelly-enabled) cr-slider:not([disabled])::part(knob) {
+  background-color: var(--cros-sys-primary);
+}
+
+:host-context(body.jelly-enabled) cr-slider[disabled]::part(knob) {
+  border: none;
+}
+
+:host-context(body.jelly-enabled) cr-slider::part(label) {
+  background: var(--cros-sys-primary);
+  color: var(--cros-sys-on_primary);
+}
+
 /* Toggle */
 :host-context(body.jelly-enabled) cr-toggle {
   --cr-toggle-checked-bar-color: var(--cros-sys-primary_container);
