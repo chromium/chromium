@@ -1614,10 +1614,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   NSLayoutYAxisAnchor* topAnchor;
   // On iPad, the toolbar is underneath the tab strip.
   // On iPhone, it is underneath the top of the screen.
-  if ([self canShowTabStrip]) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     topAnchor = self.tabStripView.bottomAnchor;
   } else {
     topAnchor = [self view].topAnchor;
+    // TODO(crbug.com/1423799): Dcheck added for investigation purposes, remove
+    // once crash root cause is found.
+    DCHECK(![self canShowTabStrip]);
   }
 
   // Only add leading and trailing constraints once as they are never updated.
