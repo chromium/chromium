@@ -41,7 +41,10 @@ export class TileModuleElement extends I18nMixin
       },
 
       /* The image url for the tile. */
-      imageUrl_: Object,
+      imageUrl_: {
+        type: Object,
+        value: null,
+      },
 
       smallFormat: {
         type: Boolean,
@@ -64,17 +67,18 @@ export class TileModuleElement extends I18nMixin
   private async onVisitUpdated_(): Promise<void> {
     const visitUrl = this.visit.normalizedUrl;
     if (visitUrl && this.visit.hasUrlKeyedImage && !this.smallFormat &&
-        loadTimeData.getBoolean('isHistoryClustersImagesEnabled')) {
+        loadTimeData.getBoolean('isHistoryClustersImagesEnabled') &&
+        this.visit.isKnownToSync) {
       const result =
           await ImageServiceBrowserProxy.getInstance().handler.getPageImageUrl(
               ImageServiceClientId.NtpQuests, visitUrl,
               {suggestImages: true, optimizationGuideImages: true});
       if (result && result.result) {
         this.imageUrl_ = result.result.imageUrl;
+        return;
       }
-    } else {
-      this.imageUrl_ = null;
     }
+    this.imageUrl_ = null;
   }
 
   private hasImageUrl_(): boolean {

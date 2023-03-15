@@ -26,9 +26,10 @@
   }
 
   #image {
-    background: red;
+    background: var(--color-new-tab-page-module-background);
     border-radius: 25px;
     overflow: hidden;
+    position: relative;
   }
 
   :host([large-format]) #image {
@@ -51,6 +52,13 @@
     height: 100%;
     object-fit: cover;
     width: 100%;
+  }
+
+  #image page-favicon {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
   #icon {
@@ -125,17 +133,22 @@
 </style>
 <a id="content" href="[[visit.normalizedUrl.url]]">
   <div id="image">
-    <template is="dom-if" if="[[hasImageUrl_(imageUrl_)]]">
+    <template is="dom-if" if="[[hasImageUrl_(imageUrl_)]]" restamp>
       <img is="cr-auto-img" auto-src="[[imageUrl_.url]]"
           draggable="false">
       </img>
+    </template>
+    <template is="dom-if" if="[[!hasImageUrl_(imageUrl_)]]" restamp>
+      <page-favicon url="[[visit.normalizedUrl]]"
+          is-known-to-sync="[[visit.isKnownToSync]]" size="24">
+      </page-favicon>
     </template>
   </div>
   <div id="text-container">
     <div id="title" class="truncate">[[visit.pageTitle]]</div>
     <div id="info-container">
       <page-favicon id="icon" url="[[visit.normalizedUrl]]"
-        is-known-to-sync="[[visit.isKnownToSync]]">
+          is-known-to-sync="[[visit.isKnownToSync]]">
       </page-favicon>
       <div id="label" class="truncate"> [[label_]]</div>
       <span id="dot">&nbsp&#8226&nbsp</span>

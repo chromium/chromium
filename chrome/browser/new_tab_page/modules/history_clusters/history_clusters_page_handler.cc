@@ -100,6 +100,7 @@ history::ClusterVisit GenerateSampleVisit(history::VisitID visit_id,
   history::VisitRow visit_row;
   visit_row.visit_id = visit_id;
   visit_row.visit_time = base::Time::Now();
+  visit_row.is_known_to_sync = true;
   auto content_annotations = history::VisitContentAnnotations();
   content_annotations.has_url_keyed_image = has_url_keyed_image;
   history::AnnotatedVisit annotated_visit;

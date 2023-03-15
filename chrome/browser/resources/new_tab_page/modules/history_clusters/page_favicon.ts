@@ -46,6 +46,11 @@ class PageFavicon extends PolymerElement {
        * fetching higher quality favicons in that case.
        */
       isKnownToSync: Boolean,
+
+      size: {
+        type: Number,
+        value: 16,
+      },
     };
   }
 
@@ -55,6 +60,7 @@ class PageFavicon extends PolymerElement {
 
   url: Url;
   isKnownToSync: boolean;
+  size: number;
 
   //============================================================================
   // Helper methods
@@ -66,7 +72,8 @@ class PageFavicon extends PolymerElement {
     }
     return `background-image:${
         getFaviconForPageURL(
-            this.url.url, this.isKnownToSync, '', /** --favicon-size */ 16)}`;
+            this.url.url, this.isKnownToSync, '',
+            /** --favicon-size */ this.size)}`;
   }
 }
 
