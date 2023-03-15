@@ -229,8 +229,7 @@ class MockQuotaManager : public QuotaManager {
                     QuotaErrorOr<BucketInfo> result);
   void DidGetModifiedInTimeRange(
       GetBucketsCallback callback,
-      std::unique_ptr<std::set<BucketLocator>> buckets,
-      blink::mojom::StorageType storage_type);
+      std::unique_ptr<std::set<BucketLocator>> buckets);
   void DidDeleteBucketData(StatusCallback callback,
                            blink::mojom::QuotaStatusCode status);
 

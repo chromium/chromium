@@ -455,11 +455,9 @@ class QuotaManagerImplTest : public testing::Test {
   std::set<BucketLocator> GetBucketsModifiedBetween(StorageType type,
                                                     base::Time begin,
                                                     base::Time end) {
-    base::test::TestFuture<std::set<BucketLocator>, StorageType> future;
+    base::test::TestFuture<std::set<BucketLocator>> future;
     quota_manager_impl_->GetBucketsModifiedBetween(
-        type, begin, end,
-        future.GetCallback<const std::set<BucketLocator>&, StorageType>());
-    EXPECT_EQ(future.Get<1>(), type);
+        type, begin, end, future.GetCallback<const std::set<BucketLocator>&>());
     return future.Get<0>();
   }
 

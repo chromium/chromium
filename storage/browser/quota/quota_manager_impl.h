@@ -699,7 +699,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
       QuotaErrorOr<std::set<BucketInfo>> result);
   void DidGetModifiedBetween(GetBucketsCallback callback,
-                             blink::mojom::StorageType type,
                              QuotaErrorOr<std::set<BucketLocator>> result);
 
   void MaybeRunStoragePressureCallback(const blink::StorageKey& storage_key,

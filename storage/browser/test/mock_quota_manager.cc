@@ -250,7 +250,7 @@ void MockQuotaManager::GetBucketsModifiedBetween(StorageType type,
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MockQuotaManager::DidGetModifiedInTimeRange,
                                 weak_factory_.GetWeakPtr(), std::move(callback),
-                                std::move(buckets_to_return), type));
+                                std::move(buckets_to_return)));
 }
 
 void MockQuotaManager::DeleteBucketData(const BucketLocator& bucket,
@@ -386,9 +386,8 @@ void MockQuotaManager::DidGetBucket(
 
 void MockQuotaManager::DidGetModifiedInTimeRange(
     GetBucketsCallback callback,
-    std::unique_ptr<std::set<BucketLocator>> buckets,
-    StorageType storage_type) {
-  std::move(callback).Run(*buckets, storage_type);
+    std::unique_ptr<std::set<BucketLocator>> buckets) {
+  std::move(callback).Run(*buckets);
 }
 
 void MockQuotaManager::DidDeleteBucketData(

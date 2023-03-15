@@ -955,8 +955,8 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
       StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher,
       bool perform_storage_cleanup,
       base::OnceClosure callback,
-      const std::set<storage::BucketLocator>& buckets,
-      blink::mojom::StorageType quota_storage_type);
+      blink::mojom::StorageType quota_storage_type,
+      const std::set<storage::BucketLocator>& buckets);
 
  private:
   // All of these data are accessed on IO thread.
@@ -2301,7 +2301,8 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::ClearDataOnIOThread(
         base::BindOnce(&QuotaManagedDataDeletionHelper::ClearBucketsOnIOThread,
                        base::Unretained(this), base::RetainedRef(quota_manager),
                        special_storage_policy, storage_key_matcher,
-                       perform_storage_cleanup, decrement_callback));
+                       perform_storage_cleanup, decrement_callback,
+                       blink::mojom::StorageType::kTemporary));
   }
 
   // Do the same for syncable quota.
@@ -2312,7 +2313,8 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::ClearDataOnIOThread(
         base::BindOnce(&QuotaManagedDataDeletionHelper::ClearBucketsOnIOThread,
                        base::Unretained(this), base::RetainedRef(quota_manager),
                        special_storage_policy, std::move(storage_key_matcher),
-                       perform_storage_cleanup, decrement_callback));
+                       perform_storage_cleanup, decrement_callback,
+                       blink::mojom::StorageType::kSyncable));
   }
 
   DecrementTaskCountOnIO();
@@ -2326,8 +2328,8 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
         StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher,
         bool perform_storage_cleanup,
         base::OnceClosure callback,
-        const std::set<storage::BucketLocator>& buckets,
-        blink::mojom::StorageType quota_storage_type) {
+        blink::mojom::StorageType quota_storage_type,
+        const std::set<storage::BucketLocator>& buckets) {
   // The QuotaManager manages all storage other than cookies, LocalStorage,
   // and SessionStorage. This loop wipes out most HTML5 storage for the given
   // storage keys.

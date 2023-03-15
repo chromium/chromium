@@ -139,8 +139,7 @@ void SiteDataCountingHelper::GetCookiesCallback(
 }
 
 void SiteDataCountingHelper::GetQuotaBucketsCallback(
-    const std::set<storage::BucketLocator>& buckets,
-    blink::mojom::StorageType type) {
+    const std::set<storage::BucketLocator>& buckets) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::set<GURL> urls;
   for (const storage::BucketLocator& bucket : buckets)

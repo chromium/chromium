@@ -50,8 +50,7 @@ class SiteDataCountingHelper {
       const scoped_refptr<storage::SpecialStoragePolicy>&
           special_storage_policy,
       const std::vector<content::StorageUsageInfo>& infos);
-  void GetQuotaBucketsCallback(const std::set<storage::BucketLocator>& buckets,
-                               blink::mojom::StorageType type);
+  void GetQuotaBucketsCallback(const std::set<storage::BucketLocator>& buckets);
 
   void Done(const std::vector<GURL>& origins);
 

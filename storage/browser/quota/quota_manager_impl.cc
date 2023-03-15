@@ -1693,7 +1693,7 @@ void QuotaManagerImpl::GetBucketsModifiedBetween(StorageType type,
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(std::set<BucketLocator>(), type);
+    std::move(callback).Run(std::set<BucketLocator>());
     return;
   }
 
@@ -1706,7 +1706,7 @@ void QuotaManagerImpl::GetBucketsModifiedBetween(StorageType type,
           },
           type, begin, end),
       base::BindOnce(&QuotaManagerImpl::DidGetModifiedBetween,
-                     weak_factory_.GetWeakPtr(), std::move(callback), type));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 bool QuotaManagerImpl::ResetUsageTracker(StorageType type) {
@@ -2898,7 +2898,6 @@ void QuotaManagerImpl::DidGetBucketsCheckExpiration(
 
 void QuotaManagerImpl::DidGetModifiedBetween(
     GetBucketsCallback callback,
-    StorageType type,
     QuotaErrorOr<std::set<BucketLocator>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
@@ -2906,10 +2905,10 @@ void QuotaManagerImpl::DidGetModifiedBetween(
   DidDatabaseWork(result.has_value() ||
                   result.error() != QuotaError::kDatabaseError);
   if (!result.has_value()) {
-    std::move(callback).Run(std::set<BucketLocator>(), type);
+    std::move(callback).Run(std::set<BucketLocator>());
     return;
   }
-  std::move(callback).Run(result.value(), type);
+  std::move(callback).Run(result.value());
 }
 
 template <typename ValueType>

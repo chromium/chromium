@@ -135,10 +135,8 @@ class MockQuotaManagerTest : public testing::Test {
   }
 
   void GotModifiedBuckets(base::OnceClosure quit_closure,
-                          const std::set<BucketLocator>& buckets,
-                          StorageType type) {
+                          const std::set<BucketLocator>& buckets) {
     buckets_ = buckets;
-    type_ = type;
     std::move(quit_closure).Run();
   }
 
@@ -186,10 +184,6 @@ class MockQuotaManagerTest : public testing::Test {
 
   const std::set<BucketLocator>& buckets() const { return buckets_; }
 
-  const StorageType& type() const {
-    return type_;
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
@@ -199,7 +193,6 @@ class MockQuotaManagerTest : public testing::Test {
   int deletion_callback_count_;
 
   std::set<BucketLocator> buckets_;
-  StorageType type_;
 
   base::WeakPtrFactory<MockQuotaManagerTest> weak_factory_{this};
 };
@@ -470,7 +463,6 @@ TEST_F(MockQuotaManagerTest, ModifiedBuckets) {
 
   GetModifiedBuckets(kTemporary, then, base::Time::Max());
 
-  EXPECT_EQ(kTemporary, type());
   EXPECT_EQ(1UL, buckets().size());
   EXPECT_TRUE(ContainsBucket(buckets(), bucket1));
   EXPECT_FALSE(ContainsBucket(buckets(), bucket2));
@@ -479,21 +471,18 @@ TEST_F(MockQuotaManagerTest, ModifiedBuckets) {
 
   GetModifiedBuckets(kTemporary, then, base::Time::Max());
 
-  EXPECT_EQ(kTemporary, type());
   EXPECT_EQ(2UL, buckets().size());
   EXPECT_TRUE(ContainsBucket(buckets(), bucket1));
   EXPECT_TRUE(ContainsBucket(buckets(), bucket2));
 
   GetModifiedBuckets(kTemporary, then, now);
 
-  EXPECT_EQ(kTemporary, type());
   EXPECT_EQ(1UL, buckets().size());
   EXPECT_TRUE(ContainsBucket(buckets(), bucket1));
   EXPECT_FALSE(ContainsBucket(buckets(), bucket2));
 
   GetModifiedBuckets(kTemporary, now - a_minute, now + a_minute);
 
-  EXPECT_EQ(kTemporary, type());
   EXPECT_EQ(1UL, buckets().size());
   EXPECT_FALSE(ContainsBucket(buckets(), bucket1));
   EXPECT_TRUE(ContainsBucket(buckets(), bucket2));
