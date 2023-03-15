@@ -25,6 +25,7 @@ export interface SignInPromoElement {
     buttonRow: HTMLElement,
     contentArea: HTMLElement,
     declineSignInButton: CrButtonElement,
+    disclaimerText: HTMLElement,
     managedDeviceDisclaimer: HTMLElement,
     safeZone: HTMLElement,
   };
@@ -84,7 +85,7 @@ export class SignInPromoElement extends SignInPromoElementBase {
 
       isDeviceManaged_: {
         type: Boolean,
-        value: loadTimeData.getBoolean('isDeviceManaged'),
+        value: () => loadTimeData.getBoolean('isDeviceManaged'),
       },
 
       anyButtonClicked_: {

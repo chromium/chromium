@@ -7,60 +7,89 @@ import 'chrome://intro/sign_in_promo.js';
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
 import {SignInPromoElement} from 'chrome://intro/sign_in_promo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestIntroBrowserProxy} from './test_intro_browser_proxy.js';
 
+function checkSignInButtons(element: SignInPromoElement, disabled: boolean) {
+  assertEquals(element.$.acceptSignInButton.disabled, disabled);
+  assertEquals(element.$.declineSignInButton.disabled, disabled);
+}
+
 suite('SignInPromoTest', function() {
-  let testElement: SignInPromoElement;
+  let signInPromoElement: SignInPromoElement;
   let testBrowserProxy: TestIntroBrowserProxy;
 
   setup(function() {
     testBrowserProxy = new TestIntroBrowserProxy();
     IntroBrowserProxyImpl.setInstance(testBrowserProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = document.createElement('sign-in-promo');
-    document.body.appendChild(testElement);
-    return waitBeforeNextRender(testElement);
   });
 
   teardown(function() {
-    testElement.remove();
+    signInPromoElement.remove();
   });
 
-  function checkButtonsDisabled() {
-    assertTrue(testElement.$.acceptSignInButton.disabled);
-    assertTrue(testElement.$.declineSignInButton.disabled);
-  }
+  suite('NonManagedDevice', function() {
+    setup(function() {
+      loadTimeData.overrideValues({
+        isDeviceManaged: false,
+      });
 
-  function checkButtonsEnabled() {
-    assertFalse(testElement.$.acceptSignInButton.disabled);
-    assertFalse(testElement.$.declineSignInButton.disabled);
-  }
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      signInPromoElement = document.createElement('sign-in-promo');
+      document.body.appendChild(signInPromoElement);
+      return waitBeforeNextRender(signInPromoElement);
+    });
 
-  test('accept sign-in button clicked', function() {
-    checkButtonsEnabled();
-    assertEquals(testBrowserProxy.getCallCount('continueWithAccount'), 0);
-    testElement.$.acceptSignInButton.click();
-    checkButtonsDisabled();
-    assertEquals(testBrowserProxy.getCallCount('continueWithAccount'), 1);
+    test('accept sign-in button clicked', function() {
+      checkSignInButtons(signInPromoElement, false);
+      assertEquals(testBrowserProxy.getCallCount('continueWithAccount'), 0);
+      signInPromoElement.$.acceptSignInButton.click();
+      checkSignInButtons(signInPromoElement, true);
+      assertEquals(testBrowserProxy.getCallCount('continueWithAccount'), 1);
+    });
+
+    test('decline sign-in button clicked', function() {
+      checkSignInButtons(signInPromoElement, false);
+      assertEquals(testBrowserProxy.getCallCount('continueWithoutAccount'), 0);
+      signInPromoElement.$.declineSignInButton.click();
+      checkSignInButtons(signInPromoElement, true);
+      assertEquals(testBrowserProxy.getCallCount('continueWithoutAccount'), 1);
+    });
+
+    test('"reset-intro-buttons" event resets buttons', function() {
+      checkSignInButtons(signInPromoElement, false);
+      signInPromoElement.$.acceptSignInButton.click();
+      checkSignInButtons(signInPromoElement, true);
+      webUIListenerCallback('reset-intro-buttons');
+      checkSignInButtons(signInPromoElement, false);
+    });
   });
 
-  test('decline sign-in button clicked', function() {
-    checkButtonsEnabled();
-    assertEquals(testBrowserProxy.getCallCount('continueWithoutAccount'), 0);
-    testElement.$.declineSignInButton.click();
-    checkButtonsDisabled();
-    assertEquals(testBrowserProxy.getCallCount('continueWithoutAccount'), 1);
-  });
+  suite('ManagedDevice', function() {
+    setup(function() {
+      loadTimeData.overrideValues({
+        isDeviceManaged: true,
+      });
 
-  test('"reset-intro-buttons" event resets buttons', function() {
-    checkButtonsEnabled();
-    testElement.$.acceptSignInButton.click();
-    checkButtonsDisabled();
-    webUIListenerCallback('reset-intro-buttons');
-    checkButtonsEnabled();
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      signInPromoElement = document.createElement('sign-in-promo');
+      document.body.appendChild(signInPromoElement);
+      return waitBeforeNextRender(signInPromoElement);
+    });
+
+    test('buttons are disabled if disclaimer is empty', function() {
+      checkSignInButtons(signInPromoElement, true);
+      assertTrue(
+          signInPromoElement.$.disclaimerText.innerHTML.trim().length === 0);
+
+      webUIListenerCallback(
+          'managed-device-disclaimer-updated', 'managedDeviceDisclaimer');
+      assertTrue(
+          signInPromoElement.$.disclaimerText.innerHTML.trim().length !== 0);
+      checkSignInButtons(signInPromoElement, false);
+    });
   });
 });

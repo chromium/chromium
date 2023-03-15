@@ -36,13 +36,7 @@ var SignInPromoTest = class extends IntroBrowserTest {
   }
 };
 
-// TODO(https://crbug.com/1423532): Failing on Mac.
-GEN('#if BUILDFLAG(IS_MAC)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
-TEST_F('SignInPromoTest', 'MAYBE_All', function() {
+TEST_F('SignInPromoTest', 'All', function() {
   mocha.run();
 });
 
