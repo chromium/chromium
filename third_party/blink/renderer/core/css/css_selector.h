@@ -523,14 +523,15 @@ class CORE_EXPORT CSSSelector {
   static String FormatPseudoTypeForDebugging(PseudoType);
 
  private:
-  unsigned relation_ : 4;     // enum RelationType
-  unsigned match_ : 4;        // enum MatchType
-  unsigned pseudo_type_ : 8;  // enum PseudoType
-  unsigned is_last_in_selector_list_ : 1;
-  unsigned is_last_in_tag_history_ : 1;
-  unsigned has_rare_data_ : 1;
-  unsigned is_for_page_ : 1;
-  unsigned is_implicitly_added_ : 1;
+  unsigned relation_ : 4;  // enum RelationType, NOLINT(runtime/bitfields)
+  unsigned match_ : 4;     // enum MatchType, NOLINT(runtime/bitfields)
+  uint8_t pseudo_type_;    // enum PseudoType
+  bool is_last_in_selector_list_ : 1;
+  bool is_last_in_tag_history_ : 1;
+  bool has_rare_data_ : 1;
+  bool is_for_page_ : 1;
+  bool is_implicitly_added_ : 1;
+  // 3 free bits here.
 
   // If set, we don't need to check this simple selector when matching;
   // it will always match, since we can only see the selector if we
@@ -549,7 +550,15 @@ class CORE_EXPORT CSSSelector {
   //
   // This always starts out false, and is set when we bucket a given
   // RuleData (by calling MarkAsCoveredByBucketing()).
-  unsigned is_covered_by_bucketing_ : 1;
+  //
+  // This is not a bit field, because doing so would pack it into the same
+  // 32-bit word as match_, relation_ and has_rare_data_, which would cause
+  // a TSan warning (which seems to be a false positive?) when those are
+  // used for Trace() concurrently with setting is_covered_by_bucketing_
+  // from the main thread. If we need more flags, and the bits above are
+  // not sufficient, we could pack other flags together with this one,
+  // but only if they are not read by Trace().
+  bool is_covered_by_bucketing_;
 
   void SetPseudoType(PseudoType pseudo_type) {
     pseudo_type_ = pseudo_type;
