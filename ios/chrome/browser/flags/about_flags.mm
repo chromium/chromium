@@ -1638,7 +1638,7 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
                                 // The following gets filtered out from
                                 // the JSON string when parsed.
                                 "  {"
-                                "    \"toplevel_name\": \"abc 123\""
+                                "    \"toplevel_name\": \"Managed Bookmarks\""
                                 "  },"
                                 "  {"
                                 "    \"name\": \"Google\","
