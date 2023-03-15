@@ -192,6 +192,7 @@ dev_list="\
   libspeechd-dev
   libsqlite3-dev
   libssl-dev
+  libsystemd-dev
   libudev-dev
   libva-dev
   libwww-perl
