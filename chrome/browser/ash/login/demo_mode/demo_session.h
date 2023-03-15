@@ -233,6 +233,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
   void SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
       absl::optional<double> keyboard_brightness_percentage);
 
+  // Allocate the device to a group in the experiment and register the
+  // synthetic field trial.
+  void RegisterDemoModeAAExperiment();
+
   // Whether demo session has been started.
   bool started_ = false;
 
