@@ -341,6 +341,10 @@ UIWindow* GetAnyWindow() {
   });
 }
 
+- (void)crashNotAnNSException {
+  @throw @"Boom";
+}
+
 - (void)crashUnhandledNSException {
   std::thread t([self]() {
     @autoreleasepool {
@@ -502,6 +506,34 @@ class CrashThread : public crashpad::Thread {
   mach_thread.Start();
   signal_thread.Join();
   mach_thread.Join();
+}
+
+class ThrowNSExceptionThread : public crashpad::Thread {
+ public:
+  explicit ThrowNSExceptionThread() : Thread() {}
+
+ private:
+  void ThreadMain() override {
+    for (int i = 0; i < 300; ++i) {
+      @try {
+        NSArray* empty_array = @[];
+        [empty_array objectAtIndex:42];
+      } @catch (NSException* exception) {
+      } @finally {
+      }
+    }
+  }
+};
+
+- (void)catchConcurrentNSException {
+  std::vector<ThrowNSExceptionThread> race_threads(30);
+  for (ThrowNSExceptionThread& race_thread : race_threads) {
+    race_thread.Start();
+  }
+
+  for (ThrowNSExceptionThread& race_thread : race_threads) {
+    race_thread.Join();
+  }
 }
 
 - (void)crashInHandlerReentrant {

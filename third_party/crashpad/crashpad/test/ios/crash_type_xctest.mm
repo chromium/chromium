@@ -169,6 +169,16 @@
       isEqualToString:@"NSInternalInconsistencyException"]);
 }
 
+- (void)testNotAnNSException {
+  [rootObject_ crashNotAnNSException];
+  // When @throwing something other than an NSException the
+  // UncaughtExceptionHandler is not called, so the application SIGABRTs.
+  [self verifyCrashReportException:EXC_SOFT_SIGNAL];
+  NSNumber* report_exception;
+  XCTAssertTrue([rootObject_ pendingReportExceptionInfo:&report_exception]);
+  XCTAssertEqual(report_exception.intValue, SIGABRT);
+}
+
 - (void)testUnhandledNSException {
   [rootObject_ crashUnhandledNSException];
   [self verifyCrashReportException:crashpad::kMachExceptionFromNSException];
@@ -372,6 +382,17 @@
   XCTAssertTrue(app_.state == XCUIApplicationStateRunningForeground);
   rootObject_ = [EDOClientService rootObjectWithPort:12345];
   XCTAssertEqual([rootObject_ pendingReportCount], 1);
+}
+
+- (void)testSimultaneousNSException {
+  [rootObject_ catchConcurrentNSException];
+
+  // The app should not crash
+  XCTAssertTrue(app_.state == XCUIApplicationStateRunningForeground);
+
+  // No report should be generated.
+  [rootObject_ processIntermediateDumps];
+  XCTAssertEqual([rootObject_ pendingReportCount], 0);
 }
 
 - (void)testCrashInHandlerReentrant {

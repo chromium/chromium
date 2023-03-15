@@ -73,6 +73,9 @@
 // Trigger a crash with an uncaught NSException.
 - (void)crashNSException;
 
+// Trigger a crash throwing something that isn't an NSException (an NSString).
+- (void)crashNotAnNSException;
+
 // Trigger a crash with an uncaught and unhandled NSException.
 - (void)crashUnhandledNSException;
 
@@ -102,6 +105,9 @@
 
 // Triggers a simulataneous Mach exception and signal in different threads.
 - (void)crashConcurrentSignalAndMach;
+
+// Triggers simultaneous caught NSExceptions
+- (void)catchConcurrentNSException;
 
 // Triggers a SIGABRT signal while handling an NSException to test reentrant
 // exceptions.
