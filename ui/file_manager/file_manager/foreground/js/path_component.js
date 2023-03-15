@@ -83,7 +83,11 @@ export class PathComponent {
     let displayRootFullPath = locationInfo.volumeInfo.displayRoot.fullPath;
 
     const prefixEntry = locationInfo.volumeInfo.prefixEntry;
-    if (prefixEntry) {
+    // Directories under Drive Fake Root can return the fake root entry list as
+    // prefix entry, but we will never show "Google Drive" as the prefix in the
+    // breadcrumb.
+    if (prefixEntry &&
+        prefixEntry.rootType !== VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
       components.push(new PathComponent(
           prefixEntry.name, prefixEntry.toURL(), prefixEntry));
     }

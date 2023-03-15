@@ -28,7 +28,10 @@ import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {PropStatus} from '../../externs/ts/state.js';
+import {Store} from '../../externs/ts/store.js';
 import {updateSearch} from '../../state/actions.js';
+import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
+import {trashRootKey} from '../../state/reducers/volumes.js';
 import {getEmptyState, getStore} from '../../state/store.js';
 
 import {ActionsController} from './actions_controller.js';
@@ -402,6 +405,9 @@ export class FileManager extends EventTarget {
      * @private {boolean}
      */
     this.guestMode_ = false;
+
+    /** @private {!Store} */
+    this.store_ = getStore();
 
     startColorChangeUpdater();
   }
@@ -1105,7 +1111,9 @@ export class FileManager extends EventTarget {
         str('RECENT_ROOT_LABEL'), VolumeManagerCommon.RootType.RECENT,
         this.getSourceRestriction_(),
         chrome.fileManagerPrivate.FileCategory.ALL);
-
+    if (util.isFilesAppExperimental()) {
+      this.store_.dispatch(addUiEntry({entry: this.recentEntry_}));
+    }
     assert(this.launchParams_);
     this.selectionHandler_ = new FileSelectionHandler(
         assert(this.directoryModel_), assert(this.fileOperationManager_),
@@ -1384,7 +1392,7 @@ export class FileManager extends EventTarget {
     const searchQuery = this.launchParams_.searchQuery;
     if (searchQuery) {
       metrics.startInterval('Load.ProcessInitialSearchQuery');
-      getStore().dispatch(updateSearch({
+      this.store_.dispatch(updateSearch({
         query: searchQuery,
         status: PropStatus.STARTED,
         options: undefined,
@@ -1718,10 +1726,16 @@ export class FileManager extends EventTarget {
             str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
             new TrashRootEntry());
       }
+      if (util.isFilesAppExperimental()) {
+        this.store_.dispatch(addUiEntry({entry: this.fakeTrashItem_.entry}));
+      }
       this.directoryTree.dataModel.fakeTrashItem = this.fakeTrashItem_;
       return;
     }
 
+    if (util.isFilesAppExperimental()) {
+      this.store_.dispatch(removeUiEntry({key: trashRootKey}));
+    }
     this.directoryTree.dataModel.fakeTrashItem = null;
     this.navigateAwayFromDisabledRoot_(this.fakeTrashItem_);
   }
@@ -1733,19 +1747,19 @@ export class FileManager extends EventTarget {
    */
   toggleDriveRootOnPreferencesUpdate_() {
     if (this.driveEnabled_) {
+      const driveFakeRoot = new FakeEntryImpl(
+          str('DRIVE_DIRECTORY_LABEL'),
+          VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
       if (!this.fakeDriveItem_) {
         this.fakeDriveItem_ = new NavigationModelFakeItem(
             str('DRIVE_DIRECTORY_LABEL'), NavigationModelItemType.DRIVE,
-            new FakeEntryImpl(
-                str('DRIVE_DIRECTORY_LABEL'),
-                VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT));
+            driveFakeRoot);
         this.fakeDriveItem_.disabled = this.volumeManager_.isDisabled(
             VolumeManagerCommon.VolumeType.DRIVE);
       }
       this.directoryTree.dataModel.fakeDriveItem = this.fakeDriveItem_;
       return;
     }
-
     this.directoryTree.dataModel.fakeDriveItem = null;
     this.navigateAwayFromDisabledRoot_(this.fakeDriveItem_);
   }

@@ -11,6 +11,8 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {removeVolume} from '../../state/actions/volumes.js';
+import {getStore} from '../../state/store.js';
 
 import {EntryLocationImpl} from './entry_location_impl.js';
 import {VolumeInfoListImpl} from './volume_info_list_impl.js';
@@ -312,7 +314,9 @@ export class VolumeManagerImpl extends EventTarget {
             } else {
               console.debug(`Unmounted '${volumeId}'`);
             }
-
+            if (util.isFilesAppExperimental()) {
+              getStore().dispatch(removeVolume({volumeId}));
+            }
             this.volumeInfoList.remove(volumeId);
             this.finishRequest_(requestKey, status);
             return;
