@@ -679,16 +679,12 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   image = unaccelerated_image.get();
 #endif  // BUILDFLAG(IS_LINUX)
 
-  // TODO(crbug.com/1418291, crbug.com/1424119):
-  // Using a webgpu mailbox texture to upload a cpu-backed resource on Metal and
-  // OpenGLES uploads all zeros. Disable that upload path if the image is not
-  // texture-backed.
+  // TODO(crbug.com/1424119):
+  // Using a webgpu mailbox texture to upload a cpu-backed resource on OpenGLES uploads all
+  // zeros. Disable that upload path if the image is not texture-backed.
   auto backendType = device()->adapter()->backendType();
-  if (backendType == WGPUBackendType_Metal ||
-      backendType == WGPUBackendType_OpenGLES) {
-    if (!image->IsTextureBacked()) {
-      use_webgpu_mailbox_texture = false;
-    }
+  if (backendType == WGPUBackendType_OpenGLES && !image->IsTextureBacked()) {
+    use_webgpu_mailbox_texture = false;
   }
 
   bool noop = copy_size.width == 0 || copy_size.height == 0 ||
