@@ -20,7 +20,7 @@ class GURL;
 class Profile;
 class ScopedKeepAlive;
 
-// BrowserSerivce's Lacros implementation.
+// BrowserService's Lacros implementation.
 // This handles the requests from ash-chrome.
 class BrowserServiceLacros : public crosapi::mojom::BrowserService,
                              public BrowserListObserver {
