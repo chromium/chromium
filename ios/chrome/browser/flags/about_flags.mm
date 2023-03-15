@@ -563,6 +563,9 @@ const FeatureEntry::FeatureParam kTabInactivityThresholdTwoWeeks[] = {
 const FeatureEntry::FeatureParam kTabInactivityThresholdThreeWeeks[] = {
     {kTabInactivityThresholdParameterName,
      kTabInactivityThresholdThreeWeeksParam}};
+const FeatureEntry::FeatureParam kTabInactivityThresholdOneMinuteDemo[] = {
+    {kTabInactivityThresholdParameterName,
+     kTabInactivityThresholdOneMinuteDemoParam}};
 
 const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
     {"One week", kTabInactivityThresholdOneWeek,
@@ -571,6 +574,8 @@ const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
      std::size(kTabInactivityThresholdTwoWeeks), nullptr},
     {"Three weeks", kTabInactivityThresholdThreeWeeks,
      std::size(kTabInactivityThresholdThreeWeeks), nullptr},
+    {"One minute [Demo]", kTabInactivityThresholdOneMinuteDemo,
+     std::size(kTabInactivityThresholdOneMinuteDemo), nullptr},
 };
 
 const FeatureEntry::FeatureParam

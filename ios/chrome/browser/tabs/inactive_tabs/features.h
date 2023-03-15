@@ -22,6 +22,7 @@ extern const char kTabInactivityThresholdParameterName[];
 extern const char kTabInactivityThresholdOneWeekParam[];
 extern const char kTabInactivityThresholdTwoWeeksParam[];
 extern const char kTabInactivityThresholdThreeWeeksParam[];
+extern const char kTabInactivityThresholdOneMinuteDemoParam[];
 
 // Convenience method for determining if Inactive Tabs is enabled.
 bool IsInactiveTabsEnabled();

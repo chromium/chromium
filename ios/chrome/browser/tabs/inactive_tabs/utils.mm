@@ -19,19 +19,26 @@ namespace {
 
 // Returns true if the given web state last is inactive determined by the given
 // threshold.
-bool IsInactive(int threshold, web::WebState* web_state) {
-  const int time_since_last_activation =
-      (base::Time::Now() - web_state->GetLastActiveTime()).InDays();
-  // Note: Even though a week is 7 days, the threshold value is returned with
-  // one extra day in all cases (> instead of >= operator) as it matches the
-  // user expectations in the following case:
-  //
-  //     The user opens a tab every Monday. Last Monday it was opened at
-  //     10:05am. The tab should not immediately be considered inactive at
-  //     10:06am today.
-  //
-  // The padding is here to encompass a flexibility of a day.
-  return time_since_last_activation > threshold;
+bool IsInactive(const base::TimeDelta& threshold, web::WebState* web_state) {
+  const base::TimeDelta time_since_last_activation =
+      base::Time::Now() - web_state->GetLastActiveTime();
+  if (threshold > base::Days(1)) {
+    // Note: Even though a week is 7 days, the threshold value is returned with
+    // one extra day in all cases (> instead of >= operator) as it matches the
+    // user expectations in the following case:
+    //
+    //     The user opens a tab every Monday. Last Monday it was opened at
+    //     10:05am. The tab should not immediately be considered inactive at
+    //     10:06am today.
+    //
+    // The padding is here to encompass a flexibility of a day.
+    return time_since_last_activation.InDays() > threshold.InDays();
+  } else {
+    // This is the demo mode. Compare the times with no one-day padding.
+    // TODO(crbug.com/1412108): Remove this once the experimental flag is
+    // removed.
+    return time_since_last_activation > threshold;
+  }
 }
 
 }  // namespace
@@ -52,7 +59,7 @@ void MoveTabsFromActiveToInactive(Browser* active_browser,
   DCHECK(IsInactiveTabsEnabled());
   WebStateList* active_web_state_list = active_browser->GetWebStateList();
   WebStateList* inactive_web_state_list = inactive_browser->GetWebStateList();
-  const int inactivity_threshold = InactiveTabsTimeThreshold().InDays();
+  const base::TimeDelta inactivity_threshold = InactiveTabsTimeThreshold();
 
   for (int index = active_web_state_list->GetIndexOfFirstNonPinnedWebState();
        index < active_web_state_list->count();) {
@@ -81,7 +88,7 @@ void MoveTabsFromInactiveToActive(Browser* inactive_browser,
   DCHECK(IsInactiveTabsEnabled());
   WebStateList* active_web_state_list = active_browser->GetWebStateList();
   WebStateList* inactive_web_state_list = inactive_browser->GetWebStateList();
-  const int inactivity_threshold = InactiveTabsTimeThreshold().InDays();
+  const base::TimeDelta inactivity_threshold = InactiveTabsTimeThreshold();
   int removed_web_state_number = 0;
 
   for (int index = 0; index < inactive_web_state_list->count();) {
