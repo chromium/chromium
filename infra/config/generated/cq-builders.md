@@ -504,6 +504,9 @@ as required builders.
   Location filters:
   * [`//third_party/nearby/README.chromium`](https://cs.chromium.org/search?q=+file:third_party/nearby/README.chromium)
 
+* [win-branded-compile-rel](https://ci.chromium.org/p/chrome/builders/try/win-branded-compile-rel) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""win-branded-compile-rel""))
+  * Experiment percentage: 50.0
+
 * [gpu-fyi-cq-android-arm64](https://ci.chromium.org/p/chromium/builders/try/gpu-fyi-cq-android-arm64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""gpu-fyi-cq-android-arm64""))
   * Experiment percentage: 100.0
 

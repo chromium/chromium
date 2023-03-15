@@ -65,6 +65,14 @@ chrome_internal_verifier(
     tryjob = try_.job(),
 )
 
+chrome_internal_verifier(
+    builder = "win-branded-compile-rel",
+    tryjob = try_.job(
+        # TODO(crbug.com/1259887): Promote out of experimental.
+        experiment_percentage = 50,
+    ),
+)
+
 ### Optional builders ###
 
 chrome_internal_verifier(
