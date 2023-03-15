@@ -38,6 +38,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -376,7 +377,9 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
         {features::kLoadingOnlyLearnHighPriorityResources,
          features::kLoadingPreconnectToRedirectTarget,
          features::kNavigationPredictorPreconnectHoldback},
-        {});
+        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // disable this feature.
+        {features::kHttpsUpgrades});
   }
 
   LoadingPredictorBrowserTest(const LoadingPredictorBrowserTest&) = delete;
