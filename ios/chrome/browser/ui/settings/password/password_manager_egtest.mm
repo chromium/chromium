@@ -575,7 +575,8 @@ id<GREYMatcher> EditDoneButton() {
       [self isRunningTest:@selector(testAddPasswordLayoutWithLongNotes)] ||
       [self isRunningTest:@selector
             (testAddPasswordSaveButtonStateOnFieldChanges)] ||
-      [self isRunningTest:@selector(testLayoutWithLongNotes)]) {
+      [self isRunningTest:@selector(testLayoutWithLongNotes)] ||
+      [self isRunningTest:@selector(testShowHidePasswordWithNotesEnabled)]) {
     config.features_enabled.push_back(syncer::kPasswordNotesWithBackup);
   }
 
@@ -1407,10 +1408,6 @@ id<GREYMatcher> EditDoneButton() {
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
                                             username:@"concrete username"]
       performAction:grey_tap()];
-
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
 
   TapEdit();
   [[EarlGrey selectElementWithMatcher:TooLongNoteFooter()]
@@ -2814,6 +2811,36 @@ id<GREYMatcher> EditDoneButton() {
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
+
+  [GetInteractionForPasswordDetailItem(ShowPasswordButton())
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [GetInteractionForPasswordDetailItem(ShowPasswordButton())
+      performAction:grey_tap()];
+  [GetInteractionForPasswordDetailItem(HidePasswordButton())
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [GetInteractionForPasswordDetailItem(HidePasswordButton())
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests that reauthentication is not required to show password when notes are
+// enabled since the reauthentication happens before navigating to the details
+// view in this scenario.
+- (void)testShowHidePasswordWithNotesEnabled {
+  SaveExamplePasswordForm();
+
+  OpenPasswordManager();
+  [PasswordSettingsAppInterface
+      setUpMockReauthenticationModuleForPasswordManager];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
+                                            username:@"concrete username"]
+      performAction:grey_tap()];
 
   [GetInteractionForPasswordDetailItem(ShowPasswordButton())
       assertWithMatcher:grey_sufficientlyVisible()];

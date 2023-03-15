@@ -154,6 +154,11 @@ const int kMaxNoteCharAmount = 1000;
 // signed-in.
 @property(nonatomic, readonly) NSString* userEmail;
 
+// Timer used to keep track of the time that passed after user passed the
+// authentication and navigated to the details view. Once it runs out, view
+// navigates to the password list view.
+@property(nonatomic, strong) NSTimer* authValidityTimer;
+
 @end
 
 @implementation PasswordDetailsTableViewController
@@ -184,6 +189,7 @@ const int kMaxNoteCharAmount = 1000;
 
   self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerId;
   self.tableView.allowsSelectionDuringEditing = YES;
+  [self setOrExtendAuthValidityTimer];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -194,6 +200,7 @@ const int kMaxNoteCharAmount = 1000;
 #pragma mark - ChromeTableViewController
 
 - (void)editButtonPressed {
+  [self setOrExtendAuthValidityTimer];
   // If there are no passwords, proceed with editing without
   // reauthentication.
   if (![self hasAtLeastOnePassword]) {
@@ -446,6 +453,7 @@ const int kMaxNoteCharAmount = 1000;
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [self setOrExtendAuthValidityTimer];
   TableViewModel* model = self.tableViewModel;
   NSInteger itemType = [model itemTypeForIndexPath:indexPath];
   switch (itemType) {
@@ -668,6 +676,7 @@ const int kMaxNoteCharAmount = 1000;
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
+  [self setOrExtendAuthValidityTimer];
   BOOL usernameValid = [self checkIfValidUsernames];
   BOOL passwordValid = [self checkIfValidPasswords];
   BOOL noteValid = [self checkIfValidNotes];
@@ -688,6 +697,7 @@ const int kMaxNoteCharAmount = 1000;
 #pragma mark - TableViewMultiLineTextEditItemDelegate
 
 - (void)textViewItemDidChange:(TableViewMultiLineTextEditItem*)tableViewItem {
+  [self setOrExtendAuthValidityTimer];
   // Update save button state based on the note's length and validity of other
   // input fields.
   BOOL noteValid = tableViewItem.text.length <= kMaxNoteCharAmount;
@@ -762,12 +772,13 @@ const int kMaxNoteCharAmount = 1000;
 
 // Shows reauthentication dialog if needed. If the reauthentication is
 // successful reveals the password.
-// TODO(crbug.com/1414897): Add 5 min timeout and remove reauth in password
-// details page with notes enabled.
 - (void)attemptToShowPasswordFor:(ReauthenticationReason)reason {
   // If password was already shown (before editing or copying) or the flag to
   // override auth is YES, we don't need to request reauth again.
-  if (self.isPasswordShown || self.showPasswordWithoutAuth) {
+  // With password notes feature enabled the authentication happens during
+  // navigation from the password list view to the password details view.
+  if (self.isPasswordShown || self.showPasswordWithoutAuth ||
+      IsPasswordNotesWithBackupEnabled()) {
     [self showPasswordFor:reason];
     return;
   }
@@ -1150,10 +1161,46 @@ const int kMaxNoteCharAmount = 1000;
   [self.passwordDetailsInfoItems addObject:passwordItem];
 }
 
+// Moves password at specified index from profile store to account store.
+- (void)moveCredentialToAccountStore:(int)passwordIndex {
+  DCHECK_GE(passwordIndex, 0);
+  DCHECK(self.handler);
+
+  [self.handler moveCredentialToAccountStore:self.passwords[passwordIndex]];
+  [self showToast:l10n_util::GetNSStringF(
+                      IDS_IOS_PASSWORD_SAVED_TO_ACCOUNT_SNACKBAR_MESSAGE,
+                      base::SysNSStringToUTF16(self.userEmail))
+       forSuccess:YES];
+}
+
+// Navigates to password manager list view when the timeout for a valid
+// authentication has passed.
+- (void)authValidityTimerFired:(NSTimer*)timer {
+  [self.navigationController popViewControllerAnimated:YES];
+}
+
+// Starts the timer after passing an authentication to open password details
+// view or extends it on an interaction with the details view.
+- (void)setOrExtendAuthValidityTimer {
+  if (!IsPasswordNotesWithBackupEnabled()) {
+    return;
+  }
+
+  [self.authValidityTimer invalidate];
+  self.authValidityTimer = [NSTimer
+      scheduledTimerWithTimeInterval:syncer::kPasswordNotesAuthValidity.Get()
+                                         .InSeconds()
+                              target:self
+                            selector:@selector(authValidityTimerFired:)
+                            userInfo:nil
+                             repeats:NO];
+}
+
 #pragma mark - Actions
 
 // Called when the user tapped on the show/hide button near password.
 - (void)didTapShowHideButton:(UIButton*)buttonView {
+  [self setOrExtendAuthValidityTimer];
   [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
                                 animated:NO];
   if (IsPasswordGroupingEnabled()) {
@@ -1188,6 +1235,7 @@ const int kMaxNoteCharAmount = 1000;
 
 // Called when the user tap error info icon in the username input.
 - (void)didTapUsernameErrorInfo:(UIButton*)buttonView {
+  [self setOrExtendAuthValidityTimer];
   NSString* text = l10n_util::GetNSString(IDS_IOS_USERNAME_ALREADY_USED);
 
   NSAttributedString* attributedText = [[NSAttributedString alloc]
@@ -1226,6 +1274,7 @@ const int kMaxNoteCharAmount = 1000;
 // Copies the password information to system pasteboard and shows a toast of
 // success/failure.
 - (void)copyPasswordDetails:(id)sender {
+  [self setOrExtendAuthValidityTimer];
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   UIMenuController* menu = base::mac::ObjCCastStrict<UIMenuController>(sender);
   PasswordDetailsMenuItem* menuItem =
@@ -1306,7 +1355,18 @@ const int kMaxNoteCharAmount = 1000;
 }
 
 - (void)didTapMoveButton:(UIGestureRecognizer*)gestureRecognizer {
+  [self setOrExtendAuthValidityTimer];
   UIView* view = gestureRecognizer.view;
+  // Only one password at position 0 shows if no grouping applied.
+  int passwordIndex = IsPasswordGroupingEnabled() ? view.tag : 0;
+
+  // With password notes feature enabled the authentication happens during
+  // navigation from the password list view to the password details view.
+  if (IsPasswordNotesWithBackupEnabled()) {
+    [self moveCredentialToAccountStore:passwordIndex];
+    return;
+  }
+
   if (![self.reauthModule canAttemptReauth]) {
     return;
   }
@@ -1320,15 +1380,8 @@ const int kMaxNoteCharAmount = 1000;
         if (result == ReauthenticationResult::kFailure) {
           return;
         }
-        // Only one password at position 0 shows if no grouping applied.
-        int position = IsPasswordGroupingEnabled() ? view.tag : 0;
-        DCHECK_GE(position, 0);
-        DCHECK(self.handler);
-        [self.handler moveCredentialToAccountStore:self.passwords[position]];
-        [self showToast:l10n_util::GetNSStringF(
-                            IDS_IOS_PASSWORD_SAVED_TO_ACCOUNT_SNACKBAR_MESSAGE,
-                            base::SysNSStringToUTF16(self.userEmail))
-             forSuccess:YES];
+
+        [self moveCredentialToAccountStore:passwordIndex];
       };
   [self.reauthModule
       attemptReauthWithLocalizedReason:
