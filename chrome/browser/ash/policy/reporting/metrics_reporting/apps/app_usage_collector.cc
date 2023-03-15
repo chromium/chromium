@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_collector.h"
 
+#include <memory>
+
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -15,21 +19,50 @@
 
 namespace reporting {
 
+// static
+std::unique_ptr<AppUsageCollector> AppUsageCollector::Create(
+    Profile* profile,
+    const ReportingSettings* reporting_settings) {
+  auto app_platform_metrics_retriever =
+      std::make_unique<AppPlatformMetricsRetriever>(profile);
+  return base::WrapUnique(new AppUsageCollector(
+      profile, reporting_settings, std::move(app_platform_metrics_retriever)));
+}
+
+// static
+std::unique_ptr<AppUsageCollector> AppUsageCollector::CreateForTest(
+    Profile* profile,
+    const ReportingSettings* reporting_settings,
+    std::unique_ptr<AppPlatformMetricsRetriever>
+        app_platform_metrics_retriever) {
+  return base::WrapUnique(new AppUsageCollector(
+      profile, reporting_settings, std::move(app_platform_metrics_retriever)));
+}
+
 AppUsageCollector::AppUsageCollector(
     Profile* profile,
     const ReportingSettings* reporting_settings,
-    ::apps::AppPlatformMetrics* app_platform_metrics)
+    std::unique_ptr<AppPlatformMetricsRetriever> app_platform_metrics_retriever)
     : profile_(profile),
       reporting_settings_(reporting_settings),
-      app_platform_metrics_(app_platform_metrics) {
-  DCHECK(app_platform_metrics_);
-  app_platform_metrics_->AddObserver(this);
+      app_platform_metrics_retriever_(
+          std::move(app_platform_metrics_retriever)) {
+  DCHECK(app_platform_metrics_retriever_);
+  app_platform_metrics_retriever_->GetAppPlatformMetrics(base::BindOnce(
+      &AppUsageCollector::InitUsageCollector, weak_ptr_factory_.GetWeakPtr()));
 }
 
-AppUsageCollector::~AppUsageCollector() {
-  if (IsInObserverList()) {
-    app_platform_metrics_->RemoveObserver(this);
+AppUsageCollector::~AppUsageCollector() = default;
+
+void AppUsageCollector::InitUsageCollector(
+    ::apps::AppPlatformMetrics* app_platform_metrics) {
+  if (!app_platform_metrics) {
+    // This can happen if the `AppPlatformMetrics` component initialization
+    // failed (for example, component was destructed). We just abort
+    // initialization of the usage collector when this happens.
+    return;
   }
+  observer_.Observe(app_platform_metrics);
 }
 
 void AppUsageCollector::OnAppUsage(const std::string& app_id,
@@ -50,6 +83,10 @@ void AppUsageCollector::OnAppUsage(const std::string& app_id,
   }
 
   CreateOrUpdateAppUsageEntry(app_id, app_type, instance_id, running_time);
+}
+
+void AppUsageCollector::OnAppPlatformMetricsDestroyed() {
+  observer_.Reset();
 }
 
 void AppUsageCollector::CreateOrUpdateAppUsageEntry(

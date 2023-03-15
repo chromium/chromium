@@ -18,9 +18,11 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer_type.h"
 
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::NotNull;
 using ::testing::StrEq;
@@ -31,8 +33,24 @@ namespace {
 constexpr char kTestAppId[] = "TestApp";
 constexpr base::TimeDelta kAppUsageCollectionInterval = base::Minutes(5);
 
-class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
+// Mock retriever for the `AppPlatformMetrics` component.
+class MockAppPlatformMetricsRetriever : public AppPlatformMetricsRetriever {
  public:
+  MockAppPlatformMetricsRetriever() : AppPlatformMetricsRetriever(nullptr) {}
+  MockAppPlatformMetricsRetriever(const MockAppPlatformMetricsRetriever&) =
+      delete;
+  MockAppPlatformMetricsRetriever& operator=(
+      const MockAppPlatformMetricsRetriever&) = delete;
+  ~MockAppPlatformMetricsRetriever() override = default;
+
+  MOCK_METHOD(void,
+              GetAppPlatformMetrics,
+              (AppPlatformMetricsCallback callback),
+              (override));
+};
+
+class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
+ protected:
   void SetUp() override {
     ::apps::AppPlatformMetricsServiceTestBase::SetUp();
 
@@ -44,6 +62,19 @@ class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
     // Pre-install app so it can be used by tests to simulate usage.
     InstallOneApp(kTestAppId, ::apps::AppType::kArc, /*publisher_id=*/"",
                   ::apps::Readiness::kReady, ::apps::InstallSource::kPlayStore);
+
+    // Set up `AppUsageCollector` with relevant test params.
+    auto mock_app_platform_metrics_retriever =
+        std::make_unique<MockAppPlatformMetricsRetriever>();
+    EXPECT_CALL(*mock_app_platform_metrics_retriever, GetAppPlatformMetrics(_))
+        .WillOnce([this](AppPlatformMetricsRetriever::AppPlatformMetricsCallback
+                             callback) {
+          std::move(callback).Run(
+              app_platform_metrics_service()->AppPlatformMetrics());
+        });
+    app_usage_collector_ = AppUsageCollector::CreateForTest(
+        profile(), &reporting_settings_,
+        std::move(mock_app_platform_metrics_retriever));
   }
 
   void SimulateAppUsageForInstance(::aura::Window* window,
@@ -77,15 +108,15 @@ class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
                 Eq(expected_usage_time));
   }
 
- protected:
+  // Fake reporting settings component used by the test.
   test::FakeReportingSettings reporting_settings_;
+
+  // App usage collector used by tests.
+  std::unique_ptr<AppUsageCollector> app_usage_collector_;
 };
 
 TEST_F(AppUsageCollectorTest, PersistAppUsageDataInPrefStore) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
-  AppUsageCollector app_usage_collector(
-      profile(), &reporting_settings_,
-      app_platform_metrics_service()->AppPlatformMetrics());
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
@@ -101,9 +132,6 @@ TEST_F(AppUsageCollectorTest, PersistAppUsageDataInPrefStore) {
 
 TEST_F(AppUsageCollectorTest, ShouldNotPersistAppUsageDataIfSettingDisabled) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, false);
-  AppUsageCollector app_usage_collector(
-      profile(), &reporting_settings_,
-      app_platform_metrics_service()->AppPlatformMetrics());
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
@@ -120,9 +148,6 @@ TEST_F(AppUsageCollectorTest, ShouldNotPersistAppUsageDataIfSettingDisabled) {
 
 TEST_F(AppUsageCollectorTest, ShouldAggregateAppUsageDataOnSubsequentUsage) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
-  AppUsageCollector app_usage_collector(
-      profile(), &reporting_settings_,
-      app_platform_metrics_service()->AppPlatformMetrics());
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
@@ -149,9 +174,6 @@ TEST_F(AppUsageCollectorTest,
        ShouldStopPersistingAppUsageDataWhenSettingDisabled) {
   // Enable reporting setting initially.
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
-  AppUsageCollector app_usage_collector(
-      profile(), &reporting_settings_,
-      app_platform_metrics_service()->AppPlatformMetrics());
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
@@ -175,9 +197,6 @@ TEST_F(AppUsageCollectorTest,
 
 TEST_F(AppUsageCollectorTest, ShouldPersistAppUsageDataForNewInstance) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
-  AppUsageCollector app_usage_collector(
-      profile(), &reporting_settings_,
-      app_platform_metrics_service()->AppPlatformMetrics());
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
@@ -199,6 +218,27 @@ TEST_F(AppUsageCollectorTest, ShouldPersistAppUsageDataForNewInstance) {
   // Verify the component persists usage data for the new instance.
   ASSERT_THAT(GetPrefService()->GetDict(::apps::kAppUsageTime).size(), Eq(2UL));
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId1, kAppUsageDuration);
+}
+
+TEST_F(AppUsageCollectorTest, OnAppPlatformMetricsDestroyed) {
+  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
+
+  // Reset `AppPlatformMetricsService` to destroy the `AppPlatformMetrics`
+  // component.
+  ResetAppPlatformMetricsService();
+
+  // Create a new window for the app and simulate app usage to verify the
+  // component is no longer tracking app usage metric.
+  static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
+  const auto window = std::make_unique<::aura::Window>(nullptr);
+  window->Init(::ui::LAYER_NOT_DRAWN);
+  const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
+  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+
+  // Verify there is no data persisted to the pref store.
+  const auto& usage_dict_pref =
+      GetPrefService()->GetDict(::apps::kAppUsageTime);
+  ASSERT_TRUE(usage_dict_pref.empty());
 }
 
 }  // namespace
