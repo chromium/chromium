@@ -227,12 +227,12 @@ void CheckExactValues(
     EXPECT_FALSE(settings->has_focus_mode);
   }
   ASSERT_EQ(settings->points_of_interest.size(), 3u);
-  EXPECT_EQ(settings->points_of_interest[0]->x, -0.75);
-  EXPECT_EQ(settings->points_of_interest[0]->y, -0.25);
+  EXPECT_EQ(settings->points_of_interest[0]->x, 0.0);
+  EXPECT_EQ(settings->points_of_interest[0]->y, 0.0);
   EXPECT_EQ(settings->points_of_interest[1]->x, 0.25);
   EXPECT_EQ(settings->points_of_interest[1]->y, 0.75);
-  EXPECT_EQ(settings->points_of_interest[2]->x, 1.25);
-  EXPECT_EQ(settings->points_of_interest[2]->y, 1.75);
+  EXPECT_EQ(settings->points_of_interest[2]->x, 1.0);
+  EXPECT_EQ(settings->points_of_interest[2]->y, 1.0);
   EXPECT_TRUE(settings->has_exposure_compensation);
   EXPECT_EQ(settings->exposure_compensation,
             all_capabilities->exposureCompensation()->min() +

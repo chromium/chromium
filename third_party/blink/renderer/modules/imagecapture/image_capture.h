@@ -97,6 +97,16 @@ class MODULES_EXPORT ImageCapture final
   using PromiseResolverFunction =
       base::OnceCallback<void(ScriptPromiseResolver*)>;
 
+  // Called by `CheckAndApplyMediaTrackConstraintsToSettings()` to apply
+  // a single constraint set to photo settings and to effective capabilities.
+  void ApplyMediaTrackConstraintSetToSettings(
+      media::mojom::blink::PhotoSettings*,
+      MediaTrackCapabilities* effective_capabilities,
+      MediaTrackSettings* effective_settings,
+      const MediaTrackConstraintSet*,
+      MediaTrackConstraintSetType) const;
+  // Called by `CheckAndApplyMediaTrackConstraintsToSettings()` check if
+  // effective capabilities satisfy a single constraint set.
   bool CheckMediaTrackConstraintSet(
       const MediaTrackCapabilities* effective_capabilities,
       const MediaTrackSettings* effective_settings,
