@@ -22,6 +22,8 @@
  * TrashEntry combines both files for display.
  */
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {parseTrashInfoFiles, startIOTask} from './api.js';
@@ -63,6 +65,12 @@ const TRASH_CONFIG = [
       VolumeManagerCommon.VolumeType.DOWNLOADS, '/', '/.Trash/',
       /*deleteIsForever=*/ true),
 ];
+
+if (loadTimeData.getBoolean('FILES_TRASH_DRIVE_ENABLED')) {
+  TRASH_CONFIG.push(new TrashConfig(
+      VolumeManagerCommon.VolumeType.DRIVE, '/', '/.Trash-1000/',
+      /*deleteIsForever=*/ false));
+}
 
 /**
  * Interval (ms) until items in trash are permanently deleted. 30 days.

@@ -1209,6 +1209,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("keyboardDeleteDownloads"),
         TestCase("keyboardDeleteDownloads").EnableTrash(),
         TestCase("keyboardDeleteDrive"),
+        TestCase("keyboardDeleteDrive").EnableTrash(),
         TestCase("keyboardDeleteFolderDownloads").InGuestMode(),
         TestCase("keyboardDeleteFolderDownloads"),
         TestCase("keyboardDeleteFolderDownloads").EnableTrash(),
@@ -2249,6 +2250,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableTrash()
             .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
         TestCase("trashDeleteFromTrashOriginallyFromMyFiles")
+            .EnableTrash()
+            .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
+        TestCase("trashDeleteFromTrashOriginallyFromDrive")
             .EnableTrash()
             .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
         TestCase("trashNoTasksInTrashRoot").EnableTrash(),

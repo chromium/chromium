@@ -100,8 +100,8 @@ base::File::Error SetTrackedExtendedAttribute(const base::FilePath& path) {
   if (lsetxattr(path.value().c_str(), trash::kTrackedDirectoryName,
                 tracked_name.c_str(), tracked_name.size(), 0) < 0) {
     RecordDirectorySetupMetric(trash::DirectorySetupUmaType::FAILED_XATTR);
-    PLOG(ERROR) << "Failed to set the xattr";
-    return base::File::FILE_ERROR_FAILED;
+    PLOG(WARNING) << "Failed to set the xattr " << trash::kTrackedDirectoryName
+                  << "=" << tracked_name << " on " << path;
   }
   return base::File::FILE_OK;
 }

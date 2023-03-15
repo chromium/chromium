@@ -1194,6 +1194,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(ash::features::kFilesSearchV2));
   dict->Set("FILES_TRASH_ENABLED",
             base::FeatureList::IsEnabled(ash::features::kFilesTrash));
+  dict->Set("FILES_TRASH_DRIVE_ENABLED",
+            base::FeatureList::IsEnabled(ash::features::kFilesTrashDrive));
   dict->Set(
       "FILES_SINGLE_PARTITION_FORMAT_ENABLED",
       base::FeatureList::IsEnabled(ash::features::kFilesSinglePartitionFormat));

@@ -2000,8 +2000,10 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.enable_trash) {
     enabled_features.push_back(ash::features::kFilesTrash);
+    enabled_features.push_back(ash::features::kFilesTrashDrive);
   } else {
     disabled_features.push_back(ash::features::kFilesTrash);
+    disabled_features.push_back(ash::features::kFilesTrashDrive);
   }
 
   if (options.enable_dlp_files_restriction) {

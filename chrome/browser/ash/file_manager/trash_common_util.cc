@@ -79,6 +79,19 @@ TrashPathsMap GenerateEnabledTrashLocationsForProfile(
           /*prefix_path=*/
           util::GetDownloadsFolderForProfile(profile).BaseName()));
 
+  if (base::FeatureList::IsEnabled(ash::features::kFilesTrashDrive)) {
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+    if (integration_service) {
+      enabled_trash_locations.try_emplace(
+          integration_service->GetMountPointPath(),
+          TrashLocation(
+              /*supplied_relative_folder_path=*/base::FilePath(".Trash-1000"),
+              /*supplied_mount_point_path=*/integration_service
+                  ->GetMountPointPath()));
+    }
+  }
+
   return enabled_trash_locations;
 }
 
