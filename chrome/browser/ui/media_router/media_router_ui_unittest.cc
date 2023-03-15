@@ -704,6 +704,37 @@ TEST_F(MediaRouterViewsUITest, UpdateSinksWhenDialogMovesToAnotherDisplay) {
   ui_->UpdateSinks();
 }
 
+TEST_F(MediaRouterViewsUITest, FreezeRoute) {
+  EXPECT_CALL(*mock_router_, GetMirroringMediaControllerHost(kRouteId));
+  ui_->FreezeRoute(kRouteId);
+}
+
+TEST_F(MediaRouterViewsUITest, UnfreezeRoute) {
+  EXPECT_CALL(*mock_router_, GetMirroringMediaControllerHost(kRouteId));
+  ui_->UnfreezeRoute(kRouteId);
+}
+
+TEST_F(MediaRouterViewsUITest, OnFreezeInfoChanged) {
+  MockControllerObserver observer;
+
+  EXPECT_CALL(observer, OnModelUpdated(_))
+      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+        EXPECT_TRUE(model.media_sinks().empty());
+      })));
+  ui_->AddObserver(&observer);
+
+  // Calling OnFreezeInfoChanged will trigger the UI to UpdateSinks, which we
+  // can detect through OnModelUpdated.
+  EXPECT_CALL(observer, OnModelUpdated(_))
+      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+        EXPECT_TRUE(model.media_sinks().empty());
+      })));
+  ui_->OnFreezeInfoChanged();
+
+  EXPECT_CALL(observer, OnControllerDestroyingInternal());
+  ui_.reset();
+}
+
 class MediaRouterViewsUIIncognitoTest : public MediaRouterViewsUITest {
  protected:
   void SetMediaRouterFactory() override {

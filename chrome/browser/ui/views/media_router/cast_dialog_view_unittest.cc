@@ -90,6 +90,8 @@ class MockCastDialogController : public CastDialogController {
                void(const std::string& sink_id, MediaCastMode cast_mode));
   MOCK_METHOD1(StopCasting, void(const std::string& route_id));
   MOCK_METHOD1(ClearIssue, void(const Issue::Id& issue_id));
+  MOCK_METHOD1(FreezeRoute, void(const std::string& route_id));
+  MOCK_METHOD1(UnfreezeRoute, void(const std::string& route_id));
   MOCK_METHOD0(TakeMediaRouteStarter, std::unique_ptr<MediaRouteStarter>());
   MOCK_METHOD1(RegisterDestructor, void(base::OnceClosure));
 };

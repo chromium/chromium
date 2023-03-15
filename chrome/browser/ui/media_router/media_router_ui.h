@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/media_router/web_contents_display_observer.h"
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
+#include "components/media_router/browser/mirroring_media_controller_host.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/media_source.h"
 
@@ -47,7 +48,8 @@ class RouteRequestResult;
 // Functions as an intermediary between MediaRouter and Views Cast dialog.
 class MediaRouterUI : public CastDialogController,
                       public MediaSinkWithCastModesObserver,
-                      public PresentationRequestSourceObserver {
+                      public PresentationRequestSourceObserver,
+                      public MirroringMediaControllerHost::Observer {
  public:
   // MediaRouterUI's are typically created with one of the CreateWith* methods
   // below.
@@ -99,6 +101,8 @@ class MediaRouterUI : public CastDialogController,
                     MediaCastMode cast_mode) override;
   void StopCasting(const std::string& route_id) override;
   void ClearIssue(const Issue::Id& issue_id) override;
+  void FreezeRoute(const std::string& route_id) override;
+  void UnfreezeRoute(const std::string& route_id) override;
   // Note that |MediaRouterUI| should not be used after |TakeMediaRouteStarter|
   // is called. To enforce that, |TakeMediaRouteStarter| calls the destructor
   // callback given to |RegisterDestructor| to destroy itself.
@@ -162,6 +166,7 @@ class MediaRouterUI : public CastDialogController,
                            UIMediaRoutesObserverSkipsUnavailableCastModes);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterUITest,
                            UpdateSinksWhenDialogMovesToAnotherDisplay);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, OnFreezeInfoChanged);
 
   class WebContentsFullscreenOnLoadedObserver;
 
@@ -213,6 +218,9 @@ class MediaRouterUI : public CastDialogController,
 
   // PresentationRequestSourceObserver
   void OnSourceUpdated(std::u16string& source_name) override;
+
+  // MirroringObserver
+  void OnFreezeInfoChanged() override;
 
   // Called to update the dialog with the current list of of enabled sinks.
   void UpdateSinks();
@@ -277,6 +285,8 @@ class MediaRouterUI : public CastDialogController,
   UIMediaSink ConvertToUISink(const MediaSinkWithCastModes& sink,
                               const MediaRoute* route,
                               const absl::optional<Issue>& issue);
+
+  void StopObservingMirroringMediaControllerHosts();
 
   // Returns the MediaRouter for this instance's BrowserContext.
   virtual MediaRouter* GetMediaRouter() const;

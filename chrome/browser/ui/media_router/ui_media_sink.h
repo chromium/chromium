@@ -32,6 +32,14 @@ enum class UIMediaSinkState {
   UNAVAILABLE
 };
 
+struct FreezeInfo {
+  // Whether the route supports freeze / unfreeze.
+  bool can_freeze = false;
+
+  // The current freeze state of the route.
+  bool is_frozen = false;
+};
+
 struct UIMediaSink {
  public:
   explicit UIMediaSink(mojom::MediaRouteProviderId provider);
@@ -77,6 +85,9 @@ struct UIMediaSink {
   // Set of Cast Modes (e.g. presentation, desktop mirroring) supported by the
   // sink.
   CastModeSet cast_modes;
+
+  // The current information related to freeze.
+  FreezeInfo freeze_info;
 };
 
 }  // namespace media_router

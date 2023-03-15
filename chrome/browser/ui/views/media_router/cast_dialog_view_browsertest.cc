@@ -66,6 +66,8 @@ class MockCastDialogController : public media_router::CastDialogController {
                     media_router::MediaCastMode cast_mode) override {}
   void StopCasting(const media_router::MediaRoute::Id& route_id) override {}
   void ClearIssue(const media_router::Issue::Id& issue_id) override {}
+  void FreezeRoute(const media_router::MediaRoute::Id& route_id) override {}
+  void UnfreezeRoute(const media_router::MediaRoute::Id& route_id) override {}
   std::unique_ptr<media_router::MediaRouteStarter> TakeMediaRouteStarter()
       override {
     return nullptr;

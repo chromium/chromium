@@ -91,6 +91,7 @@ MediaRouterUI::MediaRouterUI(
 }
 
 MediaRouterUI::~MediaRouterUI() {
+  StopObservingMirroringMediaControllerHosts();
   if (media_route_starter_)
     DetachFromMediaRouteStarter();
   for (CastDialogController::Observer& observer : observers_) {
@@ -188,6 +189,26 @@ void MediaRouterUI::StopCasting(const std::string& route_id) {
 
 void MediaRouterUI::ClearIssue(const Issue::Id& issue_id) {
   RemoveIssue(issue_id);
+}
+
+void MediaRouterUI::FreezeRoute(const std::string& route_id) {
+  MirroringMediaControllerHost* freeze_host =
+      GetMediaRouter()->GetMirroringMediaControllerHost(route_id);
+  if (!freeze_host) {
+    return;
+  }
+
+  freeze_host->Freeze();
+}
+
+void MediaRouterUI::UnfreezeRoute(const std::string& route_id) {
+  MirroringMediaControllerHost* freeze_host =
+      GetMediaRouter()->GetMirroringMediaControllerHost(route_id);
+  if (!freeze_host) {
+    return;
+  }
+
+  freeze_host->Unfreeze();
 }
 
 std::unique_ptr<MediaRouteStarter> MediaRouterUI::TakeMediaRouteStarter() {
@@ -389,6 +410,12 @@ void MediaRouterUI::OnSourceUpdated(std::u16string& source_name) {
   UpdateModelHeader(source_name);
 }
 
+void MediaRouterUI::OnFreezeInfoChanged() {
+  // UpdateSinks regenerates the list of UIMediaSinks, and for each it queries
+  // the current freeze info.
+  UpdateSinks();
+}
+
 void MediaRouterUI::UpdateSinks() {
   std::vector<UIMediaSink> media_sinks;
   for (const MediaSinkWithCastModes& sink : GetEnabledSinks()) {
@@ -514,6 +541,7 @@ void MediaRouterUI::OnIssueCleared() {
 }
 
 void MediaRouterUI::OnRoutesUpdated(const std::vector<MediaRoute>& routes) {
+  StopObservingMirroringMediaControllerHosts();
   routes_.clear();
 
   for (const MediaRoute& route : routes) {
@@ -528,6 +556,12 @@ void MediaRouterUI::OnRoutesUpdated(const std::vector<MediaRoute>& routes) {
     }
 #endif
     routes_.push_back(route);
+    MirroringMediaControllerHost* mirroring_controller_host =
+        GetMediaRouter()->GetMirroringMediaControllerHost(
+            route.media_route_id());
+    if (mirroring_controller_host) {
+      mirroring_controller_host->AddObserver(this);
+    }
   }
 
   if (terminating_route_id_ &&
@@ -623,6 +657,15 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
       ui_sink.state = UIMediaSinkState::CONNECTING;
     } else {
       ui_sink.state = UIMediaSinkState::CONNECTED;
+
+      MirroringMediaControllerHost* mirroring_controller_host =
+          GetMediaRouter()->GetMirroringMediaControllerHost(
+              route->media_route_id());
+      if (mirroring_controller_host) {
+        ui_sink.freeze_info.can_freeze =
+            mirroring_controller_host->can_freeze();
+        ui_sink.freeze_info.is_frozen = mirroring_controller_host->is_frozen();
+      }
     }
   } else {
     ui_sink.state = current_route_request() &&
@@ -633,6 +676,19 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
   if (issue && IssueMatches(*issue, ui_sink))
     ui_sink.issue = issue;
   return ui_sink;
+}
+
+void MediaRouterUI::StopObservingMirroringMediaControllerHosts() {
+  for (const MediaRoute& route : routes_) {
+    MirroringMediaControllerHost* mirroring_controller_host =
+        GetMediaRouter()->GetMirroringMediaControllerHost(
+            route.media_route_id());
+    if (mirroring_controller_host) {
+      // It is safe to call RemoveObserver even if we are not observing a
+      // particular host.
+      mirroring_controller_host->RemoveObserver(this);
+    }
+  }
 }
 
 MediaRouter* MediaRouterUI::GetMediaRouter() const {
