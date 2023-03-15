@@ -75,7 +75,9 @@ class KernelTimeout {
   // Convert to `struct timespec` for interfaces that expect a relative
   // timeout. If !has_timeout() or is_absolute_timeout(), attempts to convert to
   // a reasonable relative timeout, but callers should to test has_timeout() and
-  // is_absolute_timeout() and prefer to use a more appropriate interface.
+  // is_absolute_timeout() and prefer to use a more appropriate interface. Since
+  // the return value is a relative duration, it should be recomputed by calling
+  // this method in the case of a spurious wakeup.
   struct timespec MakeRelativeTimespec() const;
 
   // Convert to unix epoch nanos for interfaces that expect an absolute timeout
@@ -107,23 +109,35 @@ class KernelTimeout {
   // timeout, like std::condition_variable::wait_for(). If !has_timeout() or
   // is_absolute_timeout(), attempts to convert to a reasonable relative
   // timeout, but callers should test has_timeout() and is_absolute_timeout()
-  // and prefer to use a more appropriate interface.
+  // and prefer to use a more appropriate interface. Since the return value is a
+  // relative duration, it should be recomputed by calling this method in the
+  // case of a spurious wakeup.
   std::chrono::nanoseconds ToChronoDuration() const;
 
  private:
+  // Returns the current time, expressed as a count of nanoseconds since the
+  // epoch used by an arbitrary clock. The implementation tries to use a steady
+  // (monotonic) clock if one is available.
+  static int64_t SteadyClockNow();
+
   // Internal representation.
   //   - If the value is kNoTimeout, then the timeout is infinite, and
   //     has_timeout() will return true.
-  //   - If the low bit is 0, then the high 63 bits is number of nanoseconds
+  //   - If the low bit is 0, then the high 63 bits is the number of nanoseconds
   //     after the unix epoch.
-  //   - If the low bit is 1, then the high 63 bits is a relative duration in
-  //     nanoseconds.
+  //   - If the low bit is 1, then the high 63 bits is the number of nanoseconds
+  //     after the epoch used by SteadyClockNow().
   uint64_t rep_;
 
   // Returns the number of nanoseconds stored in the internal representation.
   // Together with is_absolute_timeout() and is_relative_timeout(), the return
   // value is used to compute when the timeout should occur.
   int64_t RawNanos() const { return static_cast<int64_t>(rep_ >> 1); }
+
+  // Converts to nanoseconds from now. Since the return value is a relative
+  // duration, it should be recomputed by calling this method in the case of a
+  // spurious wakeup.
+  int64_t InNanosecondsFromNow() const;
 
   // A value that represents no timeout (or an infinite timeout).
   static constexpr uint64_t kNoTimeout = (std::numeric_limits<uint64_t>::max)();

@@ -48,7 +48,6 @@
 #include "absl/base/optimization.h"
 #include "absl/synchronization/internal/kernel_timeout.h"
 
-
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace synchronization_internal {
@@ -67,9 +66,7 @@ static void MaybeBecomeIdle() {
 
 #if ABSL_WAITER_MODE == ABSL_WAITER_MODE_FUTEX
 
-Waiter::Waiter() {
-  futex_.store(0, std::memory_order_relaxed);
-}
+Waiter::Waiter() : futex_(0) {}
 
 bool Waiter::Wait(KernelTimeout t) {
   // Loop until we can atomically decrement futex from a positive

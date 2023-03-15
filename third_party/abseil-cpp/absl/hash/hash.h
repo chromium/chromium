@@ -110,9 +110,10 @@ ABSL_NAMESPACE_BEGIN
 //   * std::unique_ptr and std::shared_ptr
 //   * All string-like types including:
 //     * absl::Cord
-//     * std::string
-//     * std::string_view (as well as any instance of std::basic_string that
-//       uses char and std::char_traits)
+//     * std::string (as well as any instance of std::basic_string that
+//       uses one of {char, wchar_t, char16_t, char32_t} and its associated
+//       std::char_traits)
+//     * std::string_view
 //  * All the standard sequence containers (provided the elements are hashable)
 //  * All the standard associative containers (provided the elements are
 //    hashable)

@@ -384,6 +384,8 @@ EXPORTS
     ??$ArgumentToConv@_J@str_format_internal@absl@@YA?AW4FormatConversionCharSet@1@XZ
     ??$ArgumentToConv@_K@str_format_internal@absl@@YA?AW4FormatConversionCharSet@1@XZ
     ??$ArgumentToConv@_N@str_format_internal@absl@@YA?AW4FormatConversionCharSet@1@XZ
+    ??$AsciiStrCaseFold@$00@ascii_internal@absl@@YAXPEAD0@Z
+    ??$AsciiStrCaseFold@$0A@@ascii_internal@absl@@YAXPEAD0@Z
     ??$AssignElements@V?$allocator@UPayload@status_internal@absl@@@Cr@std@@V?$IteratorValueAdapter@V?$allocator@UPayload@status_internal@absl@@@Cr@std@@V?$move_iterator@PEAUPayload@status_internal@absl@@@23@@inlined_vector_internal@absl@@@inlined_vector_internal@absl@@YAXPEAUPayload@status_internal@1@AEAV?$IteratorValueAdapter@V?$allocator@UPayload@status_internal@absl@@@Cr@std@@V?$move_iterator@PEAUPayload@status_internal@absl@@@23@@01@_K@Z
     ??$Base64EscapeInternal@V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@strings_internal@absl@@YAXPEBE_KPEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@_NPEBD@Z
     ??$BufferSizeFor@$$V@log_internal@absl@@YA_KW4WireType@01@@Z
@@ -2432,7 +2434,7 @@ EXPORTS
     ?ExpectedChecksum@Cord@absl@@QEBA?AV?$optional@I@2@XZ
     ?Extend@CRC32@crc_internal@absl@@UEBAXPEAIPEBX_K@Z
     ?ExtendByZeroes@CRC32@crc_internal@absl@@UEBAXPEAI_K@Z
-    ?ExtendByZeroesImpl@CRC32@crc_internal@absl@@AEBAXPEAI_KQEBI2@Z
+    ?ExtendByZeroesImpl@CRC32@crc_internal@absl@@CAXPEAI_KQEBI2@Z
     ?ExtendCrc32c@absl@@YA?AVcrc32c_t@1@V21@Vstring_view@1@@Z
     ?ExtendCrc32cByZeroes@absl@@YA?AVcrc32c_t@1@V21@_K@Z
     ?ExtendCrc32cInline@crc_internal@absl@@YA_NPEAIPEBD_K@Z
@@ -2704,6 +2706,7 @@ EXPORTS
     ?IDivDuration@time_internal@absl@@YA_J_NVDuration@2@1PEAV32@@Z
     ?In@Time@absl@@QEBA?AUBreakdown@12@VTimeZone@2@@Z
     ?InMillisecondsFromNow@KernelTimeout@synchronization_internal@absl@@QEBAKXZ
+    ?InNanosecondsFromNow@KernelTimeout@synchronization_internal@absl@@AEBA_JXZ
     ?Increment@RefcountAndFlags@cord_internal@absl@@QEAAXXZ
     ?IncrementSynchSem@Mutex@absl@@CAXPEAV12@PEAUPerThreadSynch@base_internal@2@@Z
     ?IndexBefore@CordRepBtree@cord_internal@absl@@AEBA?AUPosition@123@U4123@_K@Z
@@ -3157,6 +3160,7 @@ EXPORTS
     ?StartsWithIgnoreCase@absl@@YA_NVstring_view@1@0@Z
     ?StatusCodeToString@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@W4StatusCode@1@@Z
     ?StderrThreshold@absl@@YA?AW4LogSeverityAtLeast@1@XZ
+    ?SteadyClockNow@KernelTimeout@synchronization_internal@absl@@CA_JXZ
     ?Store@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@absl@@Vstring_view@2@AEBVCord@2@@Z@base_internal@absl@@QEAAXP6A?AV?$optional@V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@3@Vstring_view@3@AEBVCord@3@@Z@Z
     ?Store@?$AtomicHook@P6AXPEBDH000@Z@base_internal@absl@@QEAAXP6AXPEBDH000@Z@Z
     ?Store@?$AtomicHook@P6AXPEBDPEBX@Z@base_internal@absl@@QEAAXP6AXPEBDPEBX@Z@Z
@@ -3813,7 +3817,6 @@ EXPORTS
     ?ascii_isspace@absl@@YA_NE@Z
     ?ascii_isxdigit@absl@@YA_NE@Z
     ?ascii_tolower@absl@@YADE@Z
-    ?ascii_toupper@absl@@YADE@Z
     ?back@?$InlinedVector@H$0CP@V?$allocator@H@Cr@std@@@absl@@QEAAAEAHXZ
     ?back@?$InlinedVector@PEAUCordRep@cord_internal@absl@@$01V?$allocator@PEAUCordRep@cord_internal@absl@@@Cr@std@@@absl@@QEAAAEAPEAUCordRep@cord_internal@2@XZ
     ?back@?$InlinedVector@PEAUCordRep@cord_internal@absl@@$0CP@V?$allocator@PEAUCordRep@cord_internal@absl@@@Cr@std@@@absl@@QEAAAEAPEAUCordRep@cord_internal@2@XZ

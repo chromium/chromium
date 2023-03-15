@@ -609,6 +609,12 @@ inline std::ostream& operator<<(std::ostream& os, Duration d) {
   return os << FormatDuration(d);
 }
 
+// Support for StrFormat(), StrCat() etc.
+template <typename Sink>
+void AbslStringify(Sink& sink, Duration d) {
+  sink.Append(FormatDuration(d));
+}
+
 // ParseDuration()
 //
 // Parses a duration string consisting of a possibly signed sequence of
@@ -1384,6 +1390,12 @@ ABSL_ATTRIBUTE_PURE_FUNCTION std::string FormatTime(Time t);
 // Output stream operator.
 inline std::ostream& operator<<(std::ostream& os, Time t) {
   return os << FormatTime(t);
+}
+
+// Support for StrFormat(), StrCat() etc.
+template <typename Sink>
+void AbslStringify(Sink& sink, Time t) {
+  sink.Append(FormatTime(t));
 }
 
 // ParseTime()

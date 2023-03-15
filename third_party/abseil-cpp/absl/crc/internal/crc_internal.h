@@ -118,9 +118,9 @@ class CRC32 : public CRCImpl {
   //
   // These will be set to reverse_zeroes_ and reverse_table0_ for Unextend, and
   // CRC32::zeroes_ and CRC32::table0_ for Extend.
-  void ExtendByZeroesImpl(uint32_t* crc, size_t length,
-                          const uint32_t zeroes_table[256],
-                          const uint32_t poly_table[256]) const;
+  static void ExtendByZeroesImpl(uint32_t* crc, size_t length,
+                                 const uint32_t zeroes_table[256],
+                                 const uint32_t poly_table[256]);
 
   uint32_t table0_[256];  // table of byte extensions
   uint32_t zeroes_[256];  // table of zero extensions

@@ -544,7 +544,7 @@ EXPORTS
     ?ExpectedChecksum@Cord@absl@@QEBA?AV?$optional@I@2@XZ
     ?Extend@CRC32@crc_internal@absl@@UEBAXPEAIPEBX_K@Z
     ?ExtendByZeroes@CRC32@crc_internal@absl@@UEBAXPEAI_K@Z
-    ?ExtendByZeroesImpl@CRC32@crc_internal@absl@@AEBAXPEAI_KQEBI2@Z
+    ?ExtendByZeroesImpl@CRC32@crc_internal@absl@@CAXPEAI_KQEBI2@Z
     ?ExtendCrc32cByZeroes@absl@@YA?AVcrc32c_t@1@V21@_K@Z
     ?ExtendCrc32cInternal@crc_internal@absl@@YA?AVcrc32c_t@2@V32@Vstring_view@2@@Z
     ?ExtendTransitions@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NXZ
@@ -692,6 +692,7 @@ EXPORTS
     ?IDivDuration@time_internal@absl@@YA_J_NVDuration@2@1PEAV32@@Z
     ?In@Time@absl@@QEBA?AUBreakdown@12@VTimeZone@2@@Z
     ?InMillisecondsFromNow@KernelTimeout@synchronization_internal@absl@@QEBAKXZ
+    ?InNanosecondsFromNow@KernelTimeout@synchronization_internal@absl@@AEBA_JXZ
     ?IncrementSynchSem@Mutex@absl@@CAXPEAV12@PEAUPerThreadSynch@base_internal@2@@Z
     ?InitDiscreteDistribution@random_internal@absl@@YA?AV?$vector@U?$pair@N_K@Cr@std@@V?$allocator@U?$pair@N_K@Cr@std@@@23@@Cr@std@@PEAV?$vector@NV?$allocator@N@Cr@std@@@45@@Z
     ?InitFrom@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAAXAEBV123@@Z
@@ -970,6 +971,7 @@ EXPORTS
     ?StartsWithIgnoreCase@absl@@YA_NVstring_view@1@0@Z
     ?StatusCodeToString@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@W4StatusCode@1@@Z
     ?StderrThreshold@absl@@YA?AW4LogSeverityAtLeast@1@XZ
+    ?SteadyClockNow@KernelTimeout@synchronization_internal@absl@@CA_JXZ
     ?StrAppend@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@111@Z
     ?StrAppend@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@11@Z
     ?StrAppend@absl@@YAXPEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@1@Z

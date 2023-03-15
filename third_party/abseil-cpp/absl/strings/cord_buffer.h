@@ -160,7 +160,6 @@ class CordBuffer {
   // for more information on buffer capacities and intended usage.
   static CordBuffer CreateWithDefaultLimit(size_t capacity);
 
-
   // CordBuffer::CreateWithCustomLimit()
   //
   // Creates a CordBuffer instance of the desired `capacity` rounded to an
@@ -336,7 +335,7 @@ class CordBuffer {
     }
 
     // Returns the available area of the internal SSO data
-    absl::Span<char> long_available() {
+    absl::Span<char> long_available() const {
       assert(!is_short());
       const size_t length = long_rep.rep->length;
       return absl::Span<char>(long_rep.rep->Data() + length,

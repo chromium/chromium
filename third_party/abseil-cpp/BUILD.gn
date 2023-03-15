@@ -241,6 +241,7 @@ if (build_with_chromium) {
         "absl/strings:str_replace_test",
         "absl/strings:string_view_test",
         "absl/synchronization:kernel_timeout_internal_test",
+        "absl/time:time_test",
         "absl/types:optional_test",
         "absl/types:variant_test",
         "//third_party/googletest:gtest_main",

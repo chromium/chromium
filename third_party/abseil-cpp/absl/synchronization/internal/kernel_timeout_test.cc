@@ -62,9 +62,6 @@ TEST(KernelTimeout, FiniteTimes) {
     EXPECT_TRUE(t.is_absolute_timeout());
     EXPECT_FALSE(t.is_relative_timeout());
     EXPECT_EQ(absl::TimeFromTimespec(t.MakeAbsTimespec()), when);
-    // MakeRelativeTimespec() doesn't quite round trip when using an absolute
-    // time, but it should get pretty close. Past times are converted to zero
-    // durations.
     EXPECT_LE(
         absl::AbsDuration(absl::DurationFromTimespec(t.MakeRelativeTimespec()) -
                           std::max(duration, absl::ZeroDuration())),
@@ -201,7 +198,10 @@ TEST(KernelTimeout, FiniteDurations) {
     EXPECT_LE(absl::AbsDuration(absl::Now() + duration -
                                 absl::TimeFromTimespec(t.MakeAbsTimespec())),
               absl::Milliseconds(5));
-    EXPECT_EQ(absl::DurationFromTimespec(t.MakeRelativeTimespec()), duration);
+    EXPECT_LE(
+        absl::AbsDuration(absl::DurationFromTimespec(t.MakeRelativeTimespec()) -
+                          duration),
+        kTimingBound);
     EXPECT_LE(absl::AbsDuration(absl::Now() + duration -
                                 absl::FromUnixNanos(t.MakeAbsNanos())),
               absl::Milliseconds(5));
@@ -210,7 +210,9 @@ TEST(KernelTimeout, FiniteDurations) {
     EXPECT_LE(absl::AbsDuration(absl::Now() + duration -
                                 absl::FromChrono(t.ToChronoTimePoint())),
               kTimingBound);
-    EXPECT_EQ(absl::FromChrono(t.ToChronoDuration()), duration);
+    EXPECT_LE(
+        absl::AbsDuration(absl::FromChrono(t.ToChronoDuration()) - duration),
+        kTimingBound);
   }
 }
 
@@ -298,7 +300,6 @@ TEST(KernelTimeout, OverflowNanos) {
   int64_t limit = std::numeric_limits<int64_t>::max() - now_nanos;
   absl::Duration duration = absl::Nanoseconds(limit) + absl::Seconds(1);
   KernelTimeout t(duration);
-  EXPECT_TRUE(t.has_timeout());
   // Timeouts should still be far in the future.
   EXPECT_GT(absl::TimeFromTimespec(t.MakeAbsTimespec()),
             absl::Now() + absl::Hours(100000));

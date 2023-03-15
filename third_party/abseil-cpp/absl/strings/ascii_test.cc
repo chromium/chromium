@@ -14,6 +14,7 @@
 
 #include "absl/strings/ascii.h"
 
+#include <algorithm>
 #include <cctype>
 #include <clocale>
 #include <cstring>
@@ -189,14 +190,14 @@ TEST(AsciiStrTo, Lower) {
   const std::string str("GHIJKL");
   const std::string str2("MNOPQR");
   const absl::string_view sp(str2);
-  std::string mutable_str("STUVWX");
+  std::string mutable_str("_`?@[{AMNOPQRSTUVWXYZ");
 
   EXPECT_EQ("abcdef", absl::AsciiStrToLower(buf));
   EXPECT_EQ("ghijkl", absl::AsciiStrToLower(str));
   EXPECT_EQ("mnopqr", absl::AsciiStrToLower(sp));
 
   absl::AsciiStrToLower(&mutable_str);
-  EXPECT_EQ("stuvwx", mutable_str);
+  EXPECT_EQ("_`?@[{amnopqrstuvwxyz", mutable_str);
 
   char mutable_buf[] = "Mutable";
   std::transform(mutable_buf, mutable_buf + strlen(mutable_buf),
@@ -207,12 +208,12 @@ TEST(AsciiStrTo, Lower) {
 TEST(AsciiStrTo, Upper) {
   const char buf[] = "abcdef";
   const std::string str("ghijkl");
-  const std::string str2("mnopqr");
+  const std::string str2("_`?@[{amnopqrstuvwxyz");
   const absl::string_view sp(str2);
 
   EXPECT_EQ("ABCDEF", absl::AsciiStrToUpper(buf));
   EXPECT_EQ("GHIJKL", absl::AsciiStrToUpper(str));
-  EXPECT_EQ("MNOPQR", absl::AsciiStrToUpper(sp));
+  EXPECT_EQ("_`?@[{AMNOPQRSTUVWXYZ", absl::AsciiStrToUpper(sp));
 
   char mutable_buf[] = "Mutable";
   std::transform(mutable_buf, mutable_buf + strlen(mutable_buf),

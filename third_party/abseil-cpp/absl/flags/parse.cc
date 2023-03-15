@@ -19,9 +19,9 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <iterator>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -278,7 +278,7 @@ std::tuple<absl::string_view, absl::string_view, bool> SplitNameAndValue(
     return std::make_tuple("", "", false);
   }
 
-  auto equal_sign_pos = arg.find("=");
+  auto equal_sign_pos = arg.find('=');
 
   absl::string_view flag_name = arg.substr(0, equal_sign_pos);
 
@@ -599,6 +599,34 @@ bool CanIgnoreUndefinedFlag(absl::string_view flag_name) {
   return false;
 }
 
+// --------------------------------------------------------------------
+
+void ReportUnrecognizedFlags(
+    const std::vector<UnrecognizedFlag>& unrecognized_flags,
+    bool report_as_fatal_error) {
+  for (const auto& unrecognized : unrecognized_flags) {
+    // Verify if flag_name has the "no" already removed
+    std::vector<std::string> misspelling_hints;
+    if (unrecognized.source == UnrecognizedFlag::kFromArgv) {
+      misspelling_hints =
+          flags_internal::GetMisspellingHints(unrecognized.flag_name);
+    }
+
+    if (misspelling_hints.empty()) {
+      flags_internal::ReportUsageError(
+          absl::StrCat("Unknown command line flag '", unrecognized.flag_name,
+                       "'"),
+          report_as_fatal_error);
+    } else {
+      flags_internal::ReportUsageError(
+          absl::StrCat("Unknown command line flag '", unrecognized.flag_name,
+                       "'. Did you mean: ",
+                       absl::StrJoin(misspelling_hints, ", "), " ?"),
+          report_as_fatal_error);
+    }
+  }
+}
+
 }  // namespace
 
 // --------------------------------------------------------------------
@@ -664,40 +692,79 @@ std::vector<std::string> GetMisspellingHints(const absl::string_view flag) {
 // --------------------------------------------------------------------
 
 std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
-                                        UsageFlagsAction usage_flag_act,
-                                        OnUndefinedFlag on_undef_flag) {
+                                        UsageFlagsAction usage_flag_action,
+                                        OnUndefinedFlag undef_flag_action) {
+  std::vector<char*> positional_args;
+  std::vector<UnrecognizedFlag> unrecognized_flags;
+
+  bool parse_successful = absl::ParseAbseilFlagsOnly(
+      argc, argv, positional_args, unrecognized_flags);
+
+  if (undef_flag_action != OnUndefinedFlag::kIgnoreUndefined) {
+    if (parse_successful &&
+        undef_flag_action == OnUndefinedFlag::kAbortIfUndefined) {
+      if (!unrecognized_flags.empty()) { parse_successful = false; }
+    }
+
+    flags_internal::ReportUnrecognizedFlags(
+        unrecognized_flags,
+        !parse_successful &&
+            (undef_flag_action == OnUndefinedFlag::kAbortIfUndefined));
+  }
+
+#if ABSL_FLAGS_STRIP_NAMES
+  if (!parse_successful) {
+    ReportUsageError("NOTE: command line flags are disabled in this build",
+                     true);
+  }
+#endif
+
+  if (!parse_successful) {
+    HandleUsageFlags(std::cout, ProgramUsageMessage());
+    std::exit(1);
+  }
+
+  if (usage_flag_action == UsageFlagsAction::kHandleUsage) {
+    int exit_code = HandleUsageFlags(std::cout, ProgramUsageMessage());
+
+    if (exit_code != -1) {
+      std::exit(exit_code);
+    }
+  }
+
+  return positional_args;
+}
+
+// --------------------------------------------------------------------
+
+}  // namespace flags_internal
+
+bool ParseAbseilFlagsOnly(int argc, char* argv[],
+                          std::vector<char*>& positional_args,
+                          std::vector<UnrecognizedFlag>& unrecognized_flags) {
   ABSL_INTERNAL_CHECK(argc > 0, "Missing argv[0]");
 
-  // Once parsing has started we will not have more flag registrations.
-  // If we did, they would be missing during parsing, which is a problem on
-  // itself.
+  using flags_internal::ArgsList;
+  using flags_internal::specified_flags;
+
+  std::vector<std::string> flagfile_value;
+  std::vector<ArgsList> input_args;
+
+  // Once parsing has started we will not allow more flag registrations.
   flags_internal::FinalizeRegistry();
 
   // This routine does not return anything since we abort on failure.
-  CheckDefaultValuesParsingRoundtrip();
+  flags_internal::CheckDefaultValuesParsingRoundtrip();
 
-  std::vector<std::string> flagfile_value;
-
-  std::vector<ArgsList> input_args;
-  input_args.emplace_back(argc, argv);
-
-  std::vector<char*> output_args;
-  std::vector<char*> positional_args;
-  output_args.reserve(static_cast<size_t>(argc));
-
-  // This is the list of undefined flags. The element of the list is the pair
-  // consisting of boolean indicating if flag came from command line (vs from
-  // some flag file we've read) and flag name.
-  // TODO(rogeeff): Eliminate the first element in the pair after cleanup.
-  std::vector<std::pair<bool, std::string>> undefined_flag_names;
+  input_args.push_back(ArgsList(argc, argv));
 
   // Set program invocation name if it is not set before.
-  if (ProgramInvocationName() == "UNKNOWN") {
+  if (flags_internal::ProgramInvocationName() == "UNKNOWN") {
     flags_internal::SetProgramInvocationName(argv[0]);
   }
-  output_args.push_back(argv[0]);
+  positional_args.push_back(argv[0]);
 
-  absl::MutexLock l(&specified_flags_guard);
+  absl::MutexLock l(&flags_internal::specified_flags_guard);
   if (specified_flags == nullptr) {
     specified_flags = new std::vector<const CommandLineFlag*>;
   } else {
@@ -709,13 +776,15 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
   // recursive parsing of flagfile(s).
   bool success = true;
   while (!input_args.empty()) {
-    // 10. First we process the built-in generator flags.
-    success &= HandleGeneratorFlags(input_args, flagfile_value);
+    // First we process the built-in generator flags.
+    success &= flags_internal::HandleGeneratorFlags(input_args, flagfile_value);
 
-    // 30. Select top-most (most recent) arguments list. If it is empty drop it
+    // Select top-most (most recent) arguments list. If it is empty drop it
     // and re-try.
     ArgsList& curr_list = input_args.back();
 
+    // Every ArgsList starts with real or fake program name, so we can always
+    // start by skipping it.
     curr_list.PopFront();
 
     if (curr_list.Size() == 0) {
@@ -723,13 +792,13 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
       continue;
     }
 
-    // 40. Pick up the front remaining argument in the current list. If current
-    // stack of argument lists contains only one element - we are processing an
-    // argument from the original argv.
+    // Handle the next argument in the current list. If the stack of argument
+    // lists contains only one element - we are processing an argument from the
+    // original argv.
     absl::string_view arg(curr_list.Front());
     bool arg_from_argv = input_args.size() == 1;
 
-    // 50. If argument does not start with - or is just "-" - this is
+    // If argument does not start with '-' or is just "-" - this is
     // positional argument.
     if (!absl::ConsumePrefix(&arg, "-") || arg.empty()) {
       ABSL_INTERNAL_CHECK(arg_from_argv,
@@ -739,8 +808,8 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
       continue;
     }
 
-    // 60. Split the current argument on '=' to figure out the argument
-    // name and value. If flag name is empty it means we've got "--". value
+    // Split the current argument on '=' to deduce the argument flag name and
+    // value. If flag name is empty it means we've got an "--" argument. Value
     // can be empty either if there were no '=' in argument string at all or
     // an argument looked like "--foo=". In a latter case is_empty_value is
     // true.
@@ -748,10 +817,11 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
     absl::string_view value;
     bool is_empty_value = false;
 
-    std::tie(flag_name, value, is_empty_value) = SplitNameAndValue(arg);
+    std::tie(flag_name, value, is_empty_value) =
+        flags_internal::SplitNameAndValue(arg);
 
-    // 70. "--" alone means what it does for GNU: stop flags parsing. We do
-    // not support positional arguments in flagfiles, so we just drop them.
+    // Standalone "--" argument indicates that the rest of the arguments are
+    // positional. We do not support positional arguments in flagfiles.
     if (flag_name.empty()) {
       ABSL_INTERNAL_CHECK(arg_from_argv,
                           "Flagfile cannot contain positional argument");
@@ -760,36 +830,36 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
       break;
     }
 
-    // 80. Locate the flag based on flag name. Handle both --foo and --nofoo
+    // Locate the flag based on flag name. Handle both --foo and --nofoo.
     CommandLineFlag* flag = nullptr;
     bool is_negative = false;
-    std::tie(flag, is_negative) = LocateFlag(flag_name);
+    std::tie(flag, is_negative) = flags_internal::LocateFlag(flag_name);
 
     if (flag == nullptr) {
       // Usage flags are not modeled as Abseil flags. Locate them separately.
       if (flags_internal::DeduceUsageFlags(flag_name, value)) {
         continue;
       }
-
-      if (on_undef_flag != OnUndefinedFlag::kIgnoreUndefined) {
-        undefined_flag_names.emplace_back(arg_from_argv,
-                                          std::string(flag_name));
-      }
+      unrecognized_flags.emplace_back(arg_from_argv
+                                          ? UnrecognizedFlag::kFromArgv
+                                          : UnrecognizedFlag::kFromFlagfile,
+                                      flag_name);
       continue;
     }
 
-    // 90. Deduce flag's value (from this or next argument)
+    // Deduce flag's value (from this or next argument).
     bool value_success = true;
-    std::tie(value_success, value) =
-        DeduceFlagValue(*flag, value, is_negative, is_empty_value, &curr_list);
+    std::tie(value_success, value) = flags_internal::DeduceFlagValue(
+        *flag, value, is_negative, is_empty_value, &curr_list);
     success &= value_success;
 
-    // 100. Set the located flag to a new new value, unless it is retired.
-    // Setting retired flag fails, but we ignoring it here while also reporting
-    // access to retired flag.
+    // Set the located flag to a new value, unless it is retired. Setting
+    // retired flag fails, but we ignoring it here while also reporting access
+    // to retired flag.
     std::string error;
     if (!flags_internal::PrivateHandleAccessor::ParseFrom(
-            *flag, value, SET_FLAGS_VALUE, kCommandLine, error)) {
+            *flag, value, flags_internal::SET_FLAGS_VALUE,
+            flags_internal::kCommandLine, error)) {
       if (flag->IsRetired()) continue;
 
       flags_internal::ReportUsageError(error, true);
@@ -799,71 +869,41 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
     }
   }
 
-  for (const auto& flag_name : undefined_flag_names) {
-    if (CanIgnoreUndefinedFlag(flag_name.second)) continue;
-    // Verify if flag_name has the "no" already removed
-    std::vector<std::string> flags;
-    if (flag_name.first) flags = GetMisspellingHints(flag_name.second);
-    if (flags.empty()) {
-      flags_internal::ReportUsageError(
-          absl::StrCat("Unknown command line flag '", flag_name.second, "'"),
-          true);
-    } else {
-      flags_internal::ReportUsageError(
-          absl::StrCat("Unknown command line flag '", flag_name.second,
-                       "'. Did you mean: ", absl::StrJoin(flags, ", "), " ?"),
-          true);
-    }
-
-    success = false;
-  }
-
-#if ABSL_FLAGS_STRIP_NAMES
-  if (!success) {
-    flags_internal::ReportUsageError(
-        "NOTE: command line flags are disabled in this build", true);
-  }
-#endif
-
-  if (!success) {
-    flags_internal::HandleUsageFlags(std::cout,
-                                     ProgramUsageMessage());
-    std::exit(1);
-  }
-
-  if (usage_flag_act == UsageFlagsAction::kHandleUsage) {
-    int exit_code = flags_internal::HandleUsageFlags(
-        std::cout, ProgramUsageMessage());
-
-    if (exit_code != -1) {
-      std::exit(exit_code);
-    }
-  }
-
-  ResetGeneratorFlags(flagfile_value);
-
-  // Reinstate positional args which were intermixed with flags in the arguments
-  // list.
-  for (auto arg : positional_args) {
-    output_args.push_back(arg);
-  }
+  flags_internal::ResetGeneratorFlags(flagfile_value);
 
   // All the remaining arguments are positional.
   if (!input_args.empty()) {
     for (size_t arg_index = input_args.back().FrontIndex();
          arg_index < static_cast<size_t>(argc); ++arg_index) {
-      output_args.push_back(argv[arg_index]);
+      positional_args.push_back(argv[arg_index]);
     }
   }
 
   // Trim and sort the vector.
   specified_flags->shrink_to_fit();
   std::sort(specified_flags->begin(), specified_flags->end(),
-            SpecifiedFlagsCompare{});
-  return output_args;
+            flags_internal::SpecifiedFlagsCompare{});
+
+  // Filter out unrecognized flags, which are ok to ignore.
+  std::vector<UnrecognizedFlag> filtered;
+  filtered.reserve(unrecognized_flags.size());
+  for (const auto& unrecognized : unrecognized_flags) {
+    if (flags_internal::CanIgnoreUndefinedFlag(unrecognized.flag_name))
+      continue;
+    filtered.push_back(unrecognized);
+  }
+
+  std::swap(unrecognized_flags, filtered);
+
+  return success;
 }
 
-}  // namespace flags_internal
+// --------------------------------------------------------------------
+
+void ReportUnrecognizedFlags(
+    const std::vector<UnrecognizedFlag>& unrecognized_flags) {
+  flags_internal::ReportUnrecognizedFlags(unrecognized_flags, true);
+}
 
 // --------------------------------------------------------------------
 

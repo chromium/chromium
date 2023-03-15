@@ -516,14 +516,14 @@ H AbslHashValue(H hash_state, const std::shared_ptr<T>& ptr) {
 // the same character sequence. These types are:
 //
 //  - `absl::Cord`
-//  - `std::string` (and std::basic_string<char, std::char_traits<char>, A> for
-//      any allocator A)
+//  - `std::string` (and std::basic_string<T, std::char_traits<T>, A> for
+//      any allocator A and any T in {char, wchar_t, char16_t, char32_t})
 //  - `absl::string_view` and `std::string_view`
 //
-// For simplicity, we currently support only `char` strings. This support may
-// be broadened, if necessary, but with some caution - this overload would
-// misbehave in cases where the traits' `eq()` member isn't equivalent to `==`
-// on the underlying character type.
+// For simplicity, we currently support only strings built on `char`, `wchar_t`,
+// `char16_t`, or `char32_t`. This support may be broadened, if necessary, but
+// with some caution - this overload would misbehave in cases where the traits'
+// `eq()` member isn't equivalent to `==` on the underlying character type.
 template <typename H>
 H AbslHashValue(H hash_state, absl::string_view str) {
   return H::combine(

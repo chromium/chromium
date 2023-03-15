@@ -1015,7 +1015,7 @@ struct Buffer {
     --end;
   }
 
-  char &back() {
+  char &back() const {
     assert(begin < end);
     return end[-1];
   }
