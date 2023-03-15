@@ -328,9 +328,9 @@ void RealtimeAudioDestinationHandler::StartPlatformDestination() {
                "RealtimeAudioDestinationHandler::StartPlatformDestination",
                "sink information (when starting a new destination)",
                audio_utilities::GetSinkInfoForTracing(
-                  sink_descriptor_, latency_hint_,
+                  sink_descriptor_, latency_hint_, MaxChannelCount(),
                   sample_rate_.has_value() ? sample_rate_.value() : -1,
-                  MaxChannelCount(), GetCallbackBufferSize()));
+                  GetCallbackBufferSize()));
   DCHECK(IsMainThread());
 
   if (platform_destination_->IsPlaying()) {
@@ -384,9 +384,9 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   TRACE_EVENT1("webaudio", "RealtimeAudioDestinationHandler::SetSinkDescriptor",
                "sink information (when descriptor change requested)",
                audio_utilities::GetSinkInfoForTracing(
-                  sink_descriptor, latency_hint_,
+                  sink_descriptor, latency_hint_, MaxChannelCount(),
                   sample_rate_.has_value() ? sample_rate_.value() : -1,
-                  MaxChannelCount(), GetCallbackBufferSize()));
+                  GetCallbackBufferSize()));
   DCHECK(IsMainThread());
 
   // Create a pending AudioDestination to replace the current one.

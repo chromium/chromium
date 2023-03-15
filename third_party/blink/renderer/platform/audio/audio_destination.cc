@@ -330,7 +330,7 @@ AudioDestination::AudioDestination(
                "sink information",
                audio_utilities::GetSinkInfoForTracing(
                    sink_descriptor, latency_hint,
-                   web_audio_device_->SampleRate(), number_of_output_channels,
+                   number_of_output_channels, web_audio_device_->SampleRate(),
                    callback_buffer_size_));
 
   metric_reporter_.Initialize(
