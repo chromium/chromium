@@ -7019,11 +7019,6 @@
     "expiry_milestone": -1
   },
   {
-    "name" : "unified-side-panel",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "corising", "pbos", "tluk" ],
-    "expiry_milestone" : 110
-  },
-  {
     "name": "unsafely-treat-insecure-origin-as-secure",
     "owners": [ "security-dev" ],
     // This flag is supported for bypassing security restrictions on HTTP pages,
