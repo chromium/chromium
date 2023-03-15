@@ -17,7 +17,7 @@ def _CheckNoAutofillBrowserTestsWithoutAutofillBrowserTestEnvironment(
   autofill_files_pattern = re.compile(
       r'(autofill|password_manager).*\.(mm|cc|h)')
   concerned_files = [(f, input_api.ReadFile(f))
-                     for f in input_api.AffectedFiles()
+                     for f in input_api.AffectedFiles(include_deletes=False)
                      if autofill_files_pattern.search(f.LocalPath())]
 
   warning_files = []
