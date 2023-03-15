@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
@@ -71,11 +70,11 @@ public final class WebPaymentIntentHelperTypeConverter {
         if (methodDataMap == null) return null;
         Map<String, WebPaymentIntentHelperType.PaymentMethodData> compatibleMethodDataMap =
                 new HashMap<>();
-        CollectionUtil.forEach(methodDataMap,
-                entry
-                -> compatibleMethodDataMap.put(entry.getKey(),
-                        WebPaymentIntentHelperTypeConverter.fromMojoPaymentMethodData(
-                                entry.getValue())));
+        for (var entry : methodDataMap.entrySet()) {
+            compatibleMethodDataMap.put(entry.getKey(),
+                    WebPaymentIntentHelperTypeConverter.fromMojoPaymentMethodData(
+                            entry.getValue()));
+        }
         return compatibleMethodDataMap;
     }
 
@@ -85,11 +84,11 @@ public final class WebPaymentIntentHelperTypeConverter {
         if (modifiers == null) return null;
         Map<String, WebPaymentIntentHelperType.PaymentDetailsModifier> compatibleModifiers =
                 new HashMap<>();
-        CollectionUtil.forEach(modifiers,
-                entry
-                -> compatibleModifiers.put(entry.getKey(),
-                        WebPaymentIntentHelperTypeConverter.fromMojoPaymentDetailsModifier(
-                                entry.getValue())));
+        for (var entry : modifiers.entrySet()) {
+            compatibleModifiers.put(entry.getKey(),
+                    WebPaymentIntentHelperTypeConverter.fromMojoPaymentDetailsModifier(
+                            entry.getValue()));
+        }
         return compatibleModifiers;
     }
 
@@ -98,10 +97,10 @@ public final class WebPaymentIntentHelperTypeConverter {
             @Nullable List<PaymentItem> paymentItems) {
         if (paymentItems == null) return null;
         List<WebPaymentIntentHelperType.PaymentItem> compatiblePaymentItems = new ArrayList<>();
-        CollectionUtil.forEach(paymentItems,
-                element
-                -> compatiblePaymentItems.add(
-                        WebPaymentIntentHelperTypeConverter.fromMojoPaymentItem(element)));
+        for (var element : paymentItems) {
+            compatiblePaymentItems.add(
+                    WebPaymentIntentHelperTypeConverter.fromMojoPaymentItem(element));
+        }
         return compatiblePaymentItems;
     }
 
@@ -120,11 +119,10 @@ public final class WebPaymentIntentHelperTypeConverter {
         if (shippingOptions == null) return null;
         List<WebPaymentIntentHelperType.PaymentShippingOption> shippingOptionList =
                 new ArrayList<>();
-        CollectionUtil.forEach(shippingOptions,
-                element
-                -> shippingOptionList.add(
-                        WebPaymentIntentHelperTypeConverter.fromMojoPaymentShippingOption(
-                                element)));
+        for (var element : shippingOptions) {
+            shippingOptionList.add(
+                    WebPaymentIntentHelperTypeConverter.fromMojoPaymentShippingOption(element));
+        }
         return shippingOptionList;
     }
 

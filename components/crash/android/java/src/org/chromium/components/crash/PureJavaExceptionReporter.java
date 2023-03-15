@@ -10,7 +10,6 @@ import android.util.Log;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
@@ -165,7 +164,9 @@ public abstract class PureJavaExceptionReporter
             mMinidumpFileStream = null;
             return;
         }
-        CollectionUtil.forEach(mReportContent, e -> { addPairedString(e.getKey(), e.getValue()); });
+        for (var e : mReportContent.entrySet()) {
+            addPairedString(e.getKey(), e.getValue());
+        }
         addString(mBoundary);
         flushToFile();
     }

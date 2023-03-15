@@ -225,7 +225,7 @@ public final class PolicyCacheTest {
      */
     private void cachePolicies(Map<String, Pair<PolicyCache.Type, Object>> policies) {
         List<Pair<String, PolicyCache.Type>> cachedPolicies = new ArrayList();
-        CollectionUtil.forEach(policies, entry -> {
+        for (var entry : policies.entrySet()) {
             String policyName = entry.getKey();
             PolicyCache.Type policyType = entry.getValue().first;
             Object policyValue = entry.getValue().second;
@@ -251,7 +251,7 @@ public final class PolicyCacheTest {
                     break;
             }
             cachedPolicies.add(Pair.create(policyName, policyType));
-        });
+        }
         mPolicyCache.cachePolicies(mPolicyMap, cachedPolicies);
     }
 

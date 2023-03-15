@@ -16,7 +16,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -225,7 +224,9 @@ public class ChromeActionModeHandler {
 
         private Set<String> getPackageNames(List<ResolveInfo> list) {
             Set<String> set = new HashSet<>();
-            CollectionUtil.forEach(list, (info) -> set.add(info.activityInfo.packageName));
+            for (var info : list) {
+                set.add(info.activityInfo.packageName);
+            }
             return set;
         }
 

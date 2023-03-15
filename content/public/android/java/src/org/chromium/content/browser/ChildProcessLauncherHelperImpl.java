@@ -19,7 +19,6 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ChildBindingState;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.CpuFeatures;
 import org.chromium.base.EarlyTraceEvent;
@@ -334,7 +333,7 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     private static void sendPreviouslySeenZygoteBundleToExistingConnections(int pid) {
-        CollectionUtil.forEach(sLauncherByPid, entry -> {
+        for (var entry : sLauncherByPid.entrySet()) {
             int otherPid = entry.getKey();
             if (pid != otherPid) {
                 ChildProcessConnection otherConnection = entry.getValue().mLauncher.getConnection();
@@ -345,7 +344,7 @@ public final class ChildProcessLauncherHelperImpl {
                     otherConnection.consumeZygoteBundle(sZygoteBundle);
                 }
             }
-        });
+        }
     }
 
     private final ChildProcessLauncher mLauncher;
@@ -857,11 +856,11 @@ public final class ChildProcessLauncherHelperImpl {
      *                 run on the same thread this method is called on.  That thread must support a
      *                 {@link android.os.Looper}.
      */
-    public static void getProcessIdsByType(Callback < Map < String, List<Integer>>> callback) {
+    public static void getProcessIdsByType(Callback<Map<String, List<Integer>>> callback) {
         final Handler responseHandler = new Handler();
         LauncherThread.post(() -> {
             Map<String, List<Integer>> map = new HashMap<>();
-            CollectionUtil.forEach(sLauncherByPid, entry -> {
+            for (var entry : sLauncherByPid.entrySet()) {
                 String type = entry.getValue().getProcessType();
                 List<Integer> pids = map.get(type);
                 if (pids == null) {
@@ -869,7 +868,7 @@ public final class ChildProcessLauncherHelperImpl {
                     map.put(type, pids);
                 }
                 pids.add(entry.getKey());
-            });
+            }
 
             responseHandler.post(callback.bind(map));
         });

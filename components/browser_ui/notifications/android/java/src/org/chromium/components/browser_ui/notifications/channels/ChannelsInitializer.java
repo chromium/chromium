@@ -12,7 +12,6 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 
 import java.util.Collection;
@@ -160,9 +159,12 @@ public class ChannelsInitializer {
         }
 
         // Channel groups must be created before the channels.
-        CollectionUtil.forEach(
-                channelGroups.values(), mNotificationManager::createNotificationChannelGroup);
-        CollectionUtil.forEach(channels.values(), mNotificationManager::createNotificationChannel);
+        for (var channelGroup : channelGroups.values()) {
+            mNotificationManager.createNotificationChannelGroup(channelGroup);
+        }
+        for (var channel : channels.values()) {
+            mNotificationManager.createNotificationChannel(channel);
+        }
     }
 
     /**

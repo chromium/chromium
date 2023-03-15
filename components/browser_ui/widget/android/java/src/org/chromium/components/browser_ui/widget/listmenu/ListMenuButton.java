@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ObserverList;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -253,13 +252,13 @@ public class ListMenuButton
      * @param shown Whether the popup menu was shown or dismissed.
      */
     private void notifyPopupListeners(boolean shown) {
-        CollectionUtil.forEach(mPopupListeners.mObservers, l -> {
+        for (var l : mPopupListeners.mObservers) {
             if (shown) {
                 l.onPopupMenuShown();
             } else {
                 l.onPopupMenuDismissed();
             }
-        });
+        }
     }
 
     void setAttachedToWindowForTesting() {

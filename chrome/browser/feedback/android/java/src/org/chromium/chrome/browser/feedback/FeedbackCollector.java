@@ -14,8 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.collect.Iterables;
+
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -83,7 +84,9 @@ public abstract class FeedbackCollector<T> implements Runnable {
         if (screenshotTask != null) mScreenshotTask = screenshotTask;
 
         // 3. Start all asynchronous sources and the screenshot task.
-        CollectionUtil.forEach(mAsynchronousSources, source -> source.start(this));
+        for (var source : mAsynchronousSources) {
+            source.start(this);
+        }
         if (mScreenshotTask != null) mScreenshotTask.capture(this);
 
         // 4. Kick off a task to timeout the async sources.
@@ -140,12 +143,14 @@ public abstract class FeedbackCollector<T> implements Runnable {
         mCallback = null;
 
         Bundle bundle = new Bundle();
-        doWorkOnAllFeedbackSources(source -> {
+        for (var source : getAllSources()) {
             Map<String, String> feedback = source.getFeedback();
-            if (feedback == null) return;
+            if (feedback == null) continue;
 
-            CollectionUtil.forEach(feedback, e -> { bundle.putString(e.getKey(), e.getValue()); });
-        });
+            for (var e : feedback.entrySet()) {
+                bundle.putString(e.getKey(), e.getValue());
+            }
+        }
         return bundle;
     }
 
@@ -163,12 +168,12 @@ public abstract class FeedbackCollector<T> implements Runnable {
         mCallback = null;
 
         Map<String, String> logs = new HashMap<>();
-        doWorkOnAllFeedbackSources(source -> {
+        for (var source : getAllSources()) {
             Pair<String, String> log = source.getLogs();
-            if (log == null) return;
+            if (log == null) continue;
 
             logs.put(log.first, log.second);
-        });
+        }
         return logs;
     }
 
@@ -213,8 +218,7 @@ public abstract class FeedbackCollector<T> implements Runnable {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(this));
     }
 
-    private void doWorkOnAllFeedbackSources(Callback<FeedbackSource> worker) {
-        CollectionUtil.forEach(mSynchronousSources, worker);
-        CollectionUtil.forEach(mAsynchronousSources, worker);
+    private Iterable<FeedbackSource> getAllSources() {
+        return Iterables.concat(mSynchronousSources, mAsynchronousSources);
     }
 }

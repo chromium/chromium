@@ -63,6 +63,7 @@ android_library("java") {
     "//components/variations/android:variations_java",
     "//content/public/android:content_java",
     "//net/android:net_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]

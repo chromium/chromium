@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.profiles;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
 
@@ -25,10 +24,10 @@ import java.util.Map;
  */
 public class ProfileKeyedMap<T> {
     /** Indicates no cleanup action is required when destroying an object in the map. */
-    public static Callback NO_REQUIRED_CLEANUP_ACTION = (e) -> {};
+    public static final Callback NO_REQUIRED_CLEANUP_ACTION = null;
 
     private final Map<Profile, T> mData = new HashMap<>();
-    private final Callback<T> mDestroyAction;
+    private final @Nullable Callback<T> mDestroyAction;
 
     private ProfileManager.Observer mProfileManagerObserver;
 
@@ -38,7 +37,7 @@ public class ProfileKeyedMap<T> {
      * @param destroyAction The action to be taken on the object during destruction of this map
      *                      or when a Profile is destroyed.
      */
-    public ProfileKeyedMap(@NonNull Callback<T> destroyAction) {
+    public ProfileKeyedMap(@Nullable Callback<T> destroyAction) {
         mDestroyAction = destroyAction;
     }
 
@@ -72,7 +71,7 @@ public class ProfileKeyedMap<T> {
                 public void onProfileDestroyed(Profile destroyedProfile) {
                     T obj = mData.remove(destroyedProfile);
                     if (obj == null) return;
-                    mDestroyAction.onResult(obj);
+                    if (mDestroyAction != null) mDestroyAction.onResult(obj);
                 }
             };
             ProfileManager.addObserver(mProfileManagerObserver);
@@ -86,7 +85,11 @@ public class ProfileKeyedMap<T> {
     public void destroy() {
         if (mProfileManagerObserver != null) ProfileManager.removeObserver(mProfileManagerObserver);
         mProfileManagerObserver = null;
-        CollectionUtil.forEach(mData, e -> mDestroyAction.onResult(e.getValue()));
+        if (mDestroyAction != null) {
+            for (var obj : mData.values()) {
+                mDestroyAction.onResult(obj);
+            }
+        }
         mData.clear();
     }
 }
