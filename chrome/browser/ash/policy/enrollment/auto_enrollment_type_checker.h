@@ -13,6 +13,11 @@ namespace policy {
 
 class AutoEnrollmentTypeChecker {
  public:
+  // Parameter values for the kEnterpriseEnableUnifiedStateDetermination flag.
+  static constexpr char kUnifiedStateDeterminationAlways[] = "always";
+  static constexpr char kUnifiedStateDeterminationNever[] = "never";
+  static constexpr char kUnifiedStateDeterminationOfficialBuild[] = "official";
+
   // Parameter values for the kEnterpriseEnableForcedReEnrollment flag.
   static constexpr char kForcedReEnrollmentAlways[] = "always";
   static constexpr char kForcedReEnrollmentNever[] = "never";
@@ -54,8 +59,15 @@ class AutoEnrollmentTypeChecker {
     kUnknownDueToMissingSystemClockSync = 4,
   };
 
+  // Returns true when unified state determination is enabled based on
+  // command-line switch, official build status and server-based kill-switch.
+  static bool IsUnifiedStateDeterminationEnabled();
+
   // Returns true if forced re-enrollment is enabled based on command-line
   // switch and official build status.
+  //
+  // Also returns true when unified enrollment is enabled. This allows legacy
+  // code to handle the unified enrollment state determination correctly.
   static bool IsFREEnabled();
 
   // Returns true if initial enrollment is enabled based on command-line
@@ -76,6 +88,10 @@ class AutoEnrollmentTypeChecker {
   // machine serial number to be present is a sanity-check to ensure that the
   // VPD has actually been read successfully. If VPD read failed, the FRE check
   // is required.
+  //
+  // Returns kExplicitlyRequired when unified state determination is enabled.
+  // This allows legacy code to handle the unified state determination
+  // correctly.
   static FRERequirement GetFRERequirementAccordingToVPD(
       ash::system::StatisticsProvider* statistics_provider);
 
@@ -87,11 +103,18 @@ class AutoEnrollmentTypeChecker {
   // supposed to call this again after the system clock has been synchronized.
   //
   // `dev_disable_boot == true` forces FRE unless explicitly disabled via
-  // command-line switch.
+  // commandline switch.
+  //
+  // This method has a DCHECK that ensures that it is only called when unified
+  // state determination is enabled.
   static CheckType DetermineAutoEnrollmentCheckType(
       bool is_system_clock_synchronized,
       ash::system::StatisticsProvider* statistics_provider,
       bool dev_disable_boot);
+
+  // Allows to configure unified state determination kill switch. Used for
+  // testing.
+  static void SetUnifiedStateDeterminationKillSwitchForTesting(bool enabled);
 
  private:
   // Requirement for initial state determination.
@@ -117,6 +140,10 @@ class AutoEnrollmentTypeChecker {
   GetInitialStateDeterminationRequirement(
       bool is_system_clock_synchronized,
       ash::system::StatisticsProvider* statistics_provider);
+
+  // Checks if unified state determination is disabled using the server-based
+  // kill-switch.
+  static bool UnifiedStateDeterminationKillSwitchEnabled();
 };
 
 }  // namespace policy

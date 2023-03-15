@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/constants/ash_switches.h"
@@ -46,10 +47,39 @@ std::string FRERequirementToString(
   }
 }
 
+absl::optional<bool> g_unified_enrollment_kill_switch_;
+
 }  // namespace
 
 // static
+bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  std::string command_line_mode = command_line->GetSwitchValueASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination);
+  if (command_line_mode == kUnifiedStateDeterminationAlways) {
+    return true;
+  }
+  if (command_line_mode == kUnifiedStateDeterminationNever) {
+    return false;
+  }
+  return !UnifiedStateDeterminationKillSwitchEnabled() &&
+         // Non-Google-branded Chrome indicates that we're running on non-Chrome
+         // hardware. In that environment, it doesn't make sense to enable state
+         // determination as state key generation is likely to fail.
+         IsGoogleBrandedChrome();
+}
+
+// static
 bool AutoEnrollmentTypeChecker::IsFREEnabled() {
+  // To support legacy code that does not support unified enrollment yet, we
+  // pretend FRE is explicitly enabled, when unified enrollment is enabled. For
+  // example, this enables state keys to be uploaded with the policy fetches.
+  // TODO(b/265923216): Migrate legacy code to support unified state
+  // determination.
+  if (IsUnifiedStateDeterminationEnabled()) {
+    return true;
+  }
+
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   std::string command_line_mode = command_line->GetSwitchValueASCII(
@@ -104,6 +134,20 @@ bool AutoEnrollmentTypeChecker::IsEnabled() {
 AutoEnrollmentTypeChecker::FRERequirement
 AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
     ash::system::StatisticsProvider* statistics_provider) {
+  // To support legacy code that does not support unified enrollment yet, we
+  // pretend FRE is explicitly enabled, when unified enrollment is enabled. For
+  // example, this disables powerwash and TPM firmware updates during OOBE
+  // (since admin could have forbidden both).
+  // TODO(b/265923216): Migrate legacy code to support unified state
+  // determination.
+  if (IsUnifiedStateDeterminationEnabled()) {
+    // Flex devices do not support FRE.
+    if (ash::switches::IsRevenBranding()) {
+      return FRERequirement::kRequired;
+    }
+    return FRERequirement::kExplicitlyRequired;
+  }
+
   const absl::optional<base::StringPiece> check_enrollment_value =
       statistics_provider->GetMachineStatistic(
           ash::system::kCheckEnrollmentKey);
@@ -266,6 +310,11 @@ AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
     bool is_system_clock_synchronized,
     ash::system::StatisticsProvider* statistics_provider,
     bool dev_disable_boot) {
+  // The only user of this function is AutoEnrollmentController and it should
+  // not be calling it when unified enrollment is enabled. Instead, we fake
+  // explicitly forced re-enrollment to prevent users from skipping it.
+  DCHECK(!IsUnifiedStateDeterminationEnabled());
+
   // Skip everything if neither FRE nor Initial Enrollment are enabled.
   if (!IsEnabled()) {
     LOG(WARNING) << "Auto-enrollment disabled.";
@@ -320,6 +369,22 @@ AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
 
   // Neither FRE nor initial state determination checks are needed.
   return CheckType::kNone;
+}
+
+// static
+void AutoEnrollmentTypeChecker::
+    SetUnifiedStateDeterminationKillSwitchForTesting(bool enabled) {
+  g_unified_enrollment_kill_switch_ = enabled;
+}
+
+// static
+bool AutoEnrollmentTypeChecker::UnifiedStateDeterminationKillSwitchEnabled() {
+  if (!g_unified_enrollment_kill_switch_.has_value()) {
+    // TODO(b/265923216): Implement fetching server-based kill switch.
+    g_unified_enrollment_kill_switch_ = true;
+  }
+
+  return g_unified_enrollment_kill_switch_.value();
 }
 
 }  // namespace policy

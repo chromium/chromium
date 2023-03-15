@@ -27,6 +27,8 @@ class DeviceManagementService;
 
 // Indicates the current state of the auto-enrollment check.
 enum class AutoEnrollmentState {
+  // TODO(b/265923216): Deprecate kIdle and kPending states after fully
+  // migrating to EnrollmentStateFetcher and removing AutoEnrollmentClient.
   // Not yet started.
   kIdle = 0,
   // Working, another event will be fired eventually.

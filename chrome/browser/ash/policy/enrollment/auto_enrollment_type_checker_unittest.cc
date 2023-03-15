@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -367,6 +368,88 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
               AutoEnrollmentTypeChecker::FRERequirement::kRequired);
   }
 }
+
+// This is parametrized with unified_enrollment_kill_switch.
+class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
+    : public AutoEnrollmentTypeCheckerTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    AutoEnrollmentTypeCheckerTest::SetUp();
+    AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
+        kill_switch_enabled_);
+  }
+
+  const bool kill_switch_enabled_ = GetParam();
+};
+
+TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Default) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
+            !kill_switch_enabled_);
+#else
+  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, OfficialBuild) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      AutoEnrollmentTypeChecker::kUnifiedStateDeterminationOfficialBuild);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled(),
+            !kill_switch_enabled_);
+#else
+  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Never) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+
+  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
+
+  // Check that FRE switches are respected.
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableForcedReEnrollment,
+      AutoEnrollmentTypeChecker::kForcedReEnrollmentNever);
+  EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
+
+  // Check that FRE requirement is read from VPD.
+  ash::system::FakeStatisticsProvider statistics_provider;
+  statistics_provider.SetMachineStatistic(ash::system::kCheckEnrollmentKey,
+                                          "0");
+  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                &statistics_provider),
+            AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyNotRequired);
+  statistics_provider.SetMachineStatistic(ash::system::kCheckEnrollmentKey,
+                                          "1");
+  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                &statistics_provider),
+            AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+}
+
+TEST_P(AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP, Always) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
+
+  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled());
+
+  // Ensure that legacy functions behave as if FRE was explicitly enabled.
+  EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
+  EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                /*statistics_provider=*/nullptr),
+            AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestSuite,
+    AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP,
+    testing::Bool());
 
 // This is parametrized with dev_disable_boot.
 class AutoEnrollmentTypeCheckerTestP
