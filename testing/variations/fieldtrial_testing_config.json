@@ -5574,6 +5574,21 @@
             ]
         }
     ],
+    "GpuCleanupInBackground": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GpuCleanupInBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "GridAndGroupAndroidM5": [
         {
             "platforms": [
