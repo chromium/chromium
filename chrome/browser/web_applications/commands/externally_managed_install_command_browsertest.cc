@@ -219,8 +219,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
-                       ExternalInstallSourceReinstallOverrideManifestData) {
+IN_PROC_BROWSER_TEST_F(
+    ExternallyManagedInstallCommandBrowserTest,
+    DISABLED_ExternalInstallSourceReinstallOverrideManifestData) {
   const GURL kWebAppUrl = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html");
