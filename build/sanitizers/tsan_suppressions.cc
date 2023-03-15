@@ -61,14 +61,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/380554
     "deadlock:g_type_add_interface_static\n"
 
-    // http://crbug.com/397022
-    "deadlock:"
-    "base::trace_event::TraceEventTestFixture_ThreadOnceBlocking_Test::"
-    "TestBody\n"
-
-    // http://crbug.com/415472
-    "deadlock:base::trace_event::TraceLog::GetCategoryGroupEnabled\n"
-
     // Lock inversion in third party code, won't fix.
     // https://crbug.com/455638
     "deadlock:dbus::Bus::ShutdownAndBlock\n"
