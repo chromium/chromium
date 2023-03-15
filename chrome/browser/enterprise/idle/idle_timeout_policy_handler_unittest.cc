@@ -4,7 +4,9 @@
 
 #include "chrome/browser/enterprise/idle/idle_timeout_policy_handler.h"
 
+#include <iterator>
 #include <string>
+#include <vector>
 
 #include "base/json/values_util.h"
 #include "base/ranges/algorithm.h"
@@ -27,9 +29,16 @@
 namespace enterprise_idle {
 
 using base::UTF8ToUTF16;
+using testing::IsEmpty;
+using testing::UnorderedElementsAre;
 
 class IdleTimeoutPolicyHandlerTest : public testing::Test {
  protected:
+  void SetUp() override {
+    // Some action types require SyncDisabled=true, so set it for most tests.
+    SetPolicyValue(policy::key::kSyncDisabled, base::Value(true));
+  }
+
   void SetPolicyValue(const std::string& policy, base::Value value) {
     policies_.Set(policy, policy::POLICY_LEVEL_MANDATORY,
                   policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
@@ -54,8 +63,15 @@ class IdleTimeoutPolicyHandlerTest : public testing::Test {
       ApplyPolicySettings();
   }
 
-  policy::PolicyErrorMap& errors() { return errors_; }
   PrefValueMap& prefs() { return prefs_; }
+  policy::PolicyMap& policies() { return policies_; }
+
+  std::vector<std::u16string> errors() {
+    std::vector<std::u16string> strings;
+    base::ranges::transform(errors_, std::back_inserter(strings),
+                            [](const auto& it) { return it.second.message; });
+    return strings;
+  }
 
  private:
   policy::PolicyMap policies_;
@@ -71,7 +87,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, PoliciesNotSet) {
   CheckAndApplyPolicySettings();
 
   // Shouldn't error.
-  EXPECT_EQ(errors().size(), 0U);
+  EXPECT_THAT(errors(), IsEmpty());
 
   // Prefs should not be set.
   const base::Value* pref_value;
@@ -89,8 +105,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, JustTimeout) {
   auto expected_error =
       l10n_util::GetStringFUTF16(IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
                                  UTF8ToUTF16(policy::key::kIdleTimeoutActions));
-  EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second.message, expected_error);
+  EXPECT_THAT(errors(), UnorderedElementsAre(expected_error));
 
   // Prefs should not be set.
   const base::Value* pref_value;
@@ -109,8 +124,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, JustActions) {
   auto expected_error =
       l10n_util::GetStringFUTF16(IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
                                  UTF8ToUTF16(policy::key::kIdleTimeout));
-  EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second.message, expected_error);
+  EXPECT_THAT(errors(), UnorderedElementsAre(expected_error));
 
   // Prefs should not be set.
   const base::Value* pref_value;
@@ -130,8 +144,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, InvalidTimeoutPolicyType) {
   auto expected_error = l10n_util::GetStringFUTF16(
       IDS_POLICY_TYPE_ERROR,
       UTF8ToUTF16(base::Value::GetTypeName(base::Value::Type::INTEGER)));
-  EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second.message, expected_error);
+  EXPECT_THAT(errors(), UnorderedElementsAre(expected_error));
 
   // Prefs should not be set.
   const base::Value* pref_value;
@@ -150,8 +163,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, InvalidActionsPolicyType) {
   auto expected_error = l10n_util::GetStringFUTF16(
       IDS_POLICY_SCHEMA_VALIDATION_ERROR,
       u"Policy type mismatch: expected: \"list\", actual: \"string\".");
-  EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second.message, expected_error);
+  EXPECT_THAT(errors(), UnorderedElementsAre(expected_error));
 
   // Prefs should not be set.
   const base::Value* pref_value;
@@ -177,8 +189,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, InvalidActionWrongType) {
       l10n_util::GetStringFUTF16(
           IDS_POLICY_SCHEMA_VALIDATION_ERROR,
           u"Policy type mismatch: expected: \"string\", actual: \"integer\"."));
-  EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second.message, expected_error);
+  EXPECT_THAT(errors(), UnorderedElementsAre(expected_error));
 
   // Prefs should be set.
   const base::Value* pref_value;
@@ -198,8 +209,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, ValidConfiguration) {
 
   CheckAndApplyPolicySettings();
 
-  // Should have no errors.
-  EXPECT_TRUE(errors().empty());
+  EXPECT_THAT(errors(), IsEmpty());
 
   // Prefs should be set.
   const base::Value* pref_value;
@@ -227,8 +237,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, OneMinuteMinimum) {
   // Should have an error.
   auto expected_error =
       l10n_util::GetStringFUTF16(IDS_POLICY_OUT_OF_RANGE_ERROR, u"0");
-  EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second.message, expected_error);
+  EXPECT_THAT(errors(), UnorderedElementsAre(expected_error));
 
   // Prefs should be set.
   const base::Value* pref_value;
@@ -256,8 +265,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, ActionNotRecognized) {
       UTF8ToUTF16(policy::key::kIdleTimeoutActions) + u"[2]",
       l10n_util::GetStringFUTF16(IDS_POLICY_SCHEMA_VALIDATION_ERROR,
                                  u"Invalid value for string"));
-  EXPECT_EQ(errors().size(), 1U);
-  EXPECT_EQ(errors().begin()->second.message, expected_error);
+  EXPECT_THAT(errors(), UnorderedElementsAre(expected_error));
 
   // Prefs should not be set.
   const base::Value* pref_value;
@@ -292,7 +300,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, AllActions) {
   CheckAndApplyPolicySettings();
 
   // Should have no errors.
-  EXPECT_TRUE(errors().empty());
+  EXPECT_THAT(errors(), IsEmpty());
 
   // Prefs should be set.
   const base::Value* pref_value;
@@ -318,5 +326,71 @@ TEST_F(IdleTimeoutPolicyHandlerTest, AllActions) {
                   static_cast<int>(ActionType::kClearSiteSettings),
                   static_cast<int>(ActionType::kClearHostedAppData)));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(IdleTimeoutPolicyHandlerTest, SyncNotDisabled) {
+  SetPolicyValue(policy::key::kSyncDisabled, base::Value(false));
+  SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
+  base::Value::List list;
+  list.Append("close_browsers");
+  list.Append("show_profile_picker");
+  list.Append("clear_browsing_history");
+  list.Append("clear_download_history");
+  list.Append("clear_cookies_and_other_site_data");
+  list.Append("clear_cached_images_and_files");
+  list.Append("clear_password_signin");
+  list.Append("clear_autofill");
+  list.Append("clear_site_settings");
+  list.Append("clear_hosted_app_data");
+  SetPolicyValue(policy::key::kIdleTimeoutActions,
+                 base::Value(std::move(list)));
+
+  CheckAndApplyPolicySettings();
+
+  // Should have these errors.
+  EXPECT_THAT(errors(),
+              UnorderedElementsAre(
+                  u"These actions require the SyncDisabled policy to be set to "
+                  u"Enabled: clear_browsing_history, clear_password_signin, "
+                  u"clear_autofill, clear_hosted_app_data."));
+
+  // Prefs should not be set.
+  const base::Value* pref_value;
+  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeout, &pref_value));
+  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeoutActions, &pref_value));
+}
+
+TEST_F(IdleTimeoutPolicyHandlerTest, SyncDisabledIsFalse) {
+  policies().Erase(policy::key::kSyncDisabled);
+  SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
+  base::Value::List list;
+  list.Append("close_browsers");
+  list.Append("show_profile_picker");
+  list.Append("clear_browsing_history");
+  list.Append("clear_download_history");
+  list.Append("clear_cookies_and_other_site_data");
+  list.Append("clear_cached_images_and_files");
+  list.Append("clear_password_signin");
+  list.Append("clear_autofill");
+  list.Append("clear_site_settings");
+  list.Append("clear_hosted_app_data");
+  SetPolicyValue(policy::key::kIdleTimeoutActions,
+                 base::Value(std::move(list)));
+
+  CheckAndApplyPolicySettings();
+
+  // Should have these errors.
+  EXPECT_THAT(errors(),
+              UnorderedElementsAre(
+                  u"These actions require the SyncDisabled policy to be set to "
+                  u"Enabled: clear_browsing_history, clear_password_signin, "
+                  u"clear_autofill, clear_hosted_app_data."));
+
+  // Prefs should not be set.
+  const base::Value* pref_value;
+  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeout, &pref_value));
+  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeoutActions, &pref_value));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_idle

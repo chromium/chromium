@@ -4,12 +4,17 @@
 
 #include "chrome/browser/enterprise/idle/idle_timeout_policy_handler.h"
 
+#include <cstring>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/json/values_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/idle/action.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
@@ -25,6 +30,21 @@ namespace enterprise_idle {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kCloseBrowsersActionName[] = "close_browsers";
+const char kShowProfilePickerActionName[] = "show_profile_picker";
+#endif  // !BUILDFLAG(IS_ANDROID)
+const char kClearBrowsingHistoryActionName[] = "clear_browsing_history";
+const char kClearDownloadHistoryActionName[] = "clear_download_history";
+const char kClearCookiesAndOtherSiteDataActionName[] =
+    "clear_cookies_and_other_site_data";
+const char kClearCachedImagesAndFilesActionName[] =
+    "clear_cached_images_and_files";
+const char kClearPasswordSigninActionName[] = "clear_password_signin";
+const char kClearAutofillActionName[] = "clear_autofill";
+const char kClearSiteSettingsActionName[] = "clear_site_settings";
+const char kClearHostedAppDataActionName[] = "clear_hosted_app_data";
+
 // If `other_policy_name` is unset, adds an error to `errors` and returns false.
 bool CheckOtherPolicySet(const policy::PolicyMap& policies,
                          const std::string& this_policy_name,
@@ -38,37 +58,53 @@ bool CheckOtherPolicySet(const policy::PolicyMap& policies,
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+bool RequiresSyncDisabled(const std::string& name) {
+  static const char* kActionsAllowedWithSync[] = {
+      kCloseBrowsersActionName,
+      kShowProfilePickerActionName,
+      kClearDownloadHistoryActionName,
+      kClearCookiesAndOtherSiteDataActionName,
+      kClearCachedImagesAndFilesActionName,
+      kClearSiteSettingsActionName,
+  };
+  return !base::ranges::any_of(
+      base::make_span(kActionsAllowedWithSync),
+      [&name](const char* s) { return !std::strcmp(s, name.c_str()); });
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 absl::optional<ActionType> NameToActionType(const std::string& name) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (name == "close_browsers") {
+  if (name == kCloseBrowsersActionName) {
     return ActionType::kCloseBrowsers;
   }
-  if (name == "show_profile_picker") {
+  if (name == kShowProfilePickerActionName) {
     return ActionType::kShowProfilePicker;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-  if (name == "clear_browsing_history") {
+  if (name == kClearBrowsingHistoryActionName) {
     return ActionType::kClearBrowsingHistory;
   }
-  if (name == "clear_download_history") {
+  if (name == kClearDownloadHistoryActionName) {
     return ActionType::kClearDownloadHistory;
   }
-  if (name == "clear_cookies_and_other_site_data") {
+  if (name == kClearCookiesAndOtherSiteDataActionName) {
     return ActionType::kClearCookiesAndOtherSiteData;
   }
-  if (name == "clear_cached_images_and_files") {
+  if (name == kClearCachedImagesAndFilesActionName) {
     return ActionType::kClearCachedImagesAndFiles;
   }
-  if (name == "clear_password_signin") {
+  if (name == kClearPasswordSigninActionName) {
     return ActionType::kClearPasswordSignin;
   }
-  if (name == "clear_autofill") {
+  if (name == kClearAutofillActionName) {
     return ActionType::kClearAutofill;
   }
-  if (name == "clear_site_settings") {
+  if (name == kClearSiteSettingsActionName) {
     return ActionType::kClearSiteSettings;
   }
-  if (name == "clear_hosted_app_data") {
+  if (name == kClearHostedAppDataActionName) {
     return ActionType::kClearHostedAppData;
   }
   return absl::nullopt;
@@ -89,7 +125,7 @@ void IdleTimeoutPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* value =
-      policies.GetValue(policy::key::kIdleTimeout, base::Value::Type::INTEGER);
+      policies.GetValue(policy_name(), base::Value::Type::INTEGER);
   DCHECK(value);
 
   // Apply a minimum of 1.
@@ -101,15 +137,17 @@ bool IdleTimeoutPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
   // Nothing to do if unset.
-  if (!policies.GetValueUnsafe(policy::key::kIdleTimeout))
+  if (!policies.GetValueUnsafe(policy_name())) {
     return false;
+  }
 
   // Check that it's an integer, and that it's >= 1.
-  if (!policy::IntRangePolicyHandler::CheckPolicySettings(policies, errors))
+  if (!policy::IntRangePolicyHandler::CheckPolicySettings(policies, errors)) {
     return false;
+  }
 
   // If IdleTimeoutActions is unset, add an error and do nothing.
-  if (!CheckOtherPolicySet(policies, policy::key::kIdleTimeout,
+  if (!CheckOtherPolicySet(policies, policy_name(),
                            policy::key::kIdleTimeoutActions, errors)) {
     return false;
   }
@@ -129,8 +167,8 @@ IdleTimeoutActionsPolicyHandler::~IdleTimeoutActionsPolicyHandler() = default;
 void IdleTimeoutActionsPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* policy_value = policies.GetValue(
-      policy::key::kIdleTimeoutActions, base::Value::Type::LIST);
+  const base::Value* policy_value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
   DCHECK(policy_value);
 
   // Convert strings to integers (from the ActionType enum).
@@ -152,8 +190,9 @@ bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
   // Nothing to do if unset.
-  if (!policies.GetValueUnsafe(policy::key::kIdleTimeoutActions))
+  if (!policies.GetValueUnsafe(policy_name())) {
     return false;
+  }
 
   // Check that it's a list of strings, and that they're supported enum values.
   // Unsupported enum values are dropped, with a warning on chrome://policy.
@@ -163,10 +202,35 @@ bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
   }
 
   // If IdleTimeout is unset, add an error and do nothing.
-  if (!CheckOtherPolicySet(policies, policy::key::kIdleTimeoutActions,
-                           policy::key::kIdleTimeout, errors)) {
+  if (!CheckOtherPolicySet(policies, policy_name(), policy::key::kIdleTimeout,
+                           errors)) {
     return false;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  const base::Value* sync_disabled =
+      policies.GetValue(policy::key::kSyncDisabled, base::Value::Type::BOOLEAN);
+  if (!sync_disabled || !sync_disabled->GetBool()) {
+    // SyncDisabled is false. Check actions that require SyncDisabled=true,
+    // and show a user-friendly error message if needed.
+    std::vector<std::string> invalid_actions;
+    const base::Value* value =
+        policies.GetValue(policy_name(), base::Value::Type::LIST);
+    DCHECK(value);
+    for (const base::Value& action : value->GetList()) {
+      if (action.is_string() && RequiresSyncDisabled(action.GetString())) {
+        invalid_actions.push_back(action.GetString());
+      }
+    }
+    if (!invalid_actions.empty()) {
+      errors->AddError(
+          policy_name(), IDS_POLICY_IDLE_TIMEOUT_ACTIONS_DEPENDENCY_ERROR,
+          std::vector<std::string>{policy::key::kSyncDisabled, "Enabled",
+                                   base::JoinString(invalid_actions, ", ")});
+      return false;
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return true;
 }
