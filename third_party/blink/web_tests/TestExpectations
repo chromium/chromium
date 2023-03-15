@@ -2904,11 +2904,11 @@ crbug.com/1365604 [ Win ] external/wpt/custom-elements/form-associated/ElementIn
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # Renaming a DevTools tab requires a 3-way change
-crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Pass Failure ]
-crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
-crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
-crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
-crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-websql.js [ Pass Failure ]
+crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
+crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
+crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
+crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
+crbug.com/1423684 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
 
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/626703 external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
@@ -2925,13 +2925,14 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-pr
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
+crbug.com/626703 [ Win10.20h2 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/lna-allow-potentially-trustworthy-same-origin/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/lna-allow-potentially-trustworthy-same-origin/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/lna-permission/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/lna-permission/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/lna-workers-disabled/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/lna-workers-disabled/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
@@ -6895,7 +6896,7 @@ crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-t
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-promise.html [ Failure Pass ]
 crbug.com/1422630 [ Fuchsia ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass ]
 crbug.com/1422630 [ Mac ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass Timeout ]
-crbug.com/1422630 [ Win ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass ]
+crbug.com/1422630 [ Win11 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass ]
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure Pass Timeout ]
 
 # Flaky timeout on mac.
