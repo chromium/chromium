@@ -1,5 +1,6 @@
 include_rules = [
   "+pdf/pdf.h",  # Test only.
+  "+pdf/pdf_features.h",  # Test only
 ]
 
 specific_include_rules = {
