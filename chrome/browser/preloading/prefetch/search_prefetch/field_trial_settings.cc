@@ -16,7 +16,7 @@ BASE_FEATURE(kSearchPrefetchServicePrefetching,
 
 BASE_FEATURE(kSearchPrefetchBlockBeforeHeaders,
              "SearchPrefetchBlockBeforeHeaders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchPrefetchSkipsCancel,
              "SearchPrefetchSkipsCancel",
