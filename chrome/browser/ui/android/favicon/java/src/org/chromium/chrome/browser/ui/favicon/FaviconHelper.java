@@ -176,15 +176,7 @@ public class FaviconHelper {
      */
     public boolean getLocalFaviconImageForURL(Profile profile, GURL pageUrl, int desiredSizeInPixel,
             FaviconImageCallback faviconImageCallback) {
-        return getLocalFaviconImageForURL(
-                profile, pageUrl.getSpec(), desiredSizeInPixel, faviconImageCallback);
-    }
-
-    @Deprecated // Use GURL version instead.
-    public boolean getLocalFaviconImageForURL(Profile profile, String pageUrl,
-            int desiredSizeInPixel, FaviconImageCallback faviconImageCallback) {
         assert mNativeFaviconHelper != 0;
-        // TODO(crbug/783819): Convert to GURL.
         return FaviconHelperJni.get().getLocalFaviconImageForURL(
                 mNativeFaviconHelper, profile, pageUrl, desiredSizeInPixel, faviconImageCallback);
     }
@@ -234,8 +226,8 @@ public class FaviconHelper {
         void destroy(long nativeFaviconHelper);
         boolean getComposedFaviconImage(long nativeFaviconHelper, Profile profile, GURL[] urls,
                 int desiredSizeInDip, ComposedFaviconImageCallback composedFaviconImageCallback);
-        boolean getLocalFaviconImageForURL(long nativeFaviconHelper, Profile profile,
-                String pageUrl, int desiredSizeInDip, FaviconImageCallback faviconImageCallback);
+        boolean getLocalFaviconImageForURL(long nativeFaviconHelper, Profile profile, GURL pageUrl,
+                int desiredSizeInDip, FaviconImageCallback faviconImageCallback);
         boolean getForeignFaviconImageForURL(long nativeFaviconHelper, Profile profile,
                 GURL pageUrl, int desiredSizeInDip, FaviconImageCallback faviconImageCallback);
     }

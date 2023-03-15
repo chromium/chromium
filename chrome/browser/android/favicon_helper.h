@@ -34,7 +34,7 @@ class FaviconHelper {
   jboolean GetLocalFaviconImageForURL(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_profile,
-      const base::android::JavaParamRef<jstring>& j_page_url,
+      const base::android::JavaParamRef<jobject>& j_page_url,
       jint j_desired_size_in_pixel,
       const base::android::JavaParamRef<jobject>& j_favicon_image_callback);
   jboolean GetForeignFaviconImageForURL(

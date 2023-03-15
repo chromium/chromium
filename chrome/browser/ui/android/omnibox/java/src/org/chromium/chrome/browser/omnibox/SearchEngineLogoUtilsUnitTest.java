@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -54,12 +53,13 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 /**
  * Tests for SearchEngineLogoUtils.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 public class SearchEngineLogoUtilsUnitTest {
     private static final String LOGO_URL = JUnitTestGURLs.URL_1;
     private static final String EVENTS_HISTOGRAM = "AndroidSearchEngineLogo.Events";
@@ -97,7 +97,7 @@ public class SearchEngineLogoUtilsUnitTest {
         doReturn(LOGO_URL).when(mTemplateUrlService).getUrlForSearchQuery(any());
         doReturn(true)
                 .when(mFaviconHelper)
-                .getLocalFaviconImageForURL(any(), anyString(), anyInt(), any());
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), any());
         doReturn(false).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
         LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
 
@@ -138,8 +138,7 @@ public class SearchEngineLogoUtilsUnitTest {
         Promise<StatusIconResource> promise = mSearchEngineLogoUtils.getSearchEngineLogo(mResource,
                 BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService);
         verify(mFaviconHelper)
-                .getLocalFaviconImageForURL(
-                        any(), anyString(), anyInt(), mCallbackCaptor.capture());
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         faviconCallback.onFaviconAvailable(mBitmap, JUnitTestGURLs.getGURL(LOGO_URL));
 
@@ -187,8 +186,7 @@ public class SearchEngineLogoUtilsUnitTest {
         Promise<StatusIconResource> promise = mSearchEngineLogoUtils.getSearchEngineLogo(mResource,
                 BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService);
         verify(mFaviconHelper)
-                .getLocalFaviconImageForURL(
-                        any(), anyString(), anyInt(), mCallbackCaptor.capture());
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         faviconCallback.onFaviconAvailable(mBitmap, JUnitTestGURLs.getGURL(LOGO_URL));
         assertEquals(promise.getResult(), expected);
@@ -234,7 +232,7 @@ public class SearchEngineLogoUtilsUnitTest {
                 mSearchEngineLogoUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
 
         when(mFaviconHelper.getLocalFaviconImageForURL(
-                     any(), anyString(), anyInt(), mCallbackCaptor.capture()))
+                     any(), any(), anyInt(), mCallbackCaptor.capture()))
                 .thenReturn(false);
 
         Promise<StatusIconResource> promise = mSearchEngineLogoUtils.getSearchEngineLogo(
@@ -259,8 +257,7 @@ public class SearchEngineLogoUtilsUnitTest {
                 Mockito.mock(Resources.class), BrandedColorScheme.APP_DEFAULT,
                 Mockito.mock(Profile.class), mTemplateUrlService);
         verify(mFaviconHelper)
-                .getLocalFaviconImageForURL(
-                        any(), anyString(), anyInt(), mCallbackCaptor.capture());
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         faviconCallback.onFaviconAvailable(null, JUnitTestGURLs.getGURL(LOGO_URL));
 
