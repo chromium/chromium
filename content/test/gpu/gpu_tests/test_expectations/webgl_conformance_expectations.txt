@@ -460,6 +460,7 @@ crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/textu
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/svg_image/* [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/webgl_canvas/* [ Failure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/data/gles2/shaders/* [ RetryOnFailure ]
 
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]

@@ -353,8 +353,10 @@ crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/textu
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/svg_image/* [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/textures/webgl_canvas/* [ Failure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance2/rendering/canvas-resizing-with-pbo-bound.html [ Failure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance2/textures/canvas/* [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance2/textures/image/* [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance2/textures/image_bitmap_from_canvas/* [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance2/textures/image_bitmap_from_image_bitmap/* [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
@@ -371,9 +373,10 @@ crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/fborender
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/texturefiltering/* [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/textureformat/sized_color_3d_pot_01.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/textureformat/sized_depth_stencil.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/textureshadow/2d_array_nearest_mipmap_linear_not_equal.html [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/texturespecification/* [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/texturewrap/rgba8_npot.html [ RetryOnFailure ]
-crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/uniformbuffers/single_basic_array.html [ RetryOnFailure ]
+crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/uniformbuffers/* [ RetryOnFailure ]
 crbug.com/1421053 [ mac amd-0x67ef angle-metal ] deqp/functional/gles3/vertexarrays/* [ RetryOnFailure ]
 
 ## Metal Intel ##
