@@ -166,8 +166,10 @@ ToggleEffectsView::ToggleEffectsView(VideoConferenceTrayController* controller,
 
     // All buttons in a single row should have the same width i.e. fraction of
     // the parent width.
-    const int button_width =
-        (GetPreferredSize().width() - kButtonSpacing) / row.size();
+    // TODO(b/273806849): Remove the way we distribute size by using
+    // `SetPreferredSize`, since this is taking cared by the layout manager
+    // already.
+    const int button_width = (parent_width - kButtonSpacing) / row.size();
 
     // Add a button for each item in the row.
     for (auto* tile : row) {
