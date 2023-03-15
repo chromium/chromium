@@ -90,6 +90,12 @@ double ScoreNormalizer::Normalize(const std::string& name, double score) const {
     return kDefaultScore;
   }
 
+  // If all bins expect the first have the same lower divider, the normalized
+  // score is meaningless, so use the default.
+  if (size > 2 && bins[1].lower_divider() == bins[size - 1].lower_divider()) {
+    return kDefaultScore;
+  }
+
   size_t index = BinIndexFor(bins, score);
   double offset;
   if (index == 0) {
