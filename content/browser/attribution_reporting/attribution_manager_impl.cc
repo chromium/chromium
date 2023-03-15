@@ -1316,17 +1316,20 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
 
             DCHECK(!manager->pending_os_events_.empty());
 
-            const auto& event = manager->pending_os_events_.front();
+            {
+              const auto& event = manager->pending_os_events_.front();
 
-            if (event.input_event.has_value()) {
-              manager->attribution_os_level_manager_->RegisterAttributionSource(
-                  event.registration_url, event.top_level_origin,
-                  is_debug_key_allowed, *event.input_event);
-            } else {
-              manager->attribution_os_level_manager_
-                  ->RegisterAttributionTrigger(event.registration_url,
-                                               event.top_level_origin,
-                                               is_debug_key_allowed);
+              if (event.input_event.has_value()) {
+                manager->attribution_os_level_manager_
+                    ->RegisterAttributionSource(
+                        event.registration_url, event.top_level_origin,
+                        is_debug_key_allowed, *event.input_event);
+              } else {
+                manager->attribution_os_level_manager_
+                    ->RegisterAttributionTrigger(event.registration_url,
+                                                 event.top_level_origin,
+                                                 is_debug_key_allowed);
+              }
             }
 
             manager->pending_os_events_.pop_front();
