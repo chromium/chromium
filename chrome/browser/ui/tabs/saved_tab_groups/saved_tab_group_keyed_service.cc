@@ -103,10 +103,12 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
     base::Token token =
         listener_.GetOrCreateTrackedIDForWebContents(browser, created_contents);
-    model_.Get(saved_tab.saved_group_guid())
-        ->GetTab(saved_tab.saved_tab_guid())
-        ->SetLocalTabID(token);
+    SavedTabGroupTab tab(*model_.Get(saved_tab.saved_group_guid())
+                              ->GetTab(saved_tab.saved_tab_guid()));
+    tab.SetLocalTabID(token);
 
+    model_.ReplaceTabInGroupAt(saved_tab.saved_group_guid(),
+                               saved_tab.saved_tab_guid(), std::move(tab));
     opened_web_contents.emplace_back(created_contents);
   }
 

@@ -173,7 +173,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncData) {
   EXPECT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
   EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
 
-  SavedTabGroup* group_from_model =
+  const SavedTabGroup* group_from_model =
       saved_tab_group_model_.Get(group.saved_guid());
 
   EXPECT_EQ(group_from_model->saved_tabs().size(), 2u);
@@ -207,7 +207,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncDataWithExistingData) {
 
   saved_tab_group_model_.Add(std::move(group));
 
-  SavedTabGroup* group_from_model = saved_tab_group_model_.Get(group_guid);
+  const SavedTabGroup* group_from_model =
+      saved_tab_group_model_.Get(group_guid);
 
   // Create an updated version of `group` using the same creation time and 1
   // less tab.
@@ -288,7 +289,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OrphanedTabAddedIntoGroupWhenFound) {
   EXPECT_TRUE(saved_tab_group_model_.Contains(orphaned_guid));
   EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
 
-  SavedTabGroup* orphaned_group_from_model =
+  const SavedTabGroup* orphaned_group_from_model =
       saved_tab_group_model_.Get(orphaned_guid);
 
   EXPECT_EQ(orphaned_group_from_model->saved_tabs().size(), 1u);
@@ -337,7 +338,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter90Days) {
   EXPECT_TRUE(saved_tab_group_model_.Contains(orphaned_guid));
   EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
 
-  SavedTabGroup* orphaned_group_from_model =
+  const SavedTabGroup* orphaned_group_from_model =
       saved_tab_group_model_.Get(orphaned_guid);
   EXPECT_TRUE(orphaned_group_from_model->saved_tabs().empty());
   EXPECT_FALSE(
@@ -379,7 +380,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter90Days) {
   EXPECT_TRUE(saved_tab_group_model_.Contains(orphaned_guid));
   EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
 
-  SavedTabGroup* orphaned_group_from_model =
+  const SavedTabGroup* orphaned_group_from_model =
       saved_tab_group_model_.Get(orphaned_guid);
   EXPECT_EQ(orphaned_group_from_model->saved_tabs().size(), 1u);
   EXPECT_TRUE(
@@ -414,7 +415,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddSyncData) {
 
   // Ensure all data passed by the bridge is the same.
   ASSERT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
-  SavedTabGroup* group_from_model =
+  const SavedTabGroup* group_from_model =
       saved_tab_group_model_.Get(group.saved_guid());
 
   EXPECT_TRUE(AreGroupSpecificsEqual(*group.ToSpecifics(),
@@ -478,7 +479,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateSyncData) {
       CreateEntityChangeListFromGroup(
           group, syncer::EntityChange::ChangeType::ACTION_ADD));
 
-  SavedTabGroup* group_from_model =
+  const SavedTabGroup* group_from_model =
       saved_tab_group_model_.Get(group.saved_guid());
 
   group.SetTitle(u"A new title");
@@ -522,7 +523,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, DeleteSyncData) {
           group, syncer::EntityChange::ChangeType::ACTION_ADD));
 
   ASSERT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
-  SavedTabGroup* group_from_model =
+  const SavedTabGroup* group_from_model =
       saved_tab_group_model_.Get(group.saved_guid());
 
   // Ensure a deleted tab is deleted from the group correctly in the model.

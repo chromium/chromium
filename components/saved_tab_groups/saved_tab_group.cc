@@ -190,7 +190,6 @@ SavedTabGroup& SavedTabGroup::ReplaceTabAt(const base::GUID& tab_id,
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0u);
   CHECK_LT(index.value(), saved_tabs_.size());
-  CHECK(!ContainsTab(tab.saved_tab_guid()));
   saved_tabs_.erase(saved_tabs_.begin() + index.value());
   saved_tabs_.insert(saved_tabs_.begin() + index.value(), std::move(tab));
   UpdateTabPositionsImpl();
@@ -265,7 +264,7 @@ void SavedTabGroup::InsertTabImpl(const SavedTabGroupTab& tab) {
 }
 
 bool SavedTabGroup::ShouldMergeGroup(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) {
+    const sync_pb::SavedTabGroupSpecifics& sync_specific) const {
   bool sync_update_is_latest =
       sync_specific.update_time_windows_epoch_micros() >=
       update_time_windows_epoch_micros()
