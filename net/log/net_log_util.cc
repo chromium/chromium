@@ -157,31 +157,28 @@ base::Value::Dict GetNetConstants() {
   // Add a dictionary with information about the relationship between
   // CertVerifier::VerifyFlags and their symbolic names.
   {
-    base::Value::Dict dict;
-
-    dict.Set("VERIFY_DISABLE_NETWORK_FETCHES",
-             CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES);
-
     static_assert(CertVerifier::VERIFY_FLAGS_LAST == (1 << 0),
                   "Update with new flags");
-
-    constants_dict.Set("certVerifierFlags", std::move(dict));
+    constants_dict.Set(
+        "certVerifierFlags",
+        base::Value::Dict().Set("VERIFY_DISABLE_NETWORK_FETCHES",
+                                CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES));
   }
 
   {
-    base::Value::Dict dict;
-
-    dict.Set("kStrong", static_cast<int>(
-                            SimplePathBuilderDelegate::DigestPolicy::kStrong));
-    dict.Set("kWeakAllowSha1",
-             static_cast<int>(
-                 SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1));
-
     static_assert(SimplePathBuilderDelegate::DigestPolicy::kMaxValue ==
                       SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1,
                   "Update with new flags");
 
-    constants_dict.Set("certPathBuilderDigestPolicy", std::move(dict));
+    constants_dict.Set(
+        "certPathBuilderDigestPolicy",
+        base::Value::Dict()
+            .Set("kStrong",
+                 static_cast<int>(
+                     SimplePathBuilderDelegate::DigestPolicy::kStrong))
+            .Set("kWeakAllowSha1",
+                 static_cast<int>(
+                     SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1)));
   }
 
   // Add a dictionary with information about the relationship between load flag
@@ -248,13 +245,12 @@ base::Value::Dict GetNetConstants() {
   // Information about the relationship between event phase enums and their
   // symbolic names.
   {
-    base::Value::Dict dict;
-
-    dict.Set("PHASE_BEGIN", static_cast<int>(NetLogEventPhase::BEGIN));
-    dict.Set("PHASE_END", static_cast<int>(NetLogEventPhase::END));
-    dict.Set("PHASE_NONE", static_cast<int>(NetLogEventPhase::NONE));
-
-    constants_dict.Set("logEventPhase", std::move(dict));
+    constants_dict.Set(
+        "logEventPhase",
+        base::Value::Dict()
+            .Set("PHASE_BEGIN", static_cast<int>(NetLogEventPhase::BEGIN))
+            .Set("PHASE_END", static_cast<int>(NetLogEventPhase::END))
+            .Set("PHASE_NONE", static_cast<int>(NetLogEventPhase::NONE)));
   }
 
   // Information about the relationship between source type enums and
@@ -264,13 +260,12 @@ base::Value::Dict GetNetConstants() {
   // Information about the relationship between address family enums and
   // their symbolic names.
   {
-    base::Value::Dict dict;
-
-    dict.Set("ADDRESS_FAMILY_UNSPECIFIED", ADDRESS_FAMILY_UNSPECIFIED);
-    dict.Set("ADDRESS_FAMILY_IPV4", ADDRESS_FAMILY_IPV4);
-    dict.Set("ADDRESS_FAMILY_IPV6", ADDRESS_FAMILY_IPV6);
-
-    constants_dict.Set("addressFamily", std::move(dict));
+    constants_dict.Set(
+        "addressFamily",
+        base::Value::Dict()
+            .Set("ADDRESS_FAMILY_UNSPECIFIED", ADDRESS_FAMILY_UNSPECIFIED)
+            .Set("ADDRESS_FAMILY_IPV4", ADDRESS_FAMILY_IPV4)
+            .Set("ADDRESS_FAMILY_IPV6", ADDRESS_FAMILY_IPV6));
   }
 
   // Information about the relationship between DnsQueryType enums and their
@@ -339,22 +334,19 @@ NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context) {
     DCHECK(host_resolver);
     HostCache* cache = host_resolver->GetHostCache();
     if (cache) {
-      base::Value::Dict dict;
-      base::Value::Dict dns_config = host_resolver->GetDnsConfigAsValue();
-      dict.Set("dns_config", std::move(dns_config));
-
-      base::Value::Dict cache_info_dict;
       base::Value::List cache_contents_list;
-
-      cache_info_dict.Set("capacity", static_cast<int>(cache->max_entries()));
-      cache_info_dict.Set("network_changes", cache->network_changes());
-
       cache->GetList(cache_contents_list, true /* include_staleness */,
                      HostCache::SerializationType::kDebug);
-      cache_info_dict.Set("entries", std::move(cache_contents_list));
 
-      dict.Set("cache", std::move(cache_info_dict));
-      net_info_dict.Set(kNetInfoHostResolver, std::move(dict));
+      net_info_dict.Set(
+          kNetInfoHostResolver,
+          base::Value::Dict()
+              .Set("dns_config", host_resolver->GetDnsConfigAsValue())
+              .Set("cache",
+                   base::Value::Dict()
+                       .Set("capacity", static_cast<int>(cache->max_entries()))
+                       .Set("network_changes", cache->network_changes())
+                       .Set("entries", std::move(cache_contents_list))));
     }
 
     // Construct a list containing the names of the disabled DoH providers.
@@ -466,15 +458,13 @@ NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context) {
       }
       net_info_dict.Set(kNetInfoReporting, std::move(reporting_value));
     } else {
-      base::Value::Dict reporting_dict;
-      reporting_dict.Set("reportingEnabled", false);
-      net_info_dict.Set(kNetInfoReporting, std::move(reporting_dict));
+      net_info_dict.Set(kNetInfoReporting,
+                        base::Value::Dict().Set("reportingEnabled", false));
     }
 
 #else   // BUILDFLAG(ENABLE_REPORTING)
-    base::Value::Dict reporting_dict;
-    reporting_dict.Set("reportingEnabled", false);
-    net_info_dict.Set(kNetInfoReporting, std::move(reporting_dict));
+    net_info_dict.Set(kNetInfoReporting,
+                      base::Value::Dict().Set("reportingEnabled", false));
 #endif  // BUILDFLAG(ENABLE_REPORTING)
   }
 

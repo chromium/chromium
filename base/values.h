@@ -429,20 +429,70 @@ class BASE_EXPORT GSL_OWNER Value {
 
     // Sets an entry with `key` and `value` in this dictionary, overwriting any
     // existing entry with the same `key`. Returns a pointer to the set `value`.
-    Value* Set(StringPiece key, Value&& value);
-    Value* Set(StringPiece key, bool value);
+    Value* Set(StringPiece key, Value&& value) &;
+    Value* Set(StringPiece key, bool value) &;
     template <typename T>
     Value* Set(StringPiece, const T*) = delete;
-    Value* Set(StringPiece key, int value);
-    Value* Set(StringPiece key, double value);
-    Value* Set(StringPiece key, StringPiece value);
-    Value* Set(StringPiece key, StringPiece16 value);
-    Value* Set(StringPiece key, const char* value);
-    Value* Set(StringPiece key, const char16_t* value);
-    Value* Set(StringPiece key, std::string&& value);
-    Value* Set(StringPiece key, BlobStorage&& value);
-    Value* Set(StringPiece key, Dict&& value);
-    Value* Set(StringPiece key, List&& value);
+    Value* Set(StringPiece key, int value) &;
+    Value* Set(StringPiece key, double value) &;
+    Value* Set(StringPiece key, StringPiece value) &;
+    Value* Set(StringPiece key, StringPiece16 value) &;
+    Value* Set(StringPiece key, const char* value) &;
+    Value* Set(StringPiece key, const char16_t* value) &;
+    Value* Set(StringPiece key, std::string&& value) &;
+    Value* Set(StringPiece key, BlobStorage&& value) &;
+    Value* Set(StringPiece key, Dict&& value) &;
+    Value* Set(StringPiece key, List&& value) &;
+
+    // Rvalue overrides of the `Set` methods, which allow you to construct
+    // a `Value::Dict` builder-style:
+    //
+    // Value::Dict result =
+    //     Value::Dict()
+    //         .Set("key-1", "first value")
+    //         .Set("key-2", 2)
+    //         .Set("key-3", true)
+    //         .Set("nested-dictionary", Value::Dict()
+    //                                       .Set("nested-key-1", "value")
+    //                                       .Set("nested-key-2", true))
+    //         .Set("nested-list", Value::List()
+    //                                 .Append("nested-list-value")
+    //                                 .Append(5)
+    //                                 .Append(true));
+    //
+    // Each method returns a rvalue reference to `this`, so this is as efficient
+    // as (and less mistake-prone than) stand-alone calls to `Set`.
+    //
+    // The equivalent code without using these builder-style methods:
+    //
+    // Value::Dict bad_example;
+    // bad_example.Set("key-1", "first value")
+    // bad_example.Set("key-2", 2)
+    // bad_example.Set("key-3", true)
+    // Value::Dict nested_dictionary;
+    // nested_dictionary.Set("nested-key-1", "value");
+    // nested_dictionary.Set("nested-key-2", true);
+    // bad_example.Set("nested_dictionary", std::move(nested_dictionary));
+    // Value::List nested_list;
+    // nested_list.Append("nested-list-value");
+    // nested_list.Append(5);
+    // nested_list.Append(true);
+    // bad_example.Set("nested-list", std::move(nested_list));
+    //
+    Dict&& Set(StringPiece key, Value&& value) &&;
+    Dict&& Set(StringPiece key, bool value) &&;
+    template <typename T>
+    Dict&& Set(StringPiece, const T*) && = delete;
+    Dict&& Set(StringPiece key, int value) &&;
+    Dict&& Set(StringPiece key, double value) &&;
+    Dict&& Set(StringPiece key, StringPiece value) &&;
+    Dict&& Set(StringPiece key, StringPiece16 value) &&;
+    Dict&& Set(StringPiece key, const char* value) &&;
+    Dict&& Set(StringPiece key, const char16_t* value) &&;
+    Dict&& Set(StringPiece key, std::string&& value) &&;
+    Dict&& Set(StringPiece key, BlobStorage&& value) &&;
+    Dict&& Set(StringPiece key, Dict&& value) &&;
+    Dict&& Set(StringPiece key, List&& value) &&;
 
     // Removes the entry corresponding to `key` from this dictionary. Returns
     // true if an entry was removed or false otherwise.
@@ -542,6 +592,11 @@ class BASE_EXPORT GSL_OWNER Value {
     using const_iterator = CheckedContiguousConstIterator<Value>;
     using value_type = Value;
 
+    // Creates a list with the given capacity reserved.
+    // Correctly using this will greatly reduce the code size and improve
+    // performance when creating a list whose size is known up front.
+    static List with_capacity(size_t capacity);
+
     List();
 
     List(List&&) noexcept;
@@ -610,20 +665,53 @@ class BASE_EXPORT GSL_OWNER Value {
     List Clone() const;
 
     // Appends `value` to the end of this list.
-    void Append(Value&& value);
-    void Append(bool value);
+    void Append(Value&& value) &;
+    void Append(bool value) &;
     template <typename T>
     void Append(const T*) = delete;
-    void Append(int value);
-    void Append(double value);
-    void Append(StringPiece value);
-    void Append(StringPiece16 value);
-    void Append(const char* value);
-    void Append(const char16_t* value);
-    void Append(std::string&& value);
-    void Append(BlobStorage&& value);
-    void Append(Dict&& value);
-    void Append(List&& value);
+    void Append(int value) &;
+    void Append(double value) &;
+    void Append(StringPiece value) &;
+    void Append(StringPiece16 value) &;
+    void Append(const char* value) &;
+    void Append(const char16_t* value) &;
+    void Append(std::string&& value) &;
+    void Append(BlobStorage&& value) &;
+    void Append(Dict&& value) &;
+    void Append(List&& value) &;
+
+    // Rvalue overrides of the `Append` methods, which allow you to construct
+    // a `Value::List` builder-style:
+    //
+    // Value::List result = Value::List()
+    //     .Append("first value")
+    //     .Append(2)
+    //     .Append(true);
+    //
+    // Each method returns a rvalue reference to `this`, so this is as efficient
+    // as (and less mistake-prone than) stand-alone calls to `Append`.
+    //
+    // The equivalent code without using these builder-style methods:
+    //
+    // Value::List bad_example;
+    // bad_example.Append("first value");
+    // bad_example.Append(2);
+    // bad_example.Append(true);
+    //
+    List&& Append(Value&& value) &&;
+    List&& Append(bool value) &&;
+    template <typename T>
+    List&& Append(const T*) && = delete;
+    List&& Append(int value) &&;
+    List&& Append(double value) &&;
+    List&& Append(StringPiece value) &&;
+    List&& Append(StringPiece16 value) &&;
+    List&& Append(const char* value) &&;
+    List&& Append(const char16_t* value) &&;
+    List&& Append(std::string&& value) &&;
+    List&& Append(BlobStorage&& value) &&;
+    List&& Append(Dict&& value) &&;
+    List&& Append(List&& value) &&;
 
     // Inserts `value` before `pos` in this list. Returns an iterator to the
     // inserted value.

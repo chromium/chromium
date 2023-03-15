@@ -27,29 +27,25 @@ scoped_refptr<const extensions::Extension> CreateTestApp(
     ManifestLocation location) {
   return extensions::ExtensionBuilder()
       .SetManifest(
-          extensions::DictionaryBuilder()
+          base::Value::Dict()
               .Set("name", "test app")
               .Set("version", "1")
               .Set("manifest_version", 2)
               .Set("app",
-                   extensions::DictionaryBuilder()
+                   base::Value::Dict()  //
                        .Set("background",
-                            extensions::DictionaryBuilder()
+                            base::Value::Dict()
                                 .Set("persistent", "false")
-                                .Set("scripts", extensions::ListBuilder()
-                                                    .Append("background.js")
-                                                    .Build())
-                                .Build())
-                       .Build())
+                                .Set("scripts",
+                                     base::Value::List::with_capacity(1)  //
+                                         .Append("background.js"))))
               .Set("storage",
-                   extensions::DictionaryBuilder()
-                       .Set("managed_schema", "managed_storage_schema.json")
-                       .Build())
-              .Set("permissions", extensions::ListBuilder()
-                                      .Append("usb")
-                                      .Append("alwaysOnTopWindows")
-                                      .Build())
-              .Build())
+                   base::Value::Dict().Set("managed_schema",
+                                           "managed_storage_schema.json"))
+              .Set("permissions",
+                   base::Value::List::with_capacity(2)  //
+                       .Append("usb")
+                       .Append("alwaysOnTopWindows")))
       .SetID(extension_id)
       .SetLocation(location)
       .Build();

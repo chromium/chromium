@@ -310,14 +310,13 @@ std::string ConvertToString(message_center::NotificationType type) {
 
 base::Value::Dict MakeDictionaryFromNotification(
     const message_center::Notification& notification) {
-  base::Value::Dict result;
-  result.Set("id", notification.id());
-  result.Set("type", ConvertToString(notification.type()));
-  result.Set("title", notification.title());
-  result.Set("message", notification.message());
-  result.Set("priority", notification.priority());
-  result.Set("progress", notification.progress());
-  return result;
+  return base::Value::Dict()
+      .Set("id", notification.id())
+      .Set("type", ConvertToString(notification.type()))
+      .Set("title", notification.title())
+      .Set("message", notification.message())
+      .Set("priority", notification.priority())
+      .Set("progress", notification.progress());
 }
 
 std::string GetPrinterType(PrinterClass type) {
@@ -1571,44 +1570,39 @@ AutotestPrivateGetExtensionsInfoFunction::Run() {
   for (ExtensionList::const_iterator it = all.begin(); it != all.end(); ++it) {
     const Extension* extension = it->get();
     std::string id = extension->id();
-    base::Value::Dict extension_value;
-    extension_value.Set("id", id);
-    extension_value.Set("version", extension->VersionString());
-    extension_value.Set("name", extension->name());
-    extension_value.Set("publicKey", extension->public_key());
-    extension_value.Set("description", extension->description());
-    extension_value.Set("backgroundUrl",
-                        BackgroundInfo::GetBackgroundURL(extension).spec());
-    extension_value.Set("optionsUrl",
-                        OptionsPageInfo::GetOptionsPage(extension).spec());
-
-    extension_value.Set("hostPermissions",
-                        GetHostPermissions(extension, false));
-    extension_value.Set("effectiveHostPermissions",
-                        GetHostPermissions(extension, true));
-    extension_value.Set("apiPermissions", GetAPIPermissions(extension));
-
     ManifestLocation location = extension->location();
-    extension_value.Set("isComponent",
-                        location == ManifestLocation::kComponent);
-    extension_value.Set("isInternal", location == ManifestLocation::kInternal);
-    extension_value.Set("isUserInstalled",
-                        location == ManifestLocation::kInternal ||
-                            Manifest::IsUnpackedLocation(location));
-    extension_value.Set("isEnabled", service->IsExtensionEnabled(id));
-    extension_value.Set("allowedInIncognito",
-                        util::IsIncognitoEnabled(id, browser_context()));
     const ExtensionAction* action =
         extension_action_manager->GetExtensionAction(*extension);
-    extension_value.Set("hasPageAction", action && action->action_type() ==
-                                                       ActionInfo::TYPE_PAGE);
 
-    extensions_values.Append(std::move(extension_value));
+    extensions_values.Append(
+        base::Value::Dict()
+            .Set("id", id)
+            .Set("version", extension->VersionString())
+            .Set("name", extension->name())
+            .Set("publicKey", extension->public_key())
+            .Set("description", extension->description())
+            .Set("backgroundUrl",
+                 BackgroundInfo::GetBackgroundURL(extension).spec())
+            .Set("optionsUrl",
+                 OptionsPageInfo::GetOptionsPage(extension).spec())
+            .Set("hostPermissions", GetHostPermissions(extension, false))
+            .Set("effectiveHostPermissions",
+                 GetHostPermissions(extension, true))
+            .Set("apiPermissions", GetAPIPermissions(extension))
+
+            .Set("isComponent", location == ManifestLocation::kComponent)
+            .Set("isInternal", location == ManifestLocation::kInternal)
+            .Set("isUserInstalled", location == ManifestLocation::kInternal ||
+                                        Manifest::IsUnpackedLocation(location))
+            .Set("isEnabled", service->IsExtensionEnabled(id))
+            .Set("allowedInIncognito",
+                 util::IsIncognitoEnabled(id, browser_context()))
+            .Set("hasPageAction",
+                 action && action->action_type() == ActionInfo::TYPE_PAGE));
   }
 
-  base::Value::Dict return_value;
-  return_value.Set("extensions", std::move(extensions_values));
-  return RespondNow(WithArguments(std::move(return_value)));
+  return RespondNow(WithArguments(
+      base::Value::Dict().Set("extensions", std::move(extensions_values))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2077,14 +2071,14 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(
 ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetLacrosInfoFunction";
   auto* browser_manager = crosapi::BrowserManager::Get();
-  base::Value::Dict result;
-  result.Set("state", api::autotest_private::ToString(
-                          ToLacrosState(browser_manager->state_)));
-  result.Set("isKeepAlive", browser_manager->IsKeepAliveEnabled());
-  result.Set("lacrosPath", browser_manager->lacros_path().MaybeAsASCII());
-  result.Set("mode", api::autotest_private::ToString(
-                         ToLacrosMode(crosapi::browser_util::GetLacrosMode())));
-  return RespondNow(WithArguments(std::move(result)));
+  return RespondNow(WithArguments(
+      base::Value::Dict()
+          .Set("state", api::autotest_private::ToString(
+                            ToLacrosState(browser_manager->state_)))
+          .Set("isKeepAlive", browser_manager->IsKeepAliveEnabled())
+          .Set("lacrosPath", browser_manager->lacros_path().MaybeAsASCII())
+          .Set("mode", api::autotest_private::ToString(ToLacrosMode(
+                           crosapi::browser_util::GetLacrosMode())))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2105,31 +2099,28 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcAppFunction::Run() {
     return RespondNow(Error("ARC is not available"));
   }
 
-  base::Value::Dict app_value;
-  {
-    const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-        prefs->GetApp(params->app_id);
-    if (!app_info) {
-      return RespondNow(Error("App is not available"));
-    }
-
-    app_value.Set("name", std::move(app_info->name));
-    app_value.Set("packageName", std::move(app_info->package_name));
-    app_value.Set("activity", std::move(app_info->activity));
-    app_value.Set("intentUri", std::move(app_info->intent_uri));
-    app_value.Set("iconResourceId", std::move(app_info->icon_resource_id));
-    app_value.Set("lastLaunchTime", app_info->last_launch_time.ToJsTime());
-    app_value.Set("installTime", app_info->install_time.ToJsTime());
-    app_value.Set("sticky", app_info->sticky);
-    app_value.Set("notificationsEnabled", app_info->notifications_enabled);
-    app_value.Set("ready", app_info->ready);
-    app_value.Set("suspended", app_info->suspended);
-    app_value.Set("showInLauncher", app_info->show_in_launcher);
-    app_value.Set("shortcut", app_info->shortcut);
-    app_value.Set("launchable", app_info->launchable);
+  const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+      prefs->GetApp(params->app_id);
+  if (!app_info) {
+    return RespondNow(Error("App is not available"));
   }
 
-  return RespondNow(WithArguments(std::move(app_value)));
+  return RespondNow(WithArguments(
+      base::Value::Dict()
+          .Set("name", std::move(app_info->name))
+          .Set("packageName", std::move(app_info->package_name))
+          .Set("activity", std::move(app_info->activity))
+          .Set("intentUri", std::move(app_info->intent_uri))
+          .Set("iconResourceId", std::move(app_info->icon_resource_id))
+          .Set("lastLaunchTime", app_info->last_launch_time.ToJsTime())
+          .Set("installTime", app_info->install_time.ToJsTime())
+          .Set("sticky", app_info->sticky)
+          .Set("notificationsEnabled", app_info->notifications_enabled)
+          .Set("ready", app_info->ready)
+          .Set("suspended", app_info->suspended)
+          .Set("showInLauncher", app_info->show_in_launcher)
+          .Set("shortcut", app_info->shortcut)
+          .Set("launchable", app_info->launchable)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3095,11 +3086,10 @@ void AutotestPrivateGetPrinterListFunction::OnEnterprisePrintersInitialized() {
     std::vector<chromeos::Printer> printer_list =
         printers_manager_->GetPrinters(type);
     for (const auto& printer : printer_list) {
-      base::Value::Dict result;
-      result.Set("printerName", printer.display_name());
-      result.Set("printerId", printer.id());
-      result.Set("printerType", GetPrinterType(type));
-      results_.Append(std::move(result));
+      results_.Append(base::Value::Dict()
+                          .Set("printerName", printer.display_name())
+                          .Set("printerId", printer.id())
+                          .Set("printerType", GetPrinterType(type)));
     }
   }
   // We have to respond in separate task on the same thread, because it will
@@ -4374,12 +4364,11 @@ void AutotestPrivateArcAppTracingStopAndAnalyzeFunction::OnTracingResult(
     double fps,
     double commit_deviation,
     double render_quality) {
-  base::Value::Dict result;
-  result.Set("success", success);
-  result.Set("fps", fps);
-  result.Set("commitDeviation", commit_deviation);
-  result.Set("renderQuality", render_quality);
-  Respond(WithArguments(std::move(result)));
+  Respond(WithArguments(base::Value::Dict()
+                            .Set("success", success)
+                            .Set("fps", fps)
+                            .Set("commitDeviation", commit_deviation)
+                            .Set("renderQuality", render_quality)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
