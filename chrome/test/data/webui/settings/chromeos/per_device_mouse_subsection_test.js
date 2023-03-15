@@ -167,7 +167,7 @@ suite('PerDeviceMouseSubsection', function() {
         subsection.shadowRoot.querySelector('#mouseScrollAcceleration');
     assertFalse(isVisible(mouseScrollAccelerationToggleButton));
     mouseScrollSpeedSlider =
-        assert(subsection.shadowRoot.querySelector('#mouseScrollSpeedSlider'));
+        subsection.shadowRoot.querySelector('#mouseScrollSpeedSlider');
     assertFalse(isVisible(mouseScrollSpeedSlider));
   });
 });

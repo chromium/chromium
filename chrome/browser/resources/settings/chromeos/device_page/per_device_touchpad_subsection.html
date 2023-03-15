@@ -43,7 +43,7 @@
             label-max="$i18n{pointerFast}">
         </settings-slider>
     </div>
-    <template is="dom-if" if="[[allowScrollSettings_]]">
+    <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
       <settings-toggle-button id="touchpadScrollAcceleration"
           class="hr"
           pref="{{scrollAccelerationPref}}"
@@ -62,7 +62,7 @@
         </settings-slider>
       </div>
     </template>
-    <template is="dom-if" if="[[touchpad.isHaptic]]">
+    <template is="dom-if" if="[[touchpad.isHaptic]]" restamp>
       <div class="settings-box">
         <div class="start" id="touchpadHapticClickSensitivityLabel"
             aria-hidden="true">

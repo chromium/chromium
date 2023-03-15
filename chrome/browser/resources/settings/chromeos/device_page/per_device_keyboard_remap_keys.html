@@ -41,14 +41,14 @@
       key="[[modifierKey.kBackspace]]" id="backspaceKey"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeBackspacePref}}"></keyboard-remap-modifier-key-row>
-  <template is="dom-if" if="[[hasAssistantKey_]]">
+  <template is="dom-if" if="[[hasAssistantKey_]]" restamp>
     <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.kAssistant]]" id="assistantKey"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeAssistantPref}}"></keyboard-remap-modifier-key-row>
   </template>
-  <template is="dom-if" if="[[hasCapsLockKey]]">
+  <template is="dom-if" if="[[hasCapsLockKey]]" restamp>
     <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.kCapsLock]]" id="capsLockKey"

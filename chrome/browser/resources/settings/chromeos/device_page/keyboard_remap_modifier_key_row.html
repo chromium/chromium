@@ -44,11 +44,11 @@
 <div class="settings-box">
   <div>
     <div id="keyLabelContainer" class="start key-container">
-      <template is="dom-if" if="[[!metaKeyIcon]]">
+      <template is="dom-if" if="[[!metaKeyIcon]]" restamp>
         <div id="keyLabel"
             aria-hidden="true">[[keyLabel]]</div>
       </template>
-      <template is="dom-if" if="[[metaKeyIcon]]">
+      <template is="dom-if" if="[[metaKeyIcon]]" restamp>
         <iron-icon icon="[[metaKeyIcon]]"></iron-icon>
       </template>
     </div>

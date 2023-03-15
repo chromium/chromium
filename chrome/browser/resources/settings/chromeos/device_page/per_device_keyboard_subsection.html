@@ -16,7 +16,7 @@
 </style>
 <h2>[[keyboard.name]]</h2>
 <div class="subsection">
-  <template is="dom-if" if="[[keyboard.isExternal]]">
+  <template is="dom-if" if="[[keyboard.isExternal]]" restamp>
     <settings-toggle-button
         class="hr" inverted="true"
         id="externalTopRowAreFunctionKeysButton"
@@ -32,7 +32,7 @@
         sub-label="$i18n{keyboardBlockMetaFunctionKeyRewritesDescription}">
     </settings-toggle-button>
   </template>
-  <template is="dom-if" if="[[!keyboard.isExternal]]">
+  <template is="dom-if" if="[[!keyboard.isExternal]]" restamp>
     <settings-toggle-button
         class="hr" id="internalTopRowAreFunctionKeysButton"
         pref="{{topRowAreFunctionKeysPref}}"

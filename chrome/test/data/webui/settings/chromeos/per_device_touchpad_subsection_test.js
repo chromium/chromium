@@ -228,16 +228,16 @@ suite('PerDeviceTouchpadSubsection', function() {
     touchpadScrollAccelerationButton =
         subsection.shadowRoot.querySelector('#touchpadScrollAcceleration');
     assertFalse(isVisible(touchpadScrollAccelerationButton));
-    touchpadScrollSpeedSlider = assert(
-        subsection.shadowRoot.querySelector('#touchpadScrollSpeedSlider'));
+    touchpadScrollSpeedSlider =
+        subsection.shadowRoot.querySelector('#touchpadScrollSpeedSlider');
     assertFalse(isVisible(touchpadScrollSpeedSlider));
     touchpadSensitivitySlider =
         assert(subsection.shadowRoot.querySelector('#touchpadSensitivity'));
     assertEquals(
         fakeTouchpads[1].settings.sensitivity,
         touchpadSensitivitySlider.pref.value);
-    touchpadHapticClickSensitivitySlider = assert(
-        subsection.shadowRoot.querySelector('#touchpadHapticClickSensitivity'));
+    touchpadHapticClickSensitivitySlider =
+        subsection.shadowRoot.querySelector('#touchpadHapticClickSensitivity');
     assertFalse(isVisible(touchpadHapticClickSensitivitySlider));
     touchpadHapticFeedbackToggleButton =
         subsection.shadowRoot.querySelector('#touchpadHapticFeedbackToggle');
