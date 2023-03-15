@@ -89,8 +89,12 @@ AtomicString StringTraits<AtomicString>::FromV8String(
 }
 
 ALWAYS_INLINE bool CanExternalize(v8::Local<v8::String> v8_string,
-                                  ExternalMode mode) {
-  return mode == kExternalize && v8_string->CanMakeExternal();
+                                  ExternalMode mode,
+                                  bool is_one_byte) {
+  const v8::String::Encoding requested_encoding =
+      is_one_byte ? v8::String::ONE_BYTE_ENCODING
+                  : v8::String::TWO_BYTE_ENCODING;
+  return mode == kExternalize && v8_string->CanMakeExternal(requested_encoding);
 }
 
 // Retrieves the StringResourceBase from `v8_string`.
@@ -142,14 +146,14 @@ ALWAYS_INLINE StringType
 ConvertAndExternalizeString(v8::Isolate* isolate,
                             v8::Local<v8::String> v8_string,
                             bool can_externalize,
+                            bool is_one_byte,
                             bool* was_externalized) {
   int length = v8_string->Length();
-  bool one_byte = v8_string->ContainsOnlyOneByte();
   StringType result =
-      one_byte ? StringTraits<StringType>::template FromV8String<
-                     V8StringOneByteTrait>(isolate, v8_string, length)
-               : StringTraits<StringType>::template FromV8String<
-                     V8StringTwoBytesTrait>(isolate, v8_string, length);
+      is_one_byte ? StringTraits<StringType>::template FromV8String<
+                        V8StringOneByteTrait>(isolate, v8_string, length)
+                  : StringTraits<StringType>::template FromV8String<
+                        V8StringTwoBytesTrait>(isolate, v8_string, length);
 
   *was_externalized = false;
   if (LIKELY(can_externalize)) {
@@ -198,9 +202,11 @@ StringType ToBlinkString(v8::Local<v8::String> v8_string, ExternalMode mode) {
   // It is safe to ignore externalization failures as it just means later
   // calls will recreate the string.
   bool was_externalized;
+  const bool is_one_byte = v8_string->IsOneByte();
   // TODO(ajwong): Avoid v8::Isolate::GetCurrent() call.
   return ConvertAndExternalizeString<StringType>(
-      v8::Isolate::GetCurrent(), v8_string, CanExternalize(v8_string, mode),
+      v8::Isolate::GetCurrent(), v8_string,
+      CanExternalize(v8_string, mode, is_one_byte), is_one_byte,
       &was_externalized);
 }
 
@@ -236,7 +242,8 @@ StringView ToBlinkStringView(v8::Local<v8::String> v8_string,
   // TODO(ajwong): Pass in isolate to avoid extra TLS lookups? Especially with
   // small identifiers on 64-bit platforms, externalizations are less frequent
   // so this path is hotter.
-  bool can_externalize = CanExternalize(v8_string, mode);
+  const bool is_one_byte = v8_string->IsOneByte();
+  bool can_externalize = CanExternalize(v8_string, mode, is_one_byte);
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   if (LIKELY(can_externalize)) {
     bool was_externalized;
@@ -257,7 +264,7 @@ StringView ToBlinkStringView(v8::Local<v8::String> v8_string,
     // calling this with kDoNotExternalize and relying on the
     // StringView::StackBackingStore yields the most efficient code.
     AtomicString blink_string = ConvertAndExternalizeString<AtomicString>(
-        isolate, v8_string, can_externalize, &was_externalized);
+        isolate, v8_string, can_externalize, is_one_byte, &was_externalized);
     if (was_externalized)
       return StringView(blink_string);
   }
@@ -300,7 +307,7 @@ StringView ToBlinkStringView(v8::Local<v8::String> v8_string,
   // TODO(ajwong): Revisit if the length restriction on externalization makes
   // sense. It's odd that pointer compression changes externalization
   // behavior.
-  if (v8_string->ContainsOnlyOneByte()) {
+  if (is_one_byte) {
     LChar* lchar = backing_store.Realloc<LChar>(length);
     v8_string->WriteOneByte(isolate, lchar, 0, length);
     return StringView(lchar, length);
