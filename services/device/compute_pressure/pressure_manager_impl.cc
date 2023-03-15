@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/compute_pressure/cpu_probe.h"
-#include "services/device/compute_pressure/platform_collector.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace device {
@@ -21,26 +20,16 @@ constexpr base::TimeDelta PressureManagerImpl::kDefaultSamplingInterval;
 
 // static
 std::unique_ptr<PressureManagerImpl> PressureManagerImpl::Create() {
-  return base::WrapUnique(new PressureManagerImpl(
-      CpuProbe::Create(), PressureManagerImpl::kDefaultSamplingInterval));
+  return base::WrapUnique(new PressureManagerImpl(kDefaultSamplingInterval));
 }
 
-// static
-std::unique_ptr<PressureManagerImpl> PressureManagerImpl::CreateForTesting(
-    std::unique_ptr<CpuProbe> cpu_probe,
-    base::TimeDelta sampling_interval) {
-  return base::WrapUnique(
-      new PressureManagerImpl(std::move(cpu_probe), sampling_interval));
-}
-
-PressureManagerImpl::PressureManagerImpl(std::unique_ptr<CpuProbe> cpu_probe,
-                                         base::TimeDelta sampling_interval)
+PressureManagerImpl::PressureManagerImpl(base::TimeDelta sampling_interval)
     // base::Unretained usage is safe here because the callback is only run
-    // while `collector_` is alive, and `collector_` is owned by this instance.
-    : collector_(std::move(cpu_probe),
-                 sampling_interval,
-                 base::BindRepeating(&PressureManagerImpl::UpdateClients,
-                                     base::Unretained(this))) {
+    // while `cpu_probe_` is alive, and `cpu_probe_` is owned by this instance.
+    : cpu_probe_(CpuProbe::Create(
+          sampling_interval,
+          base::BindRepeating(&PressureManagerImpl::UpdateClients,
+                              base::Unretained(this)))) {
   // base::Unretained use is safe because mojo guarantees the callback will not
   // be called after `clients_` is deallocated, and `clients_` is owned by
   // PressureManagerImpl.
@@ -65,12 +54,12 @@ void PressureManagerImpl::AddClient(
     AddClientCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!collector_.has_probe()) {
+  if (!cpu_probe_) {
     std::move(callback).Run(mojom::PressureStatus::kNotSupported);
     return;
   }
   clients_.Add(std::move(client));
-  collector_.EnsureStarted();
+  cpu_probe_->EnsureStarted();
   std::move(callback).Run(mojom::PressureStatus::kOk);
 }
 
@@ -92,7 +81,14 @@ void PressureManagerImpl::OnClientRemoteDisconnected(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (clients_.empty())
-    collector_.Stop();
+    cpu_probe_->Stop();
+}
+
+void PressureManagerImpl::SetCpuProbeForTesting(
+    std::unique_ptr<CpuProbe> cpu_probe) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  cpu_probe_ = std::move(cpu_probe);
 }
 
 }  // namespace device

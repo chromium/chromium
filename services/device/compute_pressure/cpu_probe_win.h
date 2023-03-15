@@ -7,53 +7,41 @@
 
 #include <memory>
 
-#include "base/sequence_checker.h"
+#include "base/memory/weak_ptr.h"
 #include "base/thread_annotations.h"
+#include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "services/device/compute_pressure/cpu_probe.h"
-#include "services/device/compute_pressure/pressure_sample.h"
-#include "services/device/compute_pressure/scoped_pdh_query.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "services/device/public/mojom/pressure_update.mojom-shared.h"
 
 namespace device {
 
 class CpuProbeWin : public CpuProbe {
  public:
   // Factory method for production instances.
-  static std::unique_ptr<CpuProbeWin> Create();
+  static std::unique_ptr<CpuProbeWin> Create(
+      base::TimeDelta,
+      base::RepeatingCallback<void(mojom::PressureState)>);
 
   ~CpuProbeWin() override;
 
   CpuProbeWin(const CpuProbeWin&) = delete;
   CpuProbeWin& operator=(const CpuProbeWin&) = delete;
 
+ private:
+  class BlockingTaskRunnerHelper;
+
+  CpuProbeWin(base::TimeDelta,
+              base::RepeatingCallback<void(mojom::PressureState)>);
+
   // CpuProbe implementation.
   void Update() override;
-  PressureSample LastSample() override;
 
- private:
-  CpuProbeWin();
+  base::SequenceBound<BlockingTaskRunnerHelper> helper_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  absl::optional<PressureSample> GetPdhData();
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  // Used to derive CPU utilization.
-  ScopedPdhQuery cpu_query_;
-  // This "handle" doesn't need to be freed but its lifetime is associated
-  // with cpu_query_.
-  PDH_HCOUNTER cpu_percent_utilization_;
-
-  // True if PdhCollectQueryData has been called.
-  //
-  // It requires two data samples to calculate a formatted data value. So
-  // PdhCollectQueryData should be called twice before calling
-  // PdhGetFormattedCounterValue.
-  // Detailed information can be found in the following website:
-  // https://learn.microsoft.com/en-us/windows/win32/perfctrs/collecting-performance-data
-  bool got_baseline_ = false;
-
-  PressureSample last_sample_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      kUnsupportedValue;
+  base::WeakPtrFactory<CpuProbeWin> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace device

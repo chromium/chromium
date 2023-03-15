@@ -14,16 +14,15 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "services/device/compute_pressure/platform_collector.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 
 namespace device {
 
 class CpuProbe;
 
-// Handles the communication between the browser process and services.
+// Handles the communication between the renderer process and services.
 //
-// This class owns one instance of PlatformCollector. The PlatformCollector
+// This class owns one instance of CpuProbe. The CpuProbe
 // instance keeps collecting compute pressure information from the
 // underlying operating system when `clients_` is not empty and stops
 // collecting when `clients_` becomes empty.
@@ -40,11 +39,6 @@ class PressureManagerImpl : public mojom::PressureManager {
   // Factory method for production instances.
   static std::unique_ptr<PressureManagerImpl> Create();
 
-  // Factory method with dependency injection support for testing.
-  static std::unique_ptr<PressureManagerImpl> CreateForTesting(
-      std::unique_ptr<CpuProbe> cpu_probe,
-      base::TimeDelta sampling_interval);
-
   ~PressureManagerImpl() override;
 
   PressureManagerImpl(const PressureManagerImpl&) = delete;
@@ -56,19 +50,23 @@ class PressureManagerImpl : public mojom::PressureManager {
   void AddClient(mojo::PendingRemote<mojom::PressureClient> client,
                  AddClientCallback callback) override;
 
+  void SetCpuProbeForTesting(std::unique_ptr<CpuProbe>);
+
  private:
-  PressureManagerImpl(std::unique_ptr<CpuProbe> cpu_probe,
-                      base::TimeDelta sampling_interval);
+  friend class PressureManagerImplTest;
+
+  explicit PressureManagerImpl(base::TimeDelta sampling_interval);
 
   // Called periodically by PlatformCollector.
   void UpdateClients(mojom::PressureState state);
 
-  // Stop `collector_` once there is no client.
+  // Stop `cpu_probe_` once there is no client.
   void OnClientRemoteDisconnected(mojo::RemoteSetElementId /*id*/);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  PlatformCollector collector_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Probe for retrieving the compute pressure state for CPU.
+  std::unique_ptr<CpuProbe> cpu_probe_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::ReceiverSet<mojom::PressureManager> receivers_
       GUARDED_BY_CONTEXT(sequence_checker_);

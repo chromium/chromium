@@ -19,8 +19,6 @@ source_set("compute_pressure") {
   sources = [
     "cpu_probe.cc",
     "cpu_probe.h",
-    "platform_collector.cc",
-    "platform_collector.h",
     "pressure_manager_impl.cc",
     "pressure_manager_impl.h",
     "pressure_sample.h",

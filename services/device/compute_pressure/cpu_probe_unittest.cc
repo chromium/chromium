@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/compute_pressure/platform_collector.h"
+#include "services/device/compute_pressure/cpu_probe.h"
 
 #include <cstddef>
 #include <memory>
@@ -17,8 +17,6 @@
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/scoped_blocking_call.h"
-#include "build/build_config.h"
 #include "services/device/compute_pressure/cpu_probe.h"
 #include "services/device/compute_pressure/pressure_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,13 +24,12 @@
 
 namespace device {
 
-class PlatformCollectorTest : public testing::Test {
+class CpuProbeTest : public testing::Test {
  public:
-  PlatformCollectorTest()
-      : collector_(std::make_unique<PlatformCollector>(
-            std::make_unique<FakeCpuProbe>(),
+  CpuProbeTest()
+      : cpu_probe_(std::make_unique<FakeCpuProbe>(
             base::Milliseconds(1),
-            base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
+            base::BindRepeating(&CpuProbeTest::CollectorCallback,
                                 base::Unretained(this)))) {}
 
   void WaitForUpdate() {
@@ -41,15 +38,6 @@ class PlatformCollectorTest : public testing::Test {
     base::RunLoop run_loop;
     SetNextUpdateCallback(run_loop.QuitClosure());
     run_loop.Run();
-  }
-
-  // Only valid if `collector_` uses a FakeCpuProbe. This is guaranteed if
-  // `collector_` is not replaced during the test.
-  FakeCpuProbe& cpu_probe() {
-    auto* cpu_probe =
-        static_cast<FakeCpuProbe*>(collector_->cpu_probe_for_testing());
-    DCHECK(cpu_probe);
-    return *cpu_probe;
   }
 
   void CollectorCallback(mojom::PressureState sample) {
@@ -66,9 +54,9 @@ class PlatformCollectorTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  // This member is a std::unique_ptr instead of a plain PlatformCollector
+  // This member is a std::unique_ptr instead of a plain CpuProbe
   // so it can be replaced inside tests.
-  std::unique_ptr<PlatformCollector> collector_;
+  std::unique_ptr<CpuProbe> cpu_probe_;
 
   // The samples reported by the callback.
   std::vector<mojom::PressureState> samples_
@@ -86,68 +74,19 @@ class PlatformCollectorTest : public testing::Test {
   base::OnceClosure update_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-TEST_F(PlatformCollectorTest, EnsureStarted) {
+TEST_F(CpuProbeTest, EnsureStarted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cpu_probe().SetLastSample(PressureSample{0.9});
-  collector_->EnsureStarted();
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())
+      ->SetLastSample(PressureSample{0.9});
+  cpu_probe_->EnsureStarted();
   WaitForUpdate();
 
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
 }
 
-namespace {
-
-// TestDouble for CpuProbe that produces a different value after every Update().
-class StreamingCpuProbe : public CpuProbe {
- public:
-  explicit StreamingCpuProbe(std::vector<PressureSample> samples,
-                             base::OnceClosure callback)
-      : samples_(std::move(samples)), callback_(std::move(callback)) {
-    DETACH_FROM_SEQUENCE(sequence_checker_);
-    DCHECK_GT(samples_.size(), 0u);
-  }
-  ~StreamingCpuProbe() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
-
-  // CpuProbe implementation.
-  void Update() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    ++sample_index_;
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-  }
-
-  PressureSample LastSample() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (sample_index_ < samples_.size()) {
-      return samples_.at(sample_index_);
-    }
-
-    if (!callback_.is_null()) {
-      std::move(callback_).Run();
-    }
-
-    return samples_.back();
-  }
-
- private:
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  std::vector<PressureSample> samples_ GUARDED_BY_CONTEXT(sequence_checker_);
-  size_t sample_index_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-
-  // This closure is called on a LastSample call after expected number of
-  // samples has been taken by PressureSampler.
-  base::OnceClosure callback_;
-};
-
-}  // namespace
-
-TEST_F(PlatformCollectorTest, EnsureStartedSkipsFirstSample) {
+TEST_F(CpuProbeTest, EnsureStartedSkipsFirstSample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -160,19 +99,19 @@ TEST_F(PlatformCollectorTest, EnsureStartedSkipsFirstSample) {
   };
 
   base::RunLoop run_loop;
-  collector_ = std::make_unique<PlatformCollector>(
-      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+  cpu_probe_ = std::make_unique<StreamingCpuProbe>(
       base::Milliseconds(1),
-      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
-                          base::Unretained(this)));
-  collector_->EnsureStarted();
+      base::BindRepeating(&CpuProbeTest::CollectorCallback,
+                          base::Unretained(this)),
+      std::move(samples), run_loop.QuitClosure());
+  cpu_probe_->EnsureStarted();
   run_loop.Run();
 
   EXPECT_THAT(samples_, testing::ElementsAre(
                             mojom::PressureState{mojom::PressureState::kFair}));
 }
 
-TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateWrongValue) {
+TEST_F(CpuProbeTest, EnsureStartedCheckCalculateStateWrongValue) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -185,16 +124,17 @@ TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateWrongValue) {
   };
 
   base::RunLoop run_loop;
-  collector_ = std::make_unique<PlatformCollector>(
-      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+  cpu_probe_ = std::make_unique<StreamingCpuProbe>(
       base::Milliseconds(1),
-      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
-                          base::Unretained(this)));
-  collector_->EnsureStarted();
+      base::BindRepeating(&CpuProbeTest::CollectorCallback,
+                          base::Unretained(this)),
+      std::move(samples), run_loop.QuitClosure());
+  cpu_probe_->EnsureStarted();
+
   EXPECT_DCHECK_DEATH_WITH(run_loop.Run(), "unexpected value: 1.1");
 }
 
-TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateHysteresisUp) {
+TEST_F(CpuProbeTest, EnsureStartedCheckCalculateStateHysteresisUp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -213,12 +153,12 @@ TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateHysteresisUp) {
   };
 
   base::RunLoop run_loop;
-  collector_ = std::make_unique<PlatformCollector>(
-      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+  cpu_probe_ = std::make_unique<StreamingCpuProbe>(
       base::Milliseconds(1),
-      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
-                          base::Unretained(this)));
-  collector_->EnsureStarted();
+      base::BindRepeating(&CpuProbeTest::CollectorCallback,
+                          base::Unretained(this)),
+      std::move(samples), run_loop.QuitClosure());
+  cpu_probe_->EnsureStarted();
   run_loop.Run();
 
   EXPECT_THAT(samples_,
@@ -229,7 +169,7 @@ TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateHysteresisUp) {
                   mojom::PressureState{mojom::PressureState::kCritical}));
 }
 
-TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateHysteresisDown) {
+TEST_F(CpuProbeTest, EnsureStartedCheckCalculateStateHysteresisDown) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -248,12 +188,12 @@ TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateHysteresisDown) {
   };
 
   base::RunLoop run_loop;
-  collector_ = std::make_unique<PlatformCollector>(
-      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+  cpu_probe_ = std::make_unique<StreamingCpuProbe>(
       base::Milliseconds(1),
-      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
-                          base::Unretained(this)));
-  collector_->EnsureStarted();
+      base::BindRepeating(&CpuProbeTest::CollectorCallback,
+                          base::Unretained(this)),
+      std::move(samples), run_loop.QuitClosure());
+  cpu_probe_->EnsureStarted();
   run_loop.Run();
 
   EXPECT_THAT(samples_,
@@ -264,8 +204,7 @@ TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateHysteresisDown) {
                   mojom::PressureState{mojom::PressureState::kNominal}));
 }
 
-TEST_F(PlatformCollectorTest,
-       EnsureStartedCheckCalculateStateHysteresisDownByDelta) {
+TEST_F(CpuProbeTest, EnsureStartedCheckCalculateStateHysteresisDownByDelta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -284,12 +223,12 @@ TEST_F(PlatformCollectorTest,
   };
 
   base::RunLoop run_loop;
-  collector_ = std::make_unique<PlatformCollector>(
-      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+  cpu_probe_ = std::make_unique<StreamingCpuProbe>(
       base::Milliseconds(1),
-      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
-                          base::Unretained(this)));
-  collector_->EnsureStarted();
+      base::BindRepeating(&CpuProbeTest::CollectorCallback,
+                          base::Unretained(this)),
+      std::move(samples), run_loop.QuitClosure());
+  cpu_probe_->EnsureStarted();
   run_loop.Run();
 
   EXPECT_THAT(samples_,
@@ -300,7 +239,7 @@ TEST_F(PlatformCollectorTest,
                   mojom::PressureState{mojom::PressureState::kNominal}));
 }
 
-TEST_F(PlatformCollectorTest,
+TEST_F(CpuProbeTest,
        EnsureStartedCheckCalculateStateHysteresisDownByDeltaTwoState) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -318,12 +257,12 @@ TEST_F(PlatformCollectorTest,
   };
 
   base::RunLoop run_loop;
-  collector_ = std::make_unique<PlatformCollector>(
-      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+  cpu_probe_ = std::make_unique<StreamingCpuProbe>(
       base::Milliseconds(1),
-      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
-                          base::Unretained(this)));
-  collector_->EnsureStarted();
+      base::BindRepeating(&CpuProbeTest::CollectorCallback,
+                          base::Unretained(this)),
+      std::move(samples), run_loop.QuitClosure());
+  cpu_probe_->EnsureStarted();
   run_loop.Run();
 
   EXPECT_THAT(samples_,
@@ -333,8 +272,7 @@ TEST_F(PlatformCollectorTest,
                   mojom::PressureState{mojom::PressureState::kFair}));
 }
 
-TEST_F(PlatformCollectorTest,
-       EnsureStartedCheckCalculateStateHysteresisUpByDelta) {
+TEST_F(CpuProbeTest, EnsureStartedCheckCalculateStateHysteresisUpByDelta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -353,12 +291,12 @@ TEST_F(PlatformCollectorTest,
   };
 
   base::RunLoop run_loop;
-  collector_ = std::make_unique<PlatformCollector>(
-      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+  cpu_probe_ = std::make_unique<StreamingCpuProbe>(
       base::Milliseconds(1),
-      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
-                          base::Unretained(this)));
-  collector_->EnsureStarted();
+      base::BindRepeating(&CpuProbeTest::CollectorCallback,
+                          base::Unretained(this)),
+      std::move(samples), run_loop.QuitClosure());
+  cpu_probe_->EnsureStarted();
   run_loop.Run();
 
   EXPECT_THAT(samples_,
@@ -369,66 +307,70 @@ TEST_F(PlatformCollectorTest,
                   mojom::PressureState{mojom::PressureState::kCritical}));
 }
 
-TEST_F(PlatformCollectorTest, StopDelayedEnsureStartedImmediate) {
+TEST_F(CpuProbeTest, StopDelayedEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  collector_->EnsureStarted();
+  cpu_probe_->EnsureStarted();
   WaitForUpdate();
-  collector_->Stop();
+  cpu_probe_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(PressureSample{0.9});
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())
+      ->SetLastSample(PressureSample{0.9});
 
-  collector_->EnsureStarted();
+  cpu_probe_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(PlatformCollectorTest, StopDelayedEnsureStartedDelayed) {
+TEST_F(CpuProbeTest, StopDelayedEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  collector_->EnsureStarted();
+  cpu_probe_->EnsureStarted();
   WaitForUpdate();
-  collector_->Stop();
+  cpu_probe_->Stop();
   samples_.clear();
-  cpu_probe().SetLastSample(PressureSample{0.9});
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())
+      ->SetLastSample(PressureSample{0.9});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
-  collector_->EnsureStarted();
+  cpu_probe_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(PlatformCollectorTest, StopImmediateEnsureStartedImmediate) {
+TEST_F(CpuProbeTest, StopImmediateEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  collector_->EnsureStarted();
-  collector_->Stop();
+  cpu_probe_->EnsureStarted();
+  cpu_probe_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(PressureSample{0.9});
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())
+      ->SetLastSample(PressureSample{0.9});
 
-  collector_->EnsureStarted();
+  cpu_probe_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(PlatformCollectorTest, StopImmediateEnsureStartedDelayed) {
+TEST_F(CpuProbeTest, StopImmediateEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  collector_->EnsureStarted();
-  collector_->Stop();
+  cpu_probe_->EnsureStarted();
+  cpu_probe_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(PressureSample{0.9});
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())
+      ->SetLastSample(PressureSample{0.9});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
-  collector_->EnsureStarted();
+  cpu_probe_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));

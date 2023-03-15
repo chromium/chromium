@@ -7,12 +7,17 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "base/timer/timer.h"
 #include "services/device/compute_pressure/pressure_sample.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
 
 namespace device {
 
-// Interface for retrieving the compute pressure state from the underlying OS.
+// Interface for retrieving the compute pressure state for CPU from the
+// underlying OS at regular intervals.
 //
 // Operating systems differ in how they summarize the info needed to derive the
 // compute pressure state. For example, the Linux kernel exposes CPU utilization
@@ -27,37 +32,77 @@ namespace device {
 // systems differ in requirements for accessing compute pressure information,
 // and this interface expresses the union of all requirements.
 //
-// Instances are not thread-safe. All methods except for the constructor must be
-// created on the same sequence. The sequence must allow blocking I/O
-// operations.
+// Instances are not thread-safe and should be used on the same sequence.
+//
+// The instance is owned by a PressureManagerImpl.
 class CpuProbe {
  public:
-  // LastSample() return value when the implementation fails to get a result.
+  // Return this value when the implementation fails to get a result.
   static constexpr PressureSample kUnsupportedValue = {.cpu_utilization = 0.0};
 
   // Instantiates the CpuProbe subclass most suitable for the current platform.
   //
   // Returns nullptr if no suitable implementation exists.
-  static std::unique_ptr<CpuProbe> Create();
+  static std::unique_ptr<CpuProbe> Create(
+      base::TimeDelta,
+      base::RepeatingCallback<void(mojom::PressureState)>);
 
   CpuProbe(const CpuProbe&) = delete;
   CpuProbe& operator=(const CpuProbe&) = delete;
 
   virtual ~CpuProbe();
 
-  // Collects new CPU compute resource availability.
-  //
-  // The return value of LastSample() will reflect resource availability between
-  // the current state and the last Update() call.
-  virtual void Update() = 0;
+  // Idempotent.
+  // Start the timer to retrieve the compute pressure state from the
+  // underlying OS at specific time interval.
+  void EnsureStarted();
 
-  // CPU compute resource availability between the last two Update() calls.
-  virtual PressureSample LastSample() = 0;
+  // Idempotent.
+  // Stop the timer.
+  void Stop();
 
  protected:
   // The constructor is intentionally only exposed to subclasses. Production
   // code must use the Create() factory method.
-  CpuProbe();
+  CpuProbe(base::TimeDelta,
+           base::RepeatingCallback<void(mojom::PressureState)>);
+
+  // Called periodically while the CpuProbe is running.
+  // This function can be overridden in tests to deal with `sample`.
+  virtual void OnPressureSampleAvailable(PressureSample sample);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+ private:
+  friend class PressureManagerImpl;
+
+  // Implemented by subclasses to retrieve the compute pressure state for
+  // different operating systems.
+  virtual void Update() = 0;
+
+  // Calculate PressureState based on PressureSample.
+  mojom::PressureState CalculateState(const PressureSample&);
+
+  // Last state stored as index instead of value.
+  size_t last_state_index_ =
+      static_cast<size_t>(mojom::PressureState::kNominal);
+
+  // Drive repeated sampling.
+  base::RepeatingTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const base::TimeDelta sampling_interval_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Called with each sample reading.
+  base::RepeatingCallback<void(mojom::PressureState)> sampling_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // True if the CpuProbe state will be reported after the next update.
+  //
+  // The PressureSample reported by many CpuProbe implementations relies
+  // on the differences observed between two Update() calls. For this reason,
+  // the PressureSample reported after a first Update() call is not
+  // reported via `sampling_callback_`.
+  bool got_probe_baseline_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };
 
 }  // namespace device

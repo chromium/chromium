@@ -132,7 +132,7 @@ source_set("tests") {
 
   sources = [
     "battery/battery_status_service_unittest.cc",
-    "compute_pressure/platform_collector_unittest.cc",
+    "compute_pressure/cpu_probe_unittest.cc",
     "compute_pressure/pressure_manager_impl_unittest.cc",
     "compute_pressure/pressure_test_support.cc",
     "compute_pressure/pressure_test_support.h",

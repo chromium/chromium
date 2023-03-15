@@ -5,11 +5,15 @@
 #ifndef SERVICES_DEVICE_COMPUTE_PRESSURE_PRESSURE_TEST_SUPPORT_H_
 #define SERVICES_DEVICE_COMPUTE_PRESSURE_PRESSURE_TEST_SUPPORT_H_
 
-#include "base/sequence_checker.h"
+#include <stdint.h>
+
+#include "base/functional/callback_forward.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "services/device/compute_pressure/cpu_probe.h"
 #include "services/device/compute_pressure/pressure_sample.h"
+#include "services/device/public/mojom/pressure_update.mojom-shared.h"
 
 namespace device {
 
@@ -19,22 +23,46 @@ class FakeCpuProbe : public CpuProbe {
   // Value returned by LastSample() if SetLastSample() is not called.
   static constexpr PressureSample kInitialSample{0.42};
 
-  FakeCpuProbe();
+  FakeCpuProbe(base::TimeDelta,
+               base::RepeatingCallback<void(mojom::PressureState)>);
   ~FakeCpuProbe() override;
 
   // CpuProbe implementation.
   void Update() override;
-  PressureSample LastSample() override;
+
+  void OnUpdate();
 
   // Can be called from any thread.
   void SetLastSample(PressureSample sample);
 
  private:
-  // Bound to the sequence for Update() and LastSample().
-  SEQUENCE_CHECKER(sequence_checker_);
-
   base::Lock lock_;
   PressureSample last_sample_ GUARDED_BY_CONTEXT(lock_);
+};
+
+// Test double for CpuProbe that produces a different value after every
+// Update().
+class StreamingCpuProbe : public CpuProbe {
+ public:
+  StreamingCpuProbe(base::TimeDelta,
+                    base::RepeatingCallback<void(mojom::PressureState)>,
+                    std::vector<PressureSample>,
+                    base::OnceClosure);
+
+  ~StreamingCpuProbe() override;
+
+  // CpuProbe implementation.
+  void Update() override;
+
+  void OnUpdate();
+
+ private:
+  std::vector<PressureSample> samples_ GUARDED_BY_CONTEXT(sequence_checker_);
+  size_t sample_index_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+  // This closure is called on a LastSample call after expected number of
+  // samples has been taken by PressureSampler.
+  base::OnceClosure callback_;
 };
 
 }  // namespace device

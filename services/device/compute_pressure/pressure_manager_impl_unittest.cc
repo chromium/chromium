@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -24,7 +25,8 @@ namespace device {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultSamplingIntervalForTesting = base::Seconds(1);
+constexpr base::TimeDelta kDefaultSamplingIntervalForTesting =
+    base::Milliseconds(10);
 
 // Synchronous proxy to a device::mojom::PressureManager.
 class PressureManagerImplSync {
@@ -118,14 +120,12 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
 
   void SetUp() override {
     DeviceServiceTestBase::SetUp();
-    CreateConnection(std::make_unique<FakeCpuProbe>(),
-                     kDefaultSamplingIntervalForTesting);
-  }
 
-  void CreateConnection(std::unique_ptr<CpuProbe> cpu_probe,
-                        base::TimeDelta sampling_interval) {
-    manager_impl_ = PressureManagerImpl::CreateForTesting(std::move(cpu_probe),
-                                                          sampling_interval);
+    manager_impl_ = PressureManagerImpl::Create();
+    manager_impl_->SetCpuProbeForTesting(std::make_unique<FakeCpuProbe>(
+        kDefaultSamplingIntervalForTesting,
+        base::BindRepeating(&PressureManagerImpl::UpdateClients,
+                            base::Unretained(manager_impl_.get()))));
     manager_.reset();
     manager_impl_->Bind(manager_.BindNewPipeAndPassReceiver());
     manager_impl_sync_ =
@@ -169,7 +169,7 @@ TEST_F(PressureManagerImplTest, ThreeClients) {
 }
 
 TEST_F(PressureManagerImplTest, AddClientNoProbe) {
-  CreateConnection(nullptr, kDefaultSamplingIntervalForTesting);
+  manager_impl_->SetCpuProbeForTesting(nullptr);
 
   FakePressureClient client;
   ASSERT_EQ(manager_impl_sync_->AddClient(client.BindNewPipeAndPassRemote()),

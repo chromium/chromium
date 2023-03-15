@@ -4,25 +4,76 @@
 
 #include "services/device/compute_pressure/cpu_probe_mac.h"
 
+#include <stdint.h>
+
+#include <utility>
+#include <vector>
+
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "services/device/compute_pressure/core_times.h"
+#include "services/device/compute_pressure/host_processor_info_scanner.h"
+#include "services/device/compute_pressure/pressure_sample.h"
 
 namespace device {
 
-// static
-std::unique_ptr<CpuProbeMac> CpuProbeMac::Create() {
-  return base::WrapUnique(new CpuProbeMac());
-}
+// Helper class that performs the actual I/O. It must run on a
+// SequencedTaskRunner that is properly configured for blocking I/O
+// operations.
+class CpuProbeMac::BlockingTaskRunnerHelper final {
+ public:
+  BlockingTaskRunnerHelper(base::WeakPtr<CpuProbeMac>,
+                           scoped_refptr<base::SequencedTaskRunner>);
+  ~BlockingTaskRunnerHelper();
 
-CpuProbeMac::CpuProbeMac() {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
 
-CpuProbeMac::~CpuProbeMac() {
+  void Update();
+
+ private:
+  // Called when a core is seen the first time.
+  void InitializeCore(size_t, const CoreTimes&);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // |owner_| can only be checked for validity on |owner_task_runner_|'s
+  // sequence.
+  base::WeakPtr<CpuProbeMac> owner_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Task runner belonging to CpuProbeWin. Calls to it
+  // will be done via this task runner.
+  scoped_refptr<base::SequencedTaskRunner> owner_task_runner_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Used to derive CPU utilization.
+  HostProcessorInfoScanner processor_info_scanner_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Most recent per-core times.
+  std::vector<CoreTimes> last_per_core_times_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  PressureSample last_sample_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      kUnsupportedValue;
+};
+
+CpuProbeMac::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper(
+    base::WeakPtr<CpuProbeMac> cpu_probe_mac,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : owner_(cpu_probe_mac), owner_task_runner_(std::move(task_runner)) {}
+
+CpuProbeMac::BlockingTaskRunnerHelper::~BlockingTaskRunnerHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void CpuProbeMac::Update() {
+void CpuProbeMac::BlockingTaskRunnerHelper::Update() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   processor_info_scanner_.Update();
@@ -58,20 +109,49 @@ void CpuProbeMac::Update() {
   } else {
     last_sample_ = kUnsupportedValue;
   }
+
+  owner_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&CpuProbeMac::OnPressureSampleAvailable, owner_,
+                                last_sample_));
 }
 
-PressureSample CpuProbeMac::LastSample() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return last_sample_;
-}
-
-void CpuProbeMac::InitializeCore(size_t core_index,
-                                 const CoreTimes& initial_core_times) {
+void CpuProbeMac::BlockingTaskRunnerHelper::InitializeCore(
+    size_t core_index,
+    const CoreTimes& initial_core_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(last_per_core_times_.size(), core_index);
 
   last_per_core_times_.push_back(initial_core_times);
+}
+
+// static
+std::unique_ptr<CpuProbeMac> CpuProbeMac::Create(
+    base::TimeDelta sampling_interval,
+    base::RepeatingCallback<void(mojom::PressureState)> sampling_callback) {
+  return base::WrapUnique(
+      new CpuProbeMac(sampling_interval, std::move(sampling_callback)));
+}
+
+CpuProbeMac::CpuProbeMac(
+    base::TimeDelta sampling_interval,
+    base::RepeatingCallback<void(mojom::PressureState)> sampling_callback)
+    : CpuProbe(sampling_interval, std::move(sampling_callback)) {
+  helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+      weak_factory_.GetWeakPtr(),
+      base::SequencedTaskRunner::GetCurrentDefault());
+}
+
+CpuProbeMac::~CpuProbeMac() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void CpuProbeMac::Update() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  helper_.AsyncCall(&BlockingTaskRunnerHelper::Update);
 }
 
 }  // namespace device
