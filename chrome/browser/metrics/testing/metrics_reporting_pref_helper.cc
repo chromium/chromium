@@ -23,7 +23,7 @@
 namespace {
 
 void SetMetricsReportingEnabledChromeOS(bool is_enabled,
-                                        base::Value& local_state_dict) {
+                                        base::Value::Dict& local_state_dict) {
   namespace em = enterprise_management;
   em::ChromeDeviceSettingsProto device_settings_proto;
   device_settings_proto.mutable_metrics_enabled()->set_metrics_enabled(
@@ -31,7 +31,7 @@ void SetMetricsReportingEnabledChromeOS(bool is_enabled,
   em::PolicyData policy_data;
   policy_data.set_policy_type("google/chromeos/device");
   policy_data.set_policy_value(device_settings_proto.SerializeAsString());
-  local_state_dict.SetStringKey(
+  local_state_dict.Set(
       prefs::kDeviceSettingsCache,
       ash::device_settings_cache::PolicyDataToString(policy_data));
 }
@@ -42,9 +42,9 @@ void SetMetricsReportingEnabledChromeOS(bool is_enabled,
 namespace metrics {
 
 base::FilePath SetUpUserDataDirectoryForTesting(bool is_enabled) {
-  base::Value local_state_dict(base::Value::Type::DICT);
-  local_state_dict.SetBoolPath(metrics::prefs::kMetricsReportingEnabled,
-                               is_enabled);
+  base::Value::Dict local_state_dict;
+  local_state_dict.SetByDottedPath(metrics::prefs::kMetricsReportingEnabled,
+                                   is_enabled);
 
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
