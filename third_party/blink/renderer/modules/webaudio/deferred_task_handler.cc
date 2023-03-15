@@ -122,7 +122,7 @@ void DeferredTaskHandler::HandleDirtyAudioSummingJunctions() {
 void DeferredTaskHandler::HandleDirtyAudioNodeOutputs() {
   AssertGraphOwner();
 
-  HashSet<AudioNodeOutput*> dirty_outputs;
+  HashSet<AudioNodeOutput*, recordreplay::ReplayPointerIdHash<AudioNodeOutput>> dirty_outputs;
   dirty_audio_node_outputs_.swap(dirty_outputs);
 
   // Note: the updating of rendering state may cause output nodes
@@ -294,7 +294,7 @@ void DeferredTaskHandler::UpdateChangedChannelInterpretation() {
 
 DeferredTaskHandler::DeferredTaskHandler(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)), audio_thread_(0) {}
+    : task_runner_(std::move(task_runner)), context_graph_mutex_("DeferredTaskHandler"), audio_thread_(0) {}
 
 scoped_refptr<DeferredTaskHandler> DeferredTaskHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {

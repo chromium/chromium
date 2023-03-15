@@ -6,8 +6,13 @@
 
 #include "base/check.h"
 #include "base/threading/platform_thread.h"
+#include "base/record_replay.h"
 
 namespace WTF {
+
+RecursiveMutex::RecursiveMutex(const char* replay_ordered_name) : 
+  lock_(replay_ordered_name) {
+}
 
 void RecursiveMutex::lock() {
   auto thread_id = base::PlatformThread::CurrentId();

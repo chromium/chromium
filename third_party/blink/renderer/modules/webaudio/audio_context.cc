@@ -799,6 +799,8 @@ void AudioContext::HandleAudibility(AudioBus* destination_bus) {
   }
 
   if (was_audible_ != is_audible) {
+    recordreplay::Assert("[RUN-1506] AudioContext::HandleAudibility %d %d", was_audible_, is_audible);
+
     // Audibility changed in this render, so report the change.
     was_audible_ = is_audible;
     if (is_audible) {

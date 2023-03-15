@@ -8,6 +8,7 @@
 #define BASE_RECORD_REPLAY_H_
 
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -167,6 +168,67 @@ struct CompareMemberByPointerId {
     }
     return a < b;
   }
+};
+
+inline unsigned HashInt(uint32_t key) {
+  key += ~(key << 15);
+  key ^= (key >> 10);
+  key += (key << 3);
+  key ^= (key >> 6);
+  key += ~(key << 11);
+  key ^= (key >> 16);
+  return key;
+}
+
+inline unsigned HashInt(uint64_t key) {
+  key += ~(key << 32);
+  key ^= (key >> 22);
+  key += ~(key << 13);
+  key ^= (key >> 8);
+  key += (key << 3);
+  key ^= (key >> 15);
+  key += ~(key << 27);
+  key ^= (key >> 31);
+  return static_cast<unsigned>(key);
+}
+
+// Replay's hashing function for pointers, using the registered pointer id.
+template <typename T>
+struct ReplayPointerIdHash {
+  static unsigned GetHash(T* key) {
+    if (!IsRecordingOrReplaying("pointer-ids")) {
+      return HashInt((uint64_t)key);
+    }
+
+    int ptr = PointerId(key);
+    CHECK(ptr != 0);
+    return HashInt((uint32_t)ptr);
+  }
+  static bool Equal(T* a, T* b) { return a == b; }
+  static bool Equal(std::nullptr_t, T* b) { return !b; }
+  static bool Equal(T* a, std::nullptr_t) { return !a; }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
+};
+
+// Replay's hashing function for scoped pointers, using the registered pointer id.
+template <typename T>
+struct ReplayRefPointerIdHash : ReplayPointerIdHash<T> {
+  using ReplayPointerIdHash<T>::GetHash;
+  static unsigned GetHash(const scoped_refptr<T>& key) {
+    if (!IsRecordingOrReplaying("pointer-ids")) {
+      return HashInt((uint64_t)key.get());
+    }
+
+    int ptr = PointerId(key.get());
+    CHECK(ptr != 0);
+    return HashInt((uint32_t)ptr);
+  }
+  using ReplayPointerIdHash<T>::Equal;
+  static bool Equal(const scoped_refptr<T>& a, const scoped_refptr<T>& b) {
+    return a == b;
+  }
+  static bool Equal(T* a, const scoped_refptr<T>& b) { return a == b; }
+  static bool Equal(const scoped_refptr<T>& a, T* b) { return a == b; }
 };
 
 
