@@ -1852,6 +1852,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       result.SetFlag(MatchFlag::kAffectedByInitial);
       return true;
     }
+    case CSSSelector::kPseudoTrue:
+      return true;
     case CSSSelector::kPseudoUnknown:
     default:
       NOTREACHED();

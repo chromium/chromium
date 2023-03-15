@@ -320,6 +320,8 @@ class CORE_EXPORT CSSSelector {
     kPseudoSpatialNavigationInterest,
     kPseudoSpellingError,
     kPseudoTargetText,
+    // Always matches. See SetTrue().
+    kPseudoTrue,
     kPseudoVideoPersistent,
     kPseudoVideoPersistentAncestor,
 
@@ -359,6 +361,12 @@ class CORE_EXPORT CSSSelector {
   // since any selector which is nest-containing is also treated as
   // scope-containing during parsing.
   CSSNestingType GetNestingType() const;
+  // Set this CSSSelector as a :true pseudo-class. This can be useful if you
+  // need to insert a special RelationType into a selector's TagHistory,
+  // but lack any existing/suitable CSSSelector to attach that RelationType to.
+  //
+  // Note that :true is always implicit (see IsImplicit).
+  void SetTrue();
   void UpdatePseudoPage(const AtomicString&, const Document*);
   static PseudoType NameToPseudoType(const AtomicString&,
                                      bool has_arguments,

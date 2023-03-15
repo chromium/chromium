@@ -446,4 +446,23 @@ TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
   EXPECT_FALSE(checker.Match(context, result));
 }
 
+TEST_F(SelectorCheckerTest, PseudoTrue) {
+  GetDocument().body()->setInnerHTML("<div id=foo></div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  CSSSelector selector;
+  selector.SetTrue();
+  selector.SetLastInTagHistory(true);
+
+  Element* foo = GetDocument().getElementById("foo");
+  ASSERT_TRUE(foo);
+
+  SelectorChecker checker(SelectorChecker::kResolvingStyle);
+  SelectorChecker::SelectorCheckingContext context(foo);
+  context.selector = &selector;
+
+  SelectorChecker::MatchResult result;
+  EXPECT_TRUE(checker.Match(context, result));
+}
+
 }  // namespace blink

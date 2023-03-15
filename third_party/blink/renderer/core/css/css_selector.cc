@@ -377,6 +377,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoState:
     case kPseudoTarget:
     case kPseudoToggle:
+    case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoValid:
@@ -837,6 +838,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoState:
     case kPseudoTarget:
     case kPseudoToggle:
+    case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoValid:
@@ -880,6 +882,12 @@ CSSNestingType CSSSelector::GetNestingType() const {
     default:
       return CSSNestingType::kNone;
   }
+}
+
+void CSSSelector::SetTrue() {
+  SetMatch(kPseudoClass);
+  SetPseudoType(kPseudoTrue);
+  is_implicitly_added_ = true;
 }
 
 static void SerializeIdentifierOrAny(const AtomicString& identifier,
@@ -927,7 +935,8 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
     if (GetPseudoType() == kPseudoUnparsed) {
       builder.Append(Value());
     } else if (GetPseudoType() != kPseudoState &&
-               GetPseudoType() != kPseudoParent) {
+               GetPseudoType() != kPseudoParent &&
+               GetPseudoType() != kPseudoTrue) {
       builder.Append(':');
       builder.Append(SerializingValue());
     }
@@ -1120,13 +1129,14 @@ String CSSSelector::SelectorText() const {
       return builder.ReleaseString() + result;
     }
 
-    // If we are combining with an implicit & or :scope, it is as if we used
-    // a relative combinator.
+    // If we are combining with an implicit &, :scope or :true, it is as if we
+    // used a relative combinator.
     RelationType relation = compound->Relation();
     DCHECK_NE(relation, kSubSelector);
     if (compound->TagHistory()->Match() == kPseudoClass &&
         (compound->TagHistory()->GetPseudoType() == kPseudoParent ||
-         compound->TagHistory()->GetPseudoType() == kPseudoScope) &&
+         compound->TagHistory()->GetPseudoType() == kPseudoScope ||
+         compound->TagHistory()->GetPseudoType() == kPseudoTrue) &&
         compound->TagHistory()->is_implicitly_added_) {
       relation = ConvertRelationToRelative(relation);
     }

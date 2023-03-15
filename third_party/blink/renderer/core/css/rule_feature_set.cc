@@ -187,6 +187,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoGrammarError:
     case CSSSelector::kPseudoHas:
     case CSSSelector::kPseudoUnparsed:  // Never invalidates.
+    case CSSSelector::kPseudoTrue:
     case CSSSelector::kPseudoViewTransition:
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:
