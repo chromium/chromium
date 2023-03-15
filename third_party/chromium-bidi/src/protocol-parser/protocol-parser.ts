@@ -451,10 +451,20 @@ export namespace BrowsingContext {
       ])
     )
     .refine((pageRanges: string[]) => {
-      return pageRanges.every((pageRange: string) =>
-        // matches: '2' | '2-' | '-2' | '2-4'
-        pageRange.match(/^((?:\d+)|(?:\d+[-])|(?:[-]\d+)|(?:\d+[-]\d+))$/)
-      );
+      return pageRanges.every((pageRange: string) => {
+        const match = pageRange.match(
+          // matches: '2' | '2-' | '-2' | '2-4'
+          /^(?:(?:\d+)|(?:\d+[-])|(?:[-]\d+)|(?:(?<start>\d+)[-](?<end>\d+)))$/
+        );
+
+        // If a page range is specified, validate start <= end.
+        const {start, end} = match?.groups ?? {};
+        if (start && end && Number(start) > Number(end)) {
+          return false;
+        }
+
+        return match;
+      });
     });
 
   // PrintParameters = {

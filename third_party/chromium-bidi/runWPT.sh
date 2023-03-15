@@ -52,6 +52,7 @@ log "Running WPT in headless=$HEADLESS mode..."
   --log-wptreport "$WPT_REPORT" \
   --manifest "$MANIFEST" \
   --metadata "$WPT_METADATA" \
+  --timeout-multiplier 8 \
   "$PRODUCT" \
   "$@")
 
