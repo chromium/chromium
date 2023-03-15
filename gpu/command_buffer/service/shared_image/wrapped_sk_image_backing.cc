@@ -14,9 +14,18 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkColorType.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
+#include "third_party/skia/include/core/SkTextureCompressionType.h"
 
 namespace gpu {
 
@@ -234,8 +243,9 @@ bool WrappedSkImageBacking::InitializeWithData(base::span<const uint8_t> pixels,
   if (format().IsCompressed()) {
     textures_[0].backend_texture =
         context_state_->gr_context()->createCompressedBackendTexture(
-            size().width(), size().height(), SkImage::kETC1_CompressionType,
-            pixels.data(), pixels.size(), GrMipMapped::kNo, GrProtected::kNo);
+            size().width(), size().height(),
+            SkTextureCompressionType::kETC1_RGB8, pixels.data(), pixels.size(),
+            GrMipMapped::kNo, GrProtected::kNo);
   } else {
     auto info = AsSkImageInfo();
     if (!stride) {

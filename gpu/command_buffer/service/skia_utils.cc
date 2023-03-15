@@ -14,8 +14,13 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/skia_limits.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/core/SkTextureCompressionType.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
@@ -137,7 +142,7 @@ GLuint GetGrGLBackendTextureFormat(
   if (gl_storage_format == GL_ETC1_RGB8_OES) {
     GrGLFormat gr_gl_format =
         gr_context_thread_safe
-            ->compressedBackendFormat(SkImage::kETC1_CompressionType)
+            ->compressedBackendFormat(SkTextureCompressionType::kETC1_RGB8)
             .asGLFormat();
     if (gr_gl_format == GrGLFormat::kCOMPRESSED_ETC1_RGB8) {
       internal_format = GL_ETC1_RGB8_OES;
