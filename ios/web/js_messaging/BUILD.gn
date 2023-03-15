@@ -37,6 +37,7 @@ source_set("js_messaging") {
     "web_frames_manager_impl.mm",
     "web_frames_manager_java_script_feature.h",
     "web_frames_manager_java_script_feature.mm",
+    "web_frames_manager_observer_bridge.mm",
     "web_view_js_utils.h",
     "web_view_js_utils.mm",
     "web_view_web_state_map.h",
@@ -196,6 +197,7 @@ source_set("unittests") {
     "web_frame_util_unittest.mm",
     "web_frames_manager_impl_unittest.mm",
     "web_frames_manager_java_script_feature_unittest.mm",
+    "web_frames_manager_observer_bridge_unittest.mm",
     "web_view_js_utils_unittest.mm",
     "web_view_web_state_map_unittest.mm",
   ]

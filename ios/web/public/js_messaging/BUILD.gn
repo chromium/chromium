@@ -23,6 +23,7 @@ source_set("js_messaging") {
     "web_frame_user_data.h",
     "web_frame_util.h",
     "web_frames_manager.h",
+    "web_frames_manager_observer_bridge.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
