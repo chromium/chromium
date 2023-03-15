@@ -1472,8 +1472,9 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_KeyboardFocusWindowCycle) {
 // Ensure that destroying a <webview> with a pending mouse lock request doesn't
 // leave a stale mouse lock widget pointer in the embedder WebContents. See
 // https://crbug.com/1346245.
+// Flaky: crbug.com/1424552
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
-                       DestroyGuestWithPendingPointerLock) {
+                       DISABLED_DestroyGuestWithPendingPointerLock) {
   LoadAndLaunchPlatformApp("web_view/pointer_lock_pending",
                            "WebViewTest.LAUNCHED");
 
