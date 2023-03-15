@@ -7,7 +7,7 @@ import * as AcceleratorTypes from 'chrome://resources/mojo/ui/base/accelerators/
 
 import * as AcceleratorConfigurationTypes from '../mojom-webui/ash/public/mojom/accelerator_configuration.mojom-webui.js';
 import * as AcceleratorInfoTypes from '../mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.js';
-import {SearchHandler, SearchHandlerInterface, SearchResult} from '../mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js';
+import {SearchHandler, SearchHandlerInterface, SearchResult, SearchResultsAvailabilityObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js';
 import {AcceleratorConfigurationProviderInterface, AcceleratorResultData, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 
@@ -185,6 +185,8 @@ export type MojoSearchResult = SearchResult;
 export interface ShortcutSearchHandlerInterface extends SearchHandlerInterface {
   search(query: String16, maxNumResults: number):
       Promise<{results: MojoSearchResult[]}>;
+  addSearchResultsAvailabilityObserver(
+      observer: SearchResultsAvailabilityObserverRemote): void;
 }
 
 /**

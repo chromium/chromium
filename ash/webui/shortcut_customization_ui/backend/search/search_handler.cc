@@ -29,13 +29,31 @@ SearchHandler::SearchHandler(
       local_search_service::Backend::kLinearMap,
       index_remote_.BindNewPipeAndPassReceiver());
   DCHECK(index_remote_.is_bound());
+
+  search_concept_registry_->AddObserver(this);
 }
-SearchHandler::~SearchHandler() = default;
+
+SearchHandler::~SearchHandler() {
+  search_concept_registry_->RemoveObserver(this);
+}
 
 void SearchHandler::BindInterface(
     mojo::PendingReceiver<shortcut_customization::mojom::SearchHandler>
         pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
+}
+
+void SearchHandler::OnRegistryUpdated() {
+  for (auto& observer : observers_) {
+    observer->OnSearchResultsAvailabilityChanged();
+  }
+}
+
+void SearchHandler::AddSearchResultsAvailabilityObserver(
+    mojo::PendingRemote<
+        shortcut_customization::mojom::SearchResultsAvailabilityObserver>
+        observer) {
+  observers_.Add(std::move(observer));
 }
 
 void SearchHandler::Search(const std::u16string& query,

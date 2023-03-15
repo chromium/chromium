@@ -20,6 +20,34 @@ namespace ash::shortcut_ui {
 
 namespace {
 
+class FakeObserver
+    : public shortcut_customization::mojom::SearchResultsAvailabilityObserver {
+ public:
+  FakeObserver() = default;
+  ~FakeObserver() override = default;
+
+  mojo::PendingRemote<
+      shortcut_customization::mojom::SearchResultsAvailabilityObserver>
+  GenerateRemote() {
+    mojo::PendingRemote<
+        shortcut_customization::mojom::SearchResultsAvailabilityObserver>
+        remote;
+    receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+  size_t num_calls() const { return num_calls_; }
+
+ private:
+  // shortcut_customization::mojom::SearchResultsAvailabilityObserver:
+  void OnSearchResultsAvailabilityChanged() override { ++num_calls_; }
+
+  size_t num_calls_ = 0;
+  mojo::Receiver<
+      shortcut_customization::mojom::SearchResultsAvailabilityObserver>
+      receiver_{this};
+};
+
 std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
   std::vector<shortcut_ui::SearchConcept> concepts;
 
@@ -155,8 +183,6 @@ class SearchHandlerTest : public testing::Test {
   SearchHandlerTest()
       : search_concept_registry_(*local_search_service_proxy_.get()),
         handler_(&search_concept_registry_, local_search_service_proxy_.get()) {
-    handler_.BindInterface(handler_remote_.BindNewPipeAndPassReceiver());
-    handler_remote_.FlushForTesting();
   }
   ~SearchHandlerTest() override = default;
 
@@ -165,6 +191,11 @@ class SearchHandlerTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kSearchInShortcutsApp},
         /*disabled_features=*/{});
+
+    handler_.BindInterface(handler_remote_.BindNewPipeAndPassReceiver());
+    handler_remote_->AddSearchResultsAvailabilityObserver(
+        results_availability_observer_.GenerateRemote());
+    handler_remote_.FlushForTesting();
   }
 
   void VerifySearchResultIsPresent(
@@ -190,13 +221,29 @@ class SearchHandlerTest : public testing::Test {
   mojo::Remote<shortcut_customization::mojom::SearchHandler> handler_remote_;
   shortcut_ui::SearchHandler handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  FakeObserver results_availability_observer_;
 };
 
 TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
   search_concept_registry_.SetSearchConcepts(GetTestSearchConcepts());
   handler_remote_.FlushForTesting();
   task_environment_.RunUntilIdle();
+
+  // SearchHandler observer should be called after the registry is updated.
+  EXPECT_EQ(1u, results_availability_observer_.num_calls());
+
   std::vector<shortcut_customization::mojom::SearchResultPtr> search_results;
+
+  // A search with no matches should return no results.
+  shortcut_customization::mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
+      .Search(u"this search matches nothing!",
+              /*max_num_results=*/5u, &search_results);
+  EXPECT_EQ(search_results.size(), 0u);
+
+  // The number of observer calls should not have changed, even though a search
+  // was completed. The observer is only called when the availability of results
+  // changes, i.e. when the index is updated.
+  EXPECT_EQ(1u, results_availability_observer_.num_calls());
 
   // The descriptions for the fake shortcuts are "Open launcher", "Open new
   // tab", "Open the Foo app", and "Select all text content".
@@ -211,6 +258,9 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
                               /*search_results=*/search_results);
   VerifySearchResultIsPresent(/*description=*/u"Open the Foo app",
                               /*search_results=*/search_results);
+
+  // Checking again that the observer was not called after the previous search.
+  EXPECT_EQ(1u, results_availability_observer_.num_calls());
 
   // The query "open" should also match the first three Concepts (query case
   // doesn't matter).
@@ -262,7 +312,8 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
   EXPECT_GT(search_results.at(0)->relevance_score,
             search_results.at(1)->relevance_score);
 
-  // Clear the index and verify that searches return no results.
+  // Clear the index and verify that searches return no results, and that the
+  // observer was called an additional time.
   std::vector<SearchConcept> empty_search_concepts;
   search_concept_registry_.SetSearchConcepts(std::move(empty_search_concepts));
   task_environment_.RunUntilIdle();
@@ -270,6 +321,7 @@ TEST_F(SearchHandlerTest, SearchResultsNormalUsage) {
       .Search(u"Open",
               /*max_num_results=*/5u, &search_results);
   EXPECT_EQ(search_results.size(), 0u);
+  EXPECT_EQ(results_availability_observer_.num_calls(), 2u);
 }
 
 TEST_F(SearchHandlerTest, SearchResultsEdgeCases) {

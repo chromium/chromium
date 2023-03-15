@@ -29,7 +29,8 @@ namespace ash::shortcut_ui {
 // results with SearchConceptRegistry.
 //
 // Searches which do not provide any matches result in an empty results array.
-class SearchHandler : public shortcut_customization::mojom::SearchHandler {
+class SearchHandler : public shortcut_customization::mojom::SearchHandler,
+                      SearchConceptRegistry::Observer {
  public:
   SearchHandler(SearchConceptRegistry* search_concept_registry,
                 local_search_service::LocalSearchServiceProxy*
@@ -47,6 +48,13 @@ class SearchHandler : public shortcut_customization::mojom::SearchHandler {
   void Search(const std::u16string& query,
               uint32_t max_num_results,
               SearchCallback callback) override;
+  void AddSearchResultsAvailabilityObserver(
+      mojo::PendingRemote<
+          shortcut_customization::mojom::SearchResultsAvailabilityObserver>
+          observer) override;
+
+  // SearchConceptRegistry::Observer::
+  void OnRegistryUpdated() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SearchHandlerTest, CompareSearchResults);
@@ -71,6 +79,9 @@ class SearchHandler : public shortcut_customization::mojom::SearchHandler {
 
   // Note: Expected to have multiple clients, so ReceiverSet/RemoteSet are used.
   mojo::ReceiverSet<shortcut_customization::mojom::SearchHandler> receivers_;
+  mojo::RemoteSet<
+      shortcut_customization::mojom::SearchResultsAvailabilityObserver>
+      observers_;
 
   raw_ptr<SearchConceptRegistry> search_concept_registry_;
   mojo::Remote<local_search_service::mojom::Index> index_remote_;

@@ -21,6 +21,19 @@ struct SearchResult {
   double relevance_score;
 };
 
+// Used to observe changes to search results.
+interface SearchResultsAvailabilityObserver {
+  // Called when the availability of one or more search results has changed. In
+  // this context, "availability" refers to whether a search result can be
+  // returned based on the user's current state. E.g. some results might only be
+  // shown if an external keyboard is plugged in. Clients can use this function
+  // to ensure that they do not show "stale" results which are no longer
+  // actionable by the user. Note that the observer doesn't provide the new
+  // search results, so clients will have to redo the SearchHandler.Search()
+  // call to retrieve new results.
+  OnSearchResultsAvailabilityChanged();
+};
+
 // Provides search results. Implemented in the browser process;
 // intended to be called from the Shortcuts app TS and Launcher C++.
 interface SearchHandler {
@@ -38,4 +51,9 @@ interface SearchHandler {
   // would return an empty result array.
   Search(mojo_base.mojom.String16 query,
          uint32 max_num_results) => (array<SearchResult> results);
+
+  // Adds an observer of search result availability. Disconnected observers are
+  // discarded; to stop observing, close the connection.
+  AddSearchResultsAvailabilityObserver(
+    pending_remote<SearchResultsAvailabilityObserver> observer);
 };
