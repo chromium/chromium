@@ -149,6 +149,8 @@ public class OptionalButtonCoordinator {
             }
         }
 
+        // Reset background alpha, in case the IPH onDismiss callback doesn't fire.
+        mMediator.setBackgroundAlpha(255);
         mMediator.updateButton(buttonData);
     }
 
@@ -252,12 +254,23 @@ public class OptionalButtonCoordinator {
             }
         });
 
-        ViewRectProvider viewRectProvider = new ViewRectProvider(mView);
+        // We want this IPH highlight to be on the same position as the button's background which is
+        // an ImageView separate from the button's ListMenuButton. IPH highlights are implemented as
+        // a drawable set to the view's background (something like:
+        // backgroundImageView.setBackground(drawable)). If we try to highlight the background's
+        // ImageView nothing will be shown, because the highlight is obstructed by the image. Set
+        // callbacks to make the background image transparent so the highlight is visible. This gets
+        // reset once the IPH is dismissed.
+        iphCommandBuilder.setOnShowCallback(() -> mMediator.setBackgroundAlpha(0));
+        iphCommandBuilder.setOnDismissCallback(() -> mMediator.setBackgroundAlpha(255));
+
+        ViewRectProvider viewRectProvider = new ViewRectProvider(
+                mView.getBackgroundView() == null ? mView : mView.getBackgroundView());
         viewRectProvider.setIncludePadding(false);
 
-        highlightParams.setBoundsRespectPadding(false);
+        highlightParams.setBoundsRespectPadding(true);
         iphCommandBuilder.setAnchorView(
-                mView.getButtonView() == null ? mView : mView.getButtonView());
+                mView.getBackgroundView() == null ? mView : mView.getBackgroundView());
         iphCommandBuilder.setViewRectProvider(viewRectProvider);
         iphCommandBuilder.setHighlightParams(highlightParams);
     }

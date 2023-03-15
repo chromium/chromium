@@ -35,6 +35,7 @@ class OptionalButtonProperties {
     public static final WritableObjectPropertyKey<ColorStateList> ICON_TINT_LIST =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey ICON_BACKGROUND_COLOR = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey ICON_BACKGROUND_ALPHA = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey PADDING_START = new WritableIntPropertyKey();
     public static final WritableBooleanPropertyKey TRANSITION_CANCELLATION_REQUESTED =
             new WritableBooleanPropertyKey();
@@ -44,6 +45,6 @@ class OptionalButtonProperties {
     public static final PropertyKey[] ALL_KEYS = {BUTTON_DATA, IS_ENABLED,
             TRANSITION_STARTED_CALLBACK, TRANSITION_FINISHED_CALLBACK,
             ON_BEFORE_HIDE_TRANSITION_CALLBACK, TRANSITION_ROOT, ICON_TINT_LIST,
-            ICON_BACKGROUND_COLOR, PADDING_START, TRANSITION_CANCELLATION_REQUESTED,
-            IS_ANIMATION_ALLOWED_PREDICATE};
+            ICON_BACKGROUND_COLOR, ICON_BACKGROUND_ALPHA, PADDING_START,
+            TRANSITION_CANCELLATION_REQUESTED, IS_ANIMATION_ALLOWED_PREDICATE};
 }

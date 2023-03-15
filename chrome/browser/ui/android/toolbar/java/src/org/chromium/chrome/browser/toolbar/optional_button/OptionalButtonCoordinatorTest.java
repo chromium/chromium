@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.optional_button;
 import static junit.framework.Assert.assertEquals;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -203,9 +204,39 @@ public class OptionalButtonCoordinatorTest {
         verify(mockIphCommandBuilder).setAnchorView(any());
         verify(mockIphCommandBuilder).setViewRectProvider(any());
         verify(mockIphCommandBuilder).setHighlightParams(any());
+        verify(mockIphCommandBuilder).setOnShowCallback(any());
+        verify(mockIphCommandBuilder).setOnDismissCallback(any());
         verifyNoMoreInteractions(mockIphCommandBuilder);
 
         verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
+    }
+
+    @Test
+    public void testUpdateButton_showingIphChangesBackgroundAlpha() {
+        Drawable iconDrawable = mock(Drawable.class);
+        OnClickListener clickListener = view -> {};
+        IPHCommandBuilder mockIphCommandBuilder = mock(IPHCommandBuilder.class);
+        String contentDescription = "description";
+        boolean isEnabled = true;
+        ButtonData buttonData = new ButtonDataImpl(/* canShow= */ true, iconDrawable, clickListener,
+                contentDescription, /* supportsTinting= */ true, mockIphCommandBuilder,
+                /* isEnabled= */ isEnabled, AdaptiveToolbarButtonVariant.UNKNOWN);
+
+        ArgumentCaptor<Runnable> onShowCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        ArgumentCaptor<Runnable> onDismissCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+
+        mOptionalButtonCoordinator.updateButton(buttonData);
+
+        verify(mockIphCommandBuilder).setOnShowCallback(onShowCallbackCaptor.capture());
+        verify(mockIphCommandBuilder).setOnDismissCallback(onDismissCallbackCaptor.capture());
+
+        // Showing an IPH should make the background transparent to be able to see the highlight.
+        onShowCallbackCaptor.getValue().run();
+        verify(mMockOptionalButtonView).setBackgroundAlpha(0);
+
+        // Dismissing the IPH should bring back the background to normal.
+        onDismissCallbackCaptor.getValue().run();
+        verify(mMockOptionalButtonView, atLeastOnce()).setBackgroundAlpha(255);
     }
 
     @Test

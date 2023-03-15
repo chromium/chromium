@@ -32,6 +32,8 @@ class OptionalButtonViewBinder {
         } else if (OptionalButtonProperties.ICON_BACKGROUND_COLOR.equals(propertyKey)) {
             view.setBackgroundColorFilter(
                     model.get(OptionalButtonProperties.ICON_BACKGROUND_COLOR));
+        } else if (OptionalButtonProperties.ICON_BACKGROUND_ALPHA.equals(propertyKey)) {
+            view.setBackgroundAlpha(model.get(OptionalButtonProperties.ICON_BACKGROUND_ALPHA));
         } else if (OptionalButtonProperties.PADDING_START.equals(propertyKey)) {
             view.setPaddingStart(model.get(OptionalButtonProperties.PADDING_START));
         } else if (OptionalButtonProperties.TRANSITION_CANCELLATION_REQUESTED.equals(propertyKey)) {

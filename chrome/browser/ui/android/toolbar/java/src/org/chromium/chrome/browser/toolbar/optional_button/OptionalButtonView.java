@@ -263,6 +263,13 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mBackground.setColorFilter(color);
     }
 
+    void setBackgroundAlpha(int alpha) {
+        mBackground.setImageAlpha(alpha);
+    }
+
+    View getBackgroundView() {
+        return mBackground;
+    }
     void setColorStateList(ColorStateList colorStateList) {
         ImageViewCompat.setImageTintList(mButton, colorStateList);
         ImageViewCompat.setImageTintList(mAnimationImage, colorStateList);

@@ -48,6 +48,10 @@ class OptionalButtonMediator {
         mModel.set(OptionalButtonProperties.ICON_BACKGROUND_COLOR, backgroundColor);
     }
 
+    void setBackgroundAlpha(int alpha) {
+        mModel.set(OptionalButtonProperties.ICON_BACKGROUND_ALPHA, alpha);
+    }
+
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
         mModel.set(OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK,
                 onBeforeHideTransitionCallback);
