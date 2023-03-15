@@ -97,6 +97,7 @@ class ASH_EXPORT VideoConferenceTray
   VideoConferenceTrayButton* audio_icon() { return audio_icon_; }
   VideoConferenceTrayButton* camera_icon() { return camera_icon_; }
   VideoConferenceTrayButton* screen_share_icon() { return screen_share_icon_; }
+  IconButton* toggle_bubble_button() { return toggle_bubble_button_; }
 
   // TrayBackgroundView:
   void CloseBubble() override;

@@ -128,6 +128,7 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
 
  private:
   friend class ReturnToAppPanelTest;
+  friend class VideoConferenceIntegrationTest;
 
   // ReturnToAppButton::Observer:
   void OnExpandedStateChanged(bool expanded) override;
