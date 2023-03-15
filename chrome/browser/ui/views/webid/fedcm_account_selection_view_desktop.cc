@@ -247,8 +247,8 @@ void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
   DismissReason dismiss_reason =
       (bubble_widget_->closed_reason() ==
        views::Widget::ClosedReason::kCloseButtonClicked)
-          ? DismissReason::CLOSE_BUTTON
-          : DismissReason::OTHER;
+          ? DismissReason::kCloseButton
+          : DismissReason::kOther;
   OnDismiss(dismiss_reason);
 }
 
@@ -370,7 +370,7 @@ void FedCmAccountSelectionView::Close() {
     return;
 
   bubble_widget_->Close();
-  OnDismiss(DismissReason::OTHER);
+  OnDismiss(DismissReason::kOther);
 }
 
 void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {

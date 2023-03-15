@@ -60,7 +60,7 @@ void IdentityRequestDialogController::ShowAccountsDialog(
     AccountSelectionCallback on_selected,
     DismissCallback dismiss_callback) {
   if (!is_interception_enabled_) {
-    std::move(dismiss_callback).Run(DismissReason::OTHER);
+    std::move(dismiss_callback).Run(DismissReason::kOther);
   }
 }
 
@@ -70,7 +70,7 @@ void IdentityRequestDialogController::ShowFailureDialog(
     const std::string& idp_for_display,
     DismissCallback dismiss_callback) {
   if (!is_interception_enabled_) {
-    std::move(dismiss_callback).Run(DismissReason::OTHER);
+    std::move(dismiss_callback).Run(DismissReason::kOther);
   }
 }
 

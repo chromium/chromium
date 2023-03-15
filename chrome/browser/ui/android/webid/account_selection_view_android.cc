@@ -121,7 +121,7 @@ void AccountSelectionViewAndroid::Show(
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.
-    delegate_->OnDismiss(DismissReason::OTHER);
+    delegate_->OnDismiss(DismissReason::kOther);
     return;
   }
 

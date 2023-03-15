@@ -68,12 +68,12 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogDismissReason
   enum class DismissReason {
-    OTHER = 0,
-    CLOSE_BUTTON = 1,
-    SWIPE = 2,
-    VIRTUAL_KEYBOARD_SHOWN = 3,
+    kOther = 0,
+    kCloseButton = 1,
+    kSwipe = 2,
+    kVirtualKeyboardShown = 3,
 
-    COUNT = 4,
+    kMaxValue = kVirtualKeyboardShown,
   };
 
   using AccountSelectionCallback =

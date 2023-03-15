@@ -82,9 +82,7 @@ void FedCmMetrics::RecordCancelReason(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   if (is_disabled_)
     return;
-  base::UmaHistogramEnumeration(
-      "Blink.FedCm.CancelReason", dismiss_reason,
-      IdentityRequestDialogController::DismissReason::COUNT);
+  base::UmaHistogramEnumeration("Blink.FedCm.CancelReason", dismiss_reason);
 }
 
 void FedCmMetrics::RecordTokenResponseAndTurnaroundTime(

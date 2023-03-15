@@ -535,7 +535,7 @@ class TestDialogController
       case AccountsDialogAction::kClose:
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(dismiss_callback),
-                                      DismissReason::CLOSE_BUTTON));
+                                      DismissReason::kCloseButton));
         break;
       case AccountsDialogAction::kNone:
         break;
@@ -556,7 +556,7 @@ class TestDialogController
       case IdpSigninStatusMismatchDialogAction::kClose:
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(dismiss_callback),
-                                      DismissReason::CLOSE_BUTTON));
+                                      DismissReason::kCloseButton));
         break;
       case IdpSigninStatusMismatchDialogAction::kNone:
         break;

@@ -1305,8 +1305,8 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
   // the virtual keyboard showing on Android.
   bool should_embargo = false;
   switch (dismiss_reason) {
-    case IdentityRequestDialogController::DismissReason::CLOSE_BUTTON:
-    case IdentityRequestDialogController::DismissReason::SWIPE:
+    case IdentityRequestDialogController::DismissReason::kCloseButton:
+    case IdentityRequestDialogController::DismissReason::kSwipe:
       should_embargo = true;
       break;
     default:
@@ -1722,7 +1722,7 @@ void FederatedAuthRequestImpl::AcceptAccountsDialogForDevtools(
 
 void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools() {
   // We pick a reason here does not trigger embargo.
-  OnDialogDismissed(IdentityRequestDialogController::DismissReason::OTHER);
+  OnDialogDismissed(IdentityRequestDialogController::DismissReason::kOther);
 }
 
 bool FederatedAuthRequestImpl::GetSingleReturningAccount(
