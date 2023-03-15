@@ -33,7 +33,7 @@ class ArcVmDataMigrationConfirmationDialog : public views::DialogDelegate {
 
  private:
   void InitializeView(int days_until_deadline);
-  void OnButtonClicked(bool accepted);
+  void OnButtonClicked(int days_until_deadline, bool accepted);
 
   ArcVmDataMigrationConfirmationCallback callback_;
 

@@ -2353,6 +2353,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.NotificationShownForTheFirstTime"
+    enum="BooleanEnabled" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    Counts the number of events that the notification for ARCVM /data migration
+    is shown for the first first time for the user.
+  </summary>
+</histogram>
+
+<histogram
+    name="Arc.VmDataMigration.RemainingDays.{ArcVmDataMigrationFrontEndEvents}"
+    units="days" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The number of days until the deadline displayed in the notification or the
+    confirmation dialog of ARCVM /data migration. The value is initialized as 30
+    when the notification is shown for the first time, and decremented until it
+    reaches the minimum value 1. When it reaches the minimum value, it means
+    that the migration should be performed in the same day and should not be
+    dismissed, so the notification and the dialog become nondismissible.
+    Reported when {ArcVmDataMigrationFrontEndEvents}.
+  </summary>
+  <token key="ArcVmDataMigrationFrontEndEvents">
+    <variant name="ConfirmationDialogAccepted"
+        summary="the accept button of the confirmation dialog is clicked"/>
+    <variant name="ConfirmationDialogCanceled"
+        summary="the cancel button of the confirmation dialog is clicked"/>
+    <variant name="ConfirmationDialogShown"
+        summary="the confirmation dialog is shown"/>
+    <variant name="NotificationShown" summary="the notification is shown"/>
+  </token>
+</histogram>
+
 <histogram name="Arc.VmDataMigration.SetupResult"
     enum="ArcVmDataMigrationSetupResult" expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>

@@ -9,6 +9,8 @@
 #include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -36,6 +38,21 @@ constexpr char kInternalName[] = "ArcVmDataMigrationConfirmationDialog";
 
 constexpr int kDialogCornerRadius = 12;
 
+void ReportConfirmationDialogShown(int days_until_deadline) {
+  base::UmaHistogramExactLinear(
+      "Arc.VmDataMigration.RemainingDays.ConfirmationDialogShown",
+      days_until_deadline, kArcVmDataMigrationNumberOfDismissibleDays);
+}
+
+void ReportConfirmationDialogButtonClicked(int days_until_deadline,
+                                           bool accepted) {
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("Arc.VmDataMigration.RemainingDays.%s",
+                         accepted ? "ConfirmationDialogAccepted"
+                                  : "ConfirmationDialogCanceled"),
+      days_until_deadline, kArcVmDataMigrationNumberOfDismissibleDays);
+}
+
 }  // namespace
 
 ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
@@ -46,6 +63,8 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
   set_internal_name(kInternalName);
 
   const int days_until_deadline = GetDaysUntilArcVmDataMigrationDeadline(prefs);
+  ReportConfirmationDialogShown(days_until_deadline);
+
   if (ArcVmDataMigrationShouldBeDismissible(days_until_deadline)) {
     SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
     SetButtonLabel(
@@ -57,10 +76,12 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
                        IDS_ARC_VM_DATA_MIGRATION_DIALOG_SKIP_BUTTON_LABEL));
     SetAcceptCallback(
         base::BindOnce(&ArcVmDataMigrationConfirmationDialog::OnButtonClicked,
-                       weak_ptr_factory_.GetWeakPtr(), true /* accepted */));
+                       weak_ptr_factory_.GetWeakPtr(), days_until_deadline,
+                       true /* accepted */));
     SetCancelCallback(
         base::BindOnce(&ArcVmDataMigrationConfirmationDialog::OnButtonClicked,
-                       weak_ptr_factory_.GetWeakPtr(), false /* accepted */));
+                       weak_ptr_factory_.GetWeakPtr(), days_until_deadline,
+                       false /* accepted */));
   } else {
     SetButtons(ui::DIALOG_BUTTON_OK);
     SetButtonLabel(ui::DIALOG_BUTTON_OK,
@@ -68,7 +89,8 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
                        IDS_ARC_VM_DATA_MIGRATION_DIALOG_UPDATE_BUTTON_LABEL));
     SetAcceptCallback(
         base::BindOnce(&ArcVmDataMigrationConfirmationDialog::OnButtonClicked,
-                       weak_ptr_factory_.GetWeakPtr(), true /* accepted */));
+                       weak_ptr_factory_.GetWeakPtr(), days_until_deadline,
+                       true /* accepted */));
   }
 
   InitializeView(days_until_deadline);
@@ -157,8 +179,11 @@ void ArcVmDataMigrationConfirmationDialog::InitializeView(
   SetContentsView(std::move(view));
 }
 
-void ArcVmDataMigrationConfirmationDialog::OnButtonClicked(bool accepted) {
+void ArcVmDataMigrationConfirmationDialog::OnButtonClicked(
+    int days_until_deadline,
+    bool accepted) {
   DCHECK(!callback_.is_null());
+  ReportConfirmationDialogButtonClicked(days_until_deadline, accepted);
   std::move(callback_).Run(accepted);
 }
 

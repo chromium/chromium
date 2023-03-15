@@ -84,8 +84,9 @@ constexpr int kArcVersionT = 33;
 constexpr int kMaxArcVersion = 999;
 
 // How long ARCVM /data migration notification and dialog are dismissible.
+constexpr int kArcVmDataMigrationNumberOfDismissibleDays = 30;
 constexpr base::TimeDelta kArcVmDataMigrationDismissibleTimeDelta =
-    base::Days(30);
+    base::Days(kArcVmDataMigrationNumberOfDismissibleDays);
 
 // Returns true if ARC is installed and the current device is officially
 // supported to run ARC.
