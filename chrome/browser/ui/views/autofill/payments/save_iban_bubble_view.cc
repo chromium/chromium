@@ -69,10 +69,6 @@ void SaveIbanBubbleView::AddedToWidget() {
           *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_DARK),
           base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                               base::Unretained(this))));
-
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(
-          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::PRODUCT_LOGO));
 }
 
 std::u16string SaveIbanBubbleView::GetWindowTitle() const {

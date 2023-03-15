@@ -86,11 +86,6 @@ class IconView : public views::ImageView {
             icon, kIconHeight, GetColorProvider()->GetColor(ui::kColorIcon));
         break;
       }
-      case TitleWithIconAndSeparatorView::Icon::PRODUCT_LOGO:
-        image =
-            gfx::CreateVectorIcon(vector_icons::kProductIcon, kIconHeight,
-                                  GetColorProvider()->GetColor(ui::kColorIcon));
-        break;
     }
     SetImage(image);
   }

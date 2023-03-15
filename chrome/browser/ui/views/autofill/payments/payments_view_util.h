@@ -40,8 +40,6 @@ class TitleWithIconAndSeparatorView : public views::TableLayoutView {
     GOOGLE_PAY,
     // Google super G.
     GOOGLE_G,
-    // Product logo (Logo that represents the user agent).
-    PRODUCT_LOGO,
   };
 
   TitleWithIconAndSeparatorView(const std::u16string& window_title,
