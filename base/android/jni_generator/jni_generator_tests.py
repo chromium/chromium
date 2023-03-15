@@ -58,7 +58,6 @@ class JniGeneratorOptions(object):
     self.cpp = 'cpp'
     self.javap = 'mock-javap'
     self.enable_profiling = False
-    self.enable_tracing = False
     self.use_proxy_hash = False
     self.enable_jni_multiplexing = False
     self.always_mangle = False
@@ -1323,30 +1322,6 @@ class Foo {
                                                     JniGeneratorOptions())
     self.AssertGoldenTextEquals(jni_from_java.GetContent())
 
-  def testTracing(self):
-    test_data = """
-    package org.chromium.foo;
-
-    @JNINamespace("org::chromium_foo")
-    class Foo {
-
-    @CalledByNative
-    Foo();
-
-    @CalledByNative
-    void callbackFromNative();
-
-    native void nativeInstanceMethod(long nativeInstance);
-
-    static native void nativeStaticMethod();
-    }
-    """
-    options_with_tracing = JniGeneratorOptions()
-    options_with_tracing.enable_tracing = True
-    jni_from_java = jni_generator.JNIFromJavaSource(
-        test_data, 'org/chromium/foo/Foo', options_with_tracing)
-    self.AssertGoldenTextEquals(jni_from_java.GetContent())
-
   def testStaticBindingCaller(self):
     test_data = """
     package org.chromium.foo;
@@ -1452,7 +1427,6 @@ class ProxyTestGenerator(BaseTest):
     }
     """
     options_with_tracing = JniGeneratorOptions()
-    options_with_tracing.enable_tracing = True
     jni_from_java = jni_generator.JNIFromJavaSource(
         test_data, 'org/chromium/foo/Foo', options_with_tracing)
     self.AssertGoldenTextEquals(jni_from_java.GetContent())

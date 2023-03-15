@@ -1334,7 +1334,6 @@ $METHOD_STUBS
         'POST_CALL': post_call,
         'STUB_NAME': self.helper.GetStubName(native),
         'PROFILING_ENTERED_NATIVE': profiling_entered_native,
-        'TRACE_EVENT': '',
     }
 
     namespace_qual = self.namespace + '::' if self.namespace else ''
@@ -1347,15 +1346,11 @@ $METHOD_STUBS
           'PARAM0_NAME': native.params[0].name,
           'P0_TYPE': native.p0_type,
       })
-      if self.options.enable_tracing:
-        values['TRACE_EVENT'] = self.GetTraceEventForNameTemplate(
-            namespace_qual + '${P0_TYPE}::${NAME}', values)
       template = Template("""\
 JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
     JNIEnv* env,
     ${PARAMS_IN_STUB}) {
 ${PROFILING_ENTERED_NATIVE}\
-${TRACE_EVENT}\
   ${P0_TYPE}* native = reinterpret_cast<${P0_TYPE}*>(${PARAM0_NAME});
   CHECK_NATIVE_PTR(env, jcaller, native, "${NAME}"${OPTIONAL_ERROR_RETURN});
   return native->${NAME}(${PARAMS_IN_CALL})${POST_CALL};
@@ -1364,9 +1359,6 @@ ${TRACE_EVENT}\
     else:
       if values['PARAMS']:
         values['PARAMS'] = ', ' + values['PARAMS']
-      if self.options.enable_tracing:
-        values['TRACE_EVENT'] = self.GetTraceEventForNameTemplate(
-            namespace_qual + '${IMPL_METHOD_NAME}', values)
       template = Template("""\
 static ${RETURN_DECLARATION} ${IMPL_METHOD_NAME}(JNIEnv* env${PARAMS});
 
@@ -1374,7 +1366,6 @@ JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
     JNIEnv* env,
     ${PARAMS_IN_STUB}) {
 ${PROFILING_ENTERED_NATIVE}\
-${TRACE_EVENT}\
   return ${IMPL_METHOD_NAME}(${PARAMS_IN_CALL})${POST_CALL};
 }
 """)
@@ -1502,7 +1493,6 @@ ${FUNCTION_HEADER}
           ${JNI_SIGNATURE},
           &g_${JAVA_CLASS}_${METHOD_ID_VAR_NAME});
 
-${TRACE_EVENT}\
 ${PROFILING_LEAVING_NATIVE}\
   ${RETURN_DECLARATION}
      ${PRE_CALL}env->${ENV_CALL}(${FIRST_PARAM_IN_CALL},
@@ -1517,11 +1507,6 @@ ${PROFILING_LEAVING_NATIVE}\
           function_header_with_unused_template.substitute(values))
     else:
       values['FUNCTION_HEADER'] = function_header_template.substitute(values)
-    if self.options.enable_tracing:
-      values['TRACE_EVENT'] = self.GetTraceEventForNameTemplate(
-          '${JAVA_NAME_FULL}', values)
-    else:
-      values['TRACE_EVENT'] = ''
     return RemoveIndentedEmptyLines(template.substitute(values))
 
   def GetTraceEventForNameTemplate(self, name_template, values):
@@ -1652,10 +1637,6 @@ See SampleForTests.java for more details.
       '--enable_profiling',
       action='store_true',
       help='Add additional profiling instrumentation.')
-  parser.add_argument(
-      '--enable_tracing',
-      action='store_true',
-      help='Add TRACE_EVENTs to generated functions.')
   parser.add_argument(
       '--always_mangle', action='store_true', help='Mangle all function names')
   parser.add_argument('--unchecked_exceptions',

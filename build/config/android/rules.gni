@@ -16,10 +16,6 @@ import("//build/config/zip.gni")
 import("//build/toolchain/toolchain.gni")
 assert(is_android || is_robolectric)
 
-declare_args() {
-  enable_jni_tracing = false
-}
-
 # Use a dedicated include dir so that files can #include headers from other
 # toolchains without affecting non-JNI #includes.
 if (target_os == "android") {
@@ -250,9 +246,6 @@ if (enable_java_templates) {
 
       if (enable_profiling) {
         args += [ "--enable_profiling" ]
-      }
-      if (enable_jni_tracing) {
-        args += [ "--enable_tracing" ]
       }
       if (current_toolchain != default_toolchain && target_os == "android") {
         # Rather than regenerating .h files in secondary toolchains, re-use the

@@ -40,7 +40,6 @@ static void JNI_Foo_Foo(JNIEnv* env);
 JNI_GENERATOR_EXPORT void Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1foo_1Foo_1foo(
     JNIEnv* env,
     jclass jcaller) {
-  TRACE_EVENT0("jni", "JNI_Foo_Foo");
   return JNI_Foo_Foo(env);
 }
 
@@ -57,7 +56,6 @@ JNI_GENERATOR_EXPORT jstring Java_org_chromium_base_natives_GEN_1JNI_org_1chromi
     jint y,
     jchar x,
     jshort z) {
-  TRACE_EVENT0("jni", "JNI_Foo_Bar");
   return JNI_Foo_Bar(env, base::android::JavaParamRef<jstring>(env, s), y, x, z).Release();
 }
 
@@ -69,7 +67,6 @@ JNI_GENERATOR_EXPORT jobjectArray
     JNIEnv* env,
     jclass jcaller,
     jobjectArray a) {
-  TRACE_EVENT0("jni", "JNI_Foo_Foobar");
   return JNI_Foo_Foobar(env, base::android::JavaParamRef<jobjectArray>(env, a)).Release();
 }
 
@@ -78,7 +75,6 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_
     jclass jcaller,
     jlong nativePtr,
     jobject caller) {
-  TRACE_EVENT0("jni", "Ptr::Baz");
   Ptr* native = reinterpret_cast<Ptr*>(nativePtr);
   CHECK_NATIVE_PTR(env, jcaller, native, "Baz");
   return native->Baz(env, base::android::JavaParamRef<jobject>(env, caller));
@@ -88,7 +84,6 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_
     JNIEnv* env,
     jclass jcaller,
     jlong nativePtr) {
-  TRACE_EVENT0("jni", "Ptr::FooBar");
   Ptr* native = reinterpret_cast<Ptr*>(nativePtr);
   CHECK_NATIVE_PTR(env, jcaller, native, "FooBar");
   return native->FooBar(env);
@@ -98,7 +93,6 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeInstanceMethod(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeInstance) {
-  TRACE_EVENT0("jni", "Instance::InstanceMethod");
   Instance* native = reinterpret_cast<Instance*>(nativeInstance);
   CHECK_NATIVE_PTR(env, jcaller, native, "InstanceMethod");
   return native->InstanceMethod(env, base::android::JavaParamRef<jobject>(env, jcaller));
@@ -109,7 +103,6 @@ static void JNI_Foo_StaticMethod(JNIEnv* env);
 JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller) {
-  TRACE_EVENT0("jni", "JNI_Foo_StaticMethod");
   return JNI_Foo_StaticMethod(env);
 }
 
