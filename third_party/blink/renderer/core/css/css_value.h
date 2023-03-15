@@ -213,6 +213,10 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsScopedValue() const { return !needs_tree_scope_population_; }
 
+#if DCHECK_IS_ON()
+  String ClassTypeToString() const;
+#endif
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void Trace(Visitor*) const;
 

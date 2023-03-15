@@ -712,4 +712,150 @@ void CSSValue::Trace(Visitor* visitor) const {
   NOTREACHED();
 }
 
+#if DCHECK_IS_ON()
+String CSSValue::ClassTypeToString() const {
+  switch (GetClassType()) {
+    case kNumericLiteralClass:
+      return "NumericLiteralClass";
+    case kMathFunctionClass:
+      return "MathFunctionClass";
+    case kIdentifierClass:
+      return "IdentifierClass";
+    case kColorClass:
+      return "ColorClass";
+    case kColorMixClass:
+      return "ColorMixClass";
+    case kCounterClass:
+      return "CounterClass";
+    case kQuadClass:
+      return "QuadClass";
+    case kCustomIdentClass:
+      return "CustomIdentClass";
+    case kStringClass:
+      return "StringClass";
+    case kURIClass:
+      return "URIClass";
+    case kValuePairClass:
+      return "ValuePairClass";
+    case kLightDarkValuePairClass:
+      return "LightDarkValuePairClass";
+    case kScrollClass:
+      return "ScrollClass";
+    case kViewClass:
+      return "ViewClass";
+    case kRatioClass:
+      return "RatioClass";
+    case kBasicShapeCircleClass:
+      return "BasicShapeCircleClass";
+    case kBasicShapeEllipseClass:
+      return "BasicShapeEllipseClass";
+    case kBasicShapePolygonClass:
+      return "BasicShapePolygonClass";
+    case kBasicShapeInsetClass:
+      return "BasicShapeInsetClass";
+    case kBasicShapeRectClass:
+      return "BasicShapeRectClass";
+    case kBasicShapeXYWHClass:
+      return "BasicShapeXYWHClass";
+    case kImageClass:
+      return "ImageClass";
+    case kCursorImageClass:
+      return "CursorImageClass";
+    case kCrossfadeClass:
+      return "CrossfadeClass";
+    case kPaintClass:
+      return "PaintClass";
+    case kLinearGradientClass:
+      return "LinearGradientClass";
+    case kRadialGradientClass:
+      return "RadialGradientClass";
+    case kConicGradientClass:
+      return "ConicGradientClass";
+    case kLinearTimingFunctionClass:
+      return "LinearTimingFunctionClass";
+    case kCubicBezierTimingFunctionClass:
+      return "CubicBezierTimingFunctionClass";
+    case kStepsTimingFunctionClass:
+      return "StepsTimingFunctionClass";
+    case kBorderImageSliceClass:
+      return "BorderImageSliceClass";
+    case kFontFeatureClass:
+      return "FontFeatureClass";
+    case kFontFaceSrcClass:
+      return "FontFaceSrcClass";
+    case kFontFamilyClass:
+      return "FontFamilyClass";
+    case kFontStyleRangeClass:
+      return "FontStyleRangeClass";
+    case kFontVariationClass:
+      return "FontVariationClass";
+    case kAlternateClass:
+      return "AlternateClass";
+    case kInheritedClass:
+      return "InheritedClass";
+    case kInitialClass:
+      return "InitialClass";
+    case kUnsetClass:
+      return "UnsetClass";
+    case kRevertClass:
+      return "RevertClass";
+    case kRevertLayerClass:
+      return "RevertLayerClass";
+    case kReflectClass:
+      return "ReflectClass";
+    case kShadowClass:
+      return "ShadowClass";
+    case kUnicodeRangeClass:
+      return "UnicodeRangeClass";
+    case kGridTemplateAreasClass:
+      return "GridTemplateAreasClass";
+    case kPathClass:
+      return "PathClass";
+    case kRayClass:
+      return "RayClass";
+    case kVariableReferenceClass:
+      return "VariableReferenceClass";
+    case kCustomPropertyDeclarationClass:
+      return "CustomPropertyDeclarationClass";
+    case kPendingSubstitutionValueClass:
+      return "PendingSubstitutionValueClass";
+    case kPendingSystemFontValueClass:
+      return "PendingSystemFontValueClass";
+    case kInvalidVariableValueClass:
+      return "InvalidVariableValueClass";
+    case kCyclicVariableValueClass:
+      return "CyclicVariableValueClass";
+    case kLayoutFunctionClass:
+      return "LayoutFunctionClass";
+    case kCSSContentDistributionClass:
+      return "CSSContentDistributionClass";
+    case kKeyframeShorthandClass:
+      return "KeyframeShorthandClass";
+    case kInitialColorValueClass:
+      return "InitialColorValueClass";
+    case kImageSetOptionClass:
+      return "ImageSetOptionClass";
+    case kImageSetTypeClass:
+      return "ImageSetTypeClass";
+    case kValueListClass:
+      return "ValueListClass";
+    case kFunctionClass:
+      return "FunctionClass";
+    case kImageSetClass:
+      return "ImageSetClass";
+    case kGridLineNamesClass:
+      return "GridLineNamesClass";
+    case kGridAutoRepeatClass:
+      return "GridAutoRepeatClass";
+    case kGridIntegerRepeatClass:
+      return "GridIntegerRepeatClass";
+    case kAxisClass:
+      return "AxisClass";
+    default:
+      NOTREACHED();
+      return "Unknown ClassType";
+  }
+}
+#endif
+
 }  // namespace blink
