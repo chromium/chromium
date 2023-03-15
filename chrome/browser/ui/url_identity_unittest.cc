@@ -57,8 +57,8 @@ class UrlIdentityTest : public testing::Test {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&testing_profile_);
     std::string iwa_name(kTestIsolatedWebAppName);
     GURL iwa_url(kTestIsolatedWebAppUrl);
-    web_app::AppId app_id_ = web_app::AddDummyIsolatedAppToRegistry(
-        &testing_profile_, iwa_url, iwa_name);
+    web_app::AddDummyIsolatedAppToRegistry(&testing_profile_, iwa_url,
+                                           iwa_name);
   }
 
   void InstallExtension() {
