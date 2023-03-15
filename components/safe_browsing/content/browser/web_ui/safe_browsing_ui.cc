@@ -497,6 +497,13 @@ void AddStoreInfo(const DatabaseManagerInfo::DatabaseInfo::StoreInfo store_info,
     store_info_list.Append("State: " + state_base64);
   }
 
+  for (const auto& prefix_set : store_info.prefix_sets()) {
+    std::string size = base::UTF16ToUTF8(base::FormatNumber(prefix_set.size()));
+    std::string count =
+        base::UTF16ToUTF8(base::FormatNumber(prefix_set.count()));
+    store_info_list.Append(count + " prefixes of size " + size);
+  }
+
   database_info_list.Append(std::move(store_info_list));
 }
 

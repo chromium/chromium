@@ -11,6 +11,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
+#include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 namespace safe_browsing {
 
@@ -108,6 +109,12 @@ class HashPrefixMap {
   enum class MigrateResult { kSuccess, kFailure, kNotNeeded };
   virtual MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                           V4StoreFileFormat* file_format) = 0;
+
+  // Collects debug information about the prefixes in the map.
+  virtual void GetPrefixInfo(
+      google::protobuf::RepeatedPtrField<
+          DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
+          prefix_sets) = 0;
 };
 
 // An in-memory implementation of HashPrefixMap.
@@ -127,6 +134,9 @@ class InMemoryHashPrefixMap : public HashPrefixMap {
   HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash) override;
   MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                   V4StoreFileFormat* file_format) override;
+  void GetPrefixInfo(google::protobuf::RepeatedPtrField<
+                     DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
+                         prefix_sets) override;
 
  private:
   std::unordered_map<PrefixSize, HashPrefixes> map_;
@@ -151,6 +161,9 @@ class MmapHashPrefixMap : public HashPrefixMap {
   HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash) override;
   MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                   V4StoreFileFormat* file_format) override;
+  void GetPrefixInfo(google::protobuf::RepeatedPtrField<
+                     DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
+                         prefix_sets) override;
 
   static base::FilePath GetPath(const base::FilePath& store_path,
                                 const std::string& extension);

@@ -58,6 +58,19 @@ message DatabaseManagerInfo {
       // The current state of the client for the requested store (the encrypted
       // ClientState that was sent to the client from the previous request).
       optional string state = 6;
+
+      // A message encapsulating the number of prefixes of a given size.
+      message PrefixSet {
+        // Size of the prefixes in the set, in bytes.
+        optional int64 size = 1;
+
+        // Number of prefixes in the set.
+        optional int64 count = 2;
+      }
+
+      // Has an entry for each prefix size found within the store as well as the
+      // corresponding count of prefixes of that size.
+      repeated PrefixSet prefix_sets = 7;
     }
 
     // Information about each of the stores managed by the database.

@@ -963,6 +963,8 @@ void V4Store::CollectStoreInfo(
     store_info->set_last_apply_update_time_millis(
         last_apply_update_time_millis_.ToJavaTime());
   }
+
+  hash_prefix_map_->GetPrefixInfo(store_info->mutable_prefix_sets());
 }
 
 }  // namespace safe_browsing

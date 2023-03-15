@@ -198,6 +198,20 @@ HashPrefixMap::MigrateResult InMemoryHashPrefixMap::MigrateFileFormat(
   return MigrateResult::kSuccess;
 }
 
+void InMemoryHashPrefixMap::GetPrefixInfo(
+    google::protobuf::RepeatedPtrField<
+        DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>* prefix_sets) {
+  for (const auto& size_and_prefixes : map_) {
+    const PrefixSize& size = size_and_prefixes.first;
+    const HashPrefixes& hash_prefixes = size_and_prefixes.second;
+
+    DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet* prefix_set =
+        prefix_sets->Add();
+    prefix_set->set_size(size);
+    prefix_set->set_count(hash_prefixes.size() / size);
+  }
+}
+
 // Writes a hash prefix file, and buffers writes to avoid a write call for each
 // hash prefix. The file will be deleted if Finish() is never called.
 class MmapHashPrefixMap::BufferedFileWriter {
@@ -382,6 +396,20 @@ HashPrefixMap::MigrateResult MmapHashPrefixMap::MigrateFileFormat(
   }
   lur->clear_additions();
   return MigrateResult::kSuccess;
+}
+
+void MmapHashPrefixMap::GetPrefixInfo(
+    google::protobuf::RepeatedPtrField<
+        DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>* prefix_sets) {
+  for (const auto& size_and_info : map_) {
+    const PrefixSize& size = size_and_info.first;
+    const FileInfo& info = size_and_info.second;
+
+    DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet* prefix_set =
+        prefix_sets->Add();
+    prefix_set->set_size(size);
+    prefix_set->set_count(info.GetView().size() / size);
+  }
 }
 
 // static
