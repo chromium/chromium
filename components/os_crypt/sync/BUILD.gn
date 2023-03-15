@@ -74,6 +74,7 @@ component("os_crypt") {
 
   if (is_win) {
     sources += [ "os_crypt_win.cc" ]
+    deps += [ "//components/version_info" ]
     libs = [ "crypt32.lib" ]
   }
 

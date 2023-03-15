@@ -5,16 +5,19 @@
 #include <windows.h>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wincrypt_shim.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
 #include "crypto/aead.h"
 #include "crypto/hkdf.h"
 #include "crypto/random.h"
@@ -36,6 +39,9 @@ constexpr char kEncryptionVersionPrefix[] = "v10";
 // Key prefix for a key encrypted with DPAPI.
 constexpr char kDPAPIKeyPrefix[] = "DPAPI";
 
+// Name used for a feature to used named encryption source in DPAPI.
+constexpr char kNamedEncryptionSourceName[] = "NamedEncryptionSource";
+
 bool EncryptStringWithDPAPI(const std::string& plaintext,
                             std::string* ciphertext) {
   DATA_BLOB input;
@@ -47,8 +53,21 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
   DATA_BLOB output;
   {
     SCOPED_UMA_HISTOGRAM_TIMER("OSCrypt.Win.Encrypt.Time");
-    result =
-        CryptProtectData(&input, L"", nullptr, nullptr, nullptr, 0, &output);
+    static BASE_FEATURE(kNamedEncyptionSource, kNamedEncryptionSourceName,
+                        base::FEATURE_ENABLED_BY_DEFAULT);
+    DWORD flags = 0;
+    std::string data_description;
+    if (base::FeatureList::IsEnabled(kNamedEncyptionSource)) {
+      data_description = version_info::GetProductName();
+      flags = CRYPTPROTECT_AUDIT;
+    }
+    result = ::CryptProtectData(
+        /*pDataIn=*/&input,
+        /*szDataDescr=*/base::SysUTF8ToWide(data_description).c_str(),
+        /*pOptionalEntropy=*/nullptr,
+        /*pvReserved=*/nullptr,
+        /*pPromptStruct=*/nullptr, /*dwFlags=*/flags,
+        /*pDataOut=*/&output);
   }
   base::UmaHistogramBoolean("OSCrypt.Win.Encrypt.Result", result);
   if (!result) {
