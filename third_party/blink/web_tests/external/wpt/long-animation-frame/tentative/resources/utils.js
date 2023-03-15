@@ -11,8 +11,7 @@ function loaf_promise(t) {
   return new Promise(resolve => {
       const observer = new PerformanceObserver(entries => {
           const entry = entries.getEntries()[0];
-          // TODO: understand why we need this 5ms epsilon.
-          if (entry.duration > very_long_frame_duration - 5) {
+          if (entry.duration >= very_long_frame_duration) {
             observer.disconnect();
             resolve(entry);
           }

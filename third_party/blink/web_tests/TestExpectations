@@ -2931,6 +2931,11 @@ crbug.com/626703 [ Linux ] virtual/lna-permission/external/wpt/fetch/local-netwo
 crbug.com/626703 [ Mac12 ] virtual/lna-permission/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/lna-workers-disabled/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/lna-workers-disabled/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
+crbug.com/626703 [ Mac12-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
+crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/font-access/font_access_sorted.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/font-access/font_access_sorted.tentative.https.window.html [ Timeout ]
@@ -6883,6 +6888,13 @@ crbug.com/1414607 http/tests/devtools/tracing/timeline-js/timeline-js-line-level
 
 crbug.com/1409713 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
+
+# Sheriff 2023-03-13
+crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-promise.html [ Failure Pass ]
+crbug.com/1422630 [ Fuchsia ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass ]
+crbug.com/1422630 [ Mac ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass Timeout ]
+crbug.com/1422630 [ Win ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass ]
+crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure Pass Timeout ]
 
 # Flaky timeout on mac.
 crbug.com/1422305 [ Mac ] external/wpt/workers/Worker_script_mimetype.htm [ Pass Timeout ]
