@@ -12,6 +12,8 @@ blink_modules_sources("exported") {
     "web_dom_media_stream_track.cc",
     "web_embedded_worker_impl.cc",
     "web_embedded_worker_impl.h",
+    "web_shared_storage_worklet_thread_impl.cc",
+    "web_shared_storage_worklet_thread_impl.h",
   ]
 
   defines = [ "BLINK_MODULES_IMPLEMENTATION=1" ]
@@ -21,6 +23,7 @@ blink_modules_sources("exported") {
     "//third_party/blink/renderer/modules/crypto",
     "//third_party/blink/renderer/modules/filesystem",
     "//third_party/blink/renderer/modules/mediastream",
+    "//third_party/blink/renderer/modules/shared_storage/services",
     "//ui/accessibility:ax_enums_mojo_blink",
   ]
 }

@@ -626,9 +626,16 @@ void WorkerThread::InitializeOnWorkerThread(
     worker_scheduler_->InitializeOnWorkerThread(global_scope_);
     worker_reporting_proxy_.DidCreateWorkerGlobalScope(GlobalScope());
 
-    worker_inspector_controller_ = WorkerInspectorController::Create(
-        this, url_for_debugger, inspector_task_runner_,
-        std::move(devtools_params));
+    // `url_for_debugger` can be null for out-of-process worklet (e.g. shared
+    // storage worklet). Tentatively skip creating the
+    // `WorkerInspectorController`.
+    // TODO(crbug.com/1419253): support inspector for out-of-process worklet and
+    // remove this if-check.
+    if (!url_for_debugger.IsNull()) {
+      worker_inspector_controller_ = WorkerInspectorController::Create(
+          this, url_for_debugger, inspector_task_runner_,
+          std::move(devtools_params));
+    }
 
     // Since context initialization below may fail, we should notify debugger
     // about the new worker thread separately, so that it can resolve it by id
@@ -663,15 +670,21 @@ void WorkerThread::InitializeOnWorkerThread(
     WorkerThreads().insert(this);
   }
 
-  // It is important that no code is run on the Isolate between
-  // initializing InspectorTaskRunner and pausing on start.
-  // Otherwise, InspectorTaskRunner might interrupt isolate execution
-  // from another thread and try to resume "pause on start" before
-  // we even paused.
-  worker_inspector_controller_->WaitForDebuggerIfNeeded();
-  // Note the above call runs nested message loop which may result in
-  // worker thread being torn down by request from the parent thread,
-  // while waiting for debugger.
+  // `worker_inspector_controller_` can be null for out-of-process worklet (e.g.
+  // shared storage worklet).
+  // TODO(crbug.com/1419253): support inspector for out-of-process worklet and
+  // remove this if-check.
+  if (worker_inspector_controller_) {
+    // It is important that no code is run on the Isolate between
+    // initializing InspectorTaskRunner and pausing on start.
+    // Otherwise, InspectorTaskRunner might interrupt isolate execution
+    // from another thread and try to resume "pause on start" before
+    // we even paused.
+    worker_inspector_controller_->WaitForDebuggerIfNeeded();
+    // Note the above call runs nested message loop which may result in
+    // worker thread being torn down by request from the parent thread,
+    // while waiting for debugger.
+  }
 }
 
 void WorkerThread::EvaluateClassicScriptOnWorkerThread(

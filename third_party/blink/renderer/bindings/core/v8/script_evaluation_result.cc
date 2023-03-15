@@ -111,6 +111,16 @@ v8::Local<v8::Value> ScriptEvaluationResult::GetExceptionForModule() const {
   return value_;
 }
 
+v8::Local<v8::Value> ScriptEvaluationResult::GetExceptionForWorklet() const {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(script_type_, mojom::blink::ScriptType::kClassic);
+#endif
+  DCHECK_EQ(result_type_, ResultType::kException);
+  DCHECK(!value_.IsEmpty());
+
+  return value_;
+}
+
 v8::Local<v8::Value> ScriptEvaluationResult::GetExceptionForClassicForTesting()
     const {
   DCHECK_EQ(result_type_, ResultType::kException);

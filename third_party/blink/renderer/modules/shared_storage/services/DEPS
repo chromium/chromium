@@ -1,0 +1,15 @@
+include_rules = [
+    "-third_party/blink/renderer/modules",
+    "+third_party/blink/renderer/core",
+    "+third_party/blink/renderer/modules/modules_export.h",
+    "+third_party/blink/renderer/modules/shared_storage/services",
+    "+third_party/blink/renderer/modules/v8",
+    "+gin/converter.h",
+]
+
+specific_include_rules = {
+    ".*_(unit)?test\.cc": [
+        "+base/task/bind_post_task.h",
+        "+services/network/test/test_url_loader_factory.h",
+    ],
+}

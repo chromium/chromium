@@ -1550,6 +1550,7 @@ data/set_cookie.html
 data/set_cookie.html.mock-http-headers
 data/set_document_cookie.html
 data/shared_storage/customizable_module.js
+data/shared_storage/customizable_script.js
 data/shared_storage/erroneous_function_module.js
 data/shared_storage/erroneous_module.js
 data/shared_storage/getter_module.js

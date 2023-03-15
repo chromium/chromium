@@ -78,11 +78,16 @@ struct PaintWorkletToken {
   mojo_base.mojom.UnguessableToken value;
 };
 
+struct SharedStorageWorkletToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
 union WorkletToken {
   AnimationWorkletToken animation_worklet_token;
   AudioWorkletToken audio_worklet_token;
   LayoutWorkletToken layout_worklet_token;
   PaintWorkletToken paint_worklet_token;
+  SharedStorageWorkletToken shared_storage_worklet_token;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,6 +123,7 @@ union ExecutionContextToken {
   AudioWorkletToken audio_worklet_token;
   LayoutWorkletToken layout_worklet_token;
   PaintWorkletToken paint_worklet_token;
+  SharedStorageWorkletToken shared_storage_worklet_token;
   ShadowRealmToken shadow_realm_token;
 };
 

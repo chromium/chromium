@@ -383,6 +383,7 @@ source_set("blink_headers") {
     "web/web_serialized_script_value.h",
     "web/web_serialized_script_value_version.h",
     "web/web_settings.h",
+    "web/web_shared_storage_worklet_thread.h",
     "web/web_shared_worker.h",
     "web/web_shared_worker_client.h",
     "web/web_testing_support.h",

@@ -119,6 +119,15 @@ class CORE_EXPORT ScriptEvaluationResult final {
   // Can be called only when GetResultType() == kException.
   v8::Local<v8::Value> GetExceptionForModule() const;
 
+  // Returns the exception thrown for classic scripts for a worklet.
+  // Can be called only when GetResultType() == kException.
+  //
+  // TODO(crbug.com/1419253): Shared storage worklet is using a ClassicScript
+  // and relies on this method to get the exception. This is tentative.
+  // Eventually, this method should be removed once shared storage migrates to
+  // the blink-worklet's script loading infrastructure.
+  v8::Local<v8::Value> GetExceptionForWorklet() const;
+
   // Returns the exception thrown for both module and classic scripts.
   // Can be called only when GetResultType() == kException.
   v8::Local<v8::Value> GetExceptionForClassicForTesting() const;
