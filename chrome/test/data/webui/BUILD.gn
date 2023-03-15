@@ -11,6 +11,7 @@ import("//chrome/test/include_js_tests.gni")
 import("//components/signin/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
@@ -328,6 +329,11 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
+mojom("web_ui_test_bindings") {
+  sources = [ "web_ui_test.mojom" ]
+  webui_module_path = "/"
+}
+
 generate_grd("build_chai_grdp") {
   testonly = true
   grd_prefix = "webui_generated_test"
@@ -348,9 +354,22 @@ generate_grd("build_web_ui_test_mojo_grdp") {
   testonly = true
   grd_prefix = "webui_generated_test"
   out_grd = "$target_gen_dir/web_ui_test_mojo_resources.grdp"
-  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/mojom-webui/chrome/test/data/webui/",
+                  root_build_dir)
   input_files = [ "web_ui_test.mojom-webui.js" ]
-  deps = [ "..:web_ui_test_mojom_js_module" ]
+  deps = [ ":web_ui_test_bindings_js__generator" ]
+}
+
+if (is_chromeos_ash) {
+  generate_grd("build_web_ui_test_mojo_lite_grdp") {
+    testonly = true
+    grd_prefix = "webui"
+    out_grd = "$target_gen_dir/web_ui_test_mojo_lite_resources.grdp"
+    input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+    input_files = [ "web_ui_test.mojom-lite.js" ]
+    deps = [ ":web_ui_test_bindings_js__generator" ]
+  }
 }
 
 ts_library("build_ts") {
@@ -435,6 +454,7 @@ generate_grd("build_grd") {
     "js:build_grdp",
     "metrics_internals:build_grdp",
     "metrics_reporter:build_grdp",
+    "mojo:build_grdp",
     "net_internals:build_grdp",
     "new_tab_page:build_grdp",
     "password_manager:build_grdp",
@@ -461,6 +481,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/metrics_internals/resources.grdp",
     "$target_gen_dir/metrics_reporter/resources.grdp",
     "$target_gen_dir/mocha_resources.grdp",
+    "$target_gen_dir/mojo/resources.grdp",
     "$target_gen_dir/net_internals/resources.grdp",
     "$target_gen_dir/new_tab_page/resources.grdp",
     "$target_gen_dir/password_manager/resources.grdp",
@@ -532,6 +553,7 @@ generate_grd("build_grd") {
 
   if (is_chromeos_ash) {
     deps += [
+      ":build_web_ui_test_mojo_lite_grdp",
       "chromeos:build_grdp",
       "chromeos/ash_common:build_grdp",
       "chromeos/cloud_upload:build_grdp",
@@ -560,6 +582,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/chromeos/resources.grdp",
       "$target_gen_dir/nearby_share/resources.grdp",
       "$target_gen_dir/settings/chromeos/resources.grdp",
+      "$target_gen_dir/web_ui_test_mojo_lite_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]
