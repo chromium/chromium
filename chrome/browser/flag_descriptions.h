@@ -1205,9 +1205,6 @@ extern const char
 extern const char
     kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription[];
 
-extern const char kOmniboxInspireMeName[];
-extern const char kOmniboxInspireMeDescription[];
-
 extern const char kOmniboxKeepSecondaryZeroSuggestName[];
 extern const char kOmniboxKeepSecondaryZeroSuggestDescription[];
 

@@ -1123,18 +1123,6 @@ bool IsUrlScoringModelEnabled() {
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
-// Inspire Me ->
-const base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
-    &omnibox::kInspireMe,
-    "AdditionalRelatedQueries",
-    0);
-
-const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
-    &omnibox::kInspireMe,
-    "AdditionalTrendingQueries",
-    0);
-// <- Inspire Me
-// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 

@@ -34,9 +34,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/intranet_redirector_state.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -369,19 +367,6 @@ void AutocompleteResult::SortAndCull(
 #if BUILDFLAG(IS_ANDROID)
       sections.push_back(
           std::make_unique<AndroidZpsSection>(suggestion_groups_map_));
-
-      if (omnibox::IsNTPPage(page_classification)) {
-        size_t num_related_queries =
-            OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.Get();
-        size_t num_trending_queries =
-            OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.Get();
-
-        if (num_related_queries + num_trending_queries > 0) {
-          sections.push_back(std::make_unique<AndroidInspireMeZpsSection>(
-              num_related_queries, num_trending_queries,
-              suggestion_groups_map_));
-        }
-      }
 #else   // !BUILDFLAG(IS_ANDROID)
       sections.push_back(
           std::make_unique<DesktopZpsSection>(suggestion_groups_map_));

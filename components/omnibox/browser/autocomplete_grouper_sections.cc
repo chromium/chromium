@@ -111,15 +111,6 @@ AndroidZpsSection::AndroidZpsSection(omnibox::GroupConfigMap& group_configs)
                   {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST}},
                  group_configs) {}
 
-AndroidInspireMeZpsSection::AndroidInspireMeZpsSection(
-    size_t max_related_queries,
-    size_t max_trending_queries,
-    omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(max_related_queries + max_trending_queries,
-                 {{max_related_queries, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
-                  {max_trending_queries, omnibox::GROUP_TRENDS}},
-                 group_configs) {}
-
 DesktopZpsSection::DesktopZpsSection(omnibox::GroupConfigMap& group_configs)
     : ZpsSection(8,
                  {{8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},

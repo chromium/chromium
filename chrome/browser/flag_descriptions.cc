@@ -2139,11 +2139,6 @@ const char
     kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription[] =
         "When enabled, HQP doesn't demote same-host suggestions.";
 
-const char kOmniboxInspireMeName[] = "Omnibox Trending and Related Queries";
-const char kOmniboxInspireMeDescription[] =
-    "When enabled, appends additional suggestions based on local trends and/or "
-    "related to the recently executed queries.";
-
 const char kOmniboxKeepSecondaryZeroSuggestName[] =
     "Keeps all secondary zero-prefix suggestions.";
 const char kOmniboxKeepSecondaryZeroSuggestDescription[] =
