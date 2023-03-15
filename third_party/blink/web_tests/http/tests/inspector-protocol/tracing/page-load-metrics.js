@@ -24,15 +24,16 @@
   // Web vitals
   const firstContentfulPaint =
       tracingHelper.findEvent('firstContentfulPaint', Phase.MARK);
-  const largestContentfulPaintCandidates =
-      tracingHelper.findEvents('largestContentfulPaint::Candidate', Phase.MARK);
+  const largestContentfulPaintCandidate =
+      tracingHelper.findEvents('largestContentfulPaint::Candidate', Phase.MARK).find(candidate => candidate.args.data.navigationId === firstContentfulPaint.args.data.navigationId);
   const layoutShift = tracingHelper.findEvent('LayoutShift', Phase.INSTANT);
+
 
   testRunner.log('\nGot FCP event:');
   tracingHelper.logEventShape(firstContentfulPaint);
 
-  testRunner.log('\nGot LCP candidate events:');
-  tracingHelper.logEventShape(largestContentfulPaintCandidates);
+  testRunner.log('\nGot LCP candidate event:');
+  tracingHelper.logEventShape(largestContentfulPaintCandidate);
 
   testRunner.log('\nGot LayoutShift event:');
   tracingHelper.logEventShape(layoutShift);
@@ -61,7 +62,7 @@
   const navigationId = networkRequest.args.data.requestId;
 
   const allRequestIds = [
-    ...largestContentfulPaintCandidates,
+    largestContentfulPaintCandidate,
     firstContentfulPaint,
     firstPaint,
   ].map(event => event.args.data.navigationId);

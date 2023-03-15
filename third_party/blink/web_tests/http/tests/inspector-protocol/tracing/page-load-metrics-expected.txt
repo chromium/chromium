@@ -19,51 +19,28 @@ Object: {
 	ts: number
 }
 
-Got LCP candidate events:
-Array: [
-	{
-		args: {
-			data: {
-				candidateIndex: number
-				isMainFrame: boolean
-				isOutermostMainFrame: boolean
-				navigationId: string
-				nodeId: number
-				size: number
-				type: string
-			}
-			frame: string
+Got LCP candidate event:
+Object: {
+	args: {
+		data: {
+			candidateIndex: number
+			isMainFrame: boolean
+			isOutermostMainFrame: boolean
+			navigationId: string
+			nodeId: number
+			size: number
+			type: string
 		}
-		cat: string
-		name: string
-		ph: string
-		pid: number
-		s: string
-		tid: number
-		ts: number
+		frame: string
 	}
-	{
-		args: {
-			data: {
-				candidateIndex: number
-				isMainFrame: boolean
-				isOutermostMainFrame: boolean
-				navigationId: string
-				nodeId: number
-				size: number
-				type: string
-			}
-			frame: string
-		}
-		cat: string
-		name: string
-		ph: string
-		pid: number
-		s: string
-		tid: number
-		ts: number
-	}
-]
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
 
 Got LayoutShift event:
 Object: {
