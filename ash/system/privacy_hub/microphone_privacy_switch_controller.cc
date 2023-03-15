@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -80,8 +81,18 @@ void MicrophonePrivacySwitchController::OnInputMuteChanged(
   mic_muted_by_mute_switch_ =
       CrasAudioHandler::Get()->input_muted_by_microphone_mute_switch();
 
-  if (input_stream_count_) {
-    SetMicrophoneNotificationVisible(mic_mute_on_);
+  // The `VideoConferenceTrayController` shows this info as a toast.
+  if (!features::IsVideoConferenceEnabled()) {
+    if (features::IsPrivacyIndicatorsEnabled()) {
+      // Only show the notification when a stream starts (handled in
+      // `OnNumberOfInputStreamsWithPermissionChanged()`), and always dismiss
+      // the notification if mute is turned off.
+      if (!mic_mute_on_) {
+        SetMicrophoneNotificationVisible(mic_mute_on_);
+      }
+    } else if (input_stream_count_) {
+      SetMicrophoneNotificationVisible(mic_mute_on_);
+    }
   }
 
   // `pref_change_registrar_` is only initialized after a user logs in.
@@ -112,19 +123,37 @@ void MicrophonePrivacySwitchController::
 
   mic_muted_by_mute_switch_ = muted;
 
-  if (input_stream_count_) {
+  if (features::IsVideoConferenceEnabled()) {
+    // The `VideoConferenceTrayController` shows this info as a toast.
+    return;
+  }
+
+  if (features::IsPrivacyIndicatorsEnabled()) {
+    // If the hardware switch is on, call `SetMicrophoneNotificationVisible()`
+    // to ensure the text is updated to reflect the hw switch. Only show the
+    // notification when a stream starts (handled in
+    // `OnNumberOfInputStreamsWithPermissionChanged()`), and always dismiss the
+    // notification if mute is turned off.
+    if (mic_muted_by_mute_switch_ || !mic_mute_on_) {
+      SetMicrophoneNotificationVisible(mic_mute_on_);
+    }
+  } else if (input_stream_count_) {
     SetMicrophoneNotificationVisible(mic_mute_on_);
   }
 }
 
 void MicrophonePrivacySwitchController::
     OnNumberOfInputStreamsWithPermissionChanged() {
+  if (features::IsVideoConferenceEnabled()) {
+    // The `VideoConferenceTrayController` shows this info as a toast.
+    return;
+  }
   // Catches the case where a mic-using app is launched while the mic is muted.
   const size_t input_stream_count = CountActiveInputStreams();
   const bool stream_count_increased = input_stream_count > input_stream_count_;
   input_stream_count_ = input_stream_count;
 
-  if (!input_stream_count_) {
+  if (input_stream_count_ == 0) {
     SetMicrophoneNotificationVisible(false);
   } else if (stream_count_increased) {
     SetMicrophoneNotificationVisible(input_stream_count_ && mic_mute_on_);
@@ -152,6 +181,11 @@ void MicrophonePrivacySwitchController::SetSystemMute() {
 
 void MicrophonePrivacySwitchController::SetMicrophoneNotificationVisible(
     const bool visible) {
+  if (features::IsVideoConferenceEnabled()) {
+    // The `VideoConferenceTrayController` shows this info as a toast.
+    return;
+  }
+
   PrivacyHubNotificationController* const privacy_hub_notification_controller =
       Shell::Get()->system_notification_controller()->privacy_hub();
 
@@ -173,6 +207,11 @@ void MicrophonePrivacySwitchController::SetMicrophoneNotificationVisible(
 }
 
 void MicrophonePrivacySwitchController::UpdateMicrophoneNotification() {
+  if (features::IsVideoConferenceEnabled()) {
+    // The `VideoConferenceTrayController` shows this info as a toast.
+    return;
+  }
+
   PrivacyHubNotificationController* const privacy_hub_notification_controller =
       Shell::Get()->system_notification_controller()->privacy_hub();
 

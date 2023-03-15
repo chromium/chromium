@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"

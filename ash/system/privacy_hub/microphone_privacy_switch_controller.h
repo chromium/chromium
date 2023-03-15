@@ -14,8 +14,8 @@
 
 namespace ash {
 
-// This controller keeps the kUserMicrophoneAllowed preference and the state of
-// the system input mute in sync.
+// This controller keeps the `kUserMicrophoneAllowed` preference and the state
+// of the system input mute in sync.
 class ASH_EXPORT MicrophonePrivacySwitchController
     : public CrasAudioHandler::AudioObserver,
       public SessionObserver {
@@ -34,11 +34,11 @@ class ASH_EXPORT MicrophonePrivacySwitchController
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
   void OnNumberOfInputStreamsWithPermissionChanged() override;
 
-  // SessionObserver
+  // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
  private:
-  // A callback that is invoked when the user changes kUserMicrophoneAllowed
+  // A callback that is invoked when the user changes `kUserMicrophoneAllowed`
   // preference from the Privacy Hub UI.
   void OnPreferenceChanged();
 

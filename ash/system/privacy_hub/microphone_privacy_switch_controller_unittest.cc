@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/privacy_hub_delegate.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
@@ -19,7 +20,9 @@
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -95,34 +98,61 @@ class MockFrontendAPI : public PrivacyHubDelegate {
 
 }  // namespace
 
-class PrivacyHubMicrophoneControllerTest : public AshTestBase {
+// Test fixture used to test privacy hub specific behavior.
+// The two bool params are as follows, and every combination of the two are ran:
+// 0. `IsPrivacyIndicatorsEnabled()`
+// 1. `IsVideoConferenceEnabled()`
+class PrivacyHubMicrophoneControllerTest
+    : public AshTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   PrivacyHubMicrophoneControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+    std::vector<base::test::FeatureRef> enabled_features{
+        ash::features::kCrosPrivacyHub};
+    if (IsPrivacyIndicatorsEnabled()) {
+      enabled_features.push_back(features::kPrivacyIndicators);
+    }
+    if (IsVideoConferenceEnabled()) {
+      fake_video_conference_tray_controller_ =
+          std::make_unique<FakeVideoConferenceTrayController>();
+      enabled_features.push_back(features::kVideoConference);
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kCameraEffectsSupportedByHardware);
+    }
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatures(enabled_features, {});
 
     auto delegate = std::make_unique<MockNewWindowDelegate>();
     new_window_delegate_ = delegate.get();
     window_delegate_provider_ =
         std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
   }
-  ~PrivacyHubMicrophoneControllerTest() override = default;
+  ~PrivacyHubMicrophoneControllerTest() override {
+    fake_video_conference_tray_controller_.reset();
+    new_window_delegate_ = nullptr;
+    window_delegate_provider_.reset();
+  }
 
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
 
-    // This makes sure a global instance of SensorDisabledNotificationDelegate
+    // This makes sure a global instance of `SensorDisabledNotificationDelegate`
     // is created before running tests.
     Shell::Get()->privacy_hub_controller()->set_frontend(&mock_frontend_);
   }
 
   void TearDown() override {
     SetMicrophoneMuteSwitchState(/*muted=*/false);
+
     AshTestBase::TearDown();
   }
 
- protected:
+  bool IsPrivacyIndicatorsEnabled() { return std::get<0>(GetParam()); }
+
+  bool IsVideoConferenceEnabled() { return std::get<1>(GetParam()); }
+
   void SetUserPref(bool allowed) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         prefs::kUserMicrophoneAllowed, allowed);
@@ -210,10 +240,16 @@ class PrivacyHubMicrophoneControllerTest : public AshTestBase {
   MockNewWindowDelegate* new_window_delegate_ = nullptr;
   std::unique_ptr<TestNewWindowDelegateProvider> window_delegate_provider_;
   FakeSensorDisabledNotificationDelegate delegate_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<FakeVideoConferenceTrayController>
+      fake_video_conference_tray_controller_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(PrivacyHubMicrophoneControllerTest, SetSystemMuteOnLogin) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrivacyHubMicrophoneControllerTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+TEST_P(PrivacyHubMicrophoneControllerTest, SetSystemMuteOnLogin) {
   for (bool microphone_allowed : {false, true, false}) {
     const bool microphone_muted = !microphone_allowed;
     SetUserPref(microphone_allowed);
@@ -230,14 +266,14 @@ TEST_F(PrivacyHubMicrophoneControllerTest, SetSystemMuteOnLogin) {
   }
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, OnPreferenceChanged) {
+TEST_P(PrivacyHubMicrophoneControllerTest, OnPreferenceChanged) {
   for (bool microphone_allowed : {false, true, false}) {
     SetUserPref(microphone_allowed);
     EXPECT_EQ(CrasAudioHandler::Get()->IsInputMuted(), !microphone_allowed);
   }
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, OnInputMuteChanged) {
+TEST_P(PrivacyHubMicrophoneControllerTest, OnInputMuteChanged) {
   for (bool microphone_muted : {false, true, false}) {
     const bool microphone_allowed = !microphone_muted;
 
@@ -247,7 +283,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest, OnInputMuteChanged) {
   }
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, OnMicrophoneMuteSwitchValueChanged) {
+TEST_P(PrivacyHubMicrophoneControllerTest, OnMicrophoneMuteSwitchValueChanged) {
   EXPECT_CALL(mock_frontend_, MicrophoneHardwareToggleChanged(_));
   Shell::Get()
       ->privacy_hub_controller()
@@ -255,7 +291,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest, OnMicrophoneMuteSwitchValueChanged) {
       .OnInputMutedByMicrophoneMuteSwitchChanged(true);
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, SimpleMuteUnMute) {
+TEST_P(PrivacyHubMicrophoneControllerTest, SimpleMuteUnMute) {
   // No notification initially.
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 
@@ -270,7 +306,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest, SimpleMuteUnMute) {
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, LaunchAppUsingMicrophone) {
+TEST_P(PrivacyHubMicrophoneControllerTest, LaunchAppUsingMicrophone) {
   // No notification initially.
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 
@@ -287,19 +323,22 @@ TEST_F(PrivacyHubMicrophoneControllerTest, LaunchAppUsingMicrophone) {
   // Launch an app that's using the mic. The microphone mute notification should
   // show as a popup.
   LaunchApp(u"junior");
-
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
-  // Notification should not be pinned.
-  EXPECT_FALSE(GetSWSwitchNotification()->rich_notification_data().pinned);
-
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+    // Notification should not be pinned.
+    EXPECT_FALSE(GetSWSwitchNotification()->rich_notification_data().pinned);
+  }
   // Unmute again, notification goes down.
   UnMuteMicrophone();
 
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest,
+TEST_P(PrivacyHubMicrophoneControllerTest,
        SilentNotificationOnMuteWhileMicInUse) {
   // No notification initially.
   EXPECT_FALSE(IsAnyMicNotificationVisible());
@@ -310,22 +349,33 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
 
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 
-  // Mute the mic, a notification should be shown and also popup.
+  // Mute the mic, a notification should be shown and also popup. If Video
+  // Conference or Privacy Indicators are enabled, no notifier is sent if muted
+  // during a session.
   MuteMicrophone();
 
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
+  if (IsPrivacyIndicatorsEnabled() || IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+  }
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest,
+TEST_P(PrivacyHubMicrophoneControllerTest,
        ShowPopupNotificationOnStreamAddition) {
   // Launch an app while microphone is muted.
   MuteMicrophone();
   LaunchApp(u"junior");
 
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
-
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+  }
   // Mark the notification as read.
   MarkPopupAsShown(PrivacyHubNotificationController::kCombinedNotificationId);
 
@@ -334,18 +384,28 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   // Add an app, and verify the notification popup gets shown.
   LaunchApp(u"rose");
 
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+  }
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, RemovingStreamDoesNotShowPopup) {
+TEST_P(PrivacyHubMicrophoneControllerTest, RemovingStreamDoesNotShowPopup) {
   // Launch 2 apps while microphone is muted.
   MuteMicrophone();
   LaunchApp(u"junior");
   LaunchApp(u"rose");
 
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+  }
 
   // Mark the notification as read.
   MarkPopupAsShown(PrivacyHubNotificationController::kCombinedNotificationId);
@@ -356,7 +416,11 @@ TEST_F(PrivacyHubMicrophoneControllerTest, RemovingStreamDoesNotShowPopup) {
   // reshown.
   CloseApp(u"rose");
 
-  EXPECT_TRUE(GetSWSwitchNotification());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+  }
   EXPECT_FALSE(GetSWSwitchPopupNotification());
 
   // The notification should be removed if all apps are closed.
@@ -365,12 +429,18 @@ TEST_F(PrivacyHubMicrophoneControllerTest, RemovingStreamDoesNotShowPopup) {
   EXPECT_FALSE(GetSWSwitchNotification());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionButton) {
+TEST_P(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionButton) {
   MuteMicrophone();
   LaunchApp(u"junior");
 
   // The mute notification should have an action button.
   message_center::Notification* notification = GetSWSwitchNotification();
+
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification);
+    return;
+  }
+
   ASSERT_TRUE(notification);
   EXPECT_EQ(1u, notification->buttons().size());
 
@@ -387,12 +457,18 @@ TEST_F(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionButton) {
             1);
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionBody) {
+TEST_P(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionBody) {
   MuteMicrophone();
   LaunchApp(u"junior");
 
   // The mute notification should have an action button.
   message_center::Notification* notification = GetSWSwitchNotification();
+
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification);
+    return;
+  }
+
   ASSERT_TRUE(notification);
   EXPECT_EQ(1u, notification->buttons().size());
 
@@ -404,7 +480,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionBody) {
   EXPECT_FALSE(GetSWSwitchNotification());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionButton) {
+TEST_P(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionButton) {
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
   LaunchApp(u"junior");
@@ -413,6 +489,12 @@ TEST_F(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionButton) {
   // should have a "Learn more" button.
   EXPECT_FALSE(GetSWSwitchNotification());
   message_center::Notification* notification = GetHWSwitchNotification();
+
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification);
+    return;
+  }
+
   ASSERT_TRUE(notification);
   EXPECT_EQ(1u, notification->buttons().size());
 
@@ -430,11 +512,17 @@ TEST_F(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionButton) {
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionBody) {
+TEST_P(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionBody) {
   SetMicrophoneMuteSwitchState(/*muted=*/true);
   LaunchApp(u"junior");
 
   message_center::Notification* notification = GetHWSwitchNotification();
+
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification);
+    return;
+  }
+
   ASSERT_TRUE(notification);
 
   // Check that clicking the body has no effect but notification disappears.
@@ -446,7 +534,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionBody) {
   EXPECT_FALSE(GetHWSwitchNotification());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest,
+TEST_P(PrivacyHubMicrophoneControllerTest,
        TogglingMuteSwitchRemovesNotificationActionButton) {
   // Mute microphone, and activate an audio input stream.
   MuteMicrophone();
@@ -454,22 +542,31 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
 
   // The mute notification should have an action button.
   message_center::Notification* notification = GetSWSwitchNotification();
-  ASSERT_TRUE(notification);
-  EXPECT_EQ(1u, notification->buttons().size());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON),
-            notification->buttons()[0].title);
 
-  // Toggle microphone mute switch and verify that new notification appears with
-  // a "Learn more" button.
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification);
+  } else {
+    ASSERT_TRUE(notification);
+    EXPECT_EQ(1u, notification->buttons().size());
+    EXPECT_EQ(l10n_util::GetStringUTF16(
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON),
+              notification->buttons()[0].title);
+  }
+  // Toggle microphone mute switch and verify that new notification appears
+  // with a "Learn more" button.
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
   EXPECT_FALSE(GetSWSwitchNotification());
+
   notification = GetHWSwitchNotification();
-  ASSERT_TRUE(notification);
-  EXPECT_EQ(1u, notification->buttons().size());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
-            notification->buttons()[0].title);
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification);
+  } else {
+    ASSERT_TRUE(notification);
+    EXPECT_EQ(1u, notification->buttons().size());
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
+              notification->buttons()[0].title);
+  }
 
   SetMicrophoneMuteSwitchState(/*muted=*/false);
   ASSERT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
@@ -477,23 +574,35 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest,
-       TogglingMuteSwitchCreatesHWPopupAndRemovesSWPopup) {
+TEST_P(PrivacyHubMicrophoneControllerTest,
+       TogglingMuteSwitchDoesNotHideNotificationPopup) {
   // Mute microphone, and activate an audio input stream.
   MuteMicrophone();
   LaunchApp(u"junior");
 
-  // Verify the notification popup is shown.
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    // Verify the notification popup is shown.
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+  }
 
   // Toggle microphone mute switch and verify that toggling mute switch creates
   // new hardware switch pop up notification and the software switch
   // notification is removed.
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
-  EXPECT_TRUE(GetHWSwitchNotification());
-  EXPECT_TRUE(GetHWSwitchNotification());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetHWSwitchNotification());
+    EXPECT_FALSE(GetHWSwitchNotification());
+  } else {
+    // Verify the notification popup is shown.
+    EXPECT_TRUE(GetHWSwitchNotification());
+    EXPECT_TRUE(GetHWSwitchNotification());
+  }
+
   // The software switch notification is instantly hidden.
   EXPECT_FALSE(GetSWSwitchNotification());
 
@@ -507,34 +616,50 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   EXPECT_FALSE(GetHWSwitchNotification());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest,
+TEST_P(PrivacyHubMicrophoneControllerTest,
        RemovingAllInputStreamsWhileHwSwitchToggled) {
   SetMicrophoneMuteSwitchState(/*muted=*/true);
   LaunchApp(u"junior");
 
-  EXPECT_TRUE(GetHWSwitchNotification());
-  EXPECT_TRUE(GetHWSwitchPopupNotification());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetHWSwitchNotification());
+    EXPECT_FALSE(GetHWSwitchNotification());
+  } else {
+    EXPECT_TRUE(GetHWSwitchNotification());
+    EXPECT_TRUE(GetHWSwitchPopupNotification());
+  }
 
   CloseApp(u"junior");
 
   EXPECT_FALSE(GetHWSwitchNotification());
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest,
+TEST_P(PrivacyHubMicrophoneControllerTest,
        ToggleMicrophoneMuteSwitchWhileInputStreamActive) {
   // Launch an app using microphone, and toggle mute switch.
   LaunchApp(u"junior");
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
-  // Notification should be shown and also popup.
-  EXPECT_TRUE(GetHWSwitchNotification());
-  EXPECT_TRUE(GetHWSwitchPopupNotification());
+  // Notification should be shown and also popup. If Video Conference or Privacy
+  // Indicators are enabled, this notification is not sent.
+  if (IsPrivacyIndicatorsEnabled() || IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetHWSwitchNotification());
+    EXPECT_FALSE(GetHWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetHWSwitchNotification());
+    EXPECT_TRUE(GetHWSwitchPopupNotification());
+  }
 
   // Add another audio input stream, and verify the notification popup shows.
   LaunchApp(u"junior1");
 
-  EXPECT_TRUE(GetHWSwitchNotification());
-  EXPECT_TRUE(GetHWSwitchPopupNotification());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetHWSwitchNotification());
+    EXPECT_FALSE(GetHWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetHWSwitchNotification());
+    EXPECT_TRUE(GetHWSwitchPopupNotification());
+  }
 
   // Mark notification as read, and then remove an audio input stream.
   MarkPopupAsShown(PrivacyHubNotificationController::
@@ -545,17 +670,25 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   CloseApp(u"junior1");
 
   // Verify that notification popup is not reshown.
-  EXPECT_TRUE(GetHWSwitchNotification());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetHWSwitchNotification());
+  } else {
+    EXPECT_TRUE(GetHWSwitchNotification());
+  }
   EXPECT_FALSE(GetHWSwitchPopupNotification());
 
   // Adding another stream shows a popup again.
   LaunchApp(u"rose");
-
-  EXPECT_TRUE(GetHWSwitchNotification());
-  EXPECT_TRUE(GetHWSwitchPopupNotification());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetHWSwitchNotification());
+    EXPECT_FALSE(GetHWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetHWSwitchNotification());
+    EXPECT_TRUE(GetHWSwitchPopupNotification());
+  }
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, NotificationText) {
+TEST_P(PrivacyHubMicrophoneControllerTest, NotificationText) {
   // No notification initially.
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 
@@ -568,51 +701,71 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationText) {
   // determined.
   LaunchApp(absl::nullopt);
 
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE),
-            GetSWSwitchNotification()->title());
-  // The notification body should not contain any app name.
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE),
-      GetSWSwitchNotification()->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+    EXPECT_EQ(l10n_util::GetStringUTF16(
+                  IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE),
+              GetSWSwitchNotification()->title());
+    // The notification body should not contain any app name.
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE),
+        GetSWSwitchNotification()->message());
+  }
 
   // Launch an app that's using the mic, the name of the app can be determined.
   LaunchApp(u"app1");
 
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
-  // The notification body should contain name of the app.
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(
-          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, u"app1"),
-      GetSWSwitchNotification()->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+    // The notification body should contain name of the app.
+    EXPECT_EQ(l10n_util::GetStringFUTF16(
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+                  u"app1"),
+              GetSWSwitchNotification()->message());
+  }
 
   // Launch another app that's using the mic, the name of the app can be
   // determined.
   LaunchApp(u"app2");
 
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
-  // The notification body should contain the two available app names in the
-  // order of most recently launched.
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-                u"app2", u"app1"),
-            GetSWSwitchNotification()->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+    // The notification body should contain the two available app names in the
+    // order of most recently launched.
+    EXPECT_EQ(l10n_util::GetStringFUTF16(
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+                  u"app2", u"app1"),
+              GetSWSwitchNotification()->message());
+  }
 
   // Launch yet another app that's using the mic, the name of the app can be
   // determined.
   LaunchApp(u"app3");
 
-  EXPECT_TRUE(GetSWSwitchNotification());
-  EXPECT_TRUE(GetSWSwitchPopupNotification());
-  // As more that two apps are attempting to use the microphone, we fall back to
-  // displaying the generic message in the notification.
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE),
-      GetSWSwitchNotification()->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetSWSwitchNotification());
+    EXPECT_FALSE(GetSWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetSWSwitchNotification());
+    EXPECT_TRUE(GetSWSwitchPopupNotification());
+    // As more that two apps are attempting to use the microphone, we fall back
+    // to displaying the generic message in the notification.
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE),
+        GetSWSwitchNotification()->message());
+  }
 
   EXPECT_FALSE(
       ui::MicrophoneMuteSwitchMonitor::Get()->microphone_mute_switch_on());
@@ -620,18 +773,22 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationText) {
 
   // Toggle the hw switch.
   SetMicrophoneMuteSwitchState(/*muted=*/true);
-
-  EXPECT_TRUE(GetHWSwitchNotification());
-  EXPECT_TRUE(GetHWSwitchPopupNotification());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_MICROPHONE_MUTED_BY_HW_SWITCH_NOTIFICATION_TITLE),
-            GetHWSwitchNotification()->title());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE),
-      GetHWSwitchNotification()->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(GetHWSwitchNotification());
+    EXPECT_FALSE(GetHWSwitchPopupNotification());
+  } else {
+    EXPECT_TRUE(GetHWSwitchNotification());
+    EXPECT_TRUE(GetHWSwitchPopupNotification());
+    EXPECT_EQ(l10n_util::GetStringUTF16(
+                  IDS_MICROPHONE_MUTED_BY_HW_SWITCH_NOTIFICATION_TITLE),
+              GetHWSwitchNotification()->title());
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE),
+        GetHWSwitchNotification()->message());
+  }
 }
 
-TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
+TEST_P(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   // No notification initially.
   EXPECT_FALSE(IsAnyMicNotificationVisible());
 
@@ -646,11 +803,15 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   LaunchApp(app1);
 
   message_center::Notification* notification_ptr = GetSWSwitchNotification();
-  ASSERT_TRUE(notification_ptr);
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(
-          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, app1),
-      notification_ptr->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification_ptr);
+  } else {
+    ASSERT_TRUE(notification_ptr);
+    EXPECT_EQ(
+        l10n_util::GetStringFUTF16(
+            IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, app1),
+        notification_ptr->message());
+  }
 
   // Launch app2 that's also accessing the mic, the microphone mute notification
   // should be displayed again with both the application names in the
@@ -659,22 +820,30 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   LaunchApp(app2);
 
   notification_ptr = GetSWSwitchNotification();
-  ASSERT_TRUE(notification_ptr);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-                app2, app1),
-            notification_ptr->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification_ptr);
+  } else {
+    ASSERT_TRUE(notification_ptr);
+    EXPECT_EQ(l10n_util::GetStringFUTF16(
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+                  app2, app1),
+              notification_ptr->message());
+  }
 
   // Close one of the applications. The notification message should be updated
   // to only contain the name of the other application.
   CloseApp(app1);
 
   notification_ptr = GetSWSwitchNotification();
-  ASSERT_TRUE(notification_ptr);
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(
-          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, app2),
-      notification_ptr->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification_ptr);
+  } else {
+    ASSERT_TRUE(notification_ptr);
+    EXPECT_EQ(
+        l10n_util::GetStringFUTF16(
+            IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, app2),
+        notification_ptr->message());
+  }
 
   // Test the HW switch notification case.
   // HW switch is turned ON.
@@ -683,22 +852,30 @@ TEST_F(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   LaunchApp(app1);
 
   notification_ptr = GetHWSwitchNotification();
-  ASSERT_TRUE(notification_ptr);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
-                app1, app2),
-            notification_ptr->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification_ptr);
+  } else {
+    ASSERT_TRUE(notification_ptr);
+    EXPECT_EQ(l10n_util::GetStringFUTF16(
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+                  app1, app2),
+              notification_ptr->message());
+  }
 
   // Closing one of the applications should remove the name of that application
   // from the hw switch notification message.
   CloseApp(app2);
 
   notification_ptr = GetHWSwitchNotification();
-  ASSERT_TRUE(notification_ptr);
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(
-          IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, app1),
-      notification_ptr->message());
+  if (IsVideoConferenceEnabled()) {
+    EXPECT_FALSE(notification_ptr);
+  } else {
+    ASSERT_TRUE(notification_ptr);
+    EXPECT_EQ(
+        l10n_util::GetStringFUTF16(
+            IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME, app1),
+        notification_ptr->message());
+  }
 }
 
 }  // namespace ash
