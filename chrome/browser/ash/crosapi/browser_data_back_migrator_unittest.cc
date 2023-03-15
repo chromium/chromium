@@ -195,6 +195,30 @@ void SetUpIndexedDB(const base::FilePath& ash_profile_dir,
   }
 }
 
+void SetUpProfileDirectories(const base::FilePath& lacros_dir) {
+  // Set up the contents of lacros to mimic several secondary profile
+  // directories and some other irrelevant files and directories.
+  // |- user
+  //     |- lacros
+  //         |- Default
+  //         |- Profile 3     /* directory */
+  //         |- Profile 9     /* file */
+  //         |- Profile 14
+  //         |- Profile 824
+  //         |- Profile w/o number
+  //         |- Other directory
+
+  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Profile 3")));
+  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Profile 14")));
+  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Profile 824")));
+  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Profile w/o number")));
+  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Other directory")));
+
+  ASSERT_TRUE(
+      base::WriteFile(lacros_dir.Append("Profile 9"),
+                      base::StringPiece(kLacrosDataContent, kLacrosDataSize)));
+}
+
 void GenerateLevelDB(const base::FilePath& path,
                      std::map<std::string, std::string> values) {
   // Open a new LevelDB database.
@@ -318,9 +342,11 @@ class BrowserDataBackMigratorTest : public testing::Test {
 
     ash_profile_dir_ = user_data_dir_.GetPath().Append("user");
 
+    lacros_dir_ =
+        ash_profile_dir_.Append(browser_data_migrator_util::kLacrosDir);
+
     lacros_profile_dir_ =
-        ash_profile_dir_.Append(browser_data_migrator_util::kLacrosDir)
-            .Append(browser_data_migrator_util::kLacrosProfilePath);
+        lacros_dir_.Append(browser_data_migrator_util::kLacrosProfilePath);
 
     tmp_profile_dir_ =
         ash_profile_dir_.Append(browser_data_back_migrator::kTmpDir);
@@ -425,6 +451,7 @@ class BrowserDataBackMigratorTest : public testing::Test {
 
   base::ScopedTempDir user_data_dir_;
   base::FilePath ash_profile_dir_;
+  base::FilePath lacros_dir_;
   base::FilePath lacros_profile_dir_;
   base::FilePath tmp_profile_dir_;
 
@@ -1151,6 +1178,18 @@ TEST(BrowserDataBackMigratorUMATest, RecordMigrationTimeIfSuccessful) {
   BrowserDataBackMigrator::RecordMigrationTimeIfSuccessful(
       success, base::TimeTicks::Now());
   histogram_tester.ExpectTotalCount(kSuccessfulMigrationTimeUMA, 1);
+}
+TEST_F(BrowserDataBackMigratorTest, RecordNumberOfLacrosSecondaryProfiles) {
+  base::HistogramTester histogram_tester;
+
+  SetUpProfileDirectories(lacros_dir_);
+  BrowserDataBackMigrator::RecordNumberOfLacrosSecondaryProfiles(
+      ash_profile_dir_);
+
+  histogram_tester.ExpectTotalCount(kNumberOfLacrosSecondaryProfilesUMA, 1);
+
+  // Expect that the bucket for 3 secondary profiles has one record.
+  histogram_tester.ExpectBucketCount(kNumberOfLacrosSecondaryProfilesUMA, 3, 1);
 }
 
 }  // namespace ash

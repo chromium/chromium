@@ -523,6 +523,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataBackMigrator.NumberOfLacrosSecondaryProfiles"
+    units="profiles" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The number of Lacros secondary profiles at the time of starting the backward
+    migration process. Recorded every time migration is started.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataBackMigrator.PosixErrno.{TaskStatus}"
     enum="PopularOSErrno" expires_after="2023-12-01">
   <owner>janagrill@google.com</owner>

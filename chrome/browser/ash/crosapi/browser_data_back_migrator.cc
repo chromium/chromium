@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
@@ -95,6 +96,8 @@ void BrowserDataBackMigrator::Migrate(
   DCHECK(!running_);
   DCHECK(IsBackMigrationEnabled(
       crosapi::browser_util::PolicyInitState::kBeforeInit));
+
+  RecordNumberOfLacrosSecondaryProfiles(ash_profile_dir_);
 
   running_ = true;
   migration_start_time_ = base::TimeTicks::Now();
@@ -1380,6 +1383,48 @@ void BrowserDataBackMigrator::RecordMigrationTimeIfSuccessful(
 
   base::UmaHistogramMediumTimes(kSuccessfulMigrationTimeUMA,
                                 base::TimeTicks::Now() - migration_start_time);
+}
+
+// static
+void BrowserDataBackMigrator::RecordNumberOfLacrosSecondaryProfiles(
+    const base::FilePath& ash_profile_dir) {
+  // Since backward migration runs in Ash, calling `GetNumberOfProfiles()` on
+  // `ProfileManager` returns the number of profiles in Ash. In order to get the
+  // number of secondary profiles in Lacros, the number of directories in the
+  // format `chrome::kMultiProfileDirPrefix` + number inside the Lacros
+  // directory is counted.
+
+  const base::FilePath lacros_dir =
+      ash_profile_dir.Append(browser_data_migrator_util::kLacrosDir);
+
+  size_t number_of_secondary_profiles = 0;
+  const std::string prefix = chrome::kMultiProfileDirPrefix;
+  const size_t prefix_length = prefix.length();
+
+  base::FileEnumerator enumerator(lacros_dir, false /* recursive */,
+                                  base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath entry = enumerator.Next(); !entry.empty();
+       entry = enumerator.Next()) {
+    const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
+    if (!S_ISDIR(info.stat().st_mode)) {
+      continue;
+    }
+
+    const std::string base_name = entry.BaseName().value();
+
+    bool starts_with_prefix =
+        base::StartsWith(base_name, prefix, base::CompareCase::SENSITIVE);
+    int number;
+    bool ends_with_number =
+        base::StringToInt(base_name.substr(prefix_length), &number);
+
+    if (starts_with_prefix && ends_with_number) {
+      number_of_secondary_profiles += 1;
+    }
+  }
+
+  base::UmaHistogramCounts100(kNumberOfLacrosSecondaryProfilesUMA,
+                              number_of_secondary_profiles);
 }
 
 // static

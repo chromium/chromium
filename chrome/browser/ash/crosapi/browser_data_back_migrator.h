@@ -27,6 +27,8 @@ constexpr char kFinalStatusUMA[] = "Ash.BrowserDataBackMigrator.FinalStatus";
 constexpr char kPosixErrnoUMA[] = "Ash.BrowserDataBackMigrator.PosixErrno.";
 constexpr char kSuccessfulMigrationTimeUMA[] =
     "Ash.BrowserDataBackMigrator.SuccessfulMigrationTime";
+constexpr char kNumberOfLacrosSecondaryProfilesUMA[] =
+    "Ash.BrowserDataBackMigrator.NumberOfLacrosSecondaryProfiles";
 
 constexpr char kPreMigrationCleanUpTimeUMA[] =
     "Ash.BrowserDataBackMigrator.ElapsedTimePreMigrationCleanUp";
@@ -122,6 +124,8 @@ class BrowserDataBackMigrator {
                            RecordPosixErrnoIfAvailable);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorUMATest,
                            RecordMigrationTimeIfSuccessful);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
+                           RecordNumberOfLacrosSecondaryProfiles);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorUMATest, TaskStatusToString);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
                            MergesAshOnlyPreferencesCorrectly);
@@ -354,6 +358,11 @@ class BrowserDataBackMigrator {
   static void RecordMigrationTimeIfSuccessful(
       TaskResult result,
       base::TimeTicks migration_start_time);
+
+  // Records `kNumberOfLacrosSecondaryProfilesUMA` with the number of secondary
+  // profiles in Lacros at the time of starting backward migration.
+  static void RecordNumberOfLacrosSecondaryProfiles(
+      const base::FilePath& ash_profile_dir);
 
   // Converts `TaskStatus` to string.
   static std::string TaskStatusToString(TaskStatus task_status);
