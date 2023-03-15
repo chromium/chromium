@@ -63,8 +63,7 @@ TEST_P(WaylandZcrColorManagerTest, CreateColorManagementOutput) {
   // Set default values for the output.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl::TestOutput* output = server->output();
-    output->SetRect({800, 600});
-    output->SetScale(1);
+    output->SetPhysicalAndLogicalBounds({800, 600});
     output->Flush();
   });
 

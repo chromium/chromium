@@ -50,8 +50,7 @@ class WaylandZAuraOutputTest : public WaylandTestSimpleWithAuraShell {
     // Set default values for the output.
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       wl::TestOutput* output = server->output();
-      output->SetRect({800, 600});
-      output->SetScale(1);
+      output->SetPhysicalAndLogicalBounds({800, 600});
       output->Flush();
     });
 
@@ -146,20 +145,20 @@ TEST_F(WaylandZAuraOutputTest, DisplayIdConversions) {
 TEST_F(WaylandZAuraOutputTest, ActiveDisplay) {
   WaylandTestScreen test_screen(output_manager_->wayland_screen());
 
-  wl::TestOutput *primary = nullptr, *secondary = nullptr;
+  wl::TestOutput* primary = nullptr;
+  wl::TestOutput* secondary = nullptr;
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     primary = server->output();
-    secondary = server->CreateAndInitializeOutput();
+    secondary =
+        server->CreateAndInitializeOutput(wl::TestOutputMetrics({100, 100}));
   });
 
-  int64_t primary_id = display::kInvalidDisplayId,
-          secondary_id = display::kInvalidDisplayId;
+  int64_t primary_id = display::kInvalidDisplayId;
+  int64_t secondary_id = display::kInvalidDisplayId;
   // Wait so that the client creates xdg/aura outputs.
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
-    secondary->SetRect(gfx::Rect(100, 100));
-    secondary->Flush();
-    primary_id = primary->GetAuraOutput()->display_id();
-    secondary_id = secondary->GetAuraOutput()->display_id();
+    primary_id = primary->GetDisplayId();
+    secondary_id = secondary->GetDisplayId();
   });
 
   WaitForAllDisplaysReady();

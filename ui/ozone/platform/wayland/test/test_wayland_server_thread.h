@@ -121,10 +121,11 @@ class TestWaylandServerThread : public base::Thread,
     return resource ? T::FromResource(resource) : nullptr;
   }
 
-  TestOutput* CreateAndInitializeOutput() {
-    auto output = std::make_unique<TestOutput>();
-    if (output_.aura_shell_enabled())
+  TestOutput* CreateAndInitializeOutput(TestOutputMetrics metrics = {}) {
+    auto output = std::make_unique<TestOutput>(std::move(metrics));
+    if (output_.aura_shell_enabled()) {
       output->set_aura_shell_enabled();
+    }
     output->Initialize(display());
 
     TestOutput* output_ptr = output.get();

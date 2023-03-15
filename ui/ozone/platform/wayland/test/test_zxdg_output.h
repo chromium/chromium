@@ -16,30 +16,19 @@ namespace wl {
 
 extern const struct zxdg_output_v1_interface kTestZXdgOutputImpl;
 
-// Manages zxdg_output object.
+struct TestOutputMetrics;
+
+// Handles the server-side representation of the zxdg_output.
 class TestZXdgOutput : public ServerObject {
  public:
   explicit TestZXdgOutput(wl_resource* resource);
-
   TestZXdgOutput(const TestZXdgOutput&) = delete;
   TestZXdgOutput& operator=(const TestZXdgOutput&) = delete;
-
   ~TestZXdgOutput() override;
 
-  void SetLogicalSize(const gfx::Size& size);
-
-  // Send logical size w/o remembering.
-  void SendLogicalSize(const gfx::Size& size);
-
-  bool HasLogicalSize() const {
-    return logical_size_.has_value() || pending_logical_size_.has_value();
-  }
-
-  void Flush();
-
- private:
-  absl::optional<gfx::Size> pending_logical_size_;
-  absl::optional<gfx::Size> logical_size_;
+  // Called by the owning wl_output as part of its Flush() operation that
+  // propagates the current state of `metrics_` to clients.
+  void Flush(const TestOutputMetrics& metrics);
 };
 
 }  // namespace wl

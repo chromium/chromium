@@ -7,6 +7,7 @@
 #include <xdg-output-unstable-v1-server-protocol.h>
 
 #include "ui/base/wayland/wayland_display_util.h"
+#include "ui/ozone/platform/wayland/test/test_output_metrics.h"
 
 namespace wl {
 
@@ -15,20 +16,12 @@ TestZXdgOutput::TestZXdgOutput(wl_resource* resource)
 
 TestZXdgOutput::~TestZXdgOutput() = default;
 
-void TestZXdgOutput::SetLogicalSize(const gfx::Size& size) {
-  pending_logical_size_ = size;
-}
-
-void TestZXdgOutput::SendLogicalSize(const gfx::Size& size) {
-  zxdg_output_v1_send_logical_size(resource(), size.width(), size.height());
-}
-
-void TestZXdgOutput::Flush() {
-  if (pending_logical_size_) {
-    logical_size_ = *pending_logical_size_;
-    pending_logical_size_.reset();
-    SendLogicalSize(*logical_size_);
-  }
+void TestZXdgOutput::Flush(const TestOutputMetrics& metrics) {
+  zxdg_output_v1_send_logical_size(resource(), metrics.xdg_logical_size.width(),
+                                   metrics.xdg_logical_size.height());
+  zxdg_output_v1_send_logical_position(resource(),
+                                       metrics.xdg_logical_origin.x(),
+                                       metrics.xdg_logical_origin.y());
 }
 
 const struct zxdg_output_v1_interface kTestZXdgOutputImpl = {

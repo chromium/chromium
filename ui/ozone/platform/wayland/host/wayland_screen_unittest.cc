@@ -42,6 +42,13 @@ constexpr uint32_t kNumberOfDisplays = 1;
 constexpr uint32_t kOutputWidth = 1024;
 constexpr uint32_t kOutputHeight = 768;
 
+// Helper that gets the rightmost x coordinate for the given `output`.
+int GetRightX(const wl::TestOutput* output) {
+  const auto& size = output->GetPhysicalSize();
+  const auto& origin = output->GetOrigin();
+  return origin.x() + size.width();
+}
+
 class TestDisplayObserver : public display::DisplayObserver {
  public:
   TestDisplayObserver() {}
@@ -104,8 +111,7 @@ class WaylandScreenTest : public WaylandTest {
 
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       auto* output = server->output();
-      output->SetRect({kOutputWidth, kOutputHeight});
-      output->SetScale(1);
+      output->SetPhysicalAndLogicalBounds({kOutputWidth, kOutputHeight});
       output->Flush();
     });
 
@@ -168,40 +174,27 @@ TEST_P(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
   wl::TestOutput* output2 = nullptr;
   wl::TestOutput* output3 = nullptr;
 
-  gfx::Rect output1_rect;
-  PostToServerAndWait(
-      [&output1, &output1_rect](wl::TestWaylandServerThread* server) {
-        output1 = server->output();
-        ASSERT_TRUE(output1);
-        output1_rect = server->output()->GetRect();
-      });
-
-  // Add a second display.
-  PostToServerAndWait([&output2](wl::TestWaylandServerThread* server) {
-    output2 = server->CreateAndInitializeOutput();
-    ASSERT_TRUE(output2);
+  PostToServerAndWait([&output1](wl::TestWaylandServerThread* server) {
+    output1 = server->output();
+    ASSERT_TRUE(output1);
   });
 
-  // The second display is located to the right of first display
-  gfx::Rect output2_rect(output1_rect.right(), 0, 800, 600);
+  // Add a second display. The second display is located to the right of first
+  // display.
   PostToServerAndWait(
-      [output2, &output2_rect](wl::TestWaylandServerThread* server) {
-        output2->SetRect(output2_rect);
-        output2->Flush();
+      [&output2, &output1](wl::TestWaylandServerThread* server) {
+        output2 = server->CreateAndInitializeOutput(
+            wl::TestOutputMetrics({GetRightX(output1), 0, 800, 600}));
+        ASSERT_TRUE(output2);
       });
 
-  // Add a third display.
-  PostToServerAndWait([&output3](wl::TestWaylandServerThread* server) {
-    output3 = server->CreateAndInitializeOutput();
-    ASSERT_TRUE(output3);
-  });
-
-  // The third display is located to the right of second display
-  gfx::Rect output3_rect(output2_rect.right(), 0, 800, 600);
+  // Add a third display. The third display is located to the right of second
+  // display.
   PostToServerAndWait(
-      [output3, &output3_rect](wl::TestWaylandServerThread* server) {
-        output3->SetRect(output3_rect);
-        output3->Flush();
+      [&output3, &output2](wl::TestWaylandServerThread* server) {
+        output3 = server->CreateAndInitializeOutput(
+            wl::TestOutputMetrics({GetRightX(output2), 0, 800, 600}));
+        ASSERT_TRUE(output3);
       });
 
   WaitForAllDisplaysReady();
@@ -248,18 +241,14 @@ TEST_P(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
   entered_outputs = window_->root_surface()->entered_outputs();
   EXPECT_EQ(1u, entered_outputs.size());
 
-  // Add a second display.
-  PostToServerAndWait([&output2](wl::TestWaylandServerThread* server) {
-    ASSERT_FALSE(output2);
-    output2 = server->CreateAndInitializeOutput();
-    ASSERT_TRUE(output2);
-  });
-
-  // The second display is located to the right of first display
+  // Add a second display. The second display is located to the right of first
+  // display.
   PostToServerAndWait(
-      [output2, &output2_rect](wl::TestWaylandServerThread* server) {
-        output2->SetRect(output2_rect);
-        output2->Flush();
+      [&output2, &output1](wl::TestWaylandServerThread* server) {
+        ASSERT_FALSE(output2);
+        output2 = server->CreateAndInitializeOutput(
+            wl::TestOutputMetrics({GetRightX(output1), 0, 800, 600}));
+        ASSERT_TRUE(output2);
       });
 
   PostToServerAndWait(
@@ -276,6 +265,7 @@ TEST_P(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
 TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
   // This has to be stored on the client thread, but must be used only on the
   // server thread.
+  wl::TestOutput* output1 = nullptr;
   wl::TestOutput* output2 = nullptr;
 
   TestDisplayObserver observer;
@@ -283,25 +273,18 @@ TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
 
   const int64_t old_primary_display_id =
       platform_screen_->GetPrimaryDisplay().id();
-  gfx::Rect output1_rect;
-  PostToServerAndWait([&output1_rect](wl::TestWaylandServerThread* server) {
-    output1_rect = server->output()->GetRect();
+  PostToServerAndWait([&output1](wl::TestWaylandServerThread* server) {
+    output1 = server->output();
   });
-  ASSERT_FALSE(output1_rect.IsEmpty());
+  ASSERT_FALSE(output1->GetPhysicalSize().IsEmpty());
 
-  // Add a second display.
-  PostToServerAndWait([&output2](wl::TestWaylandServerThread* server) {
-    output2 = server->CreateAndInitializeOutput();
-    ASSERT_TRUE(output2);
-  });
-
-  // The second display is located to the right of first display like
-  // | || |.
-  gfx::Rect output2_rect(output1_rect.width(), 0, 800, 600);
+  // Add a second display. The second display is located to the right of first
+  // display like | || |.
   PostToServerAndWait(
-      [output2, &output2_rect](wl::TestWaylandServerThread* server) {
-        output2->SetRect(output2_rect);
-        output2->Flush();
+      [&output2, &output1](wl::TestWaylandServerThread* server) {
+        output2 = server->CreateAndInitializeOutput(
+            wl::TestOutputMetrics({GetRightX(output1), 0, 800, 600}));
+        ASSERT_TRUE(output2);
       });
 
   WaitForAllDisplaysReady();
@@ -320,18 +303,13 @@ TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
   int64_t removed_display_id = observer.GetRemovedDisplay().id();
   EXPECT_EQ(added_display_id, removed_display_id);
 
-  // Create another display again.
-  PostToServerAndWait([&output2](wl::TestWaylandServerThread* server) {
-    ASSERT_FALSE(output2);
-    output2 = server->CreateAndInitializeOutput();
-    ASSERT_TRUE(output2);
-  });
-
-  // Updates rect again.
+  // Create another display again. Updates rect again.
   PostToServerAndWait(
-      [output2, &output2_rect](wl::TestWaylandServerThread* server) {
-        output2->SetRect(output2_rect);
-        output2->Flush();
+      [&output2, &output1](wl::TestWaylandServerThread* server) {
+        ASSERT_FALSE(output2);
+        output2 = server->CreateAndInitializeOutput(
+            wl::TestOutputMetrics({GetRightX(output1), 0, 800, 600}));
+        ASSERT_TRUE(output2);
       });
 
   WaitForAllDisplaysReady();
@@ -341,15 +319,14 @@ TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
   EXPECT_NE(platform_screen_->GetPrimaryDisplay().id(), added_display_id);
 
   // Now, rearrange displays so that second display becomes the primary one.
-  output1_rect = gfx::Rect(1024, 0, 1024, 768);
-  output2_rect = gfx::Rect(0, 0, 1024, 768);
-  PostToServerAndWait([&output1_rect, &output2_rect,
-                       output2](wl::TestWaylandServerThread* server) {
+  constexpr auto output1_bounds = gfx::Rect(1024, 0, 1024, 768);
+  constexpr auto output2_bounds = gfx::Rect(0, 0, 1024, 768);
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto* output = server->output();
-    output->SetRect(output1_rect);
+    output->SetPhysicalAndLogicalBounds(output1_bounds);
     output->Flush();
 
-    output2->SetRect(output2_rect);
+    output2->SetPhysicalAndLogicalBounds(output2_bounds);
     output2->Flush();
   });
 
@@ -548,26 +525,21 @@ TEST_P(WaylandScreenTest, GetDisplayMatching) {
       platform_screen_->GetPrimaryDisplay();
 
   // This has to be stored on the client thread, but must be used only on the
-  // server thread.
-  wl::TestOutput* output2 = nullptr;
-  PostToServerAndWait([&output2](wl::TestWaylandServerThread* server) {
-    output2 = server->CreateAndInitializeOutput();
-    ASSERT_TRUE(output2);
-  });
-
-  // Place it on the right side of the primary display.
-  const gfx::Rect output2_rect =
+  // server thread. Place it on the right side of the primary display.
+  const auto outout2_bounds =
       gfx::Rect(primary_display.bounds().width(), 0, 1024, 768);
+  wl::TestOutput* output2 = nullptr;
   PostToServerAndWait(
-      [output2, output2_rect](wl::TestWaylandServerThread* server) {
-        output2->SetRect(output2_rect);
-        output2->Flush();
+      [&output2, &outout2_bounds](wl::TestWaylandServerThread* server) {
+        output2 = server->CreateAndInitializeOutput(
+            wl::TestOutputMetrics(outout2_bounds));
+        ASSERT_TRUE(output2);
       });
 
   WaitForAllDisplaysReady();
 
   const display::Display second_display = observer.GetDisplay();
-  EXPECT_EQ(second_display.bounds(), output2_rect);
+  EXPECT_EQ(second_display.bounds(), outout2_bounds);
 
   // We have two displays: display1(0:0,1024x768) and display2(1024:0,1024x768).
   EXPECT_EQ(
@@ -594,10 +566,11 @@ TEST_P(WaylandScreenTest, GetDisplayMatching) {
 
   // Place second display 700 pixels below along y axis (1024:700,1024x768)
   PostToServerAndWait(
-      [output2, output2_rect](wl::TestWaylandServerThread* server) {
-        output2->SetRect(
-            gfx::Rect(gfx::Point(output2_rect.x(), output2_rect.y() + 700),
-                      output2_rect.size()));
+      [&output2, &outout2_bounds](wl::TestWaylandServerThread* server) {
+        output2->SetOrigin(
+            gfx::Point(outout2_bounds.x(), outout2_bounds.y() + 700));
+        output2->SetLogicalOrigin(
+            gfx::Point(outout2_bounds.x(), outout2_bounds.y() + 700));
         output2->Flush();
       });
 
@@ -661,27 +634,22 @@ TEST_P(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
       platform_screen_->GetPrimaryDisplay();
 
   // Create an additional display. This has to be stored on the client thread,
-  // but must be used only on the server thread.
-  wl::TestOutput* output2 = nullptr;
-  PostToServerAndWait([&output2](wl::TestWaylandServerThread* server) {
-    output2 = server->CreateAndInitializeOutput();
-    ASSERT_TRUE(output2);
-  });
-
-  // Place it on the right side of the primary
-  // display.
-  const gfx::Rect output2_rect =
+  // but must be used only on the server thread. Place it on the right side of
+  // the primary display.
+  const gfx::Rect output2_bounds =
       gfx::Rect(primary_display.bounds().width(), 0, 1024, 768);
+  wl::TestOutput* output2 = nullptr;
   PostToServerAndWait(
-      [output2, output2_rect](wl::TestWaylandServerThread* server) {
-        output2->SetRect(output2_rect);
-        output2->Flush();
+      [&output2, &output2_bounds](wl::TestWaylandServerThread* server) {
+        output2 = server->CreateAndInitializeOutput(
+            wl::TestOutputMetrics(output2_bounds));
+        ASSERT_TRUE(output2);
       });
 
   WaitForAllDisplaysReady();
 
   const display::Display secondary_display = observer.GetDisplay();
-  EXPECT_EQ(secondary_display.bounds(), output2_rect);
+  EXPECT_EQ(secondary_display.bounds(), output2_bounds);
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   // There must be a primary display used if the window has not received an
@@ -1035,98 +1003,54 @@ TEST_P(WaylandScreenTest, Transform) {
   for (const auto& [transform, expected_rotation] : kTestData) {
     PostToServerAndWait(
         [new_transform = transform](wl::TestWaylandServerThread* server) {
-          server->output()->SetTransform(new_transform);
-          server->output()->Flush();
+          auto* output = server->output();
+          output->SetPanelTransform(new_transform);
+          output->SetLogicalTransform(new_transform);
+          output->Flush();
         });
 
     auto main_display = platform_screen_->GetPrimaryDisplay();
+    EXPECT_EQ(main_display.panel_rotation(), expected_rotation);
     EXPECT_EQ(main_display.rotation(), expected_rotation);
   }
 }
 
-namespace {
-
-class LazilyConfiguredScreenTest
-    : public WaylandTest,
-      public wl::TestWaylandServerThread::OutputDelegate {
- public:
-  LazilyConfiguredScreenTest() = default;
-  LazilyConfiguredScreenTest(const LazilyConfiguredScreenTest&) = delete;
-  LazilyConfiguredScreenTest& operator=(const LazilyConfiguredScreenTest&) =
-      delete;
-  ~LazilyConfiguredScreenTest() override = default;
-
-  void SetUp() override {
-    // This can be set on the client thread as the server is not running yet.
-    ASSERT_FALSE(server_.IsRunning());
-    server_.set_output_delegate(this);
-    WaylandTest::SetUp();
-
-    output_manager_ = connection_->wayland_output_manager();
-    ASSERT_TRUE(output_manager_);
-  }
-
-  void TearDown() override {
-    WaylandTest::TearDown();
-
-    PostToServerAndWait(
-        [output = aux_output_](wl::TestWaylandServerThread* server) {
-          output->DestroyGlobal();
-          server->set_output_delegate(nullptr);
-        });
-    aux_output_ = nullptr;
-    primary_output_ = nullptr;
-  }
-
- protected:
-  // wl::TestWaylandServerThread::OutputDelegate:
-  void SetupOutputs(wl::TestOutput* primary) override {
-    // This happens before the server starts to run.
-    ASSERT_FALSE(server_.IsRunning());
-
-    // Keep the first wl_output announced "unconfigured" and just caches it for
-    // now, so we can exercise WaylandOutputManager::IsOutputReady() function
-    // when wl_output events come in unordered.
-    primary_output_ = primary;
-
-    // Create/announce a second wl_output object and makes it the first one to
-    // get configuration events (eg: geometry, done, etc). This is achieved by
-    // setting its bounds here.
-    aux_output_ = server_.CreateAndInitializeOutput();
-    aux_output_->SetRect({0, 0, 800, 600});
-  }
-
-  // Must only be accessed on the server thread.
-  raw_ptr<wl::TestOutput> primary_output_ = nullptr;
-  raw_ptr<wl::TestOutput> aux_output_ = nullptr;
-
-  raw_ptr<WaylandOutputManager> output_manager_ = nullptr;
-};
-
-}  // namespace
-
 // Ensures WaylandOutputManager and WaylandScreen properly handle scenarios
 // where multiple wl_output objects are announced but not "configured" (ie:
 // size, position, mode, etc sent to client) at bind time.
-TEST_P(LazilyConfiguredScreenTest, DualOutput) {
-  // Ensure WaylandScreen got properly created and fed with a single display
-  // object, ie: |aux_output_| at server side.
-  EXPECT_TRUE(output_manager_->IsOutputReady());
-  EXPECT_TRUE(screen_);
-  EXPECT_EQ(1u, screen_->GetAllDisplays().size());
+TEST_P(WaylandScreenTest, DualOutput) {
+  // Create two new outputs which will announce the output globals to clients
+  // but will suppress sending the metrics events when the clients bind to
+  // these.
+  wl::TestOutput* output_1 = nullptr;
+  wl::TestOutput* output_2 = nullptr;
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    output_1 = server_.CreateAndInitializeOutput(
+        wl::TestOutputMetrics({800, 0, 800, 600}));
+    output_2 = server_.CreateAndInitializeOutput(
+        wl::TestOutputMetrics({1600, 0, 800, 600}));
+    output_1->set_suppress_implicit_flush(true);
+    output_2->set_suppress_implicit_flush(true);
+  });
 
-  // Send wl_output configuration events for the first advertised wl_output
-  // object. ie: |primary_output_| at server side.
+  // The client should only register the single (primary) display.
+  EXPECT_EQ(1u, platform_screen_->GetAllDisplays().size());
+
+  // Propagate the events for output_2 first. output_2 was advertised to clients
+  // after output_1.
   PostToServerAndWait(
-      [output = primary_output_](wl::TestWaylandServerThread* server) {
-        output->SetRect({800, 0, kOutputWidth, kOutputHeight});
-        output->SetScale(1);
-        output->Flush();
-      });
+      [&](wl::TestWaylandServerThread* server) { output_2->Flush(); });
 
-  // And make sure it makes its way into the WaylandScreen's display list at
-  // client side.
-  EXPECT_EQ(2u, screen_->GetAllDisplays().size());
+  // The client should now have a view of output_2.
+  EXPECT_EQ(2u, platform_screen_->GetAllDisplays().size());
+
+  // Propagate the events for output_1 last. output_1 was advertised to clients
+  // before output_2.
+  PostToServerAndWait(
+      [&](wl::TestWaylandServerThread* server) { output_1->Flush(); });
+
+  // The client should now have a view of all three displays.
+  EXPECT_EQ(3u, platform_screen_->GetAllDisplays().size());
 }
 
 class WaylandAuraShellScreenTest : public WaylandScreenTest {
@@ -1144,8 +1068,9 @@ TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   platform_screen_->AddObserver(&observer);
   constexpr gfx::Rect kPhysicalBounds{800, 600};
   PostToServerAndWait([kPhysicalBounds](wl::TestWaylandServerThread* server) {
-    server->output()->SetRect(kPhysicalBounds);
-    server->output()->Flush();
+    auto* output = server->output();
+    output->SetPhysicalAndLogicalBounds(kPhysicalBounds);
+    output->Flush();
   });
 
   uint32_t changed_values = display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
@@ -1163,7 +1088,7 @@ TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   PostToServerAndWait([expected_inset](wl::TestWaylandServerThread* server) {
     auto* output = server->output();
     ASSERT_TRUE(output->GetAuraOutput());
-    output->GetAuraOutput()->SetInsets(expected_inset);
+    output->SetLogicalInsets(expected_inset);
     output->Flush();
   });
 
@@ -1179,12 +1104,11 @@ TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   constexpr int32_t kNewScaleValue = 2;
   const gfx::Size scaled_logical_size =
       gfx::ScaleToRoundedSize(kPhysicalBounds.size(), 1.f / kNewScaleValue);
-  PostToServerAndWait(
-      [scaled_logical_size](wl::TestWaylandServerThread* server) {
-        auto* output = server->output();
-        output->xdg_output()->SetLogicalSize(scaled_logical_size);
-        output->Flush();
-      });
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* output = server->output();
+    output->SetLogicalSize(scaled_logical_size);
+    output->Flush();
+  });
 
   changed_values =
       display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR |
@@ -1202,15 +1126,13 @@ TEST_P(WaylandAuraShellScreenTest, OutputPropertyChanges) {
   EXPECT_EQ(observer.GetDisplay().work_area(), scaled_work_area);
 
   // Test rotation.
-  PostToServerAndWait(
-      [scaled_logical_size](wl::TestWaylandServerThread* server) {
-        gfx::Size transposed = scaled_logical_size;
-        transposed.Transpose();
-        auto* output = server->output();
-        output->SetTransform(WL_OUTPUT_TRANSFORM_90);
-        output->xdg_output()->SetLogicalSize(transposed);
-        output->Flush();
-      });
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* output = server->output();
+    output->SetPanelTransform(WL_OUTPUT_TRANSFORM_90);
+    output->SetLogicalTransform(WL_OUTPUT_TRANSFORM_90);
+    output->ApplyLogicalTranspose();
+    output->Flush();
+  });
 
   changed_values = display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
                    display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
@@ -1246,30 +1168,28 @@ TEST_P(WaylandAuraShellScreenTest,
   // wl_output.geometry origin is set in DIP screen coordinates.
   constexpr gfx::Point kOrigin(50, 70);
   constexpr gfx::Size kPhysicalSize(1200, 1600);
-  PostToServerAndWait(
-      [kOrigin, kPhysicalSize](wl::TestWaylandServerThread* server) {
-        // wl_output.mode size is sent in physical coordinates, so it has
-        // portrait dimensions for a display panel with portrait natural
-        // orientation.
-        server->output()->SetRect({kOrigin, kPhysicalSize});
-      });
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    // wl_output.mode size is sent in physical coordinates, so it has
+    // portrait dimensions for a display panel with portrait natural
+    // orientation.
+    server->output()->SetPhysicalAndLogicalBounds({kOrigin, kPhysicalSize});
+  });
 
   // Inset is sent in logical coordinates.
   constexpr gfx::Insets kInsets = gfx::Insets::TLBR(10, 20, 30, 40);
-  gfx::Size scaled_logical_size = gfx::ScaleToRoundedSize(kPhysicalSize, 0.5);
-  scaled_logical_size.Transpose();
-  PostToServerAndWait([kInsets, scaled_logical_size](
-                          wl::TestWaylandServerThread* server) {
+  const gfx::Size scaled_logical_size =
+      gfx::ScaleToRoundedSize(kPhysicalSize, 0.5);
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
     auto* output = server->output();
     ASSERT_TRUE(output->GetAuraOutput());
-    output->GetAuraOutput()->SetInsets(kInsets);
-
+    output->SetLogicalSize(scaled_logical_size);
+    output->SetLogicalInsets(kInsets);
     // Display panel's natural orientation is in portrait, so it needs a
     // transform of 90 degrees to be in landscape.
-    output->SetTransform(WL_OUTPUT_TRANSFORM_90);
+    output->SetPanelTransform(WL_OUTPUT_TRANSFORM_90);
     // Begin with the logical transform at 0 degrees.
-    output->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_NORMAL);
-    output->xdg_output()->SetLogicalSize(scaled_logical_size);
+    output->SetLogicalTransform(WL_OUTPUT_TRANSFORM_NORMAL);
+    output->ApplyLogicalTranspose();
     output->Flush();
   });
 
@@ -1298,15 +1218,13 @@ TEST_P(WaylandAuraShellScreenTest,
 
   // Further rotate the display to logical portrait orientation, which is 180
   // with the natural orientation offset.
-  scaled_logical_size.Transpose();
-  PostToServerAndWait(
-      [scaled_logical_size](wl::TestWaylandServerThread* server) {
-        auto* output = server->output();
-        output->SetTransform(WL_OUTPUT_TRANSFORM_180);
-        output->GetAuraOutput()->SetLogicalTransform(WL_OUTPUT_TRANSFORM_90);
-        output->xdg_output()->SetLogicalSize(scaled_logical_size);
-        output->Flush();
-      });
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* output = server->output();
+    output->SetPanelTransform(WL_OUTPUT_TRANSFORM_180);
+    output->SetLogicalTransform(WL_OUTPUT_TRANSFORM_90);
+    output->ApplyLogicalTranspose();
+    output->Flush();
+  });
 
   changed_values = display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
                    display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
@@ -1341,27 +1259,19 @@ TEST_P(WaylandAuraShellScreenTest, UseCorrectScreenBeforeEnterEvent) {
   wl::TestOutput* output1 = nullptr;
   wl::TestOutput* output2 = nullptr;
 
-  gfx::Rect output1_rect;
-  PostToServerAndWait(
-      [&output1, &output1_rect](wl::TestWaylandServerThread* server) {
-        output1 = server->output();
-        ASSERT_TRUE(output1);
-        output1_rect = server->output()->GetRect();
-      });
-
-  // Add a second display with scale factor 2.
-  PostToServerAndWait([&output2](wl::TestWaylandServerThread* server) {
-    output2 = server->CreateAndInitializeOutput();
-    ASSERT_TRUE(output2);
+  PostToServerAndWait([&output1](wl::TestWaylandServerThread* server) {
+    output1 = server->output();
+    ASSERT_TRUE(output1);
   });
 
-  gfx::Rect output2_rect(output1_rect.right(), 0, 800, 600);
+  // Add a second display with scale factor 2.
   PostToServerAndWait(
-      [output2, &output2_rect](wl::TestWaylandServerThread* server) {
-        output2->SetRect(output2_rect);
-        // Scale Factor 2
-        output2->xdg_output()->SetLogicalSize({400, 300});
-        output2->Flush();
+      [&output1, &output2](wl::TestWaylandServerThread* server) {
+        output2 = server->CreateAndInitializeOutput(
+            wl::TestOutputMetrics({GetRightX(output1), 0, 800, 600}));
+        // Scale Factor 2.
+        output2->SetLogicalSize({400, 300});
+        ASSERT_TRUE(output2);
       });
 
   WaitForAllDisplaysReady();
@@ -1369,7 +1279,7 @@ TEST_P(WaylandAuraShellScreenTest, UseCorrectScreenBeforeEnterEvent) {
   // Create a window on the 2nd display with scale factor 2.
   EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(testing::_)).Times(1);
   PlatformWindowInitProperties properties;
-  properties.bounds = gfx::Rect(output1_rect.right(), 0, 100, 100);
+  properties.bounds = gfx::Rect(GetRightX(output1), 0, 100, 100);
   properties.type = PlatformWindowType::kWindow;
   window_ =
       delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
@@ -1396,16 +1306,6 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTest,
     WaylandAuraShellScreenTest,
-    Values(wl::ServerConfig{
-        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
-
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         LazilyConfiguredScreenTest,
-                         Values(wl::ServerConfig{}));
-
-INSTANTIATE_TEST_SUITE_P(
-    XdgVersionStableTestWithAuraShell,
-    LazilyConfiguredScreenTest,
     Values(wl::ServerConfig{
         .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 

@@ -12,19 +12,22 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
+#include "ui/ozone/platform/wayland/test/test_output_metrics.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
 #include "ui/ozone/platform/wayland/test/test_zxdg_output.h"
 
 namespace wl {
 
-// Handle wl_output object.
+// Handles the server-side representation of the wl_output. Values stored in
+// `metrics_` are propagated to clients when `Flush()` is called. This occurs
+// when the client first binds the output and output extensions are set by
+// default.
 class TestOutput : public GlobalObject {
  public:
   TestOutput();
-
+  explicit TestOutput(TestOutputMetrics metrics);
   TestOutput(const TestOutput&) = delete;
   TestOutput& operator=(const TestOutput&) = delete;
-
   ~TestOutput() override;
 
   static TestOutput* FromResource(wl_resource* resource);
@@ -33,12 +36,31 @@ class TestOutput : public GlobalObject {
   void set_aura_shell_enabled() { aura_shell_enabled_ = true; }
   bool aura_shell_enabled() { return aura_shell_enabled_; }
 
-  const gfx::Rect GetRect() { return rect_; }
-  void SetRect(const gfx::Rect& rect);
-  int32_t GetScale() const { return scale_; }
-  void SetScale(int32_t factor);
-  void SetTransform(wl_output_transform transform);
+  //////////////////////////////////////////////////////////////////////////////
+  // Output metrics helpers.
 
+  // Sets the physical and logical bounds of the output to `bounds`. This is
+  // helpful for the default case.
+  void SetPhysicalAndLogicalBounds(const gfx::Rect& bounds);
+
+  // Applies a transpose operation on the logical size.
+  void ApplyLogicalTranspose();
+
+  void SetOrigin(const gfx::Point& wl_origin);
+  void SetScale(int32_t wl_scale);
+  void SetLogicalSize(const gfx::Size& xdg_logical_size);
+  void SetLogicalOrigin(const gfx::Point& xdg_logical_origin);
+  void SetPanelTransform(wl_output_transform wl_panel_transform);
+  void SetLogicalInsets(const gfx::Insets& wl_logical_insets);
+  void SetLogicalTransform(wl_output_transform aura_logical_transform);
+
+  const gfx::Size& GetPhysicalSize() const;
+  const gfx::Point& GetOrigin() const;
+  int32_t GetScale() const;
+  int64_t GetDisplayId() const;
+  //////////////////////////////////////////////////////////////////////////////
+
+  // Flushes `metrics_` for this output and all available extensions.
   void Flush();
 
   void SetAuraOutput(TestZAuraOutput* aura_output);
@@ -47,18 +69,22 @@ class TestOutput : public GlobalObject {
   void SetXdgOutput(TestZXdgOutput* aura_output);
   TestZXdgOutput* xdg_output() { return xdg_output_; }
 
+  void set_suppress_implicit_flush(bool suppress_implicit_flush) {
+    suppress_implicit_flush_ = suppress_implicit_flush;
+  }
+
  protected:
   void OnBind() override;
 
  private:
   bool aura_shell_enabled_ = false;
-  gfx::Rect rect_;
-  int32_t scale_;
-  wl_output_transform transform_{WL_OUTPUT_TRANSFORM_NORMAL};
 
-  absl::optional<gfx::Rect> pending_rect_ = absl::nullopt;
-  absl::optional<int32_t> pending_scale_ = absl::nullopt;
-  absl::optional<wl_output_transform> pending_transform_ = absl::nullopt;
+  // Disable sending metrics to clients implicitly (i.e. when the output is
+  // bound or when output extensions are created). If this is set `Flush()` must
+  // be explicitly called to propagate pending metrics.
+  bool suppress_implicit_flush_ = false;
+
+  TestOutputMetrics metrics_;
 
   raw_ptr<TestZAuraOutput> aura_output_ = nullptr;
   raw_ptr<TestZXdgOutput> xdg_output_ = nullptr;

@@ -160,8 +160,9 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
 
     // Set output dimensions at some offset.
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-      server->output()->SetRect({20, 30, 1200, 900});
-      server->output()->Flush();
+      auto* output = server->output();
+      output->SetPhysicalAndLogicalBounds({20, 30, 1200, 900});
+      output->Flush();
     });
 
     drag_finished_callback_ = std::make_unique<MockDragFinishedCallback>();
@@ -460,7 +461,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
       if (output->xdg_output()) {
         // Use logical size to control the scale when the pixel coordinates
         // is enabled.
-        output->xdg_output()->SetLogicalSize({400, 300});
+        output->SetLogicalSize({400, 300});
       } else {
         output->SetScale(kTripleScale);
       }

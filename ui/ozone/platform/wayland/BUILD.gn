@@ -444,6 +444,8 @@ source_set("test_support") {
     "test/test_keyboard.h",
     "test/test_output.cc",
     "test/test_output.h",
+    "test/test_output_metrics.cc",
+    "test/test_output_metrics.h",
     "test/test_overlay_prioritized_surface.cc",
     "test/test_overlay_prioritized_surface.h",
     "test/test_overlay_prioritizer.cc",

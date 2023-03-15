@@ -2261,14 +2261,15 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Configure first output with scale 1.
     wl::TestOutput* output1 = server->output();
-    output1->SetRect(gfx::Rect(1920, 1080));
-    output1->SetScale(1);
+    output1->SetPhysicalAndLogicalBounds({1920, 1080});
+    output1->Flush();
 
     // Creating an output with scale 2.
-    wl::TestOutput* output2 = server->CreateAndInitializeOutput();
-    output2->SetRect(gfx::Rect(1920, 1080));
+    auto* output2 =
+        server->CreateAndInitializeOutput(wl::TestOutputMetrics({1920, 1080}));
     output2->SetScale(2);
   });
+  WaitForAllDisplaysReady();
 
   auto* output_manager = connection_->wayland_output_manager();
   EXPECT_EQ(2u, output_manager->GetAllOutputs().size());
@@ -2320,14 +2321,15 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Configure an output with scale 1.
     wl::TestOutput* output1 = server->output();
-    output1->SetRect(gfx::Rect(1920, 1080));
-    output1->SetScale(1);
+    output1->SetPhysicalAndLogicalBounds({1920, 1080});
+    output1->Flush();
 
     // Creating an output with scale 2.
-    wl::TestOutput* output2 = server->CreateAndInitializeOutput();
-    output2->SetRect(gfx::Rect(1920, 0, 1920, 1080));
+    auto* output2 = server->CreateAndInitializeOutput(
+        wl::TestOutputMetrics({1920, 0, 1920, 1080}));
     output2->SetScale(2);
   });
+  WaitForAllDisplaysReady();
 
   auto* output_manager = connection_->wayland_output_manager();
   EXPECT_EQ(2u, output_manager->GetAllOutputs().size());
@@ -2415,13 +2417,12 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Configure an output with scale 1.
     wl::TestOutput* main_output = server->output();
-    main_output->SetRect(gfx::Rect(1920, 1080));
-    main_output->SetScale(1);
+    main_output->SetPhysicalAndLogicalBounds({1920, 1080});
+    main_output->Flush();
 
-    // Creating an output with scale 2.
-    wl::TestOutput* secondary_output = server->CreateAndInitializeOutput();
-    secondary_output->SetRect(gfx::Rect(1921, 0, 1920, 1080));
-    secondary_output->SetScale(1);
+    // Creating an output with scale 1.
+    server->CreateAndInitializeOutput(
+        wl::TestOutputMetrics({1921, 0, 1920, 1080}));
   });
 
   auto* output_manager = connection_->wayland_output_manager();
@@ -2517,14 +2518,15 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferUsesParentScale) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Configure the the first output with scale 1.
     wl::TestOutput* main_output = server->output();
-    main_output->SetRect(gfx::Rect(1920, 1080));
-    main_output->SetScale(1);
+    main_output->SetPhysicalAndLogicalBounds({1920, 1080});
+    main_output->Flush();
 
     // Creating an output with scale 2.
-    wl::TestOutput* secondary_output = server->CreateAndInitializeOutput();
-    secondary_output->SetRect(gfx::Rect(1921, 0, 1920, 1080));
-    secondary_output->SetScale(2);
+    auto* output2 = server->CreateAndInitializeOutput(
+        wl::TestOutputMetrics({1921, 0, 1920, 1080}));
+    output2->SetScale(2);
   });
+  WaitForAllDisplaysReady();
 
   auto* output_manager = connection_->wayland_output_manager();
   EXPECT_EQ(2u, output_manager->GetAllOutputs().size());
@@ -2577,11 +2579,12 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Update first output.
     wl::TestOutput* output1 = server->output();
-    output1->SetRect(gfx::Rect(1920, 1080));
+    output1->SetPhysicalAndLogicalBounds({1920, 1080});
+    output1->Flush();
 
     // Creating a 2nd output.
-    wl::TestOutput* output2 = server->CreateAndInitializeOutput();
-    output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
+    server->CreateAndInitializeOutput(
+        wl::TestOutputMetrics({1921, 0, 1920, 1080}));
   });
 
   WaitForAllDisplaysReady();
@@ -2624,8 +2627,8 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Create the third output.
-    wl::TestOutput* output3 = server->CreateAndInitializeOutput();
-    output3->SetRect(gfx::Rect(0, 1081, 1920, 1080));
+    server->CreateAndInitializeOutput(
+        wl::TestOutputMetrics({0, 1081, 1920, 1080}));
   });
 
   WaitForAllDisplaysReady();
@@ -2718,11 +2721,12 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Update the first output.
     wl::TestOutput* output1 = server->output();
-    output1->SetRect(gfx::Rect(1920, 1080));
+    output1->SetPhysicalAndLogicalBounds({1920, 1080});
+    output1->Flush();
 
     // Create a 2nd output.
-    wl::TestOutput* output2 = server->CreateAndInitializeOutput();
-    output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
+    server->CreateAndInitializeOutput(
+        wl::TestOutputMetrics({1921, 0, 1920, 1080}));
   });
 
   WaitForAllDisplaysReady();
