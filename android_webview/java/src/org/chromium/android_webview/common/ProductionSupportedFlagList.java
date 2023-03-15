@@ -162,6 +162,9 @@ public final class ProductionSupportedFlagList {
                             + "classifications."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                     "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PHONE_NUMBER_TRUNK_TYPES,
+                    "Rationalizes city-and-number and city-code fields to the "
+                            + "correct trunk-prefix types."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENFORCE_DELAYS_IN_STRIKE_DATABASE,
                     "Enforce delay between offering Autofill opportunities in the "
                             + "strike database."),

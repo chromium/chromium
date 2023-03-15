@@ -62134,6 +62134,8 @@ from previous Chrome versions.
   <int value="69571279" label="ExperimentalRgbKeyboardPatterns:disabled"/>
   <int value="69778786" label="NotificationPermissionVariant:disabled"/>
   <int value="71290103" label="ArcNearbySharing:enabled"/>
+  <int value="73008877"
+      label="AutofillEnableSupportForPhoneNumberTrunkTypes:enabled"/>
   <int value="73606763" label="XsurfaceMetricsReporting:disabled"/>
   <int value="73929836" label="VrBrowsingInCustomTab:enabled"/>
   <int value="75207621" label="enable-stylus-virtual-keyboard:enabled"/>
@@ -63236,6 +63238,8 @@ from previous Chrome versions.
   <int value="698842796"
       label="RevokeNotificationsPermissionIfDisabledOnAppLevel:disabled"/>
   <int value="699149897" label="ContentSuggestionsDebugLog:disabled"/>
+  <int value="699334781"
+      label="AutofillEnableSupportForPhoneNumberTrunkTypes:disabled"/>
   <int value="699632009" label="NewTabPageTilesTitleWrapAround:enabled"/>
   <int value="700346797" label="WheelEventRegions:enabled"/>
   <int value="700926106" label="OmniboxPedalsBatch3NonEnglish:enabled"/>
