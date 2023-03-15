@@ -837,7 +837,7 @@ TEST_F(DriveFsPinManagerTest, OnFileCreated) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
-  EXPECT_EQ(manager.progress_.stage, Stage::kNotStarted);
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
 
   const DriveItem item{.size = 2487};
   mojom::FileChange event;
@@ -845,7 +845,7 @@ TEST_F(DriveFsPinManagerTest, OnFileCreated) {
   event.stable_id = item.stable_id;
   event.path = Path("/root/Path 1");
 
-  // Should not have any effect since the Pin manager is in kNotStarted stage.
+  // Should not have any effect since the Pin manager is in kStopped stage.
   EXPECT_CALL(drivefs_, GetMetadataByStableId(_, _)).Times(0);
   manager.OnFileCreated(std::as_const(event));
 
@@ -894,7 +894,7 @@ TEST_F(DriveFsPinManagerTest, OnFileDeleted) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
-  EXPECT_EQ(manager.progress_.stage, Stage::kNotStarted);
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
 
   const DriveItem item{.size = 2487};
   const Path path("/root/Path 1");
@@ -970,7 +970,7 @@ TEST_F(DriveFsPinManagerTest, OnFileModified) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
-  EXPECT_EQ(manager.progress_.stage, Stage::kNotStarted);
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
 
   const DriveItem item{.size = 2487};
   const Id id = Id(item.stable_id);

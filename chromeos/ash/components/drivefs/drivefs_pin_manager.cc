@@ -35,10 +35,9 @@ bool InProgress(const Stage stage) {
     case Stage::kSyncing:
       return true;
 
-    case Stage::kNotStarted:
+    case Stage::kStopped:
     case Stage::kPaused:
     case Stage::kSuccess:
-    case Stage::kStopped:
     case Stage::kCannotGetFreeSpace:
     case Stage::kCannotListFiles:
     case Stage::kNotEnoughSpace:
@@ -309,13 +308,12 @@ ostream& operator<<(ostream& out, const Stage stage) {
 #define PRINT(s)    \
   case Stage::k##s: \
     return out << #s;
-    PRINT(NotStarted)
+    PRINT(Stopped)
     PRINT(Paused)
     PRINT(GettingFreeSpace)
     PRINT(ListingFiles)
     PRINT(Syncing)
     PRINT(Success)
-    PRINT(Stopped)
     PRINT(CannotGetFreeSpace)
     PRINT(CannotListFiles)
     PRINT(NotEnoughSpace)
@@ -611,7 +609,7 @@ void PinManager::Start() {
 void PinManager::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (InProgress(progress_.stage)) {
+  if (progress_.stage != Stage::kStopped) {
     VLOG(1) << "Stopping";
     Complete(Stage::kStopped);
   }

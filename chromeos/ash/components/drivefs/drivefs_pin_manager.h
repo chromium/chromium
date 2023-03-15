@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& out, HumanReadableSize size);
 // monitoring. This enum represents the various stages the setup goes through.
 enum class Stage {
   // Initial stage.
-  kNotStarted,
+  kStopped,
 
   // Paused because of unfavorable network conditions.
   kPaused,
@@ -56,7 +56,6 @@ enum class Stage {
   kSuccess,
 
   // Final error stages.
-  kStopped,
   kCannotGetFreeSpace,
   kCannotListFiles,
   kNotEnoughSpace,
@@ -113,7 +112,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   int duplicated_events = 0;
 
   // Stage of the setup process.
-  Stage stage = Stage::kNotStarted;
+  Stage stage = Stage::kStopped;
 
   // Has the PinManager ever emptied its set of tracking items?
   bool emptied_queue = false;
