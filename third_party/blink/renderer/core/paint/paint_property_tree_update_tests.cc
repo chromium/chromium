@@ -1633,7 +1633,11 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   builder.SetTransformOrigin(
       TransformOrigin(Length::Fixed(70), Length::Fixed(30), 0));
   target->SetStyle(builder.TakeStyle());
-  EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
+  if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)) {
+    EXPECT_FALSE(target->NeedsPaintPropertyUpdate());
+  } else {
+    EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
+  }
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   {
 #if DCHECK_IS_ON()
@@ -1916,6 +1920,9 @@ TEST_P(PaintPropertyTreeUpdateTest, LocalBorderBoxPropertiesChange) {
 // running the blink property tree builder.
 TEST_P(PaintPropertyTreeUpdateTest,
        DirectTransformUpdateSkipsPropertyTreeBuilder) {
+  if (!base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)) {
+    return;
+  }
   SetBodyInnerHTML(R"HTML(
       <div id='div' style="transform:translateX(100px)"></div>
   )HTML");
@@ -1977,7 +1984,11 @@ TEST_P(PaintPropertyTreeUpdateTest,
   div->setAttribute(html_names::kStyleAttr, "opacity:0.8");
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)) {
+    EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  } else {
+    EXPECT_TRUE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  }
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_NEAR(0.8, div_properties->Effect()->Opacity(), 0.001);
@@ -2000,7 +2011,11 @@ TEST_P(PaintPropertyTreeUpdateTest,
                     "opacity:0.8; transform: translateX(200px)");
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)) {
+    EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  } else {
+    EXPECT_TRUE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  }
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_NEAR(0.8, div_properties->Effect()->Opacity(), 0.001);
@@ -2033,10 +2048,17 @@ TEST_P(PaintPropertyTreeUpdateTest,
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
 
-  EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)) {
+    EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+    EXPECT_FALSE(
+        positioned_ancestor->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  } else {
+    EXPECT_TRUE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+    EXPECT_TRUE(
+        positioned_ancestor->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  }
+
   EXPECT_FALSE(dom_ancestor->GetLayoutObject()->NeedsPaintPropertyUpdate());
-  EXPECT_FALSE(
-      positioned_ancestor->GetLayoutObject()->NeedsPaintPropertyUpdate());
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(200, div_properties->Transform()->Get2dTranslation().x());
