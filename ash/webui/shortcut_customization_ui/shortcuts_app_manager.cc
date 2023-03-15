@@ -24,7 +24,8 @@ ShortcutsAppManager::ShortcutsAppManager(
   if (features::IsSearchInShortcutsAppEnabled()) {
     search_concept_registry_ =
         std::make_unique<SearchConceptRegistry>(*local_search_service_proxy);
-    search_handler_ = std::make_unique<SearchHandler>();
+    search_handler_ = std::make_unique<SearchHandler>(
+        search_concept_registry_.get(), local_search_service_proxy);
   }
   accelerator_configuration_provider_ =
       std::make_unique<AcceleratorConfigurationProvider>();
