@@ -145,6 +145,11 @@ def generate_tsconfig(board):
     root_dir = get_chromium_root()
     common_definitions = os.path.join(root_dir, 'tools/typescript/definitions')
 
+    target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
+    assert os.path.exists(target_gen_dir), (
+        f"Failed to find the build output dir {target_gen_dir}."
+        " Please check the board name and build Chrome once.")
+
     with open(os.path.join(cca_root, 'tsconfig_base.json')) as f:
         tsconfig = json.load(f)
 
