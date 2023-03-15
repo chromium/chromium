@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <!--
-Encodes two RGB frames and checks that output color space is changed to Rec601.
-Then encodes two I420 frame w/ Rec709 colors and checks that the output color
-space is changed to Rec709, and that a key frame is generated alongside the
-change.
+Encodes two I420 frames and checks that output color space is changed to Rec709.
+Then encodes two RGBA frame w/ Rec601 colors and checks that the output color
+space is changed to Rec601, and that a key frame is generated alongside the
+change. It then verifies the decoded bitstream has the proper color information.
 
 The spec doesn't mandate any particular output color space, so this just checks
-that our internal behvaior is surfaced correctly. A key frame is expected when
+that our internal behavior is surfaced correctly. A key frame is expected when
 color space changes to mirror the our decoder requirement to provide a key frame
 whenever VideoDecoderConfig changes.
 -->
@@ -26,24 +26,22 @@ whenever VideoDecoderConfig changes.
     const FRAME_HEIGHT = 480;
 
     function isRec709(colorSpace) {
-      return colorSpace.primaries === 'bt709'
-        && colorSpace.transfer === 'bt709'
-        && colorSpace.matrix === 'bt709'
-        && colorSpace.fullRange === false;
+      return colorSpace.primaries === 'bt709' &&
+          colorSpace.transfer === 'bt709' && colorSpace.matrix === 'bt709' &&
+          colorSpace.fullRange === false;
     }
 
     function isSRGB(colorSpace) {
-      return colorSpace.primaries === 'bt709'
-        && colorSpace.transfer === 'iec61966-2-1'
-        && colorSpace.matrix === 'rgb'
-        && colorSpace.fullRange === true;
+      return colorSpace.primaries === 'bt709' &&
+          colorSpace.transfer === 'iec61966-2-1' &&
+          colorSpace.matrix === 'rgb' && colorSpace.fullRange === true;
     }
 
     function isRec601(colorSpace) {
-      return colorSpace.primaries === 'smpte170m'
-        && colorSpace.transfer === 'smpte170m'
-        && colorSpace.matrix === 'smpte170m'
-        && colorSpace.fullRange === false;
+      return colorSpace.primaries === 'smpte170m' &&
+          (colorSpace.transfer === 'smpte170m' ||
+           colorSpace.transfer === 'bt709') &&
+          colorSpace.matrix === 'smpte170m' && colorSpace.fullRange === false;
     }
 
     function makePixelArray(byteLength) {
@@ -90,18 +88,21 @@ whenever VideoDecoderConfig changes.
       }
 
       const frameDuration = 16666;
-      let inputFrames = [makeFrame('RGBA', 0 * frameDuration),
-                         makeFrame('RGBA', 1 * frameDuration),
-                         makeFrame('I420', 2 * frameDuration),
-                         makeFrame('I420', 3 * frameDuration)];
+      let inputFrames = [
+        // Use I420/BT.709 first since default macOS colorspace is sRGB.
+        makeFrame('I420', 0 * frameDuration),
+        makeFrame('I420', 1 * frameDuration),
+        makeFrame('RGBA', 2 * frameDuration),
+        makeFrame('RGBA', 3 * frameDuration),
+      ];
       let outputChunks = [];
-      let outputMetadatas = [];
+      let outputMetadata = [];
       let errors = 0;
 
       const init = {
         output(chunk, metadata) {
           outputChunks.push(chunk);
-          outputMetadatas.push(metadata);
+          outputMetadata.push(metadata);
         },
         error(e) {
           errors++;
@@ -119,48 +120,129 @@ whenever VideoDecoderConfig changes.
       await encoder.flush();
       encoder.close();
 
-      TEST.assert(errors == 0, 'Encoding errors occurred during the test');
-      TEST.assert(outputChunks.length == 4, 'Unexpected number of outputs');
-      TEST.assert(outputMetadatas.length == 4, 'Unexpected number of output metadatas');
+      TEST.assert_eq(errors, 0, 'Encoding errors occurred during the test');
+      TEST.assert_eq(outputChunks.length, 4, 'Unexpected number of outputs');
+      TEST.assert_eq(
+          outputMetadata.length, 4, 'Unexpected number of output metadata');
 
-      // First output should be a key frame and have acompanying metadata.
-      // Corresponding input RGBA sRGB, so we expect encoder will have used
-      // libYUV to convert to I420 or NV12 rec601.
-      TEST.assert(inputFrames[0].format == 'RGBA', 'inputs[0] is RGBA');
-      TEST.assert(isSRGB(inputFrames[0].colorSpace), 'inputs[0] is sRGB');
-      TEST.assert(outputChunks[0].type == 'key', 'outputs[0] is key');
-      TEST.assert('decoderConfig' in outputMetadatas[0], 'metdatas[0] has decoderConfig');
-      TEST.assert(isRec601(outputMetadatas[0].decoderConfig.colorSpace), 'metdatas[0] is rec601');
+      // I420 passthrough should preserve default rec709 color space.
+      TEST.assert_eq(inputFrames[0].format, 'I420', 'inputs[0] is I420');
+      TEST.assert(isRec709(inputFrames[0].colorSpace), 'inputs[0] is rec709');
+      TEST.assert_eq(outputChunks[0].type, 'key', 'outputs[0] is key');
+      TEST.assert(
+          'decoderConfig' in outputMetadata[0],
+          'metadata[0] has decoderConfig');
+      TEST.assert(
+          isRec709(outputMetadata[0].decoderConfig.colorSpace),
+          'metadata[0] is rec709');
 
-      // Second outupt may or may not be a key frame w/ metadata (up to
-      // encoder). Corresponding input is still RGBA sRGB, so if metadata is
+      // Next output may or may not be a key frame w/ metadata (up to
+      // encoder). Corresponding input is still I420 rec709, so if metadata is
       // given, we expect same colorSpace as for the previous frame.
-      TEST.assert(inputFrames[1].format == 'RGBA', 'inputs[1] is RGBA');
-      TEST.assert(isSRGB(inputFrames[1].colorSpace), 'inputs[1] is sRGB');
-      if('decoderConfig' in outputMetadatas[1]) {
-        TEST.assert(isRec601(outputMetadatas[1].decoderConfig.colorSpace), 'metdatas[1] is rec601');
+      TEST.assert_eq(inputFrames[1].format, 'I420', 'inputs[1] is I420');
+      TEST.assert(isRec709(inputFrames[1].colorSpace, 'inputs[1] is rec709'));
+      if ('decoderConfig' in outputMetadata[1]) {
+        TEST.assert(
+            isRec709(outputMetadata[1].decoderConfig.colorSpace),
+            'metadata[1] is rec709');
       }
 
-      // Third output should be a key frame and have acompanying metadata
-      // because the correpsonding input format changed to I420, which means
-      // we passthrough without libYUV conversion and a new decoderConfig
-      // should reflect that.
-      TEST.assert(inputFrames[2].format == 'I420', 'inputs[2] is I420');
-      TEST.assert(isRec709(inputFrames[2].colorSpace), 'inputs[2] is rec709');
+      // Next output should be a key frame and have accompanying metadata
+      // because the corresponding input format changed to RGBA, which means
+      // we libyuv will convert to I420 w/ rec601 during encoding.
+      TEST.assert_eq(inputFrames[2].format, 'RGBA', 'inputs[2] is RGBA');
+      TEST.assert(isSRGB(inputFrames[2].colorSpace), 'inputs[2] is sRGB');
+
       // TODO(https://crbug.com/1241448): Uncomment the line below once android
       // reliably produces a key frame at the appropriate time. For now this
       // is covered by a DCHECK (excluding android) in video_encoder.cc.
       // TEST.assert(outputChunks[2].type == 'key', 'outputs[2] is key');
-      TEST.assert('decoderConfig' in outputMetadatas[2], 'metadatas[2] has decoderConfig');
-      TEST.assert(isRec709(outputMetadatas[2].decoderConfig.colorSpace), 'metadatas[2] is rec709');
 
-      // Fourth outupt may or may not be a key frame w/ metadata (up to
-      // encoder). Corresponding input is still I420 rec709, so if metadata is
+      TEST.assert(
+          'decoderConfig' in outputMetadata[2],
+          'metadata[2] has decoderConfig');
+      TEST.assert(
+          isRec601(outputMetadata[2].decoderConfig.colorSpace),
+          'metadata[2] is rec601');
+
+      // Next output may or may not be a key frame w/ metadata (up to
+      // encoder). Corresponding input is still RGBA sRGB, so if metadata is
       // given, we expect same colorSpace as for the previous frame.
-      TEST.assert(inputFrames[3].format == 'I420', 'inputs[3] is I420');
-      TEST.assert(isRec709(inputFrames[3].colorSpace, 'inputs[3] is rec709'));
-      if('decoderConfig' in outputMetadatas[3]) {
-        TEST.assert(isRec709(outputMetadatas[3].decoderConfig.colorSpace), 'metadatas[3] is rec709');
+      TEST.assert_eq(inputFrames[3].format, 'RGBA', 'inputs[3] is RGBA');
+      TEST.assert(isSRGB(inputFrames[3].colorSpace), 'inputs[3] is sRGB');
+      if ('decoderConfig' in outputMetadata[3]) {
+        TEST.assert(
+            isRec601(outputMetadata[3].decoderConfig.colorSpace),
+            'metadata[3] is rec601');
+      }
+
+      // Now decode the frames and ensure the encoder embedded the right color
+      // space information in the bitstream.
+
+      // VP8 doesn't have embedded color space information in the bitstream.
+      if (arg.codec == 'vp8')
+        return;
+
+      let decodedFrames = [];
+      const decoderInit = {
+        output(frame) {
+          decodedFrames.push(frame);
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      };
+
+      let decoder = new VideoDecoder(decoderInit);
+      for (var i = 0; i < outputChunks.length; ++i) {
+        if ('decoderConfig' in outputMetadata[i]) {
+          let config = {...outputMetadata[i].decoderConfig};
+
+          // Removes the color space provided by the encoder so that color space
+          // information in the underlying bitstream is exposed during decode.
+          config.colorSpace = {};
+
+          config.hardwareAcceleration = arg.acceleration;
+          decoder.configure(config);
+        }
+        decoder.decode(outputChunks[i]);
+        await waitForNextFrame();
+      }
+      await decoder.flush();
+      decoder.close();
+
+      TEST.assert_eq(
+          errors, 0, 'Encoding errors occurred during the decoding test');
+      TEST.assert_eq(
+          decodedFrames.length, outputChunks.length,
+          'Unexpected number of decoded outputs');
+
+      let colorSpace = {};
+      for (var i = 0; i < decodedFrames.length; ++i) {
+        if ('decoderConfig' in outputMetadata[i])
+          colorSpace = outputMetadata[i].decoderConfig.colorSpace;
+
+        TEST.assert_eq(
+            decodedFrames[i].colorSpace.primaries, colorSpace.primaries,
+            `Frame ${i} color primaries mismatch`);
+        TEST.assert_eq(
+            decodedFrames[i].colorSpace.matrix, colorSpace.matrix,
+            `Frame ${i} color matrix mismatch`);
+        if (decodedFrames[i].colorSpace.transfer != colorSpace.transfer) {
+          // Allow functionally equivalent matches.
+          TEST.assert(
+              colorSpace.transfer == 'smpte170m' &&
+                  decodedFrames[i].colorSpace.transfer == 'bt709',
+              `Frame ${i} color transfer mismatch`)
+        } else {
+          TEST.assert_eq(
+              decodedFrames[i].colorSpace.transfer, colorSpace.transfer,
+              `Frame ${i} color transfer mismatch`);
+        }
+        TEST.assert_eq(
+            decodedFrames[i].colorSpace.fullRange, colorSpace.fullRange,
+            `Frame ${i} color fullRange mismatch`);
       }
     }
   </script>

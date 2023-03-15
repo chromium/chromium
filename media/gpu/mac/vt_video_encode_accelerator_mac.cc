@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/mac/color_space_util_mac.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -195,10 +196,12 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
 }  // namespace
 
 struct VTVideoEncodeAccelerator::InProgressFrameEncode {
-  InProgressFrameEncode(base::TimeDelta rtp_timestamp)
-      : timestamp(rtp_timestamp) {}
+  InProgressFrameEncode(base::TimeDelta rtp_timestamp,
+                        const gfx::ColorSpace& frame_cs)
+      : timestamp(rtp_timestamp), encoded_color_space(frame_cs) {}
 
   const base::TimeDelta timestamp;
+  const gfx::ColorSpace encoded_color_space;
 };
 
 struct VTVideoEncodeAccelerator::EncodeOutput {
@@ -206,10 +209,11 @@ struct VTVideoEncodeAccelerator::EncodeOutput {
 
   EncodeOutput(VTEncodeInfoFlags info_flags,
                CMSampleBufferRef sbuf,
-               base::TimeDelta timestamp)
+               const InProgressFrameEncode& frame_info)
       : info(info_flags),
         sample_buffer(sbuf, base::scoped_policy::RETAIN),
-        capture_timestamp(timestamp) {}
+        capture_timestamp(frame_info.timestamp),
+        encoded_color_space(frame_info.encoded_color_space) {}
 
   EncodeOutput(const EncodeOutput&) = delete;
   EncodeOutput& operator=(const EncodeOutput&) = delete;
@@ -217,6 +221,7 @@ struct VTVideoEncodeAccelerator::EncodeOutput {
   const VTEncodeInfoFlags info;
   const base::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
   const base::TimeDelta capture_timestamp;
+  const gfx::ColorSpace encoded_color_space;
 };
 
 struct VTVideoEncodeAccelerator::BitstreamBufferRef {
@@ -435,6 +440,39 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     client_->NotifyError(kPlatformFailureError);
     return;
   }
+
+  if (can_set_encoder_color_space_) {
+    // WrapVideoFrameInCVPixelBuffer() will do a few different things depending
+    // on the input buffer type:
+    //   * If it's an IOSurface, the underlying attached color space will
+    //     passthough to the pixel buffer.
+    //   * If we're uploading to a new pixel buffer and the provided frame color
+    //     space is valid that'll be set on the pixel buffer.
+    //   * If the frame color space is not valid, BT709 will be assumed.
+    auto frame_cs = GetImageBufferColorSpace(pixel_buffer);
+    if (encoder_color_space_ && frame_cs != encoder_color_space_) {
+      if (pending_encodes_) {
+        auto status = VTCompressionSessionCompleteFrames(compression_session_,
+                                                         kCMTimeInvalid);
+        if (status != noErr) {
+          OSSTATUS_LOG(ERROR, status) << " flush failed: " << status;
+          client_->NotifyError(kPlatformFailureError);
+          return;
+        }
+      }
+      if (!ResetCompressionSession(codec_)) {
+        client_->NotifyError(kPlatformFailureError);
+        return;
+      }
+      encoder_color_space_.reset();
+    }
+
+    if (!encoder_color_space_) {
+      encoder_color_space_ = frame_cs;
+      SetEncoderColorSpace();
+    }
+  }
+
   base::ScopedCFTypeRef<CFDictionaryRef> frame_props =
       video_toolbox::DictionaryWithKeyValue(
           kVTEncodeFrameOptionKey_ForceKeyFrame,
@@ -442,7 +480,8 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
 
   // Wrap information we'll need after the frame is encoded in a heap object.
   // We'll get the pointer back from the VideoToolbox completion callback.
-  auto request = std::make_unique<InProgressFrameEncode>(frame->timestamp());
+  auto request = std::make_unique<InProgressFrameEncode>(
+      frame->timestamp(), encoder_color_space_.value_or(gfx::ColorSpace()));
 
   if (bitrate_.mode() == Bitrate::Mode::kConstant) {
     // In CBR mode, we adjust bitrate before every encode based on past history
@@ -560,7 +599,7 @@ void VTVideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
 
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status)
-        << " VTCompressionSessionCompleteFrames failed: " << status;
+        << " VTCompressionSessionCompleteFrames failed: ";
     std::move(flush_callback).Run(/*success=*/false);
     return;
   }
@@ -626,8 +665,7 @@ void VTVideoEncodeAccelerator::CompressionCallback(void* encoder_opaque,
 
   // EncodeOutput holds onto CMSampleBufferRef when posting task between
   // threads.
-  auto encode_output =
-      std::make_unique<EncodeOutput>(info, sbuf, frame_info->timestamp);
+  auto encode_output = std::make_unique<EncodeOutput>(info, sbuf, *frame_info);
 
   // This method is NOT called on |task_runner_|, so we still need to
   // post a task back to it to do work.
@@ -647,7 +685,7 @@ void VTVideoEncodeAccelerator::CompressionCallbackTask(
   DCHECK_GE(pending_encodes_, 0);
 
   if (status != noErr) {
-    DLOG(ERROR) << " encode failed: " << status;
+    OSSTATUS_DLOG(ERROR, status) << "Encode failed: ";
     client_->NotifyError(kPlatformFailureError);
     return;
   }
@@ -720,6 +758,8 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
       NOTREACHED();
       break;
   }
+
+  md.encoded_color_space = encode_output->encoded_color_space;
 
   client_->BitstreamBufferReady(buffer_ref->id, std::move(md));
   MaybeRunFlushCallback();
@@ -869,6 +909,47 @@ void VTVideoEncodeAccelerator::MaybeRunFlushCallback() {
     return;
 
   std::move(pending_flush_cb_).Run(/*success=*/true);
+}
+
+void VTVideoEncodeAccelerator::SetEncoderColorSpace() {
+  if (!encoder_color_space_ || !encoder_color_space_->IsValid()) {
+    return;
+  }
+
+  CFStringRef primary, transfer, matrix;
+  if (!GetImageBufferColorValues(*encoder_color_space_, &primary, &transfer,
+                                 &matrix)) {
+    DLOG(ERROR) << "Failed to set bitstream color space: "
+                << encoder_color_space_->ToString();
+    return;
+  }
+
+  video_toolbox::SessionPropertySetter session_property_setter(
+      compression_session_);
+  if (!session_property_setter.IsSupported(
+          kVTCompressionPropertyKey_ColorPrimaries) ||
+      !session_property_setter.IsSupported(
+          kVTCompressionPropertyKey_TransferFunction) ||
+      !session_property_setter.IsSupported(
+          kVTCompressionPropertyKey_YCbCrMatrix)) {
+    DLOG(ERROR) << "VTCompressionSession doesn't support color space settings.";
+    can_set_encoder_color_space_ = false;
+    return;
+  }
+
+  if (!session_property_setter.Set(kVTCompressionPropertyKey_ColorPrimaries,
+                                   primary) ||
+      !session_property_setter.Set(kVTCompressionPropertyKey_TransferFunction,
+                                   transfer) ||
+      !session_property_setter.Set(kVTCompressionPropertyKey_YCbCrMatrix,
+                                   matrix)) {
+    DLOG(ERROR) << "Failed to set color space on VTCompressionSession.";
+    can_set_encoder_color_space_ = false;
+    return;
+  }
+
+  DVLOG(1) << "Set encoder color space to: "
+           << encoder_color_space_->ToString();
 }
 
 }  // namespace media

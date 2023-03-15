@@ -10,6 +10,8 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/strings/sys_string_conversions.h"
+#include "media/base/mac/color_space_util_mac.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -49,6 +51,40 @@ bool IsAcceptableCvPixelFormat(VideoPixelFormat format, OSType cv_format) {
   return false;
 }
 
+bool CvPixelBufferHasColorSpace(CVPixelBufferRef pixel_buffer) {
+  return CVBufferGetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
+                               nullptr) &&
+         CVBufferGetAttachment(pixel_buffer, kCVImageBufferTransferFunctionKey,
+                               nullptr) &&
+         CVBufferGetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey,
+                               nullptr);
+}
+
+void SetCvPixelBufferColorSpace(const gfx::ColorSpace& frame_cs,
+                                CVPixelBufferRef pixel_buffer) {
+  // Apply required colorimetric attachments.
+  CFStringRef primary, transfer, matrix;
+  if (frame_cs.IsValid() &&
+      GetImageBufferColorValues(frame_cs, &primary, &transfer, &matrix)) {
+    CVBufferSetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
+                          primary, kCVAttachmentMode_ShouldPropagate);
+    CVBufferSetAttachment(pixel_buffer, kCVImageBufferTransferFunctionKey,
+                          transfer, kCVAttachmentMode_ShouldPropagate);
+    CVBufferSetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey, matrix,
+                          kCVAttachmentMode_ShouldPropagate);
+  } else if (!CvPixelBufferHasColorSpace(pixel_buffer)) {
+    CVBufferSetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
+                          kCVImageBufferColorPrimaries_ITU_R_709_2,
+                          kCVAttachmentMode_ShouldPropagate);
+    CVBufferSetAttachment(pixel_buffer, kCVImageBufferTransferFunctionKey,
+                          kCVImageBufferTransferFunction_ITU_R_709_2,
+                          kCVAttachmentMode_ShouldPropagate);
+    CVBufferSetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey,
+                          kCVImageBufferYCbCrMatrix_ITU_R_709_2,
+                          kCVAttachmentMode_ShouldPropagate);
+  }
+}
+
 }  // namespace
 
 MEDIA_EXPORT base::ScopedCFTypeRef<CVPixelBufferRef>
@@ -68,6 +104,8 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
               frame->format(), CVPixelBufferGetPixelFormatType(pixel_buffer))) {
         DLOG(ERROR) << "Dropping CVPixelBuffer w/ incorrect format.";
         pixel_buffer.reset();
+      } else {
+        SetCvPixelBufferColorSpace(frame->ColorSpace(), pixel_buffer);
       }
       return pixel_buffer;
     }
@@ -90,6 +128,8 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
                   CVPixelBufferGetPixelFormatType(pixel_buffer))) {
             DLOG(ERROR) << "Dropping CVPixelBuffer w/ incorrect format.";
             pixel_buffer.reset();
+          } else {
+            SetCvPixelBufferColorSpace(frame->ColorSpace(), pixel_buffer);
           }
           return pixel_buffer;
         }
@@ -104,20 +144,25 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
   if (!frame)
     return pixel_buffer;
 
-  VLOG(3) << "Returning RAM based CVPixelBuffer.";
-
   // VideoFrame only supports YUV formats and most of them are 'YVU' ordered,
   // which CVPixelBuffer does not support. This means we effectively can only
   // represent I420 and NV12 frames. In addition, VideoFrame does not carry
   // colorimetric information, so this function assumes standard video range
   // and ITU Rec 709 primaries.
   const VideoPixelFormat video_frame_format = frame->format();
+  const bool is_full_range =
+      frame->ColorSpace().GetRangeID() == gfx::ColorSpace::RangeID::FULL;
   OSType cv_format;
   if (video_frame_format == PIXEL_FORMAT_I420) {
-    cv_format = kCVPixelFormatType_420YpCbCr8Planar;
+    cv_format = is_full_range ? kCVPixelFormatType_420YpCbCr8PlanarFullRange
+                              : kCVPixelFormatType_420YpCbCr8Planar;
   } else if (video_frame_format == PIXEL_FORMAT_NV12) {
-    cv_format = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+    cv_format = is_full_range ? kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+                              : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
   } else if (video_frame_format == PIXEL_FORMAT_NV12A) {
+    if (is_full_range) {
+      DVLOG(1) << "Full range NV12A is not supported by the OS.";
+    }
     cv_format = kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
   } else {
     DLOG(ERROR) << "Unsupported frame format: " << video_frame_format;
@@ -166,18 +211,7 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
   // reference count manually. The release callback set on the pixel buffer will
   // release the frame.
   frame->AddRef();
-
-  // Apply required colorimetric attachments.
-  CVBufferSetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
-                        kCVImageBufferColorPrimaries_ITU_R_709_2,
-                        kCVAttachmentMode_ShouldPropagate);
-  CVBufferSetAttachment(pixel_buffer, kCVImageBufferTransferFunctionKey,
-                        kCVImageBufferTransferFunction_ITU_R_709_2,
-                        kCVAttachmentMode_ShouldPropagate);
-  CVBufferSetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey,
-                        kCVImageBufferYCbCrMatrix_ITU_R_709_2,
-                        kCVAttachmentMode_ShouldPropagate);
-
+  SetCvPixelBufferColorSpace(frame->ColorSpace(), pixel_buffer);
   return pixel_buffer;
 }
 
