@@ -265,3 +265,31 @@ minifier.
 Local Modifications:
 Removed uglify-js dependency since we don't plan to use the --minify-js flag in
 Chromium.
+
+Name: Type Definition for WebCodecs
+Short Name: @types/dom-webcodecs
+URL: https://www.npmjs.com/package/@types/dom-webcodecs
+Version: 0.1.5
+License: MIT
+Security Critical: No. The types are only used when type checking in ChromeOS.
+
+Description:
+This package contains type definitions for WebCodecs
+(https://w3c.github.io/webcodecs/).
+
+Local Modifications:
+(none)
+
+Name: Type Definition for MediaStreamTrack Processing
+Short Name: @types/dom-mediacapture-transform
+URL: https://www.npmjs.com/package/@types/dom-mediacapture-transform
+Version: 0.1.4
+License: MIT
+Security Critical: No. The types are only used when type checking in ChromeOS.
+
+Description:
+This package contains type definitions for MediaStreamTrack Insertable Media
+Processing using Streams (https://w3c.github.io/mediacapture-transform/).
+
+Local Modifications:
+(none)
