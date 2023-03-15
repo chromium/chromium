@@ -3675,6 +3675,7 @@ if (!is_android) {
       sources += [
         "../browser/ash/crosapi/browser_data_back_migrator_browsertest.cc",
         "../browser/ash/crosapi/browser_data_migrator_browsertest.cc",
+        "../browser/ash/crosapi/media_ui_ash_browsertest.cc",
         "../browser/ash/crosapi/network_settings_service_ash_browsertest.cc",
         "../browser/ash/crosapi/screen_manager_ash_browsertest.cc",
         "../browser/ash/crosapi/video_conference_ash_browsertest.cc",

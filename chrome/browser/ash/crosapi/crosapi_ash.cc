@@ -67,6 +67,7 @@
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
+#include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/message_center_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
@@ -228,6 +229,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       login_ash_(std::make_unique<LoginAsh>()),
       login_screen_storage_ash_(std::make_unique<LoginScreenStorageAsh>()),
       login_state_ash_(std::make_unique<LoginStateAsh>()),
+      media_ui_ash_(std::make_unique<MediaUIAsh>()),
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
       metrics_ash_(std::make_unique<MetricsAsh>()),
       metrics_reporting_ash_(registry->CreateMetricsReportingAsh(
@@ -599,6 +601,10 @@ void CrosapiAsh::BindMachineLearningService(
         chromeos::machine_learning::mojom::MachineLearningService> receiver) {
   chromeos::machine_learning::ServiceConnection::GetInstance()
       ->BindMachineLearningService(std::move(receiver));
+}
+
+void CrosapiAsh::BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) {
+  media_ui_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindMediaSessionAudioFocus(

@@ -99,6 +99,7 @@ import "chromeos/crosapi/mojom/vpn_extension_observer.mojom";
 import "chromeos/crosapi/mojom/wallpaper.mojom";
 import "chromeos/crosapi/mojom/web_app_service.mojom";
 import "chromeos/crosapi/mojom/web_page_info.mojom";
+import "chromeos/crosapi/mojom/media_ui.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
@@ -135,8 +136,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 105
-// Next method id: 108
+// Next version: 106
+// Next method id: 109
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -420,6 +421,10 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=17] BindMachineLearningService@22(
       pending_receiver<chromeos.machine_learning.mojom.MachineLearningService> receiver);
+
+  // Binds the MediaUI interface for the Global Media Controls UI.
+  // Added in M113.
+  [MinVersion=105] BindMediaUI@108(pending_receiver<MediaUI> receiver);
 
   // Binds the MessageCenter interface for showing notification messages.
   // Added in M86.

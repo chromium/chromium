@@ -10,8 +10,9 @@ module global_media_controls.mojom;
 // side, in the case of Chrome OS).
 
 // Corresponds to icons shown in the device picker UI.
+[Stable, Extensible]
 enum IconType {
-  kUnknown = 0,
+  [Default] kUnknown = 0,
   kThrobber = 1,
   kInfo = 2,
   kTv = 3,
@@ -23,33 +24,51 @@ enum IconType {
 
 // Represents a media playback device, which may be a physical device such as a
 // TV or a smart speaker, or a virtual device.
+//
+// Next version: 1
+// Next id: 4
+[Stable]
 struct Device {
-  string id;
-  string name;
-  string status_text;
-  IconType icon;
+  string id@0;
+  string name@1;
+  string status_text@2;
+  IconType icon@3;
 };
 
 // Provides access to devices on which media can be played back. One instance is
 // created per media session or presentation.
 // On Chrome OS, this is implemented by Lacros (or the Ash browser).
+//
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="e34cfef5-7dc9-40f1-9fd8-e4e0f70b1beb"]
 interface DeviceListHost {
   // Selecting a device may cause media to be played, stopped, etc. on that
   // device depending on the current state.
-  SelectDevice(string device_id);
+  SelectDevice@0(string device_id);
 };
 
 // Receives updates about devices available for media playback. Typically has a
 // 1-to-1 relationship with a DeviceListHost.
 // On Chrome OS, this is implemented by the Ash system UI.
+//
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="ba4ece9a-0557-471a-a3bf-888b71bcde5f"]
 interface DeviceListClient {
   // Receives devices available for playback of the media session that this
   // object is associated with.
-  OnDevicesUpdated(array<Device> devices);
+  OnDevicesUpdated@0(array<Device> devices);
 };
 
 // Provides access to DeviceListHosts.
-// On Chrome OS, this is implemented by Lacros (or the Ash browser).
+// On Chrome OS, this is implemented by Lacros (or the Ash browser), and
+// registers itself with Ash via crosapi.mojom.MediaUI. DeviceService instances
+// are per-profile.
+//
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="a0822b52-40d9-444b-abfa-d35f0d30d69f"]
 interface DeviceService {
   // Lets DeviceListClient start observing the DeviceListHost associated with
   // the local media session specified by `session_id` obtained via
@@ -57,7 +76,7 @@ interface DeviceService {
   //
   // If a session is not found, then the pending remote/receiver get dropped,
   // and the caller can be notified to do cleanup via their disconnect handlers.
-  GetDeviceListHostForSession(
+  GetDeviceListHostForSession@0(
       string session_id, pending_receiver<DeviceListHost> host_receiver,
       pending_remote<DeviceListClient> client_remote);
 
@@ -72,7 +91,7 @@ interface DeviceService {
   //
   // If the request is associated with a local media session, then
   // ObserveDeviceListHostForSession() should be called instead.
-  GetDeviceListHostForPresentation(
+  GetDeviceListHostForPresentation@1(
       pending_receiver<DeviceListHost> host_receiver,
       pending_remote<DeviceListClient> client_remote);
 };
