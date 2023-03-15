@@ -9,7 +9,6 @@ import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "ui/gfx/mojom/color_space.mojom";
 import "media/mojo/mojom/video_encoder_info.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
@@ -306,7 +305,6 @@ struct BitstreamBufferMetadata {
   int32 qp;
   CodecMetadata? codec_metadata;
   gfx.mojom.Size? encoded_size;
-  gfx.mojom.ColorSpace? encoded_color_space;
 };
 
 interface VideoEncodeAcceleratorClient {
