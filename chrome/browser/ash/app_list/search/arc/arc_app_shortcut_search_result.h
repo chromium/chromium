@@ -12,6 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "ui/gfx/image/image_skia.h"
 
 class AppListControllerDelegate;
@@ -24,17 +25,20 @@ class IconDecodeRequest;
 
 namespace app_list {
 
+namespace {
+using ::ash::string_matching::TokenizedString;
+}
+
 class ArcAppShortcutSearchResult : public ChromeSearchResult,
                                    public AppIconLoaderDelegate {
  public:
-  // Constructor for ArcAppShortcutSearchResult. |is_recommendation|
-  // defines the display type of search results. |query| will take on the
-  // default value for zero state results.
+  // Constructor for ArcAppShortcutSearchResult. `is_recommendation`
+  // defines the display type of search results.
   ArcAppShortcutSearchResult(arc::mojom::AppShortcutItemPtr data,
                              Profile* profile,
                              AppListControllerDelegate* list_controller,
                              bool is_recommendation,
-                             const std::u16string& query,
+                             const TokenizedString& tokenized_query,
                              const std::string& details);
 
   ArcAppShortcutSearchResult(const ArcAppShortcutSearchResult&) = delete;

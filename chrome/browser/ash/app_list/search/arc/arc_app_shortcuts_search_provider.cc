@@ -14,8 +14,13 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/search/arc/arc_app_shortcut_search_result.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace app_list {
+
+namespace {
+using ::ash::string_matching::TokenizedString;
+}  // namespace
 
 ArcAppShortcutsSearchProvider::ArcAppShortcutsSearchProvider(
     int max_results,
@@ -66,6 +71,8 @@ void ArcAppShortcutsSearchProvider::OnGetAppShortcutGlobalQueryItems(
   const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
   DCHECK(arc_prefs);
 
+  TokenizedString tokenized_query(last_query_, TokenizedString::Mode::kWords);
+
   SearchProvider::Results search_results;
   for (auto& item : shortcut_items) {
     const std::string app_id =
@@ -77,7 +84,7 @@ void ArcAppShortcutsSearchProvider::OnGetAppShortcutGlobalQueryItems(
       continue;
     search_results.emplace_back(std::make_unique<ArcAppShortcutSearchResult>(
         std::move(item), profile_, list_controller_,
-        false /*is_recommendation*/, last_query_, app_info->name));
+        false /*is_recommendation*/, tokenized_query, app_info->name));
   }
   SwapResults(&search_results);
 }
