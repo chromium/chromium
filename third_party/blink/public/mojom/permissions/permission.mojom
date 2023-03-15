@@ -50,9 +50,10 @@ struct CameraDevicePermissionDescriptor {
 };
 
 struct TopLevelStorageAccessPermissionDescriptor {
-  // Site vs Origin applicability is still in flux. The current naming indicates
-  // site, but origin is preferred as site can be derived from it and not vice-
-  // versa. See, e.g.: https://github.com/privacycg/storage-access/issues/113
+  // Site vs Origin applicability is still in flux. Origin is preferred as site
+  // can be derived from it and not vice-versa, and because starting stricter
+  // is better for any future migration.
+  // See, e.g.: https://github.com/privacycg/storage-access/issues/113
   url.mojom.Origin requestedOrigin;
 };
 
