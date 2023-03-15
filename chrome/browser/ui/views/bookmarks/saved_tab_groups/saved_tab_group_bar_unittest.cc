@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 
+#include <memory>
+
 #include "base/guid.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
+#include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,15 +61,21 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    CreateBrowser();
 
     saved_tab_group_model_ = std::make_unique<SavedTabGroupModel>();
     saved_tab_group_bar_ = std::make_unique<SavedTabGroupBar>(
-        nullptr, saved_tab_group_model(), false);
+        browser(), saved_tab_group_model(), false);
+
+    saved_tab_group_bar_->SetPageNavigator(nullptr);
   }
 
   void TearDown() override {
     saved_tab_group_bar_.reset();
     saved_tab_group_model_.reset();
+    browser_window_.reset();
+    browser_.reset();
+    profile_.reset();
 
     ChromeViewsTestBase::TearDown();
   }
@@ -89,9 +100,25 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
     return size;
   }
 
+  void CreateBrowser() {
+    TestingProfile::Builder profile_builder;
+    profile_ = profile_builder.Build();
+    browser_window_ = std::make_unique<TestBrowserWindow>();
+    Browser::CreateParams params(profile_.get(), /*user_gesture*/ true);
+    params.type = Browser::TYPE_NORMAL;
+    params.window = browser_window_.get();
+    browser_.reset(Browser::Create(params));
+  }
+
+  Browser* browser() { return browser_.get(); }
+
  private:
   std::unique_ptr<SavedTabGroupBar> saved_tab_group_bar_;
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
+
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestBrowserWindow> browser_window_;
+  std::unique_ptr<Browser> browser_;
 
   const int button_padding_;
   const int button_height_;
@@ -181,7 +208,7 @@ TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
 
   SavedTabGroupBar another_tab_group_bar_on_same_model(
-      nullptr, saved_tab_group_model(), false);
+      browser(), saved_tab_group_model(), false);
 
   EXPECT_EQ(saved_tab_group_bar()->children().size(),
             another_tab_group_bar_on_same_model.children().size());

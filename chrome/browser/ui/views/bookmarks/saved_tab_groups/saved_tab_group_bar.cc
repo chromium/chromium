@@ -341,7 +341,7 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
                               base::Unretained(this)),
           base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
                               base::Unretained(this), group.saved_guid()),
-          animations_enabled_),
+          browser_, animations_enabled_),
       index);
 
   if (children().size() > (kMaxVisibleButtons + 1)) {
@@ -505,7 +505,7 @@ void SavedTabGroupBar::OnOverflowButtonPressed(views::View* view,
                             base::Unretained(this)),
         base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
                             base::Unretained(this), group->saved_guid()),
-        animations_enabled_));
+        browser_, animations_enabled_));
   }
 
   auto* widget =
