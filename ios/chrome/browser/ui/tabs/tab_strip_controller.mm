@@ -1343,6 +1343,8 @@ const CGFloat kSymbolSize = 18;
   [_closingTabs addObject:view];
   _targetFrames.RemoveFrame(view);
 
+  _pinnedTabCount = _webStateList->GetIndexOfFirstNonPinnedWebState();
+
   // Adjust the content size now that the tab has been removed from the model.
   [self updateContentSizeAndRepositionViews];
 
