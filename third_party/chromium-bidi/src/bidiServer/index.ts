@@ -104,6 +104,7 @@ async function onNewBidiConnectionOpen(
   // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
   const chromeArguments = [
     ...(headless ? ['--headless', '--hide-scrollbars', '--mute-audio'] : []),
+    // keep-sorted start
     '--disable-component-update',
     '--disable-popup-blocking',
     '--enable-automation',
@@ -113,6 +114,7 @@ async function onNewBidiConnectionOpen(
     '--remote-debugging-port=9222',
     '--use-mock-keychain',
     `--user-data-dir=${profileDir}`,
+    // keep-sorted end
     'about:blank',
   ];
 

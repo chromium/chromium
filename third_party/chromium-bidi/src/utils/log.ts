@@ -16,10 +16,12 @@
  */
 
 export enum LogType {
+  // keep-sorted start
   bidi = 'BiDi Messages',
   browsingContexts = 'Browsing Contexts',
   cdp = 'CDP',
   system = 'System',
+  // keep-sorted end
 }
 
 export type LoggerFn = (type: LogType, ...messages: unknown[]) => void;

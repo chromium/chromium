@@ -89,3 +89,7 @@ repos:
         language: pygrep
         files: \.js$|\.cjs$|\.mjs$|\.ts$|\.py$
         args: [--negate, --multiline]
+  - repo: https://github.com/google/keep-sorted
+    rev: v0.1.1
+    hooks:
+      - id: keep-sorted

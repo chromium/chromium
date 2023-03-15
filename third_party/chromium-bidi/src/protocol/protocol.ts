@@ -30,6 +30,7 @@ export interface EventResponse<MethodType, ParamsType> {
 }
 
 export type BiDiMethod =
+  // keep-sorted start
   | 'browsingContext.captureScreenshot'
   | 'browsingContext.close'
   | 'browsingContext.create'
@@ -46,6 +47,7 @@ export type BiDiMethod =
   | 'session.status'
   | 'session.subscribe'
   | 'session.unsubscribe';
+// keep-sorted end
 
 export namespace Message {
   export type OutgoingMessage =
