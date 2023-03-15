@@ -95,6 +95,13 @@ class HtmlToWrapperTest(unittest.TestCase):
                    'html_to_wrapper/foo_expected.min.html.ts',
                    minify=True)
 
+  def testHtmlToWrapper_MinifyDetect(self):
+    self._run_test('html_to_wrapper/foo.html',
+                   'html_to_wrapper/foo.html.ts',
+                   'html_to_wrapper/foo_expected.min.html.ts',
+                   minify=True,
+                   template='detect')
+
   def testHtmlToWrapper_UseJs(self):
     self._run_test('html_to_wrapper/foo.html',
                    'html_to_wrapper/foo.html.js',

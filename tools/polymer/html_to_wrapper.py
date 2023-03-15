@@ -57,7 +57,7 @@ POLYMER_TOKEN = '//resources/polymer/v3_0/polymer/polymer_bundled.min.js'
 
 
 # Detects whether the element to be wrapped is using Polymer or native APIs.
-def get_wrapper_element_template(template_type, extension, in_file):
+def get_wrapper_element_template(template_type, definition_file):
   if template_type == 'native':
     return _NON_POLYMER_ELEMENT_TEMPLATE
 
@@ -65,7 +65,6 @@ def get_wrapper_element_template(template_type, extension, in_file):
     return _ELEMENT_TEMPLATE
 
   if template_type == 'detect':
-    definition_file = path.splitext(in_file)[0] + extension
     with io.open(definition_file, encoding='utf-8', mode='r') as f:
       content = f.read()
       return _ELEMENT_TEMPLATE if POLYMER_TOKEN in content else \
@@ -137,8 +136,11 @@ def main(argv):
             'Polymer icons files not supported with template="native"')
         template = _ICONS_TEMPLATE
       else:
-        template = get_wrapper_element_template(args.template, extension,
-                                                wrapper_in_file)
+        # Locate the file that holds the web component's definition. Assumed to
+        # be in the same folder as input HTML template file.
+        definition_file = path.splitext(path.join(in_folder,
+                                                  in_file))[0] + extension
+        template = get_wrapper_element_template(args.template, definition_file)
 
       wrapper = template % {
           'content': html_content,
