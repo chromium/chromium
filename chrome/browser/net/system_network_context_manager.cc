@@ -794,19 +794,34 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     network_context_params->enforce_chrome_ct_policy = true;
   }
 
-  // If a custom proxy is specified, set the proxy rules
-  if (command_line.HasSwitch(::switches::kIPAnonymizationProxyServer)) {
+  // If a custom proxy for IP protection is specified by either command line
+  // switch or Finch experiment flag, set the proxy rules
+  if (command_line.HasSwitch(::switches::kIPAnonymizationProxyServer) ||
+      base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
     auto proxy_config = network::mojom::CustomProxyConfig::New();
     proxy_config->rules.type =
         net::ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
-    proxy_config->rules.ParseFromString(command_line.GetSwitchValueASCII(
-        ::switches::kIPAnonymizationProxyServer));
 
-    // Get allowlist hosts
-    std::string proxy_allow_list = command_line.GetSwitchValueASCII(
-        ::switches::kIPAnonymizationProxyAllowList);
+    // Command line input takes precedence over flag configuration
+    std::string ip_protection_proxy_server =
+        command_line.HasSwitch(::switches::kIPAnonymizationProxyServer)
+            ? command_line.GetSwitchValueASCII(
+                  ::switches::kIPAnonymizationProxyServer)
+            : net::features::kIpPrivacyProxyServer.Get();
+
+    proxy_config->rules.ParseFromString(ip_protection_proxy_server);
+
+    // Get allowlist hosts, command line input takes precedence over flag
+    // configuration
+    std::string ip_protection_proxy_allow_list =
+        command_line.HasSwitch(::switches::kIPAnonymizationProxyServer)
+            ? command_line.GetSwitchValueASCII(
+                  ::switches::kIPAnonymizationProxyAllowList)
+            : net::features::kIpPrivacyProxyAllowlist.Get();
+
     proxy_config->rules.reverse_bypass = true;
-    proxy_config->rules.bypass_rules.ParseFromString(proxy_allow_list);
+    proxy_config->rules.bypass_rules.ParseFromString(
+        ip_protection_proxy_allow_list);
 
     proxy_config->should_replace_direct = true;
     proxy_config->should_override_existing_config = false;

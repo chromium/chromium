@@ -352,6 +352,16 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPrefetchFollowsNormalCacheSemantics);
 NET_EXPORT BASE_DECLARE_FEATURE(kKerberosInBrowserRedirect);
 #endif
 
+// Enables custom proxy configuration for the IP Protection experimental proxy.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableIpProtectionProxy);
+
+// Sets the name of the IP protection proxy.
+NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyServer;
+
+// Sets the allow list for the IP protection proxy.
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kIpPrivacyProxyAllowlist;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

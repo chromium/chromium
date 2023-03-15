@@ -323,4 +323,17 @@ BASE_FEATURE(kKerberosInBrowserRedirect,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// IP protection experiment configuration settings
+BASE_FEATURE(kEnableIpProtectionProxy,
+             "EnableIpPrivacyProxy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kIpPrivacyProxyServer{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyServer",
+    /*default_value=*/""};
+
+const base::FeatureParam<std::string> kIpPrivacyProxyAllowlist{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAllowlist",
+    /*default_value=*/""};
+
 }  // namespace net::features
