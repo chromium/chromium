@@ -4698,6 +4698,7 @@ source_set("unit_tests") {
     "../ui/webui/settings/ash/accessibility_handler_unittest.cc",
     "../ui/webui/settings/ash/bluetooth_handler_unittest.cc",
     "../ui/webui/settings/ash/calculator/size_calculator_test_api.h",
+    "../ui/webui/settings/ash/crostini_section_unittest.cc",
     "../ui/webui/settings/ash/device_keyboard_handler_unittest.cc",
     "../ui/webui/settings/ash/device_name_handler_unittest.cc",
     "../ui/webui/settings/ash/device_section_unittest.cc",

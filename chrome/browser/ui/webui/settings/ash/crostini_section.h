@@ -28,6 +28,10 @@ class CrostiniSection : public OsSettingsSection {
   ~CrostiniSection() override;
 
  private:
+  friend class CrostiniSectionTest;
+
+  static bool ShouldShowBruschetta(Profile* profile);
+
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;

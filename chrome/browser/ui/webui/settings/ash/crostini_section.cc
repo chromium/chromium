@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/management_utils.h"
@@ -249,6 +250,20 @@ CrostiniSection::CrostiniSection(Profile* profile,
 
 CrostiniSection::~CrostiniSection() = default;
 
+bool CrostiniSection::ShouldShowBruschetta(Profile* profile) {
+  const bool bru_enabled = bruschetta::BruschettaFeatures::Get()->IsEnabled();
+  const bool bru_installable =
+      !bruschetta::GetInstallableConfigs(profile).empty();
+  const bool bru_installed =
+      !guest_os::GetContainers(profile, guest_os::VmType::BRUSCHETTA).empty();
+  if (bru_enabled && !bru_installable) {
+    LOG(WARNING)
+        << "Bruschetta is enabled but has no installable configs. Installed = "
+        << bru_installed;
+  }
+  return bru_enabled && (bru_installable || bru_installed);
+}
+
 void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"bruschettaPageLabel", IDS_SETTINGS_BRUSCHETTA_LABEL},
@@ -443,16 +458,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_));
 
   // Should Bruschetta be displayed in the settings at all?
-  const bool bru_feature = bruschetta::BruschettaFeatures::Get()->IsEnabled();
-  const bool bru_config =
-      bruschetta::HasInstallableConfig(profile_, bruschetta::kBruschettaVmName);
-  if (bru_feature && !bru_config) {
-    LOG(WARNING) << "Bruschetta has no installable config.";
-  }
-  // TODO(b/266160969): After confirming that the Bruschetta policy is present
-  // for existing users, make showBruschetta check for both bru_feature &&
-  // bru_config.
-  html_source->AddBoolean("showBruschetta", bru_feature);
+  html_source->AddBoolean("showBruschetta", ShouldShowBruschetta(profile_));
 
   html_source->AddString(
       "bruschettaSharedPathsInstructionsLocate",

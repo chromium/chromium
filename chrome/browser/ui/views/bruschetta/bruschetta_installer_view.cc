@@ -47,6 +47,11 @@ constexpr int kWindowHeight = 636;
 void BruschettaInstallerView::Show(Profile* profile,
                                    const guest_os::GuestId& guest_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (bruschetta::GetInstallableConfigs(profile).empty()) {
+    LOG(ERROR)
+        << "Bruschetta has no installable configs, not running the installer.";
+    return;
+  }
   if (!g_bruschetta_installer_view) {
     g_bruschetta_installer_view =
         new BruschettaInstallerView(profile, guest_id);
