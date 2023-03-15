@@ -34,17 +34,20 @@ found in the LICENSE file.
           android:id="@+id/fast_checkout_credit_card_item_number"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+          android:textAlignment="viewStart" />
         <TextView
           android:id="@+id/fast_checkout_credit_card_item_name"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+          android:textAlignment="viewStart" />
         <TextView
           android:id="@+id/fast_checkout_credit_card_item_expiration_date"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+          android:textAlignment="viewStart" />
     </LinearLayout>
     <ImageView
         android:id="@+id/fast_checkout_credit_card_item_selected_icon"

@@ -10,9 +10,9 @@ import static org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterI
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import org.chromium.chrome.browser.ui.fast_checkout.R;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -27,7 +27,8 @@ class FooterItemViewBinder {
     /** Binds the item view for the footer with to the model properties. */
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == LABEL) {
-            TextView newItemTextView = view.findViewById(R.id.fast_checkout_add_new_item_label);
+            TextViewWithCompoundDrawables newItemTextView =
+                    view.findViewById(R.id.fast_checkout_add_new_item_label);
             newItemTextView.setText(model.get(LABEL));
             newItemTextView.setContentDescription(
                     view.getContext().getResources().getString(model.get(LABEL)) + ", "

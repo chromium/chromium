@@ -80,12 +80,14 @@ found in the LICENSE file.
                 android:id="@+id/fast_checkout_home_sheet_profile_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                android:textAlignment="viewStart" />
               <TextView
                 android:id="@+id/fast_checkout_home_sheet_profile_street"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                android:textAlignment="viewStart" />
               <LinearLayout
                 android:id="@+id/fast_checkout_home_sheet_profile_sub_section"
                 android:layout_width="match_parent"
@@ -96,12 +98,14 @@ found in the LICENSE file.
                   android:id="@+id/fast_checkout_home_sheet_profile_email"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                  android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                  android:textAlignment="viewStart" />
                 <TextView
                   android:id="@+id/fast_checkout_home_sheet_profile_phone_number"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                  android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                  android:textAlignment="viewStart" />
               </LinearLayout>
           </LinearLayout>
           <ImageView
@@ -150,7 +154,8 @@ found in the LICENSE file.
                     android:id="@+id/fast_checkout_sheet_selected_credit_card_header"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                    android:textAlignment="viewStart" />
                 <ImageView
                     android:id="@+id/fast_checkout_gpay_icon"
                     android:layout_width="@dimen/fast_checkout_google_pay_icon_width"

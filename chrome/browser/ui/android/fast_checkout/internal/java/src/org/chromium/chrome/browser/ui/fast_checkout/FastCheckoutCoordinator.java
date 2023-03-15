@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ViewFlipper;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
@@ -88,5 +90,10 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
     @Override
     public void destroy() {
         mMediator.destroy();
+    }
+
+    @VisibleForTesting
+    PropertyModel getModelForTesting() {
+        return mModel;
     }
 }

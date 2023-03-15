@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.CREDIT_CARD_SCREEN;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
@@ -87,8 +89,9 @@ public class FastCheckoutRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
-                    // Add .setRevision(2) if UI changed such that it invalidates previous golden
-                    // images. Increase number with each subsequent UI change.
+                    // Increase revision number with each UI change if it invalidates previous
+                    // golden images.
+                    .setRevision(1)
                     .build();
 
     @Mock
@@ -158,5 +161,39 @@ public class FastCheckoutRenderTest {
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(
                 org.chromium.components.browser_ui.bottomsheet.R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "fast_checkout_home_screen_server_card");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsAddressesScreen() throws IOException {
+        runOnUiThreadBlocking(() -> {
+            mCoordinator.getModelForTesting().set(
+                    FastCheckoutProperties.CURRENT_SCREEN, AUTOFILL_PROFILE_SCREEN);
+            mCoordinator.showOptions(new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
+                    new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(
+                org.chromium.components.browser_ui.bottomsheet.R.id.bottom_sheet);
+        mRenderTestRule.render(bottomSheetView, "fast_checkout_addresses_screen");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsCreditCardsScreen() throws IOException {
+        runOnUiThreadBlocking(() -> {
+            mCoordinator.getModelForTesting().set(
+                    FastCheckoutProperties.CURRENT_SCREEN, CREDIT_CARD_SCREEN);
+            mCoordinator.showOptions(new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
+                    new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(
+                org.chromium.components.browser_ui.bottomsheet.R.id.bottom_sheet);
+        mRenderTestRule.render(bottomSheetView, "fast_checkout_credit_cards_screen");
     }
 }

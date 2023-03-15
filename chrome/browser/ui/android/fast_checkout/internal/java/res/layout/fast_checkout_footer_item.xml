@@ -4,28 +4,20 @@ Copyright 2022 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<FrameLayout
-    android:id="@+id/fast_checkout_footer_item"
+<org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+    android:id="@+id/fast_checkout_add_new_item_label"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/fast_checkout_detail_sheet_footer_icon_margin_horizontal"
     android:paddingTop="@dimen/fast_checkout_detail_sheet_padding_vertical"
-    android:paddingBottom="@dimen/fast_checkout_detail_sheet_padding_vertical">
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/fast_checkout_detail_sheet_footer_icon_margin_horizontal"
-        android:layout_gravity="center_vertical"
-        android:importantForAccessibility="no"
-        app:srcCompat="@drawable/ic_add"
-        app:tint="?attr/colorPrimary" />
-    <TextView
-        android:id="@+id/fast_checkout_add_new_item_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="56dp"
-        android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
-</FrameLayout>
+    android:paddingBottom="@dimen/fast_checkout_detail_sheet_padding_vertical"
+    android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1"
+    android:textAlignment="viewStart"
+    android:drawableStart="@drawable/ic_add"
+    android:drawablePadding="@dimen/fast_checkout_detail_sheet_footer_icon_margin_horizontal"
+    app:drawableWidth="24dp"
+    app:drawableHeight="24dp"
+    app:drawableTint="?attr/colorPrimary" />
