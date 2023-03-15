@@ -196,8 +196,9 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
   }
 };
 
-// Disabled due to flaky test results: crbug.com/805666.
-#if BUILDFLAG(IS_WIN)
+// Disabled due to flaky test results on Windows (https://crbug.com/805666) and
+// Linux (https://crbug.com/1406591).
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_MouseMove DISABLED_MouseMove
 #else
 #define MAYBE_MouseMove MouseMove
