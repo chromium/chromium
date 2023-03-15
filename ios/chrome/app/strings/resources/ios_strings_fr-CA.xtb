@@ -243,7 +243,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2712127207578915686">Imposs. d'ouvrir fichier</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
-<translation id="2737716090799520623">Lorsque vous êtes connecté à Chrome, les mots de passe que vous enregistrez sont enregistrés dans votre compte Google (<ph name="ACCOUNT" />). Pour désactiver cette option, <ph name="BEGIN_LINK" />accédez aux paramètres<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Champ précédent</translation>
 <translation id="2749231692441336879">Vous suivez <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">à l'instant</translation>
@@ -1164,7 +1163,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9165320910061267720">Pour recevoir des notifications d'alertes relatives à une baisse de prix, vous devez activer les notifications dans vos paramètres iOS.</translation>
 <translation id="9177438225260810839">Rechercher dans les onglets ouverts</translation>
 <translation id="9188680907066685419">Se déconnecter du compte géré</translation>
-<translation id="9193147658040604536">Faites glisser ici pour épingler l'onglet</translation>
 <translation id="9200875785104711666">il y a <ph name="TIME" /> j</translation>
 <translation id="9203116392574189331">Transférer</translation>
 <translation id="9219154867334666734">Rechercher des onglets…</translation>

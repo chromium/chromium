@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Rozbalená (zbalíte ju kliknutím)</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2597457036804169544">Nepoužívať tmavý motív na weboch</translation>
+<translation id="2606760465469169465">Automatické overenie</translation>
 <translation id="2621115761605608342">Povoliť JavaScript na konkrétnom webe.</translation>
 <translation id="2653659639078652383">Odoslať</translation>
 <translation id="2677748264148917807">Odísť</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Vybrané kontakty budú zdieľané s webom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Naposledy navštívený dnes</translation>
 <translation id="5225463052809312700">Zapnúť kameru</translation>
+<translation id="5229337741799419985">Toto nastavenie funguje bez identifikácie vašej totožnosti alebo bez toho, aby weby videli vašu históriu prehliadania</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5264323282659631142">Odstrániť <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Režim celej obrazovky ukončíte potiahnutím z hornej časti a klepnutím na tlačidlo Späť.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Práve sťahované položky</translation>
+<translation id="6701547804986694515">Web, ktorý navštívite, môže v Chrome uložiť informácie potvrdzujúce, že nie ste robot. Pri ďalšom prehliadaní môžu weby pomocou Chromu overiť informácie z predchádzajúceho navštíveného webu, že ste zrejme skutočná osoba.</translation>
 <translation id="6722828510648505498">Blokujte výzvy na prihlásenie od služieb identity.</translation>
 <translation id="6746124502594467657">Presunúť nadol</translation>
 <translation id="6749077623962119521">Chcete resetovať povolenia?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Vyberte obrázok</translation>
 <translation id="8801436777607969138">Blokovať JavaScript na konkrétnom webe.</translation>
 <translation id="8803526663383843427">Keď je funkcia zapnutá</translation>
+<translation id="8805385115381080995">Prehliadanie je rýchlejšie, pretože daný web vás pravdepodobne nepožiada o overenie, že ste skutočná osoba</translation>
 <translation id="8816026460808729765">Brániť webom v prístupe k senzorom</translation>
 <translation id="8823559166155093873">Blokovať súbory cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Táto stránka je nebezpečná</translation>
 <translation id="9201023452444595544">Všetky offline dáta budú vymazané</translation>
 <translation id="930525582205581608">Chcete tento web odstrániť?</translation>
+<translation id="947156494302904893">Weby, ktoré navštevujete môžu skontrolovať, či ste skutočná osoba a nie robot</translation>
 <translation id="967624055006145463">Uložené dáta</translation>
 </translationbundle>

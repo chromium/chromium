@@ -326,6 +326,7 @@
 <translation id="1278859221870828664">Google Play 앱 및 서비스 검토</translation>
 <translation id="127946606521051357">근처 기기가 공유 시도 중</translation>
 <translation id="1280965841156951489">파일 수정</translation>
+<translation id="1282311502488501110">로그인 안함</translation>
 <translation id="1282465000333679776">시스템 오디오 공유</translation>
 <translation id="1284277788676816155">데이터 저장 허용 안 함</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
@@ -1763,6 +1764,7 @@
 <translation id="2490481887078769936">목록에서 <ph name="FILE_NAME" />이(가) 삭제됨</translation>
 <translation id="249113932447298600">죄송합니다. 현재 이 기기(<ph name="DEVICE_LABEL" />)는 지원되지 않습니다.</translation>
 <translation id="2492461744635776704">인증서 로그인 요청 준비 중</translation>
+<translation id="249330843868392562">TTS(텍스트 음성 변환) 설정 열기</translation>
 <translation id="2495524171012645395">최근에 본 레시피</translation>
 <translation id="2496180316473517155">인터넷 사용 기록</translation>
 <translation id="2497229222757901769">마우스 속도</translation>
@@ -2344,6 +2346,7 @@
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}other{<ph name="MANAGER" />에서 기한 전에 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}}</translation>
 <translation id="3009178788565917040">출력</translation>
 <translation id="3009300415590184725">모바일 데이터 서비스 설정 과정을 취소하시겠습니까?</translation>
+<translation id="3009352964623081324">검색 + O를 누른 후 S. 음성을 설치, 관리, 맞춤설정할 수 있습니다.</translation>
 <translation id="3009779501245596802">색인화된 데이터베이스</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{비밀번호가 안전함}=1{취약한 비밀번호 {COUNT}개}other{취약한 비밀번호 {COUNT}개}}</translation>
 <translation id="3010279545267083280">비밀번호 삭제됨</translation>
@@ -3929,6 +3932,7 @@
 <translation id="4452898361839215358">또는 PPD를 선택합니다 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">키보드 오른쪽 상단에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />에서 검색하거나 URL을 입력하세요.</translation>
+<translation id="4457472090507035117">현재 음성 선택:</translation>
 <translation id="4458535500699390320">이 탭이 비활성 상태인 동안 메모리 절약 모드가 다른 작업을 위해 메모리를 확보했습니다. 언제든지 설정에서 변경할 수 있습니다.</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" />일 전에 사용</translation>
 <translation id="4460014764210899310">그룹 해제</translation>
@@ -6979,6 +6983,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7258225044283673131">애플리케이션이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
 <translation id="7260186537988033909">키오스크 및 사이니지 기기 등록 완료</translation>
 <translation id="7260367682327802201">Android 기기에 비슷한 설정이 포함되어 있을 수 있습니다. Chrome과 Android 기기에서 광고 측정이 사용 설정되어 있으면 회사에서 사용자가 방문하는 웹사이트와 사용하는 앱에서 광고 효과를 측정할 수 있습니다.</translation>
+<translation id="7261612856573623172">시스템 TTS(텍스트 음성 변환) 음성</translation>
 <translation id="7262004276116528033">이 로그인 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅됩니다.</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{사이트 1개의 권한이 삭제됨}other{사이트 {NUM_SITES}개의 권한이 삭제됨}}</translation>
 <translation id="7264695323040866038">지원되는 웹 링크를 열 때 항상 <ph name="APP" /> 앱을 사용할까요?</translation>
@@ -9097,6 +9102,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9150045010208374699">카메라 사용</translation>
 <translation id="9150079578948279438">프로필을 삭제할 수 없습니다. 다시 시도하거나 이동통신사에 기술 지원을 요청하세요.</translation>
 <translation id="9150860646299915960">Linux 컨테이너 업그레이드</translation>
+<translation id="9151249085738989067">언어에 따라 자동으로 ChromeVox 음성을 전환합니다.</translation>
 <translation id="9154194610265714752">업데이트됨</translation>
 <translation id="91568222606626347">바로가기 만들기...</translation>
 <translation id="9157096865782046368">0.8초</translation>

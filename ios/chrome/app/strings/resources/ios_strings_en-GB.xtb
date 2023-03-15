@@ -243,7 +243,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">Unable to Open File</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
-<translation id="2737716090799520623">When you're signed in to Chrome, passwords that you save will go in your Google Account (<ph name="ACCOUNT" />). To turn this off, <ph name="BEGIN_LINK" />go to settings<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Previous field</translation>
 <translation id="2749231692441336879">Following <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">just now</translation>
@@ -1164,7 +1163,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9165320910061267720">To get notifications of price drop alerts, you'll need to turn on notifications in your iOS settings.</translation>
 <translation id="9177438225260810839">Search open tabs</translation>
 <translation id="9188680907066685419">Sign out of managed account</translation>
-<translation id="9193147658040604536">Drag here to pin tab</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d ago</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Search Tabs…</translation>

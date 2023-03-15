@@ -243,7 +243,6 @@
 <translation id="271033894570825754">Новый</translation>
 <translation id="2712127207578915686">Невозможно открыть файл</translation>
 <translation id="2718352093833049315">Только Wi-Fi</translation>
-<translation id="2737716090799520623">Если вы вошли в Chrome, сохраненные пароли будут добавляться в ваш аккаунт Google (<ph name="ACCOUNT" />). Отключить эту функцию можно в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Предыдущее поле</translation>
 <translation id="2749231692441336879">Вы подписались на "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="2764831210418622012">только что</translation>
@@ -520,6 +519,7 @@
 <translation id="4737560986434232178">Искать в недавних вкладках</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4747097190499141774">Шифрование с помощью кодовой фразы не применяется к способам оплаты и адресам из Google Pay. Доступ к зашифрованным данным будет только у тех, кто знает кодовую фразу. Она не пересылается и не хранится в Google. Если вы забудете фразу или решите изменить эту настройку, вам придется сбросить параметры синхронизации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, только на этом устройстве, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Новая вкладка инкогнито</translation>
 <translation id="4766112107778026136">Рекомендации и подписки</translation>
 <translation id="4775879719735953715">Браузер по умолчанию</translation>
@@ -883,6 +883,7 @@
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7062545763355031412">Принять и переключиться</translation>
+<translation id="707592680990535433">Вы сможете задать настройки, когда войдете в аккаунт Google в Chrome.</translation>
 <translation id="7080806333218412752">Обеспечивает отправку URL на проверку по критериям Безопасного просмотра. Кроме того с целью выявления новых угроз отправляется на анализ небольшая выборка страниц, скачанных файлов и сведений об использовании расширений, а также информация о системе. Когда выполнен вход в аккаунт Google, между этими данными и аккаунтом временно устанавливается связь, чтобы вы были защищены во время работы с различными приложениями Google.</translation>
 <translation id="7095110968493193530">В Google Менеджере паролей для аккаунта <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Недавние вкладки</translation>
@@ -944,6 +945,7 @@
 <translation id="7600965453749440009">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Заблок. вспл. окон: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7607521702806708809">Удалить пароль</translation>
+<translation id="7611459119367035420">Ваши закрепленные вкладки будут появляться здесь.</translation>
 <translation id="7638584964844754484">Неверная кодовая фраза</translation>
 <translation id="7646263789464975852">Меню → Настройки → Проверка безопасности</translation>
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>
@@ -956,6 +958,7 @@
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7720410380936703141">ПОВТОРИТЬ</translation>
 <translation id="7726702057919861819">Меню → История → Очистить историю</translation>
+<translation id="7733646263819020771">Закладка <ph name="BOOKMRK_NAME" />. Только на этом устройстве.</translation>
 <translation id="7738120385185846461">Сообщить о проблеме</translation>
 <translation id="7741325291586284254">Страница "Новая вкладка инкогнито"</translation>
 <translation id="7744394900930577716">Пароли в других приложениях</translation>
@@ -1164,7 +1167,6 @@
 <translation id="9165320910061267720">Чтобы получать оповещения о скидках, включите уведомления в настройках iOS.</translation>
 <translation id="9177438225260810839">Поиск по открытым вкладкам</translation>
 <translation id="9188680907066685419">Выход из управляемого аккаунта</translation>
-<translation id="9193147658040604536">Перетащите вкладку сюда, чтобы закрепить</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> дн. назад</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Поиск по вкладкам</translation>

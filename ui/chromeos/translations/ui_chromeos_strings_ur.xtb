@@ -941,6 +941,7 @@
 <translation id="8492972329130824181">ہوم نیٹ ورک دستیاب نہیں ہے۔ منسلک ہونے کیلئے موبائل ڈیٹا رومنگ کو فعال کرنا ہوگا۔</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو اخذ کیا جا رہا ہے…</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، آلے کے سیٹ اپ ہونے کے بعد فعال کریں، اپنے منتظم کے زیر انتظام</translation>
+<translation id="8512483403832814140">کسی بھی وقت</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">فرانسیسی (فرانس)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی<ph name="SIGNAL_STRENGTH" />%، تفصیلات</translation>

@@ -243,7 +243,6 @@
 <translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">Հնարավոր չէ բացել ֆայլը</translation>
 <translation id="2718352093833049315">Միայն Wi-Fi-ով</translation>
-<translation id="2737716090799520623">Եթե մուտք եք գործել Chrome, գաղտնաբառերը, որոնք պահում եք, կավելացվեն ձեր Google հաշիվ (<ph name="ACCOUNT" />)։ Այս գործառույթը կարելի է անջատել <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="2747003861858887689">Նախորդ դաշտը</translation>
 <translation id="2749231692441336879">Դուք բաժանորդագրվեցիք «<ph name="CHANNEL_NAME" />» ալիքին</translation>
 <translation id="2764831210418622012">հենց նոր</translation>
@@ -1164,7 +1163,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9165320910061267720">Գների իջեցման մասին ծանուցումներ ստանալու համար միացրեք ծանուցումները ձեր iOS-ի կարգավորումներում։</translation>
 <translation id="9177438225260810839">Որոնում բաց ներդիրներում</translation>
 <translation id="9188680907066685419">Ելք կառավարվող հաշվից</translation>
-<translation id="9193147658040604536">Քաշեք այստեղ՝ ներդիրն ամրացնելու համար</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> օր առաջ</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Ներդիրների որոնում…</translation>

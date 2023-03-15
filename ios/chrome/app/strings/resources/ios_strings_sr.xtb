@@ -243,7 +243,6 @@
 <translation id="271033894570825754">Ново</translation>
 <translation id="2712127207578915686">Није могуће отворити датотеку</translation>
 <translation id="2718352093833049315">Само на WiFi-ју</translation>
-<translation id="2737716090799520623">Када сте пријављени у Chrome, лозинке које сачувате иду на Google налог (<ph name="ACCOUNT" />). Да бисте то искључили, <ph name="BEGIN_LINK" />идите у подешавања<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Претходно поље</translation>
 <translation id="2749231692441336879">Пратите канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">малопре</translation>
@@ -1164,7 +1163,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9165320910061267720">Да бисте добијали обавештења о снижењима, треба да укључите обавештења у iOS подешавањима.</translation>
 <translation id="9177438225260810839">Претражите отворене картице</translation>
 <translation id="9188680907066685419">Одјавите се са налога којим се управља</translation>
-<translation id="9193147658040604536">Превуците овде да бисте закачили картицу</translation>
 <translation id="9200875785104711666">пре <ph name="TIME" /> д</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Претражите картице…</translation>

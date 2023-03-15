@@ -630,6 +630,7 @@
 
 തിരയലുകൾ, പ്രവൃത്തി എന്നിവ പോലെ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> എന്നതിലെ മറ്റ് Google സേവനങ്ങളിൽ നിന്നുള്ള മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രവും നിങ്ങളുടെ Google അക്കൗണ്ടിൽ ഉണ്ടായേക്കാം.</translation>
 <translation id="452750746583162491">നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ അവലോകനം ചെയ്യുക</translation>
+<translation id="4528638190900283934">അധിക ഫീച്ചറുകൾക്കായി സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4532845899244822526">ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ, <ph name="TAB_COUNT_INCOGNITO" /> അദൃശ്യ മോഡ്}}</translation>
 <translation id="4554077758708533499">USB കേബിൾ ഉപയോഗിച്ച് കണക്റ്റ് ചെയ്തു</translation>
@@ -1241,10 +1242,10 @@
 <translation id="7707922173985738739">മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കുക</translation>
 <translation id="7709094866268987903">നിങ്ങൾ നീക്കം ചെയ്ത താൽപ്പര്യങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="7709918231054955894">നിങ്ങളുടെ എല്ലാ ടാബുകളും നേടുക</translation>
+<translation id="772434085369393266">നാവിഗേഷനുകൾ HTTPS-ലേക്ക് അപ്ഗ്രേഡ് ചെയ്യുക, അതിനെ പിന്തുണയ്ക്കാത്ത സൈറ്റുകൾ ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് മുന്നറിയിപ്പ് ലഭിക്കും. വിപുലമായ പരിരക്ഷ പ്രവർത്തനക്ഷമമാക്കിയതിനാൽ നിങ്ങൾക്ക് ഈ ക്രമീകരണം മാറ്റാനാകില്ല.</translation>
 <translation id="7725024127233776428">നിങ്ങൾ ബുക്ക്‌മാർക്ക് ചെയ്യുന്ന പേജുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ട ടെക്‌സ്റ്റ്</translation>
 <translation id="7762668264895820836">SD കാർഡ് <ph name="SD_CARD_NUMBER" /></translation>
-<translation id="7762928140712606393">അധിക ഫീച്ചറുകളും അതിശക്തമായ Chrome സുരക്ഷയും നേടാൻ സൈൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="7764225426217299476">വിലാസം ചേർക്കുക</translation>
 <translation id="7772032839648071052">പാസ്ഫ്രേസ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> അടയ്‌ക്കുക</translation>

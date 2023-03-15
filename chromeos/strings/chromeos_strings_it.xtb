@@ -79,6 +79,7 @@
 <translation id="1641857168437328880">Alimentatore di documenti (solo fronte)</translation>
 <translation id="1643449475550628585">Cambia l'immagine di sfondo ogni giorno</translation>
 <translation id="1644574205037202324">Cronologia</translation>
+<translation id="1651925268237749928">Hai selezionato un album condiviso. Altre persone possono aggiungere o modificare foto. È possibile che per lo sfondo vengano usate foto che non sono attualmente incluse in questo album.</translation>
 <translation id="1662989795263954667">Operazione interrotta - Inchiostro esaurito</translation>
 <translation id="1664796644829245314">Visualizza <ph name="PREVIEW_OBJECT" /> in anteprima</translation>
 <translation id="1668469839109562275">VPN integrata</translation>
@@ -236,6 +237,7 @@
 <translation id="319101249942218879">Immagine dell'avatar cambiata</translation>
 <translation id="3192947282887913208">File audio</translation>
 <translation id="3199982728237701504">Alimentatore di documenti (fronte e retro)</translation>
+<translation id="3201315366910775591">Gli album condivisi possono essere aggiornati da altri utenti</translation>
 <translation id="3211671540163313381">Mappatura tasti per il D-pad</translation>
 <translation id="3226405216343213872">Ricerca di scanner in corso…</translation>
 <translation id="3226657629376379887">Menu azioni del layout</translation>
@@ -494,7 +496,7 @@
 <translation id="5423849171846380976">Attivato</translation>
 <translation id="5430931332414098647">Tethering istantaneo</translation>
 <translation id="5431318178759467895">A colori</translation>
-<translation id="5457599981699367932">Esplora come ospite</translation>
+<translation id="5457599981699367932">Naviga come ospite</translation>
 <translation id="54609108002486618">Gestito</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativo rimanente}other{{0} tentativi rimanenti}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -653,6 +655,7 @@
 <translation id="6838167112108853532">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN collegati abilitati siano disattivati o rimossi.</translation>
 <translation id="6853312040151791195">Velocità di riduzione della carica</translation>
 <translation id="6889786074662672253">Durante il riavvio, non scollegare questo dispositivo esterno o non arrestare il computer. Puoi ridurre a icona questa finestra. Questa operazione potrebbe richiedere qualche minuto e nel frattempo il dispositivo esterno potrebbe non funzionare.</translation>
+<translation id="6900701049656042631">Questo album non contiene foto. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
 <translation id="6905724422583748843">Torna a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Il coperchio dello scanner è aperto. Chiudilo e riprova.</translation>
 <translation id="6911383237894364323">Impossibile connettersi ai server multimediali</translation>

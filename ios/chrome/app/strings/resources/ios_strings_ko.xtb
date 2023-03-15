@@ -243,7 +243,6 @@
 <translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">파일을 열 수 없음</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
-<translation id="2737716090799520623">Chrome에 로그인하면 저장한 비밀번호가 내 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다. 이 기능을 사용 중지하려면 <ph name="BEGIN_LINK" />설정으로 이동<ph name="END_LINK" />하세요.</translation>
 <translation id="2747003861858887689">이전 필드</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> 사이트를 팔로우했습니다.</translation>
 <translation id="2764831210418622012">방금</translation>
@@ -1164,7 +1163,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9165320910061267720">가격 인하 알림을 받으려면 iOS 설정에서 알림을 사용 설정해야 합니다.</translation>
 <translation id="9177438225260810839">열린 탭 검색</translation>
 <translation id="9188680907066685419">관리 계정에서 로그아웃</translation>
-<translation id="9193147658040604536">탭을 고정하려면 여기로 드래그하세요.</translation>
 <translation id="9200875785104711666"><ph name="TIME" />일 전</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">탭 검색…</translation>

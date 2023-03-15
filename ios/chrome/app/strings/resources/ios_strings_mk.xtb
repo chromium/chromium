@@ -243,7 +243,6 @@
 <translation id="271033894570825754">Ново</translation>
 <translation id="2712127207578915686">Не може да се отвори датотеката</translation>
 <translation id="2718352093833049315">Само преку Wi-Fi</translation>
-<translation id="2737716090799520623">Кога сте најавени на Chrome, лозинките што ги зачувувате ќе одат на вашата сметка на Google (<ph name="ACCOUNT" />). За да го исклучите тоа, <ph name="BEGIN_LINK" />одете во „Поставки“<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Претходно поле</translation>
 <translation id="2749231692441336879">Се следи <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">пред малку</translation>
@@ -1164,7 +1163,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9165320910061267720">За да добивате известувања за намалувања на цените, ќе треба да ги вклучите известувањата во вашите поставки за iOS.</translation>
 <translation id="9177438225260810839">Пребарајте ги отворените картички</translation>
 <translation id="9188680907066685419">Одјавете се од управувана сметка</translation>
-<translation id="9193147658040604536">Повлечете овде за да закачите картичка</translation>
 <translation id="9200875785104711666">Пред <ph name="TIME" /> д.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Пребарајте ги картичките…</translation>

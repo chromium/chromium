@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Extinde <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Dezactivează sunetul pentru un anumit site.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}few{# cookie-uri}other{# de cookie-uri}}</translation>
+<translation id="4478158430052450698">Simplifică personalizarea zoomului pentru diferite site-uri</translation>
 <translation id="4479647676395637221">Întreabă înainte de a permite site-urilor să folosească camera foto (recomandat)</translation>
 <translation id="4505788138578415521">Adresă URL extinsă</translation>
 <translation id="4534723447064627427">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze microfonul, activează microfonul și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>

@@ -243,7 +243,6 @@
 <translation id="271033894570825754">Νέο</translation>
 <translation id="2712127207578915686">Αδύνατο άνοιγμα αρχείου</translation>
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
-<translation id="2737716090799520623">Όταν είστε συνδεδεμένοι στο Chrome, οι κωδικοί πρόσβασης που αποθηκεύετε θα αποθηκεύονται στον Λογαριασμό σας Google (<ph name="ACCOUNT" />). Για να απενεργοποιήσετε αυτήν τη λειτουργία, <ph name="BEGIN_LINK" />μεταβείτε στις ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Προηγούμενο πεδίο</translation>
 <translation id="2749231692441336879">Παρακολουθείτε το κανάλι <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">μόλις τώρα</translation>
@@ -1136,6 +1135,7 @@
 <translation id="8952559610785099500">Προσθήκη κωδικού πρόσβασης</translation>
 <translation id="8953046091948372197">Εδώ θα βρείτε τους κωδικούς πρόσβασής σας</translation>
 <translation id="895541991026785598">Αναφορά προβλήματος</translation>
+<translation id="8971545611707025079">Έλεγχος ξανά</translation>
 <translation id="8974714402877957201">1. Ανοίξτε τις Ρυθμίσεις του iPad</translation>
 <translation id="8976382372951310360">Βοήθεια</translation>
 <translation id="8976414606286374109">Οι κάρτες αποθηκεύονται στον Λογαριασμό σας Google.</translation>
@@ -1169,7 +1169,6 @@
 <translation id="9165320910061267720">Για να λαμβάνετε ειδοποιήσεις σχετικά με τις πτώσεις τιμών, θα πρέπει να ενεργοποιήσετε τις ειδοποιήσεις στις ρυθμίσεις iOS.</translation>
 <translation id="9177438225260810839">Αναζήτηση σε ανοικτές καρτέλες</translation>
 <translation id="9188680907066685419">Αποσύνδεση από διαχειριζόμενο λογαριασμό</translation>
-<translation id="9193147658040604536">Σύρετε εδώ για Καρφίτσωμα καρτέλας</translation>
 <translation id="9200875785104711666">Πριν από <ph name="TIME" /> ημ.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Αναζήτηση στις καρτέλες…</translation>

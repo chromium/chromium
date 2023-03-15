@@ -622,6 +622,7 @@
 
 Google аккаунтуңуздун башка Google кызматтарынан алынган серептөө таржымалы <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> дарегинде болушу мүмкүн.</translation>
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
+<translation id="4528638190900283934">Кошумча функцияларды колдонуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="4532845899244822526">Куржун тандаңыз</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_COUNT_MANY" /> өтмөк, <ph name="TAB_COUNT_INCOGNITO" /> жашыруун}}</translation>
 <translation id="4554077758708533499">USB кабели аркылуу туташты</translation>
@@ -1236,7 +1237,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7725024127233776428">Сиз кыстарма катары сактаган барактар ушул жерде көрүнөт</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> түзмөгүнөн көчүрүлгөн текст</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />-SD-карта</translation>
-<translation id="7762928140712606393">Кошумча функциялар жана Chrome'дун коопсуздук системасы үчүн аккаунтка кириңиз</translation>
 <translation id="7764225426217299476">Дарек кошуу</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> өтмөгүн жабуу</translation>

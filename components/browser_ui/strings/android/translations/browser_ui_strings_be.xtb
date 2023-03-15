@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Разгарнуць апісанне "<ph name="TARGET_DESCRIPTION" />"</translation>
 <translation id="4468959413250150279">Выключыць гук на канкрэтным сайце.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# файл cookie}one{# файл cookie}few{# файлы cookie}many{# файлаў cookie}other{# файла cookie}}</translation>
+<translation id="4478158430052450698">Вы можаце спрасціць змяненне маштабу на розных сайтах</translation>
 <translation id="4479647676395637221">Пытацца, перш чым дазволіць сайтам выкарыстоўваць камеру (рэкамендуецца)</translation>
 <translation id="4505788138578415521">URL-адрас разгорнуты</translation>
 <translation id="4534723447064627427">Каб даць праграме "<ph name="APP_NAME" />" доступ да мікрафона, уключыце апошні ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>

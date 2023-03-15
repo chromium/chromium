@@ -243,7 +243,6 @@
 <translation id="271033894570825754">Новий</translation>
 <translation id="2712127207578915686">Не вдалося відкрити файл</translation>
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
-<translation id="2737716090799520623">Коли ви ввійдете в Chrome, збережені паролі буде додано у ваш обліковий запис Google (<ph name="ACCOUNT" />). Вимкнути цю функцію можна в розділі <ph name="BEGIN_LINK" />Налаштування<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Попереднє поле</translation>
 <translation id="2749231692441336879">Ви підписалися на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">щойно</translation>
@@ -1164,7 +1163,6 @@
 <translation id="9165320910061267720">Щоб отримувати сповіщення про зниження цін, увімкніть їх у налаштуваннях iOS.</translation>
 <translation id="9177438225260810839">Шукати у відкритих вкладках</translation>
 <translation id="9188680907066685419">Вийти з керованого облікового запису</translation>
-<translation id="9193147658040604536">Щоб закріпити вкладку, перетягніть її сюди</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> дн. тому</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Шукати вкладки…</translation>

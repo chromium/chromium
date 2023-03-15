@@ -1123,6 +1123,7 @@
 <translation id="6710213216561001401">មុន</translation>
 <translation id="6723839937902243910">ថាមពល</translation>
 <translation id="6727969043791803658">បានភ្ជាប់ ​ថ្ម​ <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6732087373923685049">កាមេរ៉ា</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">កំពុងប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="6739144137573853180">ចូលទៅការកំណត់</translation>
@@ -1515,6 +1516,7 @@
 <translation id="8785070478575117577">ភ្ជាប់​ទៅ <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790998409862094015">ខ្លាំង</translation>
+<translation id="8792626944327216835">មីក្រូហ្វូន</translation>
 <translation id="8806053966018712535">ថតឯកសារ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"ជំនួយ"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

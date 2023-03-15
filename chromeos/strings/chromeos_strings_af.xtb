@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Brandmuur is bespeur</translation>
 <translation id="1075811647922107217">Bladsygrootte</translation>
+<translation id="1082009148392559545">Laai tans die sluimerskerm af</translation>
 <translation id="1094693127011229778">IP-adres is nie beskikbaar nie</translation>
 <translation id="1113892970288677790">Kies saamgestelde kunswerke en prente</translation>
 <translation id="1119447706177454957">Interne fout</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Bestuur deur <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Naambedieners</translation>
 <translation id="1731082422893354635">Bluetooth-raakpaneel</translation>
+<translation id="1738949837603788263">Sone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Kon nie prente laai nie. Gaan jou netwerkverbinding na of probeer weer om die prente te laai.</translation>
 <translation id="1751249301761991853">Persoonlik</translation>
 <translation id="1753496554272155572">Verlaat muurpapiervoorskou</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Onderneminginskrywing</translation>
 <translation id="6379086450106841622">Raakskerm</translation>
 <translation id="6381741036071372448">Toets jou sleutelbord</translation>
+<translation id="6382182670717268353">Sluimerskermvoorskou</translation>
 <translation id="6388847657025262518">Die skandeerder se dokumentvoerder is geblokkeer. Gaan die dokumentvoerder na en probeer weer.</translation>
 <translation id="6394634179843537518">Voeg lêer by</translation>
 <translation id="6410257289063177456">Prentlêers</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="7180611975245234373">Herlaai</translation>
 <translation id="7180865173735832675">Pasmaak</translation>
+<translation id="7184043045742675738">Klik op enige sleutel om jou knoppie te pasmaak. Herposisioneer sleutel met muis of pylsleutels.</translation>
 <translation id="7212734716605298123">Fermware-opdaterings vir eksterne toestelle</translation>
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
 <translation id="725133483556299729">Kies e-posadres</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-raakskerm</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> oor</translation>
+<translation id="7613724632293948900">Herposisioneer met muis of pylsleutels.</translation>
 <translation id="7620771111601174153">Kom meer te wete in Hulpsentrum</translation>
 <translation id="763165478673169849">Laas teruggestel</translation>
 <translation id="7648838807254605802">Hoë HTTPS-traagheid</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Verskaffer se naam</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Muurpapier</translation>
+<translation id="8820457400746201697">Beweeg die blou raakpunt na ’n handeling toe. Kies die geassosieerde sleutel om te pasmaak.</translation>
 <translation id="8834539327799336565">Tans gekoppel</translation>
 <translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8855781559874488009">Kan nie deur brandmuur aan HTTP-webwerwe koppel nie</translation>

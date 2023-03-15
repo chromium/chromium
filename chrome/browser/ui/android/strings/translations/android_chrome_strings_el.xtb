@@ -283,6 +283,7 @@
 <translation id="2581165646603367611">Αυτό θα διαγράψει τα cookie, την κρυφή μνήμη και άλλα δεδομένα ιστοτόπων που το Chrome θεωρεί ότι δεν είναι σημαντικά.</translation>
 <translation id="2587052924345400782">Διατίθεται νεότερη έκδοση</translation>
 <translation id="2593272815202181319">Monospace</translation>
+<translation id="2603212228005142861">Συνδεθείτε για να διαχειριστείτε τις προτιμήσεις σας</translation>
 <translation id="2604446170045642109">Μπορείτε να απενεργοποιήσετε το σκούρο θέμα για ιστοτόπους στις ρυθμίσεις σας.</translation>
 <translation id="2612676031748830579">Αριθμός κάρτας</translation>
 <translation id="2625189173221582860">Ο κωδικός πρόσβασης αντιγράφηκε</translation>
@@ -630,6 +631,7 @@
 
 Ο Λογαριασμός σας Google μπορεί να έχει άλλες μορφές ιστορικού περιήγησης, όπως αναζητήσεις και δραστηριότητα από άλλες υπηρεσίες της Google στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="452750746583162491">Έλεγχος συγχρονισμένων δεδομένων</translation>
+<translation id="4528638190900283934">Συνδεθείτε για πρόσθετες λειτουργίες</translation>
 <translation id="4532845899244822526">Επιλογή φακέλου</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα}other{<ph name="TAB_COUNT_MANY" /> καρτέλες, <ph name="TAB_COUNT_INCOGNITO" /> ανώνυμης περιήγησης}}</translation>
 <translation id="4554077758708533499">Συνδέθηκε με καλώδιο USB</translation>
@@ -1245,7 +1247,6 @@
 <translation id="7725024127233776428">Εδώ εμφανίζονται οι σελίδες στις οποίες προσθέτετε σελιδοδείκτη</translation>
 <translation id="7757787379047923882">Το κείμενο κοινοποιήθηκε από τη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Κάρτα SD <ph name="SD_CARD_NUMBER" /></translation>
-<translation id="7762928140712606393">Συνδεθείτε για πρόσθετες λειτουργίες και την ισχυρότερη ασφάλεια του Chrome</translation>
 <translation id="7764225426217299476">Προσθήκη διεύθυνσης</translation>
 <translation id="7772032839648071052">Επιβεβαίωση φράσης πρόσβασης</translation>
 <translation id="7772375229873196092">Κλείσιμο <ph name="APP_NAME" /></translation>

@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Aptikta užkarda</translation>
 <translation id="1075811647922107217">Puslapio dydis</translation>
+<translation id="1082009148392559545">Atsisiunčiama ekrano užsklanda</translation>
 <translation id="1094693127011229778">IP adresas nepasiekiamas</translation>
 <translation id="1113892970288677790">Pasirinkite kuruojamus plakatus ir vaizdus</translation>
 <translation id="1119447706177454957">Vidinė klaida</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Tvarko <ph name="FIRST_MANAGER" /> ir <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Pavadinimų serveriai</translation>
 <translation id="1731082422893354635">„Bluetooth“ jutiklinė dalis</translation>
+<translation id="1738949837603788263"><ph name="ZONE_NUMBER" /> zona</translation>
 <translation id="1745577949879301685">Nepavyko įkelti vaizdų. Patikrinkite tinklo ryšį arba pabandykite dar kartą įkelti vaizdus.</translation>
 <translation id="1751249301761991853">Suasmeninimas</translation>
 <translation id="1753496554272155572">Išeiti iš ekrano fono peržiūros</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Įmonės registracija</translation>
 <translation id="6379086450106841622">Jutiklinis ekranas</translation>
 <translation id="6381741036071372448">Klaviatūros išbandymas</translation>
+<translation id="6382182670717268353">Ekrano užsklandos peržiūra</translation>
 <translation id="6388847657025262518">Skaitytuvo dokumentų tiektuvas užstrigo. Patikrinkite tiektuvą ir bandykite dar kartą.</translation>
 <translation id="6394634179843537518">Pridėti failą</translation>
 <translation id="6410257289063177456">Vaizdo failai</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7180865173735832675">Tinkinti</translation>
+<translation id="7184043045742675738">Spustelėkite bet kurį klavišą, jei norite tinkinti mygtuką. Pakeiskite klavišo padėtį naudodami pelės arba rodyklių klavišus.</translation>
 <translation id="7212734716605298123">Išorinių įrenginių programinės aparatinės įrangos naujiniai</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
 <translation id="725133483556299729">El. pašto adreso pasirinkimas</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB jutiklinis ekranas</translation>
 <translation id="7595982850646262331">Liko <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Pakeiskite padėtį naudodami pelės arba rodyklių klavišus.</translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
 <translation id="763165478673169849">Paskutinio nustatymo iš naujo laikas</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Teikėjo pavadinimas</translation>
 <translation id="8814190375133053267">WI-Fi</translation>
 <translation id="8818152010000655963">Ekrano fonas</translation>
+<translation id="8820457400746201697">Mėlyną lietimo tašką perkelkite į veiksmą. Pasirinkite susietą klavišą, kurį norite tinkinti.</translation>
 <translation id="8834539327799336565">Šiuo metu susieti</translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
 <translation id="8855781559874488009">Nepavyko prisijungti per užkardą prie HTTP svetainių</translation>

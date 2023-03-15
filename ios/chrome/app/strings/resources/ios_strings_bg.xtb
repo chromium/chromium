@@ -243,7 +243,6 @@
 <translation id="271033894570825754">Създаване</translation>
 <translation id="2712127207578915686">Файлът не може да се отвори</translation>
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
-<translation id="2737716090799520623">Когато сте влезли в Chrome, паролите, които запазвате, ще се съхраняват в профила ви в Google (<ph name="ACCOUNT" />). За да изключите тази функция, <ph name="BEGIN_LINK" />отворете настройките<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Предишното поле</translation>
 <translation id="2749231692441336879">Следите <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">току-що</translation>
@@ -1164,7 +1163,6 @@
 <translation id="9165320910061267720">За да получавате известия за сигнали за понижение на цената, трябва да включите известията от настройките на iOS.</translation>
 <translation id="9177438225260810839">Търсене в отворените раздели</translation>
 <translation id="9188680907066685419">Излизане от управляван профил</translation>
-<translation id="9193147658040604536">Плъзнете тук за фиксиране на раздела</translation>
 <translation id="9200875785104711666">Преди <ph name="TIME" /> дни</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Търсене на раздели…</translation>

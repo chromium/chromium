@@ -95,6 +95,7 @@
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。使用箭头键可浏览日期。</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />，已安装的应用</translation>
+<translation id="1414919006379339073">关闭当前窗口</translation>
 <translation id="1415846719612499304">显示网络列表。<ph name="STATE_TEXT" />。</translation>
 <translation id="1419738280318246476">解锁设备即可执行通知操作</translation>
 <translation id="1420408895951708260">开启/关闭护眼模式。<ph name="STATE_TEXT" /></translation>
@@ -316,6 +317,7 @@
 <translation id="2621713457727696555">受保护</translation>
 <translation id="263399434338050016">“全选”</translation>
 <translation id="2645435784669275700">Chrome 操作系统</translation>
+<translation id="2647092942972307022">存储空间配额共 <ph name="TOTAL_MEMORY" />，剩余 <ph name="USED_MEMORY" /></translation>
 <translation id="2653019840645008922">窗口截取/录制</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">点击并拖动</translation>
@@ -601,6 +603,7 @@
 <translation id="4112140312785995938">快退</translation>
 <translation id="4114315158543974537">开启手机中心</translation>
 <translation id="4115378294792113321">洋红色</translation>
+<translation id="411881149140864134">启用左侧桌面</translation>
 <translation id="412298498316631026">窗口</translation>
 <translation id="4123259114412175274">如需解锁 Chromebook，请确保手机的蓝牙已开启</translation>
 <translation id="4125970834901680537">无法在平板电脑模式下流式传输应用。请在笔记本电脑模式下重试。</translation>
@@ -612,6 +615,7 @@
 <translation id="4165275524535002941">数据线可能不支持显示屏</translation>
 <translation id="4177913004758410636">{0,plural, =1{请在 1 天内更新此设备}other{请在 # 天内更新此设备}}</translation>
 <translation id="4181841719683918333">语言</translation>
+<translation id="4185671786623711291">将活动窗口移至右侧桌面</translation>
 <translation id="4192112279662688596">或</translation>
 <translation id="4193857202545160520">显示点击操作和按键</translation>
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
@@ -689,6 +693,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> 后充满</translation>
 <translation id="4538824937723742295">截取整个屏幕</translation>
 <translation id="4544483149666270818">选择一个窗口即可录制</translation>
+<translation id="4548482551627849548">将活动窗口移至左侧桌面</translation>
 <translation id="4560576029703263363">已开启</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
@@ -1066,6 +1071,7 @@
 <translation id="6490471652906364588">USB-C 设备（右侧端口）</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> 要求您在截止日期之前更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="649452524636452238">智能卡 PIN 码</translation>
+<translation id="6495322433318104734">正在显示屏保，按任意键即可退出</translation>
 <translation id="6495400115277918834">已启动“画中画”模式，按 Alt+Shift+V 可聚焦</translation>
 <translation id="6497418457565568043">“勿扰”模式已开启</translation>
 <translation id="6500896621837555595">更新</translation>
@@ -1117,6 +1123,7 @@
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6723839937902243910">电源</translation>
 <translation id="6727969043791803658">已连接，剩余电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732087373923685049">摄像头</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">摄像头和麦克风正在使用中</translation>
 <translation id="6739144137573853180">转到“设置”</translation>
@@ -1251,6 +1258,7 @@
 <translation id="746232733191930409">录屏模式</translation>
 <translation id="7466449121337984263">请轻触传感器</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
+<translation id="7489261257412536105">进入或退出全屏模式</translation>
 <translation id="7490360161041035804">您可以固定重要文件，包括 Google 云端硬盘文件。如需固定某个文件，请将鼠标指针悬停在该文件上，或者打开“文件”应用并从中右键点击相应文件。</translation>
 <translation id="7497767806359279797">选择语言和键盘布局</translation>
 <translation id="7508690557411636492">过去一个月内打开过</translation>
@@ -1403,6 +1411,7 @@
 <translation id="8230305195727960608">颜色反转模式</translation>
 <translation id="8233140502441622270">打开“键盘快捷键”应用</translation>
 <translation id="8236042855478648955">该休息了</translation>
+<translation id="8239034820133090126">启用右侧桌面</translation>
 <translation id="8246282815785366524">欢迎回来，<ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，应用</translation>
@@ -1452,6 +1461,7 @@
 <translation id="8492573885090281069">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="8496402167048257517">显示“附近分享”设置</translation>
 <translation id="8507563469658346379">所有人，<ph name="REMAINING_TIME" /></translation>
+<translation id="8511123073331775246">新建桌面</translation>
 <translation id="85123341071060231">Chromebook 的蓝牙功能已关闭。若要解锁 Chromebook，请输入密码。</translation>
 <translation id="8513108775083588393">自动旋转屏幕</translation>
 <translation id="851458219935658693">显示当前桌面中的窗口，已选中单选按钮</translation>
@@ -1462,6 +1472,7 @@
 <translation id="8546059259582788728">已成功撤消排序</translation>
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8553395910833293175">此前就已分配至所有桌面。</translation>
+<translation id="8555757996376137129">移除当前桌面</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> 建议您更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">通知设置</translation>
 <translation id="857201607579416096">菜单已移至屏幕的右下角。</translation>
@@ -1502,6 +1513,7 @@
 <translation id="8785070478575117577">连接到“<ph name="NETWORK_NAME" />”</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790998409862094015">高强度</translation>
+<translation id="8792626944327216835">麦克风</translation>
 <translation id="8806053966018712535">文件夹“<ph name="FOLDER_NAME" />”</translation>
 <translation id="880709030178078220">“帮助”</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

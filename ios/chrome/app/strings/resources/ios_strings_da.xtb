@@ -243,7 +243,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="271033894570825754">Nyt</translation>
 <translation id="2712127207578915686">Filen kan ikke åbnes</translation>
 <translation id="2718352093833049315">Kun på Wi-Fi</translation>
-<translation id="2737716090799520623">Når du er logget ind i Chrome, opbevares de adgangskoder, du gemmer, på din Google-konto (<ph name="ACCOUNT" />). <ph name="BEGIN_LINK" />Gå til indstillingerne<ph name="END_LINK" /> for at deaktivere dette.</translation>
 <translation id="2747003861858887689">Forrige felt</translation>
 <translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">lige nu</translation>
@@ -1164,7 +1163,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9165320910061267720">Hvis du vil have notifikationer om prisfald, skal du aktivere notifikationer i iOS-indstillingerne.</translation>
 <translation id="9177438225260810839">Søg i åbne faner</translation>
 <translation id="9188680907066685419">Log ud af den administrerede konto</translation>
-<translation id="9193147658040604536">Træk hertil for at fastgøre fanen</translation>
 <translation id="9200875785104711666">For <ph name="TIME" /> d. siden</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Søg i faner…</translation>

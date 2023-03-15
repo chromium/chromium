@@ -683,6 +683,7 @@
 <translation id="259821504105826686">Φωτογραφικές και ψηφιακές τέχνες</translation>
 <translation id="2601150049980261779">Ρομαντικές ταινίες</translation>
 <translation id="2604589665489080024">Μουσική ποπ</translation>
+<translation id="2606760465469169465">Αυτόματη επαλήθευση</translation>
 <translation id="2610561535971892504">Κλικ για αντιγραφή</translation>
 <translation id="2617988307566202237">Το Chrome <ph name="BEGIN_EMPHASIS" />δεν θα αποθηκεύει<ph name="END_EMPHASIS" /> τις παρακάτω πληροφορίες:
           <ph name="BEGIN_LIST" />
@@ -1904,6 +1905,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Πώς μπορείτε να διαχειρίζεστε τα δεδομένα σας:<ph name="END_BOLD" /> Το Chrome διαγράφει αυτόματα τους ιστοτόπους που είναι παλαιότεροι των 4 εβδομάδων. Ένας ιστότοπος που επισκέπτεστε ξανά μπορεί να εμφανιστεί και πάλι στη λίστα. Μπορείτε επίσης να αποκλείσετε έναν ιστότοπο ώστε να μην προτείνει διαφημίσεις για εσάς και να απενεργοποιήσετε τις διαφημίσεις που προτείνονται από ιστότοπο ανά πάσα στιγμή στις ρυθμίσεις του Chrome.</translation>
 <translation id="5610142619324316209">Ελέγξτε τη σύνδεση</translation>
 <translation id="5610807607761827392">Μπορείτε να διαχειριστείτε τις κάρτες και τις διευθύνσεις στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Αποθήκευση στον λογαριασμό</translation>
 <translation id="561165882404867731">Μεταφράστε αυτήν τη σελίδα με τη Μετάφραση Google.</translation>
 <translation id="5612720917913232150">Ο ιστότοπος <ph name="URL" /> επιθυμεί να χρησιμοποιήσει την τοποθεσία του υπολογιστή σας</translation>
 <translation id="561669346091975195">Τηλεοπτικές εκπομπές επιστημονικής φαντασίας και φαντασίας</translation>
@@ -3193,6 +3195,7 @@
 <translation id="8806285662264631610">Προϊόντα μπάνιου και σώματος</translation>
 <translation id="8807160976559152894">Περικοπή μετά από κάθε σελίδα</translation>
 <translation id="8809203544698246977">Τα αποκλεισμένα θέματα εμφανίζονται εδώ</translation>
+<translation id="8811470563853401328">Αποθήκευση διεύθυνσης στον λογαριασμό;</translation>
 <translation id="8813277370772331957">Υπενθύμιση αργότερα</translation>
 <translation id="8814707942599948500">Φάκελος C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να ενημερώσετε το Chrome από τις ρυθμίσεις του Chrome.</translation>
@@ -3286,6 +3289,7 @@
 <translation id="9042617223719777575">Μεγάλη χωρητικότητα</translation>
 <translation id="9044359186343685026">Χρήση Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Αυτές οι ενέργειες απαιτούν η πολιτική <ph name="POLICY_NAME" /> να έχει οριστεί σε <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 ίντσες</translation>
 <translation id="9049981332609050619">Επιχειρήσατε να μεταβείτε στον <ph name="DOMAIN" /> , αλλά ο διακομιστής παρουσίασε ένα μη έγκυρο πιστοποιητικό.</translation>
 <translation id="9050666287014529139">Φράση πρόσβασής σας</translation>

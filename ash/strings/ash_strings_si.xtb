@@ -1117,6 +1117,7 @@
 <translation id="6710213216561001401">පෙර</translation>
 <translation id="6723839937902243910">බලය</translation>
 <translation id="6727969043791803658">සම්බන්ධිතයි, බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6732087373923685049">කැමරාව</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">කැමරාව සහ මයික්‍රෆෝනය භාවිතා වේ</translation>
 <translation id="6739144137573853180">සැකසීම් වෙත යන්න</translation>
@@ -1505,6 +1506,7 @@
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> වෙත සබඳින්න</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790998409862094015">දැඩි</translation>
+<translation id="8792626944327216835">මයික්‍රෝෆෝනය</translation>
 <translation id="8806053966018712535">ෆෝල්ඩරය <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"උදවු"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

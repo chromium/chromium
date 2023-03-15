@@ -630,6 +630,7 @@
 
 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />에서 검색이나 기타 Google 서비스에서의 활동 등 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
+<translation id="4528638190900283934">로그인하여 더 많은 기능을 사용하세요</translation>
 <translation id="4532845899244822526">폴더 선택</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
 <translation id="4554077758708533499">USB 케이블로 연결됨</translation>
@@ -1244,7 +1245,6 @@
 <translation id="7725024127233776428">북마크한 페이지가 여기에 표시됩니다.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
 <translation id="7762668264895820836">SD 카드 <ph name="SD_CARD_NUMBER" /></translation>
-<translation id="7762928140712606393">로그인하여 추가 기능과 Chrome의 강력한 보안 설정을 사용하세요</translation>
 <translation id="7764225426217299476">주소 추가</translation>
 <translation id="7772032839648071052">암호 확인</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> 닫기</translation>

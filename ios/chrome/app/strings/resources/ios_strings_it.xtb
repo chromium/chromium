@@ -243,7 +243,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="271033894570825754">Nuovo</translation>
 <translation id="2712127207578915686">Impossibile aprire il file</translation>
 <translation id="2718352093833049315">Solo su Wi-Fi</translation>
-<translation id="2737716090799520623">Se accedi a Chrome, le password salvate verranno memorizzate nel tuo Account Google (<ph name="ACCOUNT" />). Per disattivare questa preferenza, <ph name="BEGIN_LINK" />vai alle impostazioni<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Campo precedente</translation>
 <translation id="2749231692441336879">Segui <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">un attimo fa</translation>
@@ -1164,7 +1163,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9165320910061267720">Per ricevere notifiche relative agli avvisi sui cali di prezzo, devi attivare le notifiche nelle impostazioni di iOS.</translation>
 <translation id="9177438225260810839">Cerca nelle schede aperte</translation>
 <translation id="9188680907066685419">Esci dall'account gestito</translation>
-<translation id="9193147658040604536">Trascina qui per bloccare la scheda</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> g fa</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Cerca tra le schede…</translation>

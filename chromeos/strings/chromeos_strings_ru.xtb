@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
 <translation id="1075811647922107217">Размер страницы</translation>
+<translation id="1082009148392559545">Скачивание заставки</translation>
 <translation id="1094693127011229778">IP-адрес недоступен.</translation>
 <translation id="1113892970288677790">Выберите произведения искусства и красивые фото</translation>
 <translation id="1119447706177454957">Внутренняя ошибка</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Под управлением <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Серверы имен</translation>
 <translation id="1731082422893354635">Сенсорная панель Bluetooth</translation>
+<translation id="1738949837603788263">Зона <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Не удалось загрузить изображения. Проверьте подключение к сети и повторите попытку.</translation>
 <translation id="1751249301761991853">Персональные настройки</translation>
 <translation id="1753496554272155572">Выйти из предпросмотра обоев</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
 <translation id="6379086450106841622">Сенсорный экран</translation>
 <translation id="6381741036071372448">Проверьте свою клавиатуру</translation>
+<translation id="6382182670717268353">Предварительный просмотр заставки</translation>
 <translation id="6388847657025262518">Автоподатчик документов заклинило. Устраните проблему и повторите попытку.</translation>
 <translation id="6394634179843537518">Добавить файл</translation>
 <translation id="6410257289063177456">Файлы изображений</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7180865173735832675">Настроить</translation>
+<translation id="7184043045742675738">Чтобы настроить кнопку, нажмите на любую клавишу. Измените положение с помощью мыши или клавиш со стрелками.</translation>
 <translation id="7212734716605298123">Обновление встроенного ПО на внешних устройствах</translation>
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
 <translation id="725133483556299729">Выбор адреса электронной почты</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сенсорный экран USB</translation>
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Измените положение с помощью мыши или клавиш со стрелками.</translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
 <translation id="763165478673169849">Время последнего сброса</translation>
 <translation id="7648838807254605802">большое время ожидания HTTPS</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Название провайдера</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Обои</translation>
+<translation id="8820457400746201697">Чтобы выполнить действие, переместите синюю точку касания. Для настройки выберите связанную клавишу.</translation>
 <translation id="8834539327799336565">Текущие подключения</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8855781559874488009">Не удается подключиться к HTTP-сайтам через брандмауэр.</translation>

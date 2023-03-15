@@ -243,7 +243,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="271033894570825754">Nowy</translation>
 <translation id="2712127207578915686">Nie można otworzyć pliku</translation>
 <translation id="2718352093833049315">Tylko przez Wi-Fi</translation>
-<translation id="2737716090799520623">Gdy zalogujesz się w Chrome, zapisane hasła pojawią się na Twoim koncie Google (<ph name="ACCOUNT" />). Aby wyłączyć tę funkcję, <ph name="BEGIN_LINK" />otwórz ustawienia<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Poprzednie pole</translation>
 <translation id="2749231692441336879">Obserwujesz: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">przed chwilą</translation>
@@ -1164,7 +1163,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9165320910061267720">Aby otrzymywać alerty o obniżkach cen, musisz włączyć powiadomienia w ustawieniach iOS.</translation>
 <translation id="9177438225260810839">Szukaj w otwartych kartach</translation>
 <translation id="9188680907066685419">Wyloguj się z konta zarządzanego</translation>
-<translation id="9193147658040604536">Przeciągnij tutaj, aby przypiąć kartę</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d temu</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">Wyszukaj karty…</translation>

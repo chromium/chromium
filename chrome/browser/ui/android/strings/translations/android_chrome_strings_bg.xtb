@@ -630,6 +630,7 @@
 
 Възможно е в профила ви в Google да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> – например търсения и активност от други наши услуги.</translation>
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
+<translation id="4528638190900283934">За допълнителни функции влезте в профила си</translation>
 <translation id="4532845899244822526">Избиране на папка</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
 <translation id="4554077758708533499">Установена е връзка с USB кабел</translation>
@@ -1244,7 +1245,6 @@
 <translation id="7725024127233776428">Запазените от вас отметки към страници се показват тук</translation>
 <translation id="7757787379047923882">Текст, споделен от <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD карта <ph name="SD_CARD_NUMBER" /></translation>
-<translation id="7762928140712606393">Влезте в профила си, за да се възползвате от допълнителни функции и най-високото ниво на сигурност на Chrome</translation>
 <translation id="7764225426217299476">Добавяне на адрес</translation>
 <translation id="7772032839648071052">Потвърдете пропуска</translation>
 <translation id="7772375229873196092">Затваряне на <ph name="APP_NAME" /></translation>

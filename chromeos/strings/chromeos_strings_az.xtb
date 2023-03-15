@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Qoruyucu divar aşkarlandı</translation>
 <translation id="1075811647922107217">Səhifə ölçüsü</translation>
+<translation id="1082009148392559545">Ekran qoruyucusu endirilir</translation>
 <translation id="1094693127011229778">İP ünvanı əlçatan deyil</translation>
 <translation id="1113892970288677790">Kurasiya edilən rəsmlər və şəkilləri seçin</translation>
 <translation id="1119447706177454957">Daxili xəta</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> və <ph name="SECOND_MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="1726100011689679555">Ad serverləri</translation>
 <translation id="1731082422893354635">Bluetooth taçped</translation>
+<translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Şəkilləri yükləmək mümkün olmadı. Şəbəkə bağlantınızı yoxlayın və ya şəkilləri yenidən yükləməyə cəhd edin.</translation>
 <translation id="1751249301761991853">Şəxsi</translation>
 <translation id="1753496554272155572">Divar kağızı önizləməsindən çıxın</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Sahibkarlıq qeydiyyatı</translation>
 <translation id="6379086450106841622">Taçskrin</translation>
 <translation id="6381741036071372448">Klaviaturanızı test edin</translation>
+<translation id="6382182670717268353">Ekran qoruyucusuna önbaxış</translation>
 <translation id="6388847657025262518">Skanerin sənəd ötürücüsü ilişib. Ötürücünü yoxlayıb yenidən cəhd edin.</translation>
 <translation id="6394634179843537518">Fayl əlavə edin</translation>
 <translation id="6410257289063177456">Təsvir Faylları</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur. Administratorlar cihazı məsafədən konfiqurasiya edə bilər.</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7180865173735832675">Fərdiləşdirin</translation>
+<translation id="7184043045742675738">Düyməni fərdiləşdirmək üçün istənilən düyməyə klikləyin. Maus və ya ox düymələri ilə mövqenin dəyişdirilməsi düyməsi.</translation>
 <translation id="7212734716605298123">Xarici cihazlar üçün proqram güncəlləmələri</translation>
 <translation id="7216409898977639127">Mobil provayder</translation>
 <translation id="725133483556299729">E-poçt seçin</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB taçskrin</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qalıb</translation>
+<translation id="7613724632293948900">Maus və ya ox düymələri ilə mövqenin dəyişdirilməsi.</translation>
 <translation id="7620771111601174153">Yardım Mərkəzində ətraflı məlumat əldə edin</translation>
 <translation id="763165478673169849">Son Sıfırlama Vaxtı</translation>
 <translation id="7648838807254605802">Yüksək HTTPS gecikməsi</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Provayder adı</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Divar kağızı</translation>
+<translation id="8820457400746201697">Mavi toxunma nöqtəsini əməliyyata doğru hərəkət etdirin. Fərdiləşdirmək üçün əlaqələndirilmiş düyməni seçin.</translation>
 <translation id="8834539327799336565">Hazırda qoşulub</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8855781559874488009">Alov divarı aktiv olduqda HTTP vebsaytlarına qoşulmaq olmur</translation>
