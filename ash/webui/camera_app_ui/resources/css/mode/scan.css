@@ -20,7 +20,7 @@ body:is(:not(.scan), :not(.streaming), .doc-mode-reviewing) #scan-modes-group {
   width: calc(100% / 2);
 }
 
-body.scan.enable-scan-barcode :is(#shutters-group, #toggle-timer) {
+body.scan.enable-scan-barcode #shutters-group {
   display: none;
 }
 

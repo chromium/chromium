@@ -845,24 +845,30 @@ export class Camera extends View implements CameraViewUI {
           this.cameraManager.getPreviewResolution().toString());
       return true;
     }
-    if ((key === 'AudioVolumeUp' || key === 'AudioVolumeDown') &&
-        state.get(state.State.TABLET) && state.get(state.State.STREAMING)) {
-      if (state.get(state.State.TAKING)) {
-        this.endTake();
-      } else {
-        this.beginTake(metrics.ShutterType.VOLUME_KEY);
+
+    if (state.get(state.State.STREAMING) &&
+        !state.get(state.State.ENABLE_SCAN_BARCODE)) {
+      if ((key === 'AudioVolumeUp' || key === 'AudioVolumeDown') &&
+          state.get(state.State.TABLET)) {
+        if (state.get(state.State.TAKING)) {
+          this.endTake();
+        } else {
+          this.beginTake(metrics.ShutterType.VOLUME_KEY);
+        }
+        return true;
       }
-      return true;
-    }
-    if (key === ' ') {
-      this.focusShutterButton();
-      if (state.get(state.State.TAKING)) {
-        this.endTake();
-      } else {
-        this.beginTake(metrics.ShutterType.KEYBOARD);
+
+      if (key === ' ') {
+        this.focusShutterButton();
+        if (state.get(state.State.TAKING)) {
+          this.endTake();
+        } else {
+          this.beginTake(metrics.ShutterType.KEYBOARD);
+        }
+        return true;
       }
-      return true;
     }
+
     return false;
   }
 
