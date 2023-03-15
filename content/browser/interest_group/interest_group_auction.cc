@@ -2481,7 +2481,7 @@ void InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete(
   //
   // TODO(https://crbug.com/1394777): We should probably add new states for
   // whether the result was used, reports sent, etc, so either the
-  // InterestGroupAuction or the InterestGroupReporter logs a single result.
+  // InterestGroupAuction or the InterestGroupAuctionReporter logs a single result.
   // Alternatively, we could add a separate histogram just for the reporter
   // stuff, which should have exactly as many entries as the historam
   // `final_auction_result_` is logged to.

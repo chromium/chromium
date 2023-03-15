@@ -181,7 +181,7 @@ class CONTENT_EXPORT InterestGroupAuction
     void EndTracingKAnonScoring();
 
     // Use a unique pointer so this can be more safely moved to the
-    // InterestGroupReporter. Doing so both preserves pointers, and make sure
+    // InterestGroupAuctionReporter. Doing so both preserves pointers, and make sure
     // there's a crash if this is dereferenced after move.
     std::unique_ptr<StorageInterestGroup> bidder;
 
