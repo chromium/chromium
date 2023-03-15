@@ -32,6 +32,7 @@ chromevox_modules = [
 chromevox_es6_modules = [
   "../common/automation_predicate.js",
   "../common/automation_util.js",
+  "../common/async_util.js",
   "../common/constants.js",
   "../common/cursors/cursor.js",
   "../common/cursors/range.js",

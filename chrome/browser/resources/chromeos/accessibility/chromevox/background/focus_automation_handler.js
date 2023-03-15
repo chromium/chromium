@@ -83,7 +83,7 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
 
     let skipFocusCheck = false;
     const focus = await AsyncUtil.getFocus();
-    if (AutomationPredicate.popUpButton(focus)) {
+    if (focus !== null && AutomationPredicate.popUpButton(focus)) {
       skipFocusCheck = true;
     }
 
