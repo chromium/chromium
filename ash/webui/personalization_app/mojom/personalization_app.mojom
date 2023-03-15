@@ -302,7 +302,7 @@ interface WallpaperProvider {
     SetWallpaperObserver(pending_remote<WallpaperObserver> observer);
 
     // Sets the given backdrop wallpaper as the user's background.
-    SelectWallpaper(uint64 image_asset_id, bool preview_mode) =>
+    SelectWallpaper(uint64 unit_id, bool preview_mode) =>
         (bool success);
 
     // Select the device default image as the user's background. Not all devices

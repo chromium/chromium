@@ -282,8 +282,8 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
 
   void AddWallpaperImage(
       const PersonalizationAppWallpaperProviderImpl::ImageInfo& image_info) {
-    wallpaper_provider_->image_asset_id_map_.insert(
-        {image_info.asset_id, image_info});
+    wallpaper_provider_->image_unit_id_map_.insert(
+        {image_info.unit_id, {image_info}});
   }
 
   TestWallpaperController* test_wallpaper_controller() {

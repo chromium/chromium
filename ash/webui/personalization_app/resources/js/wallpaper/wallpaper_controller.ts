@@ -358,7 +358,7 @@ export async function selectWallpaper(
   const {success} = await (() => {
     if (isWallpaperImage(image)) {
       return provider.selectWallpaper(
-          image.assetId, /*preview_mode=*/ shouldPreview);
+          image.unitId, /*preview_mode=*/ shouldPreview);
     } else if (isDefaultImage(image)) {
       return provider.selectDefaultImage();
     } else if (isFilePath(image)) {

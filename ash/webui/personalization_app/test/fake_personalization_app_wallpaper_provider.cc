@@ -24,6 +24,7 @@ namespace {
 
 constexpr char kFakeCollectionId[] = "fake_collection_id";
 constexpr uint64_t kFakeAssetId = 77;
+constexpr uint64_t kFakeUnitId = 3;
 constexpr char kDataUrlPrefix[] = "data:image/png;base64,";
 
 }  // namespace
@@ -71,7 +72,7 @@ void FakePersonalizationAppWallpaperProvider::FetchImagesForCollection(
   image.set_asset_id(kFakeAssetId);
   image.set_image_url(kDataUrlPrefix);
   image.add_attribution()->set_text("test");
-  image.set_unit_id(3);
+  image.set_unit_id(kFakeUnitId);
   image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_UNKNOWN);
   images.push_back(image);
   std::move(callback).Run(std::move(images));
@@ -133,16 +134,17 @@ void FakePersonalizationAppWallpaperProvider::SetWallpaperObserver(
 }
 
 void FakePersonalizationAppWallpaperProvider::SelectWallpaper(
-    uint64_t image_asset_id,
+    uint64_t unit_id,
     bool preview_mode,
     SelectWallpaperCallback callback) {
-  DCHECK_EQ(image_asset_id, kFakeAssetId);
+  DCHECK_EQ(unit_id, kFakeUnitId);
   std::move(callback).Run(/*success=*/true);
   wallpaper_receiver_.FlushForTesting();
 
   WallpaperInfo wallpaper_info;
   wallpaper_info.type = WallpaperType::kOnline;
-  wallpaper_info.asset_id = image_asset_id;
+  wallpaper_info.asset_id = kFakeAssetId;
+  wallpaper_info.unit_id = kFakeUnitId;
   wallpaper_info.layout = WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED;
   wallpaper_info.collection_id = kFakeCollectionId;
   SendOnWallpaperChanged(wallpaper_info);

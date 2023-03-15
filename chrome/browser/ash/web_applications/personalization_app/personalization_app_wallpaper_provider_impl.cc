@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "ash/public/cpp/image_util.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
@@ -23,6 +24,8 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/public/cpp/window_backdrop.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
@@ -138,6 +141,15 @@ std::string GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
   return GetJpegDataUrl(output.data(), output.size());
 }
 
+// Convenience method to get the current checkpoint.
+ScheduleCheckpoint GetCurrentCheckPoint() {
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  if (!dark_light_mode_controller) {
+    return ScheduleCheckpoint::kDisabled;
+  }
+  return dark_light_mode_controller->current_checkpoint();
+}
+
 }  // namespace
 
 PersonalizationAppWallpaperProviderImpl::
@@ -154,9 +166,9 @@ PersonalizationAppWallpaperProviderImpl::
 
 PersonalizationAppWallpaperProviderImpl::
     ~PersonalizationAppWallpaperProviderImpl() {
-  if (!image_asset_id_map_.empty()) {
+  if (!image_unit_id_map_.empty()) {
     // User viewed wallpaper page at least once during this session because
-    // |image_asset_id_map_| has wallpaper asset ids saved. Check if this user
+    // |image_unit_id_map_| has wallpaper unit ids saved. Check if this user
     // should see a wallpaper HaTS.
     ::ash::personalization_app::PersonalizationAppManagerFactory::
         GetForBrowserContext(profile_)
@@ -515,13 +527,13 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperPreviewEnded() {
 }
 
 void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
-    uint64_t image_asset_id,
+    uint64_t unit_id,
     bool preview_mode,
     SelectWallpaperCallback callback) {
-  const auto& it = image_asset_id_map_.find(image_asset_id);
+  const auto& it = image_unit_id_map_.find(unit_id);
 
-  if (it == image_asset_id_map_.end()) {
-    wallpaper_receiver_.ReportBadMessage("Invalid image asset_id selected");
+  if (it == image_unit_id_map_.end()) {
+    wallpaper_receiver_.ReportBadMessage("Invalid image unit_id selected");
     return;
   }
 
@@ -532,15 +544,17 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
     return;
   }
 
+  std::string collection_id;
   std::vector<ash::OnlineWallpaperVariant> variants;
-  for (const auto& entry : image_asset_id_map_) {
-    const ImageInfo& image_info = entry.second;
-    if (image_info.unit_id == it->second.unit_id &&
-        image_info.collection_id == it->second.collection_id) {
-      variants.emplace_back(image_info.asset_id, image_info.image_url,
-                            image_info.type);
-    }
+  for (const auto& image_info : it->second) {
+    variants.emplace_back(image_info.asset_id, image_info.image_url,
+                          image_info.type);
+    collection_id = image_info.collection_id;
   }
+
+  const auto checkpoint = GetCurrentCheckPoint();
+  auto* variant = FirstValidVariant(variants, checkpoint);
+  DCHECK(variant);
 
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
   DCHECK(client);
@@ -555,11 +569,11 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
 
   client->SetOnlineWallpaper(
       ash::OnlineWallpaperParams(
-          GetAccountId(profile_), image_asset_id,
-          GURL(it->second.image_url.spec()), it->second.collection_id,
+          GetAccountId(profile_), variant->asset_id,
+          GURL(variant->raw_url.spec()), collection_id,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
           /*from_user=*/true,
-          /*daily_refresh_enabled=*/false, it->second.unit_id, variants),
+          /*daily_refresh_enabled=*/false, unit_id, variants),
       base::BindOnce(
           &PersonalizationAppWallpaperProviderImpl::OnOnlineWallpaperSelected,
           backend_weak_ptr_factory_.GetWeakPtr()));
@@ -753,14 +767,14 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
     return;
   }
 
-  bool force_refresh = !info->asset_id.has_value();
-  if (info->asset_id.has_value()) {
-    const auto& it = image_asset_id_map_.find(info->asset_id.value());
+  bool force_refresh = !info->unit_id.has_value();
+  if (info->unit_id.has_value()) {
+    const auto& it = image_unit_id_map_.find(info->unit_id.value());
 
     // Only force refresh if the current wallpaper image does not belong to
     // this collection.
-    force_refresh = it == image_asset_id_map_.end() ||
-                    it->second.collection_id != collection_id;
+    force_refresh = it == image_unit_id_map_.end() || it->second.empty() ||
+                    it->second[0].collection_id != collection_id;
   }
   DVLOG(1) << __func__ << " info=" << info.value()
            << " collection_id=" << collection_id
@@ -878,17 +892,16 @@ void PersonalizationAppWallpaperProviderImpl::OnFetchCollectionImages(
   absl::optional<std::vector<backdrop::Image>> result;
   if (success && !images.empty()) {
     for (const auto& proto_image : images) {
-      if (!proto_image.has_asset_id() || !proto_image.has_image_url()) {
+      if (!proto_image.has_asset_id() || !proto_image.has_unit_id() ||
+          !proto_image.has_image_url()) {
         LOG(WARNING) << "Invalid image discarded";
         continue;
       }
-      image_asset_id_map_.insert(
-          {proto_image.asset_id(),
-           ImageInfo(GURL(proto_image.image_url()), collection_id,
-                     proto_image.asset_id(), proto_image.unit_id(),
-                     proto_image.has_image_type()
-                         ? proto_image.image_type()
-                         : backdrop::Image::IMAGE_TYPE_UNKNOWN)});
+      image_unit_id_map_[proto_image.unit_id()].push_back(ImageInfo(
+          GURL(proto_image.image_url()), collection_id, proto_image.asset_id(),
+          proto_image.unit_id(),
+          proto_image.has_image_type() ? proto_image.image_type()
+                                       : backdrop::Image::IMAGE_TYPE_UNKNOWN));
     }
     result = std::move(images);
   }

@@ -656,10 +656,10 @@ suite('full screen mode', () => {
     const selectWallpaperPromise = selectWallpaper(
         wallpaperProvider.images![0]!, wallpaperProvider, personalizationStore);
 
-    const [assetId, previewMode] =
+    const [unitId, previewMode] =
         await wallpaperProvider.whenCalled('selectWallpaper');
     assertTrue(previewMode);
-    assertEquals(wallpaperProvider.images![0]!.assetId, assetId);
+    assertEquals(wallpaperProvider.images![0]!.unitId, unitId);
 
     await selectWallpaperPromise;
     assertEquals(

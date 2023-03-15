@@ -88,7 +88,7 @@ class FakePersonalizationAppWallpaperProvider
       mojo::PendingRemote<ash::personalization_app::mojom::WallpaperObserver>
           observer) override;
 
-  void SelectWallpaper(uint64_t image_asset_id,
+  void SelectWallpaper(uint64_t unit_Id,
                        bool preview_mode,
                        SelectWallpaperCallback callback) override;
 

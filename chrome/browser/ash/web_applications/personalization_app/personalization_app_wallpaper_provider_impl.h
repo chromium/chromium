@@ -147,7 +147,7 @@ class PersonalizationAppWallpaperProviderImpl
   void OnWallpaperPreviewEnded() override;
 
   // ash::personalization_app::mojom::WallpaperProvider:
-  void SelectWallpaper(uint64_t image_asset_id,
+  void SelectWallpaper(uint64_t unit_id,
                        bool preview_mode,
                        SelectWallpaperCallback callback) override;
 
@@ -356,10 +356,10 @@ class PersonalizationAppWallpaperProviderImpl
           type(in_type) {}
   };
 
-  // Store a mapping of valid image asset_ids to their ImageInfo to validate
-  // user wallpaper selections. This is filled when a user first visits the
-  // Wallpaper subpage of Personalization App.
-  std::map<uint64_t, ImageInfo> image_asset_id_map_;
+  // Stores the mapping of valid image unit_ids and their image variants. This
+  // is filled when a user first visits the Wallpaper subpage of Personalization
+  // App.
+  std::map<uint64_t, std::vector<ImageInfo>> image_unit_id_map_;
 
   // Stores the mapping of Google Photos album id to its photos' dedup keys.
   // Used to determine whether an album contains the currently selected
