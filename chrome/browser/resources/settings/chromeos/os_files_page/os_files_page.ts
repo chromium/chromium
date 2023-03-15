@@ -73,6 +73,14 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
           return loadTimeData.getBoolean('showOfficeSettings');
         },
       },
+
+      /** @private */
+      isBulkPinningEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableDriveFsBulkPinning');
+        },
+      },
     };
   }
 
@@ -90,6 +98,10 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
 
   private onTapSmbShares_() {
     Router.getInstance().navigateTo(routes.SMB_SHARES);
+  }
+
+  private onGoogleDrive_() {
+    Router.getInstance().navigateTo(routes.GOOGLE_DRIVE);
   }
 
   private onTapOffice_() {

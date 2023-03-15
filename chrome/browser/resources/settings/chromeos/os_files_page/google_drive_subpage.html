@@ -1,0 +1,38 @@
+<style include="settings-shared"></style>
+
+<div
+    class="settings-box two-line first"
+    deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+  <div class="start">
+    <!-- TODO(b/273399125): email associated with current drive account -->
+    $i18n{googleDriveSignedInAs}
+  </div>
+  <cr-button role="button">
+    $i18n{googleDriveDisconnectLabel}
+  </cr-button>
+</div>
+
+<div class="hr"></div>
+
+<settings-toggle-button
+    id="disconnectGoogleDriveAccount"
+    pref="{{prefs.gdata.disabled}}"
+    label="$i18n{googleDriveOfflineTitle}"
+    sub-label="$i18n{googleDriveOfflineSubtitle}"
+    deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+</settings-toggle-button>
+
+<div class="settings-box two-line">
+  <div class="start">
+    $i18n{googleDriveOfflineClearTitle}
+    <div class="secondary">
+      <!-- TODO(b/273399125): storage being used by offline files -->
+      $i18n{googleDriveOfflineClearSubtitle}
+    </div>
+  </div>
+  <cr-button role="button">
+    $i18n{googleDriveOfflineClearAction}
+  </cr-button>
+</div>
+
+<div class="hr"></div>

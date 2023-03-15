@@ -147,6 +147,7 @@ enum Subpage {
   // Files section.
   kNetworkFileShares = 1300,
   kOfficeFiles = 1301,
+  kGoogleDrive = 1302,
 
   // Printing section.
   kPrintingDetails = 1400,
@@ -283,6 +284,7 @@ const string kJapaneseManageUserDictionarySubpagePath =
 
 // Files section.
 const string kFilesSectionPath = "files";
+const string kGoogleDriveSubpagePath = "googleDrive";
 const string kNetworkFileSharesSubpagePath = "smbShares";
 const string kOfficeFilesSubpagePath = "officeFiles";
 

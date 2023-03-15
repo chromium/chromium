@@ -1089,7 +1089,7 @@
   <message name="IDS_OS_SETTINGS_TAG_FILES" desc="Text for search result item which, when clicked, navigates the user to files settings.">
     Files
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_FILES_DISCONNECT_GOOGLE_DRIVE" desc="Text for search result item which, when clicked, navigates the user to files settings, with a toggle to enable/disable connecting the user's Google Drive account.">
+  <message name="IDS_OS_SETTINGS_TAG_FILES_DISCONNECT_GOOGLE_DRIVE" desc="Text for search result item that, when clicked, navigates the user to Settings: Google Drive settings, with a toggle to enable/disable connecting the user's Google Drive account.">
     Disconnect Google Drive account
   </message>
   <message name="IDS_OS_SETTINGS_TAG_FILES_NETWORK_FILE_SHARES" desc="Text for search result item which, when clicked, navigates the user to network file share (a.k.a. SMB share) settings. Alternate phrase for: 'SMB share'">
@@ -1100,6 +1100,9 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_FILES_OFFICE" translateable="false" desc="Text for search result item which, when clicked, navigates the user to the Office file handler settings.">
     Office file settings
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_FILES_GOOGLE_DRIVE" translateable="false" desc="Text for search result item which, when clicked, navigates the user to the Google Drive settings.">
+    Google Drive settings
   </message>
 
   <!-- Printing section. -->

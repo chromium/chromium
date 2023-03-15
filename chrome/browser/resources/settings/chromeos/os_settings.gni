@@ -173,6 +173,7 @@ web_component_files = [
   "chromeos/os_files_page/office_page.ts",
   "chromeos/os_files_page/os_files_page.ts",
   "chromeos/os_files_page/smb_shares_page.ts",
+  "chromeos/os_files_page/google_drive_subpage.ts",
   "chromeos/os_languages_page/add_input_methods_dialog.ts",
   "chromeos/os_languages_page/add_items_dialog.ts",
   "chromeos/os_languages_page/add_spellcheck_languages_dialog.ts",

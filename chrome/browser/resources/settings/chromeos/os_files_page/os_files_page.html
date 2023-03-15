@@ -2,12 +2,23 @@
 <os-settings-animated-pages id="pages" section="files"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <settings-toggle-button
-        id="disconnectGoogleDriveAccount"
-        pref="{{prefs.gdata.disabled}}"
-        label="$i18n{disconnectGoogleDriveAccount}"
-        deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
-    </settings-toggle-button>
+    <template is="dom-if" if="[[!isBulkPinningEnabled_]]">
+      <settings-toggle-button
+          id="disconnectGoogleDriveAccount"
+          pref="{{prefs.gdata.disabled}}"
+          label="$i18n{disconnectGoogleDriveAccount}"
+          deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[isBulkPinningEnabled_]]">
+      <cr-link-row
+          id="GoogleDriveLink"
+          class="hr" on-click="onGoogleDrive_"
+          label="$i18n{googleDriveLabel}"
+          sub-label="$i18n{googleDriveEnabledLabel}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
     <cr-link-row id="smbShares" class="hr" on-click="onTapSmbShares_"
         label="$i18n{smbSharesTitle}"
         role-description="$i18n{subpageArrowRoleDescription}">
@@ -24,6 +35,12 @@
     <os-settings-subpage page-title="$i18n{smbSharesTitle}">
       <settings-smb-shares-page prefs="[[prefs]]">
       </settings-smb-shares-page>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/googleDrive">
+    <os-settings-subpage page-title="$i18n{googleDriveLabel}">
+      <settings-google-drive-subpage prefs="[[prefs]]">
+      </settings-google-drive-subpage>
     </os-settings-subpage>
   </template>
   <template is="dom-if" if="[[showOfficeSettings_]]">
