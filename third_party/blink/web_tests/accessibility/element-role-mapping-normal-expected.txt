@@ -43,6 +43,10 @@ Footer in section
 Written by Julie
 Visit us at:www.chromium.org
 
+Main Heading
+Subheading
+
+Smaller Subheading
 
 January
 
@@ -200,6 +204,16 @@ element
 "
             AXRole: AXInlineTextBox "
 "
+    AXRole: AXGroup
+        AXRole: AXHeading "Main Heading"
+            AXRole: AXStaticText "Main Heading"
+                AXRole: AXInlineTextBox "Main Heading"
+        AXRole: AXHeading "Subheading"
+            AXRole: AXStaticText "Subheading"
+                AXRole: AXInlineTextBox "Subheading"
+        AXRole: AXParagraph
+            AXRole: AXStaticText "Smaller Subheading"
+                AXRole: AXInlineTextBox "Smaller Subheading"
     AXRole: AXParagraph
         AXRole: AXStaticText "January"
             AXRole: AXInlineTextBox "January"
