@@ -45,7 +45,7 @@ base::Value::Dict CreateLogValue(const WebAppCommand& command,
                                  absl::optional<CommandResult> result) {
   base::Value::Dict dict = CreateCommandMetadata(command);
   base::Value debug_value = command.ToDebugValue();
-  bool is_empty_dict = debug_value.is_dict() && debug_value.DictEmpty();
+  bool is_empty_dict = debug_value.is_dict() && debug_value.GetDict().empty();
   if (!debug_value.is_none() && !is_empty_dict) {
     dict.Set("value", command.ToDebugValue());
   }

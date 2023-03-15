@@ -115,12 +115,13 @@ StateStore::StateStore(Profile* profile)
 
   // Apply the platform data.
   Transaction transaction(this);
-  absl::optional<base::Value> value_dict(platform_state_store::Load(profile_));
-  if (value_dict) {
-    if (value_dict->DictEmpty())
+  absl::optional<base::Value::Dict> value_dict(platform_state_store::Load(profile_));
+  if (value_dict.has_value()) {
+    if (value_dict->empty()) {
       transaction.ClearAll();
-    else if (!incidents_sent_ || *incidents_sent_ != *value_dict)
-      transaction.ReplacePrefDict(std::move(value_dict.value()).TakeDict());
+    } else if (!incidents_sent_ || *incidents_sent_ != value_dict.value()) {
+      transaction.ReplacePrefDict(std::move(value_dict.value()));
+    }
   }
 
   CleanLegacyValues(&transaction);

@@ -206,7 +206,7 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::IsResponseValid(
     return AddSinkResultCode::RESPONSE_MALFORMED;
   }
 
-  if (response->DictEmpty()) {
+  if (response->GetDict().empty()) {
     logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
                       "The response from the server does not have a value. "
                       "Server response is: " +
