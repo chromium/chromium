@@ -2,6 +2,7 @@
   :host {
     align-items: center;
     display: flex;
+    flex-shrink: 0;
     gap: 4px;
     height: 36px;
   }
@@ -24,6 +25,10 @@
     margin: 0 -4px;
   }
 
+  ::slotted(cr-icon-button[slot=buttons]) {
+    margin: 0;
+  }
+
   :host-context([chrome-refresh-2023]) #backButton {
     --cr-icon-button-fill-color: var(--cr-primary-text-color);
   }
@@ -38,6 +43,7 @@
     font-size: 15px;
     font-weight: 500;
     line-height: 20px;
+    margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
