@@ -22,5 +22,5 @@ export function getAvatarUrl(url: string): string {
       url === AVATAR_PLACEHOLDER_URL) {
     return url;
   }
-  return `chrome://image/?url=${url}`;
+  return `chrome://image/?${url}`;
 }
