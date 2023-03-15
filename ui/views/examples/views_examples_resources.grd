@@ -525,7 +525,7 @@
 
       <!-- vector example -->
       <message translateable="false" name="IDS_VECTOR_FILE_SELECT_LABEL">
-        Enter a file to read
+        Enter a file or folder to read
       </message>
       <message translateable="false" name="IDS_VECTOR_RENDER_LABEL">
         Render

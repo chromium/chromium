@@ -405,6 +405,14 @@ void EditableCombobox::SetText(const std::u16string& text) {
   HandleNewContent(text);
 }
 
+std::u16string EditableCombobox::GetPlaceholderText() const {
+  return textfield_->GetPlaceholderText();
+}
+
+void EditableCombobox::SetPlaceholderText(const std::u16string& text) {
+  textfield_->SetPlaceholderText(text);
+}
+
 const gfx::FontList& EditableCombobox::GetFontList() const {
   return style::GetFont(text_context_, text_style_);
 }
@@ -600,6 +608,8 @@ const ui::ComboboxModel* EditableCombobox::GetComboboxModel() const {
 }
 
 BEGIN_METADATA(EditableCombobox, View)
+ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
 END_METADATA
 
 }  // namespace views
