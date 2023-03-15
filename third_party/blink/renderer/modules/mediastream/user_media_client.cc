@@ -108,6 +108,7 @@ UserMediaClient::RequestQueue::RequestQueue(
       user_media_processor_(user_media_processor),
       apply_constraints_processor_(
           MakeGarbageCollected<ApplyConstraintsProcessor>(
+              frame,
               WTF::BindRepeating(
                   [](UserMediaClient* client)
                       -> mojom::blink::MediaDevicesDispatcherHost* {

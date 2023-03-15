@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_APPLY_CONSTRAINTS_PROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_APPLY_CONSTRAINTS_PROCESSOR_H_
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -12,6 +13,7 @@
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink-forward.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/apply_constraints_request.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -21,6 +23,11 @@
 namespace blink {
 class MediaStreamAudioSource;
 class MediaStreamVideoTrack;
+
+// If this feature is enabled, a call to applyConstraints() on a video content
+// source will make the source restart with the new format.
+MODULES_EXPORT BASE_DECLARE_FEATURE(
+    kApplyConstraintsRestartsVideoContentSources);
 
 // ApplyConstraintsProcessor is responsible for processing applyConstraints()
 // requests. Only one applyConstraints() request can be processed at a time.
@@ -32,6 +39,7 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   using MediaDevicesDispatcherCallback = base::RepeatingCallback<
       blink::mojom::blink::MediaDevicesDispatcherHost*()>;
   ApplyConstraintsProcessor(
+      LocalFrame* frame,
       MediaDevicesDispatcherCallback media_devices_dispatcher_cb,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -48,28 +56,38 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   void ProcessRequest(blink::ApplyConstraintsRequest* request,
                       base::OnceClosure callback);
 
-  void Trace(Visitor* visitor) const { visitor->Trace(current_request_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(current_request_);
+    visitor->Trace(frame_);
+  }
 
  private:
   // Helpers for video device-capture requests.
   void ProcessVideoDeviceRequest();
-  void MaybeStopSourceForRestart(
+  void MaybeStopVideoDeviceSourceForRestart(
       const Vector<media::VideoCaptureFormat>& formats);
-  void MaybeSourceStoppedForRestart(
+  void MaybeDeviceSourceStoppedForRestart(
       blink::MediaStreamVideoSource::RestartResult result);
-  void FindNewFormatAndRestart(
+  void FindNewFormatAndRestartDeviceSource(
       const Vector<media::VideoCaptureFormat>& formats);
-  void MaybeSourceRestarted(
+  blink::VideoCaptureSettings SelectVideoDeviceSettings(
+      Vector<media::VideoCaptureFormat> formats);
+
+  // Helpers for video content-capture requests.
+  void ProcessVideoContentRequest();
+  void MaybeStopVideoContentSourceForRestart();
+  void MaybeRestartStoppedVideoContentSource(
       blink::MediaStreamVideoSource::RestartResult result);
+  blink::VideoCaptureSettings SelectVideoContentSettings();
 
   // Helpers for all video requests.
   void ProcessVideoRequest();
   blink::MediaStreamVideoTrack* GetCurrentVideoTrack();
   blink::MediaStreamVideoSource* GetCurrentVideoSource();
   bool AbortIfVideoRequestStateInvalid();  // Returns true if aborted.
-  blink::VideoCaptureSettings SelectVideoSettings(
-      Vector<media::VideoCaptureFormat> formats);
   void FinalizeVideoRequest();
+  void MaybeSourceRestarted(
+      blink::MediaStreamVideoSource::RestartResult result);
 
   // Helpers for audio requests.
   void ProcessAudioRequest();
@@ -96,6 +114,7 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   blink::MediaStreamVideoSource* video_source_ = nullptr;
   base::OnceClosure request_completed_cb_;
 
+  const Member<LocalFrame> frame_;
   MediaDevicesDispatcherCallback media_devices_dispatcher_cb_;
   THREAD_CHECKER(thread_checker_);
 
