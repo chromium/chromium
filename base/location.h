@@ -15,18 +15,6 @@
 
 namespace base {
 
-#if defined(__clang__)
-// Clang allows detection of these builtins.
-#define SUPPORTS_LOCATION_BUILTINS                                       \
-  (__has_builtin(__builtin_FUNCTION) && __has_builtin(__builtin_FILE) && \
-   __has_builtin(__builtin_LINE))
-#elif defined(COMPILER_GCC) && __GNUC__ >= 7
-// GCC has supported these for a long time, but they point at the function
-// declaration in the case of default arguments, rather than at the call site.
-#else
-#error "Not supported"
-#endif
-
 // Location provides basic info where of an object was constructed, or was
 // significantly brought to life.
 class BASE_EXPORT Location {
