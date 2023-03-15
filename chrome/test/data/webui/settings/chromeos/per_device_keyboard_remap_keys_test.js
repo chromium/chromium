@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, getInputDeviceSettingsProvider, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -18,7 +18,9 @@ suite('PerDeviceKeyboardRemapKeys', function() {
    */
   let provider = null;
   setup(() => {
-    provider = getInputDeviceSettingsProvider();
+    provider = new FakeInputDeviceSettingsProvider();
+    provider.setFakeKeyboards(fakeKeyboards);
+    setInputDeviceSettingsProviderForTesting(provider);
     PolymerTest.clearBody();
   });
 

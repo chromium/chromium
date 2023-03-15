@@ -135,6 +135,10 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         type: Object,
       },
 
+      keyboards: {
+        type: Array,
+      },
+
       metaKeyLabel: {
         type: String,
       },
@@ -173,6 +177,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   }
 
   protected keyboard: Keyboard;
+  private keyboards: Keyboard[];
   protected defaultRemappings: {[key: number]: ModifierKey} = {
     [ModifierKey.kMeta]: ModifierKey.kMeta,
     [ModifierKey.kControl]: ModifierKey.kControl,
@@ -195,6 +200,11 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private hasCapsLockKey: boolean;
   private metaKeyLabel: string;
   private isInitialized: boolean;
+
+  constructor() {
+    super();
+    this.observeKeyboardSettings();
+  }
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
@@ -234,10 +244,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
     // Get the correct keyboard from inputDeviceSettingsProvider with the id.
     const keyboardId = Number(urlSearchQuery);
-    const connectedKeyboards =
-        await this.inputDeviceSettingsProvider.getConnectedKeyboardSettings();
     const searchedKeyboard =
-        connectedKeyboards.find(keyboard => keyboard.id === keyboardId);
+        this.keyboards.find((keyboard: Keyboard) => keyboard.id === keyboardId);
     assert(!!searchedKeyboard);
     this.keyboard = searchedKeyboard;
     this.updateDefaultRemapping();
@@ -258,18 +266,23 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.isInitialized = true;
   }
 
+  private observeKeyboardSettings(): void {
+    this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
+  }
+
   onKeyboardListUpdated(keyboards: Keyboard[]): void {
+    this.keyboards = keyboards;
     if (Router.getInstance().currentRoute !==
         routes.PER_DEVICE_KEYBOARD_REMAP_KEYS) {
       return;
     }
 
-    const updatedKeyboard =
+    const keyboardFound = this.keyboard?.id &&
         keyboards.find(keyboard => keyboard.id === this.keyboard.id);
 
     // If the keyboard is disconnected in remapping page, go back to
     // per_device_keyboard page.
-    if (!updatedKeyboard) {
+    if (!keyboardFound) {
       Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
     }
   }
