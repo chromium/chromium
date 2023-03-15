@@ -806,6 +806,7 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
   // Subscribe to crash events.
   content::WebContentsObserver::Observe(login_view_->GetWebContents());
   login_view_->LoadURL(url);
+  login_window_->Show();
   CHECK(GetOobeUI());
   GetOobeUI()->AddObserver(this);
 }
