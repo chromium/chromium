@@ -166,14 +166,9 @@ class JavacOutputProcessor:
     if len(class_entries) == 1:
       return class_entries
 
-    # android_library_factory() targets set low_classpath_priority=true, and any
-    # target that is the "impl" side of a target that uses jar_excluded_patterns
-    # should use this as well.
-    # We should generally always suggest depending on the non-impl library
-    # target.
-    # TODO(crbug.com/1296711): Also use "visibility" a hint here.
-    low_entries = [x for x in class_entries if x.low_classpath_priority]
-    class_entries = low_entries or class_entries
+    # When some deps are preferred, ignore all other potential deps.
+    preferred_entries = [x for x in class_entries if x.preferred_dep]
+    class_entries = preferred_entries or class_entries
 
     # E.g. javax_annotation_jsr250_api_java.
     jsr_entries = [x for x in class_entries if 'jsr' in x.target]

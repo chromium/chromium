@@ -221,6 +221,10 @@ template("write_build_config") {
       _target_label,
     ]
 
+    if (defined(invoker.preferred_dep) && invoker.preferred_dep) {
+      args += [ "--preferred-dep" ]
+    }
+
     if (defined(invoker.aar_path)) {
       args += [
         "--aar-path",
@@ -3599,6 +3603,7 @@ if (enable_java_templates) {
                                "base_allowlist_rtxt_path",
                                "gradle_treat_as_prebuilt",
                                "input_jars_paths",
+                               "preferred_dep",
                                "low_classpath_priority",
                                "main_class",
                                "mergeable_android_manifests",

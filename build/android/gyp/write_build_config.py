@@ -334,6 +334,12 @@ its dependencies.
 The list of paths to all `deps_info['dex_path']` entries for all libraries
 that comprise this APK. Valid only for debug builds.
 
+* `deps_info['preferred_dep']`:
+Whether the target should be the preferred dep. This is usually the case when we
+have a java_group that depends on either the public or internal dep accordingly,
+and it is better to depend on the group rather than the underlying dep. Another
+case is for android_library_factory targets, the factory target should be
+preferred instead of the actual implementation.
 
 ## <a name="target_robolectric_binary">Target type `robolectric_binary`</a>:
 
@@ -1073,8 +1079,12 @@ def main(argv):
   parser.add_option('--treat-as-locale-paks', action='store_true',
       help='Consider the assets as locale paks in BuildConfig.java')
 
-  # java library options
+  # java library and group options
+  parser.add_option('--preferred-dep',
+                    action='store_true',
+                    help='Whether the target should be preferred as a dep.')
 
+  # java library options
   parser.add_option('--public-deps-configs',
                     help='GN list of config files of deps which are exposed as '
                     'part of the target\'s public API.')
@@ -1421,6 +1431,9 @@ def main(argv):
   if options.type == 'java_library':
     deps_info['is_prebuilt'] = bool(options.is_prebuilt)
     deps_info['gradle_treat_as_prebuilt'] = options.gradle_treat_as_prebuilt
+
+  if options.preferred_dep:
+    deps_info['preferred_dep'] = bool(options.preferred_dep)
 
   if options.android_manifest:
     deps_info['android_manifest'] = options.android_manifest

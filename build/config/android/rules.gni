@@ -1324,6 +1324,7 @@ if (enable_java_templates && is_android) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     _build_config_vars = [
       "input_jars_paths",
+      "preferred_dep",
       "mergeable_android_manifests",
       "proguard_configs",
       "requires_android",

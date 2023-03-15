@@ -97,8 +97,14 @@ template("android_library_factory") {
     sources = get_target_outputs(":$_process_factory_target_name")
     jar_excluded_patterns = [ "*" ]
 
-    # Mark library as low priority so that android_library() which provides real implementation
-    # does not need to depend on factory.
+    # Mark library as low priority since this one does not contain the actual
+    # impl class. The real android_library() which provides the real
+    # implementation should be first on the classpath.
     low_classpath_priority = true
+
+    # Although this factory library does not contain the actual impl class, it
+    # should still be the one that almost all targets depend on. This is so the
+    # real implementation can be provided later.
+    preferred_dep = true
   }
 }
