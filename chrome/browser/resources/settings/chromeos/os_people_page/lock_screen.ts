@@ -524,6 +524,9 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     if (management !== ManagementType.kNone) {
       if (management === ManagementType.kDevice) {
         state.controlledBy = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+      } else if (management === ManagementType.kChildRestriction) {
+        state.controlledBy =
+            chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION;
       } else {
         assert(management === ManagementType.kUser, 'Invalid management type');
         state.controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;

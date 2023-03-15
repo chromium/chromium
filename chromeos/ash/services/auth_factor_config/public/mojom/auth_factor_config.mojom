@@ -32,6 +32,7 @@ enum ManagementType {
   kNone,
   kDevice,
   kUser,
+  kChildRestriction,
 };
 
 // An interface for clients of |AuthFactorConfig| (see there for a list of

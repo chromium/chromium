@@ -101,7 +101,9 @@ void GaiaScreen::LoadOnline(const AccountId& account) {
     return;
   }
 
-  if (ShouldPrepareForRecovery(account)) {
+  // TODO(272474463): remove the Gaia path check.
+  if (gaia_path == GaiaView::GaiaPath::kDefault &&
+      ShouldPrepareForRecovery(account)) {
     auto user_context = std::make_unique<UserContext>();
     user_context->SetAccountId(account);
     auth_factor_editor_.GetAuthFactorsConfiguration(

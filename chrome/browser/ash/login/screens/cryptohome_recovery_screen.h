@@ -27,6 +27,7 @@ class CryptohomeRecoveryScreen : public BaseScreen {
     kManualRecovery,
     kRetry,
     kNoRecoveryFactor,
+    kNotApplicable,
   };
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
@@ -40,6 +41,7 @@ class CryptohomeRecoveryScreen : public BaseScreen {
 
  protected:
   // BaseScreen:
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
