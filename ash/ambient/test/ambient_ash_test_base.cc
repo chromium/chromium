@@ -14,6 +14,7 @@
 #include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/ui/ambient_animation_view.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
@@ -45,6 +46,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -229,9 +231,14 @@ void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
   }
 }
 
+void AmbientAshTestBase::SetAmbientUiSettings(
+    const AmbientUiSettings& settings) {
+  settings.WriteToPrefService(
+      *Shell::Get()->session_controller()->GetActivePrefService());
+}
+
 void AmbientAshTestBase::SetAmbientTheme(AmbientTheme theme) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
-      ambient::prefs::kAmbientTheme, static_cast<int>(theme));
+  SetAmbientUiSettings(AmbientUiSettings(theme));
 }
 
 void AmbientAshTestBase::DisableJitter() {

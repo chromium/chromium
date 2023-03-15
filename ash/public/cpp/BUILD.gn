@@ -461,6 +461,7 @@ source_set("unit_tests") {
   sources = [
     "accelerators_util_unittest.cc",
     "ambient/ambient_metrics_unittest.cc",
+    "ambient/ambient_prefs_unittest.cc",
     "android_intent_helper_unittest.cc",
     "app_list/app_list_config_provider_unittest.cc",
     "holding_space/holding_space_image_unittest.cc",
@@ -488,6 +489,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ui/vector_icons",
+    "//components/prefs:test_support",
     "//mojo/public/cpp/bindings",
     "//services/data_decoder/public/mojom",
     "//skia",

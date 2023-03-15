@@ -36,6 +36,7 @@ namespace ash {
 class AmbientAccessTokenController;
 class AmbientContainerView;
 class AmbientPhotoController;
+class AmbientUiSettings;
 class FakeAmbientBackendControllerImpl;
 class MediaStringView;
 
@@ -52,11 +53,15 @@ class AmbientAshTestBase : public AshTestBase {
   // Enables/disables ambient mode for the currently active user session.
   void SetAmbientModeEnabled(bool enabled);
 
-  // Sets the AmbientTheme to use when ShowAmbientScreen() is called.
-  // To reflect real world usage, the incoming |theme| does not take effect
+  // Sets the |AmbientUiSettings| to use when ShowAmbientScreen() is called.
+  // To reflect real world usage, the incoming settings do not take effect
   // immediately if the test is currently displaying the ambient screen. In that
-  // case, the ambient screen must be closed, and the new |theme| will take
+  // case, the ambient screen must be closed, and the new settings will take
   // effect with the next call to ShowAmbientScreen().
+  void SetAmbientUiSettings(const AmbientUiSettings& settings);
+
+  // Convenient form of the above that only sets |AmbientUiSettings::theme| and
+  // leaves the rest of the settings unset.
   void SetAmbientTheme(AmbientTheme theme);
 
   // Sets jitters configs to zero for pixel testing.

@@ -59,6 +59,7 @@ class AmbientContainerView;
 class AmbientManagedPhotoController;
 class AmbientMultiScreenMetricsRecorder;
 class AmbientPhotoController;
+class AmbientUiSettings;
 class AmbientWeatherController;
 
 // Class to handle all ambient mode functionalities.
@@ -196,7 +197,7 @@ class ASH_EXPORT AmbientController
   void StopRefreshingImages();
   void MaybeStartScreenSaver();
   void MaybeDismissUIOnMouseMove();
-  AmbientTheme GetCurrentTheme() const;
+  AmbientUiSettings GetCurrentUiSettings() const;
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
   // device being inactive for a specific amount of time.
@@ -216,7 +217,7 @@ class ASH_EXPORT AmbientController
   void OnLockScreenInactivityTimeoutPrefChanged();
   void OnLockScreenBackgroundTimeoutPrefChanged();
   void OnPhotoRefreshIntervalPrefChanged();
-  void OnThemePrefChanged();
+  void OnAmbientUiSettingsChanged();
   void OnAnimationPlaybackSpeedChanged();
 
   AmbientAccessTokenController* access_token_controller_for_testing() {
@@ -290,10 +291,6 @@ class ASH_EXPORT AmbientController
   // to keep track of the last event and identify a true mouse move event.
   // TODO(safarli): Remove this workaround when b/266234711 is fixed.
   bool last_mouse_event_was_move_ = false;
-
-  // Not set until the AmbientTheme is initially read from pref
-  // storage when ambient mode is enabled.
-  absl::optional<AmbientTheme> current_theme_from_pref_;
 
   std::unique_ptr<AmbientMultiScreenMetricsRecorder>
       multi_screen_metrics_recorder_;

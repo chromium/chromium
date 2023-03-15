@@ -80,9 +80,9 @@ PersonalizationAppAmbientProviderImpl::PersonalizationAppAmbientProviderImpl(
           &PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
-      ash::ambient::prefs::kAmbientTheme,
+      ash::ambient::prefs::kAmbientUiSettings,
       base::BindRepeating(
-          &PersonalizationAppAmbientProviderImpl::OnAnimationThemeChanged,
+          &PersonalizationAppAmbientProviderImpl::OnAmbientUiSettingsChanged,
           base::Unretained(this)));
   ambient_ui_model_observer_.Observe(
       Shell::Get()->ambient_controller()->ambient_ui_model());
@@ -128,8 +128,8 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
   // Call it once to get the current ambient mode enabled status.
   OnAmbientModeEnabledChanged();
 
-  // Call it once to get the current animation theme.
-  OnAnimationThemeChanged();
+  // Call it once to get the current ambient ui settings.
+  OnAmbientUiSettingsChanged();
 
   ResetLocalSettings();
 }
@@ -146,8 +146,7 @@ void PersonalizationAppAmbientProviderImpl::SetAnimationTheme(
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
   LogAmbientModeTheme(animation_theme);
-  pref_service->SetInteger(ash::ambient::prefs::kAmbientTheme,
-                           static_cast<int>(animation_theme));
+  AmbientUiSettings(animation_theme).WriteToPrefService(*pref_service);
 }
 
 void PersonalizationAppAmbientProviderImpl::SetTopicSource(
@@ -266,11 +265,12 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged() {
   }
 }
 
-void PersonalizationAppAmbientProviderImpl::OnAnimationThemeChanged() {
+void PersonalizationAppAmbientProviderImpl::OnAmbientUiSettingsChanged() {
   if (!ambient_observer_remote_.is_bound())
     return;
 
-  ambient_observer_remote_->OnAnimationThemeChanged(GetCurrentAnimationTheme());
+  ambient_observer_remote_->OnAnimationThemeChanged(
+      GetCurrentUiSettings().theme());
 }
 
 void PersonalizationAppAmbientProviderImpl::OnTemperatureUnitChanged() {
@@ -356,12 +356,11 @@ bool PersonalizationAppAmbientProviderImpl::IsAmbientModeEnabled() {
   return pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled);
 }
 
-ash::AmbientTheme
-PersonalizationAppAmbientProviderImpl::GetCurrentAnimationTheme() {
+AmbientUiSettings
+PersonalizationAppAmbientProviderImpl::GetCurrentUiSettings() {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
-  return static_cast<ash::AmbientTheme>(
-      pref_service->GetInteger(ash::ambient::prefs::kAmbientTheme));
+  return AmbientUiSettings::ReadFromPrefService(*pref_service);
 }
 
 void PersonalizationAppAmbientProviderImpl::UpdateSettings() {

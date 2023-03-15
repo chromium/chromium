@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
@@ -65,7 +66,7 @@ class PersonalizationAppAmbientProviderImpl
 
   // Notify WebUI the latest values.
   void OnAmbientModeEnabledChanged();
-  void OnAnimationThemeChanged();
+  void OnAmbientUiSettingsChanged();
   void OnTemperatureUnitChanged();
   void OnTopicSourceChanged();
   void OnAlbumsChanged();
@@ -76,7 +77,7 @@ class PersonalizationAppAmbientProviderImpl
 
   bool IsAmbientModeEnabled();
 
-  ash::AmbientTheme GetCurrentAnimationTheme();
+  AmbientUiSettings GetCurrentUiSettings();
 
   // Update the local `settings_` to server.
   void UpdateSettings();

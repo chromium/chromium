@@ -52,14 +52,19 @@ absl::optional<AmbientUiSettings> AmbientUiSettings::CreateFromDict(
 // static
 AmbientUiSettings AmbientUiSettings::ReadFromPrefService(
     PrefService& pref_service) {
+  const base::Value::Dict& settings_dict =
+      pref_service.GetDict(ambient::prefs::kAmbientUiSettings);
   absl::optional<AmbientUiSettings> settings_loaded =
-      CreateFromDict(pref_service.GetDict(ambient::prefs::kAmbientUiSettings));
+      CreateFromDict(settings_dict);
   if (settings_loaded) {
     return *settings_loaded;
   } else {
-    // This should only happen if pref storage was corrupted on disc.
-    LOG(ERROR) << "Loaded invalid AmbientUiSettings from pref. Using default.";
-    pref_service.ClearPref(ambient::prefs::kAmbientUiSettings);
+    if (!settings_dict.empty()) {
+      // This should only happen if pref storage was corrupted on disc.
+      LOG(ERROR)
+          << "Loaded invalid AmbientUiSettings from pref. Using default.";
+      pref_service.ClearPref(ambient::prefs::kAmbientUiSettings);
+    }
     return AmbientUiSettings();
   }
 }
