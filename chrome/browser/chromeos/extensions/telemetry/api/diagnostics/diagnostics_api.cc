@@ -123,7 +123,7 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
     }
     case crosapi::mojom::DiagnosticsRoutineUpdateUnion::Tag::kInteractiveUpdate:
       // Routine is waiting for user action. Set the status to waiting.
-      result.status = diag::RoutineStatus::ROUTINE_STATUS_WAITING_USER_ACTION;
+      result.status = diag::RoutineStatus::kWaitingUserAction;
       result.status_message = "Waiting for user action. See user_message";
       result.user_message = converters::ConvertRoutineUserMessage(
           ptr->routine_update_union->get_interactive_update()->user_message);

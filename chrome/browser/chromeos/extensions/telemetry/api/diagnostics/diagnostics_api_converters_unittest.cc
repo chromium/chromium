@@ -46,201 +46,193 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kAcPower, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_AC_POWER);
+    EXPECT_EQ(out, RoutineType::kAcPower);
   }
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kBatteryCapacity, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_BATTERY_CAPACITY);
+    EXPECT_EQ(out, RoutineType::kBatteryCapacity);
   }
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kBatteryCharge, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_BATTERY_CHARGE);
+    EXPECT_EQ(out, RoutineType::kBatteryCharge);
   }
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kBatteryDischarge, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_BATTERY_DISCHARGE);
+    EXPECT_EQ(out, RoutineType::kBatteryDischarge);
   }
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kBatteryHealth, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_BATTERY_HEALTH);
+    EXPECT_EQ(out, RoutineType::kBatteryHealth);
   }
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kCpuCache, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_CPU_CACHE);
+    EXPECT_EQ(out, RoutineType::kCpuCache);
   }
   {
     RoutineType out;
     EXPECT_TRUE(
         ConvertMojoRoutine(MojoRoutineType::kFloatingPointAccuracy, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_CPU_FLOATING_POINT_ACCURACY);
+    EXPECT_EQ(out, RoutineType::kCpuFloatingPointAccuracy);
   }
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kPrimeSearch, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_CPU_PRIME_SEARCH);
+    EXPECT_EQ(out, RoutineType::kCpuPrimeSearch);
   }
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kCpuStress, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_CPU_STRESS);
+    EXPECT_EQ(out, RoutineType::kCpuStress);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kDiskRead, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_DISK_READ);
+    EXPECT_EQ(out, RoutineType::kDiskRead);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kDnsResolution, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_DNS_RESOLUTION);
+    EXPECT_EQ(out, RoutineType::kDnsResolution);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kDnsResolverPresent, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_DNS_RESOLVER_PRESENT);
+    EXPECT_EQ(out, RoutineType::kDnsResolverPresent);
   }
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kMemory, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_MEMORY);
+    EXPECT_EQ(out, RoutineType::kMemory);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kNvmeSelfTest, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NVME_SELF_TEST);
+    EXPECT_EQ(out, RoutineType::kNvmeSelfTest);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kNvmeWearLevel, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NVME_WEAR_LEVEL);
+    EXPECT_EQ(out, RoutineType::kNvmeWearLevel);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSignalStrength, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SIGNAL_STRENGTH);
+    EXPECT_EQ(out, RoutineType::kSignalStrength);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kGatewayCanBePinged, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_GATEWAY_CAN_BE_PINGED);
+    EXPECT_EQ(out, RoutineType::kGatewayCanBePinged);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSensitiveSensor, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SENSITIVE_SENSOR);
+    EXPECT_EQ(out, RoutineType::kSensitiveSensor);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(
         MojoRoutineType::kSmartctlCheckWithPercentageUsed, &out));
-    EXPECT_EQ(out,
-              RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK_WITH_PERCENTAGE_USED);
+    EXPECT_EQ(out, RoutineType::kSmartctlCheckWithPercentageUsed);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK);
+    EXPECT_EQ(out, RoutineType::kSmartctlCheck);
   }
   {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    RoutineType out = RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kFingerprintAlive, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_FINGERPRINT_ALIVE);
+    EXPECT_EQ(out, RoutineType::kFingerprintAlive);
   }
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertRoutineStatus) {
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kReady),
-            RoutineStatus::ROUTINE_STATUS_READY);
+            RoutineStatus::kReady);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kRunning),
-            RoutineStatus::ROUTINE_STATUS_RUNNING);
+            RoutineStatus::kRunning);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kWaiting),
-            RoutineStatus::ROUTINE_STATUS_WAITING_USER_ACTION);
+            RoutineStatus::kWaitingUserAction);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kPassed),
-            RoutineStatus::ROUTINE_STATUS_PASSED);
+            RoutineStatus::kPassed);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kFailed),
-            RoutineStatus::ROUTINE_STATUS_FAILED);
+            RoutineStatus::kFailed);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kError),
-            RoutineStatus::ROUTINE_STATUS_ERROR);
+            RoutineStatus::kError);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kCancelled),
-            RoutineStatus::ROUTINE_STATUS_CANCELLED);
+            RoutineStatus::kCancelled);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kFailedToStart),
-            RoutineStatus::ROUTINE_STATUS_FAILED_TO_START);
+            RoutineStatus::kFailedToStart);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kRemoved),
-            RoutineStatus::ROUTINE_STATUS_REMOVED);
+            RoutineStatus::kRemoved);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kCancelling),
-            RoutineStatus::ROUTINE_STATUS_CANCELLING);
+            RoutineStatus::kCancelling);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kUnsupported),
-            RoutineStatus::ROUTINE_STATUS_UNSUPPORTED);
+            RoutineStatus::kUnsupported);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kNotRun),
-            RoutineStatus::ROUTINE_STATUS_NOT_RUN);
+            RoutineStatus::kNotRun);
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertRoutineCommand) {
-  EXPECT_EQ(
-      ConvertRoutineCommand(RoutineCommandType::ROUTINE_COMMAND_TYPE_CANCEL),
-      MojoRoutineCommandType::kCancel);
-  EXPECT_EQ(
-      ConvertRoutineCommand(RoutineCommandType::ROUTINE_COMMAND_TYPE_REMOVE),
-      MojoRoutineCommandType::kRemove);
-  EXPECT_EQ(
-      ConvertRoutineCommand(RoutineCommandType::ROUTINE_COMMAND_TYPE_RESUME),
-      MojoRoutineCommandType::kContinue);
-  EXPECT_EQ(
-      ConvertRoutineCommand(RoutineCommandType::ROUTINE_COMMAND_TYPE_STATUS),
-      MojoRoutineCommandType::kGetStatus);
+  EXPECT_EQ(ConvertRoutineCommand(RoutineCommandType::kCancel),
+            MojoRoutineCommandType::kCancel);
+  EXPECT_EQ(ConvertRoutineCommand(RoutineCommandType::kRemove),
+            MojoRoutineCommandType::kRemove);
+  EXPECT_EQ(ConvertRoutineCommand(RoutineCommandType::kResume),
+            MojoRoutineCommandType::kContinue);
+  EXPECT_EQ(ConvertRoutineCommand(RoutineCommandType::kStatus),
+            MojoRoutineCommandType::kGetStatus);
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertRoutineUserMessage) {
   EXPECT_EQ(
       ConvertRoutineUserMessage(MojoRoutineUserMessageType::kUnplugACPower),
-      RoutineUserMessageType::USER_MESSAGE_TYPE_UNPLUG_AC_POWER);
+      RoutineUserMessageType::kUnplugAcPower);
   EXPECT_EQ(
       ConvertRoutineUserMessage(MojoRoutineUserMessageType::kPlugInACPower),
-      RoutineUserMessageType::USER_MESSAGE_TYPE_PLUG_IN_AC_POWER);
+      RoutineUserMessageType::kPlugInAcPower);
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertDiskReadRoutineType) {
-  EXPECT_EQ(ConvertDiskReadRoutineType(
-                RoutineDiskReadRoutineType::DISK_READ_ROUTINE_TYPE_LINEAR),
+  EXPECT_EQ(ConvertDiskReadRoutineType(RoutineDiskReadRoutineType::kLinear),
             MojoDiskReadRoutineType::kLinearRead);
-  EXPECT_EQ(ConvertDiskReadRoutineType(
-                RoutineDiskReadRoutineType::DISK_READ_ROUTINE_TYPE_RANDOM),
+  EXPECT_EQ(ConvertDiskReadRoutineType(RoutineDiskReadRoutineType::kRandom),
             MojoDiskReadRoutineType::kRandomRead);
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertAcPowerStatusRoutineType) {
   EXPECT_EQ(ConvertAcPowerStatusRoutineType(
-                RoutineAcPowerStatusRoutineType::AC_POWER_STATUS_CONNECTED),
+                RoutineAcPowerStatusRoutineType::kConnected),
             MojoAcPowerStatusType::kConnected);
   EXPECT_EQ(ConvertAcPowerStatusRoutineType(
-                RoutineAcPowerStatusRoutineType::AC_POWER_STATUS_DISCONNECTED),
+                RoutineAcPowerStatusRoutineType::kDisconnected),
             MojoAcPowerStatusType::kDisconnected);
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertNvmeSelfTestRoutineType) {
   RoutineNvmeSelfTestRoutineType input_short;
-  input_short.test_type =
-      RoutineNvmeSelfTestEnum::NVME_SELF_TEST_TYPE_SHORT_TEST;
+  input_short.test_type = RoutineNvmeSelfTestEnum::kShortTest;
   EXPECT_EQ(ConvertNvmeSelfTestRoutineType(std::move(input_short)),
             MojoNvmeSelfTestType::kShortSelfTest);
 
   RoutineNvmeSelfTestRoutineType input_long;
-  input_long.test_type = RoutineNvmeSelfTestEnum::NVME_SELF_TEST_TYPE_LONG_TEST;
+  input_long.test_type = RoutineNvmeSelfTestEnum::kLongTest;
   EXPECT_EQ(ConvertNvmeSelfTestRoutineType(std::move(input_long)),
             MojoNvmeSelfTestType::kLongSelfTest);
 
   RoutineNvmeSelfTestRoutineType input_unknown;
-  input_unknown.test_type = RoutineNvmeSelfTestEnum::NVME_SELF_TEST_TYPE_NONE;
+  input_unknown.test_type = RoutineNvmeSelfTestEnum::kNone;
   EXPECT_EQ(ConvertNvmeSelfTestRoutineType(std::move(input_unknown)),
             MojoNvmeSelfTestType::kUnknown);
 }
