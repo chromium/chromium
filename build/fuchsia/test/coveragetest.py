@@ -12,10 +12,14 @@ import unittest
 
 import coverage  # pylint: disable=import-error
 
+# The files need to have sufficient coverages.
 COVERED_FILES = [
     'compatible_utils.py', 'deploy_to_fuchsia.py', 'flash_device.py',
     'log_manager.py', 'publish_package.py', 'serve_repo.py', 'test_server.py'
 ]
+
+# The files will be tested without coverage requirements.
+TESTED_FILES = ['common.py']
 
 
 def main():
@@ -30,7 +34,8 @@ def main():
                             config_file=True)
     cov.start()
 
-    for file in COVERED_FILES:
+    for file in COVERED_FILES + TESTED_FILES:
+        print('Testing ' + file + ' ...')
         # pylint: disable=import-outside-toplevel
         # import tests after coverage start to also cover definition lines.
         module = importlib.import_module(file.replace('.py', '_unittests'))

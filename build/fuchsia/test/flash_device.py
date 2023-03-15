@@ -14,10 +14,10 @@ import time
 
 from typing import Optional, Tuple
 
-from common import check_ssh_config_file, register_device_args, \
-                   run_ffx_command, SDK_ROOT
+from common import check_ssh_config_file, find_image_in_sdk, \
+    register_device_args, run_ffx_command
 from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
-    running_unattended, add_exec_to_file, get_host_arch, find_image_in_sdk
+    running_unattended, add_exec_to_file, get_host_arch
 from ffx_integration import ScopedFfxConfig
 
 
@@ -67,12 +67,7 @@ def update_required(os_check, system_image_dir: Optional[str],
             'System image directory does not exist. Assuming it\'s '
             'a product-bundle name and dynamically searching for '
             'image directory')
-        # SDK_ROOT points to third_party/fuchsia-sdk/sdk, but we want the root
-        # of the overall fuchsia-sdk package.
-        sdk_root_parent = os.path.split(SDK_ROOT)[0]
-        path = find_image_in_sdk(system_image_dir,
-                                 product_bundle=True,
-                                 sdk_root=sdk_root_parent)
+        path = find_image_in_sdk(system_image_dir)
         if not path:
             raise FileNotFoundError(
                 f'System image directory {system_image_dir} could not'

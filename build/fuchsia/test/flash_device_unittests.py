@@ -73,23 +73,21 @@ class FlashDeviceTest(unittest.TestCase):
         with mock.patch('os.path.exists', return_value=False), \
                 mock.patch('flash_device.find_image_in_sdk') as mock_find, \
                 mock.patch('flash_device._get_system_info'), \
-                mock.patch('flash_device.SDK_ROOT', 'path/to/sdk/dir'), \
+                mock.patch('common.SDK_ROOT', 'path/to/sdk/dir'), \
                 self.assertLogs():
             mock_find.return_value = 'path/to/image/dir'
             update_required, new_image_dir = flash_device.update_required(
                 'update', 'product-bundle', None)
             self.assertTrue(update_required)
             self.assertEqual(new_image_dir, 'path/to/image/dir')
-            mock_find.assert_called_once_with('product-bundle',
-                                              product_bundle=True,
-                                              sdk_root='path/to/sdk')
+            mock_find.assert_called_once_with('product-bundle')
 
     def test_update_required_raises_file_not_found_error(self) -> None:
         """Test |os_check|!='ignore' raises FileNotFoundError if no path."""
         with mock.patch('os.path.exists', return_value=False), \
                 mock.patch('flash_device.find_image_in_sdk',
                            return_value=None), \
-                mock.patch('flash_device.SDK_ROOT', 'path/to/sdk/dir'), \
+                mock.patch('common.SDK_ROOT', 'path/to/sdk/dir'), \
                 self.assertLogs(), \
                 self.assertRaises(FileNotFoundError):
             flash_device.update_required('update', 'product-bundle', None)

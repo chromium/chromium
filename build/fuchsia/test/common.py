@@ -277,3 +277,38 @@ def get_ssh_address(target_id: Optional[str]) -> str:
     return run_ffx_command(('target', 'get-ssh-address'),
                            target_id,
                            capture_output=True).stdout.strip()
+
+
+def find_in_dir(target_name: str, parent_dir: str) -> Optional[str]:
+    """Finds path in SDK.
+
+    Args:
+      target_name: Name of target to find, as a string.
+      parent_dir: Directory to start search in.
+
+    Returns:
+      Full path to the target, None if not found.
+    """
+    # Doesn't make sense to look for a full path. Only extract the basename.
+    target_name = os.path.basename(target_name)
+    for root, dirs, _ in os.walk(parent_dir):
+        if target_name in dirs:
+            return os.path.abspath(os.path.join(root, target_name))
+
+    return None
+
+
+def find_image_in_sdk(product_name: str) -> Optional[str]:
+    """Finds image dir in SDK for product given.
+
+    Args:
+      product_name: Name of product's image directory to find.
+
+    Returns:
+      Full path to the target, None if not found.
+    """
+    top_image_dir = os.path.join(SDK_ROOT, os.pardir, 'images')
+    path = find_in_dir(product_name, parent_dir=top_image_dir)
+    if path:
+        return find_in_dir('images', parent_dir=path)
+    return path
