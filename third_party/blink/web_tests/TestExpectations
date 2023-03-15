@@ -6889,3 +6889,6 @@ crbug.com/1422630 [ Fuchsia ] external/wpt/long-animation-frame/tentative/loaf-s
 crbug.com/1422630 [ Mac ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass Timeout ]
 crbug.com/1422630 [ Win ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass ]
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure Pass ]
+
+# Flaky timeout on mac.
+crbug.com/1422305 [ Mac ] external/wpt/workers/Worker_script_mimetype.htm [ Pass Timeout ]
