@@ -39,7 +39,6 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -474,10 +473,6 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
   if (!initiator_root_frame_origin) {
     return;
   }
-
-  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-      initiator_frame_host,
-      blink::mojom::WebFeature::kAttributionFencedFrameReportingBeacon);
 
   AttributionInputEvent input_event;
   if (absl::holds_alternative<NavigationBeaconId>(beacon_id)) {
