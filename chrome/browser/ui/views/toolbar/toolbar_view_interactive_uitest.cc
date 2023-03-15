@@ -30,6 +30,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -132,20 +133,43 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, ToolbarCycleFocusWithBookmarkBar) {
 IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonUpdate) {
   ToolbarButtonProvider* toolbar_button_provider =
       BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
-  EXPECT_FALSE(toolbar_button_provider->GetBackButton()->GetEnabled());
+  ToolbarButton* back_button = toolbar_button_provider->GetBackButton();
+  EXPECT_FALSE(back_button->GetEnabled());
 
   // Navigate to title1.html. Back button should be enabled.
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(toolbar_button_provider->GetBackButton()->GetEnabled());
+  EXPECT_TRUE(back_button->GetEnabled());
 
   // Delete old navigations. Back button will be disabled.
   auto& controller =
       browser()->tab_strip_model()->GetActiveWebContents()->GetController();
   controller.DeleteNavigationEntries(base::BindRepeating(
       [&](content::NavigationEntry* entry) { return true; }));
-  EXPECT_FALSE(toolbar_button_provider->GetBackButton()->GetEnabled());
+  EXPECT_FALSE(back_button->GetEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonHoverThenClick) {
+  ToolbarButtonProvider* toolbar_button_provider =
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
+  ToolbarButton* back_button = toolbar_button_provider->GetBackButton();
+  EXPECT_FALSE(back_button->GetEnabled());
+
+  // Navigate to title1.html. Back button should be enabled.
+  GURL url = ui_test_utils::GetTestUrl(
+      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(back_button->GetEnabled());
+
+  // Mouse over and click on the back button. This should navigate back in
+  // session history.
+  content::TestNavigationObserver back_nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ui_test_utils::ClickOnView(back_button);
+  back_nav_observer.Wait();
+
+  EXPECT_FALSE(back_button->GetEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
