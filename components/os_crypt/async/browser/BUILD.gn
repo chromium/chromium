@@ -1,0 +1,35 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("browser") {
+  sources = [
+    "os_crypt_async.cc",
+    "os_crypt_async.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/os_crypt/async/common",
+  ]
+
+  defines = [ "IS_OS_CRYPT_ASYNC_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "os_crypt_async_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/os_crypt/async/common",
+    "//components/os_crypt/sync",
+    "//components/os_crypt/sync:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_win) {
+    libs = [ "crypt32.lib" ]
+  }
+}
