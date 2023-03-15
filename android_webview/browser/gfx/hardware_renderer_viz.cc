@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/gfx/hardware_renderer.h"
+#include "android_webview/browser/gfx/hardware_renderer_viz.h"
 
 #include <algorithm>
 #include <iterator>
@@ -121,7 +121,7 @@ WebViewDrawAndSubmissionType GetDrawAndSubmissionType(bool invalidated,
 
 }  // namespace
 
-class HardwareRenderer::OnViz : public viz::DisplayClient {
+class HardwareRendererViz::OnViz : public viz::DisplayClient {
  public:
   OnViz(OutputSurfaceProviderWebView* output_surface_provider,
         const scoped_refptr<RootFrameSink>& root_frame_sink);
@@ -187,7 +187,7 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
   THREAD_CHECKER(viz_thread_checker_);
 };
 
-HardwareRenderer::OnViz::OnViz(
+HardwareRendererViz::OnViz::OnViz(
     OutputSurfaceProviderWebView* output_surface_provider,
     const scoped_refptr<RootFrameSink>& root_frame_sink)
     : without_gpu_(root_frame_sink),
@@ -216,20 +216,18 @@ HardwareRenderer::OnViz::OnViz(
   display_->DisableGPUAccessByDefault();
 }
 
-HardwareRenderer::OnViz::~OnViz() {
+HardwareRendererViz::OnViz::~OnViz() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
-  if (child_surface_id_.is_valid()) {
+  if (child_surface_id_.is_valid())
     without_gpu_->EvictChildSurface(child_surface_id_);
-  }
 
-  if (root_local_surface_id_.is_valid()) {
+  if (root_local_surface_id_.is_valid())
     without_gpu_->EvictRootSurface(root_local_surface_id_);
-  }
 
   GetFrameSinkManager()->surface_manager()->GarbageCollectSurfaces();
 }
 
-void HardwareRenderer::OnViz::DrawAndSwapOnViz(
+void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
     const gfx::Size& viewport,
     const gfx::Rect& clip,
     const gfx::Transform& transform,
@@ -238,8 +236,8 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
     const gfx::ColorSpace& color_space,
     bool overlays_enabled_by_hwui,
     ChildFrame* child_frame) {
-  TRACE_EVENT1("android_webview", "HardwareRenderer::DrawAndSwap", "child_id",
-               child_id.ToString());
+  TRACE_EVENT1("android_webview", "HardwareRendererViz::DrawAndSwap",
+               "child_id", child_id.ToString());
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   DCHECK(child_id.is_valid());
   DCHECK(child_frame);
@@ -338,9 +336,8 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
           }
 
           // Commit all frames that are older than current one.
-          if (frame_id.sequence_number < current_frame_id.sequence_number) {
+          if (frame_id.sequence_number < current_frame_id.sequence_number)
             return true;
-          }
 
           // All clients except root renderer and root surface are frame behind.
           const bool is_frame_behind =
@@ -350,9 +347,8 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
           // If this surface is not frame behind, commit it for current frame
           // too.
           if (!is_frame_behind &&
-              frame_id.sequence_number == current_frame_id.sequence_number) {
+              frame_id.sequence_number == current_frame_id.sequence_number)
             return true;
-          }
 
           return false;
         },
@@ -375,28 +371,27 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
   without_gpu_->SetContainedSurfaces(display_->GetContainedSurfaceIds());
 }
 
-void HardwareRenderer::OnViz::PostDrawOnViz(
+void HardwareRendererViz::OnViz::PostDrawOnViz(
     viz::FrameTimingDetailsMap* timing_details) {
   *timing_details = without_gpu_->TakeChildFrameTimingDetailsMap();
 }
 
-void HardwareRenderer::OnViz::RemoveOverlaysOnViz() {
-  if (overlay_processor_webview_) {
+void HardwareRendererViz::OnViz::RemoveOverlaysOnViz() {
+  if (overlay_processor_webview_)
     overlay_processor_webview_->RemoveOverlays();
-  }
 }
 
-void HardwareRenderer::OnViz::MarkExpectContextLossOnViz() {
+void HardwareRendererViz::OnViz::MarkExpectContextLossOnViz() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   expect_context_loss_ = true;
 }
 
-viz::FrameSinkManagerImpl* HardwareRenderer::OnViz::GetFrameSinkManager() {
+viz::FrameSinkManagerImpl* HardwareRendererViz::OnViz::GetFrameSinkManager() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   return VizCompositorThreadRunnerWebView::GetInstance()->GetFrameSinkManager();
 }
 
-void HardwareRenderer::OnViz::DisplayOutputSurfaceLost() {
+void HardwareRendererViz::OnViz::DisplayOutputSurfaceLost() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   if (!expect_context_loss_) {
     // Android WebView does not handle real context loss.
@@ -404,7 +399,7 @@ void HardwareRenderer::OnViz::DisplayOutputSurfaceLost() {
   }
 }
 
-void HardwareRenderer::OnViz::DisplayWillDrawAndSwap(
+void HardwareRendererViz::OnViz::DisplayWillDrawAndSwap(
     bool will_draw_and_swap,
     viz::AggregatedRenderPassList* render_passes) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
@@ -412,7 +407,7 @@ void HardwareRenderer::OnViz::DisplayWillDrawAndSwap(
 }
 
 base::TimeDelta
-HardwareRenderer::OnViz::GetPreferredFrameIntervalForFrameSinkId(
+HardwareRendererViz::OnViz::GetPreferredFrameIntervalForFrameSinkId(
     const viz::FrameSinkId& id,
     viz::mojom::CompositorFrameSinkType* type) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
@@ -421,7 +416,7 @@ HardwareRenderer::OnViz::GetPreferredFrameIntervalForFrameSinkId(
 }
 
 // static
-ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
+ChildFrameQueue HardwareRendererViz::WaitAndPruneFrameQueue(
     ChildFrameQueue* child_frames_ptr) {
   ChildFrameQueue& child_frames = *child_frames_ptr;
   ChildFrameQueue pruned_frames;
@@ -489,20 +484,22 @@ bool HardwareRendererDrawParams::operator!=(
   return !(*this == other);
 }
 
-HardwareRenderer::HardwareRenderer(RenderThreadManager* state,
-                                   RootFrameSinkGetter root_frame_sink_getter,
-                                   AwVulkanContextProvider* context_provider)
+HardwareRendererViz::HardwareRendererViz(
+    RenderThreadManager* state,
+    RootFrameSinkGetter root_frame_sink_getter,
+    AwVulkanContextProvider* context_provider)
     : output_surface_provider_(context_provider),
       render_thread_manager_(state),
       last_egl_context_(eglGetCurrentContext()) {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
-      base::BindOnce(&HardwareRenderer::InitializeOnViz, base::Unretained(this),
+      base::BindOnce(&HardwareRendererViz::InitializeOnViz,
+                     base::Unretained(this),
                      std::move(root_frame_sink_getter)));
 }
 
-void HardwareRenderer::InitializeOnViz(
+void HardwareRendererViz::InitializeOnViz(
     RootFrameSinkGetter root_frame_sink_getter) {
   scoped_refptr<RootFrameSink> root_frame_sink =
       std::move(root_frame_sink_getter).Run();
@@ -512,7 +509,7 @@ void HardwareRenderer::InitializeOnViz(
   }
 }
 
-HardwareRenderer::~HardwareRenderer() {
+HardwareRendererViz::~HardwareRendererViz() {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
   output_surface_provider_.shared_context_state()->MakeCurrent(nullptr);
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
@@ -530,15 +527,15 @@ HardwareRenderer::~HardwareRenderer() {
   }
 }
 
-bool HardwareRenderer::IsUsingVulkan() const {
+bool HardwareRendererViz::IsUsingVulkan() const {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
   DCHECK(output_surface_provider_.shared_context_state());
   return output_surface_provider_.shared_context_state()->GrContextIsVulkan();
 }
 
-void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
-                                   const OverlaysParams& overlays_params) {
-  TRACE_EVENT1("android_webview", "HardwareRenderer::Draw", "vulkan",
+void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
+                                      const OverlaysParams& overlays_params) {
+  TRACE_EVENT1("android_webview", "HardwareRendererViz::Draw", "vulkan",
                IsUsingVulkan());
 
   if (!IsUsingVulkan()) {
@@ -623,7 +620,7 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
   }
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
-      base::BindOnce(&HardwareRenderer::OnViz::DrawAndSwapOnViz,
+      base::BindOnce(&HardwareRendererViz::OnViz::DrawAndSwapOnViz,
                      base::Unretained(on_viz_.get()), viewport, clip, transform,
                      surface_id_, device_scale_factor_, params.color_space,
                      can_use_overlays, child_frame_.get()));
@@ -637,7 +634,7 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
   // Implement proper damage tracking, then deliver FrameTimingDetails
   // through the common begin frame path.
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
-      base::BindOnce(&HardwareRenderer::OnViz::PostDrawOnViz,
+      base::BindOnce(&HardwareRendererViz::OnViz::PostDrawOnViz,
                      base::Unretained(on_viz_.get()), &timing_details));
 
   if (need_to_update_draw_constraints || !timing_details.empty()) {
@@ -649,16 +646,16 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
   }
 }
 
-void HardwareRenderer::RemoveOverlays(
+void HardwareRendererViz::RemoveOverlays(
     OverlaysParams::MergeTransactionFn merge_transaction) {
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
-      base::BindOnce(&HardwareRenderer::OnViz::RemoveOverlaysOnViz,
+      base::BindOnce(&HardwareRendererViz::OnViz::RemoveOverlaysOnViz,
                      base::Unretained(on_viz_.get())));
 
   MergeTransactionIfNeeded(merge_transaction);
 }
 
-void HardwareRenderer::MergeTransactionIfNeeded(
+void HardwareRendererViz::MergeTransactionIfNeeded(
     OverlaysParams::MergeTransactionFn merge_transaction) {
   auto* overlay_processor = on_viz_->overlay_processor();
   if (overlay_processor) {
@@ -670,17 +667,17 @@ void HardwareRenderer::MergeTransactionIfNeeded(
   }
 }
 
-void HardwareRenderer::AbandonContext() {
+void HardwareRendererViz::AbandonContext() {
   VizCompositorThreadRunnerWebView::GetInstance()->task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&HardwareRenderer::OnViz::MarkExpectContextLossOnViz,
+      base::BindOnce(&HardwareRendererViz::OnViz::MarkExpectContextLossOnViz,
                      base::Unretained(on_viz_.get())));
   output_surface_provider_.MarkExpectContextLoss();
   output_surface_provider_.shared_context_state()->MarkContextLost(
       gpu::error::ContextLostReason::kUnknown);
 }
 
-void HardwareRenderer::CommitFrame() {
+void HardwareRendererViz::CommitFrame() {
   TRACE_EVENT0("android_webview", "CommitFrame");
   scroll_offset_ = render_thread_manager_->GetScrollOffsetOnRT();
   ChildFrameQueue child_frames = render_thread_manager_->PassFramesOnRT();
@@ -702,7 +699,7 @@ void HardwareRenderer::CommitFrame() {
   child_frame_queue_.emplace_back(std::move(child_frames.front()));
 }
 
-void HardwareRenderer::ReportDrawMetric(
+void HardwareRendererViz::ReportDrawMetric(
     const HardwareRendererDrawParams& params) {
   const bool params_changed = last_draw_params_ == params;
 
@@ -715,9 +712,9 @@ void HardwareRenderer::ReportDrawMetric(
   did_submit_compositor_frame_ = false;
 }
 
-void HardwareRenderer::Draw(const HardwareRendererDrawParams& params,
-                            const OverlaysParams& overlays_params) {
-  TRACE_EVENT0("android_webview", "HardwareRenderer::Draw");
+void HardwareRendererViz::Draw(const HardwareRendererDrawParams& params,
+                               const OverlaysParams& overlays_params) {
+  TRACE_EVENT0("android_webview", "HardwareRendererViz::Draw");
 
   for (auto& pruned_frame : WaitAndPruneFrameQueue(&child_frame_queue_)) {
     ReturnChildFrame(std::move(pruned_frame));
@@ -754,7 +751,7 @@ void HardwareRenderer::Draw(const HardwareRendererDrawParams& params,
   DrawAndSwap(params, overlays_params);
 }
 
-void HardwareRenderer::ReturnChildFrame(
+void HardwareRendererViz::ReturnChildFrame(
     std::unique_ptr<ChildFrame> child_frame) {
   if (!child_frame || !child_frame->frame) {
     return;
@@ -771,7 +768,7 @@ void HardwareRenderer::ReturnChildFrame(
                               child_frame->layer_tree_frame_sink_id);
 }
 
-void HardwareRenderer::ReturnResourcesToCompositor(
+void HardwareRendererViz::ReturnResourcesToCompositor(
     std::vector<viz::ReturnedResource> resources,
     const viz::FrameSinkId& frame_sink_id,
     uint32_t layer_tree_frame_sink_id) {
@@ -783,7 +780,7 @@ void HardwareRenderer::ReturnResourcesToCompositor(
       std::move(resources), frame_sink_id, layer_tree_frame_sink_id);
 }
 
-void HardwareRenderer::SetChildFrameForTesting(
+void HardwareRendererViz::SetChildFrameForTesting(
     std::unique_ptr<ChildFrame> child_frame) {
   child_frame_ = std::move(child_frame);
 }

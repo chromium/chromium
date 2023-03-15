@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ANDROID_WEBVIEW_BROWSER_GFX_HARDWARE_RENDERER_H_
-#define ANDROID_WEBVIEW_BROWSER_GFX_HARDWARE_RENDERER_H_
+#ifndef ANDROID_WEBVIEW_BROWSER_GFX_HARDWARE_RENDERER_VIZ_H_
+#define ANDROID_WEBVIEW_BROWSER_GFX_HARDWARE_RENDERER_VIZ_H_
 
 #include <memory>
 
@@ -49,7 +49,7 @@ struct HardwareRendererDrawParams {
   gfx::ColorSpace color_space;
 };
 
-class HardwareRenderer {
+class HardwareRendererViz {
  public:
   // Two rules:
   // 1) Never wait on |new_frame| on the UI thread, or in kModeSync. Otherwise
@@ -65,14 +65,14 @@ class HardwareRenderer {
   // * Append new frame without waiting on it.
   static ChildFrameQueue WaitAndPruneFrameQueue(ChildFrameQueue* child_frames);
 
-  HardwareRenderer(RenderThreadManager* state,
-                   RootFrameSinkGetter root_frame_sink_getter,
-                   AwVulkanContextProvider* context_provider);
+  HardwareRendererViz(RenderThreadManager* state,
+                      RootFrameSinkGetter root_frame_sink_getter,
+                      AwVulkanContextProvider* context_provider);
 
-  HardwareRenderer(const HardwareRenderer&) = delete;
-  HardwareRenderer& operator=(const HardwareRenderer&) = delete;
+  HardwareRendererViz(const HardwareRendererViz&) = delete;
+  HardwareRendererViz& operator=(const HardwareRendererViz&) = delete;
 
-  ~HardwareRenderer();
+  ~HardwareRendererViz();
 
   void Draw(const HardwareRendererDrawParams& params,
             const OverlaysParams& overlays_params);
@@ -140,4 +140,4 @@ class HardwareRenderer {
 
 }  // namespace android_webview
 
-#endif  // ANDROID_WEBVIEW_BROWSER_GFX_HARDWARE_RENDERER_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_GFX_HARDWARE_RENDERER_VIZ_H_
