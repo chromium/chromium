@@ -75,10 +75,16 @@ void SocketFactory::CreateRestrictedUDPSocket(
                           std::move(callback));
       break;
   }
-  restricted_udp_socket_receivers_.Add(
-      std::make_unique<RestrictedUDPSocket>(
-          std::move(udp_socket), traffic_annotation, std::move(resolver)),
-      std::move(receiver));
+  auto restricted_udp_socket = std::make_unique<RestrictedUDPSocket>(
+      std::move(udp_socket), traffic_annotation, std::move(resolver));
+#if BUILDFLAG(IS_CHROMEOS)
+  if (params && params->connection_tracker) {
+    restricted_udp_socket->AttachConnectionTracker(
+        std::move(params->connection_tracker));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  restricted_udp_socket_receivers_.Add(std::move(restricted_udp_socket),
+                                       std::move(receiver));
 }
 
 void SocketFactory::CreateTCPServerSocket(

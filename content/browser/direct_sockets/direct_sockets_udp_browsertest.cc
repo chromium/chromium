@@ -33,6 +33,10 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // The tests in this file use the Network Service implementation of
 // NetworkContext, to test sending and receiving of data over UDP sockets.
 
@@ -261,11 +265,86 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSocketError) {
               ::testing::HasSubstr("readWriteUdpOnError succeeded"));
 }
 
-IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ExchangeUdp) {
+class DirectSocketsBoundUdpBrowserTest : public DirectSocketsUdpBrowserTest {
+ public:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DirectSocketsBoundUdpBrowserTest() {
+    chromeos::PermissionBrokerClient::InitializeFake();
+    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(true);
+  }
+
+  ~DirectSocketsBoundUdpBrowserTest() override {
+    chromeos::PermissionBrokerClient::Shutdown();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+};
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, ExchangeUdp) {
   ASSERT_THAT(EvalJs(shell(), "exchangeUdpPacketsBetweenClientAndServer()")
                   .ExtractString(),
               testing::HasSubstr("succeeded"));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, HasFirewallHole) {
+  class DelegateImpl : public chromeos::FakePermissionBrokerClient::Delegate {
+   public:
+    DelegateImpl(uint16_t port, base::OnceClosure quit_closure)
+        : port_(port), quit_closure_(std::move(quit_closure)) {}
+
+    void OnUdpPortReleased(uint16_t port,
+                           const std::string& interface) override {
+      if (port == port_) {
+        ASSERT_EQ(interface, "");
+        ASSERT_TRUE(quit_closure_);
+        std::move(quit_closure_).Run();
+      }
+    }
+
+   private:
+    uint16_t port_;
+    base::OnceClosure quit_closure_;
+  };
+
+  auto* client = static_cast<chromeos::FakePermissionBrokerClient*>(
+      chromeos::PermissionBrokerClient::Get());
+
+  const std::string open_script = R"(
+    (async () => {
+      socket = new UDPSocket({ localAddress: '127.0.0.1' });
+      const { localPort } = await socket.opened;
+      return localPort;
+    })();
+  )";
+
+  const int32_t local_port = EvalJs(shell(), open_script).ExtractInt();
+  ASSERT_TRUE(client->HasUdpHole(local_port, "" /* all interfaces */));
+
+  base::RunLoop run_loop;
+  auto delegate =
+      std::make_unique<DelegateImpl>(local_port, run_loop.QuitClosure());
+  client->AttachDelegate(delegate.get());
+
+  EXPECT_TRUE(EvalJs(shell(), content::test::WrapAsync("socket.close()"))
+                  .error.empty());
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBoundUdpBrowserTest, FirewallHoleDenied) {
+  auto* client = chromeos::FakePermissionBrokerClient::Get();
+  client->SetUdpDenyAll();
+
+  const std::string open_script = R"(
+    (async () => {
+      socket = new UDPSocket({ localAddress: '127.0.0.1' });
+      return await socket.opened.catch(err => err.message);
+    })();
+  )";
+
+  EXPECT_THAT(EvalJs(shell(), open_script).ExtractString(),
+              testing::HasSubstr("Firewall"));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, UdpMessageConfigurations) {
   {

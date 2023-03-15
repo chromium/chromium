@@ -134,6 +134,15 @@ bool ValidateAddressAndPort(RenderFrameHost& rfh,
                                 host_port_pair.port(), protocol);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool ShouldOpenFirewallHole(const net::IPAddress& address) {
+  if (g_always_open_firewall_hole_for_testing) {
+    return true;
+  }
+  return !address.IsLoopback();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -152,14 +161,41 @@ class DirectSocketsServiceImpl::FirewallHoleDelegate
       std::move(callback).Run(result, /*local_addr=*/absl::nullopt);
       return;
     }
-    if (local_addr->address().IsLoopback() &&
-        !g_always_open_firewall_hole_for_testing) {
+    if (!ShouldOpenFirewallHole(local_addr->address())) {
       std::move(callback).Run(net::OK, *local_addr);
       return;
     }
     auto [callback_a, callback_b] =
         base::SplitOnceCallback(std::move(callback));
     content::OpenTCPFirewallHole(
+        "" /*all interfaces*/, local_addr->port(),
+        base::BindOnce(
+            &FirewallHoleDelegate::OnFirewallHoleOpened, GetWeakPtr(),
+            std::move(connection_tracker),
+            /*on_success=*/
+            base::BindOnce(std::move(callback_a), net::OK, *local_addr),
+            /*on_failure=*/
+            base::BindOnce(std::move(callback_b),
+                           net::ERR_NETWORK_ACCESS_DENIED, absl::nullopt)));
+  }
+
+  void OpenUDPFirewallHole(
+      mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
+          connection_tracker,
+      OpenBoundUDPSocketCallback callback,
+      int32_t result,
+      const absl::optional<net::IPEndPoint>& local_addr) {
+    if (result != net::OK) {
+      std::move(callback).Run(result, /*local_addr=*/absl::nullopt);
+      return;
+    }
+    if (!ShouldOpenFirewallHole(local_addr->address())) {
+      std::move(callback).Run(net::OK, *local_addr);
+      return;
+    }
+    auto [callback_a, callback_b] =
+        base::SplitOnceCallback(std::move(callback));
+    content::OpenUDPFirewallHole(
         "" /*all interfaces*/, local_addr->port(),
         base::BindOnce(
             &FirewallHoleDelegate::OnFirewallHoleOpened, GetWeakPtr(),
@@ -317,13 +353,29 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
   auto params = network::mojom::RestrictedUDPSocketParams::New();
   params->socket_options = std::move(socket_options);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
+      connection_tracker;
+  params->connection_tracker =
+      connection_tracker.InitWithNewPipeAndPassRemote();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   GetNetworkContext()->CreateRestrictedUDPSocket(
       options->local_addr,
       /*mode=*/network::mojom::RestrictedUDPSocketMode::BOUND,
       /*traffic_annotation=*/
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
-      std::move(params), std::move(receiver), std::move(listener),
-      std::move(callback));
+      /*params=*/std::move(params), std::move(receiver), std::move(listener),
+#if !BUILDFLAG(IS_CHROMEOS)
+      std::move(callback)
+#else   // BUILDFLAG(IS_CHROMEOS)
+      // On ChromeOS the original callback will be invoked after punching a
+      // firewall hole.
+      base::BindOnce(&FirewallHoleDelegate::OpenUDPFirewallHole,
+                     firewall_hole_delegate_->GetWeakPtr(),
+                     std::move(connection_tracker), std::move(callback))
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  );
 }
 
 void DirectSocketsServiceImpl::OpenTCPServerSocket(

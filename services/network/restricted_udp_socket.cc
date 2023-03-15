@@ -53,6 +53,13 @@ void RestrictedUDPSocket::SendTo(base::span<const uint8_t> data,
                      /*callback=*/std::move(callback)));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void RestrictedUDPSocket::AttachConnectionTracker(
+    mojo::PendingRemote<mojom::SocketConnectionTracker> connection_tracker) {
+  connection_tracker_ = std::move(connection_tracker);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void RestrictedUDPSocket::OnResolveCompleteForSendTo(
     std::vector<uint8_t> data,
     SendToCallback callback,
