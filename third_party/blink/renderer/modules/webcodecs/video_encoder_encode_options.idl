@@ -6,6 +6,4 @@
 
 dictionary VideoEncoderEncodeOptions {
   boolean? keyFrame;
-  VideoEncoderEncodeOptionsForVp9 vp9;
-  VideoEncoderEncodeOptionsForAv1 av1;
 };

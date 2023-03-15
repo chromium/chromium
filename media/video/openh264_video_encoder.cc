@@ -142,7 +142,7 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
   profile_ = profile;
   if (profile != H264PROFILE_BASELINE) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedProfile,
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
                       "Unsupported profile"));
     return;
   }
@@ -150,7 +150,7 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
   if (options.bitrate.has_value() &&
       options.bitrate->mode() == Bitrate::Mode::kExternal) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
                       "Unsupported bitrate mode"));
     return;
   }
@@ -176,7 +176,7 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
 
   if (options.frame_size.height() < 16 || options.frame_size.width() < 16) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
                       "Unsupported frame size which is less than 16"));
     return;
   }
