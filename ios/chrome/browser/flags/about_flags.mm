@@ -529,6 +529,31 @@ const FeatureEntry::FeatureVariation kNewTabPageRetentionVariations[] = {
      kNewTabPageRetentionTileAblationHideMVTOnly,
      std::size(kNewTabPageRetentionTileAblationHideMVTOnly), nullptr}};
 
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierDate[] = {
+    {"date", "true"}};
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierAddress[] = {
+    {"address", "true"}};
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierPhoneNumber[] = {
+    {"phonenumber", "true"}};
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierEmail[] = {
+    {"email", "true"}};
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierAll[] = {
+    {"date", "true"},
+    {"address", "true"},
+    {"phonenumber", "true"},
+    {"email", "true"}};
+const FeatureEntry::FeatureVariation kEnableExpKitTextClassifierVariations[] = {
+    {"Enabled for all entities", kEnableExpKitTextClassifierAll,
+     std::size(kEnableExpKitTextClassifierAll), nullptr},
+    {"Enabled for date", kEnableExpKitTextClassifierDate,
+     std::size(kEnableExpKitTextClassifierDate), nullptr},
+    {"Enabled for address", kEnableExpKitTextClassifierAddress,
+     std::size(kEnableExpKitTextClassifierAddress), nullptr},
+    {"Enabled for phonenumber", kEnableExpKitTextClassifierPhoneNumber,
+     std::size(kEnableExpKitTextClassifierPhoneNumber), nullptr},
+    {"Enabled for email", kEnableExpKitTextClassifierEmail,
+     std::size(kEnableExpKitTextClassifierEmail), nullptr}};
+
 const FeatureEntry::FeatureParam kEnableExperienceKitMapsWithSrp[] = {
     {kExperienceKitMapsVariationName, kEnableExperienceKitMapsVariationSrp}};
 const FeatureEntry::FeatureVariation kEnableExperienceKitMapsVariations[] = {
@@ -1023,14 +1048,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppleCalendarExperienceKitName,
      flag_descriptions::kAppleCalendarExperienceKitDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableExpKitAppleCalendar)},
-    {"enable-expkit-calendar-text-classifier",
-     flag_descriptions::kEnableExpKitCalendarTextClassifierName,
-     flag_descriptions::kEnableExpKitCalendarTextClassifierDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableExpKitCalendarTextClassifier)},
     {"enable-expkit-text-classifier",
      flag_descriptions::kEnableExpKitTextClassifierName,
      flag_descriptions::kEnableExpKitTextClassifierDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableExpKitTextClassifier)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableExpKitTextClassifier,
+                                    kEnableExpKitTextClassifierVariations,
+                                    "ExpKitTextClassifier")},
     {"experience-kit-maps", flag_descriptions::kMapsExperienceKitName,
      flag_descriptions::kMapsExperienceKitDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kMapsExperienceKit,

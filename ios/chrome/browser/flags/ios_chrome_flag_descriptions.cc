@@ -187,12 +187,6 @@ extern const char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "
     "the phone number experience.";
 
-extern const char kEnableExpKitCalendarTextClassifierName[] =
-    "Text Classifier in Experience Kit Calendar";
-extern const char kEnableExpKitCalendarTextClassifierDescription[] =
-    "When enabled, Experience Kit Calendar will use Text Classifier library in "
-    "entity detection where possible.";
-
 extern const char kEnableExpKitTextClassifierName[] =
     "Text Classifier in Experience Kit";
 extern const char kEnableExpKitTextClassifierDescription[] =

@@ -158,11 +158,6 @@ extern const char kPhoneNumberName[];
 extern const char kPhoneNumberDescription[];
 
 // Title and description for the flag to enable text classifier entity detection
-// in experience kit calendar.
-extern const char kEnableExpKitCalendarTextClassifierName[];
-extern const char kEnableExpKitCalendarTextClassifierDescription[];
-
-// Title and description for the flag to enable text classifier entity detection
 // in experience kit for different entity types.
 extern const char kEnableExpKitTextClassifierName[];
 extern const char kEnableExpKitTextClassifierDescription[];
