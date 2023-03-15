@@ -1274,6 +1274,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="Cras_StreamType" separator=".">
   <suffix name="Default" label="Default"/>
   <suffix name="VoiceCommunication" label="WebRTC"/>
+  <suffix name="ProAudio" label="ProAudio"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.ARC"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.ARCVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>

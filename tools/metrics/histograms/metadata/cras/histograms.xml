@@ -254,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cras.FetchDelayMilliSeconds" units="ms"
-    expires_after="2023-03-26">
+    expires_after="2024-03-26">
 <!-- Name completed by histogram_suffixes
      name="Cras.ClientType" and
      name="Cras.StreamType" -->
