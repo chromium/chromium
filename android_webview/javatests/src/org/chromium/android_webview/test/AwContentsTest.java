@@ -1199,7 +1199,7 @@ public class AwContentsTest {
         }
     }
 
-    // This test verifies that Private Network Access' secure context
+    // This test verifies that Local Network Access' secure context
     // restriction (feature flag BlockInsecurePrivateNetworkRequests) does not
     // apply to Webview: insecure private network requests are allowed.
     //
@@ -1208,7 +1208,7 @@ public class AwContentsTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
     @SmallTest
-    public void testInsecurePrivateNetworkAccess() throws Throwable {
+    public void testInsecureLocalNetworkAccess() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         final AwTestContainerView testContainer =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
