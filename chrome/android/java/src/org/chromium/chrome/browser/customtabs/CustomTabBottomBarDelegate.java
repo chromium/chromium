@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
@@ -373,7 +375,9 @@ public class CustomTabBottomBarDelegate
         Tab tab = tabProvider.getTab();
         if (tab != null) addedIntent.setData(Uri.parse(tab.getUrl().getSpec()));
         try {
-            pendingIntent.send(activity, 0, addedIntent, null, null);
+            ActivityOptions options = ActivityOptions.makeBasic();
+            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+            pendingIntent.send(activity, 0, addedIntent, null, null, null, options.toBundle());
         } catch (CanceledException e) {
             Log.e(TAG, "CanceledException when sending pending intent.");
         }

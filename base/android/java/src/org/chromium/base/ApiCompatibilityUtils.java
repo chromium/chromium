@@ -34,9 +34,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
+import androidx.core.os.BuildCompat;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -303,6 +308,32 @@ public class ApiCompatibilityUtils {
             return ApisO.createLaunchDisplayIdActivityOptions(displayId);
         }
         return null;
+    }
+
+    /**
+     * Sets the mode {@link ActivityOptions#MODE_BACKGROUND_ACTIVITY_START_ALLOWED} to the
+     * given {@link ActivityOptions}. The options can be used to send {@link PendingIntent}
+     * passed to Chrome from a backgrounded app.
+     * @param options {@ActivityOptions} to set the required mode to.
+     */
+    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
+    public static void setActivityOptionsBackgroundActivityStartMode(
+            @NonNull ActivityOptions options) {
+        if (!BuildCompat.isAtLeastU()) return;
+
+        // options.setPendingIntentBackgroundActivityStartMode(
+        //     ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
+        // TODO(crbug.com/1423489): Replace the reflection with the normal API.
+        try {
+            Method method = ActivityOptions.class.getMethod(
+                    "setPendingIntentBackgroundActivityStartMode", int.class);
+            Field field = ActivityOptions.class.getField("MODE_BACKGROUND_ACTIVITY_START_ALLOWED");
+            int mode = field.getInt(null);
+            method.invoke(options, mode);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchFieldException
+                | NoSuchMethodException | RuntimeException e) {
+            assert false : "PendingIntent from background activity may fail to run.";
+        }
     }
 
     // Access this via ContextUtils.getProcessName().

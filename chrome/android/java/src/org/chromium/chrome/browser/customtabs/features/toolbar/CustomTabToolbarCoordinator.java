@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.cc.input.BrowserControlsState;
@@ -168,8 +170,10 @@ public class CustomTabToolbarCoordinator {
         addedIntent.setData(Uri.parse(url.getSpec()));
         addedIntent.putExtra(Intent.EXTRA_SUBJECT, title);
         try {
-            params.getPendingIntent().send(
-                    mAppContext, 0, addedIntent, mCustomButtonClickOnFinished, null);
+            ActivityOptions options = ActivityOptions.makeBasic();
+            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+            params.getPendingIntent().send(mAppContext, 0, addedIntent,
+                    mCustomButtonClickOnFinished, null, null, options.toBundle());
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, "CanceledException while sending pending intent in custom tab");
         }

@@ -9,6 +9,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_PO
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
@@ -36,6 +37,7 @@ import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -642,8 +644,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             // in these cases prevents the Intent from firing correctly.
             String menuTitle = mMenuEntries.get(menuIndex).first;
             PendingIntent pendingIntent = mMenuEntries.get(menuIndex).second;
-            pendingIntent.send(
-                    activity, 0, isMediaViewer() ? null : addedIntent, mOnFinished, null);
+            ActivityOptions options = ActivityOptions.makeBasic();
+            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+            pendingIntent.send(activity, 0, isMediaViewer() ? null : addedIntent, mOnFinished, null,
+                    null, options.toBundle());
             if (shouldEnableEmbeddedMediaExperience()
                     && TextUtils.equals(
                             menuTitle, activity.getString(R.string.download_manager_open_with))) {

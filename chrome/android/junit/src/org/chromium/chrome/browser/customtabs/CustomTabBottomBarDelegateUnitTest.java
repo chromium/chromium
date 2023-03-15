@@ -130,7 +130,8 @@ public class CustomTabBottomBarDelegateUnitTest {
         mBottomBarDelegate.onSwipeStarted(
                 ScrollDirection.UP, MotionEvent.obtain(0, 10, MotionEvent.ACTION_MOVE, 0f, 10f, 0));
         // Verify the intent is sent.
-        verify(mSwipeUpPendingIntent).send(eq(mActivity), anyInt(), any(), any(), any());
+        verify(mSwipeUpPendingIntent)
+                .send(eq(mActivity), anyInt(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -142,7 +143,7 @@ public class CustomTabBottomBarDelegateUnitTest {
         mBottomBarDelegate.onSwipeStarted(
                 ScrollDirection.UP, MotionEvent.obtain(0, 10, MotionEvent.ACTION_MOVE, 0f, 10f, 0));
         // Verify the intent is sent.
-        verify(pendingIntent).send(eq(mActivity), anyInt(), any(), any(), any());
+        verify(pendingIntent).send(eq(mActivity), anyInt(), any(), any(), any(), any(), any());
     }
 
     @Test
