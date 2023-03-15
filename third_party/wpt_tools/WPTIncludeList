@@ -289,7 +289,7 @@
 ./tools/wptrunner/wptrunner/executors/executorservodriver.py
 ./tools/wptrunner/wptrunner/executors/process.py
 ./tools/wptrunner/wptrunner/executors/executorsafari.py
-./tools/wptrunner/wptrunner/print_reftest_runner.html
+./tools/wptrunner/wptrunner/print_pdf_runner.html
 ./tools/wptrunner/wptrunner/metadata.py
 ./tools/wptrunner/wptrunner/wptlogging.py
 ./tools/wptrunner/wptrunner/vcs.py
