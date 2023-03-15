@@ -12,7 +12,7 @@ import {DialogType, isModal} from '../../common/js/dialog_type.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
-import {isAllEntriesOnTrashEnabledVolumes, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
+import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {NudgeType} from '../../containers/nudge_container.js';
@@ -1232,12 +1232,12 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
       dialogDoneCallback();
     };
 
-    // Files that are deleted from locations that are trash enabled should
-    // instead show copy indicating the files will be permanently deleted. For
-    // all other filesystem the permanent deletion can't necessarily be verified
-    // (e.g. a copy may be moved to the underlying filesystems version of
-    // trash).
-    if (isAllEntriesOnTrashEnabledVolumes(entries, fileManager.volumeManager)) {
+    // Files that are deleted from locations that are trash enabled (except
+    // Drive) should instead show copy indicating the files will be permanently
+    // deleted. For all other filesystem the permanent deletion can't
+    // necessarily be verified (e.g. a copy may be moved to the underlying
+    // filesystems version of trash).
+    if (deleteIsForever(entries, fileManager.volumeManager)) {
       const title = entries.length === 1 ?
           strf('CONFIRM_PERMANENTLY_DELETE_ONE_TITLE') :
           strf('CONFIRM_PERMANENTLY_DELETE_SOME_TITLE');

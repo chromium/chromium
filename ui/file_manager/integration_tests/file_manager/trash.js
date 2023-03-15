@@ -35,8 +35,9 @@ async function clickDeleteButton(appId) {
 /**
  * Confirm the deletion happens and assert the dialog has the correct text.
  * @param {string} appId
+ * @param {string} okText expected OK text
  */
-async function confirmPermanentDeletion(appId) {
+async function confirmPermanentDeletion(appId, okText) {
   // Check: the delete confirm dialog should appear.
   await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
 
@@ -48,7 +49,7 @@ async function confirmPermanentDeletion(appId) {
   // Click the delete confirm dialog 'Delete' button.
   const dialogDeleteButton =
       await remoteCall.waitAndClickElement(appId, '.cr-dialog-ok');
-  chrome.test.assertEq('Delete forever', dialogDeleteButton.text);
+  chrome.test.assertEq(okText, dialogDeleteButton.text);
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(
@@ -61,7 +62,7 @@ async function confirmPermanentDeletion(appId) {
  */
 async function clickDeleteButtonAndConfirmDeletion(appId) {
   await clickDeleteButton(appId);
-  await confirmPermanentDeletion(appId);
+  await confirmPermanentDeletion(appId, 'Delete forever');
 }
 
 /**
@@ -172,7 +173,7 @@ testcase.trashPermanentlyDelete = async () => {
       'Pressing Shift+Delete failed.');
 
   // Confirm the permanent deletion of the "hello.txt" file.
-  await confirmPermanentDeletion(appId);
+  await confirmPermanentDeletion(appId, 'Delete forever');
 };
 
 /**
