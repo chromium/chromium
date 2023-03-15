@@ -20,10 +20,8 @@
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
 #include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
-#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -33,7 +31,6 @@
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
-#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -49,7 +46,6 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -81,42 +77,6 @@ void MoveCopyRequests(CopyOutputRequestQueue* from,
 viz::BeginFrameArgs NewerBeginFrameArgs(const viz::BeginFrameArgs& args1,
                                         const viz::BeginFrameArgs& args2) {
   return args1.frame_id.IsNextInSequenceTo(args2.frame_id) ? args1 : args2;
-}
-
-enum WebViewDrawAndSubmissionType : uint8_t {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  kNoInvalidateNoSubmissionSameParams = 0,
-  kNoInvalidateNoSubmissionDifferentParams = 1,
-  kNoInvalidateSubmittedFrameSameParams = 2,
-  kNoInvalidateSubmittedFrameDifferentParams = 3,
-  kInvalidateNoSubmissionSameParams = 4,
-  kInvalidateNoSubmissionDifferentParams = 5,
-  kInvalidateSubmittedFrameSameParams = 6,
-  kInvalidateSubmittedFrameDifferentParams = 7,
-  kMaxValue = kInvalidateSubmittedFrameDifferentParams
-};
-
-WebViewDrawAndSubmissionType GetDrawAndSubmissionType(bool invalidated,
-                                                      bool submitted_frame,
-                                                      bool params_changed) {
-  if (invalidated) {
-    if (submitted_frame) {
-      return params_changed ? kInvalidateSubmittedFrameDifferentParams
-                            : kInvalidateSubmittedFrameSameParams;
-    } else {
-      return params_changed ? kInvalidateNoSubmissionDifferentParams
-                            : kInvalidateNoSubmissionSameParams;
-    }
-  } else {
-    if (submitted_frame) {
-      return params_changed ? kNoInvalidateSubmittedFrameDifferentParams
-                            : kNoInvalidateSubmittedFrameSameParams;
-    } else {
-      return params_changed ? kNoInvalidateNoSubmissionDifferentParams
-                            : kNoInvalidateNoSubmissionSameParams;
-    }
-  }
 }
 
 }  // namespace
@@ -192,9 +152,9 @@ HardwareRendererViz::OnViz::OnViz(
     const scoped_refptr<RootFrameSink>& root_frame_sink)
     : without_gpu_(root_frame_sink),
       frame_sink_id_(without_gpu_->root_frame_sink_id()),
-      viz_frame_submission_(::features::IsUsingVizFrameSubmissionForWebView()),
+      viz_frame_submission_(features::IsUsingVizFrameSubmissionForWebView()),
       use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
-          ::features::kWebViewNewInvalidateHeuristic)) {
+          features::kWebViewNewInvalidateHeuristic)) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
@@ -470,27 +430,11 @@ ChildFrameQueue HardwareRendererViz::WaitAndPruneFrameQueue(
   return pruned_frames;
 }
 
-bool HardwareRendererDrawParams::operator==(
-    const HardwareRendererDrawParams& other) const {
-  return clip_left == other.clip_left && clip_top == other.clip_top &&
-         clip_right == other.clip_right && clip_bottom == other.clip_bottom &&
-         width == other.width && height == other.height &&
-         color_space == other.color_space &&
-         !memcmp(transform, other.transform, sizeof(transform));
-}
-
-bool HardwareRendererDrawParams::operator!=(
-    const HardwareRendererDrawParams& other) const {
-  return !(*this == other);
-}
-
 HardwareRendererViz::HardwareRendererViz(
     RenderThreadManager* state,
     RootFrameSinkGetter root_frame_sink_getter,
     AwVulkanContextProvider* context_provider)
-    : output_surface_provider_(context_provider),
-      render_thread_manager_(state),
-      last_egl_context_(eglGetCurrentContext()) {
+    : HardwareRenderer(state), output_surface_provider_(context_provider) {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
@@ -514,17 +458,6 @@ HardwareRendererViz::~HardwareRendererViz() {
   output_surface_provider_.shared_context_state()->MakeCurrent(nullptr);
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::DoNothingWithBoundArgs(std::move(on_viz_)));
-
-  // Reset draw constraints.
-  if (child_frame_) {
-    render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
-        ParentCompositorDrawConstraints(), child_frame_->frame_sink_id,
-        viz::FrameTimingDetailsMap(), 0u);
-  }
-  for (auto& child_frame : child_frame_queue_) {
-    child_frame->WaitOnFutureIfNeeded();
-    ReturnChildFrame(std::move(child_frame));
-  }
 }
 
 bool HardwareRendererViz::IsUsingVulkan() const {
@@ -675,114 +608,6 @@ void HardwareRendererViz::AbandonContext() {
   output_surface_provider_.MarkExpectContextLoss();
   output_surface_provider_.shared_context_state()->MarkContextLost(
       gpu::error::ContextLostReason::kUnknown);
-}
-
-void HardwareRendererViz::CommitFrame() {
-  TRACE_EVENT0("android_webview", "CommitFrame");
-  scroll_offset_ = render_thread_manager_->GetScrollOffsetOnRT();
-  ChildFrameQueue child_frames = render_thread_manager_->PassFramesOnRT();
-  // |child_frames| should have at most one non-empty frame, and one current
-  // and unwaited frame, in that order.
-  DCHECK_LE(child_frames.size(), 2u);
-  if (child_frames.empty()) {
-    return;
-  }
-  // Insert all except last, ie current frame.
-  while (child_frames.size() > 1u) {
-    child_frame_queue_.emplace_back(std::move(child_frames.front()));
-    child_frames.pop_front();
-  }
-  for (auto& pruned_frame : WaitAndPruneFrameQueue(&child_frame_queue_)) {
-    ReturnChildFrame(std::move(pruned_frame));
-  }
-  DCHECK_LE(child_frame_queue_.size(), 1u);
-  child_frame_queue_.emplace_back(std::move(child_frames.front()));
-}
-
-void HardwareRendererViz::ReportDrawMetric(
-    const HardwareRendererDrawParams& params) {
-  const bool params_changed = last_draw_params_ == params;
-
-  auto type = GetDrawAndSubmissionType(
-      did_invalidate_, did_submit_compositor_frame_, params_changed);
-  UMA_HISTOGRAM_ENUMERATION("Android.WebView.Gfx.HardwareDrawType", type);
-
-  last_draw_params_ = params;
-  did_invalidate_ = false;
-  did_submit_compositor_frame_ = false;
-}
-
-void HardwareRendererViz::Draw(const HardwareRendererDrawParams& params,
-                               const OverlaysParams& overlays_params) {
-  TRACE_EVENT0("android_webview", "HardwareRendererViz::Draw");
-
-  for (auto& pruned_frame : WaitAndPruneFrameQueue(&child_frame_queue_)) {
-    ReturnChildFrame(std::move(pruned_frame));
-  }
-  DCHECK_LE(child_frame_queue_.size(), 1u);
-  if (!child_frame_queue_.empty()) {
-    child_frame_ = std::move(child_frame_queue_.front());
-    child_frame_queue_.clear();
-
-    did_invalidate_ = child_frame_->did_invalidate;
-    did_submit_compositor_frame_ = !!child_frame_->frame;
-  }
-  // 0u is not a valid frame_sink_id, but can happen when renderer did not
-  // produce a frame. Keep the existing id in that case.
-  if (child_frame_ && child_frame_->layer_tree_frame_sink_id > 0u) {
-    last_committed_layer_tree_frame_sink_id_ =
-        child_frame_->layer_tree_frame_sink_id;
-  }
-
-  ReportDrawMetric(params);
-
-  if (last_egl_context_) {
-    // We need to watch if the current Android context has changed and enforce a
-    // clean-up in the compositor.
-    EGLContext current_context = eglGetCurrentContext();
-    DCHECK(current_context) << "Draw called without EGLContext";
-
-    // TODO(boliu): Handle context loss.
-    if (last_egl_context_ != current_context) {
-      DLOG(WARNING) << "EGLContextChanged";
-    }
-  }
-
-  DrawAndSwap(params, overlays_params);
-}
-
-void HardwareRendererViz::ReturnChildFrame(
-    std::unique_ptr<ChildFrame> child_frame) {
-  if (!child_frame || !child_frame->frame) {
-    return;
-  }
-
-  std::vector<viz::ReturnedResource> resources_to_return =
-      viz::TransferableResource::ReturnResources(
-          child_frame->frame->resource_list);
-
-  // The child frame's frame_sink_id is not necessarily same as
-  // |child_frame_sink_id_|.
-  ReturnResourcesToCompositor(std::move(resources_to_return),
-                              child_frame->frame_sink_id,
-                              child_frame->layer_tree_frame_sink_id);
-}
-
-void HardwareRendererViz::ReturnResourcesToCompositor(
-    std::vector<viz::ReturnedResource> resources,
-    const viz::FrameSinkId& frame_sink_id,
-    uint32_t layer_tree_frame_sink_id) {
-  if (!base::FeatureList::IsEnabled(features::kWebViewCheckReturnResources) &&
-      layer_tree_frame_sink_id != last_committed_layer_tree_frame_sink_id_) {
-    return;
-  }
-  render_thread_manager_->InsertReturnedResourcesOnRT(
-      std::move(resources), frame_sink_id, layer_tree_frame_sink_id);
-}
-
-void HardwareRendererViz::SetChildFrameForTesting(
-    std::unique_ptr<ChildFrame> child_frame) {
-  child_frame_ = std::move(child_frame);
 }
 
 }  // namespace android_webview
