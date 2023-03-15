@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/removed_results_ranker.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
@@ -28,6 +29,10 @@ RemovedResultsRanker::RemovedResultsRanker(Profile* profile)
           base::PassKey<RemovedResultsRanker>())) {
   DCHECK(profile_);
   DCHECK(proto_);
+
+  proto_->RegisterOnRead(
+      base::BindOnce(&RemovedResultsRanker::OnRemovedResultsProtoReady,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 RemovedResultsRanker::~RemovedResultsRanker() = default;
@@ -70,6 +75,13 @@ void RemovedResultsRanker::Remove(ChromeSearchResult* result) {
     ((*proto_)->mutable_removed_ids())->insert({result->id(), false});
     proto_->StartWrite();
   }
+}
+
+void RemovedResultsRanker::OnRemovedResultsProtoReady(
+    app_list::ReadStatus read_status) {
+  // Record `proto_` size in KB.
+  base::UmaHistogramMemoryKB("Apps.AppList.RemovedResultsProto.SizeInKB",
+                             (*proto_)->ByteSizeLong() / 1000);
 }
 
 ash::FileSuggestKeyedService*

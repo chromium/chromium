@@ -837,6 +837,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.RemovedResultsProto.SizeInKB" units="KB"
+    expires_after="M118">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Record the size of the removed results proto in KB. Emitted when the proto
+    initialization completes.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.Scoring.ScoreAboveBestMatchThreshold{Type}"
     units="BooleanHit" expires_after="2023-06-25">
   <owner>wrong@chromium.org</owner>

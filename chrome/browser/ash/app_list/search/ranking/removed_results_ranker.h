@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
@@ -41,6 +42,10 @@ class RemovedResultsRanker : public Ranker {
  private:
   friend class RemovedResultsRankerTest;
 
+  // Called when `proto_` finishes initialization. Note: `proto_` is initialized
+  // asyncly.
+  void OnRemovedResultsProtoReady(app_list::ReadStatus read_status);
+
   ash::FileSuggestKeyedService* GetFileSuggestKeyedService();
 
   // Whether the ranker has finished reading from disk.
@@ -54,6 +59,8 @@ class RemovedResultsRanker : public Ranker {
   // TODO(https://crbug.com/1368833): after this issue gets fixed, the ranker
   // should own a proto that contains only non-file result ids.
   PersistentProto<RemovedResultsProto>* const proto_;
+
+  base::WeakPtrFactory<RemovedResultsRanker> weak_ptr_factory_{this};
 };
 
 }  // namespace app_list
