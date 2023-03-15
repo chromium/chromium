@@ -25,6 +25,8 @@ class VideoFrame;
 MEDIA_EXPORT uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
                                                    uint32_t framerate);
 
+MEDIA_EXPORT int GetNumberOfThreadsForSoftwareEncoding(gfx::Size frame_size);
+
 // Encoded video frame, its data and metadata.
 struct MEDIA_EXPORT VideoEncoderOutput {
   VideoEncoderOutput();

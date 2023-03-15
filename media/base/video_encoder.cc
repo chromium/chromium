@@ -5,7 +5,9 @@
 #include "media/base/video_encoder.h"
 
 #include "base/cxx17_backports.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
+#include "base/system/sys_info.h"
 #include "media/base/video_frame.h"
 
 namespace media {
@@ -25,6 +27,28 @@ uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
   result *= base::clamp(frame_size.GetArea(), 1, kMaxArea);
   result /= kHDArea * 30u;  // HD resolution, 30 fps
   return base::clamp(result.RawValue(), kMinBitrate, kMaxBitrate);
+}
+
+int GetNumberOfThreadsForSoftwareEncoding(gfx::Size frame_size) {
+  int area = frame_size.GetCheckedArea().ValueOrDefault(1);
+  // Default to 1 thread for less than VGA.
+  int desired_threads = 1;
+
+  if (area >= 3840 * 2160) {
+    desired_threads = 16;
+  } else if (area >= 2560 * 1080) {
+    desired_threads = 8;
+  } else if (area >= 1280 * 720) {
+    desired_threads = 4;
+  } else if (area >= 640 * 480) {
+    desired_threads = 2;
+  }
+
+  // Clamp to the number of available logical processors/cores.
+  desired_threads =
+      std::min(desired_threads, base::SysInfo::NumberOfProcessors());
+
+  return desired_threads;
 }
 
 VideoEncoderOutput::VideoEncoderOutput() = default;

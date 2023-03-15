@@ -24,14 +24,14 @@ namespace {
 void SetUpOpenH264Params(const VideoEncoder::Options& options,
                          const VideoColorSpace& itu_cs,
                          SEncParamExt* params) {
+  int threads = GetNumberOfThreadsForSoftwareEncoding(options.frame_size);
   params->bEnableFrameSkip = false;
   params->iPaddingFlag = 0;
   params->iComplexityMode = MEDIUM_COMPLEXITY;
   params->iUsageType = CAMERA_VIDEO_REAL_TIME;
   params->bEnableDenoise = false;
   params->eSpsPpsIdStrategy = SPS_LISTING;
-  // Set to 1 due to https://crbug.com/583348
-  params->iMultipleThreadIdc = 1;
+  params->iMultipleThreadIdc = threads;
   if (options.framerate.has_value())
     params->fMaxFrameRate = options.framerate.value();
   params->iPicHeight = options.frame_size.height();
@@ -69,38 +69,41 @@ void SetUpOpenH264Params(const VideoEncoder::Options& options,
 
   params->iTemporalLayerNum = num_temporal_layers;
   params->iSpatialLayerNum = 1;
-  params->sSpatialLayers[0].fFrameRate = params->fMaxFrameRate;
-  params->sSpatialLayers[0].iMaxSpatialBitrate = params->iTargetBitrate;
-  params->sSpatialLayers[0].iSpatialBitrate = params->iTargetBitrate;
-  params->sSpatialLayers[0].iVideoHeight = params->iPicHeight;
-  params->sSpatialLayers[0].iVideoWidth = params->iPicWidth;
-  params->sSpatialLayers[0].sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
+  auto& layer = params->sSpatialLayers[0];
+  layer.fFrameRate = params->fMaxFrameRate;
+  layer.iMaxSpatialBitrate = params->iTargetBitrate;
+  layer.iSpatialBitrate = params->iTargetBitrate;
+  layer.iVideoHeight = params->iPicHeight;
+  layer.iVideoWidth = params->iPicWidth;
+  if (threads > 1) {
+    layer.sSliceArgument.uiSliceMode = SM_FIXEDSLCNUM_SLICE;
+    layer.sSliceArgument.uiSliceNum = threads;
+  } else {
+    layer.sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
+  }
 
   if (!itu_cs.IsSpecified())
     return;
 
-  params->sSpatialLayers[0].bVideoSignalTypePresent = true;
-  params->sSpatialLayers[0].bColorDescriptionPresent = true;
+  layer.bVideoSignalTypePresent = true;
+  layer.bColorDescriptionPresent = true;
 
   if (itu_cs.primaries != VideoColorSpace::PrimaryID::INVALID &&
       itu_cs.primaries != VideoColorSpace::PrimaryID::UNSPECIFIED) {
-    params->sSpatialLayers[0].uiColorPrimaries =
-        static_cast<unsigned char>(itu_cs.primaries);
+    layer.uiColorPrimaries = static_cast<unsigned char>(itu_cs.primaries);
   }
   if (itu_cs.transfer != VideoColorSpace::TransferID::INVALID &&
       itu_cs.transfer != VideoColorSpace::TransferID::UNSPECIFIED) {
-    params->sSpatialLayers[0].uiTransferCharacteristics =
+    layer.uiTransferCharacteristics =
         static_cast<unsigned char>(itu_cs.transfer);
   }
   if (itu_cs.matrix != VideoColorSpace::MatrixID::INVALID &&
       itu_cs.matrix != VideoColorSpace::MatrixID::UNSPECIFIED) {
-    params->sSpatialLayers[0].uiColorMatrix =
-        static_cast<unsigned char>(itu_cs.matrix);
+    layer.uiColorMatrix = static_cast<unsigned char>(itu_cs.matrix);
   }
   if (itu_cs.range == gfx::ColorSpace::RangeID::FULL ||
       itu_cs.range == gfx::ColorSpace::RangeID::LIMITED) {
-    params->sSpatialLayers[0].bFullRange =
-        itu_cs.range == gfx::ColorSpace::RangeID::FULL;
+    layer.bFullRange = itu_cs.range == gfx::ColorSpace::RangeID::FULL;
   }
 }
 
