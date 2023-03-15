@@ -37,10 +37,12 @@ const char kFeaturePolicyBlocked[] =
 // returns false to indicate the call should be allowed.
 bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
                                ExecutionContext* context,
-                               ExceptionState& exception_state) {
+                               ExceptionState* exception_state) {
   if (!context) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kContextGone);
+    if (exception_state) {
+      exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                         kContextGone);
+    }
     return true;
   }
 
@@ -52,18 +54,25 @@ bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
       window
           ? window->GetFrame()->Top()->GetSecurityContext()->GetSecurityOrigin()
           : context->GetSecurityOrigin();
-
   if (security_origin->IsOpaque()) {
-    exception_state.ThrowSecurityError(
-        "Access to the WebHID API is denied from contexts where the top-level "
-        "document has an opaque origin.");
-  } else if (!context->IsFeatureEnabled(
-                 mojom::blink::PermissionsPolicyFeature::kHid,
-                 ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+    if (exception_state) {
+      exception_state->ThrowSecurityError(
+          "Access to the WebHID API is denied from contexts where the "
+          "top-level "
+          "document has an opaque origin.");
+    }
+    return true;
   }
 
-  return exception_state.HadException();
+  if (!context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
+                                 ReportOptions::kReportOnFailure)) {
+    if (exception_state) {
+      exception_state->ThrowSecurityError(kFeaturePolicyBlocked);
+    }
+    return true;
+  }
+
+  return false;
 }
 
 void RejectWithTypeError(const String& message,
@@ -124,10 +133,8 @@ void HID::AddedEventListener(const AtomicString& event_type,
     return;
   }
 
-  auto* context = GetExecutionContext();
-  if (!context ||
-      !context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
-                                 ReportOptions::kDoNotReport)) {
+  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
+                                GetExecutionContext(), nullptr)) {
     return;
   }
 
@@ -163,7 +170,7 @@ void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
 ScriptPromise HID::getDevices(ScriptState* script_state,
                               ExceptionState& exception_state) {
   if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
-                                GetExecutionContext(), exception_state)) {
+                                GetExecutionContext(), &exception_state)) {
     return ScriptPromise();
   }
 
@@ -190,7 +197,7 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
   }
 
   if (ShouldBlockHidServiceCall(window, GetExecutionContext(),
-                                exception_state)) {
+                                &exception_state)) {
     return ScriptPromise();
   }
 

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/test-only-api.js"></script>
+<script src="/webhid/resources/common.js"></script>
+<script src="/webhid/resources/automation.js"></script>
+<script>
+'use strict';
+
+const kTestVendorId = 0x1234;
+const kTestProductId = 0xabcd;
+
+async function sleep(timeout) {
+  return new Promise(resolve => {
+    step_timeout(() => {
+      resolve();
+    }, timeout);
+  });
+}
+
+hid_test(async (t, fake) => {
+  let eventWatcher = new EventWatcher(t, navigator.hid, 'connect');
+
+  // This isn't necessary as the expected scenario shouldn't send any mojo
+  // request. However, in order to capture a bug that doesn't reject adding
+  // event listener, time delay here is to allow mojo request to be intercepted
+  // after adding connect event listener.
+  await sleep(100);
+
+  // If device connect event fires, EventWatcher will assert for an unexpected
+  // event.
+  fake.addDevice(fake.makeDevice(kTestVendorId, kTestProductId));
+  // Time delay here is to allow event to be fired if any.
+  await sleep(100);
+}, 'Connect event is not fired when hid is disallowed.');
+</script>
+</body>
