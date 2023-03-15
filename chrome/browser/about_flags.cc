@@ -1534,6 +1534,11 @@ const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconFavicons[] = {
     {"OmniboxSquareSuggestIconIcons", "true"}};
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAnswers[] = {
     {"OmniboxSquareSuggestIconAnswers", "true"}};
+const FeatureEntry::FeatureParam
+    kOmniboxSquareSuggestionIconFaviconsAndAnswers[] = {
+        {"OmniboxSquareSuggestIconIcons", "true"},
+        {"OmniboxSquareSuggestIconAnswers", "true"},
+};
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconEntities[] = {
     {"OmniboxSquareSuggestIconEntities", "true"}};
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAll[] = {
@@ -1554,6 +1559,8 @@ const FeatureEntry::FeatureVariation kOmniboxSquareSuggestionIconVariations[] =
          std::size(kOmniboxSquareSuggestionIconFavicons), nullptr},
         {"Answers", kOmniboxSquareSuggestionIconAnswers,
          std::size(kOmniboxSquareSuggestionIconAnswers), nullptr},
+        {"Favicons and answers", kOmniboxSquareSuggestionIconFaviconsAndAnswers,
+         std::size(kOmniboxSquareSuggestionIconFaviconsAndAnswers), nullptr},
         {"Entities", kOmniboxSquareSuggestionIconEntities,
          std::size(kOmniboxSquareSuggestionIconEntities), nullptr},
         {"All", kOmniboxSquareSuggestionIconAll,
