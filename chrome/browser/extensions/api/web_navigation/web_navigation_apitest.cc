@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
@@ -206,6 +208,10 @@ class WebNavigationApiTest : public ExtensionApiTest {
  public:
   explicit WebNavigationApiTest(ContextType context_type = ContextType::kNone)
       : ExtensionApiTest(context_type) {
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&HandleTestRequest));
   }
@@ -231,12 +237,18 @@ class WebNavigationApiTest : public ExtensionApiTest {
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
+
+  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
  public:
   WebNavigationApiBackForwardCacheTest() {
-    feature_list_.InitWithFeaturesAndParameters(
+    feature_list()->Reset();
+    feature_list()->InitWithFeaturesAndParameters(
         content::GetBasicBackForwardCacheFeatureForTesting(
             {{features::kBackForwardCache,
               {{"content_injection_supported", "true"},
@@ -244,9 +256,6 @@ class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~WebNavigationApiBackForwardCacheTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 using ContextType = extensions::ExtensionBrowserTest::ContextType;
@@ -276,14 +285,12 @@ class WebNavigationApiPrerenderTestWithContextType
  public:
   WebNavigationApiPrerenderTestWithContextType()
       : WebNavigationApiTest(GetParam()) {}
+
   ~WebNavigationApiPrerenderTestWithContextType() override = default;
   WebNavigationApiPrerenderTestWithContextType(
       const WebNavigationApiPrerenderTestWithContextType&) = delete;
   WebNavigationApiPrerenderTestWithContextType& operator=(
       const WebNavigationApiPrerenderTestWithContextType&) = delete;
-
- private:
-  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
@@ -717,17 +724,18 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, MAYBE_Xslt) {
 class WebNavigationApiFencedFrameTest : public WebNavigationApiTest {
  protected:
   WebNavigationApiFencedFrameTest() {
-    feature_list_.InitWithFeaturesAndParameters(
+    feature_list()->Reset();
+    feature_list()->InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kFencedFrames, {}},
                               {features::kPrivacySandboxAdsAPIsOverride, {}}},
-        /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
+        /*disabled_features=*/{features::kSpareRendererForSitePerProcess,
+                               // TODO(crbug.com/1394910): Use HTTPS URLs in
+                               // tests to avoid having to disable this feature.
+                               features::kHttpsUpgrades});
     // Fenced frames are only allowed in a secure context.
     UseHttpsTestServer();
   }
   ~WebNavigationApiFencedFrameTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiFencedFrameTest, Load) {
