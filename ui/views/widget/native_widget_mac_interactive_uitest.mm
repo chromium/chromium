@@ -18,6 +18,7 @@
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 namespace views::test {
 
@@ -267,6 +268,19 @@ TEST_F(NativeWidgetMacInteractiveUITest,
   params.workspace = kDummyWindowRestorationData;
   widget->Init(std::move(params));
 
+  // Wait for the window to minimize. Ultimately we're going to check the
+  // NSWindow minimization state, so it would make sense to wait on the
+  // notification as we do below. However,
+  // widget->GetNativeWindow().GetNativeNSWindow() returns nil before the call
+  // to widget->Init(), and we'd need to set up the notification observer at
+  // that point. So instead, wait on the Widget state change.
+  {
+    views::test::PropertyWaiter minimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        true);
+    EXPECT_TRUE(minimize_waiter.Wait());
+  }
+
   NSWindow* window = widget->GetNativeWindow().GetNativeNSWindow();
   EXPECT_TRUE([window isMiniaturized]);
 
@@ -281,7 +295,12 @@ TEST_F(NativeWidgetMacInteractiveUITest,
 
   // Activate the window from the dock (i.e.
   // SetVisibilityState(WindowVisibilityState::kShowAndActivateWindow)).
+  base::scoped_nsobject<WindowedNSNotificationObserver>
+      deminiaturizationObserver([[WindowedNSNotificationObserver alloc]
+          initForNotification:NSWindowDidDeminiaturizeNotification
+                       object:window]);
   widget->Activate();
+  [deminiaturizationObserver wait];
   EXPECT_FALSE([window isMiniaturized]);
 
   widget->CloseNow();
