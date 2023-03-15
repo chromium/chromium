@@ -68,8 +68,9 @@ class ClipboardImageWriter final : public ClipboardWriter {
         ColorBehavior::Tag());
     sk_sp<SkImage> image = nullptr;
     // `decoder` is nullptr if `png_data` doesn't begin with the PNG signature.
-    if (decoder)
+    if (decoder) {
       image = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
+    }
 
     PostCrossThreadTask(
         *task_runner, FROM_HERE,
@@ -83,8 +84,9 @@ class ClipboardImageWriter final : public ClipboardWriter {
       promise_->RejectFromReadOrDecodeFailure();
       return;
     }
-    if (!promise_->GetLocalFrame())
+    if (!promise_->GetLocalFrame()) {
       return;
+    }
     SkBitmap bitmap;
     image->asLegacyBitmap(&bitmap);
     system_clipboard()->WriteImage(std::move(bitmap));
@@ -131,8 +133,9 @@ class ClipboardTextWriter final : public ClipboardWriter {
   }
   void Write(const String& text) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!promise_->GetLocalFrame())
+    if (!promise_->GetLocalFrame()) {
       return;
+    }
     system_clipboard()->WritePlainText(text);
 
     promise_->CompleteWriteRepresentation();
@@ -155,28 +158,32 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
 
     LocalFrame* local_frame = promise_->GetLocalFrame();
     auto* execution_context = promise_->GetExecutionContext();
-    if (!local_frame || !execution_context)
+    if (!local_frame || !execution_context) {
       return;
+    }
     execution_context->CountUse(WebFeature::kHtmlClipboardApiWrite);
 
-    // Sanitizing on the main thread because HTML DOM nodes can only be used
-    // on the main thread.
     String html_string =
         String::FromUTF8(reinterpret_cast<const LChar*>(html_data->Data()),
                          html_data->ByteLength());
     KURL url;
-    unsigned fragment_start = 0;
-    unsigned fragment_end = html_string.length();
+    if (RuntimeEnabledFeatures::ClipboardUnsanitizedContentEnabled()) {
+      Write(html_string, url);
+      return;
+    }
+    // Sanitizing on the main thread because HTML DOM nodes can only be used on
+    // the main thread.
     Document* document = local_frame->GetDocument();
     String sanitized_html = CreateSanitizedMarkupWithContext(
-        *document, html_string, fragment_start, fragment_end, url, kIncludeNode,
+        *document, html_string, /*fragment_start=*/0,
+        /*fragment_end=*/html_string.length(), url, kIncludeNode,
         kResolveAllURLs);
     Write(sanitized_html, url);
   }
 
-  void Write(const String& sanitized_html, KURL url) {
+  void Write(const String& serialized_html, const KURL& url) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    system_clipboard()->WriteHTML(sanitized_html, url);
+    system_clipboard()->WriteHTML(serialized_html, url);
     promise_->CompleteWriteRepresentation();
   }
 };
@@ -206,8 +213,9 @@ class ClipboardSvgWriter final : public ClipboardWriter {
     unsigned fragment_end = svg_string.length();
 
     LocalFrame* local_frame = promise_->GetLocalFrame();
-    if (!local_frame)
+    if (!local_frame) {
       return;
+    }
     Document* document = local_frame->GetDocument();
     String sanitized_svg = CreateSanitizedMarkupWithContext(
         *document, svg_string, fragment_start, fragment_end, url, kIncludeNode,
@@ -241,8 +249,9 @@ class ClipboardCustomFormatWriter final : public ClipboardWriter {
 
   void Write(DOMArrayBuffer* custom_format_data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!promise_->GetLocalFrame())
+    if (!promise_->GetLocalFrame()) {
       return;
+    }
     if (custom_format_data->ByteLength() >=
         mojom::blink::ClipboardHost::kMaxDataSize) {
       promise_->RejectFromReadOrDecodeFailure();
@@ -283,11 +292,13 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
                                                       promise);
   }
 
-  if (mime_type == kMimeTypeTextPlain)
+  if (mime_type == kMimeTypeTextPlain) {
     return MakeGarbageCollected<ClipboardTextWriter>(system_clipboard, promise);
+  }
 
-  if (mime_type == kMimeTypeTextHTML)
+  if (mime_type == kMimeTypeTextHTML) {
     return MakeGarbageCollected<ClipboardHtmlWriter>(system_clipboard, promise);
+  }
 
   if (mime_type == kMimeTypeImageSvg &&
       RuntimeEnabledFeatures::ClipboardSvgEnabled()) {
@@ -318,8 +329,9 @@ bool ClipboardWriter::IsValidType(const String& type) {
       !Clipboard::ParseWebCustomFormat(type).empty()) {
     return type.length() < mojom::blink::ClipboardHost::kMaxFormatSize;
   }
-  if (type == kMimeTypeImageSvg)
+  if (type == kMimeTypeImageSvg) {
     return RuntimeEnabledFeatures::ClipboardSvgEnabled();
+  }
 
   // TODO(https://crbug.com/1029857): Add support for other types.
   return type == kMimeTypeImagePng || type == kMimeTypeTextPlain ||

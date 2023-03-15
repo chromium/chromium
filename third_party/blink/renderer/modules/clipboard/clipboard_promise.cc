@@ -280,13 +280,24 @@ void ClipboardPromise::HandleWrite(
         "Number of custom formats exceeds the max limit which is set to 100."));
     return;
   }
-  DCHECK(RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() ||
+
+  bool has_unsanitized_html =
+      RuntimeEnabledFeatures::ClipboardUnsanitizedContentEnabled() &&
+      base::ranges::any_of(clipboard_item_data_with_promises_,
+                           [](const auto& type_and_promise_to_blob) {
+                             return type_and_promise_to_blob.first ==
+                                    kMimeTypeTextHTML;
+                           });
+
+  DCHECK(has_unsanitized_html ||
+         RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() ||
          custom_format_items_.empty());
 
   // Input in standard formats is sanitized, so the write will be sanitized
-  // unless there are custom formats.
+  // unless the HTML is unsanitized or there are custom formats.
   RequestPermission(mojom::blink::PermissionName::CLIPBOARD_WRITE,
-                    /*will_be_sanitized=*/custom_format_items_.empty(),
+                    /*will_be_sanitized=*/
+                    !has_unsanitized_html && custom_format_items_.empty(),
                     WTF::BindOnce(&ClipboardPromise::HandleWriteWithPermission,
                                   WrapPersistent(this)));
 }
@@ -547,6 +558,8 @@ void ClipboardPromise::RequestPermission(
                             has_transient_user_activation);
   // `will_be_sanitized` is false only when we are trying to read/write
   // web custom formats.
+  // TODO(ansollan): Remove this block as custom formats don't need both a user
+  // gesture and a permission grant to use custom clipboard.
   if (!will_be_sanitized &&
       RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
       !has_transient_user_activation) {
