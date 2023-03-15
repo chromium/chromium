@@ -35,6 +35,7 @@
   <div slot="title">[[title_]]</div>
   <div slot="body">
     <cr-input id="valueInput" label="$i18n{addPaymentMethodIban}"
+        on-input="updateSaveIbanButtonEnablement_"
         value="{{value_}}" autofocus>
     </cr-input>
     <cr-input id="nicknameInput" label="$i18n{ibanNickname}"
@@ -51,8 +52,7 @@
     <cr-button id="cancelButton" class="cancel-button"
         on-click="onCancelButtonClick_">$i18n{cancel}</cr-button>
     <cr-button id="saveButton" class="action-button"
-        on-click="onIbanSaveButtonClick_"
-        disabled="[[!saveIbanEnabled_(value_)]]">
+        on-click="onIbanSaveButtonClick_">
       $i18n{save}
     </cr-button>
   </div>

@@ -36182,6 +36182,7 @@ Called by update_extension_histograms.py.-->
   <int value="1768" label="SMARTCARDPROVIDERPRIVATE_REPORTCONNECTRESULT"/>
   <int value="1769" label="SMARTCARDPROVIDERPRIVATE_REPORTDISCONNECTRESULT"/>
   <int value="1770" label="WMDESKSPRIVATE_GETDESKBYID"/>
+  <int value="1771" label="AUTOFILLPRIVATE_ISVALIDIBAN"/>
 </enum>
 
 <enum name="ExtensionIconState">

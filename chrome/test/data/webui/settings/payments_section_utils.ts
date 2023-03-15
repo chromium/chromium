@@ -47,6 +47,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
   expected.addedVirtualCards = 0;
   expected.requestedIbans = 1;
   expected.removedIbans = 0;
+  expected.isValidIban = 0;
   return expected;
 }
 

@@ -245,6 +245,7 @@ namespace autofillPrivate {
   callback GetCreditCardListCallback = void(CreditCardEntry[] entries);
   callback GetIbanListCallback = void(IbanEntry[] entries);
   callback GetUpiIdListCallback = void(DOMString[] entries);
+  callback IsValidIbanCallback = void(boolean isValid);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -309,6 +310,12 @@ namespace autofillPrivate {
     // `callback`: Callback which will be called with the list of IBANs.
     [supportsPromises] static void getIbanList(
         GetIbanListCallback callback);
+
+    // Returns true if the given `ibanValue` is a valid IBAN.
+    // `callback`: Callback which will be called with the result of IBAN
+    // validation.
+    [supportsPromises] static void isValidIban(
+        DOMString ibanValue, IsValidIbanCallback callback);
 
     // Clears the data associated with a wallet card which was saved
     // locally so that the saved copy is masked (e.g., "Card ending

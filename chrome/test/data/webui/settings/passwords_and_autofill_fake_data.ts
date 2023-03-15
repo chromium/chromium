@@ -506,6 +506,7 @@ export class PaymentsManagerExpectations {
   addedVirtualCards: number = 0;
   requestedIbans: number = 0;
   removedIbans: number = 0;
+  isValidIban: number = 0;
 }
 
 /**
@@ -535,6 +536,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'removeCreditCard',
       'removeIban',
       'addVirtualCard',
+      'isValidIban',
     ]);
 
     // Set these to have non-empty data.
@@ -600,6 +602,11 @@ export class TestPaymentsManager extends TestBrowserProxy implements
   getIbanList() {
     this.methodCalled('getIbanList');
     return Promise.resolve(this.data.ibans);
+  }
+
+  isValidIban(_ibanValue: string) {
+    this.methodCalled('isValidIban');
+    return Promise.resolve(true);
   }
 
 

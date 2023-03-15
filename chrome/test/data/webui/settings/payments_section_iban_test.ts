@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PaymentsManagerImpl, SettingsIbanEditDialogElement} from 'chrome://settings/lazy_load.js';
+import {CrInputElement, PaymentsManagerImpl, SettingsIbanEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {CrButtonElement, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
@@ -13,6 +13,16 @@ import {createIbanEntry, TestPaymentsManager} from './passwords_and_autofill_fak
 import {createPaymentsSection, getDefaultExpectations} from './payments_section_utils.js';
 
 // clang-format on
+
+/**
+ * Helper function to update IBAN value in the IBAN field.
+ */
+function updateIbanTextboxValue(valueInput: CrInputElement, value: string) {
+  valueInput.value = value;
+  valueInput.dispatchEvent(
+      new CustomEvent('input', {bubbles: true, composed: true}));
+}
+
 
 suite('PaymentsSectionIban', function() {
   setup(function() {
@@ -26,7 +36,7 @@ suite('PaymentsSectionIban', function() {
   });
 
   /**
-   * Creates the Edit IBAN dialog.
+   * Creates the Add or Edit IBAN dialog.
    */
   function createIbanDialog(ibanItem: chrome.autofillPrivate.IbanEntry):
       SettingsIbanEditDialogElement {
@@ -34,6 +44,7 @@ suite('PaymentsSectionIban', function() {
     dialog.iban = ibanItem;
     document.body.appendChild(dialog);
     flush();
+    dialog.$.saveButton.disabled = false;
     return dialog;
   }
 
@@ -135,29 +146,28 @@ suite('PaymentsSectionIban', function() {
 
     const saveButton = ibanDialog.$.saveButton;
     assertTrue(!!saveButton);
-    // Can't be saved, because there's no value.
-    assertTrue(saveButton.disabled);
 
-    // Add invalid IBAN value.
+    // Add a valid IBAN value.
     const valueInput = ibanDialog.$.valueInput;
-    valueInput.value = '11112222333344445678';
-    flush();
-    // Can't be saved, because the value of IBAN is invalid.
-    assertTrue(saveButton.disabled);
+    updateIbanTextboxValue(valueInput, 'FI1410093000123458');
 
-    // Add valid IBAN value.
-    valueInput.value = 'FI1410093000123458';
-    flush();
-    // Can be saved, because the value of IBAN is valid.
-    assertFalse(saveButton.disabled);
+    // Type in another valid IBAN value.
+    updateIbanTextboxValue(valueInput, 'IT60X0542811101000000123456');
 
     const savePromise = eventToPromise('save-iban', ibanDialog);
     saveButton.click();
     const event = await savePromise;
 
     assertEquals(undefined, event.detail.guid);
-    assertEquals('FI1410093000123458', event.detail.value);
+    assertEquals('IT60X0542811101000000123456', event.detail.value);
     assertEquals('', event.detail.nickname);
+
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    const expectations = getDefaultExpectations();
+    expectations.isValidIban = 2;
+    expectations.listeningCreditCards = 0;
+    paymentsManager.assertExpectations(expectations);
   });
 
   test('verifyIbanEntryIsNotEditedAfterCancel', async function() {

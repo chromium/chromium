@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
@@ -713,6 +714,17 @@ ExtensionFunction::ResponseAction AutofillPrivateGetIbanListFunction::Run() {
       autofill_util::GenerateIbanList(*personal_data);
   return RespondNow(ArgumentList(
       api::autofill_private::GetIbanList::Results::Create(iban_list)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateIsValidIbanFunction
+
+ExtensionFunction::ResponseAction AutofillPrivateIsValidIbanFunction::Run() {
+  absl::optional<api::autofill_private::IsValidIban::Params> parameters =
+      api::autofill_private::IsValidIban::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+  return RespondNow(WithArguments(
+      autofill::IBAN::IsValid(base::UTF8ToUTF16(parameters->iban_value))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

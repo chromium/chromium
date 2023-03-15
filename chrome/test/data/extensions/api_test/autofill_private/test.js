@@ -22,6 +22,7 @@ var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
 var EXP_YEAR = '2999';
 var IBAN_VALUE = 'AD1400080001001234567890';
+var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
 
 var failOnceCalled = function() {
   chrome.test.fail();
@@ -524,6 +525,22 @@ var availableTests = [
       countryCode: COUNTRY_CODE
     }, handler1);
   },
+
+  function isValidIban() {
+    var handler1 = function(isValidIban) {
+      // IBAN_VALUE should be valid, then follow up with invalid value.
+      chrome.test.assertTrue(isValidIban);
+      chrome.autofillPrivate.isValidIban(INVALID_IBAN_VALUE, handler2);
+    }
+
+    var handler2 = function(isValidIban) {
+      // INVALID_IBAN_VALUE is not valid.
+      chrome.test.assertFalse(isValidIban);
+      chrome.test.succeed();
+    }
+
+    chrome.autofillPrivate.isValidIban(IBAN_VALUE, handler1);
+  },
 ];
 
 /** @const */
@@ -535,13 +552,14 @@ var TESTS_FOR_CONFIG = {
   ],
   'addNewIbanNoNickname': ['addNewIbanNoNickname'],
   'addNewIbanWithNickname': ['addNewIbanWithNickname'],
-  'noChangesToExistingIban': ['addNewIbanNoNickname','noChangesToExistingIban'],
-  'updateExistingIbanNoNickname': [
-    'addNewIbanNoNickname', 'updateExistingIban_NoNickname'],
-  'updateExistingIbanWithNickname': [
-    'addNewIbanNoNickname', 'updateExistingIban_WithNickname'],
-  'removeExistingIban': [
-    'addNewIbanNoNickname', 'removeExistingIban'],
+  'noChangesToExistingIban':
+      ['addNewIbanNoNickname', 'noChangesToExistingIban'],
+  'updateExistingIbanNoNickname':
+      ['addNewIbanNoNickname', 'updateExistingIban_NoNickname'],
+  'updateExistingIbanWithNickname':
+      ['addNewIbanNoNickname', 'updateExistingIban_WithNickname'],
+  'removeExistingIban': ['addNewIbanNoNickname', 'removeExistingIban'],
+  'isValidIban': ['isValidIban'],
 };
 
 chrome.test.getConfig(function(config) {

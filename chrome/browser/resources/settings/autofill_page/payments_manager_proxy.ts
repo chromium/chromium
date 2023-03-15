@@ -29,6 +29,9 @@ export interface PaymentsManagerProxy {
    */
   getIbanList(): Promise<chrome.autofillPrivate.IbanEntry[]>;
 
+  /** @param ibanValue Returns true if the given ibanValue is valid. */
+  isValidIban(ibanValue: string): Promise<boolean>;
+
   /** @param guid The GUID of the credit card to remove. */
   removeCreditCard(guid: string): void;
 
@@ -104,6 +107,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   getIbanList() {
     return chrome.autofillPrivate.getIbanList();
+  }
+
+  isValidIban(ibanValue: string) {
+    return chrome.autofillPrivate.isValidIban(ibanValue);
   }
 
   removeCreditCard(guid: string) {

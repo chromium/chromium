@@ -131,6 +131,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const ibanDialog =
         section.shadowRoot!.querySelector('settings-iban-edit-dialog');
     assertTrue(!!ibanDialog);
+    ibanDialog.$.saveButton.disabled = false;
     return ibanDialog!;
   }
 
@@ -191,6 +192,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const ibanDialog =
         section.shadowRoot!.querySelector('settings-iban-edit-dialog');
     assertTrue(!!ibanDialog);
+    ibanDialog.$.saveButton.disabled = false;
     return ibanDialog;
   }
 

@@ -130,4 +130,9 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, removeExistingIban) {
   EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillIbanDeleted"));
 }
 
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, isValidIban) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("isValidIban")) << message_;
+}
+
 }  // namespace extensions
