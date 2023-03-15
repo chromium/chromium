@@ -235,12 +235,31 @@ void CopyCapabilities(const MediaTrackCapabilities* source,
 }
 
 void CopyConstraintSet(const MediaTrackConstraintSet* source,
-                       MediaTrackConstraintSet* destination,
-                       CopyPanTiltZoom copy_pan_tilt_zoom) {
+                       MediaTrackConstraintSet* destination) {
   // Merge any present |source| members into |destination|.
-  CopyCommonMembers(source, destination, copy_pan_tilt_zoom);
+  // Constraints come always from JavaScript (unlike capabilities and settings)
+  // so pan, tilt and zoom constraints are never privileged information and can
+  // always be copied.
+  CopyCommonMembers(source, destination, CopyPanTiltZoom(true));
   if (source->hasPointsOfInterest()) {
     destination->setPointsOfInterest(source->pointsOfInterest());
+  }
+}
+
+void CopyConstraints(const MediaTrackConstraints* source,
+                     MediaTrackConstraints* destination) {
+  HeapVector<Member<MediaTrackConstraintSet>> destination_constraint_sets;
+  for (const auto* source_constraint_set : AllSupportedConstraintSets(source)) {
+    if (source_constraint_set == source) {
+      CopyConstraintSet(source_constraint_set, destination);
+    } else {
+      auto* destination_constraint_set = MediaTrackConstraintSet::Create();
+      CopyConstraintSet(source_constraint_set, destination_constraint_set);
+      destination_constraint_sets.push_back(destination_constraint_set);
+    }
+  }
+  if (!destination_constraint_sets.empty()) {
+    destination->setAdvanced(std::move(destination_constraint_sets));
   }
 }
 
@@ -1121,7 +1140,7 @@ void ImageCapture::GotPhotoState(
 bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     media::mojom::blink::PhotoSettings* settings,
     const MediaTrackConstraints* constraints,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolver* resolver) const {
   if (!IsPageVisible()) {
     for (const MediaTrackConstraintSet* constraint_set :
          AllSupportedConstraintSets(constraints)) {
@@ -1137,10 +1156,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
       }
     }
   }
-
-  MediaTrackConstraintSet* temp_constraint_set =
-      current_constraint_set_ ? current_constraint_set_.Get()
-                              : MediaTrackConstraintSet::Create();
 
   // The "effective capability" C of an object O as the possibly proper subset
   // of the possible values of C (as returned by getCapabilities) taking into
@@ -1189,15 +1204,12 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     if (settings->has_white_balance_mode) {
       const auto white_balance_mode =
           constraint_set->whiteBalanceMode()->GetAsString();
-      temp_constraint_set->setWhiteBalanceMode(
-          constraint_set->whiteBalanceMode());
       settings->white_balance_mode = ParseMeteringMode(white_balance_mode);
     }
     settings->has_exposure_mode = constraint_set->hasExposureMode() &&
                                   constraint_set->exposureMode()->IsString();
     if (settings->has_exposure_mode) {
       const auto exposure_mode = constraint_set->exposureMode()->GetAsString();
-      temp_constraint_set->setExposureMode(constraint_set->exposureMode());
       settings->exposure_mode = ParseMeteringMode(exposure_mode);
     }
 
@@ -1205,7 +1217,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
                                constraint_set->focusMode()->IsString();
     if (settings->has_focus_mode) {
       const auto focus_mode = constraint_set->focusMode()->GetAsString();
-      temp_constraint_set->setFocusMode(constraint_set->focusMode());
       settings->focus_mode = ParseMeteringMode(focus_mode);
     }
 
@@ -1219,8 +1230,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
         mojo_point->y = point->y();
         settings->points_of_interest.push_back(std::move(mojo_point));
       }
-      temp_constraint_set->setPointsOfInterest(
-          constraint_set->pointsOfInterest());
     }
 
     // TODO(mcasas): support ConstrainDoubleRange where applicable.
@@ -1230,8 +1239,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     if (settings->has_exposure_compensation) {
       const auto exposure_compensation =
           constraint_set->exposureCompensation()->GetAsDouble();
-      temp_constraint_set->setExposureCompensation(
-          constraint_set->exposureCompensation());
       settings->exposure_compensation = exposure_compensation;
     }
 
@@ -1239,7 +1246,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
                                   constraint_set->exposureTime()->IsDouble();
     if (settings->has_exposure_time) {
       const auto exposure_time = constraint_set->exposureTime()->GetAsDouble();
-      temp_constraint_set->setExposureTime(constraint_set->exposureTime());
       settings->exposure_time = exposure_time;
     }
     settings->has_color_temperature =
@@ -1248,15 +1254,12 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     if (settings->has_color_temperature) {
       const auto color_temperature =
           constraint_set->colorTemperature()->GetAsDouble();
-      temp_constraint_set->setColorTemperature(
-          constraint_set->colorTemperature());
       settings->color_temperature = color_temperature;
     }
     settings->has_iso =
         constraint_set->hasIso() && constraint_set->iso()->IsDouble();
     if (settings->has_iso) {
       const auto iso = constraint_set->iso()->GetAsDouble();
-      temp_constraint_set->setIso(constraint_set->iso());
       settings->iso = iso;
     }
 
@@ -1264,28 +1267,24 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
                                constraint_set->brightness()->IsDouble();
     if (settings->has_brightness) {
       const auto brightness = constraint_set->brightness()->GetAsDouble();
-      temp_constraint_set->setBrightness(constraint_set->brightness());
       settings->brightness = brightness;
     }
     settings->has_contrast =
         constraint_set->hasContrast() && constraint_set->contrast()->IsDouble();
     if (settings->has_contrast) {
       const auto contrast = constraint_set->contrast()->GetAsDouble();
-      temp_constraint_set->setContrast(constraint_set->contrast());
       settings->contrast = contrast;
     }
     settings->has_saturation = constraint_set->hasSaturation() &&
                                constraint_set->saturation()->IsDouble();
     if (settings->has_saturation) {
       const auto saturation = constraint_set->saturation()->GetAsDouble();
-      temp_constraint_set->setSaturation(constraint_set->saturation());
       settings->saturation = saturation;
     }
     settings->has_sharpness = constraint_set->hasSharpness() &&
                               constraint_set->sharpness()->IsDouble();
     if (settings->has_sharpness) {
       const auto sharpness = constraint_set->sharpness()->GetAsDouble();
-      temp_constraint_set->setSharpness(constraint_set->sharpness());
       settings->sharpness = sharpness;
     }
 
@@ -1294,7 +1293,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     if (settings->has_focus_distance) {
       const auto focus_distance =
           constraint_set->focusDistance()->GetAsDouble();
-      temp_constraint_set->setFocusDistance(constraint_set->focusDistance());
       settings->focus_distance = focus_distance;
     }
 
@@ -1302,7 +1300,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
         constraint_set->hasPan() && constraint_set->pan()->IsDouble();
     if (settings->has_pan) {
       const auto pan = constraint_set->pan()->GetAsDouble();
-      temp_constraint_set->setPan(constraint_set->pan());
       settings->pan = pan;
     }
 
@@ -1310,7 +1307,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
         constraint_set->hasTilt() && constraint_set->tilt()->IsDouble();
     if (settings->has_tilt) {
       const auto tilt = constraint_set->tilt()->GetAsDouble();
-      temp_constraint_set->setTilt(constraint_set->tilt());
       settings->tilt = tilt;
     }
 
@@ -1318,7 +1314,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
         constraint_set->hasZoom() && constraint_set->zoom()->IsDouble();
     if (settings->has_zoom) {
       const auto zoom = constraint_set->zoom()->GetAsDouble();
-      temp_constraint_set->setZoom(constraint_set->zoom());
       settings->zoom = zoom;
     }
 
@@ -1327,7 +1322,6 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
         constraint_set->hasTorch() && constraint_set->torch()->IsBoolean();
     if (settings->has_torch) {
       const auto torch = constraint_set->torch()->GetAsBoolean();
-      temp_constraint_set->setTorch(constraint_set->torch());
       settings->torch = torch;
     }
 
@@ -1337,13 +1331,10 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     if (settings->has_background_blur_mode) {
       const auto background_blur =
           constraint_set->backgroundBlur()->GetAsBoolean();
-      temp_constraint_set->setBackgroundBlur(constraint_set->backgroundBlur());
       settings->background_blur_mode =
           background_blur ? BackgroundBlurMode::BLUR : BackgroundBlurMode::OFF;
     }
   }
-
-  current_constraint_set_ = temp_constraint_set;
 
   return true;
 }
@@ -1441,6 +1432,18 @@ void ImageCapture::SetMediaTrackConstraints(
     return;
   }
 
+  // TODO(crbug.com/1423282): This is not spec compliant. The current
+  // constraints are used by `GetMediaTrackConstraints()` which is used by
+  // `MediaStreamTrackImpl::getConstraints()` which should return
+  // the constraints that were the argument to the most recent successful
+  // invocation of the ApplyConstraints algorithm.
+  // https://w3c.github.io/mediacapture-main/#dom-constrainablepattern-getconstraints
+  //
+  // At this point the ApplyConstraints algorithm is still ongoing and not
+  // succeeded yet. Move this to `OnMojoSetPhotoOptions()` or such.
+  current_constraints_ = MediaTrackConstraints::Create();
+  CopyConstraints(constraints, current_constraints_);
+
   service_requests_.insert(resolver);
 
   service_->SetPhotoOptions(
@@ -1518,18 +1521,11 @@ void ImageCapture::OnSetPanTiltZoomSettingsFromTrack(
 }
 
 MediaTrackConstraints* ImageCapture::GetMediaTrackConstraints() const {
-  if (!current_constraint_set_) {
-    return nullptr;
-  }
-  MediaTrackConstraints* constraints = MediaTrackConstraints::Create();
-  HeapVector<Member<MediaTrackConstraintSet>> advanced_constraints;
-  advanced_constraints.push_back(current_constraint_set_);
-  constraints->setAdvanced(advanced_constraints);
-  return constraints;
+  return current_constraints_;
 }
 
 void ImageCapture::ClearMediaTrackConstraints() {
-  current_constraint_set_ = nullptr;
+  current_constraints_ = nullptr;
 
   // TODO(mcasas): Clear also any PhotoSettings that the device might have got
   // configured, for that we need to know a "default" state of the device; take
@@ -2078,8 +2074,8 @@ void ImageCapture::ResolveWithPhotoCapabilities(
   resolver->Resolve(photo_capabilities_);
 }
 
-bool ImageCapture::IsPageVisible() {
-  return DomWindow() ? DomWindow()->document()->IsPageVisible() : false;
+bool ImageCapture::IsPageVisible() const {
+  return DomWindow() && DomWindow()->document()->IsPageVisible();
 }
 
 const String& ImageCapture::SourceId() const {
@@ -2224,11 +2220,10 @@ ImageCapture* ImageCapture::Clone() const {
   // Copy settings.
   CopySettings(settings_, clone->settings_, CopyPanTiltZoom(true));
 
-  // Copy current constraint set.
-  if (current_constraint_set_) {
-    clone->current_constraint_set_ = MediaTrackConstraintSet::Create();
-    CopyConstraintSet(current_constraint_set_, clone->current_constraint_set_,
-                      CopyPanTiltZoom(true));
+  // Copy current constraints.
+  if (current_constraints_) {
+    clone->current_constraints_ = MediaTrackConstraints::Create();
+    CopyConstraints(current_constraints_, clone->current_constraints_);
   }
 
   return clone;
@@ -2242,7 +2237,7 @@ void ImageCapture::Trace(Visitor* visitor) const {
   visitor->Trace(capabilities_);
   visitor->Trace(settings_);
   visitor->Trace(photo_settings_);
-  visitor->Trace(current_constraint_set_);
+  visitor->Trace(current_constraints_);
   visitor->Trace(photo_capabilities_);
   visitor->Trace(service_requests_);
   ScriptWrappable::Trace(visitor);

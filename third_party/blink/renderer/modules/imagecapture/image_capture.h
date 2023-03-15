@@ -65,7 +65,7 @@ class MODULES_EXPORT ImageCapture final
   bool CheckAndApplyMediaTrackConstraintsToSettings(
       media::mojom::blink::PhotoSettings*,
       const MediaTrackConstraints*,
-      ScriptPromiseResolver*);
+      ScriptPromiseResolver*) const;
   void GetMediaTrackCapabilities(MediaTrackCapabilities*) const;
   void SetMediaTrackConstraints(ScriptPromiseResolver*,
                                 const MediaTrackConstraints* constraints);
@@ -145,7 +145,7 @@ class MODULES_EXPORT ImageCapture final
   void ResolveWithPhotoCapabilities(ScriptPromiseResolver*);
 
   // Returns true if page is visible. Otherwise returns false.
-  bool IsPageVisible();
+  bool IsPageVisible() const;
 
   // Call UpdateMediaTrackSettingsAndCapabilities with |photo_state| and call
   // |callback| with whether local changes to background blur settings and
@@ -175,7 +175,7 @@ class MODULES_EXPORT ImageCapture final
 
   Member<MediaTrackCapabilities> capabilities_;
   Member<MediaTrackSettings> settings_;
-  Member<MediaTrackConstraintSet> current_constraint_set_;
+  Member<MediaTrackConstraints> current_constraints_;
   Member<PhotoSettings> photo_settings_;
 
   Member<PhotoCapabilities> photo_capabilities_;
