@@ -40,10 +40,10 @@ using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark folders integration tests for Chrome.
-@interface BookmarksFolderTestCase : WebHttpServerChromeTestCase
+@interface BookmarksFolderChooserTestCase : WebHttpServerChromeTestCase
 @end
 
-@implementation BookmarksFolderTestCase
+@implementation BookmarksFolderChooserTestCase
 
 - (void)setUp {
   [super setUp];
@@ -59,7 +59,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
-#pragma mark - BookmarksTestFolders Tests
+#pragma mark - BookmarksFolderChooser Tests
 
 // Tests moving bookmarks into a new folder created in the moving process.
 - (void)testCreateNewFolderWhileMovingBookmarks {

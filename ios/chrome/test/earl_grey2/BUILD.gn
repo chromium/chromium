@@ -43,7 +43,10 @@ chrome_ios_eg2_test("ios_chrome_autofill_automation_eg2tests_module") {
 chrome_ios_eg2_test("ios_chrome_bookmarks_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [ "//ios/chrome/browser/ui/bookmarks:eg2_tests" ]
+  deps = [
+    "//ios/chrome/browser/ui/bookmarks:eg2_tests",
+    "//ios/chrome/browser/ui/bookmarks/folder_chooser:eg2_tests",
+  ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
