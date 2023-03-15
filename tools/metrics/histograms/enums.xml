@@ -4929,6 +4929,17 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="INSUFFICIENT_RESOURCES"/>
 </enum>
 
+<enum name="ArcVmDataMigrationSetupResult">
+  <summary>
+    The types of the result of the setup of ARCVM /data migration.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to create mount point"/>
+  <int value="2" label="Failed to attach loop device"/>
+  <int value="3" label="Failed to mount migration destination"/>
+  <int value="4" label="Failed to create thread for migration"/>
+</enum>
+
 <enum name="ArmCpuPart">
   <summary>
     Defines a subset of ARM CPU (implementer, part-number) pairs composed as a
@@ -22470,6 +22481,25 @@ metrics consent we also won't be able to send UMA metrics. -->
       label="Resumed migration failed (low disk space during migration)"/>
 </enum>
 
+<enum name="CrOSFileSystemMigrationFailedOperationType">
+  <int value="1" label="Other"/>
+  <int value="2" label="open(src_file)"/>
+  <int value="3" label="open(dest_file)"/>
+  <int value="4" label="symlink"/>
+  <int value="5" label="delete"/>
+  <int value="6" label="get-attribute"/>
+  <int value="7" label="mkdir"/>
+  <int value="8" label="readlink"/>
+  <int value="9" label="seek"/>
+  <int value="10" label="sendfile"/>
+  <int value="11" label="set-attribute"/>
+  <int value="12" label="stat"/>
+  <int value="13" label="sync"/>
+  <int value="14" label="truncate"/>
+  <int value="15" label="non fatal open(src_file)"/>
+  <int value="16" label="failed at remove-attribute"/>
+</enum>
+
 <enum name="CrOSFileSystemMigrationStartStatus">
   <int value="1" label="Migration started"/>
   <int value="2" label="Migration resumed"/>
@@ -27305,25 +27335,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
 <enum name="DIPSRedirectType">
   <int value="0" label="Client redirect"/>
   <int value="1" label="Server redirect"/>
-</enum>
-
-<enum name="DircryptoMigrationFailedOperationType">
-  <int value="1" label="Other"/>
-  <int value="2" label="open(src_file)"/>
-  <int value="3" label="open(dest_file)"/>
-  <int value="4" label="symlink"/>
-  <int value="5" label="delete"/>
-  <int value="6" label="get-attribute"/>
-  <int value="7" label="mkdir"/>
-  <int value="8" label="readlink"/>
-  <int value="9" label="seek"/>
-  <int value="10" label="sendfile"/>
-  <int value="11" label="set-attribute"/>
-  <int value="12" label="stat"/>
-  <int value="13" label="sync"/>
-  <int value="14" label="truncate"/>
-  <int value="15" label="non fatal open(src_file)"/>
-  <int value="16" label="failed at remove-attribute"/>
 </enum>
 
 <enum name="DircryptoMigrationFailedPathType">

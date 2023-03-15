@@ -2292,6 +2292,77 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.FailedErrorCode" enum="PlatformFileError"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    The error code of a file operation failure that caused the ARCVM /data
+    migration to fail. Reported when a migration thread encounters a file
+    operation error. This can be reported multiple times for a migration when
+    multiple threads fail at around the same time.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.FailedOperationType"
+    enum="CrOSFileSystemMigrationFailedOperationType"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    The type of file operation at which the ARCVM /data migration failed.
+    Reported when a migration thread encounters a file operation error. This can
+    be reported multiple times for a migration when multiple threads fail at
+    around the same time.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.InitialFreeSpace" units="MB"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    The total amount of free disk space on the system when a new or resumed
+    ARCVM /data migration is started. Reported when a migration failed with
+    ENOSPC (no space error).
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.NoSpaceFailureFreeSpace" units="MB"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    The total amount of free disk space on the system when the user encounters
+    ENOSPC (no space error) during ARCVM /data migration. Reported when a
+    migration failed with ENOSPC.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.NoSpaceXattrSize" units="bytes"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    The total number of bytes of xattr data that we are trying to store on a
+    file when we encounter an ENOSPC (no space error) during ARCVM /data
+    migration. This includes both the xattr data already present on the file as
+    well as the new xattr we are trying to set. Reported when a migration thread
+    encounters ENOSPC on setting a new xattr. This can be reported multiple
+    times for a migration when multiple threads fail at around the same time.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.SetupResult"
+    enum="ArcVmDataMigrationSetupResult" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <summary>
+    The result of the setup of ARCVM /data migration. Reported before triggering
+    the migration tool.
+  </summary>
+</histogram>
+
 <histogram name="Arc.VmDataMigration.StartStatus"
     enum="CrOSFileSystemMigrationStartStatus" expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
