@@ -1236,10 +1236,6 @@
     "label": "//chrome/android:monochrome_public_bundle_smoke_test",
     "type": "console_test_launcher",
   },
-  "mojo_core_unittests": {
-    "label": "//mojo/core:mojo_core_unittests",
-    "type": "console_test_launcher",
-  },
   "mojo_python_unittests": {
     "args": [
       "../../mojo/public/tools/run_all_python_unittests.py",

@@ -990,7 +990,6 @@
 
     'chromium_gtests_for_linux_and_chromeos_only': {
       'dbus_unittests': {},
-      'mojo_core_unittests': {},
     },
 
     'chromium_gtests_for_linux_and_mac_only': {
@@ -2547,7 +2546,6 @@
       'latency_unittests': {},
       'media_unittests': {},
       'midi_unittests': {},
-      'mojo_core_unittests': {},
       'mojo_unittests': {},
       'native_theme_unittests': {},
       'net_unittests': {
@@ -5558,7 +5556,6 @@
           ],
         },
       },
-      'mojo_core_unittests': {},
       'notification_helper_unittests': {},
       'sbox_integration_tests': {
         'swarming': {
