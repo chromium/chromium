@@ -1110,6 +1110,20 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
     }
 
+    @Test
+    @MediumTest
+    public void testFragmentWithChildAccount_doesNotApplyFREStringVariation() {
+        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
+                VariationsGroup.MAKE_CHROME_YOUR_OWN);
+        mSigninTestRule.addAccount(
+                CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+
+        launchActivityWithFragment();
+        checkFragmentWithChildAccount(
+                /* hasDisplayableFullName= */ true, /* hasDisplayableEmail= */ true);
+    }
+
     private void checkFragmentWithSelectedAccount(String email, String fullName, String givenName) {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);

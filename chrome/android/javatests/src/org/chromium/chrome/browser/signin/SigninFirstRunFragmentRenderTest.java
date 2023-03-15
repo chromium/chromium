@@ -243,6 +243,26 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    public void testFragmentWithAccountOnManagedDevice_doesNotApplyFREStringVariations(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
+                VariationsGroup.MAKE_CHROME_YOUR_OWN);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(() -> {
+            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+        });
+        mRenderTestRule.render(mFragment.getView(),
+                "signin_first_run_fragment_with_account_managed_and_string_variation");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithAccountWhenSigninIsDisabledByPolicy(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
@@ -253,6 +273,24 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         mRenderTestRule.render(
                 mFragment.getView(), "signin_first_run_fragment_when_signin_disabled_by_policy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    public void testFragmentWithAccountWhenSigninIsDisabledByPolicy_doesNotApplyFREStringVariation(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
+                VariationsGroup.MAKE_CHROME_YOUR_OWN);
+        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+
+        launchActivityWithFragment(orientation);
+
+        mRenderTestRule.render(mFragment.getView(),
+                "signin_first_run_fragment_when_signin_disabled_by_policy_and_string_variation");
     }
 
     @Test
@@ -293,6 +331,25 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
             return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
         });
         mRenderTestRule.render(mFragment.getView(), "signin_first_run_fragment_with_child_account");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    public void testFragmentWithChildAccount_doesNotApplyFREStringVariation(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
+                VariationsGroup.MAKE_CHROME_YOUR_OWN);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(() -> {
+            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+        });
+        mRenderTestRule.render(mFragment.getView(),
+                "signin_first_run_fragment_with_child_account_and_string_variation");
     }
 
     @Test

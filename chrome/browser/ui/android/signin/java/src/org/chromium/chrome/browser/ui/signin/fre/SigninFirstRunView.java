@@ -104,9 +104,14 @@ public class SigninFirstRunView extends RelativeLayout {
     }
 
     /** Updates the title and the subtitle for UI variations on native and policy load. **/
-    void applyVariationsExperiment() {
-        Pair<Integer, Integer> titleAndSubtitleId =
-                FREMobileIdentityConsistencyFieldTrial.getVariationTitleAndSubtitle();
+    void applyVariationsExperiment(boolean useExperimentalStrings) {
+        Pair<Integer, Integer> titleAndSubtitleId;
+        if (useExperimentalStrings) {
+            titleAndSubtitleId =
+                    FREMobileIdentityConsistencyFieldTrial.getVariationTitleAndSubtitle();
+        } else {
+            titleAndSubtitleId = new Pair(R.string.fre_welcome, 0);
+        }
         mTitle.setText(titleAndSubtitleId.first);
         mTitle.setVisibility(VISIBLE);
         if (titleAndSubtitleId.second != 0) {
