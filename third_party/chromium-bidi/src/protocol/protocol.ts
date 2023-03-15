@@ -80,7 +80,11 @@ export namespace Message {
     | CDP.CommandResult
     | ErrorResult;
 
-  export type EventMessage = BrowsingContext.Event | Log.Event | CDP.Event;
+  export type EventMessage =
+    | BrowsingContext.Event
+    | Log.Event
+    | CDP.Event
+    | Network.Event;
 
   export type ErrorCode =
     | 'unknown error'
@@ -864,6 +868,116 @@ export namespace Log {
   }
 }
 
+export namespace Network {
+  export type Event = BeforeRequestSentEvent | ResponseCompletedEvent;
+
+  export type BeforeRequestSentEvent = EventResponse<
+    EventNames.BeforeRequestSentEvent,
+    BeforeRequestSentParams
+  >;
+
+  export type ResponseCompletedEvent = EventResponse<
+    EventNames.ResponseCompletedEvent,
+    ResponseCompletedParams
+  >;
+
+  type Header = {
+    name: string;
+    value?: string;
+    binaryValue?: number[];
+  };
+
+  export type Cookie = {
+    name: string;
+    value?: string;
+    binaryValue?: number[];
+    domain: string;
+    path: string;
+    expires?: number;
+    size: number;
+    httpOnly: boolean;
+    secure: boolean;
+    sameSite: 'strict' | 'lax' | 'none';
+  };
+
+  type FetchTimingInfo = {
+    timeOrigin: number;
+    requestTime: number;
+    redirectStart: number;
+    redirectEnd: number;
+    fetchStart: number;
+    dnsStart: number;
+    dnsEnd: number;
+    connectStart: number;
+    connectEnd: number;
+    tlsStart: number;
+    tlsEnd: number;
+    requestStart: number;
+    responseStart: number;
+    responseEnd: number;
+  };
+
+  type RequestData = {
+    request: string;
+    url: string;
+    method: string;
+    headers: Header[];
+    cookies: Cookie[];
+    headersSize: number;
+    bodySize: number | null;
+    timings: FetchTimingInfo;
+  };
+
+  export type BaseEventParams = {
+    context: string | null;
+    navigation: BrowsingContext.Navigation | null;
+    redirectCount: number;
+    request: RequestData;
+    timestamp: number;
+  };
+
+  export type Initiator = {
+    type: 'parser' | 'script' | 'preflight' | 'other';
+    columnNumber?: number;
+    lineNumber?: number;
+    stackTrace?: Script.StackTrace;
+    request?: Request;
+  };
+
+  export type ResponseContent = {
+    size: number;
+  };
+
+  export type ResponseData = {
+    url: string;
+    protocol: string;
+    status: number;
+    statusText: string;
+    fromCache: boolean;
+    headers: Header[];
+    mimeType: string;
+    bytesReceived: number;
+    headersSize: number | null;
+    bodySize: number | null;
+    content: ResponseContent;
+  };
+
+  export type BeforeRequestSentParams = BaseEventParams & {
+    initiator: Initiator;
+  };
+
+  export type ResponseCompletedParams = BaseEventParams & {
+    response: ResponseData;
+  };
+
+  export const AllEvents = 'network';
+
+  export enum EventNames {
+    BeforeRequestSentEvent = 'network.beforeRequestSent',
+    ResponseCompletedEvent = 'network.responseCompleted',
+  }
+}
+
 export namespace CDP {
   export type Command = SendCommandCommand | GetSessionCommand;
   export type CommandResult = SendCommandResult | GetSessionResult;
@@ -943,7 +1057,9 @@ export namespace Session {
     | Log.EventNames
     | typeof Log.AllEvents
     | CDP.EventNames
-    | typeof CDP.AllEvents;
+    | typeof CDP.AllEvents
+    | Network.EventNames
+    | typeof Network.AllEvents;
 
   // SessionSubscribeParameters = {
   //   events: [*text],

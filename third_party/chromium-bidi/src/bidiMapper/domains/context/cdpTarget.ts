@@ -24,6 +24,7 @@ import {IEventManager} from '../events/EventManager';
 import {CDP} from '../../../protocol/protocol';
 import {LoggerFn} from '../../../utils/log';
 import {Deferred} from '../../../utils/deferred';
+import {NetworkProcessor} from '../network/networkProcessor';
 
 import {BrowsingContextImpl} from './browsingContextImpl';
 import {BrowsingContextStorage} from './browsingContextStorage';
@@ -37,6 +38,7 @@ export class CdpTarget {
   readonly #realmStorage: RealmStorage;
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #logger?: LoggerFn;
+  #networkDomainActivated: boolean;
 
   static create(
     targetId: string,
@@ -82,6 +84,7 @@ export class CdpTarget {
     this.#realmStorage = realmStorage;
     this.#browsingContextStorage = browsingContextStorage;
     this.#logger = logger;
+    this.#networkDomainActivated = false;
 
     this.#targetUnblocked = new Deferred();
   }
@@ -112,6 +115,12 @@ export class CdpTarget {
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
+    // Enable Network domain, if it is enabled globally.
+    // TODO: enable Network domain for OOPiF targets.
+    if (this.#eventManager.isNetworkDomainEnabled) {
+      await this.enableNetworkDomain();
+    }
+
     await this.#cdpClient.sendCommand('Runtime.enable');
     await this.#cdpClient.sendCommand('Page.enable');
     await this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
@@ -125,6 +134,17 @@ export class CdpTarget {
 
     await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
     this.#targetUnblocked.resolve();
+  }
+
+  /**
+   * Enables the Network domain (creates NetworkProcessor on the target's cdp
+   * client) if it is not enabled yet.
+   */
+  async enableNetworkDomain() {
+    if (!this.#networkDomainActivated) {
+      this.#networkDomainActivated = true;
+      await NetworkProcessor.create(this.cdpClient, this.#eventManager);
+    }
   }
 
   #setEventListeners() {

@@ -160,8 +160,8 @@ export class BrowsingContextImpl {
     return this.#parentId;
   }
 
-  get cdpSessionId(): string {
-    return this.#cdpTarget.cdpSessionId;
+  get cdpTarget(): CdpTarget {
+    return this.#cdpTarget;
   }
 
   get children(): BrowsingContextImpl[] {

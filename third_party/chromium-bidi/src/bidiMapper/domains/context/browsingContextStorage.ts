@@ -28,6 +28,10 @@ export class BrowsingContextStorage {
     );
   }
 
+  getAllContexts(): BrowsingContextImpl[] {
+    return Array.from(this.#contexts.values());
+  }
+
   removeContext(contextId: string) {
     this.#contexts.delete(contextId);
   }

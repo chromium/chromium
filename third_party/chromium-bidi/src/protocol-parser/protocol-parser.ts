@@ -29,6 +29,7 @@ import {
   CDP as CdpTypes,
   Message as MessageTypes,
   Session as SessionTypes,
+  Network as NetworkTypes,
   CommonDataTypes as CommonDataTypesTypes,
 } from '../protocol/protocol.js';
 
@@ -540,6 +541,9 @@ export namespace Session {
     LogTypes.EventNames.LogEntryAddedEvent,
     CdpTypes.AllEvents,
     CdpTypes.EventNames.EventReceivedEvent,
+    NetworkTypes.AllEvents,
+    NetworkTypes.EventNames.BeforeRequestSentEvent,
+    NetworkTypes.EventNames.ResponseCompletedEvent,
   ]);
 
   // SessionSubscribeParameters = {

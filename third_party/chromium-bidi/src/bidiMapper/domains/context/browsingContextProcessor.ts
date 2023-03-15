@@ -349,7 +349,8 @@ export class BrowsingContextProcessor {
   process_cdp_getSession(params: CDP.GetSessionParams) {
     const context = params.context;
     const sessionId =
-      this.#browsingContextStorage.getKnownContext(context).cdpSessionId;
+      this.#browsingContextStorage.getKnownContext(context).cdpTarget
+        .cdpSessionId;
     if (sessionId === undefined) {
       return {result: {cdpSession: null}};
     }

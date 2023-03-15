@@ -21,6 +21,7 @@ import {
   CommonDataTypes,
   Log,
   Message,
+  Network,
   Session,
 } from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
@@ -55,6 +56,9 @@ export function unrollEvents(
         break;
       case Log.AllEvents:
         allEvents.push(...Object.values(Log.EventNames));
+        break;
+      case Network.AllEvents:
+        allEvents.push(...Object.values(Network.EventNames));
         break;
       default:
         allEvents.push(event);
@@ -173,6 +177,12 @@ export class SubscriptionManager {
     }
     if (event === Log.AllEvents) {
       Object.values(Log.EventNames).map((specificEvent) =>
+        this.subscribe(specificEvent, contextId, channel)
+      );
+      return;
+    }
+    if (event === Network.AllEvents) {
+      Object.values(Network.EventNames).map((specificEvent) =>
         this.subscribe(specificEvent, contextId, channel)
       );
       return;
