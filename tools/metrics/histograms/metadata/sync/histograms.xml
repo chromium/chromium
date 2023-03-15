@@ -1294,6 +1294,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncablePrefValueChanged" enum="SyncablePref"
+    expires_after="2024-01-31">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    This is recorded everytime a syncable pref is changed locally. This does not
+    include changes sent during the initial sync/merge.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncedHistoryFaviconAvailability.{RequestOrigin}"
     enum="FaviconAvailabilityStatus" expires_after="2023-07-10">
   <owner>victorvianna@google.com</owner>

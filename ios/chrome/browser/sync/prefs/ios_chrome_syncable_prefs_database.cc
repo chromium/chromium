@@ -15,6 +15,10 @@ namespace browser_sync {
 namespace {
 // Not an enum class to ease cast to int.
 namespace syncable_prefs_ids {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Please also add new entries to `SyncablePref` enum in
+// tools/metrics/histograms/enums.xml.
 enum {
   // Starts with 200000 to avoid clash with prefs listed in
   // common_syncable_prefs_database.cc and

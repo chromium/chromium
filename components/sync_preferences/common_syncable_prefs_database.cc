@@ -32,6 +32,10 @@ const char kSyncablePrefForTesting[] = "syncable-test-preference";
 namespace {
 // Not an enum class to ease cast to int.
 namespace syncable_prefs_ids {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Please also add new entries to `SyncablePref` enum in
+// tools/metrics/histograms/enums.xml.
 enum {
   kSyncablePrefForTesting = 0,
   kAutofillCreditCardEnabled = 1,

@@ -99459,6 +99459,286 @@ would be helpful to identify which type is being sent.
   <int value="14" label="Added to menu (deprecated)"/>
 </enum>
 
+<enum name="SyncablePref">
+  <int value="1" label="AutofillCreditCardEnabled"/>
+  <int value="2" label="AutofillEnabledDeprecated"/>
+  <int value="3" label="AutofillHasSeenIban"/>
+  <int value="4" label="AutofillIBANEnabled"/>
+  <int value="5" label="AutofillLastVersionDeduped"/>
+  <int value="6" label="AutofillLastVersionDisusedAddressesDeleted"/>
+  <int value="7" label="AutofillProfileEnabled"/>
+  <int value="8" label="ShowAppsShortcutInBookmarkBar"/>
+  <int value="9" label="ShowBookmarkBar"/>
+  <int value="10" label="ShowManagedBookmarksInBookmarkBar"/>
+  <int value="11" label="ClearBrowsingDataHistoryNoticeShownTimes"/>
+  <int value="12" label="DeleteBrowsingHistory"/>
+  <int value="13" label="DeleteBrowsingHistoryBasic"/>
+  <int value="14" label="DeleteCache"/>
+  <int value="15" label="DeleteCacheBasic"/>
+  <int value="16" label="DeleteCookies"/>
+  <int value="17" label="DeleteCookiesBasic"/>
+  <int value="18" label="DeleteDownloadHistory"/>
+  <int value="19" label="DeleteFormData"/>
+  <int value="20" label="DeleteHostedAppsData"/>
+  <int value="21" label="DeletePasswords"/>
+  <int value="22" label="DeleteSiteSettings"/>
+  <int value="23" label="DeleteTimePeriod"/>
+  <int value="24" label="DeleteTimePeriodBasic"/>
+  <int value="25" label="LastClearBrowsingDataTime"/>
+  <int value="26" label="PreferencesMigratedToBasic"/>
+  <int value="27" label="PriceEmailNotificationsEnabled"/>
+  <int value="28" label="Font"/>
+  <int value="29" label="OfferReaderMode"/>
+  <int value="30" label="ReaderForAccessibility"/>
+  <int value="31" label="Theme"/>
+  <int value="32" label="AcceptLanguages"/>
+  <int value="33" label="ApplicationLocale"/>
+  <int value="34" label="SelectedLanguages"/>
+  <int value="35" label="SyncDemographicsPrefName"/>
+  <int value="36" label="CustomLinksInitialized"/>
+  <int value="37" label="CustomLinksList"/>
+  <int value="38" label="KeywordSpaceTriggeringEnabled"/>
+  <int value="39" label="CredentialsEnableAutosignin"/>
+  <int value="40" label="CredentialsEnableService"/>
+  <int value="41" label="PasswordDismissCompromisedAlertEnabled"/>
+  <int value="42" label="PasswordLeakDetectionEnabled"/>
+  <int value="43" label="SyncedLastTimePasswordCheckCompleted"/>
+  <int value="44" label="WasAutoSignInFirstRunExperienceShown"/>
+  <int value="45" label="CanMakePaymentEnabled"/>
+  <int value="46" label="AccountTailoredSecurityUpdateTimestamp"/>
+  <int value="47" label="CookieControlsMode"/>
+  <int value="48" label="SafeBrowsingEnabled"/>
+  <int value="49" label="SyncedDefaultSearchProviderGUID"/>
+  <int value="50" label="PrefForceTriggerTranslateCount"/>
+  <int value="51" label="PrefNeverPromptSitesDeprecated"/>
+  <int value="52" label="PrefTranslateAcceptedCount"/>
+  <int value="53" label="PrefTranslateAutoAlwaysCount"/>
+  <int value="54" label="PrefTranslateAutoNeverCount"/>
+  <int value="55" label="PrefTranslateDeniedCount"/>
+  <int value="56" label="PrefTranslateIgnoredCount"/>
+  <int value="57" label="BlockedLanguages"/>
+  <int value="58" label="OfferTranslateEnabled"/>
+  <int value="59" label="PrefAlwaysTranslateList"/>
+  <int value="60" label="PrefNeverPromptSitesWithTime"/>
+  <int value="61" label="PrefTranslateRecentTarget"/>
+  <int value="100000" label="AppLanguagePromptShown"/>
+  <int value="100001" label="PrefExplicitLanguageAskShown"/>
+  <int value="100002" label="ContextualSearchEnabled_Android"/>
+  <int value="100003" label="ContextualSearchWasFullyPrivacyEnabled"/>
+  <int value="100004" label="AccessibilityImageLabelsEnabledAndroid"/>
+  <int value="100005" label="AccessibilityImageLabelsOnlyOnWifi"/>
+  <int value="100006" label="PromptForDownloadAndroid"/>
+  <int value="100007" label="AccessibilityReadAnythingFontName"/>
+  <int value="100008" label="AccessibilityReadAnythingFontScale"/>
+  <int value="100009" label="AccessibilityReadAnythingColorInfo"/>
+  <int value="100010" label="AccessibilityReadAnythingLineSpacing"/>
+  <int value="100011" label="AccessibilityReadAnythingLetterSpacing"/>
+  <int value="100012" label="LensRegionSearchEnabled"/>
+  <int value="100013" label="HatsSurveyMetadata"/>
+  <int value="100014" label="HomePage"/>
+  <int value="100015" label="HomePageIsNewTabPage"/>
+  <int value="100016" label="NtpCustomBackgroundDict"/>
+  <int value="100017" label="LiveCaptionBubbleExpanded"/>
+  <int value="100018" label="LiveCaptionBubblePinned"/>
+  <int value="100019" label="LiveCaptionEnabled"/>
+  <int value="100020" label="LiveCaptionLanguageCode"/>
+  <int value="100021" label="LiveCaptionMediaFoundationRendererErrorSilenced"/>
+  <int value="100022" label="ShowHomeButton"/>
+  <int value="100023" label="PinnedExtensions"/>
+  <int value="100024" label="SupervisedUserApprovedExtensions"/>
+  <int value="100025" label="IsDefaultPageColorsOnHighContrast"/>
+  <int value="100026" label="ShowFullscreenToolbar"/>
+  <int value="100027" label="AllowJavascriptAppleEvents"/>
+  <int value="100028" label="RestoreAppsAndPagesPrefName"/>
+  <int value="100029" label="AccessibilityAutoclickDelayMs"/>
+  <int value="100030" label="AccessibilityAutoclickEventType"/>
+  <int value="100031" label="AccessibilityAutoclickMenuPosition"/>
+  <int value="100032" label="AccessibilityAutoclickMovementThreshold"/>
+  <int value="100033" label="AccessibilityAutoclickRevertToLeftClick"/>
+  <int value="100034" label="AccessibilityAutoclickStabilizePosition"/>
+  <int value="100035" label="AccessibilityCursorColor"/>
+  <int value="100036"
+      label="AccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed"/>
+  <int value="100037" label="AccessibilityFloatingMenuPosition"/>
+  <int value="100038" label="AccessibilityGreyscaleAmount"/>
+  <int value="100039" label="AccessibilityHueRotationAmount"/>
+  <int value="100040" label="AccessibilitySaturationAmount"/>
+  <int value="100041" label="AccessibilityScreenMagnifierCenterFocus"/>
+  <int value="100042"
+      label="AccessibilityScreenMagnifierFocusFollowingEnabled"/>
+  <int value="100043" label="AccessibilityScreenMagnifierMouseFollowingMode"/>
+  <int value="100044" label="AccessibilitySelectToSpeakBackgroundShading"/>
+  <int value="100045" label="AccessibilitySelectToSpeakEnhancedNetworkVoices"/>
+  <int value="100046" label="AccessibilitySelectToSpeakEnhancedVoiceName"/>
+  <int value="100047"
+      label="AccessibilitySelectToSpeakEnhancedVoicesDialogShown"/>
+  <int value="100048" label="AccessibilitySelectToSpeakHighlightColor"/>
+  <int value="100049" label="AccessibilitySelectToSpeakNavigationControls"/>
+  <int value="100050" label="AccessibilitySelectToSpeakVoiceName"/>
+  <int value="100051" label="AccessibilitySelectToSpeakVoiceSwitching"/>
+  <int value="100052" label="AccessibilitySelectToSpeakWordHighlight"/>
+  <int value="100053" label="AccessibilitySepiaAmount"/>
+  <int value="100054" label="AccessibilitySwitchAccessAutoScanEnabled"/>
+  <int value="100055" label="AccessibilitySwitchAccessAutoScanKeyboardSpeedMs"/>
+  <int value="100056" label="AccessibilitySwitchAccessAutoScanSpeedMs"/>
+  <int value="100057" label="AccessibilitySwitchAccessNextDeviceKeyCodes"/>
+  <int value="100058"
+      label="AccessibilitySwitchAccessPointScanSpeedDipsPerSecond"/>
+  <int value="100059" label="AccessibilitySwitchAccessPreviousDeviceKeyCodes"/>
+  <int value="100060" label="AccessibilitySwitchAccessSelectDeviceKeyCodes"/>
+  <int value="100061" label="AppNotificationBadgingEnabled"/>
+  <int value="100062" label="EnableAutoScreenLock"/>
+  <int value="100063" label="EnableStylusTools"/>
+  <int value="100064" label="FilesAppFolderShortcuts"/>
+  <int value="100065" label="FilesAppTrashEnabled"/>
+  <int value="100066" label="FilesAppUIPrefsMigrated"/>
+  <int value="100067" label="LaunchPaletteOnEjectEvent"/>
+  <int value="100068" label="LauncherContinueSectionHidden"/>
+  <int value="100069" label="LauncherFeedbackOnContinueSectionSent"/>
+  <int value="100070" label="LauncherResultEverLaunched"/>
+  <int value="100071" label="MessageCenterLockScreenMode"/>
+  <int value="100072" label="MouseAcceleration"/>
+  <int value="100073" label="MouseReverseScroll"/>
+  <int value="100074" label="MouseScrollAcceleration"/>
+  <int value="100075" label="MouseScrollSensitivity"/>
+  <int value="100076" label="MouseSensitivity"/>
+  <int value="100077" label="NaturalScroll"/>
+  <int value="100078" label="OobeMarketingOptInChoice"/>
+  <int value="100079" label="OobeMarketingOptInScreenFinished"/>
+  <int value="100080" label="PointingStickAcceleration"/>
+  <int value="100081" label="PointingStickSensitivity"/>
+  <int value="100082" label="PowerAdaptiveChargingEnabled"/>
+  <int value="100083" label="PowerAdaptiveChargingNudgeShown"/>
+  <int value="100084" label="PrimaryMouseButtonRight"/>
+  <int value="100085" label="PrimaryPointingStickButtonRight"/>
+  <int value="100086" label="ProjectorAnnotatorLastUsedMarkerColor"/>
+  <int value="100087" label="ProjectorCreationFlowEnabled"/>
+  <int value="100088" label="ProjectorCreationFlowLanguage"/>
+  <int value="100089" label="ProjectorGalleryOnboardingShowCount"/>
+  <int value="100090" label="ProjectorViewerOnboardingShowCount"/>
+  <int value="100091" label="ShelfAlignment"/>
+  <int value="100092" label="ShelfAutoHideBehavior"/>
+  <int value="100093" label="SuggestedContentEnabled"/>
+  <int value="100094" label="SyncableWallpaperInfo"/>
+  <int value="100095" label="TapDraggingEnabled"/>
+  <int value="100096" label="TapToClickEnabled"/>
+  <int value="100097" label="TouchpadAcceleration"/>
+  <int value="100098" label="TouchpadHapticClickSensitivity"/>
+  <int value="100099" label="TouchpadHapticFeedback"/>
+  <int value="100100" label="TouchpadScrollAcceleration"/>
+  <int value="100101" label="TouchpadScrollSensitivity"/>
+  <int value="100102" label="TouchpadSensitivity"/>
+  <int value="100103" label="XkbAutoRepeatDelay"/>
+  <int value="100104" label="XkbAutoRepeatEnabled"/>
+  <int value="100105" label="XkbAutoRepeatInterval"/>
+  <int value="100106" label="MostRecentConnectTetheringResponderIds"/>
+  <int value="100107" label="MostRecentTetherAvailablilityResponderIds"/>
+  <int value="100108" label="GuestOsTerminalSettings"/>
+  <int value="100109" label="PreferredLanguagesSyncable"/>
+  <int value="100110" label="SyncOsDemographicsPrefName"/>
+  <int value="100111" label="AppListPreferredOrder"/>
+  <int value="100112" label="ChromeOSReleaseNotesVersion"/>
+  <int value="100113" label="LanguageEnabledImesSyncable"/>
+  <int value="100114" label="LanguagePreloadEnginesSyncable"/>
+  <int value="100115" label="LanguageRemapAltKeyTo"/>
+  <int value="100116" label="LanguageRemapAssistantKeyTo"/>
+  <int value="100117" label="LanguageRemapBackspaceKeyTo"/>
+  <int value="100118" label="LanguageRemapCapsLockKeyTo"/>
+  <int value="100119" label="LanguageRemapControlKeyTo"/>
+  <int value="100120" label="LanguageRemapEscapeKeyTo"/>
+  <int value="100121" label="LanguageRemapExternalCommandKeyTo"/>
+  <int value="100122" label="LanguageRemapExternalMetaKeyTo"/>
+  <int value="100123" label="LanguageRemapSearchKeyTo"/>
+  <int value="100124" label="MultiProfileNeverShowIntro"/>
+  <int value="100125" label="MultiProfileWarningShowDismissed"/>
+  <int value="100126" label="OfficeSetupComplete"/>
+  <int value="100127" label="ResolveTimezoneByGeolocationMethod"/>
+  <int value="100128" label="ResolveTimezoneByGeolocationMigratedToMethod"/>
+  <int value="100129" label="ShelfDefaultPinLayoutRolls"/>
+  <int value="100130" label="TextToSpeechLangToVoiceName"/>
+  <int value="100131" label="TextToSpeechPitch"/>
+  <int value="100132" label="TextToSpeechRate"/>
+  <int value="100133" label="TextToSpeechVolume"/>
+  <int value="100134" label="Use24HourClock"/>
+  <int value="100135" label="UserPrintersAllowed"/>
+  <int value="100136" label="ProximityAuthIsChromeOSLoginEnabled"/>
+  <int value="100137" label="UserImageInfo"/>
+  <int value="100138" label="GdataDisabled"/>
+  <int value="100139" label="GdataCellularDisabled"/>
+  <int value="100140" label="AlternateErrorPagesEnabled"/>
+  <int value="100141" label="TabDiscardingExceptions"/>
+  <int value="100142" label="AccessibilityImageLabelsEnabled"/>
+  <int value="100143" label="AccessibilityImageLabelsOptInAccepted"/>
+  <int value="100144" label="AccessibilityPdfOcrAlwaysActive"/>
+  <int value="100145" label="ApplyPageColorsOnlyOnIncreasedContrast"/>
+  <int value="100146" label="DefaultCharset"/>
+  <int value="100147" label="DefaultTasksByMimeType"/>
+  <int value="100148" label="DefaultTasksBySuffix"/>
+  <int value="100149" label="DevToolsSyncPreferences"/>
+  <int value="100150" label="DevToolsSyncedPreferencesSyncEnabled"/>
+  <int value="100151" label="DownloadBubbleIphSuppression"/>
+  <int value="100152" label="EnableDoNotTrack"/>
+  <int value="100153" label="ExtensionCommands"/>
+  <int value="100154" label="ExtensionsUIDeveloperMode"/>
+  <int value="100155" label="HttpsOnlyModeEnabled"/>
+  <int value="100156" label="LiveTranslateEnabled"/>
+  <int value="100157" label="LiveTranslateTargetLanguageCode"/>
+  <int value="100158" label="NetworkEasterEggHighScore"/>
+  <int value="100159" label="NetworkPredictionOptions"/>
+  <int value="100160" label="NetworkQualities"/>
+  <int value="100161" label="NtpAppPageNames"/>
+  <int value="100162" label="PageColors"/>
+  <int value="100163" label="PerformanceTracingEnabled"/>
+  <int value="100164" label="PluginsAlwaysOpenPdfExternally"/>
+  <int value="100165" label="PrivacySandboxApisEnabled"/>
+  <int value="100166" label="PrivacySandboxFirstPartySetsEnabled"/>
+  <int value="100167" label="PrivacySandboxManuallyControlled"/>
+  <int value="100168" label="PromptForDownload"/>
+  <int value="100169" label="ProtectedContentDefault"/>
+  <int value="100170" label="RestoreOnStartup"/>
+  <int value="100171" label="SearchSuggestEnabled"/>
+  <int value="100172" label="SharingVapidKey"/>
+  <int value="100173" label="URLsToRestoreOnStartup"/>
+  <int value="100174" label="SpellCheckEnable"/>
+  <int value="100175" label="ProfileContentSettingsExceptionsAntiAbuse"/>
+  <int value="100176"
+      label="ProfileContentSettingsExceptionsAutomaticDownloads"/>
+  <int value="100177" label="ProfileContentSettingsExceptionsCookies"/>
+  <int value="100178"
+      label="ProfileContentSettingsExceptionsGetDisplayMediaSetSelectAllScreens"/>
+  <int value="100179" label="ProfileContentSettingsExceptionsImages"/>
+  <int value="100180" label="ProfileContentSettingsExceptionsJavascript"/>
+  <int value="100181" label="ProfileContentSettingsExceptionsLocalFonts"/>
+  <int value="100182" label="ProfileContentSettingsExceptionsMouselock"/>
+  <int value="100183" label="ProfileContentSettingsExceptionsPopups"/>
+  <int value="100184" label="ProfileContentSettingsExceptionsWindowPlacement"/>
+  <int value="100185" label="ProfileDefaultContentSettingValuesAntiAbuse"/>
+  <int value="100186"
+      label="ProfileDefaultContentSettingValuesAutomaticDownloads"/>
+  <int value="100187" label="ProfileDefaultContentSettingValuesCookies"/>
+  <int value="100188"
+      label="ProfileDefaultContentSettingValuesGetDisplayMediaSetSelectAllScreens"/>
+  <int value="100189" label="ProfileDefaultContentSettingValuesImages"/>
+  <int value="100190" label="ProfileDefaultContentSettingValuesJavascript"/>
+  <int value="100191" label="ProfileDefaultContentSettingValuesLocalFonts"/>
+  <int value="100192" label="ProfileDefaultContentSettingValuesMouselock"/>
+  <int value="100193" label="ProfileDefaultContentSettingValuesPopups"/>
+  <int value="100194"
+      label="ProfileDefaultContentSettingValuesWindowPlacement"/>
+  <int value="100195" label="WebauthnCablev2Pairings"/>
+  <int value="200000" label="ArticlesForYouEnabled"/>
+  <int value="200001" label="ContextualSearchEnabled_IOS"/>
+  <int value="200002" label="DefaultCharset_IOS"/>
+  <int value="200003" label="EnableDoNotTrack_IOS"/>
+  <int value="200004" label="IosHandoffToOtherDevices"/>
+  <int value="200005" label="NetworkPredictionSetting"/>
+  <int value="200006" label="NTPContentSuggestionsEnabled"/>
+  <int value="200007" label="NTPContentSuggestionsForSupervisedUserEnabled"/>
+  <int value="200008" label="SearchSuggestEnabled_IOS"/>
+  <int value="200009" label="TrackPricesOnTabsEnabled"/>
+  <int value="200010" label="VoiceSearchLocale"/>
+</enum>
+
 <enum name="SyncAttachmentStoreResult">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="UNSPECIFIED_ERROR"/>

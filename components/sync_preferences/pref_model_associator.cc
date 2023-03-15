@@ -14,6 +14,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -531,6 +532,15 @@ void PrefModelAssociator::OnPrefValueChanged(const std::string& name) {
       changes.emplace_back(FROM_HERE, syncer::SyncChange::ACTION_DELETE,
                            syncer::SyncData::CreateLocalDelete(name, type_));
     }
+  }
+
+  if (client_ &&
+      // Only log if there's actually something to sync.
+      !changes.empty()) {
+    base::UmaHistogramSparse("Sync.SyncablePrefValueChanged",
+                             client_->GetSyncablePrefsDatabase()
+                                 .GetSyncablePrefMetadata(name)
+                                 ->syncable_pref_id_);
   }
 
   sync_processor_->ProcessSyncChanges(FROM_HERE, changes);
