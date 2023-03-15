@@ -3327,6 +3327,21 @@
             ]
         }
     ],
+    "CrOSLateBootSlowAdaptiveCharging": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootSlowAdaptiveCharging"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootSuspendToHibernate": [
         {
             "platforms": [
