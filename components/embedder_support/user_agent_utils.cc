@@ -62,7 +62,7 @@ constexpr wchar_t kUniversalApiContractName[] =
 // available, there will either be a new API introduced, or we will need
 // to rely on querying the IsApiContractPresentByMajor function used by
 // user_agent_utils_unittest.cc.
-const int kHighestKnownUniversalApiContractVersion = 14;
+const int kHighestKnownUniversalApiContractVersion = 15;
 
 int GetPreRS5UniversalApiContractVersion() {
   // This calls Kernel32Version() to get the real non-spoofable version (as
