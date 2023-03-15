@@ -4,6 +4,10 @@
 
 config("benchmark_config") {
   include_dirs = [ "src/include" ]
+
+  if (!is_component_build) {
+    defines = [ "BENCHMARK_STATIC_DEFINE" ]
+  }
 }
 
 # TODO(crbug.com/1344570): Remove once third_party/google_benchmark no longer
@@ -12,10 +16,13 @@ config("benchmark_suppress_warnings") {
   cflags = [ "-Wno-deprecated-declarations" ]
 }
 
-source_set("google_benchmark") {
+component("google_benchmark") {
   testonly = true
 
-  public = [ "src/include/benchmark/benchmark.h" ]
+  public = [
+    "src/include/benchmark/benchmark.h",
+    "src/include/benchmark/export.h",
+  ]
 
   sources = [
     "src/src/arraysize.h",
@@ -27,6 +34,7 @@ source_set("google_benchmark") {
     "src/src/benchmark_register.h",
     "src/src/benchmark_runner.cc",
     "src/src/benchmark_runner.h",
+    "src/src/check.cc",
     "src/src/check.h",
     "src/src/colorprint.cc",
     "src/src/colorprint.h",
@@ -47,8 +55,6 @@ source_set("google_benchmark") {
     "src/src/perf_counters.h",
     "src/src/re.h",
     "src/src/reporter.cc",
-    "src/src/sleep.cc",
-    "src/src/sleep.h",
     "src/src/statistics.cc",
     "src/src/statistics.h",
     "src/src/string_util.cc",
@@ -68,7 +74,13 @@ source_set("google_benchmark") {
     ":benchmark_suppress_warnings",
   ]
 
+  if (is_win) {
+    configs -= [ "//build/config/win:nominmax" ]
+  }
+
   defines = [
+    "benchmark_EXPORTS=1",
+
     # Tell gtest to always use standard regular expressions.
     "HAVE_GNU_POSIX_REGEX=0",
     "HAVE_POSIX_REGEX=0",
@@ -76,8 +88,9 @@ source_set("google_benchmark") {
   ]
 }
 
-source_set("benchmark_main") {
+component("benchmark_main") {
   testonly = true
   sources = [ "src/src/benchmark_main.cc" ]
+  defines = [ "benchmark_EXPORTS=1" ]
   deps = [ ":google_benchmark" ]
 }
