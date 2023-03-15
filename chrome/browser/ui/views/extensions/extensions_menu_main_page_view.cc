@@ -72,7 +72,7 @@ bool IsSiteSettingsToggleVisible(
   return !toolbar_model->IsRestrictedUrl(web_contents->GetLastCommittedURL());
 }
 
-// Converts a view to a InstalledExtensionsMenuItemView. This cannot
+// Converts a view to a ExtensionMenuItemView. This cannot
 // be used to *determine* if a view is an ExtensionMenuItemView (it
 // should only be used when the view is known to be one). It is only used as an
 // extra measure to prevent bad static casts.
@@ -81,9 +81,9 @@ ExtensionMenuItemView* GetAsMenuItem(views::View* view) {
   return views::AsViewClass<ExtensionMenuItemView>(view);
 }
 
-// Returns the InstalledExtensionsMenuItemView corresponding to `action_id` if
+// Returns the ExtensionMenuItemView corresponding to `action_id` if
 // it is a children of `parent_view`. The children of the parent view must be
-// InstalledExtensionsMenuItemView, otherwise it will DCHECK.
+// ExtensionMenuItemView, otherwise it will DCHECK.
 ExtensionMenuItemView* GetMenuItem(
     views::View* parent_view,
     const ToolbarActionsModel::ActionId& action_id) {
