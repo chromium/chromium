@@ -46,12 +46,6 @@ class IncomingConnection : public Connection {
   std::string GetConnectionVerificationPin() const { return pin_; }
 
  private:
-  RandomSessionId random_session_id_;
-
-  // A secret represented in a 32-byte array that gets generated and sent to the
-  // source device so it can be used later to authenticate the connection.
-  std::array<uint8_t, 32> shared_secret_;
-
   // A 4-digit decimal pin code derived from the connection's authentication
   // token for the alternative pin authentication flow.
   std::string pin_;

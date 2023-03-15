@@ -15,19 +15,14 @@ namespace ash::quick_start {
 IncomingConnection::IncomingConnection(NearbyConnection* nearby_connection,
                                        RandomSessionId session_id,
                                        const std::string& authentication_token)
-    : Connection(nearby_connection),
-      random_session_id_(session_id),
-      pin_(DerivePin(authentication_token)) {
-  crypto::RandBytes(shared_secret_);
-}
+    : Connection(nearby_connection, session_id),
+      pin_(DerivePin(authentication_token)) {}
 
 IncomingConnection::IncomingConnection(NearbyConnection* nearby_connection,
                                        RandomSessionId session_id,
                                        const std::string& authentication_token,
-                                       std::array<uint8_t, 32> shared_secret)
-    : Connection(nearby_connection),
-      random_session_id_(session_id),
-      shared_secret_(shared_secret),
+                                       SharedSecret shared_secret)
+    : Connection(nearby_connection, session_id, shared_secret),
       pin_(DerivePin(authentication_token)) {}
 
 IncomingConnection::~IncomingConnection() = default;

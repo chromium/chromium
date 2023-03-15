@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_CONNECTION_H_
 
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 
 namespace ash::quick_start {
@@ -14,7 +15,14 @@ namespace ash::quick_start {
 // a Nearby Connection.
 class Connection {
  public:
-  explicit Connection(NearbyConnection* nearby_connection);
+  using SharedSecret = std::array<uint8_t, 32>;
+
+  Connection(NearbyConnection* nearby_connection, RandomSessionId session_id);
+
+  Connection(NearbyConnection* nearby_connection,
+             RandomSessionId session_id,
+             SharedSecret shared_secret);
+
   Connection(const Connection&) = delete;
   Connection& operator=(const Connection&) = delete;
   virtual ~Connection() = default;
@@ -33,6 +41,8 @@ class Connection {
                                   PayloadResponseCallback callback);
 
   NearbyConnection* nearby_connection_;
+  RandomSessionId random_session_id_;
+  SharedSecret shared_secret_;
 };
 
 }  // namespace ash::quick_start
