@@ -4,18 +4,13 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {TimezoneSelectorElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-suite('TimezoneSelectorTests', function() {
-  /** @type {TimezoneSelector} */
-  let timezoneSelector = null;
-
-  setup(function() {
-    PolymerTest.clearBody();
-  });
+suite('<timezone-selector>', function() {
+  let timezoneSelector: TimezoneSelectorElement;
 
   teardown(function() {
     timezoneSelector.remove();
@@ -38,10 +33,10 @@ suite('TimezoneSelectorTests', function() {
 
     assertEquals(
         null,
-        timezoneSelector.shadowRoot.querySelector('#userTimeZoneSelector'));
+        timezoneSelector.shadowRoot!.querySelector('#userTimeZoneSelector'));
     assertEquals(
         null,
-        timezoneSelector.shadowRoot.querySelector('#systemTimezoneSelector'));
+        timezoneSelector.shadowRoot!.querySelector('#systemTimezoneSelector'));
   });
 
   test('Per-user timezone enabled', async () => {
@@ -59,9 +54,8 @@ suite('TimezoneSelectorTests', function() {
 
     flush();
 
-    const userTimezoneSelector = assert(
-        timezoneSelector.shadowRoot.querySelector('#userTimeZoneSelector'));
-    const systemTimezoneSelector = assert(
-        timezoneSelector.shadowRoot.querySelector('#systemTimezoneSelector'));
+    assert(timezoneSelector.shadowRoot!.querySelector('#userTimeZoneSelector'));
+    assert(
+        timezoneSelector.shadowRoot!.querySelector('#systemTimezoneSelector'));
   });
 });

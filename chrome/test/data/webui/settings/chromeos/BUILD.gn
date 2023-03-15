@@ -173,7 +173,6 @@ test_files = [
   "tether_connection_dialog_test.js",
   "text_to_speech_page_tests.js",
   "text_to_speech_subpage_tests.js",
-  "timezone_selector_test.js",
   "timezone_subpage_test.js",
   "utils.ts",
 
@@ -212,6 +211,8 @@ test_files = [
   "app_management/test_store.js",
   "app_management/test_util.js",
   "app_management/toggle_row_test.js",
+
+  "date_time_page/timezone_selector_test.ts",
 
   "os_a11y_page/audio_and_captions_page_tests.ts",
   "os_a11y_page/tts_subpage_test.ts",

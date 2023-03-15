@@ -259,6 +259,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'cursor_and_touchpad_page_tests.js',
  ],
  ['DateTimePage', 'date_time_page_tests.js'],
+ ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  [
    'DisplayAndMagnificationPage',
    'display_and_magnification_page_tests.js',
@@ -477,7 +478,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'text_to_speech_page_tests.js',
  ],
  ['TextToSpeechSubpage', 'text_to_speech_subpage_tests.js'],
- ['TimezoneSelector', 'timezone_selector_test.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.js'],
 ].forEach(test => registerTest(...test));
 
