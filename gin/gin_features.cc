@@ -184,4 +184,9 @@ BASE_FEATURE(kWebAssemblyTailCall,
              "WebAssemblyTailCall",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable WebAssembly inlining (not user visible).
+BASE_FEATURE(kWebAssemblyInlining,
+             "WebAssemblyInlining",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
