@@ -72,10 +72,9 @@ const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
     "DiscoverFeedSRSPreloadTemplatesEnabled";
 
 // EnableDiscoverFeedTopSyncPromo parameters.
+const char kDiscoverFeedTopSyncPromoStyle[] = "DiscoverFeedTopSyncPromoStyle";
 const char kDiscoverFeedTopSyncPromoAutodismissImpressions[] =
     "autodismissImpressions";
-const char kDiscoverFeedTopSyncPromoStyleFullWithTitle[] = "fullWithTitle";
-const char kDiscoverFeedTopSyncPromoStyleCompact[] = "compact";
 
 // EnableFollowingFeedDefaultSortType parameters.
 const char kFollowingFeedDefaultSortTypeSortByLatest[] = "SortByLatest";
@@ -115,10 +114,11 @@ bool IsDiscoverFeedTopSyncPromoEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedTopSyncPromo);
 }
 
-bool IsDiscoverFeedTopSyncPromoCompact() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyleCompact,
-      false);
+SigninPromoViewStyle GetTopOfFeedPromoStyle() {
+  CHECK(IsDiscoverFeedTopSyncPromoEnabled());
+  // Defaults to Compact Titled (Unpersonalized).
+  return (SigninPromoViewStyle)base::GetFieldTrialParamByFeatureAsInt(
+      kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyle, 1);
 }
 
 int FeedSyncPromoAutodismissCount() {

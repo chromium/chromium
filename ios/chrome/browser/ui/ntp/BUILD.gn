@@ -373,6 +373,7 @@ source_set("feature_flags") {
   deps = [
     "//components/prefs",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui/authentication/cells:constants",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
   ]
   public_deps = [ "//base" ]

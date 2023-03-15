@@ -28,8 +28,6 @@ const CGFloat kContentStackHorizontalPadding = 18;
 const CGFloat kContentStackVerticalPadding = 9;
 // Border radius of the promo container.
 const CGFloat kPromoViewContainerBorderRadius = 15;
-// The image name of the promo view's icon.
-NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
 
 // Returns an array of constraints to make all sides of `innerView` and
 // `outerView` match, with `innerView` inset by `insets`.
@@ -107,7 +105,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
     DCHECK(!self.promoView);
     self.promoViewContainer = [[UIView alloc] init];
     self.promoViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    if (IsDiscoverFeedTopSyncPromoCompact()) {
+    if (GetTopOfFeedPromoStyle() == SigninPromoViewStyleCompactTitled) {
       self.promoViewContainer.backgroundColor =
           [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
     } else {
@@ -138,10 +136,8 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 
 - (void)updateSigninPromoWithConfigurator:
     (SigninPromoViewConfigurator*)configurator {
-  // TODO(crbug.com/1331010): Use feature params to specify which style of promo
-  // to use.
   [configurator configureSigninPromoView:self.promoView
-                               withStyle:SigninPromoViewStyleTitledCompact];
+                               withStyle:GetTopOfFeedPromoStyle()];
 }
 
 #pragma mark - Properties
@@ -186,16 +182,14 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 
   SigninPromoViewConfigurator* configurator =
       self.delegate.signinPromoConfigurator;
-  SigninPromoViewStyle promoViewStyle = IsDiscoverFeedTopSyncPromoCompact()
-                                            ? SigninPromoViewStyleTitledCompact
-                                            : SigninPromoViewStyleTitled;
+  SigninPromoViewStyle promoViewStyle = GetTopOfFeedPromoStyle();
   [configurator configureSigninPromoView:promoView withStyle:promoViewStyle];
+
+  // Override promo text for top of feed.
   promoView.titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_TITLE);
   promoView.textLabel.text =
       l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY);
-  // TODO(crbug.com/1331010): Update the Promo icon.
-  [promoView setNonProfileImage:[UIImage imageNamed:kPromoViewImageName]];
   return promoView;
 }
 
