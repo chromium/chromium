@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../appearance_page/appearance_page.js';
-import '../privacy_page/privacy_guide_promo.js';
+import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
 import '../safety_check_page/safety_check_page.js';
 import '../autofill_page/autofill_page.js';
@@ -44,8 +44,8 @@ import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.
 import {PageVisibility} from '../page_visibility.js';
 import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_page/performance_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
+import {PrivacyGuideAvailabilityMixin} from '../privacy_page/privacy_guide/privacy_guide_availability_mixin.js';
 import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
-import {PrivacyGuideAvailabilityMixin} from '../privacy_page/privacy_guide_availability_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 import {getSearchManager, SearchResult} from '../search_settings.js';

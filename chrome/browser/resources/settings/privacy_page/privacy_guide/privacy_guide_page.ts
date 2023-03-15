@@ -32,13 +32,13 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions, 
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
-import {PrivacyGuideAvailabilityMixin} from '../../privacy_page/privacy_guide_availability_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, Router} from '../../router.js';
 import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {PrivacyGuideStep} from './constants.js';
+import {PrivacyGuideAvailabilityMixin} from './privacy_guide_availability_mixin.js';
 import {getTemplate} from './privacy_guide_page.html.js';
 import {StepIndicatorModel} from './step_indicator.js';
 
