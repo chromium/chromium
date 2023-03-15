@@ -273,6 +273,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "components/remote_cocoa/browser/application_host.h"
 #endif
@@ -543,8 +544,12 @@ class TabContainerOverlayView : public views::View {
         BrowserFrameActiveState::kUseCurrent);
     canvas->DrawColor(frame_color);
 
-    // TODO(https://crbug.com/1414521): Support extension based themes /
-    // backgrounds.
+    auto* theme_service =
+        ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
+    if (!theme_service->UsingSystemTheme()) {
+      auto* non_client_frame_view = browser_view_->frame()->GetFrameView();
+      non_client_frame_view->PaintThemedFrame(canvas);
+    }
   }
 
  private:

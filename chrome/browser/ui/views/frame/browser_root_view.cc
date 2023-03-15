@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/touch_uma/touch_uma.h"
+#include "chrome/common/chrome_features.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "content/public/browser/browser_thread.h"
@@ -349,9 +350,14 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
         views::View* tabstrip_root = this;
 #if BUILDFLAG(IS_MAC)
         // In immersive fullscreen, the top container is hosted in
-        // `overlay_widget`, which has its own root view.
-        if (browser_view_->immersive_mode_controller()->IsRevealed())
-          tabstrip_root = browser_view_->overlay_widget()->GetRootView();
+        // `overlay_widget` or `tab_overlay_widget`, each have their own root
+        // view.
+        if (browser_view_->immersive_mode_controller()->IsRevealed()) {
+          tabstrip_root =
+              base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)
+                  ? browser_view_->tab_overlay_widget()->GetRootView()
+                  : browser_view_->overlay_widget()->GetRootView();
+        }
 #endif
         ConvertRectToTarget(tabstrip(), tabstrip_root, &bounds);
         canvas->ClipRect(bounds, SkClipOp::kDifference);

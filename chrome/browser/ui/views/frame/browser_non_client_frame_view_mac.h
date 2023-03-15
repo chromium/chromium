@@ -76,6 +76,9 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
 
   gfx::Insets GetCaptionButtonInsets() const;
 
+  // Used by TabContainerOverlayView to paint the tab strip background.
+  void PaintThemedFrame(gfx::Canvas* canvas) override;
+
  protected:
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -93,8 +96,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   static gfx::Rect GetCaptionButtonPlaceholderBounds(
       const gfx::Rect& frame,
       const gfx::Insets& caption_button_insets);
-
-  void PaintThemedFrame(gfx::Canvas* canvas);
 
   CGFloat FullscreenBackingBarHeight() const;
 
