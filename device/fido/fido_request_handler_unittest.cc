@@ -88,8 +88,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   void WaitForAndExpectAvailableTransportsAre(
       base::flat_set<FidoTransportProtocol> expected_transports,
       FidoRequestHandlerBase::RecognizedCredential
-          has_platform_authenticator_credential =
-              FidoRequestHandlerBase::RecognizedCredential::kUnknown) {
+          has_platform_authenticator_credential) {
     auto result = WaitForTransportAvailabilityInfo();
     EXPECT_THAT(result.available_transports,
                 ::testing::UnorderedElementsAreArray(expected_transports));
@@ -226,15 +225,10 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
                        weak_factory_.GetWeakPtr(), authenticator)));
   }
 
-  void AuthenticatorAdded(FidoDiscoveryBase* discovery,
-                          FidoAuthenticator* authenticator) override {
-    if (authenticator->AuthenticatorTransport() ==
-        FidoTransportProtocol::kInternal) {
-      transport_availability_info().has_platform_authenticator_credential =
-          has_platform_credential_;
-    }
-
-    FidoRequestHandlerBase::AuthenticatorAdded(discovery, authenticator);
+  void GetPlatformCredentialStatus(
+      FidoAuthenticator* platform_authenticator) override {
+    OnHavePlatformCredentialStatus(/*user_entities=*/{},
+                                   has_platform_credential_);
   }
 
   void HandleResponse(FidoAuthenticator* authenticator,
@@ -607,7 +601,9 @@ TEST_F(FidoRequestHandlerTest, InternalTransportDisallowedIfMarkedUnavailable) {
       callback().callback());
   request_handler->set_observer(&observer);
 
-  observer.WaitForAndExpectAvailableTransportsAre({});
+  observer.WaitForAndExpectAvailableTransportsAre(
+      {},
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
 TEST_F(FidoRequestHandlerTest,
@@ -619,7 +615,8 @@ TEST_F(FidoRequestHandlerTest,
 
   request_handler->set_observer(&observer);
   observer.WaitForAndExpectAvailableTransportsAre(
-      {FidoTransportProtocol::kUsbHumanInterfaceDevice});
+      {FidoTransportProtocol::kUsbHumanInterfaceDevice},
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
 #if BUILDFLAG(IS_WIN)

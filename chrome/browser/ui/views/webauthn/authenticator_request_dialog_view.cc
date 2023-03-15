@@ -104,6 +104,8 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // configuration is delegated to the |sheet_|, and the new sheet likely wants
   // to provide a new configuration.
   other_mechanisms_button_->SetVisible(ShouldOtherMechanismsButtonBeVisible());
+  other_mechanisms_button_->SetText(
+      sheet_->model()->GetOtherMechanismButtonLabel());
   manage_devices_button_->SetVisible(
       sheet_->model()->IsManageDevicesButtonVisible());
   DialogModelChanged();
@@ -270,11 +272,9 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
   hbox->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
-  other_mechanisms_button_ = new views::MdTextButton(
-      base::BindRepeating(
-          &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
-          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRY_ANOTHER_WAY));
+  other_mechanisms_button_ = new views::MdTextButton(base::BindRepeating(
+      &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
+      base::Unretained(this)));
   hbox->AddChildView(other_mechanisms_button_.get());
 
   manage_devices_button_ = new views::MdTextButton(

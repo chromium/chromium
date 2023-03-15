@@ -60,6 +60,7 @@ class AuthenticatorSheetModelBase
   bool IsBackButtonVisible() const override;
   bool IsCancelButtonVisible() const override;
   bool IsOtherMechanismButtonVisible() const override;
+  std::u16string GetOtherMechanismButtonLabel() const override;
   std::u16string GetCancelButtonLabel() const override;
   bool IsAcceptButtonVisible() const override;
   bool IsAcceptButtonEnabled() const override;
@@ -608,6 +609,28 @@ class AuthenticatorCreatePasskeySheetModel
   bool IsAcceptButtonEnabled() const override;
   void OnAccept() override;
   std::u16string GetAcceptButtonLabel() const override;
+};
+
+// A confirmation screen that can be shown instead of the mechanism selection
+// screen when we are confident a request can be resolved using an already
+// paired phone.
+class AuthenticatorPhoneConfirmationSheet : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorPhoneConfirmationSheet(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorPhoneConfirmationSheet() override;
+
+ private:
+  // AuthenticatorSheetModelbase:
+  const gfx::VectorIcon& GetStepIllustration(
+      ImageColorScheme color_scheme) const override;
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsAcceptButtonVisible() const override;
+  bool IsAcceptButtonEnabled() const override;
+  void OnAccept() override;
+  std::u16string GetAcceptButtonLabel() const override;
+  std::u16string GetOtherMechanismButtonLabel() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

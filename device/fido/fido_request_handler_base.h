@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // Whether the platform authenticator has a matching credential for the
     // request. This is only set for a GetAssertion request.
     RecognizedCredential has_platform_authenticator_credential =
-        RecognizedCredential::kUnknown;
+        RecognizedCredential::kNoRecognizedCredential;
 
     // The set of recognized platform credential user entities that can fulfill
     // a GetAssertion request. Not all platform authenticators report this, so

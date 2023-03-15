@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-
 namespace gfx {
 struct VectorIcon;
 }
@@ -37,7 +36,7 @@ class AuthenticatorRequestSheetModel {
   // Indicates what style to pick for the step illustration.
   enum class ImageColorScheme { kDark, kLight };
 
-  virtual ~AuthenticatorRequestSheetModel() {}
+  virtual ~AuthenticatorRequestSheetModel() = default;
 
   virtual bool IsActivityIndicatorVisible() const = 0;
   virtual bool IsBackButtonVisible() const = 0;
@@ -53,6 +52,7 @@ class AuthenticatorRequestSheetModel {
 
   virtual bool IsManageDevicesButtonVisible() const;
   virtual bool IsOtherMechanismButtonVisible() const;
+  virtual std::u16string GetOtherMechanismButtonLabel() const;
 
   virtual const gfx::VectorIcon& GetStepIllustration(
       ImageColorScheme color_scheme) const = 0;

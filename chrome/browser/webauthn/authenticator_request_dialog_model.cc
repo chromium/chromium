@@ -756,6 +756,16 @@ absl::optional<size_t> AuthenticatorRequestDialogModel::current_mechanism()
   return current_mechanism_;
 }
 
+void AuthenticatorRequestDialogModel::ContactPriorityPhone() {
+  for (auto& mechanism : mechanisms_) {
+    if (absl::holds_alternative<Mechanism::Phone>(mechanism.type)) {
+      mechanism.callback.Run();
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
 void AuthenticatorRequestDialogModel::ContactPhoneForTesting(
     const std::string& name) {
   // Ensure BLE is powered so that `ContactPhone()` shows the "Check your phone"
@@ -1201,6 +1211,17 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
           /*priority=*/false);
       specific_phones_listed = true;
     }
+    bool skip_to_phone_confirmation =
+        base::FeatureList::IsEnabled(device::kWebAuthnPhoneConfirmationSheet) &&
+        is_get_assertion &&
+        transport_availability_.has_platform_authenticator_credential ==
+            device::FidoRequestHandlerBase::RecognizedCredential::
+                kNoRecognizedCredential &&
+        paired_phones_.size() == 1 && !use_conditional_mediation_ &&
+        transport_availability_.is_only_hybrid_or_internal;
+    if (skip_to_phone_confirmation) {
+      pending_step_ = Step::kPhoneConfirmationSheet;
+    }
   }
 
   if (include_add_phone_option) {
@@ -1209,9 +1230,9 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
     // code.
     bool is_priority = false;
     if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)) {
-      // On Windows<=10, we cannot tell in advance if the platform authenticator
-      // can fulfill a get assertion request. In that case, don't jump to the QR
-      // code.
+      // On Windows WebAuthn API < 4, we cannot tell in advance if the platform
+      // authenticator can fulfill a get assertion request. In that case, don't
+      // jump to the QR code.
       bool platform_authenticator_could_fulfill_get_assertion =
           is_get_assertion && !use_conditional_mediation_ &&
           transport_availability_.has_platform_authenticator_credential !=

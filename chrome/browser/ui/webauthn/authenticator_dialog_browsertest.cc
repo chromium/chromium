@@ -305,6 +305,12 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "create_passkey") {
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+    } else if (name == "phone_confirmation") {
+      model_->set_cable_transport_info(
+          /*extension_is_v2=*/true, /*paired_phones=*/{phone},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kPhoneConfirmationSheet);
     }
 #if BUILDFLAG(IS_MAC)
     else if (name == "ble_permission_mac") {  // NOLINT
@@ -510,5 +516,9 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_permission_mac) {
 #endif
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_create_passkey) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
   ShowAndVerifyUi();
 }

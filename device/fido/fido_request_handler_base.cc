@@ -409,7 +409,7 @@ void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
     std::vector<DiscoverableCredentialMetadata> creds,
     RecognizedCredential has_credentials) {
   DCHECK_EQ(transport_availability_info_.has_platform_authenticator_credential,
-            RecognizedCredential::kUnknown);
+            RecognizedCredential::kNoRecognizedCredential);
   transport_availability_info_.has_platform_authenticator_credential =
       has_credentials;
   transport_availability_info_.recognized_platform_authenticator_credentials =

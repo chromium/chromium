@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 
+#include <string>
+
 bool AuthenticatorRequestSheetModel::ShouldFocusBackArrow() const {
   return false;
 }
@@ -27,6 +29,11 @@ bool AuthenticatorRequestSheetModel::IsManageDevicesButtonVisible() const {
 
 bool AuthenticatorRequestSheetModel::IsOtherMechanismButtonVisible() const {
   return false;
+}
+
+std::u16string AuthenticatorRequestSheetModel::GetOtherMechanismButtonLabel()
+    const {
+  return std::u16string();
 }
 
 void AuthenticatorRequestSheetModel::OnManageDevices() {}

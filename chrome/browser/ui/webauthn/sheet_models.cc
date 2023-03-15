@@ -106,6 +106,11 @@ bool AuthenticatorSheetModelBase::IsOtherMechanismButtonVisible() const {
          dialog_model_ && dialog_model_->mechanisms().size() > 1;
 }
 
+std::u16string AuthenticatorSheetModelBase::GetOtherMechanismButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRY_ANOTHER_WAY);
+}
+
 std::u16string AuthenticatorSheetModelBase::GetCancelButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_CANCEL);
 }
@@ -1420,4 +1425,53 @@ std::u16string AuthenticatorCreatePasskeySheetModel::GetAcceptButtonLabel()
 
 void AuthenticatorCreatePasskeySheetModel::OnAccept() {
   dialog_model()->HideDialogAndDispatchToPlatformAuthenticator();
+}
+
+// AuthenticatorPhoneConfirmationSheet --------------------------------
+
+AuthenticatorPhoneConfirmationSheet::AuthenticatorPhoneConfirmationSheet(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {}
+
+AuthenticatorPhoneConfirmationSheet::~AuthenticatorPhoneConfirmationSheet() =
+    default;
+
+const gfx::VectorIcon& AuthenticatorPhoneConfirmationSheet::GetStepIllustration(
+    ImageColorScheme color_scheme) const {
+  return color_scheme == ImageColorScheme::kDark ? kPasskeyPhoneDarkIcon
+                                                 : kPasskeyPhoneIcon;
+}
+
+std::u16string AuthenticatorPhoneConfirmationSheet::GetStepTitle() const {
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_PHONE_CONFIRMATION_TITLE,
+      base::UTF8ToUTF16(dialog_model()->paired_phone_names().at(0)),
+      GetRelyingPartyIdString(dialog_model()));
+}
+
+std::u16string AuthenticatorPhoneConfirmationSheet::GetStepDescription() const {
+  return u"";
+}
+
+bool AuthenticatorPhoneConfirmationSheet::IsAcceptButtonVisible() const {
+  return true;
+}
+
+bool AuthenticatorPhoneConfirmationSheet::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+std::u16string AuthenticatorPhoneConfirmationSheet::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+}
+
+void AuthenticatorPhoneConfirmationSheet::OnAccept() {
+  dialog_model()->ContactPriorityPhone();
+}
+
+std::u16string
+AuthenticatorPhoneConfirmationSheet::GetOtherMechanismButtonLabel() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_ANOTHER_DEVICE);
 }

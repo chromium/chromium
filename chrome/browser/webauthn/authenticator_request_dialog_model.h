@@ -105,6 +105,7 @@ class AuthenticatorRequestDialogModel {
     kOffTheRecordInterstitial,
 
     // Phone as a security key.
+    kPhoneConfirmationSheet,
     kCableActivate,
     kAndroidAccessory,
     kCableV2QRCode,
@@ -519,6 +520,10 @@ class AuthenticatorRequestDialogModel {
   // current_mechanism returns the index into |mechanisms| of the most recently
   // activated mechanism, or nullopt if there isn't one.
   absl::optional<size_t> current_mechanism() const;
+
+  // Contacts the "priority" paired phone. This is only valid to call when there
+  // is a single phone paired.
+  void ContactPriorityPhone();
 
   // ContactPhoneForTesting triggers a contact for a phone with the given name.
   // Only for unittests. UI should use |mechanisms()| to enumerate the

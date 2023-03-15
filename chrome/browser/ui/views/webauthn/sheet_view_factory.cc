@@ -192,6 +192,10 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorOffTheRecordInterstitialSheetModel>(
               dialog_model));
       break;
+    case Step::kPhoneConfirmationSheet:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorPhoneConfirmationSheet>(dialog_model));
+      break;
     case Step::kCableActivate:
       sheet_view = std::make_unique<AuthenticatorPaaskSheetView>(
           std::make_unique<AuthenticatorPaaskSheetModel>(dialog_model));

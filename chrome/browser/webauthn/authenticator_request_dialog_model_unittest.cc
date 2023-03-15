@@ -205,9 +205,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto use_pk = Step::kPreSelectSingleAccount;
   const auto use_pk_multi = Step::kPreSelectAccount;
   const auto qr = Step::kCableV2QRCode;
+  const auto pconf = Step::kPhoneConfirmationSheet;
 
   const auto qr1st = base::test::FeatureRef(device::kWebAuthPasskeysUI);
-  const std::vector<base::test::FeatureRef> kAllFeatures = {qr1st};
+  const auto p1st =
+      base::test::FeatureRef(device::kWebAuthnPhoneConfirmationSheet);
+  const std::vector<base::test::FeatureRef> kAllFeatures = {qr1st, p1st};
 
   const struct {
     int line_num;
@@ -391,7 +394,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {},
        {add, t(internal), t(usb)},
        qr,
-       {qr1st}},
+       {qr1st, p1st}},
       // And if the allow list only contains phones.
       {L,
        ga,
@@ -459,6 +462,62 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {winapi, add},
        mss,
        {qr1st}},
+
+      // Phone confirmation sheet: Get assertion should jump to it if there is a
+      // single phone paired.
+      {L,
+       ga,
+       {cable, internal},
+       {only_hybrid_or_internal},
+       {"a"},
+       {p("a"), add, t(internal)},
+       pconf,
+       {qr1st, p1st}},
+      // Even on Windows.
+      {L,
+       ga,
+       {cable},
+       {only_hybrid_or_internal, has_winapi},
+       {"a"},
+       {winapi, p("a"), add},
+       pconf,
+       {qr1st, p1st}},
+      // Unless there is a recognized platform credential.
+      {L,
+       ga,
+       {cable, internal},
+       {only_hybrid_or_internal, has_plat},
+       {"a"},
+       {p("a"), add, t(internal)},
+       plat_ui,
+       {qr1st, p1st}},
+      // Or a USB credential.
+      {L,
+       ga,
+       {usb, cable, internal},
+       {},
+       {"a"},
+       {p("a"), add, t(internal), t(usb)},
+       mss,
+       {qr1st, p1st}},
+      // Or this is a conditional UI request.
+      {L,
+       ga,
+       {cable, internal},
+       {only_hybrid_or_internal, c_ui},
+       {"a"},
+       {p("a"), add},
+       mss,
+       {qr1st, p1st}},
+      // Go to the mechanism selection screen if there are more phones paired.
+      {L,
+       ga,
+       {cable, internal},
+       {only_hybrid_or_internal},
+       {"a", "b"},
+       {p("a"), p("b"), add, t(internal)},
+       mss,
+       {qr1st, p1st}},
 #undef L
   };
 
@@ -1126,4 +1185,23 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelectWithEmptyAllowList) {
   task_environment()->RunUntilIdle();
   EXPECT_EQ(preselect_num_called, 1);
   EXPECT_EQ(request_num_called, 1);
+}
+
+TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone) {
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
+  std::vector<AuthenticatorRequestDialogModel::PairedPhone> phones(
+      {{"phone", /*contact_id=*/0, /*public_key_x962=*/{{0}}}});
+  model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt,
+                                 std::move(phones), base::DoNothing(),
+                                 absl::nullopt);
+  TransportAvailabilityInfo transports_info;
+  transports_info.is_ble_powered = true;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.available_transports = {AuthenticatorTransport::kHybrid};
+  model.StartFlow(std::move(transports_info),
+                  /*is_conditional_mediation=*/false,
+                  /*prefer_native_api=*/false);
+  model.ContactPriorityPhone();
+  EXPECT_EQ(model.current_step(), Step::kCableActivate);
+  EXPECT_EQ(model.selected_phone_name(), "phone");
 }
