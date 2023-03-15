@@ -356,9 +356,9 @@ bool IsLacrosEnabled() {
   if (!IsLacrosAllowedToBeEnabled())
     return false;
 
-  // If profile migration is required, the completion of it is necessary for
+  // If profile migration is enabled, the completion of it is necessary for
   // Lacros to be enabled.
-  if (IsProfileMigrationRequired()) {
+  if (IsProfileMigrationEnabled()) {
     PrefService* local_state = g_browser_process->local_state();
     // Note that local_state can be nullptr in tests.
     if (local_state &&
@@ -421,7 +421,7 @@ bool IsLacrosEnabledForMigration(const User* user,
   return base::FeatureList::IsEnabled(ash::features::kLacrosSupport);
 }
 
-bool IsProfileMigrationRequired() {
+bool IsProfileMigrationEnabled() {
   if (base::FeatureList::IsEnabled(
           ash::features::kLacrosProfileMigrationForceOff)) {
     return false;
@@ -441,7 +441,7 @@ bool IsProfileMigrationRequired() {
 }
 
 bool IsProfileMigrationAvailable() {
-  if (!IsProfileMigrationRequired()) {
+  if (!IsProfileMigrationEnabled()) {
     return false;
   }
 

@@ -399,11 +399,11 @@ void ClearLacrosDataBackwardMigrationModeCacheForTest();
 // Clears the cached value for LacrosSelection policy.
 void ClearLacrosSelectionCacheForTest();
 
-bool IsProfileMigrationRequired();
-
+// Returns true if profile migraiton is enabled. If profile migration is
+// enabled, the completion of it is required to enable Lacros.
 bool IsProfileMigrationEnabled();
 
-// Returns true if the profile migration can run, but not yet completed.
+// Returns true if the profile migration is enabled, but not yet completed.
 bool IsProfileMigrationAvailable();
 
 // Returns `MigrationMode::kMove` if LacrosOnly or `kLacrosMoveProfileMigration`
