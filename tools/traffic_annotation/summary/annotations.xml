@@ -358,7 +358,7 @@ Refer to README.md for content description and update process.
  <item id="drivefs_http_client" added_in_milestone="104" content_hash_code="042b8f2c" os_list="chromeos" file_path="chromeos/ash/components/drivefs/drivefs_http_client.cc" />
  <item id="pending_beacon_api" added_in_milestone="105" content_hash_code="02288864" os_list="linux,windows,android,chromeos" file_path="content/browser/renderer_host/pending_beacon_service.cc" />
  <item id="printing_server_printers_query" added_in_milestone="106" content_hash_code="06f4759c" os_list="chromeos" file_path="chrome/browser/ash/printing/server_printers_fetcher.cc" />
- <item id="download_bubble_retry_download" added_in_milestone="105" content_hash_code="000b1439" os_list="linux,windows,chromeos" file_path="chrome/browser/download/bubble/download_bubble_controller.cc" />
+ <item id="download_bubble_retry_download" added_in_milestone="105" content_hash_code="000b1439" os_list="linux,windows,chromeos" file_path="chrome/browser/download/bubble/download_bubble_ui_controller.cc" />
  <item id="wilco_dtc_supportd" added_in_milestone="108" content_hash_code="01050d07" os_list="chromeos" file_path="chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service.cc" />
  <item id="quick_answers_loader" added_in_milestone="105" content_hash_code="06f129c2" os_list="chromeos" file_path="chromeos/components/quick_answers/result_loader.cc" />
  <item id="chrome_search_suggest_service" added_in_milestone="105" content_hash_code="04d973c6" os_list="linux,windows,android,chromeos" file_path="components/search/start_suggest_service.cc" />

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
@@ -158,17 +158,21 @@ void DownloadBubbleUIController::HandleButtonPressed() {
 
 bool DownloadBubbleUIController::MaybeAddOfflineItem(const OfflineItem& item,
                                                      bool is_new) {
-  if (profile_->IsOffTheRecord() != item.is_off_the_record)
+  if (profile_->IsOffTheRecord() != item.is_off_the_record) {
     return false;
+  }
 
-  if (OfflineItemUtils::IsDownload(item.id))
+  if (OfflineItemUtils::IsDownload(item.id)) {
     return false;
+  }
 
-  if (item.state == OfflineItemState::CANCELLED)
+  if (item.state == OfflineItemState::CANCELLED) {
     return false;
+  }
 
-  if (item.id.name_space == ContentIndexProviderImpl::kProviderNamespace)
+  if (item.id.name_space == ContentIndexProviderImpl::kProviderNamespace) {
     return false;
+  }
 
   OfflineItemModel model(offline_manager_, item);
   if (!model.ShouldShowInBubble()) {
@@ -298,8 +302,9 @@ bool DownloadBubbleUIController::ShouldShowIncognitoIcon(
 }
 
 void DownloadBubbleUIController::OnItemRemoved(const ContentId& id) {
-  if (OfflineItemUtils::IsDownload(id))
+  if (OfflineItemUtils::IsDownload(id)) {
     return;
+  }
   offline_items_.erase(
       std::remove_if(offline_items_.begin(), offline_items_.end(),
                      [&id](const OfflineItem& candidate) {
@@ -589,12 +594,14 @@ void DownloadBubbleUIController::ScheduleCancelForEphemeralWarning(
     const std::string& guid) {
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile_);
-  if (!download_core_service)
+  if (!download_core_service) {
     return;
+  }
   ChromeDownloadManagerDelegate* delegate =
       download_core_service->GetDownloadManagerDelegate();
-  if (delegate)
+  if (delegate) {
     delegate->ScheduleCancelForEphemeralWarning(guid);
+  }
 }
 
 void DownloadBubbleUIController::RecordDownloadBubbleInteraction() {

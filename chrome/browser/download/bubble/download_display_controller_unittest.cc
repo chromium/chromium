@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
-#include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"

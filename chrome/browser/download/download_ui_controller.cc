@@ -28,8 +28,8 @@
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #else
-#include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"

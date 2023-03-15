@@ -54,7 +54,7 @@
 #include "ui/views/widget/widget.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "components/safe_browsing/core/common/features.h"

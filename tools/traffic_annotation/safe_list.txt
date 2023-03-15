@@ -103,7 +103,7 @@ missing_new_fields,chrome/browser/devtools/device/android_device_manager.cc
 missing_new_fields,chrome/browser/devtools/device/android_web_socket.cc
 missing_new_fields,chrome/browser/devtools/device/port_forwarding_controller.cc
 missing_new_fields,chrome/browser/devtools/devtools_ui_bindings.cc
-missing_new_fields,chrome/browser/download/bubble/download_bubble_controller.cc
+missing_new_fields,chrome/browser/download/bubble/download_bubble_ui_controller.cc
 missing_new_fields,chrome/browser/extensions/api/downloads/downloads_api.cc
 missing_new_fields,chrome/browser/extensions/api/image_writer_private/write_from_url_operation.cc
 missing_new_fields,chrome/browser/extensions/blocklist_state_fetcher.cc

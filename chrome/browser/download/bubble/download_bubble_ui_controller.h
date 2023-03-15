@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_UI_CONTROLLER_H_
+#define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_UI_CONTROLLER_H_
 
 #include <set>
 
@@ -30,6 +30,9 @@ using DownloadUIModelPtr = ::DownloadUIModel::DownloadUIModelPtr;
 using OfflineItemList =
     ::offline_items_collection::OfflineContentAggregator::OfflineItemList;
 
+// This handles the window-level logic for controlling the download bubble.
+// There is one instance of this class per browser window, and it is owned by
+// the download toolbar button.
 class DownloadBubbleUIController
     : public OfflineContentProvider::Observer,
       public download::AllDownloadItemNotifier::Observer {
@@ -206,4 +209,4 @@ class DownloadBubbleUIController
   base::WeakPtrFactory<DownloadBubbleUIController> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_UI_CONTROLLER_H_

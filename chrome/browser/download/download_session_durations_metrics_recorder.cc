@@ -5,7 +5,7 @@
 #include "chrome/browser/download/download_session_durations_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
