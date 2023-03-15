@@ -73,7 +73,9 @@ void InputDeviceTracker::OnActiveUserPrefServiceChanged(
   // `StringListPrefMember`s and record that we have seen all currently
   // connected devices.
   Init(pref_service);
-  RecordConnectedDevices();
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    RecordConnectedDevices();
+  }
 }
 
 bool InputDeviceTracker::WasDevicePreviouslyConnected(
@@ -127,6 +129,10 @@ void InputDeviceTracker::Init(PrefService* pref_service) {
 void InputDeviceTracker::RecordDeviceConnected(
     InputDeviceCategory category,
     const base::StringPiece& device_key) {
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    return;
+  }
+
   auto* const observed_devices = GetObservedDevicesForCategory(category);
   // If `observed_devices` is null, that means we are not yet in a valid chrome
   // session.
