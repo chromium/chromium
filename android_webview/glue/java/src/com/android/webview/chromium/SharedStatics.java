@@ -47,7 +47,7 @@ public class SharedStatics {
 
     public void setWebContentsDebuggingEnabled(boolean enable) {
         // On debug builds, Web Contents debugging is enabled elsewhere, and cannot be disabled.
-        if (BuildInfo.isDebugAndroid()) return;
+        if (BuildInfo.isDebugAndroidOrApp()) return;
         setWebContentsDebuggingEnabledUnconditionally(enable);
     }
 

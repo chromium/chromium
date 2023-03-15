@@ -215,7 +215,7 @@ public class WebViewChromiumAwInit {
             AwBrowserProcess.initializeMetricsLogUploader();
 
             mSharedStatics = new SharedStatics();
-            if (BuildInfo.isDebugAndroid()) {
+            if (BuildInfo.isDebugAndroidOrApp()) {
                 mSharedStatics.setWebContentsDebuggingEnabledUnconditionally(true);
             }
 
