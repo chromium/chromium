@@ -9,7 +9,6 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -253,11 +252,6 @@ struct AttributionDataHostManagerImpl::SourceRegistrations {
   struct Beacon {
     BeaconId id;
 
-    // Navigation source data that has been received as part of this beacon.
-    // Navigation sources cannot be processed until `navigation_complete` is set
-    // to true.
-    std::vector<StorableSource> sources;
-
     // True if the beacon has completed. If true, no further calls will be made
     // to `NotifyFencedFrameReportingBeaconData()`.
     bool beacon_complete = false;
@@ -468,8 +462,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
   if (auto it =
           registrations_.find(BeaconId(NavigationBeaconId(navigation_id)));
       it != registrations_.end()) {
-    OnSourceEligibleDataHostFinished(it->register_time);
-    registrations_.erase(it);
+    it->CompleteNavigation();
+    MaybeOnRegistrationsFinished(it);
   }
 }
 
@@ -483,13 +477,6 @@ void AttributionDataHostManagerImpl::NotifyNavigationSuccess(
   }
 
   it->CompleteNavigation();
-
-  std::vector<StorableSource>& sources = it->GetBeacon().sources;
-
-  for (StorableSource& source : sources) {
-    attribution_manager_->HandleSource(std::move(source), it->render_frame_id);
-  }
-  sources.clear();
 
   MaybeOnRegistrationsFinished(it);
 }
@@ -868,25 +855,16 @@ void AttributionDataHostManagerImpl::OnSourceParsed(
   }
 
   if (source.has_value()) {
-    absl::visit(
-        base::Overloaded{
-            [&](const SourceRegistrations::NavigationRedirect& redirect) {
-              base::UmaHistogramEnumeration(
-                  "Conversions.SourceRegistration.NavigationType.Foreground",
-                  redirect.nav_type);
-              attribution_manager_->HandleSource(std::move(*source),
-                                                 registrations.render_frame_id);
-            },
-            [&](SourceRegistrations::Beacon& beacon) {
-              if (registrations.navigation_complete) {
-                attribution_manager_->HandleSource(
-                    std::move(*source), registrations.render_frame_id);
-              } else {
-                beacon.sources.push_back(std::move(*source));
-              }
-            },
-        },
-        registrations.data);
+    attribution_manager_->HandleSource(std::move(*source),
+                                       registrations.render_frame_id);
+
+    if (const auto* redirect =
+            absl::get_if<SourceRegistrations::NavigationRedirect>(
+                &registrations.data)) {
+      base::UmaHistogramEnumeration(
+          "Conversions.SourceRegistration.NavigationType.Foreground",
+          redirect->nav_type);
+    }
   } else {
     attribution_manager_->NotifyFailedSourceRegistration(
         header_value, registrations.source_origin, reporting_origin,

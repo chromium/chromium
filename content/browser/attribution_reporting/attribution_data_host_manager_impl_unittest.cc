@@ -1566,7 +1566,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationBeaconSource_NavigationFailedBeforeAndAfterParsing) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  EXPECT_CALL(mock_manager_, HandleSource).Times(2);
 
   auto reporting_origin = url::Origin::Create(GURL("https://report.test"));
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
@@ -1600,7 +1600,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationBeaconSource_NavigationFailedBeforeAndAfterData) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  EXPECT_CALL(mock_manager_, HandleSource).Times(2);
 
   auto reporting_origin = url::Origin::Create(GURL("https://report.test"));
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
