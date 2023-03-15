@@ -12,8 +12,17 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:layout_gravity="start|top"
     android:orientation="vertical"
-    android:background="@macro/default_bg_color"
     android:visibility="gone">
+
+    <ImageView
+        android:id="@+id/sheet_header_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_shadow_height"
+        android:src="@drawable/modern_toolbar_shadow"
+        android:scaleType="fitXY"
+        android:scaleY="-1"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
 
     <LinearLayout
         android:id="@+id/sheet_header"
@@ -22,6 +31,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"
+        android:importantForAccessibility="no"
         android:background="@macro/default_bg_color"
         android:clickable="true"
         android:focusable="true"

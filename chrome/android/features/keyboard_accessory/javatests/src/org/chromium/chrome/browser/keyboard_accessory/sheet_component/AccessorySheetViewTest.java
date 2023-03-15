@@ -242,6 +242,7 @@ public class AccessorySheetViewTest {
         verify(runnable, times(1)).run();
 
         onView(withId(R.id.sheet_title)).check(matches(withText("Passwords")));
+        onViewWaiting(withId(R.id.sheet_header_shadow));
     }
 
     private Tab createTestTabWithTextView(String textViewCaption) {

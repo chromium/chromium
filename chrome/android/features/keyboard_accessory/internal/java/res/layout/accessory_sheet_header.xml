@@ -24,7 +24,6 @@ found in the LICENSE file.
         android:gravity="center_vertical|start"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:background="?android:attr/selectableItemBackground" />
+        android:layout_width="match_parent"/>
 
 </merge>

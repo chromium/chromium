@@ -52,6 +52,7 @@ class AccessorySheetView extends LinearLayout {
                     AppCompatResources.getDrawable(getContext(), R.drawable.ic_arrow_back_24dp));
             mSheetTitle = findViewById(R.id.sheet_title);
             findViewById(R.id.sheet_header).setVisibility(View.VISIBLE);
+            findViewById(R.id.sheet_header_shadow).setVisibility(View.VISIBLE);
         }
 
         // Ensure that sub components of the sheet use the RTL direction:

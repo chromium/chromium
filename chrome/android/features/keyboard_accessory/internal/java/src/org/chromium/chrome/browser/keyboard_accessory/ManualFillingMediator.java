@@ -887,7 +887,8 @@ class ManualFillingMediator
     }
 
     private int getHeaderHeight() {
-        return mActivity.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_height);
+        return mActivity.getResources().getDimensionPixelSize(
+                R.dimen.keyboard_accessory_height_with_shadow);
     }
 
     private int getIdealSheetHeight() {
