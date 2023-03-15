@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
@@ -111,7 +111,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ios::AccountConsistencyServiceFactory::GetInstance();
   ios::AccountReconcilorFactory::GetInstance();
   ios::AutocompleteClassifierFactory::GetInstance();
-  ios::BookmarkModelFactory::GetInstance();
+  ios::LocalOrSyncableBookmarkModelFactory::GetInstance();
   ios::BookmarkUndoServiceFactory::GetInstance();
   ios::CookieSettingsFactory::GetInstance();
   ios::FaviconServiceFactory::GetInstance();

@@ -12,7 +12,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -112,7 +112,8 @@
   [super start];
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   bookmarks::BookmarkModel* model =
-      ios::BookmarkModelFactory::GetForBrowserState(browserState);
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browserState);
   _mediator = [[BookmarksFolderChooserMediator alloc]
       initWithBookmarkModel:model
                 editedNodes:std::move(_hiddenNodes)

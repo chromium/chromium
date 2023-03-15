@@ -9,7 +9,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -31,16 +31,17 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       AuthenticationServiceFactory::GetInstance(),
       AuthenticationServiceFactory::GetDefaultFactory());
   test_cbs_builder.AddTestingFactory(
-      ios::BookmarkModelFactory::GetInstance(),
-      ios::BookmarkModelFactory::GetDefaultFactory());
+      ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
+      ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
 
   chrome_browser_state_ = test_cbs_builder.Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       chrome_browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());
 
-  bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-      chrome_browser_state_.get());
+  bookmark_model_ =
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          chrome_browser_state_.get());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 }

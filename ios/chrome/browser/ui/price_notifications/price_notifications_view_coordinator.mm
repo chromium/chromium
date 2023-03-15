@@ -7,7 +7,7 @@
 #import "base/check.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -66,7 +66,7 @@
       commerce::ShoppingServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();

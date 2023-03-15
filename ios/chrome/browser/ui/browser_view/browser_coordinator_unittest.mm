@@ -6,7 +6,7 @@
 
 #import "base/files/file_util.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
@@ -89,8 +89,8 @@ class BrowserCoordinatorTest : public PlatformTest {
         PrerenderServiceFactory::GetInstance(),
         PrerenderServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
-        ios::BookmarkModelFactory::GetInstance(),
-        ios::BookmarkModelFactory::GetDefaultFactory());
+        ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
+        ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));

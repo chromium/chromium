@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 
 #include <memory>
 #include <utility>
@@ -15,7 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/bookmarks/bookmark_client_impl.h"
-#include "ios/chrome/browser/bookmarks/bookmark_sync_service_factory.h"
+#include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -31,13 +31,12 @@ namespace {
 std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model =
-      std::make_unique<bookmarks::BookmarkModel>(
-          std::make_unique<BookmarkClientImpl>(
-              browser_state,
-              ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
-              ios::BookmarkSyncServiceFactory::GetForBrowserState(
-                  browser_state)));
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model = std::make_unique<
+      bookmarks::BookmarkModel>(std::make_unique<BookmarkClientImpl>(
+      browser_state,
+      ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
+      ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
+          browser_state)));
   bookmark_model->Load(browser_state->GetStatePath(),
                        bookmarks::StorageType::kLocalOrSyncable);
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
@@ -48,57 +47,62 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
 }  // namespace
 
 // static
-bookmarks::BookmarkModel* BookmarkModelFactory::GetForBrowserState(
+bookmarks::BookmarkModel*
+LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
   return static_cast<bookmarks::BookmarkModel*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
 // static
-bookmarks::BookmarkModel* BookmarkModelFactory::GetForBrowserStateIfExists(
+bookmarks::BookmarkModel*
+LocalOrSyncableBookmarkModelFactory::GetForBrowserStateIfExists(
     ChromeBrowserState* browser_state) {
   return static_cast<bookmarks::BookmarkModel*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
 }
 
 // static
-BookmarkModelFactory* BookmarkModelFactory::GetInstance() {
-  static base::NoDestructor<BookmarkModelFactory> instance;
+LocalOrSyncableBookmarkModelFactory*
+LocalOrSyncableBookmarkModelFactory::GetInstance() {
+  static base::NoDestructor<LocalOrSyncableBookmarkModelFactory> instance;
   return instance.get();
 }
 
 // static
-BookmarkModelFactory::TestingFactory BookmarkModelFactory::GetDefaultFactory() {
+LocalOrSyncableBookmarkModelFactory::TestingFactory
+LocalOrSyncableBookmarkModelFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildBookmarkModel);
 }
 
-BookmarkModelFactory::BookmarkModelFactory()
+LocalOrSyncableBookmarkModelFactory::LocalOrSyncableBookmarkModelFactory()
     : BrowserStateKeyedServiceFactory(
-          "BookmarkModel",
+          "LocalOrSyncableBookmarkModel",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ios::BookmarkSyncServiceFactory::GetInstance());
+  DependsOn(ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
   DependsOn(ios::BookmarkUndoServiceFactory::GetInstance());
   DependsOn(ManagedBookmarkServiceFactory::GetInstance());
 }
 
-BookmarkModelFactory::~BookmarkModelFactory() {}
+LocalOrSyncableBookmarkModelFactory::~LocalOrSyncableBookmarkModelFactory() {}
 
-void BookmarkModelFactory::RegisterBrowserStatePrefs(
+void LocalOrSyncableBookmarkModelFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   bookmarks::RegisterProfilePrefs(registry);
 }
 
-std::unique_ptr<KeyedService> BookmarkModelFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LocalOrSyncableBookmarkModelFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildBookmarkModel(context);
 }
 
-web::BrowserState* BookmarkModelFactory::GetBrowserStateToUse(
+web::BrowserState* LocalOrSyncableBookmarkModelFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
   return GetBrowserStateRedirectedInIncognito(context);
 }
 
-bool BookmarkModelFactory::ServiceIsNULLWhileTesting() const {
+bool LocalOrSyncableBookmarkModelFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 

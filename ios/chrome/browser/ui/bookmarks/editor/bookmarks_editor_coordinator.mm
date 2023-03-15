@@ -6,7 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
@@ -78,7 +78,8 @@
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   bookmarks::BookmarkModel* model =
-      ios::BookmarkModelFactory::GetForBrowserState(browserState);
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browserState);
 
   _viewController =
       [[BookmarksEditorViewController alloc] initWithBrowser:self.browser];

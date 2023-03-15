@@ -17,7 +17,7 @@
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
@@ -147,7 +147,8 @@ enum class PresentedState {
     _currentBrowserState = browser->GetBrowserState();
     _browserState = _currentBrowserState->GetOriginalChromeBrowserState();
     _bookmarkModel =
-        ios::BookmarkModelFactory::GetForBrowserState(_browserState);
+        ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+            _browserState);
     _mediator = [[BookmarkMediator alloc]
         initWithWithBookmarkModel:self.bookmarkModel
                             prefs:_browserState->GetPrefs()];

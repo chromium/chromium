@@ -19,8 +19,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
@@ -239,7 +239,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
         IOSChromeFaviconLoaderFactory::GetForBrowserState(_browserState);
 
     _profileBookmarks =
-        ios::BookmarkModelFactory::GetForBrowserState(_browserState);
+        ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+            _browserState);
 
     _profileBridge.reset(new BookmarkModelBridge(self, _profileBookmarks));
   }

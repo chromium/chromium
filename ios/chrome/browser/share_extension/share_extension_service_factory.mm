@@ -6,7 +6,7 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -40,7 +40,7 @@ ShareExtensionServiceFactory::ShareExtensionServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "ShareExtensionService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ios::BookmarkModelFactory::GetInstance());
+  DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
 }
 
@@ -52,7 +52,8 @@ ShareExtensionServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<ShareExtensionService>(
-      ios::BookmarkModelFactory::GetForBrowserState(chrome_browser_state),
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          chrome_browser_state),
       ReadingListModelFactory::GetForBrowserState(chrome_browser_state));
 }
 

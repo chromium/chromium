@@ -12,7 +12,7 @@
 
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -113,8 +113,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
-        ios::BookmarkModelFactory::GetInstance(),
-        ios::BookmarkModelFactory::GetDefaultFactory());
+        ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
+        ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());

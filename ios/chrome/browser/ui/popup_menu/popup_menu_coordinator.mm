@@ -14,7 +14,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
@@ -469,7 +469,7 @@ enum class IOSOverflowMenuActionType {
         self.overflowMenuMediator.isIncognito =
             self.browser->GetBrowserState()->IsOffTheRecord();
         self.overflowMenuMediator.bookmarkModel =
-            ios::BookmarkModelFactory::GetForBrowserState(
+            ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
                 self.browser->GetBrowserState());
         self.overflowMenuMediator.browserStatePrefs =
             self.browser->GetBrowserState()->GetPrefs();
@@ -581,8 +581,9 @@ enum class IOSOverflowMenuActionType {
       HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);
   self.mediator.lensCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
-  self.mediator.bookmarkModel = ios::BookmarkModelFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  self.mediator.bookmarkModel =
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(

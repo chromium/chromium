@@ -26,7 +26,7 @@
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
@@ -106,8 +106,9 @@ class PopupMenuMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
 
     TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
-                              ios::BookmarkModelFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
+        ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromePasswordStoreFactory::GetInstance(),
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
@@ -217,7 +218,8 @@ class PopupMenuMediatorTest : public PlatformTest {
 
   void SetUpBookmarks() {
     bookmark_model_ =
-        ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get());
+        ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+            browser_state_.get());
     DCHECK(bookmark_model_);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     mediator_.bookmarkModel = bookmark_model_;

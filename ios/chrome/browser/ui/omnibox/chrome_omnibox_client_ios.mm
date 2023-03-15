@@ -20,8 +20,8 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
@@ -86,7 +86,8 @@ const SessionID& ChromeOmniboxClientIOS::GetSessionID() const {
 }
 
 bookmarks::BookmarkModel* ChromeOmniboxClientIOS::GetBookmarkModel() {
-  return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
+  return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+      browser_state_);
 }
 
 TemplateURLService* ChromeOmniboxClientIOS::GetTemplateURLService() {

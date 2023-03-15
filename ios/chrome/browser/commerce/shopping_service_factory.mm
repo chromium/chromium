@@ -10,7 +10,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/session_proto_db_factory.h"
@@ -50,7 +50,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "ShoppingService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ios::BookmarkModelFactory::GetInstance());
+  DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SessionProtoDBFactory<
@@ -67,8 +67,8 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<ShoppingService>(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       GetApplicationContext()->GetApplicationLocale(),
-      ios::BookmarkModelFactory::GetInstance()->GetForBrowserState(
-          chrome_state),
+      ios::LocalOrSyncableBookmarkModelFactory::GetInstance()
+          ->GetForBrowserState(chrome_state),
       OptimizationGuideServiceFactory::GetForBrowserState(chrome_state),
       pref_service, IdentityManagerFactory::GetForBrowserState(chrome_state),
       chrome_state->GetSharedURLLoaderFactory(),

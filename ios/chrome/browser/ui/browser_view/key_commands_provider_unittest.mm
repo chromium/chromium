@@ -11,7 +11,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
@@ -66,8 +66,9 @@ class KeyCommandsProviderTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               base::BindRepeating(BuildFakeTabRestoreService));
-    builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
-                              ios::BookmarkModelFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
+        ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     web_state_list_ = browser_->GetWebStateList();
@@ -76,7 +77,8 @@ class KeyCommandsProviderTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
     bookmark_model_ =
-        ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get());
+        ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+            browser_state_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
   }

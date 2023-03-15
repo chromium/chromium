@@ -21,7 +21,7 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/core/tab_restore_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"

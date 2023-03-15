@@ -9,8 +9,8 @@
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
+#include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 
 BookmarkRemoverHelper::BookmarkRemoverHelper(ChromeBrowserState* browser_state)
@@ -47,7 +47,8 @@ void BookmarkRemoverHelper::RemoveAllUserBookmarksIOS(Callback completion) {
   completion_ = std::move(completion);
 
   bookmarks::BookmarkModel* bookmark_model =
-      ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browser_state_);
 
   if (!bookmark_model) {
     BookmarksRemoved(false);

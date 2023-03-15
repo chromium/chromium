@@ -12,7 +12,7 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/query_parser/query_parser.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -340,7 +340,7 @@
 #pragma mark - Helpers
 
 + (bookmarks::BookmarkModel*)bookmarkModel {
-  return ios::BookmarkModelFactory::GetForBrowserState(
+  return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
       chrome_test_util::GetOriginalBrowserState());
 }
 

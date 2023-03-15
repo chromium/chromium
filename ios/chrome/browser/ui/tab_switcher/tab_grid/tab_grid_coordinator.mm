@@ -14,7 +14,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -1189,7 +1189,7 @@
 
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           self.regularBrowser->GetBrowserState());
   bool currentlyBookmarked =
       bookmarkModel && bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);

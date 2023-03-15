@@ -7,7 +7,7 @@
 #import "base/task/thread_pool.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/power_bookmarks/core/power_bookmark_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -33,7 +33,7 @@ PowerBookmarkServiceFactory::PowerBookmarkServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "PowerBookmarkService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ios::BookmarkModelFactory::GetInstance());
+  DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
 }
 
 PowerBookmarkServiceFactory::~PowerBookmarkServiceFactory() = default;
@@ -44,8 +44,8 @@ PowerBookmarkServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_state =
       ChromeBrowserState::FromBrowserState(state);
   return std::make_unique<power_bookmarks::PowerBookmarkService>(
-      ios::BookmarkModelFactory::GetInstance()->GetForBrowserState(
-          chrome_state),
+      ios::LocalOrSyncableBookmarkModelFactory::GetInstance()
+          ->GetForBrowserState(chrome_state),
       state->GetStatePath().AppendASCII("power_bookmarks"),
       web::GetUIThreadTaskRunner({}),
       base::ThreadPool::CreateSequencedTaskRunner(

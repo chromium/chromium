@@ -24,7 +24,7 @@
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"

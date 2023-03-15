@@ -15,7 +15,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"

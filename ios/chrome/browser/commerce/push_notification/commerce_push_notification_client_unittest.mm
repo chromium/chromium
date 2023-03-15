@@ -19,7 +19,7 @@
 #import "components/commerce/core/test_utils.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "components/session_proto_db/session_proto_db.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/session_proto_db_factory.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
@@ -136,8 +136,9 @@ class CommercePushNotificationClientTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
-                              ios::BookmarkModelFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
+        ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
@@ -160,8 +161,9 @@ class CommercePushNotificationClientTest : public PlatformTest {
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     commerce_push_notification_client_.SetLastUsedChromeBrowserStateForTesting(
         chrome_browser_state_.get());
-    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    bookmark_model_ =
+        ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+            chrome_browser_state_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserState(

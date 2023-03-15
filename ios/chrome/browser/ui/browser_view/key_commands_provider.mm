@@ -12,7 +12,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -313,15 +313,17 @@ using base::UserMetricsAction;
   ChromeBrowserState* browserState = _browser->GetBrowserState();
   sessions::TabRestoreService* const tabRestoreService =
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
-  if (!tabRestoreService || tabRestoreService->entries().empty())
+  if (!tabRestoreService || tabRestoreService->entries().empty()) {
     return;
+  }
 
   const std::unique_ptr<sessions::TabRestoreService::Entry>& entry =
       tabRestoreService->entries().front();
   // Only handle the TAB type.
   // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
-  if (entry->type != sessions::TabRestoreService::TAB)
+  if (entry->type != sessions::TabRestoreService::TAB) {
     return;
+  }
 
   [self.dispatcher openURLInNewTab:[OpenNewTabCommand command]];
   RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, _browser.get());
@@ -356,8 +358,9 @@ using base::UserMetricsAction;
   RecordAction(UserMetricsAction("MobileKeyCommandShowNextTab"));
   WebStateList* webStateList = _browser->GetWebStateList();
   int activeIndex = webStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex)
+  if (activeIndex == WebStateList::kInvalidIndex) {
     return;
+  }
 
   // If the active index isn't the last index, activate the next index.
   // (the last index is always `count() - 1`).
@@ -373,8 +376,9 @@ using base::UserMetricsAction;
   RecordAction(UserMetricsAction("MobileKeyCommandShowPreviousTab"));
   WebStateList* webStateList = _browser->GetWebStateList();
   int activeIndex = webStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex)
+  if (activeIndex == WebStateList::kInvalidIndex) {
     return;
+  }
 
   // If the active index isn't the first index, activate the prior index.
   // Otherwise index the last index (`count() - 1`).
@@ -416,14 +420,16 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_back {
   RecordAction(UserMetricsAction("MobileKeyCommandBack"));
-  if (self.navigationAgent->CanGoBack())
+  if (self.navigationAgent->CanGoBack()) {
     self.navigationAgent->GoBack();
+  }
 }
 
 - (void)keyCommand_forward {
   RecordAction(UserMetricsAction("MobileKeyCommandForward"));
-  if (self.navigationAgent->CanGoForward())
+  if (self.navigationAgent->CanGoForward()) {
     self.navigationAgent->GoForward();
+  }
 }
 
 - (void)keyCommand_showHistory {
@@ -625,7 +631,7 @@ using base::UserMetricsAction;
 
   const GURL& url = currentWebState->GetLastCommittedURL();
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           _browser->GetBrowserState());
   return bookmarkModel->IsBookmarked(url);
 }

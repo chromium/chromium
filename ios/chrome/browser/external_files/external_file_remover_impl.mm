@@ -17,7 +17,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/url_and_title.h"
 #import "components/sessions/core/tab_restore_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
@@ -256,7 +256,8 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   }
 
   bookmarks::BookmarkModel* bookmark_model =
-      ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browser_state_);
   // Check if the bookmark model is loaded.
   if (!bookmark_model || !bookmark_model->loaded())
     return referenced_external_files;

@@ -8,7 +8,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
@@ -163,7 +163,7 @@
 // Returns `YES` if the tab `item` is already bookmarked.
 - (BOOL)isTabItemBookmarked:(TabItem*)item {
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           _browser->GetBrowserState());
   return item && bookmarkModel &&
          bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.URL);

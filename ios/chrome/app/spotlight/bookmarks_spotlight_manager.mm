@@ -15,7 +15,7 @@
 #import "base/version.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
 #import "components/bookmarks/browser/bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -154,8 +154,8 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   return [[BookmarksSpotlightManager alloc]
       initWithLargeIconService:IOSChromeLargeIconServiceFactory::
                                    GetForBrowserState(browserState)
-                 bookmarkModel:ios::BookmarkModelFactory::GetForBrowserState(
-                                   browserState)];
+                 bookmarkModel:ios::LocalOrSyncableBookmarkModelFactory::
+                                   GetForBrowserState(browserState)];
 }
 
 - (instancetype)

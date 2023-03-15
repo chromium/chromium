@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/bookmarks/bookmark_sync_service_factory.h"
+#include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -15,29 +15,32 @@ namespace ios {
 
 // static
 sync_bookmarks::BookmarkSyncService*
-BookmarkSyncServiceFactory::GetForBrowserState(
+LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
   return static_cast<sync_bookmarks::BookmarkSyncService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
 // static
-BookmarkSyncServiceFactory* BookmarkSyncServiceFactory::GetInstance() {
-  static base::NoDestructor<BookmarkSyncServiceFactory> instance;
+LocalOrSyncableBookmarkSyncServiceFactory*
+LocalOrSyncableBookmarkSyncServiceFactory::GetInstance() {
+  static base::NoDestructor<LocalOrSyncableBookmarkSyncServiceFactory> instance;
   return instance.get();
 }
 
-BookmarkSyncServiceFactory::BookmarkSyncServiceFactory()
+LocalOrSyncableBookmarkSyncServiceFactory::
+    LocalOrSyncableBookmarkSyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
-          "BookmarkSyncServiceFactory",
+          "LocalOrSyncableBookmarkSyncService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
 }
 
-BookmarkSyncServiceFactory::~BookmarkSyncServiceFactory() {}
+LocalOrSyncableBookmarkSyncServiceFactory::
+    ~LocalOrSyncableBookmarkSyncServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-BookmarkSyncServiceFactory::BuildServiceInstanceFor(
+LocalOrSyncableBookmarkSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
@@ -48,7 +51,8 @@ BookmarkSyncServiceFactory::BuildServiceInstanceFor(
   return bookmark_sync_service;
 }
 
-web::BrowserState* BookmarkSyncServiceFactory::GetBrowserStateToUse(
+web::BrowserState*
+LocalOrSyncableBookmarkSyncServiceFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
   return GetBrowserStateRedirectedInIncognito(context);
 }

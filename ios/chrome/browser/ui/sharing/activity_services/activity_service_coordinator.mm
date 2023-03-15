@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_coordinator.h"
 
 #import "components/bookmarks/browser/bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -88,7 +88,8 @@ const char kMimeTypePDF[] = "application/pdf";
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.incognito = browserState->IsOffTheRecord();
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(browserState);
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browserState);
   id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
   WebNavigationBrowserAgent* agent =

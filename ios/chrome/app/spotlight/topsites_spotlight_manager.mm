@@ -14,7 +14,7 @@
 #import "components/history/core/browser/top_sites.h"
 #import "components/history/core/browser/top_sites_observer.h"
 #import "components/sync/driver/sync_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
@@ -118,8 +118,8 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
                                    GetForBrowserState(browserState)
                       topSites:ios::TopSitesFactory::GetForBrowserState(
                                    browserState)
-                 bookmarkModel:ios::BookmarkModelFactory::GetForBrowserState(
-                                   browserState)];
+                 bookmarkModel:ios::LocalOrSyncableBookmarkModelFactory::
+                                   GetForBrowserState(browserState)];
 }
 
 - (instancetype)

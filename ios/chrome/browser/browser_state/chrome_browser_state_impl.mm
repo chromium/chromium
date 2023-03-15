@@ -26,7 +26,7 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/bookmark_model_loaded_observer.h"
 #import "ios/chrome/browser/browser_state/constants.h"
 #import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
@@ -150,7 +150,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
 
   // Listen for bookmark model load, to bootstrap the sync service.
   bookmarks::BookmarkModel* model =
-      ios::BookmarkModelFactory::GetForBrowserState(this);
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(this);
   model->AddObserver(new BookmarkModelLoadedObserver(this));
 }
 

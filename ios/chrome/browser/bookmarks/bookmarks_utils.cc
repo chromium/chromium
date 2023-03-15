@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 
@@ -18,7 +18,8 @@ using bookmarks::BookmarkNode;
 
 bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
   BookmarkModel* bookmark_model =
-      ios::BookmarkModelFactory::GetForBrowserState(browser_state);
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browser_state);
 
   if (!bookmark_model->loaded())
     return false;

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
