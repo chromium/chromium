@@ -267,9 +267,7 @@ void WEBPImageDecoder::OnSetData(SegmentReader* data) {
   // we don't require IsAllDataReceived() to be true before decoding).
   if (IsAllDataReceived()) {
     UpdateDemuxer();
-    allow_decode_to_yuv_ =
-        RuntimeEnabledFeatures::DecodeLossyWebPImagesToYUVEnabled() &&
-        CanAllowYUVDecodingForWebP();
+    allow_decode_to_yuv_ = CanAllowYUVDecodingForWebP();
   }
 }
 
