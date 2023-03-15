@@ -7351,7 +7351,7 @@ TEST_F(URLLoaderCacheTransparencyTest, Redirect) {
   // necessary to the test, but helps ensure it is passing for the right reason.
   // TODO(ricea): Stop checking this histogram if it is removed.
   static constexpr char kMarkedUnusableHistogram[] =
-      "Network.CacheTransparency.MarkedUnusable";
+      "Network.CacheTransparency2.MarkedUnusable";
 
   set_expect_redirect(true);
 
@@ -7371,7 +7371,7 @@ TEST_F(URLLoaderCacheTransparencyTest, Redirect) {
 
   // TODO(ricea): Stop checking this histogram if it is removed.
   histogram_tester().ExpectTotalCount(
-      "Network.CacheTransparency.SingleKeyedCacheIsUsed", 0);
+      "Network.CacheTransparency2.SingleKeyedCacheIsUsed", 0);
 
   // The count includes the target of the redirects.
   EXPECT_EQ(4, network_request_count());
