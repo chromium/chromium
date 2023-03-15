@@ -26,20 +26,6 @@ config("nearby_defines") {
 }
 
 ###############################################################################
-# src/internal/analytics
-###############################################################################
-# src/internal/analytics
-source_set("analytics_event_logger") {
-  public_configs = [
-    ":nearby_include_config",
-    ":nearby_defines",
-  ]
-  public = [ "src/internal/analytics/event_logger.h" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-}
-
-###############################################################################
 # src/connections
 ###############################################################################
 # src/connections
@@ -190,6 +176,7 @@ source_set("connections_implementation") {
   public_deps = [
     ":connections_enums_proto",
     ":connections_implementation_analytics",
+    ":connections_implementation_flags",
     ":connections_implementation_mediums",
     ":connections_implementation_mediums_webrtc",
     ":connections_types",
@@ -253,6 +240,27 @@ source_set("connections_implementation_analytics") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
+# src/connections/implementation/flags
+source_set("connections_implementation_flags") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  sources = [ "src/connections/implementation/flags/connections_flags.cc" ]
+  public = [
+    "src/connections/implementation/flags/connections_flags.h",
+    "src/connections/implementation/flags/nearby_connections_feature_flags.h",
+  ]
+  public_deps = [
+    ":flags",
+    ":platform_base",
+    ":platform_public_types",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 # src/connections/implementation/mediums
 source_set("connections_implementation_mediums") {
   public_configs = [
@@ -298,6 +306,8 @@ source_set("connections_implementation_mediums") {
     "src/connections/implementation/mediums/wifi_lan.h",
   ]
   public_deps = [
+    ":ble_frames_proto",
+    ":connections_implementation_flags",
     ":connections_implementation_mediums_webrtc",
     ":connections_types",
     ":platform_base",
@@ -306,7 +316,6 @@ source_set("connections_implementation_mediums") {
     ":platform_public_comm",
     ":platform_public_logging",
     ":platform_public_types",
-    ":ble_frames_proto",
     ":web_rtc_signaling_frames_proto",
     "//third_party/abseil-cpp:absl",
     "//third_party/smhasher:murmurhash3",
@@ -385,6 +394,36 @@ source_set("connections_implementation_mediums_webrtc") {
     "//third_party/abseil-cpp:absl",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+###############################################################################
+# src/internal
+###############################################################################
+# src/internal/analytics
+source_set("analytics_event_logger") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [ "src/internal/analytics/event_logger.h" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+# src/internal/flags
+source_set("flags") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [
+    "src/internal/flags/default_flag_reader.h",
+    "src/internal/flags/flag.h",
+    "src/internal/flags/flag_reader.h",
+  ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
