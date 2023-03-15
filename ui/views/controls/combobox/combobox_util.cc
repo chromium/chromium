@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/combobox/combobox_util.h"
 
+#include <memory>
+
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
@@ -11,7 +13,12 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 
 namespace views {
 
@@ -59,6 +66,30 @@ void PaintComboboxArrow(SkColor color,
   flags.setColor(color);
   flags.setAntiAlias(true);
   canvas->DrawPath(path, flags);
+}
+
+void ConfigureComboboxButtonInkDrop(Button* host_view) {
+  InkDrop::Get(host_view)->SetMode(views::InkDropHost::InkDropMode::ON);
+  host_view->SetHasInkDropActionOnClick(true);
+  InkDrop::UseInkDropForSquareRipple(InkDrop::Get(host_view),
+                                     /*highlight_on_hover=*/false);
+  views::InkDrop::Get(host_view)->SetBaseColorCallback(base::BindRepeating(
+      [](Button* host) {
+        // Use the same foreground base color as a label button.
+        return color_utils::DeriveDefaultIconColor(views::style::GetColor(
+            *host, views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY));
+      },
+      host_view));
+  InkDrop::Get(host_view)->SetCreateRippleCallback(base::BindRepeating(
+      [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
+        return std::make_unique<views::FloodFillInkDropRipple>(
+            InkDrop::Get(host), host->size(),
+            InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
+            host->GetColorProvider()->GetColor(style::GetColorId(
+                style::CONTEXT_TEXTFIELD, style::STYLE_PRIMARY)),
+            InkDrop::Get(host)->GetVisibleOpacity());
+      },
+      host_view));
 }
 
 }  // namespace views

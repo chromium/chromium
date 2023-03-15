@@ -80,28 +80,7 @@ class TransparentButton : public Button {
       views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                     GetCornerRadius());
     }
-    InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    SetHasInkDropActionOnClick(true);
-    InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
-                                       /*highlight_on_hover=*/false);
-    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-        [](Button* host) {
-          // This button will be used like a LabelButton, so use the same
-          // foreground base color as a label button.
-          return color_utils::DeriveDefaultIconColor(
-              host->GetColorProvider()->GetColor(views::style::GetColorId(
-                  views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY)));
-        },
-        this));
-    InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
-        [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
-          return std::make_unique<views::FloodFillInkDropRipple>(
-              InkDrop::Get(host), host->size(),
-              InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-              host->GetColorProvider()->GetColor(ui::kColorLabelForeground),
-              InkDrop::Get(host)->GetVisibleOpacity());
-        },
-        this));
+    ConfigureComboboxButtonInkDrop(this);
   }
   TransparentButton(const TransparentButton&) = delete;
   TransparentButton& operator&=(const TransparentButton&) = delete;

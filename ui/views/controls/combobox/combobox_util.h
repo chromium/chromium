@@ -17,6 +17,7 @@ class Rect;
 }  // namespace gfx
 
 namespace views {
+class Button;
 
 // Constants for the size of the combobox arrow.
 constexpr gfx::Size ComboboxArrowSize() {
@@ -33,6 +34,8 @@ int GetComboboxArrowContainerWidth();
 void PaintComboboxArrow(SkColor color,
                         const gfx::Rect& bounds,
                         gfx::Canvas* canvas);
+
+void ConfigureComboboxButtonInkDrop(Button* host_view);
 
 }  // namespace views
 
