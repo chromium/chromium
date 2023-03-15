@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
+import path from 'path';
+import os from 'os';
+import {mkdtemp} from 'fs/promises';
+
 import argparse from 'argparse';
 import debug from 'debug';
-import puppeteer, {
+import {
+  launch,
+  computeSystemExecutablePath,
+  Browser,
+  CDP_WEBSOCKET_ENDPOINT_REGEX,
   ChromeReleaseChannel,
-  PuppeteerLaunchOptions,
-} from 'puppeteer';
+} from '@puppeteer/browsers';
 
 import {ITransport} from '../utils/transport.js';
 
@@ -45,10 +52,8 @@ function parseArguments() {
   parser.add_argument('-c', '--channel', {
     help:
       'If set, the given installed Chrome Release Channel will be used ' +
-      'instead of one pointed by Puppeteer version. Can be one of ``, ' +
-      '`chrome`, `chrome-beta`, `chrome-canary`, `chrome-dev`. The given ' +
-      'Chrome channel should be installed. Default is ``.',
-    default: process.env['CHANNEL'] || '',
+      'instead of one pointed by Puppeteer version',
+    choices: Object.values(ChromeReleaseChannel),
   });
 
   parser.add_argument('-hl', '--headless', {
@@ -89,30 +94,53 @@ function parseArguments() {
  */
 async function onNewBidiConnectionOpen(
   headless: boolean,
-  chromeChannel: ChromeReleaseChannel,
+  chromeChannel: ChromeReleaseChannel | undefined,
   bidiTransport: ITransport
 ) {
-  const browserLaunchOptions: PuppeteerLaunchOptions = {
-    headless,
-    channel: chromeChannel,
-  };
+  // 1. Launch the browser using @puppeteer/browsers.
+  const profileDir = await mkdtemp(
+    path.join(os.tmpdir(), 'web-driver-bidi-server-')
+  );
+  // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
+  const chromeArguments = [
+    ...(headless ? ['--headless', '--hide-scrollbars', '--mute-audio'] : []),
+    '--disable-component-update',
+    '--disable-popup-blocking',
+    '--enable-automation',
+    '--no-default-browser-check',
+    '--no-first-run',
+    '--password-store=basic',
+    '--remote-debugging-port=9222',
+    '--use-mock-keychain',
+    `--user-data-dir=${profileDir}`,
+    'about:blank',
+  ];
 
-  // 1. Launch Chromium (using Puppeteer for now).
-  // Puppeteer should have downloaded Chromium during the installation.
-  // Use Puppeteer's logic of launching browser as well.
-  const browser = await puppeteer.launch(browserLaunchOptions);
+  const executablePath = chromeChannel
+    ? computeSystemExecutablePath({
+        browser: Browser.CHROME,
+        channel: chromeChannel,
+      })
+    : process.env['CHROME_BIN'];
 
-  // No need in Puppeteer being connected to browser.
-  browser.disconnect();
+  if (!executablePath) {
+    throw new Error('Could not find Chrome binary');
+  }
+
+  const browser = launch({
+    executablePath,
+    args: chromeArguments,
+  });
+
+  const wsEndpoint = await browser.waitForLineOutput(
+    CDP_WEBSOCKET_ENDPOINT_REGEX
+  );
 
   // 2. Get `BiDi-CDP` mapper JS binaries using `mapperReader`.
   const bidiMapperScript = await mapperReader();
 
   // 3. Run `BiDi-CDP` mapper in launched browser.
-  const mapperServer = await MapperServer.create(
-    browser.wsEndpoint(),
-    bidiMapperScript
-  );
+  const mapperServer = await MapperServer.create(wsEndpoint, bidiMapperScript);
 
   // 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
   // Forward messages from BiDi Mapper to the client.

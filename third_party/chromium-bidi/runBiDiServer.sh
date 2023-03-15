@@ -8,7 +8,7 @@ log() {
 }
 
 usage() {
-  log "Usage: [CHANNEL=<'' | chrome | chrome-beta | chrome-canary | chrome-dev>] [DEBUG=*] [HEADLESS=<true | false>] [PORT=8080] $0 [--headless=<true | false>]"
+  log "Usage: [CHANNEL=<stable | beta | canary | dev>] [DEBUG=*] [HEADLESS=<true | false>] [PORT=8080] $0 [--headless=<true | false>]"
   log
   log "The --headless flag takes precedence over the HEADLESS environment variable."
 }
@@ -18,8 +18,8 @@ if [[ $# -gt 0 && ("$1" == "-h" || "$1" == "--help") ]]; then
   exit 0
 fi
 
-# The chrome release channel to use: ``, `chrome`, `chrome-beta`, `chrome-canary`, `chrome-dev`.
-readonly CHANNEL="${CHANNEL:-chrome-dev}"
+# The chrome release channel to use: `stable`, `beta`, `canary`, `dev`.
+readonly CHANNEL="${CHANNEL:-dev}"
 
 # Options from npm 'debug' package.
 readonly DEBUG="${DEBUG:-*}"
@@ -47,9 +47,8 @@ log "Starting BiDi Server..."
 # Create a folder to store logs.
 mkdir -p "$LOG_DIR" && \
 env \
-CHANNEL="$CHANNEL" \
 DEBUG="$DEBUG" \
 DEBUG_COLORS="$DEBUG_COLORS" \
 NODE_OPTIONS="$NODE_OPTIONS" \
 PORT="$PORT" \
-npm run server-no-build -- --headless="$HEADLESS" "$@" 2>&1 | tee -a "$LOG_FILE")
+npm run server-no-build -- --channel="$CHANNEL" --headless="$HEADLESS" "$@" 2>&1 | tee -a "$LOG_FILE")

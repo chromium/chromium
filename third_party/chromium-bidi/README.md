@@ -172,14 +172,14 @@ npm run server -- --headless=false
 ```
 
 Use the `CHANNEL=...` environment variable or `--channel=...` argument with one of
-the following values to run the specific Chrome channel: `chrome`,
-`chrome-beta`, `chrome-canary`, `chrome-dev`.
+the following values to run the specific Chrome channel: `stable`,
+`beta`, `canary`, `dev`.
 
 The requested Chrome version should be installed.
 
 ```sh
-CHANNEL=chrome-dev npm run server
-npm run server -- --channel=chrome-dev
+CHANNEL=dev npm run server
+npm run server -- --channel=dev
 ```
 
 ### Starting on Linux and Mac
