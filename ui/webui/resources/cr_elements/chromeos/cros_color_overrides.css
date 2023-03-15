@@ -126,6 +126,14 @@ To get Chrome OS System Colors, an element must:
   --cr-input-placeholder-color: var(--cros-sys-secondary);
 }
 
+/* md-select */
+:host-context(body.jelly-enabled) .md-select {
+  --md-select-bg-color: var(--cros-sys-input_field_dark);
+  --md-select-focus-shadow-color: var(--cros-sys-primary);
+  --md-select-option-bg-color: var(--cros-sys-app_base_elevated);
+  --md-select-text-color: var(--cros-sys-on_surface);
+}
+
 /* Radio button */
 :host-context(body.jelly-enabled),
 :host-context(body.jelly-enabled) cr-radio-button {
