@@ -859,10 +859,10 @@ bool CastContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
   return false;
 }
 
-bool CastContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
+bool CastContentBrowserClient::ShouldAllowInsecureLocalNetworkRequests(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
-  // Some Cast apps hosted over HTTP needs to access the private network so that
+  // Some Cast apps hosted over HTTP needs to access the local network so that
   // media can be streamed from a local media server.
   return true;
 }

@@ -1048,11 +1048,11 @@ void AwContentBrowserClient::LogWebFeatureForCurrentPage(
       render_frame_host, feature);
 }
 
-bool AwContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
+bool AwContentBrowserClient::ShouldAllowInsecureLocalNetworkRequests(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
   // Webview does not implement support for deprecation trials, so webview apps
-  // broken by Private Network Access restrictions cannot help themselves by
+  // broken by Local Network Access restrictions cannot help themselves by
   // registering for the trial.
   // See crbug.com/1255675.
   return true;

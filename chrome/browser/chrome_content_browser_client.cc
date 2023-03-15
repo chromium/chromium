@@ -7055,7 +7055,7 @@ bool ChromeContentBrowserClient::
 #endif
 }
 
-bool ChromeContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
+bool ChromeContentBrowserClient::ShouldAllowInsecureLocalNetworkRequests(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
   // The host content settings map might no be null for some irregular profiles,

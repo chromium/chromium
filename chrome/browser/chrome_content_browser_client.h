@@ -786,7 +786,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url) override;
   bool ShouldServiceWorkerInheritPolicyContainerFromCreator(
       const GURL& url) override;
-  bool ShouldAllowInsecurePrivateNetworkRequests(
+  bool ShouldAllowInsecureLocalNetworkRequests(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
   bool IsJitDisabledForSite(content::BrowserContext* browser_context,

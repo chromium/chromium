@@ -4162,7 +4162,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
       IsMainFrameThirdPartyStoragePartitioningEnabled()));
 
   // Apply private network request policy according to our new origin.
-  if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
+  if (GetContentClient()->browser()->ShouldAllowInsecureLocalNetworkRequests(
           GetBrowserContext(), new_frame_origin)) {
     local_network_request_policy_ =
         network::mojom::LocalNetworkRequestPolicy::kAllow;
