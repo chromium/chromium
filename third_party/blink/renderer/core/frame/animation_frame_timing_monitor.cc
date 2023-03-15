@@ -418,22 +418,20 @@ void AnimationFrameTimingMonitor::Did(const probe::UserCallback& probe_data) {
   }
 }
 
+// Note that CallFunction in particular is very performance sensitive, we should
+// not perform any time captures for internal function calls, only top-level.
 void AnimationFrameTimingMonitor::Will(const probe::CallFunction& probe_data) {
-  base::TimeTicks start_time = probe_data.CaptureStartTime();
-  if (pending_script_info_ && probe_data.depth == 0 &&
-      pending_script_info_->execution_start_time.is_null()) {
-    pending_script_info_->execution_start_time = start_time;
+  if (probe_data.depth || !pending_script_info_) {
+    return;
+  }
+  if (pending_script_info_->execution_start_time.is_null()) {
+    pending_script_info_->execution_start_time = probe_data.CaptureStartTime();
   }
 }
 
 void AnimationFrameTimingMonitor::Did(const probe::CallFunction& probe_data) {
   // We use this probe callback only to capture source location.
   if (probe_data.depth || !pending_script_info_) {
-    return;
-  }
-
-  probe_data.CaptureEndTime();
-  if (probe_data.Duration() < kLongScriptDuration) {
     return;
   }
 
