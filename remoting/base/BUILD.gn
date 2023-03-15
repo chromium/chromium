@@ -35,6 +35,8 @@ source_set("base") {
     "directory_service_client.h",
     "leaky_bucket.cc",
     "leaky_bucket.h",
+    "mojo_util.cc",
+    "mojo_util.h",
     "name_value_map.h",
     "protobuf_http_client.cc",
     "protobuf_http_client.h",
@@ -281,6 +283,7 @@ source_set("run_all_unittests") {
     ]
   }
   deps = [
+    ":base",
     "//base",
     "//base/test:test_support",
     "//mojo/core/embedder",

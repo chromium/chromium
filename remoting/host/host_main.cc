@@ -18,9 +18,9 @@
 #include "base/strings/stringize_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "mojo/core/embedder/embedder.h"
 #include "remoting/base/breakpad.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/mojo_util.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/evaluate_capability.h"
@@ -247,7 +247,7 @@ int HostMain(int argc, char** argv) {
 
   remoting::LoadResources("");
 
-  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
+  InitializeMojo({.is_broker_process = main_routine == &HostProcessMain});
 
   // Invoke the entry point.
   int exit_code = main_routine();

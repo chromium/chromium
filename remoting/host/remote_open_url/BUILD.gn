@@ -79,6 +79,7 @@ source_set("main") {
     "//base",
     "//base:i18n",
     "//mojo/core/embedder",
+    "//remoting/base",
     "//remoting/base:breakpad",
     "//remoting/host",
     "//remoting/host:chromoting_host_services_client",

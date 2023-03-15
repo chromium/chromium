@@ -66,6 +66,7 @@ source_set("main") {
     ":security_key",
     "//base:debugging_buildflags",
     "//mojo/core/embedder",
+    "//remoting/base",
     "//remoting/base:breakpad",
     "//remoting/host:common",
     "//remoting/host/base",
@@ -127,6 +128,15 @@ source_set("unit_tests") {
     "//remoting/host/setup:common",
     "//remoting/protocol:protocol",
   ]
+
+  if (is_linux) {
+    # MojoIpcz (enabled on Linux) does not allow processes to start a server
+    # endpoint and connect to it within the same process boundary. The proper
+    # fix is to turn the tests into multi-process tests, but the plan is to
+    # migrate security key IPCs to NamedMojoIpcServer, and SecurityKeyIpcServer
+    # is technically only used on Windows, so it's not worth the effort.
+    sources -= [ "security_key_ipc_server_unittest.cc" ]
+  }
 
   if (is_posix) {
     sources += [ "security_key_auth_handler_posix_unittest.cc" ]

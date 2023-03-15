@@ -17,10 +17,10 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "mojo/core/embedder/embedder.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/breakpad.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/mojo_util.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/pin_validator.h"
@@ -160,7 +160,7 @@ int StartHostMain(int argc, char** argv) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "RemotingHostSetup");
 
-  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
+  InitializeMojo();
 
   std::string host_name = command_line->GetSwitchValueASCII("name");
   std::string host_pin = command_line->GetSwitchValueASCII("pin");

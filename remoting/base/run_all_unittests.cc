@@ -10,8 +10,8 @@
 #include "base/test/test_suite.h"
 #include "base/threading/thread.h"
 #include "build/chromeos_buildflags.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "remoting/base/mojo_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
   ipc_thread.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 
-  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
+  remoting::InitializeMojo();
   mojo::core::ScopedIPCSupport ipc_support(
       ipc_thread.task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);

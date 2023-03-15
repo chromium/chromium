@@ -1097,6 +1097,7 @@ if (enable_me2me_host) {
       "//base",
       "//base:debugging_buildflags",
       "//mojo/core/embedder:embedder",
+      "//remoting/base",
       "//remoting/base:breakpad",
       "//remoting/host/base",
       "//remoting/host/setup:common",
