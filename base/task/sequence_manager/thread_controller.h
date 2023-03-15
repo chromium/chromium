@@ -193,11 +193,11 @@ class BASE_EXPORT ThreadController {
   //  1) #work-in-work-implies-nested :
   //     If the |state_| is kRunningWorkItem and another work item starts
   //     (OnWorkStarted()), it implies this inner-work-item is running from a
-  //     nested loop and another RunLevel is pushed onto |run_levels_|.
-  //  2) #done-work-while-not-running-implies-done-nested
-  //     If the current work item completes (OnWorkEnded()) and |state_| is not
-  //     kRunningWorkItem, the top RunLevel was an (already exited) nested loop
-  //     and will be popped off |run_levels_|.
+  //  2) #done-work-at-lower-runlevel-implies-done-nested
+  //     WorkItems are required to pass in the nesting depth at which they were
+  //     created in OnWorkEnded(). Then, if |rundepth| is lower than the current
+  //     RunDepth(), we know the top RunLevel was an (already exited) nested
+  //     loop and will be popped off |run_levels_|.
   // We need this logic because native nested loops can run from any work item
   // without a RunLoop being involved, see
   // ThreadControllerWithMessagePumpTest.ThreadControllerActive* tests for
@@ -225,12 +225,12 @@ class BASE_EXPORT ThreadController {
   //          current RunLevel.
   //  B) When work item (A) exits its nested loop and completes, respectively:
   //     i) The loop was invisible so no RunLevel was created for it and
-  //        #done-work-while-not-running-implies-done-nested doesn't trigger so
+  //        #done-work-at-lower-runlevel-implies-done-nested doesn't trigger so
   //        it balances out.
-  //     ii) Instrumented work did run in which case |state_| is
-  //         kInBetweenWorkItems or kIdle. When the work item in which (A) runs
-  //         completes, #done-work-while-not-running-implies-done-nested
-  //         triggers and everything balances out.
+  //     ii) Instrumented work did run, and so RunLevels() increased. However,
+  //         since instrumented work (the work which called the nested loop)
+  //         keeps track of its own run depth, on its exit, we know to pop the
+  //         RunLevel corresponding to the nested work.
   //     iii) Nested instrumented work was visible but didn't appear nested,
   //          state is now back to kInBetweenWorkItems or kIdle as before (A).
   class BASE_EXPORT RunLevelTracker {
@@ -254,7 +254,7 @@ class BASE_EXPORT ThreadController {
     void OnRunLoopEnded();
     void OnWorkStarted(LazyNow& lazy_now);
     void OnApplicationTaskSelected(TimeTicks queue_time, LazyNow& lazy_now);
-    void OnWorkEnded(LazyNow& lazy_now);
+    void OnWorkEnded(LazyNow& lazy_now, int run_level_depth);
     void OnIdle(LazyNow& lazy_now);
 
     size_t num_run_levels() const {

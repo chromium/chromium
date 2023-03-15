@@ -157,13 +157,15 @@ void ThreadController::RunLevelTracker::OnApplicationTaskSelected(
   time_keeper_.OnApplicationTaskSelected(queue_time, lazy_now);
 }
 
-void ThreadController::RunLevelTracker::OnWorkEnded(LazyNow& lazy_now) {
+void ThreadController::RunLevelTracker::OnWorkEnded(LazyNow& lazy_now,
+                                                    int run_level_depth) {
   DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
   if (run_levels_.empty())
     return;
 
-  // #done-work-while-not-running-implies-done-nested
-  if (run_levels_.top().state() != kRunningWorkItem) {
+  // #done-work-at-lower-runlevel-implies-done-nested
+  if (run_level_depth != static_cast<int>(num_run_levels())) {
+    DCHECK_EQ(run_level_depth + 1, static_cast<int>(num_run_levels()));
     run_levels_.top().set_exit_lazy_now(&lazy_now);
     run_levels_.pop();
   } else {

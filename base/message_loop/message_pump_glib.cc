@@ -167,9 +167,6 @@ struct MessagePumpGlib::RunState {
   // Used to flag that the current Run() invocation should return ASAP.
   bool should_quit;
 
-  // Used to count how many Run() invocations are on the stack.
-  int run_depth;
-
   // The information of the next task available at this run-level. Stored in
   // RunState because different set of tasks can be accessible at various
   // run-levels (e.g. non-nestable tasks).
@@ -377,7 +374,6 @@ void MessagePumpGlib::Run(Delegate* delegate) {
   RunState state;
   state.delegate = delegate;
   state.should_quit = false;
-  state.run_depth = state_ ? state_->run_depth + 1 : 1;
 
   RunState* previous_state = state_;
   state_ = &state;

@@ -87,16 +87,19 @@ class BASE_EXPORT MessagePump {
 
     class ScopedDoWorkItem {
      public:
-      ScopedDoWorkItem() : outer_(nullptr) {}
+      ScopedDoWorkItem() : outer_(nullptr), work_item_depth_(0) {}
 
       ~ScopedDoWorkItem() {
-        if (outer_)
-          outer_->OnEndWorkItem();
+        if (outer_) {
+          outer_->OnEndWorkItem(work_item_depth_);
+        }
       }
 
       ScopedDoWorkItem(ScopedDoWorkItem&& rhs)
-          : outer_(std::exchange(rhs.outer_, nullptr)) {}
+          : outer_(std::exchange(rhs.outer_, nullptr)),
+            work_item_depth_(rhs.work_item_depth_) {}
       ScopedDoWorkItem& operator=(ScopedDoWorkItem&& rhs) {
+        work_item_depth_ = rhs.work_item_depth_;
         outer_ = std::exchange(rhs.outer_, nullptr);
         return *this;
       }
@@ -106,11 +109,16 @@ class BASE_EXPORT MessagePump {
 
       explicit ScopedDoWorkItem(Delegate* outer) : outer_(outer) {
         outer_->OnBeginWorkItem();
+        work_item_depth_ = outer_->RunDepth();
       }
 
       // `outer_` is not a raw_ptr<...> for performance reasons (based on
       // analysis of sampling profiler data and tab_search:top100:2020).
       RAW_PTR_EXCLUSION Delegate* outer_;
+
+      // Records the run level at which this DoWorkItem was created to allow
+      // detection of exits of nested loops.
+      int work_item_depth_;
     };
 
     // Called before a unit of work is executed. This allows reports
@@ -128,10 +136,13 @@ class BASE_EXPORT MessagePump {
     // native work -- if it can tell).
     virtual void BeforeWait() = 0;
 
+    // Returns the nesting level at which the Delegate is currently running.
+    virtual int RunDepth() = 0;
+
    private:
     // Called upon entering/exiting a ScopedDoWorkItem.
     virtual void OnBeginWorkItem() = 0;
-    virtual void OnEndWorkItem() = 0;
+    virtual void OnEndWorkItem(int work_item_depth) = 0;
   };
 
   MessagePump();

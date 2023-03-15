@@ -87,16 +87,20 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
     ++work_item_count_;
   }
 
-  void OnEndWorkItem() override {
+  void OnEndWorkItem(int run_level_depth) override {
     if (check_work_items_) {
-      MockOnEndWorkItem();
+      MockOnEndWorkItem(run_level_depth);
     }
+
+    EXPECT_EQ(run_level_depth, work_item_count_);
 
     --work_item_count_;
 
     // It's not possible to close more scopes than there are open ones.
     EXPECT_GE(work_item_count_, 0);
   }
+
+  int RunDepth() override { return work_item_count_; }
 
   void ValidateNoOpenWorkItems() {
     // Upon exiting there cannot be any open scopes.
@@ -114,7 +118,7 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
 
   // Mock functions for asserting.
   MOCK_METHOD0(MockOnBeginWorkItem, void(void));
-  MOCK_METHOD0(MockOnEndWorkItem, void(void));
+  MOCK_METHOD1(MockOnEndWorkItem, void(int));
 
   // If native events are covered in the current configuration it's not
   // possible to precisely test all assertions related to work items. This is
@@ -272,7 +276,8 @@ class TimerSlackTestDelegate : public MessagePump::Delegate {
   }
 
   void OnBeginWorkItem() override {}
-  void OnEndWorkItem() override {}
+  void OnEndWorkItem(int run_level_depth) override {}
+  int RunDepth() override { return 0; }
   void BeforeWait() override {}
 
   MessagePump::Delegate::NextWorkInfo DoWork() override {

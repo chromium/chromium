@@ -1285,6 +1285,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         MockCallback<OnceClosure> tasks[2];
+        size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 2 application tasks
         // B: Run one of them which allows nested application tasks (enter
@@ -1326,7 +1327,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
               &*thread_controller_.trace_observer_);
-          thread_controller_.OnEndWorkItem();
+          thread_controller_.OnEndWorkItem(run_level_depth + 1);
 
           // E:
           EXPECT_CALL(tasks[1], Run());
@@ -1348,7 +1349,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
               &*thread_controller_.trace_observer_);
-          thread_controller_.OnEndWorkItem();
+          thread_controller_.OnEndWorkItem(run_level_depth + 1);
 
           // H:
           EXPECT_CALL(*thread_controller_.trace_observer_,
@@ -1470,6 +1471,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         MockCallback<OnceClosure> tasks[2];
+        size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 2 application tasks
         // B: Run one of them (enter active)
@@ -1500,7 +1502,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
               &*thread_controller_.trace_observer_);
-          thread_controller_.OnEndWorkItem();
+          thread_controller_.OnEndWorkItem(run_level_depth + 1);
 
           // E:
           EXPECT_CALL(*thread_controller_.trace_observer_,
@@ -1554,6 +1556,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         MockCallback<OnceClosure> tasks[2];
+        size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 1 application task
         // B: Run it
@@ -1592,7 +1595,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             thread_controller_.OnBeginWorkItem();
             testing::Mock::VerifyAndClearExpectations(
                 &*thread_controller_.trace_observer_);
-            thread_controller_.OnEndWorkItem();
+            thread_controller_.OnEndWorkItem(run_level_depth + 1);
 
             // E & H:
             thread_controller_.SetTaskExecutionAllowed(false);
@@ -1641,6 +1644,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         MockCallback<OnceClosure> task;
+        size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 1 application task
         // B: Run it
@@ -1683,7 +1687,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
               &*thread_controller_.trace_observer_);
-          thread_controller_.OnEndWorkItem();
+          thread_controller_.OnEndWorkItem(run_level_depth + 1);
 
           // E:
           EXPECT_CALL(*thread_controller_.trace_observer_,
@@ -1698,7 +1702,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
           thread_controller_.OnBeginWorkItem();
           testing::Mock::VerifyAndClearExpectations(
               &*thread_controller_.trace_observer_);
-          thread_controller_.OnEndWorkItem();
+          thread_controller_.OnEndWorkItem(run_level_depth + 1);
 
           // G:
           thread_controller_.SetTaskExecutionAllowed(false);
@@ -1845,6 +1849,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             &*thread_controller_.trace_observer_);
 
         MockCallback<OnceClosure> task;
+        size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 1 application task
         // B: Run a native task
@@ -1885,7 +1890,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                     OnThreadControllerActiveEnd);
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnPhaseRecorded(ThreadController::kNested));
-        thread_controller_.OnEndWorkItem();
+        thread_controller_.OnEndWorkItem(run_level_depth);
 
         // F:
         EXPECT_CALL(*thread_controller_.trace_observer_,
@@ -1932,6 +1937,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
             &*thread_controller_.trace_observer_);
 
         MockCallback<OnceClosure> task;
+        size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 1 application task
         // B: Run a native task
@@ -1982,7 +1988,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
                     OnThreadControllerActiveEnd);
         EXPECT_CALL(*thread_controller_.trace_observer_,
                     OnPhaseRecorded(ThreadController::kNested));
-        thread_controller_.OnEndWorkItem();
+        thread_controller_.OnEndWorkItem(run_level_depth);
 
         // H:
         EXPECT_CALL(*thread_controller_.trace_observer_,
