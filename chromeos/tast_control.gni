@@ -327,6 +327,9 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.AppVscode.bullseye_clamshell_stable",
   "crostini.AppVscode.clamshell_stable",
 
+  # https://crbug.com/1424388
+  "health.ProbeFanInfo",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
