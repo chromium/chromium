@@ -69,7 +69,7 @@ BASE_FEATURE(kWebFeedFeedbackReroute,
 
 BASE_FEATURE(kEnableFollowManagementInstantReload,
              "EnableFollowManagementInstantReload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
 
