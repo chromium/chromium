@@ -273,6 +273,16 @@ void CopySettings(const MediaTrackSettings* source,
   }
 }
 
+MediaSettingsRange* DuplicateRange(const MediaSettingsRange* range) {
+  MediaSettingsRange* copy = MediaSettingsRange::Create();
+  copy->setMax(range->max());
+  copy->setMin(range->min());
+  if (range->hasStep()) {
+    copy->setStep(range->step());
+  }
+  return copy;
+}
+
 // TODO(crbug.com/708723): Integrate image capture constraints processing with
 // the main implementation and remove this support enum.
 enum class ConstraintType {
@@ -1005,6 +1015,31 @@ Vector<String> ApplyExactValueConstraint(
   return {exact_constraint};
 }
 
+// For exact `sequence<DOMString>` constraints and `sequence<DOMString>`
+// effective capabilities such as whiteBalanceMode, exposureMode and focusMode.
+Vector<String> ApplyExactValueConstraint(
+    bool* has_setting_ptr,
+    MeteringMode* setting_ptr,
+    const Vector<String>& effective_capability,
+    const Vector<String>& exact_constraints) {
+  // Update the effective capability.
+  Vector<String> new_effective_capability;
+  for (const auto& exact_constraint : exact_constraints) {
+    if (base::Contains(effective_capability, exact_constraint)) {
+      new_effective_capability.push_back(exact_constraint);
+    }
+  }
+  DCHECK(!new_effective_capability.empty());
+  // Clamp and update the setting.
+  if (!*has_setting_ptr ||
+      !base::Contains(exact_constraints,
+                      static_cast<const String&>(ToString(*setting_ptr)))) {
+    *has_setting_ptr = true;
+    *setting_ptr = ParseMeteringMode(new_effective_capability[0]);
+  }
+  return new_effective_capability;
+}
+
 // Apply ideal value constraints to photo settings and return effective
 // capabilities intact (ideal constraints have no effect on effective
 // capabilities).
@@ -1064,6 +1099,32 @@ Vector<String> ApplyIdealValueConstraint(
   return effective_capability;
 }
 
+// For ideal `sequence<DOMString>` constraints and `sequence<DOMString>`
+// effective capabilities such as whiteBalanceMode, exposureMode and focusMode.
+Vector<String> ApplyIdealValueConstraint(
+    bool* has_setting_ptr,
+    MeteringMode* setting_ptr,
+    const Vector<String>& effective_capability,
+    const Vector<String>& ideal_constraints,
+    const String& current_setting) {
+  // Clamp and update the setting.
+  if (!*has_setting_ptr ||
+      !base::Contains(ideal_constraints,
+                      static_cast<const String&>(ToString(*setting_ptr)))) {
+    String setting_name = current_setting;
+    for (const auto& ideal_constraint : ideal_constraints) {
+      if (base::Contains(effective_capability, ideal_constraint)) {
+        setting_name = ideal_constraint;
+        break;
+      }
+    }
+    *has_setting_ptr = true;
+    *setting_ptr = ParseMeteringMode(setting_name);
+  }
+  // Keep the effective capability intact.
+  return effective_capability;
+}
+
 // Apply value constraints to photo settings and return new effective
 // capabilities.
 //
@@ -1105,8 +1166,20 @@ Vector<bool> ApplyValueConstraint(
     case ContentType::kConstrainBooleanParameters: {
       DCHECK_NE(constraint_set_type,
                 MediaTrackConstraintSetType::kFirstAdvanced);
-      // TODO(crbug.com/1408091): Add support for ConstrainBooleanParameters.
-      return effective_capability;
+      const auto* dictionary_constraint =
+          constraint->GetAsConstrainBooleanParameters();
+      if (dictionary_constraint->hasExact()) {
+        return ApplyExactValueConstraint(has_setting_ptr, setting_ptr,
+                                         effective_capability,
+                                         dictionary_constraint->exact());
+      }
+      // We classify `ConstrainBooleanParameters` constraints containing only
+      // the `ideal` member as value constraints only in the basic constraint
+      // set in which they have an effect on the SelectSettings algorithm.
+      DCHECK_EQ(constraint_set_type, MediaTrackConstraintSetType::kBasic);
+      return ApplyIdealValueConstraint(has_setting_ptr, setting_ptr,
+                                       effective_capability,
+                                       dictionary_constraint->ideal());
     }
   }
 }
@@ -1145,8 +1218,38 @@ MediaSettingsRange* ApplyValueConstraint(
     case ContentType::kConstrainDoubleRange: {
       DCHECK_NE(constraint_set_type,
                 MediaTrackConstraintSetType::kFirstAdvanced);
-      // TODO(crbug.com/1408091): Add support for ConstrainDoubleRange.
-      return const_cast<MediaSettingsRange*>(effective_capability);
+      const auto* dictionary_constraint =
+          constraint->GetAsConstrainDoubleRange();
+      if (dictionary_constraint->hasExact()) {
+        return ApplyExactValueConstraint(has_setting_ptr, setting_ptr,
+                                         effective_capability,
+                                         dictionary_constraint->exact());
+      }
+      // Update the effective capability.
+      auto* new_effective_capability = DuplicateRange(effective_capability);
+      if (dictionary_constraint->hasMax()) {
+        new_effective_capability->setMax(std::min(dictionary_constraint->max(),
+                                                  effective_capability->max()));
+      }
+      if (dictionary_constraint->hasMin()) {
+        new_effective_capability->setMin(std::max(dictionary_constraint->min(),
+                                                  effective_capability->min()));
+      }
+      // Ideal constraints have an effect on the SelectSettings algorithm only
+      // in the basic constraint set. Always call `ApplyIdealValueConstraint()`
+      // so that either the ideal value constraint or the current setting is
+      // clamped so that the setting is within the new effective capability.
+      DCHECK(
+          (dictionary_constraint->hasIdeal() &&
+           constraint_set_type == MediaTrackConstraintSetType::kBasic) ||
+          (dictionary_constraint->hasMax() || dictionary_constraint->hasMin()));
+      return ApplyIdealValueConstraint(
+          has_setting_ptr, setting_ptr, new_effective_capability,
+          (dictionary_constraint->hasIdeal() &&
+           constraint_set_type == MediaTrackConstraintSetType::kBasic)
+              ? absl::make_optional(dictionary_constraint->ideal())
+              : absl::nullopt,
+          current_setting);
     }
   }
 }
@@ -1205,12 +1308,57 @@ Vector<String> ApplyValueConstraint(
       return ApplyIdealValueConstraint(
           has_setting_ptr, setting_ptr, effective_capability,
           constraint->GetAsString(), current_setting);
-    default:
+    case ContentType::kStringSequence:
       DCHECK_NE(constraint_set_type,
                 MediaTrackConstraintSetType::kFirstAdvanced);
-      // TODO(crbug.com/1408091): Add support for StringSequence and for
-      // ConstrainDOMStringParameters.
-      return effective_capability;
+      if (IsBareValueToBeTreatedAsExact(constraint_set_type)) {
+        return ApplyExactValueConstraint(has_setting_ptr, setting_ptr,
+                                         effective_capability,
+                                         constraint->GetAsStringSequence());
+      }
+      // We classify ideal bare value constraints as value constraints only in
+      // the basic constraint set in which they have an effect on
+      // the SelectSettings algorithm.
+      DCHECK_EQ(constraint_set_type, MediaTrackConstraintSetType::kBasic);
+      return ApplyIdealValueConstraint(
+          has_setting_ptr, setting_ptr, effective_capability,
+          constraint->GetAsStringSequence(), current_setting);
+    case ContentType::kConstrainDOMStringParameters: {
+      DCHECK_NE(constraint_set_type,
+                MediaTrackConstraintSetType::kFirstAdvanced);
+      const auto* dictionary_constraint =
+          constraint->GetAsConstrainDOMStringParameters();
+      if (dictionary_constraint->hasExact()) {
+        const V8UnionStringOrStringSequence* exact_constraint =
+            dictionary_constraint->exact();
+        switch (exact_constraint->GetContentType()) {
+          case V8UnionStringOrStringSequence::ContentType::kString:
+            return ApplyExactValueConstraint(has_setting_ptr, setting_ptr,
+                                             effective_capability,
+                                             exact_constraint->GetAsString());
+          case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+            return ApplyExactValueConstraint(
+                has_setting_ptr, setting_ptr, effective_capability,
+                exact_constraint->GetAsStringSequence());
+        }
+      }
+      // We classify `ConstrainDOMStringParameters` constraints containing only
+      // the `ideal` member as value constraints only in the basic constraint
+      // set in which they have an effect on the SelectSettings algorithm.
+      DCHECK_EQ(constraint_set_type, MediaTrackConstraintSetType::kBasic);
+      const V8UnionStringOrStringSequence* ideal_constraint =
+          dictionary_constraint->ideal();
+      switch (ideal_constraint->GetContentType()) {
+        case V8UnionStringOrStringSequence::ContentType::kString:
+          return ApplyIdealValueConstraint(
+              has_setting_ptr, setting_ptr, effective_capability,
+              ideal_constraint->GetAsString(), current_setting);
+        case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+          return ApplyIdealValueConstraint(
+              has_setting_ptr, setting_ptr, effective_capability,
+              ideal_constraint->GetAsStringSequence(), current_setting);
+      }
+    }
   }
 }
 
@@ -1272,7 +1420,19 @@ absl::optional<HeapVector<Member<Point2D>>> ApplyValueConstraint(
     case ContentType::kConstrainPoint2DParameters: {
       DCHECK_NE(constraint_set_type,
                 MediaTrackConstraintSetType::kFirstAdvanced);
-      // TODO(crbug.com/1408091): Add support for ConstrainPoint2DParameters.
+      const auto* dictionary_constraint =
+          constraint->GetAsConstrainPoint2DParameters();
+      if (dictionary_constraint->hasExact()) {
+        ApplyValueConstraint(has_setting_ptr, setting_ptr, effective_setting,
+                             dictionary_constraint->exact());
+        return dictionary_constraint->exact();
+      }
+      // We classify `ConstrainPoint2DParameters` constraints containing only
+      // the `ideal` member as value constraints only in the basic constraint
+      // set in which they have an effect on the SelectSettings algorithm.
+      DCHECK_EQ(constraint_set_type, MediaTrackConstraintSetType::kBasic);
+      ApplyValueConstraint(has_setting_ptr, setting_ptr, effective_setting,
+                           dictionary_constraint->ideal());
       return absl::nullopt;
     }
   }
