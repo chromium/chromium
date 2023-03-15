@@ -54,15 +54,47 @@ export function refreshColorCss(): boolean {
   return true;
 }
 
+
+
 let listenerId: number|null = null;
+let clientColorChangeListeners: Array<() => void> = [];
 
 /**
- * Starts listening for ColorProvider change updates from the browser.
+ * Calls `refreshColorCss()` and any listeners previously registered via
+ * `addColorChangeListener()`
  */
+export function colorProviderChangeHandler() {
+  // The webui's current css variables may now be stale, force update them.
+  refreshColorCss();
+  // Notify any interested javascript that the color scheme has changed.
+  for (const listener of clientColorChangeListeners) {
+    listener();
+  }
+}
+
+/**
+ * Register a function to be called every time the page's color provider
+ * changes. Note that the listeners will only be invoked AFTER
+ * startColorChangeUpdater() is called.
+ */
+export function addColorChangeListener(changeListener: () => void) {
+  clientColorChangeListeners.push(changeListener);
+}
+
+/**
+ * Remove a listener that was previously registered via addColorChangeListener.
+ * If provided with a listener that was not previously registered does nothing.
+ */
+export function removeColorChangeListener(changeListener: () => void) {
+  clientColorChangeListeners = clientColorChangeListeners.filter(
+      listener => listener !== changeListener);
+}
+
+/** Starts listening for ColorProvider change updates from the browser. */
 export function startColorChangeUpdater() {
   if (listenerId === null) {
-    listenerId =
-        BrowserProxy.getInstance()
-            .callbackRouter.onColorProviderChanged.addListener(refreshColorCss);
+    listenerId = BrowserProxy.getInstance()
+                     .callbackRouter.onColorProviderChanged.addListener(
+                         colorProviderChangeHandler);
   }
 }

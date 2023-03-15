@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {addColorChangeListener, startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
 import {getRGBAFromComputedStyle} from './utils.js';
 import {startObservingWallpaperColors} from './wallpaper_colors.js';
@@ -92,8 +92,20 @@ async function populateTokenTable() {
   addTokens(sysTable, tokens.sys_tokens);
 }
 
+function onColorChange() {
+  const formatter = new Intl.DateTimeFormat('en', {
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  });
+  const span = document.querySelector('#last-updated') as HTMLSpanElement;
+  span.innerText = formatter.format(new Date());
+}
+
 window.onload = () => {
   populateTokenTable();
   startColorChangeUpdater();
   startObservingWallpaperColors();
+  addColorChangeListener(onColorChange);
+  onColorChange();
 };

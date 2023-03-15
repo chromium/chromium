@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {COLORS_CSS_SELECTOR, refreshColorCss} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {addColorChangeListener, colorProviderChangeHandler, COLORS_CSS_SELECTOR, refreshColorCss, removeColorChangeListener} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -63,5 +63,35 @@ suite('ColorChangeListenerTest', () => {
     // Handles the case where the link element does not exist.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     assertFalse(refreshColorCss());
+  });
+
+  test('RegistersColorChangeListener', async () => {
+    let listenerCalledTimes = 0;
+    addColorChangeListener(() => {
+      listenerCalledTimes++;
+    });
+
+    // Emulate a color change event from the mojo pipe.
+    colorProviderChangeHandler();
+
+    assertEquals(listenerCalledTimes, 1);
+  });
+
+  test('RemovesColorChangeListener', async () => {
+    let listenerCalledTimes = 0;
+    const listener = () => {
+      listenerCalledTimes++;
+    };
+    addColorChangeListener(listener);
+
+    // Emulate a color change event from the mojo pipe.
+    colorProviderChangeHandler();
+
+    removeColorChangeListener(listener);
+
+    // Emulate a color change event from the mojo pipe.
+    colorProviderChangeHandler();
+
+    assertEquals(listenerCalledTimes, 1);
   });
 });
