@@ -39,13 +39,13 @@ bool CreateLacrosDirectoryForProfile(const AccountId& account_id) {
   const base::FilePath profile_data_dir =
       ProfileHelper::GetProfilePathByUserIdHash(
           user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
-  const base::FilePath lacros_profile_dir =
+  const base::FilePath lacros_dir =
       profile_data_dir.Append(browser_data_migrator_util::kLacrosDir);
   {
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;
     if (!(base::CreateDirectory(user_data_dir) &&
           base::CreateDirectory(profile_data_dir) &&
-          base::CreateDirectory(lacros_profile_dir))) {
+          base::CreateDirectory(lacros_dir))) {
       LOG(ERROR) << "Creating Lacros directory file failed.";
       return false;
     }
