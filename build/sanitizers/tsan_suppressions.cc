@@ -40,9 +40,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/120808
     "race:base/threading/watchdog.cc\n"
 
-    // http://crbug.com/157586
-    "race:third_party/libvpx/source/libvpx/vp8/decoder/threading.c\n"
-
     // http://crbug.com/244856
     "race:libpulsecommon*.so\n"
 
