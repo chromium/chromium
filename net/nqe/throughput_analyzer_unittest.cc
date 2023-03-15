@@ -939,21 +939,9 @@ TEST_F(ThroughputAnalyzerTest, TestHangingWindow) {
 
   for (const auto& test : tests) {
     base::HistogramTester histogram_tester;
-    double kbps = test.bits_received / test.window_duration.InMillisecondsF();
     EXPECT_EQ(test.expected_hanging,
               throughput_analyzer.IsHangingWindow(test.bits_received,
-                                                  test.window_duration, kbps));
-
-    if (test.expected_hanging) {
-      histogram_tester.ExpectUniqueSample("NQE.ThroughputObservation.Hanging",
-                                          kbps, 1);
-      histogram_tester.ExpectTotalCount("NQE.ThroughputObservation.NotHanging",
-                                        0);
-    } else {
-      histogram_tester.ExpectTotalCount("NQE.ThroughputObservation.Hanging", 0);
-      histogram_tester.ExpectUniqueSample(
-          "NQE.ThroughputObservation.NotHanging", kbps, 1);
-    }
+                                                  test.window_duration));
   }
 }
 

@@ -135,9 +135,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
 
   // Returns true if the current throughput observation window is heuristically
   // determined to contain hanging requests.
-  bool IsHangingWindow(int64_t bits_received,
-                       base::TimeDelta duration,
-                       double downstream_kbps_double) const;
+  bool IsHangingWindow(int64_t bits_received, base::TimeDelta duration) const;
 
  private:
   friend class TestThroughputAnalyzer;

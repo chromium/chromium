@@ -255,8 +255,7 @@ void ThroughputAnalyzer::NotifyExpectedResponseContentSize(
 }
 
 bool ThroughputAnalyzer::IsHangingWindow(int64_t bits_received,
-                                         base::TimeDelta duration,
-                                         double downstream_kbps_double) const {
+                                         base::TimeDelta duration) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (params_->throughput_hanging_requests_cwnd_size_multiplier() <= 0)
@@ -288,14 +287,6 @@ bool ThroughputAnalyzer::IsHangingWindow(int64_t bits_received,
       (kCwndSizeBits *
        params_->throughput_hanging_requests_cwnd_size_multiplier());
 
-  // Record kbps as function of |is_hanging|.
-  if (is_hanging) {
-    LOCAL_HISTOGRAM_COUNTS_1000000("NQE.ThroughputObservation.Hanging",
-                                   downstream_kbps_double);
-  } else {
-    LOCAL_HISTOGRAM_COUNTS_1000000("NQE.ThroughputObservation.NotHanging",
-                                   downstream_kbps_double);
-  }
   return is_hanging;
 }
 
@@ -332,7 +323,7 @@ bool ThroughputAnalyzer::MaybeGetThroughputObservation(
 
   double downstream_kbps_double = bits_received * duration.ToHz() / 1000;
 
-  if (IsHangingWindow(bits_received, duration, downstream_kbps_double)) {
+  if (IsHangingWindow(bits_received, duration)) {
     requests_.clear();
     EndThroughputObservationWindow();
     return false;
