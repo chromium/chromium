@@ -10,8 +10,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- ios
 items:
 - caption: The shopping list feature will be available to users.
   value: true
@@ -27,5 +25,6 @@ supported_on:
 - chrome.*:107-
 - chrome_os:107-
 - android:107-
+- ios:112-
 tags: []
 type: main
