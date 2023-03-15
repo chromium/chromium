@@ -533,7 +533,7 @@ test("chromevox_tests") {
     "//chrome/test:browser_tests_runner",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
-    "//chrome/test/data:web_ui_test_bindings",
+    "//chrome/test/data/webui:web_ui_test_bindings",
     "//components/webapps/browser",
     "//content/test:test_support",
     "//extensions/browser:test_support",

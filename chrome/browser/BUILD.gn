@@ -8168,7 +8168,7 @@ if (!is_android) {
       "//chrome:browser_tests_pak",
       "//chrome/browser/profiles:profile",
       "//chrome/common:mojo_bindings",
-      "//chrome/test/data:web_ui_test_bindings",
+      "//chrome/test/data/webui:web_ui_test_bindings",
       "//components/metrics:test_support",
       "//components/password_manager/core/browser:test_support",
       "//components/signin/public/identity_manager",

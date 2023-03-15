@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/data/grit/webui_test_resources.h"
+#include "chrome/test/data/grit/webui_generated_test_resources.h"
 #include "chrome/test/data/webui/mojo/foobar.mojom.h"
 #include "chrome/test/data/webui/mojo/mojo_file_system_access_test.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -57,13 +57,15 @@ class MojoFileSystemAccessUI : public ui::MojoWebUIController,
     content::WebUIDataSource* data_source =
         content::WebUIDataSource::CreateAndAdd(
             web_ui->GetWebContents()->GetBrowserContext(), kTestWebUIHost);
-    data_source->SetDefaultResource(IDR_MOJO_FILE_SYSTEM_ACCESS_TEST_HTML);
+    data_source->SetDefaultResource(
+        IDR_WEBUI_MOJO_MOJO_FILE_SYSTEM_ACCESS_TEST_HTML);
     data_source->DisableContentSecurityPolicy();
     data_source->AddResourcePath(
         "mojo_file_system_access_test.mojom-webui.js",
-        IDR_MOJO_FILE_SYSTEM_ACCESS_TEST_MOJOM_WEBUI_JS);
-    data_source->AddResourcePath("mojo_file_system_access_test.js",
-                                 IDR_MOJO_FILE_SYSTEM_ACCESS_TEST_JS);
+        IDR_WEBUI_MOJO_MOJO_FILE_SYSTEM_ACCESS_TEST_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath(
+        "mojo_file_system_access_test.js",
+        IDR_WEBUI_MOJO_MOJO_FILE_SYSTEM_ACCESS_TEST_JS);
   }
 
   MojoFileSystemAccessUI(const MojoFileSystemAccessUI&) = delete;
@@ -124,7 +126,8 @@ class OrdinaryMojoWebUI : public ui::MojoWebUIController {
         content::WebUIDataSource::CreateAndAdd(
             web_ui->GetWebContents()->GetBrowserContext(), kOrdinaryWebUIHost);
     data_source->DisableContentSecurityPolicy();
-    data_source->SetDefaultResource(IDR_MOJO_JS_INTERFACE_BROKER_TEST_BUZ_HTML);
+    data_source->SetDefaultResource(
+        IDR_WEBUI_MOJO_MOJO_JS_INTERFACE_BROKER_TEST_BUZ_HTML);
   }
 };
 
