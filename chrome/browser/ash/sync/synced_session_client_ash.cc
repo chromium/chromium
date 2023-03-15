@@ -9,7 +9,8 @@
 #include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
 #include "components/sync_sessions/synced_session.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash {
 
@@ -49,9 +50,14 @@ ForeignSyncedSessionTabAsh::~ForeignSyncedSessionTabAsh() = default;
 SyncedSessionClientAsh::SyncedSessionClientAsh() = default;
 SyncedSessionClientAsh::~SyncedSessionClientAsh() = default;
 
-void SyncedSessionClientAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver) {
-  receivers_.Add(this, std::move(receiver));
+mojo::PendingRemote<crosapi::mojom::SyncedSessionClient>
+SyncedSessionClientAsh::CreateRemote() {
+  mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> pending_receiver;
+  mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> pending_remote =
+      pending_receiver.InitWithNewPipeAndPassRemote();
+  receivers_.Add(this, std::move(pending_receiver));
+  return {pending_remote.PassPipe(),
+          crosapi::mojom::SyncedSessionClient::Version_};
 }
 
 void SyncedSessionClientAsh::OnForeignSyncedPhoneSessionsUpdated(

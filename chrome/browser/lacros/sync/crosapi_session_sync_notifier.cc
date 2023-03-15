@@ -90,14 +90,19 @@ std::vector<crosapi::mojom::SyncedSessionPtr> ConstructSyncedPhoneSessions(
 
 CrosapiSessionSyncNotifier::CrosapiSessionSyncNotifier(
     sync_sessions::SessionSyncService* session_sync_service,
-    mojo::Remote<crosapi::mojom::SyncedSessionClient> synced_session_client)
-    : session_sync_service_(session_sync_service),
+    mojo::PendingRemote<crosapi::mojom::SyncedSessionClient>
+        synced_session_client)
+    : session_sync_service_(std::move(session_sync_service)),
       synced_session_client_(std::move(synced_session_client)) {
-  session_updated_subscription_ =
-      session_sync_service->SubscribeToForeignSessionsChanged(
-          base::BindRepeating(
-              &CrosapiSessionSyncNotifier::OnForeignSyncedSessionsUpdated,
-              base::Unretained(this)));
+  if (synced_session_client_.version() >=
+      static_cast<int>(crosapi::mojom::SyncedSessionClient::
+                           kOnForeignSyncedPhoneSessionsUpdatedMinVersion)) {
+    session_updated_subscription_ =
+        session_sync_service->SubscribeToForeignSessionsChanged(
+            base::BindRepeating(
+                &CrosapiSessionSyncNotifier::OnForeignSyncedSessionsUpdated,
+                base::Unretained(this)));
+  }
 }
 
 CrosapiSessionSyncNotifier::~CrosapiSessionSyncNotifier() = default;
@@ -106,6 +111,10 @@ void CrosapiSessionSyncNotifier::OnForeignSyncedSessionsUpdated() {
   // Fetch sessions
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       session_sync_service_->GetOpenTabsUIDelegate();
+  if (!open_tabs) {
+    return;
+  }
+
   std::vector<const sync_sessions::SyncedSession*> synced_sessions;
   open_tabs->GetAllForeignSessions(&synced_sessions);
   std::vector<crosapi::mojom::SyncedSessionPtr> crosapi_synced_phone_sessions =

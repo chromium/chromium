@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace sync_sessions {
@@ -21,7 +22,8 @@ class CrosapiSessionSyncNotifier {
   // `session_sync_service` should not be null and should outlive `this`.
   CrosapiSessionSyncNotifier(
       sync_sessions::SessionSyncService* session_sync_service,
-      mojo::Remote<crosapi::mojom::SyncedSessionClient> synced_session_client);
+      mojo::PendingRemote<crosapi::mojom::SyncedSessionClient>
+          synced_session_client);
   CrosapiSessionSyncNotifier(const CrosapiSessionSyncNotifier&) = delete;
   CrosapiSessionSyncNotifier& operator=(const CrosapiSessionSyncNotifier&) =
       delete;

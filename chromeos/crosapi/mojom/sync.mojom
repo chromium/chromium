@@ -94,5 +94,12 @@ interface SyncService {
 
   // Binds SyncedSessionClient, that lives in ash-chrome.
   [MinVersion = 2]
-  BindSyncedSessionClient@2(pending_receiver<SyncedSessionClient> receiver);
+  DEPRECATED_BindSyncedSessionClient@2(
+      pending_receiver<SyncedSessionClient> receiver);
+
+  // Creates a SyncedSessionClient which lives in ash-chrome. With this
+  // method Lacros can inspect the version info of the Ash implementation.
+  [MinVersion = 3]
+  CreateSyncedSessionClient@3()
+      => (pending_remote<SyncedSessionClient>? sync_session_client);
 };

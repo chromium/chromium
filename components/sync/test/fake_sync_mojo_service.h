@@ -32,9 +32,11 @@ class FakeSyncMojoService : public crosapi::mojom::SyncService {
   void BindUserSettingsClient(
       mojo::PendingReceiver<crosapi::mojom::SyncUserSettingsClient> receiver)
       override;
-  void BindSyncedSessionClient(
+  void DEPRECATED_BindSyncedSessionClient(
       mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver)
       override;
+  void CreateSyncedSessionClient(
+      CreateSyncedSessionClientCallback callback) override;
 
   // Own methods.
   void BindReceiver(

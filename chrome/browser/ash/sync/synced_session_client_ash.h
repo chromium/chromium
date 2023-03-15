@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -91,8 +92,7 @@ class SyncedSessionClientAsh final
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  void BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver);
+  mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> CreateRemote();
 
   // crosapi::mojom::SyncedSessionClient:
   void OnForeignSyncedPhoneSessionsUpdated(

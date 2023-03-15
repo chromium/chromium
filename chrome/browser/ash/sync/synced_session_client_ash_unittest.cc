@@ -84,7 +84,7 @@ class SyncedSessionClientAshTest : public testing::Test {
 
   void SetUp() override {
     client_ = std::make_unique<SyncedSessionClientAsh>();
-    client_->BindReceiver(client_remote_.BindNewPipeAndPassReceiver());
+    client_remote_.Bind(client_->CreateRemote());
     test_observer_ = std::make_unique<TestSyncedSessionClientObserver>();
     client_->AddObserver(test_observer_.get());
   }

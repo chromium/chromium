@@ -121,24 +121,12 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
     ON_CALL(mock_sync_sessions_client_, ShouldSyncURL(_))
         .WillByDefault(Return(true));
 
-    // Create mojo pipeline between `remote_synced_session_client_` and
-    // `fake_synced_session_client_ash_`.
-    mojo::PendingRemote<crosapi::mojom::SyncedSessionClient>
-        pending_remote_synced_session_client;
-    mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient>
-        pending_receiver_synced_session_client =
-            pending_remote_synced_session_client
-                .InitWithNewPipeAndPassReceiver();
-    fake_synced_session_client_ash_.BindReceiver(
-        std::move(pending_receiver_synced_session_client));
-    remote_synced_session_client_.Bind(
-        std::move(pending_remote_synced_session_client));
-
     // Create object under test.
     crosapi_session_sync_notifier_ =
         std::make_unique<CrosapiSessionSyncNotifier>(
             &mock_session_sync_service_,
-            std::move(remote_synced_session_client_));
+            synced_session_client_receiver_
+                .BindNewPipeAndPassRemoteWithVersion());
   }
 
   base::CallbackListSubscription SubscribeToForeignSessionsChanged(
@@ -319,11 +307,11 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   std::unique_ptr<CrosapiSessionSyncNotifier> crosapi_session_sync_notifier_;
 
   syncer::FakeSyncedSessionClientAsh fake_synced_session_client_ash_;
+  mojo::Receiver<crosapi::mojom::SyncedSessionClient>
+      synced_session_client_receiver_{&fake_synced_session_client_ash_};
 
   sync_sessions::SyncedSessionTracker synced_session_tracker_;
 
-  mojo::Remote<crosapi::mojom::SyncedSessionClient>
-      remote_synced_session_client_;
   testing::NiceMock<MockSessionSyncService> mock_session_sync_service_;
   testing::NiceMock<MockOpenTabsUIDelegate> mock_open_tabs_ui_delegate_;
 

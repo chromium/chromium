@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
 
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/sync/base/features.h"
@@ -38,12 +39,32 @@ class SyncMojoServiceAshTest : public testing::Test {
 
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
+  void CreateSyncedSessionClient(base::OnceClosure callback) {
+    sync_mojo_service_ash_->CreateSyncedSessionClient(
+        base::BindOnce(&SyncMojoServiceAshTest::OnCreateSyncedSessionClient,
+                       base::Unretained(this), std::move(callback)));
+  }
+
+  void OnCreateSyncedSessionClient(
+      base::OnceClosure callback,
+      mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> pending_remote) {
+    synced_session_client_remote_.Bind(std::move(pending_remote));
+    std::move(callback).Run();
+  }
+
+  mojo::Remote<crosapi::mojom::SyncedSessionClient>&
+  synced_session_client_remote() {
+    return synced_session_client_remote_;
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedFeatureList override_features_;
 
   testing::NiceMock<syncer::MockSyncService> sync_service_;
   std::unique_ptr<SyncMojoServiceAsh> sync_mojo_service_ash_;
+  mojo::Remote<crosapi::mojom::SyncedSessionClient>
+      synced_session_client_remote_;
 };
 
 TEST_F(SyncMojoServiceAshTest, ShouldSupportMultipleRemotes) {
@@ -79,11 +100,10 @@ TEST_F(SyncMojoServiceAshTest, ShouldDisconnectOnShutdown) {
       user_settings_client_remote.BindNewPipeAndPassReceiver());
   ASSERT_TRUE(user_settings_client_remote.is_connected());
 
-  mojo::Remote<crosapi::mojom::SyncedSessionClient>
-      synced_session_client_remote;
-  sync_mojo_service_ash()->BindSyncedSessionClient(
-      synced_session_client_remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(synced_session_client_remote.is_connected());
+  base::RunLoop run_loop;
+  CreateSyncedSessionClient(run_loop.QuitClosure());
+  run_loop.Run();
+  ASSERT_TRUE(synced_session_client_remote().is_connected());
 
   sync_mojo_service_ash()->Shutdown();
   // Wait for the disconnect handler to be called.
@@ -91,7 +111,7 @@ TEST_F(SyncMojoServiceAshTest, ShouldDisconnectOnShutdown) {
   EXPECT_FALSE(sync_mojo_service_ash_remote.is_connected());
   EXPECT_FALSE(explicit_passphrase_client_remote.is_connected());
   EXPECT_FALSE(user_settings_client_remote.is_connected());
-  EXPECT_FALSE(synced_session_client_remote.is_connected());
+  EXPECT_FALSE(synced_session_client_remote().is_connected());
 }
 
 }  // namespace

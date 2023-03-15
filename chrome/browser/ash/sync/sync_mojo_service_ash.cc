@@ -58,11 +58,19 @@ void SyncMojoServiceAsh::BindUserSettingsClient(
   }
 }
 
-void SyncMojoServiceAsh::BindSyncedSessionClient(
+void SyncMojoServiceAsh::DEPRECATED_BindSyncedSessionClient(
     mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver) {
-  if (synced_session_client_) {
-    synced_session_client_->BindReceiver(std::move(receiver));
+  NOTIMPLEMENTED();
+}
+
+void SyncMojoServiceAsh::CreateSyncedSessionClient(
+    CreateSyncedSessionClientCallback callback) {
+  if (!base::FeatureList::IsEnabled(syncer::kChromeOSSyncedSessionSharing)) {
+    std::move(callback).Run(mojo::NullRemote());
+    return;
   }
+
+  std::move(callback).Run(synced_session_client_->CreateRemote());
 }
 
 }  // namespace ash

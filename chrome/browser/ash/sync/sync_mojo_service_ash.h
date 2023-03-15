@@ -50,9 +50,13 @@ class SyncMojoServiceAsh : public KeyedService,
       mojo::PendingReceiver<crosapi::mojom::SyncUserSettingsClient> receiver)
       override;
 
-  void BindSyncedSessionClient(
+  // TODO(b/260599791): Remove in M-114.
+  void DEPRECATED_BindSyncedSessionClient(
       mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver)
       override;
+
+  void CreateSyncedSessionClient(
+      CreateSyncedSessionClientCallback callback) override;
 
   // Returns null if kChromeOSSyncedSessionClient is disabled.
   SyncedSessionClientAsh* GetSyncedSessionClientAsh() {

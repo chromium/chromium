@@ -7,17 +7,28 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 class Profile;
 class SyncExplicitPassphraseClientLacros;
 class SyncUserSettingsClientLacros;
 class CrosapiSessionSyncNotifier;
 
+namespace chromeos {
+class LacrosService;
+}  // namespace chromeos
+
 namespace syncer {
 class SyncService;
-}
+}  // namespace syncer
+
+namespace sync_sessions {
+class SessionSyncService;
+}  // namespace sync_sessions
 
 // Controls lifetime of sync-related Crosapi clients.
 class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver,
@@ -37,6 +48,19 @@ class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver,
   // Note: |this| observes only the main profile.
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  // Creates a CrosapiSessionSyncNotifier after asynchronously acquiring a
+  // PendingRemote from Ash. Exits early if the:
+  //  - ChromeOS Synced Session Sharing is disabled.
+  //  - Crosapi version used is not high enough to include the necessary updates
+  //  made.
+  //  - session sync service for the user's profile cannot be found.
+  void MaybeCreateCrosapiSessionSyncNotifier(
+      chromeos::LacrosService* lacros_service,
+      Profile* profile);
+  void OnCreateSyncedSessionClient(
+      sync_sessions::SessionSyncService* session_sync_service,
+      mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> pending_remote);
+
   // The objects below are created for main profile PostProfileInit() and
   // destroyed upon main profile SyncService shutdown.
   std::unique_ptr<SyncExplicitPassphraseClientLacros>
@@ -45,6 +69,8 @@ class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver,
 
   // This object will be destroyed on `OnProfileWillBeDestroyed()` call.
   std::unique_ptr<CrosapiSessionSyncNotifier> crosapi_session_sync_notifier_;
+
+  base::WeakPtrFactory<SyncCrosapiManagerLacros> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_LACROS_SYNC_SYNC_CROSAPI_MANAGER_LACROS_H_
