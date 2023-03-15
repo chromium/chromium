@@ -26,6 +26,7 @@ import {UserImageObserver} from './user_image_observer.js';
 import {getUserProvider} from './user_interface_provider.js';
 import {getTemplate} from './user_preview_element.html.js';
 import {selectUserImageUrl} from './user_selectors.js';
+import {getAvatarUrl} from './utils.js';
 
 class AvatarChangedEvent extends CustomEvent<{text: string}> {
   constructor() {
@@ -158,13 +159,19 @@ export class UserPreview extends WithPersonalizationStore {
    * images . Static image loads faster and will provide a smooth experience
    * when the animated image complete loading.
    */
-  private getImgBackgroundStyle_(url: Url|null): string {
+  private getImgBackgroundStyle_(url: string|null): string {
     // Only add background image for default user images.
-    if (!this.image_ || this.image_.invalidImage || !this.image_.defaultImage) {
+    if (!this.image_ || this.image_.invalidImage || !this.image_.defaultImage ||
+        !url) {
       return '';
     }
+    assert(
+        !url.startsWith('chrome://image/'), 'The url should not be sanitized');
+    return `background-image: url('${getAvatarUrl(url)}&staticEncode=true')`;
+  }
 
-    return `background-image: url('` + url + `&staticEncode=true')`;
+  private getAvatarUrl_(url: string): string {
+    return getAvatarUrl(url);
   }
 
   private shouldShowDeprecatedImageSourceInfo_(image: UserImage|null): boolean {

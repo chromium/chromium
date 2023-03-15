@@ -13,13 +13,14 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {DefaultUserImage, UserImage} from '../../personalization_app.mojom-webui.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {decodeString16, getCheckmarkIcon, getSanitizedDefaultImageUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
+import {decodeString16, getCheckmarkIcon, isNonEmptyArray, isSelectionEvent} from '../utils.js';
 
 import {AvatarCamera, AvatarCameraMode} from './avatar_camera_element.js';
 import {getTemplate} from './avatar_list_element.html.js';
 import {fetchDefaultUserImages} from './user_controller.js';
 import {getUserProvider} from './user_interface_provider.js';
 import {selectLastExternalUserImageUrl} from './user_selectors.js';
+import {getAvatarUrl} from './utils.js';
 
 export interface AvatarList {
   $: {avatarCamera: AvatarCamera};
@@ -194,7 +195,7 @@ export class AvatarList extends WithPersonalizationStore {
         options.push({
           id: `defaultUserImage-${defaultImage.index}`,
           class: 'image-container',
-          imgSrc: getSanitizedDefaultImageUrl(defaultImage.url).url,
+          imgSrc: defaultImage.url.url,
           icon: getCheckmarkIcon(),
           title: decodeString16(defaultImage.title),
           defaultImageIndex: defaultImage.index,
@@ -408,10 +409,16 @@ export class AvatarList extends WithPersonalizationStore {
     // If the image is a default avatar loaded from gstatic resources,
     // return a static encoded background image.
     if (defaultImageIndex) {
-      return `background-image: url('` + url + `&staticEncode=true')`;
+      assert(
+          !url.startsWith('chrome://image/'),
+          'The URL shouldn\'t be sanitized');
+      return `background-image: url('${getAvatarUrl(url)}&staticEncode=true')`;
     }
-
     return '';
+  }
+
+  private getAvatarUrl_(url: string): string {
+    return getAvatarUrl(url);
   }
 }
 

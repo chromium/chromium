@@ -95,14 +95,6 @@ export function decodeString16(str: String16|null): string {
   return str ? str.data.map(ch => String.fromCodePoint(ch)).join('') : '';
 }
 
-/**
- * Append chrome://image/? scheme prefix to sanitize the given Url if the cloud
- * migration is enabled.
- */
-export function getSanitizedDefaultImageUrl(url: Url): Url {
-  return {url: 'chrome://image/?url=' + url.url};
-}
-
 export function isImageDataUrl(maybeDataUrl: Url|null|
                                undefined): maybeDataUrl is Url {
   return !!maybeDataUrl && typeof maybeDataUrl.url === 'string' &&

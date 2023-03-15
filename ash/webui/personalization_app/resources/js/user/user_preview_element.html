@@ -207,7 +207,7 @@
       aria-label$="[[getImageContainerAriaLabel_(path, imageIsEnterpriseManaged_)]]">
     <template is="dom-if" if="[[imageUrl_]]">
       <template is="dom-if" if="[[imageIsEnterpriseManaged_]]">
-        <img id="avatar" class="managed" src$="[[imageUrl_.url]]"
+        <img id="avatar" class="managed" src$="[[getAvatarUrl_(imageUrl_.url)]]"
             alt="$i18n{managedSetting}" title="$i18n{managedSetting}">
         <div id="enterpriseIconContainer">
           <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
@@ -244,7 +244,11 @@
         </div>
         <paper-ripple class="circle"></paper-ripple>
         <div id="imageBorderContainer">
-          <img tabindex="0" id="avatar" class="clickable" src$="[[imageUrl_.url]]"
+          <img
+              tabindex="0"
+              id="avatar"
+              class="clickable"
+              src$="[[getAvatarUrl_(imageUrl_.url)]]"
               alt$="[[getImageAlt_(image_)]]"
               role="button"
               on-click="onClickUserSubpageLink_"
@@ -255,7 +259,7 @@
       </template>
       <template is="dom-if"
           if="[[shouldShowSubpageView_(path, imageIsEnterpriseManaged_)]]">
-        <img id="avatar2" src$="[[imageUrl_.url]]"
+        <img id="avatar2" src$="[[getAvatarUrl_(imageUrl_.url)]]"
             alt$="[[getImageAlt_(image_)]]">
       </template>
     </template>

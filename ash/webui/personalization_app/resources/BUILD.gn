@@ -122,6 +122,7 @@ build_webui("build") {
     "js/user/user_reducers.ts",
     "js/user/user_selectors.ts",
     "js/user/user_state.ts",
+    "js/user/utils.ts",
     "js/user/webcam_utils_proxy.ts",
     "js/utils.ts",
     "js/wallpaper/constants.ts",

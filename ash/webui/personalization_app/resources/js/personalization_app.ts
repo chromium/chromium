@@ -99,7 +99,7 @@ export {setUserProviderForTesting} from './user/user_interface_provider.js';
 export {UserPreview} from './user/user_preview_element.js';
 export {UserSubpage} from './user/user_subpage_element.js';
 export {GetUserMediaProxy, getWebcamUtils, setWebcamUtilsForTesting} from './user/webcam_utils_proxy.js';
-export {getCountText, getNumberOfGridItemsPerRow, getSanitizedDefaultImageUrl, staticColorIds} from './utils.js';
+export {getCountText, getNumberOfGridItemsPerRow, staticColorIds} from './utils.js';
 export {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './wallpaper/constants.js';
 export {GooglePhotosAlbums} from './wallpaper/google_photos_albums_element.js';
 export {GooglePhotosCollection, GooglePhotosTab} from './wallpaper/google_photos_collection_element.js';

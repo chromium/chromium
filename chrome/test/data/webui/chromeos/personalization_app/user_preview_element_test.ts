@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {DefaultUserImage, getSanitizedDefaultImageUrl, Paths, UserImage, UserPreview} from 'chrome://personalization/js/personalization_app.js';
+import {DefaultUserImage, Paths, UserImage, UserPreview} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -74,8 +74,8 @@ suite('UserPreviewTest', function() {
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
     assertEquals(
-        getSanitizedDefaultImageUrl(userProvider.image.defaultImage?.url!).url,
-        avatarImage.src, 'correct image url is shown for default image');
+        userProvider.image.defaultImage?.url!.url, avatarImage.src,
+        'correct image url is shown for default image');
   });
 
   test('displays user image from profile image', async () => {
@@ -89,6 +89,11 @@ suite('UserPreviewTest', function() {
     assertEquals(
         userProvider.profileImage.url, avatarImage.src,
         'correct image url is shown for profile image');
+    assertTrue(
+        avatarImage.src.startsWith('data:'), 'data url is not sanitized');
+    assertTrue(
+        !avatarImage.style.backgroundImage,
+        'data url does not have a background image');
   });
 
   test('displays user image from external image', async () => {
@@ -112,6 +117,33 @@ suite('UserPreviewTest', function() {
     assertTrue(
         avatarImage.src.startsWith('blob:'),
         'blob url is shown for external image');
+    assertTrue(
+        !avatarImage.style.backgroundImage,
+        'blob url does not have a background image');
+  });
+
+  test('sanitizes gstatic image', async () => {
+    personalizationStore.data.user.image = {
+      'defaultImage': {
+        url: {
+          url: 'https://www.gstatic.com/',
+        },
+        title: toString16('the remains of the day'),
+        index: 1,
+      },
+    };
+
+    userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
+    await waitAfterNextRender(userPreviewElement);
+
+    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+                            'avatar') as HTMLImageElement;
+
+    assertTrue(
+        avatarImage.src.startsWith('chrome://image'), 'url was sanitized');
+    assertTrue(
+        avatarImage.style.backgroundImage.startsWith('url("chrome://image'),
+        'background-url was sanitized');
   });
 
   test('do not display image if user image is not ready yet', async () => {
@@ -145,8 +177,8 @@ suite('UserPreviewTest', function() {
     const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
                             'avatar2') as HTMLImageElement;
     assertEquals(
-        getSanitizedDefaultImageUrl(userProvider.image.defaultImage?.url!).url,
-        avatarImage.src, 'default image url is shown on non-clickable image');
+        userProvider.image.defaultImage?.url!.url, avatarImage.src,
+        'default image url is shown on non-clickable image');
   });
 
   test('displays enterprise logo on avatar image', async () => {

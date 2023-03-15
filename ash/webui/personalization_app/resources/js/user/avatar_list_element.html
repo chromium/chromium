@@ -116,7 +116,7 @@
         <paper-ripple class="circle"></paper-ripple>
         <div class="image-border-container">
           <img class$="[[getImageClassForOption_(item)]]"
-              src="[[item.imgSrc]]"
+              src$="[[getAvatarUrl_(item.imgSrc)]]"
               style$="[[getImgBackgroundStyle_(item.imgSrc, item.defaultImageIndex)]]"
               on-error="onImgError_">
           <iron-icon icon$="[[item.icon]]"></iron-icon>
