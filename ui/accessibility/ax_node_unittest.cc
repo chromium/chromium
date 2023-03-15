@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/test_ax_tree_manager.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/accessibility/test_ax_tree_update.h"
 
 namespace ui {
 
@@ -970,6 +971,26 @@ TEST(AXNodeTest, DescendantOfNonAtomicTextField) {
   EXPECT_FALSE(tree.GetFromId(spin_button_3.id)->data().IsTextField());
   EXPECT_TRUE(tree.GetFromId(spin_button_4.id)->data().IsSpinnerTextField());
   EXPECT_FALSE(tree.GetFromId(generic_container_5.id)->data().IsSpinnerTextField());
+}
+
+TEST(AXNodeTest, MenuItemCheckboxPosInSet) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGroup
+    ++++++3 kMenuItemCheckBox
+    ++++++++4 kStaticText name="item"
+    ++++++++++5 kInlineTextBox name="item"
+    ++++++6 kMenuItemCheckBox
+    ++++++++7 kStaticText name="item2"
+    ++++++++++8 kInlineTextBox name="item2"
+  )HTML"));
+
+  AXTree tree(update);
+
+  EXPECT_EQ(tree.GetFromId(3)->GetPosInSet(), 1);
+  EXPECT_EQ(tree.GetFromId(3)->GetSetSize(), 2);
+  EXPECT_EQ(tree.GetFromId(6)->GetPosInSet(), 2);
+  EXPECT_EQ(tree.GetFromId(6)->GetSetSize(), 2);
 }
 
 }  // namespace ui
