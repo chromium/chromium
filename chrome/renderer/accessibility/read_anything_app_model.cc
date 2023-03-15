@@ -155,13 +155,19 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   // Drawing must be done on the same tree that was sent to the distiller,
   // so it’s critical that updates are not unserialized until drawing is
   // complete.
-  if (tree_id == active_tree_id_ && distillation_in_progress_) {
+  if (tree_id == active_tree_id_) {
+    if (distillation_in_progress_) {
 #if DCHECK_IS_ON()
-    DCHECK(pending_updates_.empty() || tree_id == pending_updates_bundle_id_);
-    SetPendingUpdatesBundleId(tree_id);
+      DCHECK(pending_updates_.empty() || tree_id == pending_updates_bundle_id_);
+      SetPendingUpdatesBundleId(tree_id);
 #endif
-    AddPendingUpdates(updates);
-    return;
+      AddPendingUpdates(updates);
+      return;
+    } else {
+      // We need to unserialize old updates before we can unserialize the new
+      // ones
+      UnserializePendingUpdates();
+    }
   }
   UnserializeUpdates(std::move(updates), tree_id);
 }

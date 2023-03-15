@@ -131,6 +131,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->AccessibilityEventReceived(tree_id, updates, {});
   }
 
+  // Since a11y events happen asynchronously, they can come between the time
+  // distillation finishes and pending updates are unserialized in
+  // OnAXTreeDistilled. Thus we need to be able to set distillation progress
+  // independent of OnAXTreeDistilled.
+  void SetDistillationInProgress(bool in_progress) {
+    controller_->model_.SetDistillationInProgress(in_progress);
+  }
+
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {
     controller_->OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId);
   }
@@ -612,6 +620,66 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
   clear_update.nodes[0].id = 1;
   AccessibilityEventReceived({clear_update});
   EXPECT_EQ("", GetTextContent(1));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AccessibilityEventReceivedWhileDistilling) {
+  // Tree starts off with no text content.
+  EXPECT_EQ("", GetTextContent(1));
+  EXPECT_EQ("", GetTextContent(2));
+  EXPECT_EQ("", GetTextContent(3));
+  EXPECT_EQ("", GetTextContent(4));
+
+  // Send a new update which settings the text content of node 2.
+  ui::AXTreeUpdate update_1;
+  SetUpdateTreeID(&update_1);
+  update_1.nodes.resize(1);
+  update_1.nodes[0].id = 2;
+  update_1.nodes[0].role = ax::mojom::Role::kStaticText;
+  update_1.nodes[0].SetName("Hello world");
+  update_1.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+  AccessibilityEventReceived({update_1});
+  EXPECT_EQ("Hello world", GetTextContent(1));
+  EXPECT_EQ("Hello world", GetTextContent(2));
+  EXPECT_EQ("", GetTextContent(3));
+  EXPECT_EQ("", GetTextContent(4));
+
+  // Send three updates while distilling.
+  SetDistillationInProgress(true);
+  std::vector<ui::AXTreeUpdate> batch_updates;
+  for (int i = 2; i < 5; i++) {
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update);
+    update.nodes.resize(1);
+    update.nodes[0].id = i;
+    update.nodes[0].role = ax::mojom::Role::kStaticText;
+    update.nodes[0].SetName("Node " + base::NumberToString(i));
+    update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+    batch_updates.push_back(update);
+  }
+  AccessibilityEventReceived(batch_updates);
+  // The updates shouldn't be applied yet.
+  EXPECT_EQ("Hello world", GetTextContent(1));
+  EXPECT_EQ("Hello world", GetTextContent(2));
+
+  // Send another update after distillation finishes but before
+  // OnAXTreeDistilled would unserialize the pending updates. Since a11y events
+  // happen asynchronously, they can come between the time distillation finishes
+  // and pending updates are unserialized.
+  SetDistillationInProgress(false);
+  ui::AXTreeUpdate update_2;
+  SetUpdateTreeID(&update_2);
+  update_2.nodes.resize(1);
+  update_2.nodes[0].id = 2;
+  update_2.nodes[0].role = ax::mojom::Role::kStaticText;
+  update_2.nodes[0].SetName("Final update");
+  update_2.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+  AccessibilityEventReceived({update_2});
+
+  EXPECT_EQ("Final updateNode 3Node 4", GetTextContent(1));
+  EXPECT_EQ("Final update", GetTextContent(2));
+  EXPECT_EQ("Node 3", GetTextContent(3));
+  EXPECT_EQ("Node 4", GetTextContent(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
