@@ -32,6 +32,10 @@ dictionary MLGemmOptions {
   boolean bTranspose = false;
 };
 
+dictionary MLLeakyReluOptions {
+  float alpha = 0.01;
+};
+
 enum MLRoundingType {
   "floor",
   "ceil"
@@ -95,6 +99,9 @@ dictionary MLTransposeOptions{
 
   [RaisesException] MLOperand hardSwish(MLOperand x);
   [RaisesException] MLActivation hardSwish();
+
+  [RaisesException] MLOperand leakyRelu(MLOperand x, optional MLLeakyReluOptions options = {});
+  [RaisesException] MLActivation leakyRelu(optional MLLeakyReluOptions options = {});
 
   // Pooling operations
   [RaisesException] MLOperand averagePool2d(MLOperand input, optional MLPool2dOptions options = {});

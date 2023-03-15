@@ -2515,6 +2515,56 @@ TEST_F(MLGraphBuilderTest, ClampTest) {
   }
 }
 
+MLOperand* BuildLeakyRelu(V8TestingScope& scope,
+                          MLGraphBuilder* builder,
+                          const MLOperand* input,
+                          const MLLeakyReluOptions* options) {
+  auto* output = builder->leakyRelu(input, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Type(), input->Type());
+  auto* leaky_relu = output->Operator();
+  EXPECT_NE(leaky_relu, nullptr);
+  EXPECT_EQ(leaky_relu->Kind(), MLOperator::OperatorKind::kLeakyRelu);
+  EXPECT_EQ(leaky_relu->IsConnected(), true);
+  EXPECT_NE(leaky_relu->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, LeakyReluTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test building leaky_relu with float32 input.
+    auto* input =
+        BuildInput(builder, "input", {1, 2, 3}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLLeakyReluOptions::Create();
+    auto* output = BuildLeakyRelu(scope, builder, input, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3}));
+  }
+  {
+    // Test building leaky_relu with int32 input.
+    auto* input =
+        BuildInput(builder, "input", {2, 2, 3}, V8MLOperandType::Enum::kInt32,
+                   scope.GetExceptionState());
+    auto* options = MLLeakyReluOptions::Create();
+    auto* output = BuildLeakyRelu(scope, builder, input, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 2, 3}));
+  }
+  {
+    // Test building leaky_relu as a standalone operator.
+    auto* leaky_relu = builder->leakyRelu(MLLeakyReluOptions::Create(),
+                                          scope.GetExceptionState());
+    EXPECT_NE(leaky_relu, nullptr);
+    EXPECT_NE(leaky_relu->Operator(), nullptr);
+    EXPECT_EQ(leaky_relu->Operator()->Kind(),
+              MLOperator::OperatorKind::kLeakyRelu);
+    EXPECT_EQ(leaky_relu->Operator()->IsConnected(), false);
+    EXPECT_NE(leaky_relu->Operator()->Options(), nullptr);
+  }
+}
+
 TEST_F(MLGraphBuilderTest, Softmax) {
   V8TestingScope scope;
   MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());

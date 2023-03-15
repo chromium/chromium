@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
@@ -993,6 +994,34 @@ MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
   // function.
   return MakeGarbageCollected<MLActivation>(
       this, MLOperator::OperatorKind::kHardSwish);
+}
+
+MLOperand* MLGraphBuilder::leakyRelu(const MLOperand* input,
+                                     const MLLeakyReluOptions* options,
+                                     ExceptionState& exception_state) {
+  auto* leaky_relu = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kLeakyRelu, options);
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-relu, the output tensor of
+  // relu has the same type and dimensions as its input.
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), input->Dimensions(), leaky_relu, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  leaky_relu->Connect({input}, {output});
+  return output;
+}
+
+MLActivation* MLGraphBuilder::leakyRelu(const MLLeakyReluOptions* options,
+                                        ExceptionState& exception_state) {
+  // Create the leakyRelu operator that would be used as an activation
+  // function.
+  return MakeGarbageCollected<MLActivation>(
+      this, MLOperator::OperatorKind::kLeakyRelu, options);
 }
 
 MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,

@@ -5510,6 +5510,7 @@ interface MLGraphBuilder
     method gemm
     method hardSwish
     method input
+    method leakyRelu
     method max
     method maxPool2d
     method min

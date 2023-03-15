@@ -1175,6 +1175,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method gemm
 [Worker]     method hardSwish
 [Worker]     method input
+[Worker]     method leakyRelu
 [Worker]     method max
 [Worker]     method maxPool2d
 [Worker]     method min
