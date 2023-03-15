@@ -251,7 +251,8 @@ class OmniboxEditModel {
                  base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
   // Opens given selection. Most kinds of selection invoke an action or
-  // otherwise call `OpenMatch`, but some may `AcceptInput`.
+  // otherwise call `OpenMatch`, but some may `AcceptInput` which is not
+  // guaranteed to open a match or commit the omnibox.
   void OpenSelection(
       OmniboxPopupSelection selection,
       base::TimeTicks timestamp = base::TimeTicks(),

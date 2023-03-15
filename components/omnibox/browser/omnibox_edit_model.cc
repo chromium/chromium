@@ -1185,16 +1185,16 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                                      base::TimeTicks timestamp,
                                      WindowOpenDisposition disposition) {
-  // Intentionally accept input when selection has no line.
-  // This will reach `OpenMatch` indirectly.
-  if (selection.line >= result().size()) {
+  // Intentionally accept input when selection has no line, or keyword state.
+  // This will usually reach `OpenMatch` indirectly but no commit of
+  // the omnibox is guaranteed. For example, pressing the Enter key
+  // on blank input while in keyword mode intentionally does nothing.
+  if (selection.line >= result().size() ||
+      selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
     AcceptInput(disposition, timestamp);
     return;
   }
 
-  // Keyword mode is handled separately, and other selections should
-  // only be opened when there is a popup view.
-  DCHECK_NE(selection.state, OmniboxPopupSelection::KEYWORD_MODE);
   DCHECK(popup_view_);
 
   const AutocompleteMatch& match = result().match_at(selection.line);
