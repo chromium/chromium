@@ -4,7 +4,7 @@
 
 import {isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
-import {EntryList, FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
@@ -217,33 +217,22 @@ function appendChildIfNotExisted(
  */
 export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
   // TODO: get VolumeManager/MetadataModel properly.
-  const volumeManager = window.fileManager?.volumeManager;
-  const metadataModel = window.fileManager?.metadataModel;
-  const volumeInfo = volumeManager?.getVolumeInfo(entry);
-  const locationInfo = volumeManager?.getLocationInfo(entry);
+  const {volumeManager, metadataModel} = window.fileManager;
+  const volumeInfo = volumeManager.getVolumeInfo(entry);
+  const locationInfo = volumeManager.getLocationInfo(entry);
   // getEntryLabel() can accept locationInfo=null, but TS doesn't recognize the
   // type definition in closure, hence the ! here.
   const label = util.getEntryLabel(locationInfo!, entry);
   const volumeType = volumeInfo?.volumeType || null;
   const icon = getEntryIcon(entry, locationInfo, volumeType);
 
-  // TODO(b/271485133): populate rootType for VolumeEntry in its constructor,
-  // add volumeType property to FakeEntry so we don't need the following nested
-  // if logic to check.
-  if (entry instanceof VolumeEntry) {
-    entry.disabled = volumeManager?.isDisabled(volumeType!);
-  } else if (entry instanceof FakeEntryImpl) {
-    if (entry.rootType === VolumeManagerCommon.RootType.CROSTINI) {
-      entry.disabled = volumeManager?.isDisabled(entry.rootType);
-    } else if (entry instanceof GuestOsPlaceholder) {
-      if (entry.vm_type == chrome.fileManagerPrivate.VmType.ARCVM) {
-        entry.disabled = volumeManager.isDisabled(
-            VolumeManagerCommon.VolumeType.ANDROID_FILES);
-      } else {
-        entry.disabled =
-            volumeManager.isDisabled(VolumeManagerCommon.VolumeType.GUEST_OS);
-      }
-    }
+  /**
+   * Update disabled attribute if entry supports disabled attribute and has a
+   * non-null volumeType.
+   */
+  if ('disabled' in entry && 'volumeType' in entry && entry.volumeType) {
+    entry.disabled = volumeManager.isDisabled(
+        entry.volumeType as VolumeManagerCommon.VolumeType);
   }
 
   const metadata = metadataModel ?

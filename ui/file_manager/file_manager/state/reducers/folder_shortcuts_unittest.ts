@@ -5,10 +5,14 @@
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {State} from '../../externs/ts/state.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../actions/folder_shortcuts.js';
-import {setupStore, waitDeepEquals} from '../for_tests.js';
+import {setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState} from '../store.js';
 
 import {convertEntryToFileData} from './all_entries.js';
+
+export function setUp() {
+  setUpFileManagerOnWindow();
+}
 
 /** Generate a fake file system with fake file entries. */
 function setupFileSystem(): MockFileSystem {
