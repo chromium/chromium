@@ -5001,6 +5001,17 @@ hooks = [
                 '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
     ],
   },
+  {
+    'name': 'Fetch PGO profiles for V8 builtins',
+    'pattern': '.',
+    'condition': 'checkout_pgo_profiles',
+    'action': [ 'python3',
+                'src/v8/tools/builtins-pgo/download_profiles.py',
+                'download',
+                '--depot-tools',
+                'src/third_party/depot_tools',
+    ],
+  },
 
   # Download Cast3p Binaries
   {
