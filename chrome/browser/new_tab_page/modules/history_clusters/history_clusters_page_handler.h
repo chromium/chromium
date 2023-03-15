@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
+class CartService;
 
 namespace history_clusters {
 class HistoryClustersServiceTask;
@@ -55,6 +56,7 @@ class HistoryClustersPageHandler
   // `Done()` will be true if there is no ongoing task.
   std::unique_ptr<history_clusters::HistoryClustersServiceTask>
       fetch_clusters_task_;
+  raw_ptr<CartService> cart_service_;
 
   base::WeakPtrFactory<HistoryClustersPageHandler> weak_ptr_factory_{this};
 };

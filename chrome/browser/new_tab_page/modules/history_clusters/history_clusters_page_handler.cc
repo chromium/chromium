@@ -6,11 +6,15 @@
 
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
+#include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/history_clusters/core/history_cluster_type_utils.h"
@@ -75,7 +79,8 @@ HistoryClustersPageHandler::HistoryClustersPageHandler(
     Profile* profile)
     : receiver_(this, std::move(pending_receiver)),
       profile_(profile),
-      filter_params_(GetFilterParamsFromFeatureFlags()) {}
+      filter_params_(GetFilterParamsFromFeatureFlags()),
+      cart_service_(CartServiceFactory::GetForProfile(profile_)) {}
 
 HistoryClustersPageHandler::~HistoryClustersPageHandler() = default;
 
@@ -93,9 +98,27 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
     return;
   }
 
+  history::Cluster top_cluster = clusters.front();
   auto cluster_mojom = history_clusters::ClusterToMojom(
-      TemplateURLServiceFactory::GetForProfile(profile_), clusters.front());
+      TemplateURLServiceFactory::GetForProfile(profile_), top_cluster);
   std::move(callback).Run(std::move(cluster_mojom));
+
+  if (!IsCartModuleEnabled() || !cart_service_) {
+    return;
+  }
+  const auto metrics_callback = base::BarrierCallback<bool>(
+      top_cluster.visits.size(),
+      base::BindOnce([](const std::vector<bool>& results) {
+        bool has_cart = false;
+        for (bool result : results) {
+          has_cart = has_cart || result;
+        }
+        base::UmaHistogramBoolean(
+            "NewTabPage.HistoryClusters.HasCartForTopCluster", has_cart);
+      }));
+  for (auto& visit : top_cluster.visits) {
+    cart_service_->HasActiveCartForURL(visit.normalized_url, metrics_callback);
+  }
 }
 
 void HistoryClustersPageHandler::GetCluster(GetClusterCallback callback) {
