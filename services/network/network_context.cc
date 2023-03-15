@@ -23,6 +23,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -770,6 +771,14 @@ void NetworkContext::GetRestrictedCookieManager(
                      std::move(cookie_observer)));
 }
 
+void NetworkContext::OnRCMDisconnect(
+    const network::RestrictedCookieManager* rcm) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = restricted_cookie_managers_.find(rcm);
+  DCHECK(it != restricted_cookie_managers_.end());
+  restricted_cookie_managers_.erase(it);
+}
+
 void NetworkContext::OnComputedFirstPartySetMetadata(
     mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
     mojom::RestrictedCookieManagerRole role,
@@ -778,14 +787,20 @@ void NetworkContext::OnComputedFirstPartySetMetadata(
     const net::CookieSettingOverrides& cookie_setting_overrides,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
     net::FirstPartySetMetadata first_party_set_metadata) {
-  restricted_cookie_manager_receivers_.Add(
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::unique_ptr<RestrictedCookieManager> ptr =
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
           cookie_setting_overrides, std::move(cookie_observer),
           std::move(first_party_set_metadata),
-          network_service_->metrics_updater()),
-      std::move(receiver));
+          network_service_->metrics_updater());
+
+  auto callback = base::BindOnce(&NetworkContext::OnRCMDisconnect,
+                                 base::Unretained(this), ptr.get());
+  ptr->InstallReceiver(std::move(receiver), std::move(callback));
+  restricted_cookie_managers_.insert(std::move(ptr));
 }
 
 void NetworkContext::GetTrustTokenQueryAnswerer(

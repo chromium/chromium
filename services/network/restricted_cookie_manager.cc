@@ -8,7 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"  // for [[fallthrough]];
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -360,6 +362,7 @@ RestrictedCookieManager::RestrictedCookieManager(
               cookie_partition_key_)),
       same_party_attribute_enabled_(base::FeatureList::IsEnabled(
           net::features::kSamePartyAttributeEnabled)),
+      receiver_(this),
       metrics_updater_(metrics_updater) {
   DCHECK(cookie_store);
   DCHECK(!cookie_setting_overrides_.Has(
@@ -832,6 +835,14 @@ void RestrictedCookieManager::CookiesEnabledFor(
   std::move(callback).Run(cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
       GetCookieSettingOverrides(has_storage_access)));
+}
+
+void RestrictedCookieManager::InstallReceiver(
+    mojo::PendingReceiver<mojom::RestrictedCookieManager> pending_receiver,
+    base::OnceClosure on_disconnect_callback) {
+  DCHECK(!receiver_.is_bound());
+  receiver_.Bind(std::move(pending_receiver));
+  receiver_.set_disconnect_handler(std::move(on_disconnect_callback));
 }
 
 void RestrictedCookieManager::RemoveChangeListener(Listener* listener) {
