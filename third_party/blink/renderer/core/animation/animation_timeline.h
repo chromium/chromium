@@ -90,7 +90,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // Schedules animation timing update on next frame.
   virtual void ScheduleServiceOnNextFrame();
 
-  Animation* Play(AnimationEffect*, ExceptionState& = ASSERT_NO_EXCEPTION);
+  virtual Animation* Play(AnimationEffect*,
+                          ExceptionState& = ASSERT_NO_EXCEPTION);
 
   virtual bool NeedsAnimationTimingUpdate();
   virtual bool HasAnimations() const { return !animations_.empty(); }

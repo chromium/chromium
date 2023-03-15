@@ -304,8 +304,27 @@ bool KeyframeEffectModelBase::SetLogicalPropertyResolutionContext(
   return changed;
 }
 
-void KeyframeEffectModelBase::SetViewTimeline(const ViewTimeline* timeline) {
+void KeyframeEffectModelBase::SetViewTimelineIfRequired(
+    const ViewTimeline* timeline) {
   if (view_timeline_ == timeline) {
+    return;
+  }
+
+  bool has_timeline_offset_in_keyframe = false;
+  for (const auto& keyframe : keyframes_) {
+    if (keyframe->GetTimelineOffset()) {
+      has_timeline_offset_in_keyframe = true;
+      break;
+    }
+  }
+
+  if (!has_timeline_offset_in_keyframe) {
+    // Keyframes are essentially immutable once the keyframe model is
+    // constructed. Thus, we should never be in a position where
+    // has_timeline_offset_in_keyframe changes from true to false between
+    // checks, and we should never have a set view timeline that needs to be
+    // cleared.
+    DCHECK(!view_timeline_);
     return;
   }
 

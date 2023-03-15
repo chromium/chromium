@@ -5,7 +5,7 @@
 // https://w3.org/TR/web-animations-1/#dictdef-basepropertyindexedkeyframe
 
 dictionary BasePropertyIndexedKeyframe {
-  (double? or sequence<double?>) offset = [];
+  (KeyframeOffset? or sequence<KeyframeOffset?>) offset = [];
   (DOMString or sequence<DOMString>) easing = [];
   (CompositeOperationOrAuto or sequence<CompositeOperationOrAuto>) composite = [];
 };

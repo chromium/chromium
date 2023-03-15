@@ -944,6 +944,12 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
 
   reset_current_time_on_resume_ = false;
 
+  // Set the timeline if needed for resolving timeline offsets in kefyrames.
+  if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(effect())) {
+    ViewTimeline* view_timeline = DynamicTo<ViewTimeline>(timeline);
+    keyframe_effect->Model()->SetViewTimelineIfRequired(view_timeline);
+  }
+
   if (timeline) {
     if (!timeline->IsMonotonicallyIncreasing()) {
       ApplyPendingPlaybackRate();
@@ -1165,8 +1171,13 @@ void Animation::setEffect(AnimationEffect* new_effect) {
   // The effect is no longer associated with CSS properties.
   if (new_effect) {
     new_effect->SetIgnoreCssTimingProperties();
-    if (KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(new_effect))
+    if (KeyframeEffect* keyframe_effect =
+            DynamicTo<KeyframeEffect>(new_effect)) {
       keyframe_effect->SetIgnoreCSSKeyframes();
+      // Set the timeline if needed for resolving timeline offsets in kefyrames.
+      ViewTimeline* view_timeline = DynamicTo<ViewTimeline>(timeline());
+      keyframe_effect->Model()->SetViewTimelineIfRequired(view_timeline);
+    }
   }
 
   // The remaining steps are for handling CSS animation and transition events.

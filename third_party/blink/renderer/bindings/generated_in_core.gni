@@ -1733,8 +1733,12 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_dommatrix_float32array_float64array.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_doubleornullsequence_null.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_doubleornullsequence_null.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_string_timelinerangeoffset.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_string_timelinerangeoffset.h",
+
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_doubleorstringortimelinerangeoffsetornullsequence_string_timelinerangeoffset_null.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_doubleorstringortimelinerangeoffsetornullsequence_string_timelinerangeoffset_null.h",
+
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_string.cc",

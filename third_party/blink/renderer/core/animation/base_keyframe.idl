@@ -6,8 +6,9 @@
 
 enum CompositeOperationOrAuto {"replace", "add", "accumulate", "auto"};
 
+typedef (double or TimelineRangeOffset or DOMString) KeyframeOffset;
 dictionary BaseKeyframe {
-  double? offset = null;
+  KeyframeOffset? offset = null;
   DOMString easing = "linear";
   CompositeOperationOrAuto composite = "auto";
 };

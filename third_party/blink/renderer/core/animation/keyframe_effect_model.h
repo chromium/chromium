@@ -170,7 +170,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   virtual KeyframeEffectModelBase* Clone() = 0;
 
-  void SetViewTimeline(const ViewTimeline* timeline);
+  void SetViewTimelineIfRequired(const ViewTimeline* timeline);
 
   // Ensure timeline offsets are properly resolved. If any of the offsets
   // changed, the keyframes are resorted and cached data is cleared. Returns

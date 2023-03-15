@@ -424,7 +424,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
                       WebFeature::kCSSAnimationsStackedNeutralKeyframe);
   }
   if (has_named_range_keyframes) {
-    model->SetViewTimeline(DynamicTo<ViewTimeline>(timeline));
+    model->SetViewTimelineIfRequired(DynamicTo<ViewTimeline>(timeline));
   }
 
   return model;

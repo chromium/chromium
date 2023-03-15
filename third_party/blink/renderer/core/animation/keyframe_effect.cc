@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/sampled_effect.h"
 #include "third_party/blink/renderer/core/animation/timing_input.h"
+#include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -257,8 +258,13 @@ void KeyframeEffect::setComposite(String composite_string) {
 // https://w3.org/TR/web-animations-1/#dom-keyframeeffect-getkeyframes
 HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     ScriptState* script_state) {
-  if (Animation* animation = GetAnimation())
+  if (Animation* animation = GetAnimation()) {
     animation->FlushPendingUpdates();
+    if (ViewTimeline* view_timeline =
+            DynamicTo<ViewTimeline>(animation->timeline())) {
+      view_timeline->ResolveTimelineOffsets(/* invalidate_effect */ false);
+    }
+  }
 
   HeapVector<ScriptValue> computed_keyframes;
   if (!model_->HasFrames() || !script_state->ContextIsValid())

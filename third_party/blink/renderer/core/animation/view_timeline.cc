@@ -551,6 +551,14 @@ bool ViewTimeline::ResolveTimelineOffsets(bool invalidate_effect) const {
   return has_keyframe_update;
 }
 
+Animation* ViewTimeline::Play(AnimationEffect* effect,
+                              ExceptionState& exception_state) {
+  if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(effect)) {
+    keyframe_effect->Model()->SetViewTimelineIfRequired(this);
+  }
+  return AnimationTimeline::Play(effect, exception_state);
+}
+
 void ViewTimeline::FlushStyleUpdate() {
   ScrollTimeline::FlushStyleUpdate();
   ResolveTimelineOffsets(/* invalidate_effect */ false);

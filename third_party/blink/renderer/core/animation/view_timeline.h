@@ -68,6 +68,9 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   bool ResolveTimelineOffsets(bool invalidate_effect) const;
 
+  Animation* Play(AnimationEffect*,
+                  ExceptionState& = ASSERT_NO_EXCEPTION) override;
+
   void Trace(Visitor*) const override;
 
  protected:
