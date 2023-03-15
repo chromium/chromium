@@ -11,6 +11,7 @@
 #import <memory>
 
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
+#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
@@ -273,6 +275,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.layoutGuideCenter =
         LayoutGuideCenterForBrowser(browser_.get());
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
+    dependencies.readingModel = ReadingListModelFactory::GetForBrowserState(
+        browser_.get()->GetBrowserState());
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_

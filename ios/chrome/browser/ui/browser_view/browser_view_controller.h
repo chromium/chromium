@@ -10,6 +10,7 @@
 #import "base/ios/block_types.h"
 
 #import "base/memory/weak_ptr.h"
+#import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -65,6 +66,7 @@ class TabUsageRecorderBrowserAgent;
 @protocol IncognitoReauthCommands;
 @class LayoutGuideCenter;
 @protocol LoadQueryCommands;
+class ReadingListModel;
 class UrlLoadingBrowserAgent;
 class UrlLoadingNotifierBrowserAgent;
 class WebNavigationBrowserAgent;
@@ -95,6 +97,7 @@ typedef struct {
   id<LoadQueryCommands> loadQueryCommandsHandler;
   id<OmniboxCommands> omniboxCommandsHandler;
   BOOL isOffTheRecord;
+  ReadingListModel* readingModel;
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;

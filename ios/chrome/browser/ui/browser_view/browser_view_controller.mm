@@ -14,7 +14,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "components/reading_list/core/reading_list_model.h"
+
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
@@ -305,6 +304,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Used to get the layout guide center.
   LayoutGuideCenter* _layoutGuideCenter;
+
+  ReadingListModel* _readingModel;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -501,6 +502,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _webNavigationBrowserAgent = dependencies.webNavigationBrowserAgent;
     _layoutGuideCenter = dependencies.layoutGuideCenter;
     _webStateList = dependencies.webStateList;
+    _readingModel = dependencies.readingModel;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -2138,11 +2140,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   base::RecordAction(UserMetricsAction("MobileReadingListAdd"));
 
-  ReadingListModel* readingModel =
-      ReadingListModelFactory::GetForBrowserState(self.browserState);
-  readingModel->AddOrReplaceEntry(URL, base::SysNSStringToUTF8(title),
-                                  reading_list::ADDED_VIA_CURRENT_APP,
-                                  /*estimated_read_time=*/base::TimeDelta());
+  _readingModel->AddOrReplaceEntry(URL, base::SysNSStringToUTF8(title),
+                                   reading_list::ADDED_VIA_CURRENT_APP,
+                                   /*estimated_read_time=*/base::TimeDelta());
 }
 
 // TODO(crbug.com/1345210) Remove `isNTPActiveForCurrentWebState` method from
