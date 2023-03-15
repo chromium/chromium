@@ -82,10 +82,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileDeserializeMicroSeconds" units="microseconds"
-    expires_after="2022-12-04">
-  <owner>vogelheim@chromium.org</owner>
+    expires_after="2024-03-14">
+  <owner>jgruber@chromium.org</owner>
+  <owner>leszeks@chromium.org</owner>
   <summary>
-    Time spent deseriailzing code, used by V8 code caching.
+    Time spent deserializing code, used by V8 code caching.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
@@ -325,8 +326,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileSerializeMicroSeconds" units="microseconds"
-    expires_after="M77">
-  <owner>vogelheim@chromium.org</owner>
+    expires_after="2024-03-14">
+  <owner>jgruber@chromium.org</owner>
+  <owner>leszeks@chromium.org</owner>
   <summary>
     Time spent serializing code, used by V8 code caching.
 
@@ -1417,6 +1419,51 @@ chromium-metrics-reviews@google.com.
   <owner>ulan@chromium.org</owner>
   <summary>
     Number of megabytes requested in shared array buffer allocations.
+  </summary>
+</histogram>
+
+<histogram name="V8.SnapshotDeserializeContextMicroSeconds"
+    units="microseconds" expires_after="2024-03-14">
+  <owner>jgruber@chromium.org</owner>
+  <owner>leszeks@chromium.org</owner>
+  <summary>
+    Time spent deserializing the context snapshot.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="V8.SnapshotDeserializeIsolateMicroSeconds"
+    units="microseconds" expires_after="2024-03-14">
+  <owner>jgruber@chromium.org</owner>
+  <owner>leszeks@chromium.org</owner>
+  <summary>
+    Time spent deserializing the isolate snapshot.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="V8.SnapshotDeserializeRoSpaceMicroSeconds"
+    units="microseconds" expires_after="2024-03-14">
+  <owner>jgruber@chromium.org</owner>
+  <owner>leszeks@chromium.org</owner>
+  <summary>
+    Time spent deserializing the read-only snapshot.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
