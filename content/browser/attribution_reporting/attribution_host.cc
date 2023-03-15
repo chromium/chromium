@@ -90,8 +90,7 @@ AttributionHost::AttributionHost(WebContents* web_contents)
     : WebContentsObserver(web_contents),
       WebContentsUserData<AttributionHost>(*web_contents),
       receivers_(web_contents, this) {
-  // TODO(csharrison): When https://crbug.com/1051334 is resolved, add a DCHECK
-  // that the kConversionMeasurement feature is enabled.
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kConversionMeasurement));
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
