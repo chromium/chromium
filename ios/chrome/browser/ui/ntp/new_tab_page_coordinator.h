@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_configuring.h"
 
 @class BubblePresenter;
+@protocol NewTabPageComponentFactoryProtocol;
 @protocol NewTabPageControllerDelegate;
 @protocol ThumbStripSupporting;
 @class ViewRevealingVerticalPanHandler;
@@ -21,9 +22,12 @@
     : ChromeCoordinator <LogoAnimationControllerOwnerOwner,
                          NewTabPageConfiguring>
 
-// Initializes this Coordinator with its `browser` and a nil base view
-// controller.
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+// Initializes this coordinator with its `browser`, a nil base view
+// controller, and the given `componentFactory`.
+- (instancetype)initWithBrowser:(Browser*)browser
+               componentFactory:
+                   (id<NewTabPageComponentFactoryProtocol>)componentFactory
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

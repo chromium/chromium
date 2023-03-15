@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory_protocol.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
@@ -248,6 +249,11 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 // Returns `YES` if the coordinator is started.
 @property(nonatomic, assign) BOOL started;
 
+// Contains a factory which can generate NTP components which are initialized
+// on `start`.
+@property(nonatomic, strong) id<NewTabPageComponentFactoryProtocol>
+    componentFactory;
+
 @end
 
 @implementation NewTabPageCoordinator
@@ -258,10 +264,13 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 #pragma mark - ChromeCoordinator
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithBrowser:(Browser*)browser
+               componentFactory:
+                   (id<NewTabPageComponentFactoryProtocol>)componentFactory {
   DCHECK(browser);
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
+    _componentFactory = componentFactory;
     _containerViewController = [[UIViewController alloc] init];
   }
   return self;
@@ -586,25 +595,19 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 // Creates all the NTP components.
 - (void)initializeNTPComponents {
-  self.NTPViewController = [[NewTabPageViewController alloc] init];
-  self.headerController = [[ContentSuggestionsHeaderViewController alloc] init];
-  self.NTPMediator = [[NewTabPageMediator alloc]
-              initWithWebState:self.webState
-            templateURLService:self.templateURLService
-                     URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)
-                   authService:self.authService
-               identityManager:IdentityManagerFactory::GetForBrowserState(
-                                   self.browser->GetBrowserState())
-         accountManagerService:ChromeAccountManagerServiceFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())
-                    logoVendor:ios::provider::CreateLogoVendor(self.browser,
-                                                               self.webState)
-      identityDiscImageUpdater:self.headerController];
-  self.contentSuggestionsCoordinator = [[ContentSuggestionsCoordinator alloc]
-      initWithBaseViewController:nil
-                         browser:self.browser];
-  self.feedMetricsRecorder = self.discoverFeedService->GetFeedMetricsRecorder();
+  Browser* browser = self.browser;
+  id<NewTabPageComponentFactoryProtocol> componentFactory =
+      self.componentFactory;
+  self.NTPViewController = [componentFactory NTPViewController];
+  self.headerController = [componentFactory headerController];
+  self.NTPMediator =
+      [componentFactory NTPMediatorForBrowser:browser
+                                     webState:self.webState
+                     identityDiscImageUpdater:self.headerController];
+  self.contentSuggestionsCoordinator =
+      [componentFactory contentSuggestionsCoordinatorForBrowser:browser];
+  self.feedMetricsRecorder =
+      [componentFactory feedMetricsRecorderForBrowser:browser];
 }
 
 #pragma mark - Configurators

@@ -120,6 +120,7 @@
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/open_in/features.h"
 #import "ios/chrome/browser/ui/open_in/open_in_coordinator.h"
@@ -797,8 +798,9 @@ enum class ToolbarKind {
     }
   }
 
-  _NTPCoordinator =
-      [[NewTabPageCoordinator alloc] initWithBrowser:self.browser];
+  _NTPCoordinator = [[NewTabPageCoordinator alloc]
+       initWithBrowser:self.browser
+      componentFactory:[[NewTabPageComponentFactory alloc] init]];
   _NTPCoordinator.toolbarDelegate = _toolbarCoordinatorAdaptor;
   _NTPCoordinator.bubblePresenter = _bubblePresenter;
   self.tabLifecycleMediator.NTPCoordinator = _NTPCoordinator;

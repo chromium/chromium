@@ -45,6 +45,35 @@ source_set("constants") {
   public_deps = [ "//ios/chrome/browser/discover_feed:constants" ]
 }
 
+source_set("component_factory_protocol") {
+  sources = [ "new_tab_page_component_factory_protocol.h" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("component_factory") {
+  sources = [
+    "new_tab_page_component_factory.h",
+    "new_tab_page_component_factory.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":component_factory_protocol",
+    ":ntp_internal",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/content_suggestions",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
+    "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/url_loading",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+    "//ios/web/public",
+  ]
+}
+
 source_set("coordinator") {
   sources = [
     "new_tab_page_coordinator+private.h",
@@ -53,6 +82,7 @@ source_set("coordinator") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":component_factory_protocol",
     ":feature_flags",
     ":logo",
     ":ntp",
@@ -271,6 +301,7 @@ source_set("unit_tests") {
     "new_tab_page_retention_field_trial_unittest.mm",
   ]
   deps = [
+    ":component_factory",
     ":coordinator",
     ":feature_flags",
     ":field_trial",

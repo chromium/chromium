@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
@@ -279,8 +280,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                                              dependencies:dependencies];
     bvc_.webUsageEnabled = YES;
 
-    id NTPCoordinator_ =
-        [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()];
+    id NTPCoordinator_ = [[NewTabPageCoordinator alloc]
+         initWithBrowser:browser_.get()
+        componentFactory:[[NewTabPageComponentFactory alloc] init]];
 
     SessionRestorationBrowserAgent* sessionRestorationBrowserAgent_ =
         SessionRestorationBrowserAgent::FromBrowser(browser_.get());

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -79,8 +80,9 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     scene_state_ = OCMClassMock([SceneState class]);
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
-    coordinator_ =
-        [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()];
+    coordinator_ = [[NewTabPageCoordinator alloc]
+         initWithBrowser:browser_.get()
+        componentFactory:[[NewTabPageComponentFactory alloc] init]];
     coordinator_.baseViewController = base_view_controller_;
     coordinator_.toolbarDelegate = toolbar_delegate_;
 
