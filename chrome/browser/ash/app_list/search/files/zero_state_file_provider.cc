@@ -106,8 +106,7 @@ void ZeroStateFileProvider::SetSearchResults(
     if (!IsScreenshot(filepath, downloads_path_)) {
       DCHECK(results[i].score.has_value());
       auto result = std::make_unique<FileResult>(
-          /*id=*/kSchema + filepath.value(), filepath,
-          results[i].prediction_reason,
+          results[i].id, filepath, results[i].prediction_reason,
           ash::AppListSearchResultType::kZeroStateFile,
           ash::SearchResultDisplayType::kContinue, results[i].score.value(),
           std::u16string(), FileResult::Type::kFile, profile_);
