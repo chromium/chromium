@@ -21,6 +21,9 @@ namespace switches {
 const char kDeadlineToSynchronizeSurfaces[] =
     "deadline-to-synchronize-surfaces";
 
+// Disables reporting of frame timing via ADPF, even if supported on the device.
+const char kDisableAdpf[] = "disable-adpf";
+
 // Disables begin frame limiting in both cc scheduler and display scheduler.
 // Also implies --disable-gpu-vsync (see //ui/gl/gl_switches.h).
 const char kDisableFrameRateLimit[] = "disable-frame-rate-limit";

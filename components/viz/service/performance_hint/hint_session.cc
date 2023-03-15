@@ -17,10 +17,12 @@
 #include <sys/types.h>
 
 #include "base/android/build_info.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/switches.h"
 
 static_assert(sizeof(base::PlatformThreadId) == sizeof(int32_t),
               "thread id types incompatible");
@@ -213,6 +215,8 @@ void HintSessionFactoryImpl::WakeUp() {
 // static
 std::unique_ptr<HintSessionFactory> HintSessionFactory::Create(
     base::flat_set<base::PlatformThreadId> permanent_thread_ids) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDisableAdpf))
+    return nullptr;
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SDK_VERSION_S)
     return nullptr;
