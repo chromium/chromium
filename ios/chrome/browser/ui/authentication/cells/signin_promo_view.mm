@@ -80,6 +80,21 @@ const PromoStyleValues kCompactVerticalStyle = {
     5.0,   // kButtonStackViewSubViewSpacing
 };
 
+const PromoStyleValues kCompactHorizontalStyle = {
+    20.0,  // kStackViewTopPadding
+    14.0,  // kStackViewBottomPadding
+    42.0,  // kStackViewTrailingMargin
+    14.0,  // kContentStackViewSubViewSpacing
+    0.0,   // kTextStackViewSubViewSpacing
+    0.0,   // kButtonTitleHorizontalContentInset
+    0.0,   // kButtonTitleVerticalContentInset
+    0.0,   // kButtonCornerRadius
+    -9.0,  // kCloseButtonTrailingMargin
+    9.0,   // kCloseButtonTopMargin
+    6.0,   // kMainPromoSubViewSpacing
+    0.0,   // kButtonStackViewSubViewSpacing
+};
+
 const PromoStyleValues kTitledCompactPromoStyle = {
     18.0,  // kStackViewTopPadding
     18.0,  // kStackViewBottomPadding
@@ -111,6 +126,8 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 constexpr CGFloat kNonProfileImageHeightWidth = 56.0;
 // Size of the font for the headline.
 constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
+// Constant for the size of the compact style text.
+constexpr CGFloat kCompactStyleTextSize = 15.0;
 }
 
 @interface SigninPromoView ()
@@ -139,7 +156,9 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* compactVerticalLayoutConstraints;
 @property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* titledCompactLayoutConstraints;
+    NSArray<NSLayoutConstraint*>* compactHorizontalLayoutConstraints;
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* compactTitledLayoutConstraints;
 // Constraints for the image size.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* imageConstraints;
 @end
@@ -519,7 +538,7 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
   return _standardLayoutConstraints;
 }
 
-// Constraints specific to compact vertical layout.
+// Constraints specific to the compact vertical layout.
 - (NSArray<NSLayoutConstraint*>*)compactVerticalLayoutConstraints {
   if (!_compactVerticalLayoutConstraints) {
     _compactVerticalLayoutConstraints = @[
@@ -547,10 +566,39 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
   return _compactVerticalLayoutConstraints;
 }
 
+// Constraints specific to compact horitzontal layout.
+- (NSArray<NSLayoutConstraint*>*)compactHorizontalLayoutConstraints {
+  if (!_compactHorizontalLayoutConstraints) {
+    _compactHorizontalLayoutConstraints = @[
+      // Content padding.
+      [self.contentStackView.topAnchor
+          constraintEqualToAnchor:self.topAnchor
+                         constant:kCompactHorizontalStyle.kStackViewTopPadding],
+      [self.contentStackView.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor
+                         constant:-kCompactHorizontalStyle
+                                       .kStackViewBottomPadding],
+      [self.contentStackView.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor
+                         constant:-kCompactHorizontalStyle
+                                       .kStackViewTrailingMargin],
+      [self.closeButton.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor
+                         constant:kCompactHorizontalStyle
+                                      .kCloseButtonTrailingMargin],
+      [self.closeButton.topAnchor
+          constraintEqualToAnchor:self.topAnchor
+                         constant:kCompactHorizontalStyle
+                                      .kCloseButtonTopMargin],
+    ];
+  }
+  return _compactHorizontalLayoutConstraints;
+}
+
 // Constraints specific to titled compact layout.
-- (NSArray<NSLayoutConstraint*>*)titledCompactLayoutConstraints {
-  if (!_titledCompactLayoutConstraints) {
-    _titledCompactLayoutConstraints = @[
+- (NSArray<NSLayoutConstraint*>*)compactTitledLayoutConstraints {
+  if (!_compactTitledLayoutConstraints) {
+    _compactTitledLayoutConstraints = @[
       // Content padding.
       [self.contentStackView.topAnchor
           constraintEqualToAnchor:self.topAnchor
@@ -574,7 +622,7 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
                                       .kCloseButtonTopMargin],
     ];
   }
-  return _titledCompactLayoutConstraints;
+  return _compactTitledLayoutConstraints;
 }
 
 #pragma mark - Private
@@ -698,11 +746,67 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
       }
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
-      constraintsToActivate = self.titledCompactLayoutConstraints;
+      constraintsToActivate = self.compactTitledLayoutConstraints;
       break;
     }
-    // TODO(crbug.com/1412758): Implement new styles.
-    case SigninPromoViewStyleCompactHorizontal:
+    case SigninPromoViewStyleCompactHorizontal: {
+      // Lays out content for the horizontal compact view.
+      self.buttonVerticalStackView.alignment = UIStackViewAlignmentLeading;
+      self.buttonVerticalStackView.spacing =
+          kCompactHorizontalStyle.kButtonStackViewSubViewSpacing;
+      self.mainPromoStackView.alignment = UIStackViewAlignmentLeading;
+      self.mainPromoStackView.spacing =
+          kCompactHorizontalStyle.kMainPromoSubViewSpacing;
+      self.contentStackView.alignment = UIStackViewAlignmentTop;
+      self.contentStackView.axis = UILayoutConstraintAxisHorizontal;
+      self.contentStackView.spacing =
+          kCompactHorizontalStyle.kContentStackViewSubViewSpacing;
+      self.textVerticalStackView.alignment = UIStackViewAlignmentLeading;
+      self.textVerticalStackView.spacing =
+          kCompactHorizontalStyle.kTextStackViewSubViewSpacing;
+      self.textLabel.textAlignment = NSTextAlignmentNatural;
+      self.secondaryButton.hidden = YES;
+
+      // Configures fonts for the compact horizontal layout.
+      self.textLabel.font =
+          [[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+              fontWithSize:kCompactStyleTextSize];
+      self.textLabel.textColor = [UIColor colorNamed:kGrey800Color];
+
+      // In the Compact Horizontal style, the primary button is plain.
+      [self.primaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                               forState:UIControlStateNormal];
+      self.primaryButton.backgroundColor = nil;
+      self.primaryButton.layer.cornerRadius =
+          kCompactHorizontalStyle.kButtonCornerRadius;
+      self.primaryButton.clipsToBounds = NO;
+
+      // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+      // iOS 15.
+      if (base::ios::IsRunningOnIOS15OrLater() &&
+          IsUIButtonConfigurationEnabled()) {
+        if (@available(iOS 15, *)) {
+          self.primaryButton.configuration.contentInsets =
+              NSDirectionalEdgeInsetsMake(
+                  kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+                  kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
+                  kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+                  kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
+        }
+      }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+      else {
+        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+            kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+            kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
+            kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+            kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
+      }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
+      constraintsToActivate = self.compactHorizontalLayoutConstraints;
+      break;
+    }
     case SigninPromoViewStyleCompactVertical: {
       self.contentStackView.axis = UILayoutConstraintAxisVertical;
       self.contentStackView.spacing =
@@ -718,8 +822,9 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
       self.secondaryButton.hidden = YES;
       self.imageView.hidden = NO;
 
-      self.textLabel.font = [[UIFont
-          preferredFontForTextStyle:UIFontTextStyleBody] fontWithSize:15];
+      self.textLabel.font =
+          [[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+              fontWithSize:kCompactStyleTextSize];
       self.textLabel.textColor = [UIColor colorNamed:kGrey800Color];
 
       [self.primaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
