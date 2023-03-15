@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item_delegate.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -46,6 +47,9 @@ const CGFloat kSymbolSize = 15;
   cell.textView.text = self.text;
   cell.textView.editable = self.editingEnabled;
   cell.textView.delegate = self;
+  cell.textView.backgroundColor = styler.cellBackgroundColor
+                                      ? styler.cellBackgroundColor
+                                      : styler.tableViewBackgroundColor;
 
   if (self.label.length) {
     cell.textView.accessibilityIdentifier =
