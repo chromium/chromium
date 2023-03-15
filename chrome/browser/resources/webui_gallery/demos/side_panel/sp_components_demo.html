@@ -1,6 +1,114 @@
 <link rel="stylesheet" href="../demo.css">
+<style include="md-select sp-shared-style">
+  #urlCountSlider {
+    width: 200px;
+  }
+
+  .side-panel-demo {
+    border: solid 1px var(--cr-separator-color);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    width: 304px;
+  }
+
+  :host-context([chrome-refresh-2023]) .side-panel-demo {
+    background: var(--color-side-panel-content-background);
+    padding: var(--sp-body-padding) 0;
+  }
+
+  :host-context([chrome-refresh-2023]) .side-panel-demo:has(sp-footer) {
+    padding-block-end: 0;
+  }
+
+  sp-heading {
+    padding: 0 20px;
+  }
+
+  :host-context([chrome-refresh-2023]) sp-heading {
+    padding: 0;
+  }
+
+  #singleCard .sp-card,
+  #multipleCards {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+</style>
 
 <h1>Side panel shared components</h1>
+<div class="demos">
+  Shared UI elements that are only accessible to WebUIs in
+  chrome/browser/resources/side_panel.
+</div>
+
+<div class="demos">
+  <div class="row center">
+    <label id="urlCountLabel">Number of url items</label>
+    <cr-slider id="urlCountSlider" min="1" max="30" value="[[urlCount_]]"
+        on-cr-slider-value-changed="onUrlCountChanged_"
+        aria-labelledby="urlCountLabel">
+    </cr-slider>
+  </div>
+  <cr-checkbox checked="{{hideBackButton_}}">
+    Hide back button in heading
+  </cr-checkbox>
+  <cr-checkbox checked="{{showBadges_}}">Show item badges</cr-checkbox>
+  <div class="row center">
+    <label id="itemSizeLabel">Item size</label>
+    <select id="itemSizeSelect" class="md-select"
+        aria-labelledby="itemSizeLabel"
+        value="[[itemSize_]]"
+        on-change="onItemSizeChanged_">
+      <template is="dom-repeat" items="[[itemSizeOptions_]]">
+        <option value="[[item]]">[[item]]</option>
+      </template>
+    </select>
+  </div>
+</div>
+
+<h2>With singular card</h2>
+<div id="singleCard" class="side-panel-demo">
+  <div class="sp-card">
+    <sp-heading hide-back-button="[[hideBackButton_]]">
+      <h3 slot="heading">Heading</h3>
+
+      <span slot="metadata">Metadata</span>
+      <cr-icon-button slot="buttons" iron-icon="sp:filter-list"
+          aria-label="Filter">
+      </cr-icon-button>
+      <cr-icon-button slot="buttons" iron-icon="cr:sync"
+          aria-label="Sync">
+      </cr-icon-button>
+      <cr-icon-button slot="buttons" iron-icon="cr:create"
+          aria-label="Create">
+      </cr-icon-button>
+    </sp-heading>
+    <div class="sp-scroller">
+      <template is="dom-repeat" items="[[urls_]]">
+        <cr-url-list-item title="[[item.title]]"
+            description="[[item.url]]"
+            url="[[item.url]]"
+            size="[[itemSize_]]">
+          <template is="dom-if" if="[[showBadges_]]" restamp>
+            <sp-list-item-badge slot="badges">
+              <iron-icon icon="cr:info-outline"></iron-icon>
+              <span>2 Notes</span>
+            </sp-list-item-badge>
+          </template>
+        </cr-url-list-item>
+      </template>
+    </div>
+  </div>
+  <sp-footer pinned>
+    <cr-button class="floating-button">
+      <iron-icon slot="prefix-icon" icon="cr:add"></iron-icon>
+      Floating button
+    </cr-button>
+  </sp-footer>
+</div>
 
 <h2>Filter chips</h2>
 <div class="demos">
