@@ -331,9 +331,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     this.checkPointerSubpage_();
   }
 
-  private pointersChanged_(
-      hasMouse: boolean, hasPointingStick: boolean, hasTouchpad: boolean) {
-    this.$.pointersRow.hidden = !hasMouse && !hasPointingStick && !hasTouchpad;
+  private pointersChanged_() {
     this.checkPointerSubpage_();
   }
 
@@ -357,6 +355,11 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
             routes.PER_DEVICE_POINTING_STICK) {
       Router.getInstance().navigateTo(routes.DEVICE);
     }
+  }
+
+  private showPointersRow_(): boolean {
+    return (this.hasMouse_ || this.hasTouchpad_ || this.hasPointingStick_) &&
+        !this.isDeviceSettingsSplitEnabled_;
   }
 
   private showPerDeviceMouseRow_(): boolean {
