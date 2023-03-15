@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
-import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {queryDecoratedElement} from '../../common/js/dom_utils.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -16,21 +15,19 @@ import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {decorate} from '../../common/js/ui.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/actions/current_directory.js';
+import {setUpFileManagerOnWindow} from '../../state/for_tests.js';
 import {getEmptyState, getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
-import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
-import {createFakeDirectoryModel} from './mock_directory_model.js';
 import {TaskController} from './task_controller.js';
 import {ComboButton} from './ui/combobutton.js';
 import {Command} from './ui/command.js';
@@ -81,16 +78,8 @@ export function setUp() {
   // Initialize Command with the <command>s.
   decorate('command', Command);
 
-  const volumeManager = new MockVolumeManager();
-  window.fileManager = {
-    dialogType: DialogType.FULL_PAGE,
-    volumeManager: volumeManager,
-    metadataModel: new MockMetadataModel({}) as unknown as MetadataModel,
-    crostini: {} as unknown as Crostini,
-    selectionHandler: new FakeFileSelectionHandler(),
-    taskController: {} as unknown as TaskController,
-    directoryModel: createFakeDirectoryModel(),
-  };
+  setUpFileManagerOnWindow();
+  const volumeManager = window.fileManager.volumeManager;
 
   downloads = volumeManager.getCurrentProfileVolumeInfo(
       VolumeManagerCommon.VolumeType.DOWNLOADS)!;

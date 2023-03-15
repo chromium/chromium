@@ -10,7 +10,7 @@ import {Crostini} from '../externs/background/crostini.js';
 import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
 import {FileKey, PropStatus, State} from '../externs/ts/state.js';
 import {VolumeInfo} from '../externs/volume_info.js';
-import {FileSelectionHandler} from '../foreground/js/file_selection.js';
+import {FakeFileSelectionHandler} from '../foreground/js/fake_file_selection_handler.js';
 import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../foreground/js/metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from '../foreground/js/mock_directory_model.js';
@@ -144,7 +144,7 @@ export function setUpFileManagerOnWindow() {
     volumeManager: volumeManager,
     metadataModel: new MockMetadataModel({}) as unknown as MetadataModel,
     crostini: {} as unknown as Crostini,
-    selectionHandler: {} as unknown as FileSelectionHandler,
+    selectionHandler: new FakeFileSelectionHandler(),
     taskController: {} as unknown as TaskController,
     dialogType: DialogType.FULL_PAGE,
     directoryModel: createFakeDirectoryModel(),
