@@ -2085,6 +2085,8 @@ component("ash") {
     "wallpaper/wallpaper_constants.h",
     "wallpaper/wallpaper_controller_impl.cc",
     "wallpaper/wallpaper_controller_impl.h",
+    "wallpaper/wallpaper_image_downloader.cc",
+    "wallpaper/wallpaper_image_downloader.h",
     "wallpaper/wallpaper_metrics_manager.cc",
     "wallpaper/wallpaper_metrics_manager.h",
     "wallpaper/wallpaper_pref_manager.cc",
@@ -3851,6 +3853,8 @@ static_library("test_support") {
     "test/pixel/ash_pixel_differ.h",
     "utility/haptics_tracking_test_input_controller.cc",
     "utility/haptics_tracking_test_input_controller.h",
+    "wallpaper/test_wallpaper_image_downloader.cc",
+    "wallpaper/test_wallpaper_image_downloader.h",
 
     # These headers declare functions that are implemented inside of //ash, so
     # they cannot live in //ash/public/cpp/BUILD.gn.

@@ -31,6 +31,7 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "ash/wallpaper/wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
@@ -86,6 +87,9 @@ namespace {
 // Global to hold a WallpaperPrefManager for testing in `Create`.
 std::unique_ptr<WallpaperPrefManager> g_test_pref_manager;
 
+// Global to hold a WallpaperImageDownloader for testing in `Create`.
+std::unique_ptr<WallpaperImageDownloader> g_test_image_downloader;
+
 // The file name of the policy wallpaper.
 constexpr char kPolicyWallpaperFile[] = "policy-controlled.jpeg";
 
@@ -108,78 +112,6 @@ constexpr base::TimeDelta kWallpaperLoadAnimationDuration =
 
 // The color of the wallpaper if no other wallpaper images are available.
 constexpr SkColor kDefaultWallpaperColor = SK_ColorGRAY;
-
-constexpr net::NetworkTrafficAnnotationTag
-    kDownloadGooglePhotoTrafficAnnotation =
-        net::DefineNetworkTrafficAnnotation("wallpaper_download_google_photo",
-                                            R"(
-      semantics {
-        sender: "ChromeOS Wallpaper Controller"
-        description:
-          "When the user selects a photo from their Google Photos collection, "
-          "the image must be downloaded at a high enough resolution to display "
-          "as a wallpaper. This request fetches that image."
-        trigger: "When the user selects a Google Photo as their wallpaper, or "
-                 "when that selection reaches this device from cross-device "
-                 "sync."
-        data: "Stored credentials for the user's Google account."
-        destination: GOOGLE_OWNED_SERVICE
-        internal {
-          contacts {
-            email: "assistive-eng@google.com"
-          }
-        }
-        user_data {
-          type: ACCESS_TOKEN
-        }
-        last_reviewed: "2023-03-06"
-      }
-      policy {
-        cookies_allowed: NO
-        setting: "The policy if set, controls the wallpaper image and disables "
-        "this feature for user."
-        chrome_policy {
-          WallpaperImage {
-            WallpaperImage: "{}"
-          }
-        }
-      })");
-
-constexpr net::NetworkTrafficAnnotationTag
-    kDownloadOnlineWallpaperTrafficAnnotation =
-        net::DefineNetworkTrafficAnnotation("wallpaper_online_downloader",
-                                            R"(
-      semantics {
-        sender: "ChromeOS Wallpaper Controller"
-        description:
-          "When the user selects a photo from their desktop wallpaper "
-          "collection, the image must be downloaded at a high enough "
-          "resolution to display as a wallpaper. This request fetches "
-          "that image."
-        trigger: "When the user clicks on the wallpaper thumbnail in "
-        "the wallpaper collection"
-        data: "None. These URLs are publicly accessible."
-        destination: GOOGLE_OWNED_SERVICE
-        internal {
-          contacts {
-            email: "assitive-eng@google.com"
-          }
-        }
-        user_data {
-          type: NONE
-        }
-        last_reviewed: "2023-03-06"
-      }
-     policy {
-        cookies_allowed: NO
-        setting: "The policy if set, controls the wallpaper image and disables "
-        "this feature for user."
-        chrome_policy {
-          WallpaperImage {
-            WallpaperImage: "{}"
-          }
-        }
-      })");
 
 // The paths of wallpaper directories.
 base::FilePath& GlobalUserDataDir() {
@@ -530,32 +462,6 @@ base::TimeDelta FuzzTimeDelta(base::TimeDelta delta) {
   return delta + random_delay;
 }
 
-GURL AddDimensionsToGooglePhotosURL(GURL url) {
-  // Add a string with size data to the URL to make sure we get back the correct
-  // resolution image, within reason and maintaining aspect ratio. See:
-  // https://developers.google.com/photos/library/guides/access-media-items
-  return GURL(base::StringPrintf("%s=w%d-h%d", url.spec().c_str(),
-                                 kLargeWallpaperMaxWidth,
-                                 kLargeWallpaperMaxHeight));
-}
-
-void DownloadGooglePhotosImage(
-    const GURL& url,
-    const AccountId& account_id,
-    ImageDownloader::DownloadCallback callback,
-    const absl::optional<std::string>& access_token) {
-  GURL url_with_dimensions = AddDimensionsToGooglePhotosURL(url);
-
-  net::HttpRequestHeaders headers;
-  if (access_token.has_value()) {
-    headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                      "Bearer " + access_token.value());
-  }
-  ImageDownloader::Get()->Download(url_with_dimensions,
-                                   kDownloadGooglePhotoTrafficAnnotation,
-                                   account_id, headers, std::move(callback));
-}
-
 }  // namespace
 
 const char WallpaperControllerImpl::kSmallWallpaperSubDir[] = "small";
@@ -567,15 +473,19 @@ std::unique_ptr<WallpaperControllerImpl> WallpaperControllerImpl::Create(
     PrefService* local_state) {
   auto online_wallpaper_variant_fetcher =
       std::make_unique<OnlineWallpaperVariantInfoFetcher>();
-  if (g_test_pref_manager) {
-    return std::make_unique<WallpaperControllerImpl>(
-        std::move(g_test_pref_manager),
-        std::move(online_wallpaper_variant_fetcher));
-  }
 
-  auto pref_manager = WallpaperPrefManager::Create(local_state);
+  std::unique_ptr<WallpaperPrefManager> pref_manager =
+      g_test_pref_manager ? std::move(g_test_pref_manager)
+                          : WallpaperPrefManager::Create(local_state);
+
+  std::unique_ptr<WallpaperImageDownloader> wallpaper_image_downloader =
+      g_test_image_downloader
+          ? std::move(g_test_image_downloader)
+          : std::make_unique<WallpaperImageDownloaderImpl>();
+
   return std::make_unique<WallpaperControllerImpl>(
-      std::move(pref_manager), std::move(online_wallpaper_variant_fetcher));
+      std::move(pref_manager), std::move(online_wallpaper_variant_fetcher),
+      std::move(wallpaper_image_downloader));
 }
 
 // static
@@ -584,13 +494,21 @@ void WallpaperControllerImpl::SetWallpaperPrefManagerForTesting(
   g_test_pref_manager.swap(pref_manager);
 }
 
+// static
+void WallpaperControllerImpl::SetWallpaperImageDownloaderForTesting(
+    std::unique_ptr<WallpaperImageDownloader> image_downloader) {
+  g_test_image_downloader.swap(image_downloader);
+}
+
 WallpaperControllerImpl::WallpaperControllerImpl(
     std::unique_ptr<WallpaperPrefManager> pref_manager,
-    std::unique_ptr<OnlineWallpaperVariantInfoFetcher> online_fetcher)
+    std::unique_ptr<OnlineWallpaperVariantInfoFetcher> online_fetcher,
+    std::unique_ptr<WallpaperImageDownloader> image_downloader)
     : pref_manager_(std::move(pref_manager)),
       variant_info_fetcher_(std::move(online_fetcher)),
       color_profiles_(GetProminentColorProfiles()),
       wallpaper_reload_delay_(kWallpaperReloadDelay),
+      wallpaper_image_downloader_(std::move(image_downloader)),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
@@ -2218,8 +2136,11 @@ void WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched(
       set_wallpaper_weak_factory_.GetWeakPtr(), account_id, photo->id, album_id,
       photo->dedup_key, std::move(callback));
   wallpaper_controller_client_->FetchGooglePhotosAccessToken(
-      account_id, base::BindOnce(&DownloadGooglePhotosImage, photo->url,
-                                 account_id, std::move(download_callback)));
+      account_id,
+      base::BindOnce(
+          &WallpaperControllerImpl::OnGooglePhotosAuthenticationTokenFetched,
+          set_wallpaper_weak_factory_.GetWeakPtr(), std::move(photo),
+          account_id, std::move(download_callback)));
 }
 
 void WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDownloaded(
@@ -2280,8 +2201,10 @@ void WallpaperControllerImpl::GetGooglePhotosWallpaperFromCacheOrDownload(
         set_wallpaper_weak_factory_.GetWeakPtr(), params, std::move(callback));
     wallpaper_controller_client_->FetchGooglePhotosAccessToken(
         params.account_id,
-        base::BindOnce(&DownloadGooglePhotosImage, photo->url,
-                       params.account_id, std::move(download_callback)));
+        base::BindOnce(
+            &WallpaperControllerImpl::OnGooglePhotosAuthenticationTokenFetched,
+            set_wallpaper_weak_factory_.GetWeakPtr(), std::move(photo),
+            params.account_id, std::move(download_callback)));
   }
 }
 
@@ -2293,6 +2216,15 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
     const gfx::ImageSkia& image) {
   std::move(callback).Run(!image.isNull());
   OnWallpaperDecoded(account_id, path, info, /*show_wallpaper=*/true, image);
+}
+
+void WallpaperControllerImpl::OnGooglePhotosAuthenticationTokenFetched(
+    ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
+    const AccountId& account_id,
+    ImageDownloader::DownloadCallback callback,
+    const absl::optional<std::string>& access_token) {
+  wallpaper_image_downloader_->DownloadGooglePhotosImage(
+      photo->url, account_id, access_token, std::move(callback));
 }
 
 void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
@@ -2816,13 +2748,14 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
   if (variants.empty()) {
     // |variants| can be empty for users who have just migrated from the old
     // wallpaper picker to the new one.
-    std::string url = params.url.spec() + GetBackdropWallpaperSuffix();
-    ImageDownloader::Get()->Download(
-        GURL(url), kDownloadOnlineWallpaperTrafficAnnotation, params.account_id,
+    wallpaper_image_downloader_->DownloadBackdropImage(
+        params.url, params.account_id,
         base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                        set_wallpaper_weak_factory_.GetWeakPtr(), params,
                        /*save_file=*/true, std::move(callback)));
-  } else {
+    return;
+  }
+
     // Start fetching the wallpaper variants.
     num_variants_downloaded_ = 0;
     online_wallpaper_variant_to_use_ = gfx::ImageSkia();
@@ -2834,15 +2767,13 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
             std::move(callback)));
 
     for (size_t i = 0; i < variants.size(); i++) {
-      ImageDownloader::Get()->Download(
-          GURL(variants.at(i).raw_url.spec() + GetBackdropWallpaperSuffix()),
-          kDownloadOnlineWallpaperTrafficAnnotation, params.account_id,
-          base::BindOnce(
-              &WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded,
-              set_wallpaper_weak_factory_.GetWeakPtr(), params, on_done,
-              /*current_index=*/i));
+    wallpaper_image_downloader_->DownloadBackdropImage(
+        variants.at(i).raw_url, params.account_id,
+        base::BindOnce(
+            &WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded,
+            set_wallpaper_weak_factory_.GetWeakPtr(), params, on_done,
+            /*current_index=*/i));
     }
-  }
 }
 
 void WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded(

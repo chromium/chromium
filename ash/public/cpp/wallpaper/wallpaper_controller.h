@@ -332,10 +332,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Sync wallpaper infos and images.
   // |account_id|: The account id of the user.
   virtual void SyncLocalAndRemotePrefs(const AccountId& account_id) = 0;
-
-  // Returns a suffix to be appended to the base url of Backdrop (online)
-  // wallpapers.
-  static std::string GetBackdropWallpaperSuffix();
 };
 
 }  // namespace ash

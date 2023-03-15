@@ -14,7 +14,6 @@
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
@@ -28,6 +27,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/test_wallpaper_drivefs_delegate.h"
+#include "ash/wallpaper/test_wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
@@ -39,6 +39,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
@@ -376,10 +377,16 @@ class WallpaperControllerTest : public AshTestBase {
   void SetUp() override {
     auto pref_manager = WallpaperPrefManager::Create(local_state());
     pref_manager_ = pref_manager.get();
-    // Override the pref manager that will be used to construct the
-    // WallpaperController.
+    // Override the pref manager and image downloader that will be used to
+    // construct the WallpaperController.
     WallpaperControllerImpl::SetWallpaperPrefManagerForTesting(
         std::move(pref_manager));
+
+    auto test_wallpaper_image_downloader =
+        std::make_unique<TestWallpaperImageDownloader>();
+    test_wallpaper_image_downloader_ = test_wallpaper_image_downloader.get();
+    WallpaperControllerImpl::SetWallpaperImageDownloaderForTesting(
+        std::move(test_wallpaper_image_downloader));
 
     AshTestBase::SetUp();
 
@@ -397,8 +404,6 @@ class WallpaperControllerTest : public AshTestBase {
     // written around, but at some point they should probably be fixed.
     in_process_data_decoder_.service().SimulateImageDecoderCrashForTesting(
         true);
-
-    test_image_downloader_ = std::make_unique<TestImageDownloader>();
 
     controller_ = Shell::Get()->wallpaper_controller();
     controller_->set_wallpaper_reload_no_delay_for_test();
@@ -736,7 +741,7 @@ class WallpaperControllerTest : public AshTestBase {
 
   TestWallpaperControllerClient client_;
   raw_ptr<TestWallpaperDriveFsDelegate> drivefs_delegate_;
-  std::unique_ptr<TestImageDownloader> test_image_downloader_;
+  raw_ptr<TestWallpaperImageDownloader> test_wallpaper_image_downloader_;
 
   const AccountId kChildAccountId =
       AccountId::FromUserEmailGaiaId(kChildEmail, kChildEmail);
@@ -3951,7 +3956,8 @@ TEST_F(WallpaperControllerTest,
   info.collection_id = "fun_collection";
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
-  test_image_downloader_->set_should_fail(true);
+  test_wallpaper_image_downloader_->set_image_generator(
+      base::BindLambdaForTesting([]() { return gfx::ImageSkia(); }));
 
   controller_->UpdateDailyRefreshWallpaperForTesting();
 
@@ -4322,7 +4328,8 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaperWithoutInternet) {
   // Attempt to set the same online wallpaper without internet. Verify it
   // still succeeds because the previous call to |SetOnlineWallpaper()| has
   // saved the file.
-  test_image_downloader_->set_should_fail(true);
+  test_wallpaper_image_downloader_->set_image_generator(
+      base::BindLambdaForTesting([]() { return gfx::ImageSkia(); }));
   ClearWallpaperCount();
   base::RunLoop run_loop;
   controller_->SetOnlineWallpaper(
