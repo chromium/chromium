@@ -252691,6 +252691,19 @@
          {}
         ]
        ],
+       "placeholder-update.html": [
+        "af0c0793ee1ca73b2eff5d5054c4bf2c52e27c61",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-input-element/placeholder-update-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "range-intrinsic-size.html": [
         "ce37faf89bcc436bb0b56128f37785c0000765f6",
         [
@@ -265733,16 +265746,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "a0c3020f93b828f891fba80d2342012da9f26c3d",
-     []
-    ],
-    "mtime.json": [
-     "27a8a9b73bb2820c40e11c0d746070e857745db3",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -269167,7 +269170,7 @@
      []
     ],
     "OWNERS": [
-     "058b96795d23f1b2b6220cbeb3c3b63f39afba08",
+     "b88159551bd76df4fc51202b35271a84e27e3759",
      []
     ],
     "async-custom-formats-write-read-web-prefix.tentative.https.html.ini": [
@@ -289914,10 +289917,6 @@
       []
      ],
      "parsing": {
-      "flex-basis-computed-expected.txt": [
-       "08ab96253436d2967d601152d1300491980f6944",
-       []
-      ],
       "flex-basis-computed.html.ini": [
        "2376c332023ff9e5ab240fdc82b0665adbce6646",
        []
@@ -356349,10 +356348,6 @@
         "4069fda1d1abc9cfa3172454d234e485eac0d33a",
         []
        ],
-       "intrinsic_sizes-expected.txt": [
-        "7416b5fa0226aeddf8414b54859235df9d7eca49",
-        []
-       ],
        "intrinsic_sizes.htm.ini": [
         "2b43f15d25f7d7c98b0ed131d74379b7de4df179",
         []
@@ -356649,6 +356644,10 @@
        ],
        "multiline-placeholder-ref.html": [
         "2812f86e1e6c8e240f60ff313e856b6733e54b5e",
+        []
+       ],
+       "placeholder-update-ref.html": [
+        "38da0195395823c5cc5ff2cc1acf4ea0aab01349",
         []
        ],
        "range-intrinsic-size-ref.html": [
@@ -384203,7 +384202,7 @@
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "83930a3f263bc6ff7fb26ba21983294498a198e6",
+       "2c624a462c97f568ca791fd86490013a0993746c",
        []
       ],
       "interpolation-per-property-002.html.ini": [
@@ -386133,7 +386132,7 @@
      },
      "print": {
       "__init__.py": [
-       "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+       "eb9a890cc45592c0566b0004440225d162332687",
        []
       ]
      },
@@ -386217,7 +386216,7 @@
        []
       ],
       "fixtures_http.py": [
-       "65ea064c51977c6f4d96f8e2836be86aab00969f",
+       "03be83a20e125257ed3d1b423fbc991de40660f6",
        []
       ],
       "helpers.py": [
@@ -431238,7 +431237,7 @@
       ]
      ],
      "at-scope-parsing.html": [
-      "86574c55fc4b3aad5875cdd9fe4e9a16de164a86",
+      "a37f63b06b994686f8f55a6e3025e64050c48f7e",
       [
        null,
        {}
@@ -431506,7 +431505,7 @@
       ]
      ],
      "scope-evaluation.html": [
-      "48139d048a05e0552163a59008299cebb78522bc",
+      "bd782917e3d55220d4bf92f3a5c7f86b4c655647",
       [
        null,
        {}
@@ -431534,7 +431533,7 @@
       ]
      ],
      "scope-nesting.html": [
-      "bf4fabf3e0572d22316836fb794c696ecfd83dfb",
+      "753eab8fbbbc154a54150ebf688c420ebf9bd1a4",
       [
        null,
        {}
@@ -539757,7 +539756,7 @@
       },
       "the-video-element": {
        "intrinsic_sizes.htm": [
-        "7819ee1c1891887aadec9bb600bcb18e6cc562e3",
+        "f9426a529c10fad66becacf99bb1ad1b70401a02",
         [
          null,
          {}
@@ -620771,6 +620770,171 @@
       }
      ]
     ],
+    "per-frame-qp-encoding.https.any.js": [
+     "3207fa8356c83ef9566348f9246d0f6570068615",
+     [
+      "webcodecs/per-frame-qp-encoding.https.any.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/per-frame-qp-encoding.https.any.html?vp9_p0",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/per-frame-qp-encoding.https.any.worker.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p0",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?vp9_p2"
+        ]
+       ]
+      }
+     ]
+    ],
     "reconfiguring-encoder.https.any.js": [
      "bc7e9b74fb917639b581b72096741395df1b9198",
      [
@@ -663966,8 +664130,15 @@
       ]
      },
      "print": {
+      "background.py": [
+       "22b392db2e3c51dbf68fe616bb3340535adf53f8",
+       [
+        null,
+        {}
+       ]
+      ],
       "printcmd.py": [
-       "415786675c5936bb55cf4c6c4b49980407aa0547",
+       "f3fe50bd92d6a7dc4f8bf0c2290f2ecebc0dd1d7",
        [
         null,
         {
@@ -663976,7 +664147,7 @@
        ]
       ],
       "user_prompts.py": [
-       "0a29b518ac9a2307e6f5656e3f455831f2a05337",
+       "fb13ec2d65a25038641a42a67e48237fdef60c10",
        [
         null,
         {
