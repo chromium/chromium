@@ -132,6 +132,7 @@ void ProjectorXhrSender::Send(const GURL& url,
         /*success=*/false,
         /*response_body=*/std::string(),
         /*error=*/"UNSUPPORTED_URL");
+    LOG(ERROR) << "URL is not supported.";
     return;
   }
   GURL request_url = url;
@@ -151,6 +152,7 @@ void ProjectorXhrSender::Send(const GURL& url,
         /*success=*/false,
         /*response_body=*/std::string(),
         /*error=*/"INVALID_ACCOUNT_EMAIL");
+    LOG(ERROR) << "User email is invalid";
     return;
   }
 
@@ -185,6 +187,7 @@ void ProjectorXhrSender::OnAccessTokenRequestCompleted(
         /*success=*/false,
         /*response_body=*/std::string(),
         /*error=*/"TOKEN_FETCH_FAILURE");
+    LOG(ERROR) << "Failed to reqeust access token, error:" << error.ToString();
     return;
   }
 
@@ -257,11 +260,16 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
   bool is_success =
       response_body && response_code >= 200 && response_code < 300;
   auto response_body_or_empty = response_body ? *response_body : std::string();
-  // TODO(b/243180842): Include response code in XhrResponse when needed.
   std::move(callback).Run(
       /*success=*/is_success,
       /*response_body=*/response_body_or_empty,
       /*error=*/is_success ? std::string() : "XHR_FETCH_FAILURE");
+  if (!is_success) {
+    LOG(ERROR) << "Failed to send XHR request, Http error code: "
+               << response_code
+               << ", response body: " << response_body_or_empty;
+  }
+
   loader_map_.erase(request_id);
 }
 
