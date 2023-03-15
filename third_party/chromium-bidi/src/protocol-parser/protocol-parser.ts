@@ -22,7 +22,15 @@
 
 import {ZodType, z as zod} from 'zod';
 
-import {EventResponse, Message} from '../protocol/protocol.js';
+import {
+  BrowsingContext as BrowsingContextTypes,
+  Script as ScriptTypes,
+  Log as LogTypes,
+  CDP as CdpTypes,
+  Message as MessageTypes,
+  Session as SessionTypes,
+  CommonDataTypes as CommonDataTypesTypes,
+} from '../protocol/protocol.js';
 
 const MAX_INT = 9007199254740991 as const;
 
@@ -42,19 +50,16 @@ export function parseObject<T extends ZodType>(
     )
     .join(' ');
 
-  throw new Message.InvalidArgumentException(errorMessage);
+  throw new MessageTypes.InvalidArgumentException(errorMessage);
 }
 
 export namespace CommonDataTypes {
   export const SharedReferenceSchema = zod.object({
     sharedId: zod.string().min(1),
   });
-  export type SharedReference = zod.infer<typeof SharedReferenceSchema>;
-
   export const RemoteReferenceSchema = zod.object({
     handle: zod.string().min(1),
   });
-  export type RemoteReference = zod.infer<typeof RemoteReferenceSchema>;
 
   // UndefinedValue = {
   //   type: "undefined",
@@ -114,41 +119,18 @@ export namespace CommonDataTypes {
     BigIntValueSchema,
   ]);
 
-  export type PrimitiveProtocolValue = zod.infer<
-    typeof PrimitiveProtocolValueSchema
-  >;
-
-  // LocalValue = {
-  //   PrimitiveProtocolValue //
-  //   ArrayLocalValue //
-  //   DateLocalValue //
-  //   MapLocalValue //
-  //   ObjectLocalValue //
-  //   RegExpLocalValue //
-  //   SetLocalValue //
-  // }
-  // `LocalValue` is a recursive type, so lazy declaration is needed:
-  // https://github.com/colinhacks/zod#recursive-types
-  export type LocalValue =
-    | PrimitiveProtocolValue
-    | ArrayLocalValue
-    | DateLocalValue
-    | MapLocalValue
-    | ObjectLocalValue
-    | RegExpLocalValue
-    | SetLocalValue;
-
-  export const LocalValueSchema: zod.ZodType<LocalValue> = zod.lazy(() =>
-    zod.union([
-      PrimitiveProtocolValueSchema,
-      ArrayLocalValueSchema,
-      DateLocalValueSchema,
-      MapLocalValueSchema,
-      ObjectLocalValueSchema,
-      RegExpLocalValueSchema,
-      SetLocalValueSchema,
-    ])
-  );
+  export const LocalValueSchema: zod.ZodType<CommonDataTypesTypes.LocalValue> =
+    zod.lazy(() =>
+      zod.union([
+        PrimitiveProtocolValueSchema,
+        ArrayLocalValueSchema,
+        DateLocalValueSchema,
+        MapLocalValueSchema,
+        ObjectLocalValueSchema,
+        RegExpLocalValueSchema,
+        SetLocalValueSchema,
+      ])
+    );
 
   // Order is important, as `parse` is processed in the same order.
   // `SharedReferenceSchema`->`RemoteReferenceSchema`->`LocalValueSchema`.
@@ -171,7 +153,6 @@ export namespace CommonDataTypes {
       value: ListLocalValueSchema,
     })
   );
-  export type ArrayLocalValue = zod.infer<typeof ArrayLocalValueSchema>;
 
   // DateLocalValue = {
   //   type: "date",
@@ -181,7 +162,6 @@ export namespace CommonDataTypes {
     type: zod.literal('date'),
     value: zod.string().min(1),
   });
-  export type DateLocalValue = zod.infer<typeof DateLocalValueSchema>;
 
   // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
   const MappingLocalValueSchema: zod.ZodType = zod.lazy(() =>
@@ -199,7 +179,6 @@ export namespace CommonDataTypes {
     type: zod.literal('map'),
     value: zod.array(MappingLocalValueSchema),
   });
-  export type MapLocalValue = zod.infer<typeof MapLocalValueSchema>;
 
   // ObjectLocalValue = {
   //   type: "object",
@@ -209,7 +188,6 @@ export namespace CommonDataTypes {
     type: zod.literal('object'),
     value: zod.array(MappingLocalValueSchema),
   });
-  export type ObjectLocalValue = zod.infer<typeof ObjectLocalValueSchema>;
 
   // RegExpLocalValue = {
   //   type: "regexp",
@@ -224,7 +202,6 @@ export namespace CommonDataTypes {
       }),
     })
   );
-  export type RegExpLocalValue = zod.infer<typeof RegExpLocalValueSchema>;
 
   // SetLocalValue = {
   //   type: "set",
@@ -236,213 +213,13 @@ export namespace CommonDataTypes {
       value: ListLocalValueSchema,
     })
   );
-  export type SetLocalValue = zod.infer<typeof SetLocalValueSchema>;
-
-  export type RemoteValue =
-    | PrimitiveProtocolValue
-    | SymbolRemoteValue
-    | ArrayRemoteValue
-    | ObjectRemoteValue
-    | FunctionRemoteValue
-    | RegExpRemoteValue
-    | DateRemoteValue
-    | MapRemoteValue
-    | SetRemoteValue
-    | WeakMapRemoteValue
-    | WeakSetRemoteValue
-    | IteratorRemoteValue
-    | GeneratorRemoteValue
-    | ProxyRemoteValue
-    | ErrorRemoteValue
-    | PromiseRemoteValue
-    | TypedArrayRemoteValue
-    | ArrayBufferRemoteValue
-    | NodeRemoteValue
-    | WindowProxyRemoteValue;
-
-  export type ListRemoteValue = RemoteValue[];
-
-  export type MappingRemoteValue = [RemoteValue | string, RemoteValue][];
-
-  export type SymbolRemoteValue = RemoteReference & {
-    type: 'symbol';
-  };
-
-  export type ArrayRemoteValue = RemoteReference & {
-    type: 'array';
-    value?: ListRemoteValue;
-  };
-
-  export type ObjectRemoteValue = RemoteReference & {
-    type: 'object';
-    value?: MappingRemoteValue;
-  };
-
-  export type FunctionRemoteValue = RemoteReference & {
-    type: 'function';
-  };
-
-  export type RegExpRemoteValue = RemoteReference & RegExpLocalValue;
-
-  export type DateRemoteValue = RemoteReference & DateLocalValue;
-
-  export type MapRemoteValue = RemoteReference & {
-    type: 'map';
-    value: MappingRemoteValue;
-  };
-
-  export type SetRemoteValue = RemoteReference & {
-    type: 'set';
-    value: ListRemoteValue;
-  };
-
-  export type WeakMapRemoteValue = RemoteReference & {
-    type: 'weakmap';
-  };
-
-  export type WeakSetRemoteValue = RemoteReference & {
-    type: 'weakset';
-  };
-
-  export type IteratorRemoteValue = RemoteReference & {
-    type: 'iterator';
-  };
-
-  export type GeneratorRemoteValue = RemoteReference & {
-    type: 'generator';
-  };
-
-  export type ProxyRemoteValue = RemoteReference & {
-    type: 'proxy';
-  };
-
-  export type ErrorRemoteValue = RemoteReference & {
-    type: 'error';
-  };
-
-  export type PromiseRemoteValue = RemoteReference & {
-    type: 'promise';
-  };
-
-  export type TypedArrayRemoteValue = RemoteReference & {
-    type: 'typedarray';
-  };
-
-  export type ArrayBufferRemoteValue = RemoteReference & {
-    type: 'arraybuffer';
-  };
-
-  export type NodeRemoteValue = SharedReference &
-    RemoteReference & {
-      type: 'node';
-      value?: NodeProperties;
-    };
-
-  export type NodeProperties = RemoteReference & {
-    nodeType: number;
-    nodeValue: string;
-    localName?: string;
-    namespaceURI?: string;
-    childNodeCount: number;
-    children?: [NodeRemoteValue];
-    attributes?: Record<string, string>;
-    shadowRoot?: NodeRemoteValue | null;
-  };
-
-  export type WindowProxyRemoteValue = RemoteReference & {
-    type: 'window';
-  };
 
   // BrowsingContext = text;
   export const BrowsingContextSchema = zod.string();
-  export type BrowsingContext = zod.infer<typeof BrowsingContextSchema>;
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-script */
 export namespace Script {
-  export type Command =
-    | EvaluateCommand
-    | CallFunctionCommand
-    | GetRealmsCommand
-    | DisownCommand;
-  export type CommandResult =
-    | EvaluateResult
-    | CallFunctionResult
-    | GetRealmsResult
-    | DisownResult;
-
-  export type Realm = string;
-
-  export type ScriptResult = ScriptResultSuccess | ScriptResultException;
-  export type ScriptResultSuccess = {
-    type: 'success';
-    result: CommonDataTypes.RemoteValue;
-    realm: Realm;
-  };
-
-  export type ScriptResultException = {
-    exceptionDetails: ExceptionDetails;
-    type: 'exception';
-    realm: Realm;
-  };
-
-  export type ExceptionDetails = {
-    columnNumber: number;
-    exception: CommonDataTypes.RemoteValue;
-    lineNumber: number;
-    stackTrace: Script.StackTrace;
-    text: string;
-  };
-
-  export type RealmInfo =
-    | WindowRealmInfo
-    | DedicatedWorkerRealmInfo
-    | SharedWorkerRealmInfo
-    | ServiceWorkerRealmInfo
-    | WorkerRealmInfo
-    | PaintWorkletRealmInfo
-    | AudioWorkletRealmInfo
-    | WorkletRealmInfo;
-
-  export type BaseRealmInfo = {
-    realm: Realm;
-    origin: string;
-  };
-
-  export type WindowRealmInfo = BaseRealmInfo & {
-    type: 'window';
-    context: CommonDataTypes.BrowsingContext;
-    sandbox?: string;
-  };
-
-  export type DedicatedWorkerRealmInfo = BaseRealmInfo & {
-    type: 'dedicated-worker';
-  };
-
-  export type SharedWorkerRealmInfo = BaseRealmInfo & {
-    type: 'shared-worker';
-  };
-
-  export type ServiceWorkerRealmInfo = BaseRealmInfo & {
-    type: 'service-worker';
-  };
-
-  export type WorkerRealmInfo = BaseRealmInfo & {
-    type: 'worker';
-  };
-
-  export type PaintWorkletRealmInfo = BaseRealmInfo & {
-    type: 'paint-worklet';
-  };
-
-  export type AudioWorkletRealmInfo = BaseRealmInfo & {
-    type: 'audio-worklet';
-  };
-
-  export type WorkletRealmInfo = BaseRealmInfo & {
-    type: 'worklet';
-  };
-
   const RealmTypeSchema = zod.enum([
     'window',
     'dedicated-worker',
@@ -459,25 +236,11 @@ export namespace Script {
     type: RealmTypeSchema.optional(),
   });
 
-  export type GetRealmsParameters = zod.infer<typeof GetRealmsParametersSchema>;
-
-  export function parseGetRealmsParams(params: object): GetRealmsParameters {
+  export function parseGetRealmsParams(
+    params: object
+  ): ScriptTypes.GetRealmsParameters {
     return parseObject(params, GetRealmsParametersSchema);
   }
-
-  export type GetRealmsCommand = {
-    method: 'script.getRealms';
-    params: GetRealmsParameters;
-  };
-
-  export type GetRealmsResult = {
-    result: {realms: RealmInfo[]};
-  };
-
-  export type EvaluateCommand = {
-    method: 'script.evaluate';
-    params: EvaluateParameters;
-  };
 
   // ContextTarget = {
   //   context: BrowsingContext,
@@ -501,6 +264,7 @@ export namespace Script {
   // `RealmTargetSchema` has higher priority.
   const TargetSchema = zod.union([RealmTargetSchema, ContextTargetSchema]);
 
+  // ResultOwnership = "root" / "none"
   const OwnershipModelSchema = zod.enum(['root', 'none']);
 
   // ScriptEvaluateParameters = {
@@ -515,46 +279,47 @@ export namespace Script {
     target: TargetSchema,
     resultOwnership: OwnershipModelSchema.optional(),
   });
-  export type EvaluateParameters = zod.infer<typeof EvaluateParametersSchema>;
 
-  export function parseEvaluateParams(params: object): EvaluateParameters {
+  export function parseEvaluateParams(
+    params: object
+  ): ScriptTypes.EvaluateParameters {
     return parseObject(params, EvaluateParametersSchema);
   }
 
-  export type EvaluateResult = {
-    result: ScriptResult;
-  };
-
-  export type DisownCommand = {
-    method: 'script.disown';
-    params: EvaluateParameters;
-  };
-
+  // DisownParameters = {
+  //   handles: [Handle]
+  //   target: script.Target;
+  // }
   const DisownParametersSchema = zod.object({
     target: TargetSchema,
     handles: zod.array(zod.string()),
   });
 
-  export type DisownParameters = zod.infer<typeof DisownParametersSchema>;
-
-  export function parseDisownParams(params: object): DisownParameters {
+  export function parseDisownParams(
+    params: object
+  ): ScriptTypes.DisownParameters {
     return parseObject(params, DisownParametersSchema);
   }
 
-  export type DisownResult = {result: {}};
-
-  export type CallFunctionCommand = {
-    method: 'script.callFunction';
-    params: CallFunctionParameters;
-  };
-
+  // ArgumentValue = (
+  //   RemoteReference //
+  //   LocalValue
+  // );
   const ArgumentValueSchema = zod.union([
     CommonDataTypes.RemoteReferenceSchema,
     CommonDataTypes.SharedReferenceSchema,
     CommonDataTypes.LocalValueSchema,
   ]);
 
-  const ScriptCallFunctionParametersSchema = zod.object({
+  // CallFunctionParameters = {
+  //   functionDeclaration: text;
+  //   awaitPromise: bool;
+  //   target: script.Target;
+  //   ?arguments: [*script.ArgumentValue];
+  //   ?this: script.ArgumentValue;
+  //   ?resultOwnership: script.ResultOwnership;
+  // }
+  const CallFunctionParametersSchema = zod.object({
     functionDeclaration: zod.string(),
     target: TargetSchema,
     arguments: zod.array(ArgumentValueSchema).optional(),
@@ -563,96 +328,31 @@ export namespace Script {
     resultOwnership: OwnershipModelSchema.optional(),
   });
 
-  export type CallFunctionParameters = zod.infer<
-    typeof ScriptCallFunctionParametersSchema
-  >;
-
   export function parseCallFunctionParams(
     params: object
-  ): CallFunctionParameters {
-    return parseObject(params, ScriptCallFunctionParametersSchema);
+  ): ScriptTypes.CallFunctionParameters {
+    return parseObject(params, CallFunctionParametersSchema);
   }
-
-  export type CallFunctionResult = {
-    result: ScriptResult;
-  };
-
-  export type Source = {
-    realm: Realm;
-    context?: CommonDataTypes.BrowsingContext;
-  };
-
-  export type StackTrace = {
-    callFrames: StackFrame[];
-  };
-
-  export type StackFrame = {
-    columnNumber: number;
-    functionName: string;
-    lineNumber: number;
-    url: string;
-  };
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-browsingContext */
 export namespace BrowsingContext {
-  export type Command =
-    | GetTreeCommand
-    | NavigateCommand
-    | CreateCommand
-    | CloseCommand
-    | CaptureScreenshotCommand
-    | PrintCommand;
-  export type CommandResult =
-    | GetTreeResult
-    | NavigateResult
-    | CreateResult
-    | CloseResult
-    | CaptureScreenshotResult
-    | PrintResult;
-  export type Event =
-    | LoadEvent
-    | DomContentLoadedEvent
-    | ContextCreatedEvent
-    | ContextDestroyedEvent;
-
-  export type Navigation = string;
-
-  export type GetTreeCommand = {
-    method: 'browsingContext.getTree';
-    params: GetTreeParameters;
-  };
-
+  // GetTreeParameters = {
+  //   ?maxDepth: js-uint,
+  //   ?root: browsingContext.BrowsingContext,
+  // }
   const GetTreeParametersSchema = zod.object({
     maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
     root: CommonDataTypes.BrowsingContextSchema.optional(),
   });
-  export type GetTreeParameters = zod.infer<typeof GetTreeParametersSchema>;
 
-  export function parseGetTreeParams(params: object): GetTreeParameters {
+  export function parseGetTreeParams(
+    params: object
+  ): BrowsingContextTypes.GetTreeParameters {
     return parseObject(params, GetTreeParametersSchema);
   }
 
-  export type GetTreeResult = {
-    result: {
-      contexts: InfoList;
-    };
-  };
-
-  export type InfoList = Info[];
-
-  export type Info = {
-    context: CommonDataTypes.BrowsingContext;
-    parent?: CommonDataTypes.BrowsingContext | null;
-    url: string;
-    children: InfoList | null;
-  };
-
-  export type NavigateCommand = {
-    method: 'browsingContext.navigate';
-    params: NavigateParameters;
-  };
-
+  // ReadinessState = "none" / "interactive" / "complete"
   const ReadinessStateSchema = zod.enum(['none', 'interactive', 'complete']);
 
   // BrowsingContextNavigateParameters = {
@@ -666,26 +366,14 @@ export namespace BrowsingContext {
     url: zod.string().url(),
     wait: ReadinessStateSchema.optional(),
   });
-  export type NavigateParameters = zod.infer<typeof NavigateParametersSchema>;
 
-  export function parseNavigateParams(params: object): NavigateParameters {
+  export function parseNavigateParams(
+    params: object
+  ): BrowsingContextTypes.NavigateParameters {
     return parseObject(params, NavigateParametersSchema);
   }
 
-  export type NavigateResult = {
-    result: {
-      navigation: Navigation | null;
-      url: string;
-    };
-  };
-
-  export type CreateCommand = {
-    method: 'browsingContext.create';
-    params: CreateParameters;
-  };
-
   // BrowsingContextCreateType = "tab" / "window"
-  //
   // BrowsingContextCreateParameters = {
   //   type: BrowsingContextCreateType
   // }
@@ -693,20 +381,12 @@ export namespace BrowsingContext {
     type: zod.enum(['tab', 'window']),
     referenceContext: CommonDataTypes.BrowsingContextSchema.optional(),
   });
-  export type CreateParameters = zod.infer<typeof CreateParametersSchema>;
 
-  export function parseCreateParams(params: object): CreateParameters {
+  export function parseCreateParams(
+    params: object
+  ): BrowsingContextTypes.CreateParameters {
     return parseObject(params, CreateParametersSchema);
   }
-
-  export type CreateResult = {
-    result: Info;
-  };
-
-  export type CloseCommand = {
-    method: 'browsingContext.close';
-    params: CloseParameters;
-  };
 
   // BrowsingContextCloseParameters = {
   //   context: BrowsingContext
@@ -714,51 +394,44 @@ export namespace BrowsingContext {
   const CloseParametersSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
   });
-  export type CloseParameters = zod.infer<typeof CloseParametersSchema>;
 
-  export function parseCloseParams(params: object): CloseParameters {
+  export function parseCloseParams(
+    params: object
+  ): BrowsingContextTypes.CloseParameters {
     return parseObject(params, CloseParametersSchema);
   }
 
-  export type CloseResult = {result: {}};
-
-  export type CaptureScreenshotCommand = {
-    method: 'browsingContext.captureScreenshot';
-    params: CaptureScreenshotParameters;
-  };
-
+  // browsingContext.CaptureScreenshotParameters = {
+  //   context: browsingContext.BrowsingContext
+  // }
   const CaptureScreenshotParametersSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
   });
-  export type CaptureScreenshotParameters = zod.infer<
-    typeof CaptureScreenshotParametersSchema
-  >;
 
   export function parseCaptureScreenshotParams(
     params: object
-  ): CaptureScreenshotParameters {
+  ): BrowsingContextTypes.CaptureScreenshotParameters {
     return parseObject(params, CaptureScreenshotParametersSchema);
   }
 
-  export type CaptureScreenshotResult = {
-    result: {
-      data: string;
-    };
-  };
-
-  export type PrintCommand = {
-    method: 'browsingContext.print';
-    params: PrintParameters;
-  };
-
   // All units are in cm.
-  const PrintPageSchema = zod.object({
+  // PrintPageParameters = {
+  //   ?height: (float .ge 0.0) .default 27.94,
+  //   ?width: (float .ge 0.0) .default 21.59,
+  // }
+  const PrintPageParametersSchema = zod.object({
     height: zod.number().min(0.0).default(27.94).optional(),
     width: zod.number().min(0.0).default(21.59).optional(),
   });
 
   // All units are in cm.
-  const PrintMarginSchema = zod.object({
+  // PrintMarginParameters = {
+  //   ?bottom: (float .ge 0.0) .default 1.0,
+  //   ?left: (float .ge 0.0) .default 1.0,
+  //   ?right: (float .ge 0.0) .default 1.0,
+  //   ?top: (float .ge 0.0) .default 1.0,
+  // }
+  const PrintMarginParametersSchema = zod.object({
     bottom: zod.number().min(0.0).default(1.0).optional(),
     left: zod.number().min(0.0).default(1.0).optional(),
     right: zod.number().min(0.0).default(1.0).optional(),
@@ -783,223 +456,94 @@ export namespace BrowsingContext {
         pageRange.match(/^((?:\d+)|(?:\d+[-])|(?:[-]\d+)|(?:\d+[-]\d+))$/)
       );
     });
-  export type PrintPageRanges = zod.infer<typeof PrintPageRangesSchema>;
 
+  // PrintParameters = {
+  //   context: browsingContext.BrowsingContext,
+  //   ?background: bool .default false,
+  //   ?margin: browsingContext.PrintMarginParameters,
+  //   ?orientation: ("portrait" / "landscape") .default "portrait",
+  //   ?page: browsingContext.PrintPageParameters,
+  //   ?pageRanges: [*(js-uint / text)],
+  //   ?scale: 0.1..2.0 .default 1.0,
+  //   ?shrinkToFit: bool .default true,
+  // }
   const PrintParametersSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
     background: zod.boolean().default(false).optional(),
-    margin: PrintMarginSchema.optional(),
+    margin: PrintMarginParametersSchema.optional(),
     orientation: zod
       .enum(['portrait', 'landscape'])
       .default('portrait')
       .optional(),
-    page: PrintPageSchema.optional(),
+    page: PrintPageParametersSchema.optional(),
     pageRanges: PrintPageRangesSchema.default([]).optional(),
     scale: zod.number().min(0.1).max(2.0).default(1.0).optional(),
     shrinkToFit: zod.boolean().default(true).optional(),
   });
-  export type PrintParameters = zod.infer<typeof PrintParametersSchema>;
 
-  export function parsePrintParams(params: object): PrintParameters {
+  export function parsePrintParams(
+    params: object
+  ): BrowsingContextTypes.PrintParameters {
     return parseObject(params, PrintParametersSchema);
-  }
-
-  export type PrintResult = {
-    result: {
-      data: string;
-    };
-  };
-
-  export type LoadEvent = EventResponse<EventNames.LoadEvent, NavigationInfo>;
-
-  export type DomContentLoadedEvent = EventResponse<
-    EventNames.DomContentLoadedEvent,
-    NavigationInfo
-  >;
-
-  export type NavigationInfo = {
-    context: CommonDataTypes.BrowsingContext;
-    navigation: Navigation | null;
-    timestamp: number;
-    url: string;
-  };
-
-  export type ContextCreatedEvent = EventResponse<
-    EventNames.ContextCreatedEvent,
-    BrowsingContext.Info
-  >;
-  export type ContextDestroyedEvent = EventResponse<
-    EventNames.ContextDestroyedEvent,
-    BrowsingContext.Info
-  >;
-
-  export const AllEvents = 'browsingContext';
-
-  export enum EventNames {
-    LoadEvent = 'browsingContext.load',
-    DomContentLoadedEvent = 'browsingContext.domContentLoaded',
-    ContextCreatedEvent = 'browsingContext.contextCreated',
-    ContextDestroyedEvent = 'browsingContext.contextDestroyed',
-  }
-}
-
-/** @see https://w3c.github.io/webdriver-bidi/#module-log */
-export namespace Log {
-  export type LogEntry = GenericLogEntry | ConsoleLogEntry | JavascriptLogEntry;
-  export type Event = LogEntryAddedEvent;
-  export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-
-  export type BaseLogEntry = {
-    level: LogLevel;
-    source: Script.Source;
-    text: string | null;
-    timestamp: number;
-    stackTrace?: Script.StackTrace;
-  };
-
-  export type GenericLogEntry = BaseLogEntry & {
-    type: string;
-  };
-
-  export type ConsoleLogEntry = BaseLogEntry & {
-    type: 'console';
-    method: string;
-    args: CommonDataTypes.RemoteValue[];
-  };
-
-  export type JavascriptLogEntry = BaseLogEntry & {
-    type: 'javascript';
-  };
-
-  export type LogEntryAddedEvent = EventResponse<
-    EventNames.LogEntryAddedEvent,
-    LogEntry
-  >;
-
-  export const AllEvents = 'log';
-
-  export enum EventNames {
-    LogEntryAddedEvent = 'log.entryAdded',
   }
 }
 
 export namespace CDP {
-  export type Command = SendCommandCommand | GetSessionCommand;
-  export type CommandResult = SendCommandResult | GetSessionResult;
-  export type Event = EventReceivedEvent;
-
-  export type SendCommandCommand = {
-    method: 'cdp.sendCommand';
-    params: SendCommandParams;
-  };
-
   const SendCommandParamsSchema = zod.object({
+    // Allowing any cdpMethod, and casting to proper type later on.
     cdpMethod: zod.string(),
     // `passthrough` allows object to have any fields.
     // https://github.com/colinhacks/zod#passthrough
     cdpParams: zod.object({}).passthrough(),
     cdpSession: zod.string().optional(),
   });
-  export type SendCommandParams = zod.infer<typeof SendCommandParamsSchema>;
 
-  export function parseSendCommandParams(params: object): SendCommandParams {
-    return parseObject(params, SendCommandParamsSchema);
+  export function parseSendCommandParams(
+    params: object
+  ): CdpTypes.SendCommandParams {
+    return parseObject(
+      params,
+      SendCommandParamsSchema
+    ) as CdpTypes.SendCommandParams;
   }
-
-  export type SendCommandResult = {result: unknown};
-
-  export type GetSessionCommand = {
-    method: 'cdp.getSession';
-    params: GetSessionParams;
-  };
 
   const GetSessionParamsSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
   });
-  export type GetSessionParams = zod.infer<typeof GetSessionParamsSchema>;
 
-  export function parseGetSessionParams(params: object): GetSessionParams {
+  export function parseGetSessionParams(
+    params: object
+  ): CdpTypes.GetSessionParams {
     return parseObject(params, GetSessionParamsSchema);
-  }
-
-  export type GetSessionResult = {result: {session: string}};
-
-  export type EventReceivedEvent = EventResponse<
-    EventNames.EventReceivedEvent,
-    EventReceivedParams
-  >;
-
-  export type EventReceivedParams = {
-    cdpMethod: string;
-    cdpParams: object;
-    cdpSession: string;
-  };
-
-  export const AllEvents = 'cdp';
-
-  export enum EventNames {
-    EventReceivedEvent = 'cdp.eventReceived',
   }
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-session */
 export namespace Session {
-  export type Command = StatusCommand | SubscribeCommand | UnsubscribeCommand;
-
-  export type CommandResult =
-    | StatusResult
-    | SubscribeResult
-    | UnsubscribeResult;
-
-  export type StatusCommand = {
-    method: 'session.status';
-    params: {};
-  };
-
-  export type StatusResult = {
-    result: {
-      ready: boolean;
-      message: string;
-    };
-  };
-
-  export type SubscribeCommand = {
-    method: 'session.subscribe';
-    params: SubscribeParameters;
-  };
-
-  const SubscribeParametersEventSchema = zod.enum([
-    BrowsingContext.AllEvents,
-    BrowsingContext.EventNames.ContextCreatedEvent,
-    BrowsingContext.EventNames.ContextDestroyedEvent,
-    BrowsingContext.EventNames.DomContentLoadedEvent,
-    BrowsingContext.EventNames.LoadEvent,
-    Log.AllEvents,
-    Log.EventNames.LogEntryAddedEvent,
-    CDP.AllEvents,
-    CDP.EventNames.EventReceivedEvent,
+  const SubscriptionRequestParametersEventsSchema = zod.enum([
+    BrowsingContextTypes.AllEvents,
+    BrowsingContextTypes.EventNames.ContextCreatedEvent,
+    BrowsingContextTypes.EventNames.ContextDestroyedEvent,
+    BrowsingContextTypes.EventNames.DomContentLoadedEvent,
+    BrowsingContextTypes.EventNames.LoadEvent,
+    LogTypes.AllEvents,
+    LogTypes.EventNames.LogEntryAddedEvent,
+    CdpTypes.AllEvents,
+    CdpTypes.EventNames.EventReceivedEvent,
   ]);
 
   // SessionSubscribeParameters = {
   //   events: [*text],
   //   ?contexts: [*BrowsingContext],
   // }
-  const SubscribeParametersSchema = zod.object({
-    events: zod.array(SubscribeParametersEventSchema),
+  const SubscriptionRequestParametersSchema = zod.object({
+    events: zod.array(SubscriptionRequestParametersEventsSchema),
     contexts: zod.array(CommonDataTypes.BrowsingContextSchema).optional(),
   });
-  export type SubscribeParameters = zod.infer<typeof SubscribeParametersSchema>;
 
-  export function parseSubscribeParams(params: object): SubscribeParameters {
-    return parseObject(params, SubscribeParametersSchema);
+  export function parseSubscribeParams(
+    params: object
+  ): SessionTypes.SubscribeParameters {
+    return parseObject(params, SubscriptionRequestParametersSchema);
   }
-
-  export type SubscribeResult = {result: {}};
-
-  export type UnsubscribeCommand = {
-    method: 'session.unsubscribe';
-    params: SubscribeParameters;
-  };
-
-  export type UnsubscribeResult = {result: {}};
 }
