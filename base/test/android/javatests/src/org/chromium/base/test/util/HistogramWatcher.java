@@ -173,7 +173,8 @@ public class HistogramWatcher {
          * Add an expectation that {@code histogram} will not be recorded with any values.
          */
         public Builder expectNoRecords(String histogram) {
-            if (mTotalRecordsExpected.getOrDefault(histogram, 0) != 0) {
+            Integer recordsAlreadyExpected = mTotalRecordsExpected.get(histogram);
+            if (recordsAlreadyExpected != null && recordsAlreadyExpected != 0) {
                 throw new IllegalStateException(
                         "Cannot expect no records but also expect records in previous calls.");
             }
@@ -203,12 +204,18 @@ public class HistogramWatcher {
         }
 
         private void incrementRecordsExpected(HistogramAndValue histogramAndValue, int increase) {
-            int previousCountExpected = mRecordsExpected.getOrDefault(histogramAndValue, 0);
+            Integer previousCountExpected = mRecordsExpected.get(histogramAndValue);
+            if (previousCountExpected == null) {
+                previousCountExpected = 0;
+            }
             mRecordsExpected.put(histogramAndValue, previousCountExpected + increase);
         }
 
         private void incrementTotalRecordsExpected(String histogram, int increase) {
-            int previousCountExpected = mTotalRecordsExpected.getOrDefault(histogram, 0);
+            Integer previousCountExpected = mTotalRecordsExpected.get(histogram);
+            if (previousCountExpected == null) {
+                previousCountExpected = 0;
+            }
             mTotalRecordsExpected.put(histogram, previousCountExpected + increase);
         }
     }
@@ -323,8 +330,11 @@ public class HistogramWatcher {
         }
 
         boolean allowAnyNumberOfExtraRecords = mHistogramsAllowedExtraRecords.contains(histogram);
-        int expectedExtraRecords =
-                mRecordsExpected.getOrDefault(new HistogramAndValue(histogram, ANY_VALUE), 0);
+        Integer expectedExtraRecords =
+                mRecordsExpected.get(new HistogramAndValue(histogram, ANY_VALUE));
+        if (expectedExtraRecords == null) {
+            expectedExtraRecords = 0;
+        }
         if (!allowAnyNumberOfExtraRecords && actualExtraRecords > expectedExtraRecords
                 || actualExtraRecords < expectedExtraRecords) {
             // Expected |extraRecordsExpected| records with any value, found |extraActualRecords|.
