@@ -41,6 +41,8 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -51,7 +53,10 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.BaseSwitches;
+import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
@@ -106,6 +111,16 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mSpinner, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mHandleStrategyFactory);
         return pcct;
+    }
+
+    @Before
+    public void setUp() {
+        SysUtils.resetForTesting();
+    }
+
+    @After
+    public void tearDown() {
+        SysUtils.resetForTesting();
     }
 
     @Test
@@ -1081,6 +1096,27 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.rightMargin);
         assertEquals("Bottom sheet width should be 900dp", BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE,
                 getWindowAttributes().width);
+    }
+
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    @Test
+    public void useDividerLine() {
+        doReturn(8)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
+        mPCCTTestRule.configPortraitMode();
+        var strategy = createPcctAtHeight(1500);
+
+        assertEquals("Top margin should be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.topMargin);
+
+        // 900 dp landscape bottom sheet
+        mPCCTTestRule.configLandscapeMode();
+        strategy = createPcctAtHeight(3000);
+        assertEquals("Right margin should be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+        assertEquals("Left margin should not be zero because there is no shadow", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
     @Test

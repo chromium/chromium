@@ -24,6 +24,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.SysUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -57,8 +58,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         mUnclampedInitialWidth = initialWidth;
         mShowMaximizeButton = showMaximizeButton;
         mPositionUpdater = this::updatePosition;
-        mIsMaximized = startMaximized;
         mDecorationType = decorationType;
+        mIsMaximized = startMaximized;
         mSheetOnRight = isSheetOnRight(position);
         mSlideDownAnimation = slideInBehavior
                 == CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
@@ -325,6 +326,22 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             // 33% min-width Side Sheet
             return 11;
         }
+    }
+
+    @Override
+    protected void drawDividerLine(CustomTabToolbar toolbar) {
+        int width =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_outline_width);
+        int leftDividerInset = mSheetOnRight ? width : 0;
+        int rightDividerInset = !mSheetOnRight ? width : 0;
+
+        drawDividerLine(leftDividerInset, 0, rightDividerInset, toolbar);
+    }
+
+    @Override
+    protected boolean shouldDrawDividerLine() {
+        return SysUtils.isLowEndDevice()
+                || mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
     }
 
     @Override

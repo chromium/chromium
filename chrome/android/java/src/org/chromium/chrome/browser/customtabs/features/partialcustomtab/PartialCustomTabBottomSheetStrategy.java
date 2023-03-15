@@ -33,6 +33,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -436,6 +437,8 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     protected void setTopMargins(int shadowOffset, int handleOffset) {
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         boolean isMaxWidthLandscapeBottomSheet = isMaxWidthLandscapeBottomSheet();
+        int sideOffset =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_shadow_offset);
 
         if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
             float maxWidthBottomSheetEv =
@@ -452,7 +455,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             }
         }
 
-        int sideMargin = isMaxWidthLandscapeBottomSheet ? shadowOffset : 0;
+        int sideMargin = isMaxWidthLandscapeBottomSheet ? sideOffset : 0;
         if (handleView != null) {
             ViewGroup.MarginLayoutParams lp =
                     (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
@@ -794,6 +797,21 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         // For the restoring job that needs these values, we wait till they get reported
         // correctly by posting the task instead of executing them right away.
         new Handler().post(this::restoreWindow);
+    }
+
+    @Override
+    protected void drawDividerLine(CustomTabToolbar toolbar) {
+        int width =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_outline_width);
+        boolean maxWidthBottomSheet = isMaxWidthLandscapeBottomSheet();
+        int dividerInset = maxWidthBottomSheet ? width : 0;
+
+        drawDividerLine(dividerInset, 0, dividerInset, toolbar);
+    }
+
+    @Override
+    protected boolean shouldDrawDividerLine() {
+        return SysUtils.isLowEndDevice();
     }
 
     // Restore the window upon exiting fullscreen.

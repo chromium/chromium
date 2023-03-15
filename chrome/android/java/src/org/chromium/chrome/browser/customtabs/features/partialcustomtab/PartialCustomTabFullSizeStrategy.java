@@ -112,6 +112,14 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
         return false;
     }
 
+    @Override
+    protected boolean shouldDrawDividerLine() {
+        return false;
+    }
+
+    @Override
+    protected void drawDividerLine(CustomTabToolbar toolbar) {}
+
     private void positionOnWindow() {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
         attrs.height = MATCH_PARENT;
