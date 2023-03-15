@@ -2141,7 +2141,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, OrphanedPortalAccessibilityReset) {
     main_frame->browser_accessibility_manager()->SignalEndOfTest();
     ASSERT_TRUE(end_of_test_waiter.WaitForNotification());
   }
-  EXPECT_EQ(0, main_frame->accessibility_fatal_error_count_for_testing());
+  // If DCHECKs are enabled and in sanitizer builds, a failure will cause this
+  // test to crash rather than complete.
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
@@ -2194,7 +2195,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
     adoption_observer.WaitUntilPortalCreated();
     ASSERT_TRUE(waiter.WaitForNotification());
   }
-  EXPECT_EQ(0, main_frame->accessibility_fatal_error_count_for_testing());
+  // If DCHECKs are enabled and in sanitizer builds, a failure will cause this
+  // test to crash rather than complete.
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest,

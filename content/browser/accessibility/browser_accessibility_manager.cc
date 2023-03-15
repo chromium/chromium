@@ -401,6 +401,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
       CHECK(!ax_tree()->error().empty())
           << "A failed serialization didn't supply the error via "
              "AXTree::RecordError().";
+      // Crash immediately in unit tests.
       if (!delegate_)
         CHECK(false) << ax_tree()->error();
       return false;

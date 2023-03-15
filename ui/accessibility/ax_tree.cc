@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -2746,12 +2747,17 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   // In fast-failing-builds, crash immediately with a full message, otherwise
   // rely on AccessibilityFatalError(), which will not crash until multiple
   // errors occur.
-  // TODO(accessibility) Make AXTree errors fatal in Canary and Dev builds, as
-  // they indicate fundamental problems in part of the engine. They are much
-  // less frequent than in the past -- it should not be highimpact on users.
+  // TODO(accessibility) Make AXTree errors fatal in all builds, as they
+  // indicate fundamental problems in part of the engine. They are much less
+  // frequent than in the past -- it should not be high impact on users.
 #if defined(AX_FAIL_FAST_BUILD)
   is_fatal = true;
 #endif
+
+  ++accessibility_error_count_;
+  if (accessibility_error_count_ == kMaxAccessibilityErrorsBeforeDeath) {
+    is_fatal = true;
+  }
 
   std::ostringstream verbose_error;
   verbose_error << new_error << "\n** Pending tree update **\n"
@@ -2765,24 +2771,17 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
     LOG(FATAL) << verbose_error.str();
   }
 
-  // If this is the first error, will dump without crashing in
-  // RenderAccessibilityImpl::OnFatalError().
-  static auto* const ax_tree_error_key = base::debug::AllocateCrashKeyString(
-      "ax_tree_error", base::debug::CrashKeySize::Size256);
-  static auto* const ax_tree_update_key = base::debug::AllocateCrashKeyString(
-      "ax_tree_update", base::debug::CrashKeySize::Size256);
-  static auto* const ax_tree_key = base::debug::AllocateCrashKeyString(
-      "ax_tree", base::debug::CrashKeySize::Size256);
-  static auto* const ax_tree_data_key = base::debug::AllocateCrashKeyString(
-      "ax_tree_data", base::debug::CrashKeySize::Size256);
+  // Only send crash report first time -- don't skew crash stats too much.
+  if (accessibility_error_count_ == 1) {
+    SCOPED_CRASH_KEY_STRING256("ax-tree", "error", new_error);
+    SCOPED_CRASH_KEY_STRING1024("ax-tree", "update",
+                                update_state.pending_tree_update->ToString());
+    SCOPED_CRASH_KEY_STRING1024("ax-tree", "nodes",
+                                TreeToStringHelper(root_, 0, false));
+    SCOPED_CRASH_KEY_STRING256("ax-tree", "data", data_.ToString());
+    base::debug::DumpWithoutCrashing();
+  }
 
-  // Log additional crash keys so we can debug bad tree updates.
-  base::debug::SetCrashKeyString(ax_tree_error_key, new_error);
-  base::debug::SetCrashKeyString(ax_tree_update_key,
-                                 update_state.pending_tree_update->ToString());
-  base::debug::SetCrashKeyString(ax_tree_key,
-                                 TreeToStringHelper(root_, 0, false));
-  base::debug::SetCrashKeyString(ax_tree_data_key, data_.ToString());
   LOG(ERROR) << verbose_error.str();
 }
 
