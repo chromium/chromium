@@ -5,9 +5,14 @@
 import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
 
-import {cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
+import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
+import {addAndroidApps} from './android_apps.js';
 import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelection} from './current_directory.js';
+import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';
+import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
 import {search} from './search.js';
+import {addUiEntry, removeUiEntry} from './ui_entries.js';
+import {addVolume, removeVolume} from './volumes.js';
 
 /**
  * Root reducer for the State for Files app.
@@ -37,8 +42,31 @@ export function rootReducer(currentState: State, action: Action): State {
       return updateDirectoryContent(state, action);
     case ActionType.UPDATE_METADATA:
       return updateMetadata(state, action);
+    case ActionType.ADD_VOLUME:
+      return addVolume(currentState, action);
+    case ActionType.REMOVE_VOLUME:
+      return removeVolume(currentState, action);
+    case ActionType.REFRESH_NAVIGATION_ROOTS:
+      return refreshNavigationRoots(currentState, action);
+    case ActionType.UPDATE_NAVIGATION_ENTRY:
+      return updateNavigationEntry(currentState, action);
+    case ActionType.ADD_UI_ENTRY:
+      return addUiEntry(currentState, action);
+    case ActionType.REMOVE_UI_ENTRY:
+      return removeUiEntry(currentState, action);
+    case ActionType.REFRESH_FOLDER_SHORTCUT:
+      return refreshFolderShortcut(currentState, action);
+    case ActionType.ADD_FOLDER_SHORTCUT:
+      return addFolderShortcut(currentState, action);
+    case ActionType.REMOVE_FOLDER_SHORTCUT:
+      return removeFolderShortcut(currentState, action);
+    case ActionType.ADD_ANDROID_APPS:
+      return addAndroidApps(currentState, action);
+    case ActionType.ADD_CHILD_ENTRIES:
+      return addChildEntries(currentState, action);
     default:
-      console.error(`invalid action: ${action}`);
+      console.error(`invalid action type: ${(action as any)?.type} action: ${
+          JSON.stringify(action)}`);
       return state;
   }
 }

@@ -4,24 +4,17 @@
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {DialogType} from '../../common/js/dialog_type.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {Crostini} from '../../externs/background/crostini.js';
 import {CurrentDirectory, FileTasks, PropStatus} from '../../externs/ts/state.js';
 import {FakeFileSelectionHandler} from '../../foreground/js/fake_file_selection_handler.js';
-import {FileSelectionHandler} from '../../foreground/js/file_selection.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
-import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
-import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
-import {TaskController} from '../../foreground/js/task_controller.js';
 import {ActionType} from '../actions.js';
 import {ClearStaleCachedEntriesAction} from '../actions/all_entries.js';
 import {changeDirectory, updateSelection} from '../actions/current_directory.js';
 import {fetchFileTasks} from '../actions_producers/current_directory.js';
-import {allEntriesSize, assertAllEntriesEqual, assertStateEquals, updateContent, updMetadata, waitDeepEquals} from '../for_tests.js';
-import {getEmptyState, getFilesData, getStore, Store} from '../store.js';
+import {allEntriesSize, assertAllEntriesEqual, assertStateEquals, setUpFileManagerOnWindow, setupStore, updateContent, updMetadata, waitDeepEquals} from '../for_tests.js';
+import {getFilesData, Store} from '../store.js';
 
 import {clearCachedEntries} from './all_entries.js';
 
@@ -30,31 +23,19 @@ let fileSystem: MockFileSystem;
 
 export function setUp() {
   // changeDirectory() reducer uses the VolumeManager.
-  const volumeManager = new MockVolumeManager();
-  window.fileManager = {
-    volumeManager: volumeManager,
-    metadataModel: new MockMetadataModel({}) as unknown as MetadataModel,
-    crostini: {} as unknown as Crostini,
-    selectionHandler: new FakeFileSelectionHandler() as unknown as
-        FileSelectionHandler,
-    taskController: {} as unknown as TaskController,
-    dialogType: DialogType.FULL_PAGE,
-  };
+  setUpFileManagerOnWindow();
+  window.fileManager.selectionHandler = new FakeFileSelectionHandler();
 
-  fileSystem = volumeManager.getCurrentProfileVolumeInfo(
-                                'downloads')!.fileSystem as MockFileSystem;
+  fileSystem =
+      window.fileManager.volumeManager.getCurrentProfileVolumeInfo(
+                                          'downloads')!.fileSystem as
+      MockFileSystem;
   fileSystem.populate([
     '/dir-1/',
     '/dir-2/sub-dir/',
     '/dir-2/file.txt',
     '/dir-3/',
   ]);
-}
-
-function setupStore(): Store {
-  const store = getStore();
-  store.init(getEmptyState());
-  return store;
 }
 
 function cd(store: Store, directory: DirectoryEntry) {

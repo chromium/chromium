@@ -16,7 +16,7 @@ import {createTrashReaders} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
-import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {SearchFileType, SearchLocation, SearchOptions, SearchRecency} from '../../externs/ts/state.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getDefaultSearchOptions} from '../../state/store.js';
@@ -705,8 +705,8 @@ export class FileFilter extends EventTarget {
 
   /**
    * @param {string} name Filter identifier.
-   * @param {function(Entry)} callback A filter - a function receiving an Entry,
-   *     and returning bool.
+   * @param {function((Entry|FilesAppEntry))} callback A filter - a function
+   *     receiving an Entry, and returning bool.
    */
   addFilter(name, callback) {
     this.filters_[name] = callback;
@@ -807,7 +807,7 @@ export class FileFilter extends EventTarget {
   }
 
   /**
-   * @param {Entry} entry File entry.
+   * @param {Entry|FilesAppEntry} entry File entry.
    * @return {boolean} True if the file should be shown, false otherwise.
    */
   filter(entry) {
