@@ -33,7 +33,10 @@
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
@@ -78,6 +81,19 @@ std::unique_ptr<SVGPathByteStream> ConditionallyAddPathByteStreams(
   return AddPathByteStreams(*from_stream, by_stream, repeat_count);
 }
 
+// Entries in this cache are kept with a WeakMember. They'll be removed from
+// the map if nothing is referencing them - as such this doesn't grow
+// unbounded in size.
+// NOTE: This cache exists for a relatively minor gain in MotionMark. If at any
+// point it becomes burdensome please re-evaluate its existence.
+using CSSPathValueCache =
+    HeapHashMap<AtomicString, WeakMember<const cssvalue::CSSPathValue>>;
+static CSSPathValueCache& GetCSSPathValueCache() {
+  DEFINE_STATIC_LOCAL(Persistent<CSSPathValueCache>, cache,
+                      (MakeGarbageCollected<CSSPathValueCache>()));
+  return *cache;
+}
+
 }  // namespace
 
 SVGPath::SVGPath() : path_value_(CSSPathValue::EmptyPathValue()) {}
@@ -94,12 +110,23 @@ SVGPath* SVGPath::Clone() const {
   return MakeGarbageCollected<SVGPath>(*path_value_);
 }
 
-SVGParsingError SVGPath::SetValueAsString(const String& string) {
+SVGParsingError SVGPath::SetValueAsString(const AtomicString& string) {
+  CSSPathValueCache& cache = GetCSSPathValueCache();
+  auto it = cache.find(string);
+  if (it != cache.end()) {
+    path_value_ = it->value;
+    return SVGParseStatus::kNoError;
+  }
+
   std::unique_ptr<SVGPathByteStream> byte_stream =
       std::make_unique<SVGPathByteStream>();
   SVGParsingError parse_status =
       BuildByteStreamFromString(string, *byte_stream);
   path_value_ = MakeGarbageCollected<CSSPathValue>(std::move(byte_stream));
+
+  if (parse_status == SVGParseStatus::kNoError) {
+    cache.insert(string, path_value_);
+  }
   return parse_status;
 }
 

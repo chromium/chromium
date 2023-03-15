@@ -55,7 +55,7 @@ class SVGAnimatedLength : public ScriptWrappable,
             css_property_id,
             static_cast<unsigned>(initial_value)) {}
 
-  SVGParsingError AttributeChanged(const String&) override;
+  SVGParsingError AttributeChanged(const AtomicString&) override;
 
   // TODO(fs): This doesn't handle calc expressions. For that, we'd probably
   // need to rewrap the CSSMathExpressionNode with a kValueRangeNonNegative

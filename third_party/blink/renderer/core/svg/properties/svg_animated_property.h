@@ -56,7 +56,7 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
 
   virtual void SetAnimatedValue(SVGPropertyBase*) = 0;
 
-  virtual SVGParsingError AttributeChanged(const String&) = 0;
+  virtual SVGParsingError AttributeChanged(const AtomicString&) = 0;
   virtual bool NeedsSynchronizeAttribute() const;
   virtual void SynchronizeAttribute();
 
@@ -124,7 +124,7 @@ class SVGAnimatedPropertyCommon : public SVGAnimatedPropertyBase {
 
   bool IsAnimating() const override { return current_value_ != base_value_; }
 
-  SVGParsingError AttributeChanged(const String& value) override {
+  SVGParsingError AttributeChanged(const AtomicString& value) override {
     static_assert(Property::kInitialValueBits <= kInitialValueStorageBits,
                   "enough bits for the initial value");
 
