@@ -375,6 +375,7 @@ void ChromeBrowserCloudManagementController::OnServiceAccountSet(
 }
 
 void ChromeBrowserCloudManagementController::ShutDown() {
+  NotifyShutdown();
   delegate_->ShutDown();
   if (report_scheduler_)
     report_scheduler_.reset();
@@ -409,6 +410,12 @@ void ChromeBrowserCloudManagementController::NotifyBrowserUnenrolled(
 void ChromeBrowserCloudManagementController::NotifyCloudReportingLaunched() {
   for (auto& observer : observers_) {
     observer.OnCloudReportingLaunched(report_scheduler_.get());
+  }
+}
+
+void ChromeBrowserCloudManagementController::NotifyShutdown() {
+  for (auto& observer : observers_) {
+    observer.OnShutdown();
   }
 }
 

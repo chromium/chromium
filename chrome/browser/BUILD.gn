@@ -3674,6 +3674,8 @@ static_library("browser") {
       "enterprise/connectors/enterprise_connectors_policy_handler.h",
       "enterprise/connectors/reporting/browser_crash_event_router.cc",
       "enterprise/connectors/reporting/browser_crash_event_router.h",
+      "enterprise/connectors/reporting/crash_reporting_context.cc",
+      "enterprise/connectors/reporting/crash_reporting_context.h",
       "enterprise/connectors/reporting/extension_install_event_router.cc",
       "enterprise/connectors/reporting/extension_install_event_router.h",
       "enterprise/connectors/reporting/realtime_reporting_client.cc",
