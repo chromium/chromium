@@ -144,6 +144,7 @@
     "libs/org_jsoup_jsoup",
     "libs/org_mockito_mockito_android",
     "libs/org_mockito_mockito_core",
+    "libs/org_mockito_mockito_subclass",
     "libs/org_objenesis_objenesis",
     "libs/org_ow2_asm_asm",
     "libs/org_ow2_asm_asm_analysis",
