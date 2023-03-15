@@ -495,10 +495,6 @@ class AX_EXPORT AXTree {
   // Indicates if the tree represents a paginated document
   bool has_pagination_support_ = false;
 
-  // The number of times an a11y error occurred in this AXTree.
-  int accessibility_error_count_ = 0;
-  static constexpr int kMaxAccessibilityErrorsBeforeDeath = 5;
-
   std::unique_ptr<AXEvent> event_data_;
 };
 

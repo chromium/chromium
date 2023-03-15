@@ -2800,11 +2800,22 @@ void RenderFrameHostImpl::AccessibilityReset() {
 }
 
 void RenderFrameHostImpl::AccessibilityFatalError() {
-  // In fail fast mode, would have crashed where error occurred.
   CHECK(!BrowserAccessibilityManager::IsFailFastMode());
-  // Try to rebuild the accessibility tree from the root.
   browser_accessibility_manager_.reset();
-  if (!accessibility_reset_token_) {
+  if (accessibility_reset_token_ || !render_accessibility_)
+    return;
+
+  accessibility_fatal_error_count_++;
+  if (accessibility_fatal_error_count_ > max_accessibility_resets_) {
+    // This will both create an "Aw Snap..." and generate a second crash report
+    // in addition to the DumpWithoutCrashing() for the first reset.
+    render_accessibility_->FatalError();
+  } else {
+    // Crash keys set in BrowserAccessibilityManager::Unserialize().
+    if (accessibility_fatal_error_count_ == 1) {
+      // Only send crash report first time -- don't skew crash stats too much.
+      base::debug::DumpWithoutCrashing();
+    }
     AccessibilityReset();
   }
 }
@@ -12468,6 +12479,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // Reset the salt so that media device IDs are reset for the new document
   // if necessary.
   media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
+
+  accessibility_fatal_error_count_ = 0;
 
   UpdateIsolatableSandboxedIframeTracking(navigation_request);
 
