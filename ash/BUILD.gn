@@ -3313,6 +3313,7 @@ test("ash_unittests") {
     "system/unified/quick_settings_header_unittest.cc",
     "system/unified/quick_settings_view_unittest.cc",
     "system/unified/quiet_mode_feature_pod_controller_unittest.cc",
+    "system/unified/screen_capture_tray_item_view_unittest.cc",
     "system/unified/top_shortcuts_view_unittest.cc",
     "system/unified/unified_system_info_view_unittest.cc",
     "system/unified/unified_system_tray_controller_unittest.cc",
