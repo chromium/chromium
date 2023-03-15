@@ -177,15 +177,6 @@ void FakeAmbientBackendControllerImpl::FetchWeather(
   std::move(callback).Run(weather_info_);
 }
 
-void FakeAmbientBackendControllerImpl::GetGooglePhotosAlbumsPreview(
-    const std::vector<std::string>& album_ids,
-    int preview_width,
-    int preview_height,
-    int num_previews,
-    OnPreviewImagesFetchedCallback callback) {
-  std::move(callback).Run({GURL("http://example.com/0")});
-}
-
 const std::array<const char*, 2>&
 FakeAmbientBackendControllerImpl::GetBackupPhotoUrls() const {
   return kFakeBackupPhotoUrls;

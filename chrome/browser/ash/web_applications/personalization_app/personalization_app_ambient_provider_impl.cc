@@ -288,7 +288,8 @@ void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
   // Empty the WebUI store so it doesn't show the previously selected albums'
   // previews.
   OnPreviewsFetched(std::vector<GURL>());
-  if (features::IsPersonalizationJellyEnabled()) {
+  if (features::IsPersonalizationJellyEnabled() ||
+      settings_->topic_source == ash::AmbientModeTopicSource::kGooglePhotos) {
     if (is_updating_backend_) {
       // Once settings updated, fetch preview images.
       needs_update_previews_ = true;
@@ -296,10 +297,6 @@ void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
       // Fetch preview images if settings have been updated.
       FetchPreviewImages();
     }
-  } else if (settings_->topic_source ==
-             ash::AmbientModeTopicSource::kGooglePhotos) {
-    // When Jelly is not enabled, only fetch google photos albums previews.
-    FetchGooglePhotosAlbumsPreviews(settings_->selected_album_ids);
   }
 
   ambient_observer_remote_->OnTopicSourceChanged(settings_->topic_source);
@@ -536,20 +533,12 @@ void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
 void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
   needs_update_previews_ = false;
   previews_weak_factory_.InvalidateWeakPtrs();
+  const gfx::Size image_size =
+      features::IsPersonalizationJellyEnabled()
+          ? gfx::Size(kJellyBannerWidthPx, kJellyBannerHeightPx)
+          : gfx::Size(kBannerWidthPx, kBannerHeightPx);
   ash::AmbientBackendController::Get()->FetchPreviewImages(
-      gfx::Size(kJellyBannerWidthPx, kJellyBannerHeightPx),
-      base::BindOnce(&PersonalizationAppAmbientProviderImpl::OnPreviewsFetched,
-                     previews_weak_factory_.GetWeakPtr()));
-}
-
-// TODO(b/270434334): Remove when Jelly is enabled by default.
-void PersonalizationAppAmbientProviderImpl::FetchGooglePhotosAlbumsPreviews(
-    const std::vector<std::string>& album_ids) {
-  const int num_previews = features::IsPersonalizationJellyEnabled() ? 3 : 4;
-  DCHECK(!album_ids.empty());
-  previews_weak_factory_.InvalidateWeakPtrs();
-  ash::AmbientBackendController::Get()->GetGooglePhotosAlbumsPreview(
-      album_ids, kBannerWidthPx, kBannerHeightPx, num_previews,
+      image_size,
       base::BindOnce(&PersonalizationAppAmbientProviderImpl::OnPreviewsFetched,
                      previews_weak_factory_.GetWeakPtr()));
 }

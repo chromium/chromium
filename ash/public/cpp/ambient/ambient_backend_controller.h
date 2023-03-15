@@ -156,13 +156,6 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   // Fetch the weather information.
   virtual void FetchWeather(FetchWeatherCallback) = 0;
 
-  virtual void GetGooglePhotosAlbumsPreview(
-      const std::vector<std::string>& album_ids,
-      int preview_width,
-      int preview_height,
-      int num_previews,
-      OnPreviewImagesFetchedCallback callback) = 0;
-
   // Get stock photo urls to cache in advance in case Ambient mode is started
   // without internet access.
   virtual const std::array<const char*, 2>& GetBackupPhotoUrls() const = 0;

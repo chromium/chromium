@@ -106,8 +106,6 @@ class PersonalizationAppAmbientProviderImpl
   void MaybeUpdateTopicSource(ash::AmbientModeTopicSource topic_source);
 
   void FetchPreviewImages();
-  void FetchGooglePhotosAlbumsPreviews(
-      const std::vector<std::string>& album_ids);
   void OnPreviewsFetched(const std::vector<GURL>& preview_urls);
 
   ash::PersonalAlbum* FindPersonalAlbumById(const std::string& album_id);

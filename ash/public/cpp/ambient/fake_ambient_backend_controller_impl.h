@@ -47,12 +47,6 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       int num_albums,
       OnSettingsAndAlbumsFetchedCallback callback) override;
   void FetchWeather(FetchWeatherCallback callback) override;
-  void GetGooglePhotosAlbumsPreview(
-      const std::vector<std::string>& album_ids,
-      int preview_width,
-      int preview_height,
-      int num_previews,
-      OnPreviewImagesFetchedCallback callback) override;
   const std::array<const char*, 2>& GetBackupPhotoUrls() const override;
 
   // Simulate to reply the request of FetchSettingsAndAlbums().
