@@ -112,6 +112,13 @@ class MEDIA_EXPORT VideoFrameLayout {
   // Return the modifier of buffers.
   uint64_t modifier() const { return modifier_; }
 
+  // Any constructible layout is valid in and of itself, it can only be invalid
+  // if the backing memory is too small to contain it.
+  //
+  // Returns true if this VideoFrameLayout can fit in a contiguous buffer of
+  // size `data_size` -- always false for multi-planar layouts.
+  bool FitsInContiguousBufferOfSize(size_t data_size) const;
+
  private:
   VideoFrameLayout(VideoPixelFormat format,
                    const gfx::Size& coded_size,
