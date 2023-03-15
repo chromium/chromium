@@ -185,7 +185,7 @@ EnterpriseRemoteAppsSortLauncherFunction::Run() {
     return RespondNow(Error("Remote apps not supported in this session"));
 
   switch (parameters->options.position) {
-    case RemoteAppsPosition::REMOTE_APPS_POSITION_REMOTE_APPS_FIRST: {
+    case RemoteAppsPosition::kRemoteAppsFirst: {
       auto callback = base::BindOnce(
           &EnterpriseRemoteAppsSortLauncherFunction::OnResult, this);
       remote_apps_api->SortLauncherWithRemoteAppsFirst(std::move(callback));
