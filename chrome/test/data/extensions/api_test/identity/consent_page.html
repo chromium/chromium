@@ -1,0 +1,17 @@
+<html>
+
+<head>
+  <title>OK</title>
+</head>
+
+<body>
+  <script>
+    function apply_consent(extension_id) {
+      redirect_url = "https://" + extension_id + ".chromiumapp.org/#some_information";
+      // Simulate an HTTP redirect:
+      window.location.replace(redirect_url);
+    }
+  </script>
+</body>
+
+</html>

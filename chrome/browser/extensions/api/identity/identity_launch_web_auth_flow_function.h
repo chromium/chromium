@@ -45,6 +45,8 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   // Tests may override extension_id.
   void InitFinalRedirectURLPrefixForTest(const std::string& extension_id);
 
+  WebAuthFlow* GetWebAuthFlowForTesting();
+
  private:
   ~IdentityLaunchWebAuthFlowFunction() override;
   ResponseAction Run() override;

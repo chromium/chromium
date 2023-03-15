@@ -167,4 +167,8 @@ void IdentityLaunchWebAuthFlowFunction::OnAuthFlowURLChange(
   }
 }
 
+WebAuthFlow* IdentityLaunchWebAuthFlowFunction::GetWebAuthFlowForTesting() {
+  return auth_flow_.get();
+}
+
 }  // namespace extensions
