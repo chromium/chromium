@@ -355,6 +355,8 @@ class OsIntegrationManager : public AppRegistrarObserver {
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
   std::vector<std::unique_ptr<OsIntegrationSubManager>> sub_managers_;
+  bool set_subsystems_called = false;
+  bool first_synchronize_called_ = false;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};

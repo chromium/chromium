@@ -169,6 +169,8 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
                                          WebAppRegistrar* registrar,
                                          WebAppUiManager* ui_manager,
                                          WebAppIconManager* icon_manager) {
+  CHECK(!first_synchronize_called_);
+
   // TODO(estade): fetch the registrar from `sync_bridge` instead of passing
   // both as arguments.
   registrar_ = registrar;
@@ -203,6 +205,8 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
   sub_managers_.push_back(std::move(run_on_os_login_sub_manager));
   sub_managers_.push_back(
       std::move(uninstallation_via_os_settings_sub_manager));
+
+  set_subsystems_called = true;
 }
 
 void OsIntegrationManager::Start() {
@@ -225,9 +229,12 @@ void OsIntegrationManager::Synchronize(
     const AppId& app_id,
     base::OnceClosure callback,
     absl::optional<SynchronizeOsOptions> options) {
+  first_synchronize_called_ = true;
   DCHECK(registrar_->GetAppById(app_id))
       << "Can't perform OS integration without the app existing in the "
          "registrar.";
+
+  CHECK(set_subsystems_called);
 
   if (!AreOsIntegrationSubManagersEnabled()) {
     std::move(callback).Run();

@@ -100,7 +100,7 @@ void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
   }
   std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info =
       registrar_->GetAppShortcutsMenuItemInfos(app_id);
-  DCHECK_EQ(shortcut_menu_item_info.size(), shortcut_menu_items.size());
+  CHECK_EQ(shortcut_menu_item_info.size(), shortcut_menu_items.size());
   for (size_t menu_index = 0; menu_index < shortcut_menu_items.size();
        menu_index++) {
     proto::ShortcutMenuInfo* new_shortcut_menu_item =
