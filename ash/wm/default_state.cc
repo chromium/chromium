@@ -263,8 +263,12 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       if (in_fullscreen && window_state->IsMaximized())
         return;
 
+      // TODO(b/272091660): Consider having a more graceful algorithm for
+      // floated windows as they may have been purposefully placed semi
+      // offscreen.
       UpdateBoundsForDisplayOrWorkAreaBoundsChange(
-          window_state, /*ensure_full_window_visibility=*/false);
+          window_state,
+          /*ensure_full_window_visibility=*/window_state->IsFloated());
       return;
     }
     case WM_EVENT_SYSTEM_UI_AREA_CHANGED:

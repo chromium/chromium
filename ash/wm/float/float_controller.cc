@@ -669,14 +669,13 @@ void FloatController::OnDeskActivationChanged(const Desk* activated,
 
 void FloatController::OnDisplayMetricsChanged(const display::Display& display,
                                               uint32_t metrics) {
-  // TODO(sammiequon): Make this work for clamshell mode too.
   // The work area can change while entering or exiting tablet mode. The float
   // window changes related with those changes are handled in
   // `OnTabletModeStarting`, `OnTabletModeEnding` or attaching/detaching window
   // states.
   display::TabletState tablet_state = chromeos::TabletState::Get()->state();
   if (tablet_state == display::TabletState::kEnteringTabletMode ||
-      tablet_state == display::TabletState::kEnteringTabletMode) {
+      tablet_state == display::TabletState::kExitingTabletMode) {
     return;
   }
 

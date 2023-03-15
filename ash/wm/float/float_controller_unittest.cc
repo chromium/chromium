@@ -362,6 +362,30 @@ TEST_F(WindowFloatTest, FloatOnOtherDisplay) {
       gfx::Rect(1200, 0, 1200, 800).Contains(window->GetBoundsInScreen()));
 }
 
+TEST_F(WindowFloatTest, FloatWindowBoundsWithZoomDisplay) {
+  UpdateDisplay("1600x1000");
+
+  // Create a floated window and position it on the top-right edge of the
+  // display.
+  std::unique_ptr<aura::Window> window =
+      CreateAppWindow(gfx::Rect(1200, 0, 400, 300));
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+
+  // Use the accelerator to zoom the display up (ctrl + shift + "+") a couple
+  // times. The floated window bounds should still be within the work area
+  // bounds.
+  PressAndReleaseKey(ui::VKEY_OEM_PLUS,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_OEM_PLUS,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_OEM_PLUS,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+
+  EXPECT_TRUE(WorkAreaInsets::ForWindow(window.get())
+                  ->user_work_area_bounds()
+                  .Contains(window->GetBoundsInScreen()));
+}
+
 // Test float window per desk logic.
 TEST_F(WindowFloatTest, OneFloatWindowPerDeskLogic) {
   // Test one float window per desk is allowed.
