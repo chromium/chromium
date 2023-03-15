@@ -9,7 +9,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
@@ -84,6 +86,7 @@ class TranslationResultLoaderTest : public testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  FakeQuickAnswersState fake_quick_answers_state_;
 };
 
 TEST_F(TranslationResultLoaderTest, Success) {
@@ -100,6 +103,9 @@ TEST_F(TranslationResultLoaderTest, Success) {
       *mock_delegate_,
       OnQuickAnswerReceived(QuickAnswerEqual(expected_quick_answer.get())));
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
+
+  fake_quick_answers_state_.SetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
   base::RunLoop().RunUntilIdle();
 }
@@ -110,6 +116,9 @@ TEST_F(TranslationResultLoaderTest, NetworkError) {
       std::string(), network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
   EXPECT_CALL(*mock_delegate_, OnNetworkError());
   EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::_)).Times(0);
+
+  fake_quick_answers_state_.SetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
   base::RunLoop().RunUntilIdle();
 }
@@ -119,6 +128,9 @@ TEST_F(TranslationResultLoaderTest, EmptyResponse) {
                                        std::string());
   EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::Eq(nullptr)));
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
+
+  fake_quick_answers_state_.SetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
   base::RunLoop().RunUntilIdle();
 }

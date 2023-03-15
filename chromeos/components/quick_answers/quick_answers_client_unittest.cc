@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/test/quick_answers_test_base.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
@@ -47,7 +48,14 @@ class MockResultLoader : public TestResultLoader {
   MockResultLoader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       ResultLoaderDelegate* delegate)
-      : TestResultLoader(url_loader_factory, delegate) {}
+      : TestResultLoader(url_loader_factory, delegate) {
+    ON_CALL(*this, Fetch)
+        .WillByDefault([this](const PreprocessedOutput& preprocessed_output) {
+          // `ResultLoader::Fetch` has a fail-safe CHECK for consent_status.
+          // Delegate to `TestResultLoader` to trigger the check.
+          TestResultLoader::Fetch(preprocessed_output);
+        });
+  }
 
   MockResultLoader(const MockResultLoader&) = delete;
   MockResultLoader& operator=(const MockResultLoader&) = delete;
@@ -155,6 +163,9 @@ TEST_F(QuickAnswersClientTest, NetworkError) {
 }
 
 TEST_F(QuickAnswersClientTest, SendRequest) {
+  fake_quick_answers_state()->SetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
+
   std::unique_ptr<QuickAnswersRequest> quick_answers_request =
       std::make_unique<QuickAnswersRequest>();
   quick_answers_request->selected_text = "sel";
@@ -186,6 +197,10 @@ TEST_F(QuickAnswersClientTest, SendRequest) {
 }
 
 TEST_F(QuickAnswersClientTest, SendRequestForPreprocessing) {
+  // Make the status to kUnknown as this test case is for pre-process.
+  fake_quick_answers_state()->SetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kUnknown);
+
   std::unique_ptr<QuickAnswersRequest> quick_answers_request =
       std::make_unique<QuickAnswersRequest>();
   quick_answers_request->selected_text = "sel";
@@ -206,6 +221,9 @@ TEST_F(QuickAnswersClientTest, SendRequestForPreprocessing) {
 }
 
 TEST_F(QuickAnswersClientTest, FetchQuickAnswers) {
+  fake_quick_answers_state()->SetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
+
   std::unique_ptr<QuickAnswersRequest> quick_answers_request =
       std::make_unique<QuickAnswersRequest>();
   quick_answers_request->preprocessed_output.query = "Define sel";
@@ -222,6 +240,10 @@ TEST_F(QuickAnswersClientTest, FetchQuickAnswers) {
 }
 
 TEST_F(QuickAnswersClientTest, PreprocessDefinitionIntent) {
+  // Make the status to kUnknown as this test case is for pre-process.
+  fake_quick_answers_state()->SetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kUnknown);
+
   std::unique_ptr<QuickAnswersRequest> quick_answers_request =
       std::make_unique<QuickAnswersRequest>();
   quick_answers_request->selected_text = "unfathomable";
@@ -239,12 +261,17 @@ TEST_F(QuickAnswersClientTest, PreprocessDefinitionIntent) {
               OnRequestPreprocessFinished(
                   QuickAnswersRequestWithOutputEqual(*processed_request)));
 
+  // Simulate pre-process callback, i.e. skip_fetch=true.
   client_->IntentGeneratorCallback(
-      *quick_answers_request, /*skip_fetch=*/false,
+      *quick_answers_request, /*skip_fetch=*/true,
       IntentInfo("unfathomable", IntentType::kDictionary));
 }
 
 TEST_F(QuickAnswersClientTest, PreprocessUnitConversionIntent) {
+  // Make the status to kUnknown as this test case is for pre-process.
+  fake_quick_answers_state()->SetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kUnknown);
+
   std::unique_ptr<QuickAnswersRequest> quick_answers_request =
       std::make_unique<QuickAnswersRequest>();
   quick_answers_request->selected_text = "20ft";
@@ -262,7 +289,8 @@ TEST_F(QuickAnswersClientTest, PreprocessUnitConversionIntent) {
               OnRequestPreprocessFinished(
                   QuickAnswersRequestWithOutputEqual(*processed_request)));
 
-  client_->IntentGeneratorCallback(*quick_answers_request, /*skip_fetch=*/false,
+  // Simulate pre-process callback, i.e. skip_fetch=true.
+  client_->IntentGeneratorCallback(*quick_answers_request, /*skip_fetch=*/true,
                                    IntentInfo("20ft", IntentType::kUnit));
 }
 

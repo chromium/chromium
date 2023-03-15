@@ -4,6 +4,8 @@
 #include "chromeos/components/quick_answers/result_loader.h"
 
 #include "base/functional/bind.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/search_result_loader.h"
 #include "chromeos/components/quick_answers/translation_result_loader.h"
@@ -73,15 +75,20 @@ std::unique_ptr<ResultLoader> ResultLoader::Create(
     IntentType intent_type,
     scoped_refptr<SharedURLLoaderFactory> url_loader_factory,
     ResultLoader::ResultLoaderDelegate* delegate) {
-  if (intent_type == IntentType::kTranslation)
+  if (intent_type == IntentType::kTranslation) {
     return std::make_unique<TranslationResultLoader>(url_loader_factory,
                                                      delegate);
+  }
   return std::make_unique<SearchResultLoader>(url_loader_factory, delegate);
 }
 
 void ResultLoader::Fetch(const PreprocessedOutput& preprocessed_output) {
   DCHECK(url_loader_factory_);
   DCHECK(!preprocessed_output.query.empty());
+
+  // Fail-safe for a fetch request if `consent_status` is not `kAccepted`.
+  CHECK(QuickAnswersState::Get()->consent_status() ==
+        quick_answers::prefs::ConsentStatus::kAccepted);
 
   // Load the resource.
   BuildRequest(preprocessed_output,
@@ -95,8 +102,9 @@ void ResultLoader::OnBuildRequestComplete(
     const std::string& request_body) {
   loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                              kNetworkTrafficAnnotationTag);
-  if (!request_body.empty())
+  if (!request_body.empty()) {
     loader_->AttachStringForUpload(request_body, "application/json");
+  }
 
   loader_->SetRetryOptions(
       /*max_retries=*/5, network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
