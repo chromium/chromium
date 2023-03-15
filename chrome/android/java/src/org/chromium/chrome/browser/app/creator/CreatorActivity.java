@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -98,7 +99,8 @@ public class CreatorActivity extends SnackbarActivity {
 
         CreatorCoordinator coordinator = new CreatorCoordinator(this, mWebFeedId,
                 getSnackbarManager(), mWindowAndroid, mProfile, url, this::createWebContents,
-                this::createNewTab, mTabShareDelegateSupplier, mEntryPoint, following);
+                this::createNewTab, mTabShareDelegateSupplier, mEntryPoint, following,
+                this::showSignInInterstitial);
 
         mBottomSheetController = coordinator.getBottomSheetController();
 
@@ -149,5 +151,11 @@ public class CreatorActivity extends SnackbarActivity {
     // This implements the CreatorOpenTab interface.
     public void createNewTab(LoadUrlParams params) {
         new TabDelegate(false).createNewTab(params, TabLaunchType.FROM_LINK, null);
+    }
+
+    // This implements the SignInInterstitialInitiator interface.
+    public void showSignInInterstitial() {
+        mCreatorActionDelegate.showSignInInterstitial(
+                SigninAccessPoint.CREATOR_FEED_FOLLOW, mBottomSheetController, mWindowAndroid);
     }
 }

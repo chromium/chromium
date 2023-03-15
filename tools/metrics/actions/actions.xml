@@ -30625,6 +30625,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromCreatorFeedFollow">
+  <owner>wry@chromium.org</owner>
+  <description>
+    Recorded when showing sign-in entry in Creator Feed on Android only.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromDevicesPage" not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -31238,6 +31245,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_CONTENT_AREA.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromCreatorFeedFollow">
+  <owner>wry@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW on Android
+    Only.
   </description>
 </action>
 

@@ -208,6 +208,10 @@ enum class AccessPoint : int {
   // go/for-you-fre or launch/4223982 for more info.
   ACCESS_POINT_FOR_YOU_FRE = 45,
 
+  // Access point for Cormorant (Creator Feed) on Android only when the "Follow"
+  // button is tapped while in a signed-out state.
+  ACCESS_POINT_CREATOR_FEED_FOLLOW = 46,
+
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
   ACCESS_POINT_MAX,  // This must be last.

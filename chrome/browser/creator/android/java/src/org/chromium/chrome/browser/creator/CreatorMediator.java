@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionReques
 import android.content.Context;
 
 import org.chromium.chrome.browser.creator.CreatorApiBridge.Creator;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -23,12 +24,15 @@ public class CreatorMediator {
     private Creator mCreator;
     private PropertyModel mCreatorModel;
     private final CreatorSnackbarController mCreatorSnackbarController;
+    private SignInInterstitialInitiator mSignInInterstitialInitiator;
 
     CreatorMediator(Context context, PropertyModel creatorModel,
-            CreatorSnackbarController creatorSnackbarController) {
+            CreatorSnackbarController creatorSnackbarController,
+            SignInInterstitialInitiator signInInterstitialInitiator) {
         mContext = context;
         mCreatorModel = creatorModel;
         mCreatorSnackbarController = creatorSnackbarController;
+        mSignInInterstitialInitiator = signInInterstitialInitiator;
         if (mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY) != null) {
             getCreator();
         }
@@ -39,14 +43,18 @@ public class CreatorMediator {
     }
 
     private void followClickHandler() {
-        WebFeedBridge.followFromId(mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY),
-                /*isDurable=*/false, WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU, (result) -> {
-                    if (result.requestStatus == SUCCESS) {
-                        mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
-                    }
-                    mCreatorSnackbarController.showSnackbarForFollow(
-                            result.requestStatus, mCreatorModel.get(CreatorProperties.TITLE_KEY));
-                });
+        if (FeedServiceBridge.isSignedIn()) {
+            WebFeedBridge.followFromId(mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY),
+                    /*isDurable=*/false, WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU, (result) -> {
+                        if (result.requestStatus == SUCCESS) {
+                            mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
+                        }
+                        mCreatorSnackbarController.showSnackbarForFollow(result.requestStatus,
+                                mCreatorModel.get(CreatorProperties.TITLE_KEY));
+                    });
+        } else {
+            mSignInInterstitialInitiator.showSignInInterstitial();
+        }
     }
 
     private void followingClickHandler() {

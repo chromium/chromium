@@ -83,6 +83,8 @@ public class CreatorMediatorTest {
     private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock
     private UrlFormatter.Natives mUrlFormatterJniMock;
+    @Mock
+    private SignInInterstitialInitiator mSignInInterstitialInitiator;
 
     @Captor
     private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
@@ -116,14 +118,17 @@ public class CreatorMediatorTest {
         when(mUrlFormatterJniMock.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any()))
                 .thenReturn(JUnitTestGURLs.URL_1);
 
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mCreatorCoordinator = new CreatorCoordinator(mActivity, mWebFeedId, mSnackbarManager,
                 mWindowAndroid, mProfile, mUrl, mCreatorWebContents, mCreatorOpenTab,
-                mShareDelegateSupplier, SingleWebFeedEntryPoint.OTHER, /* isFollowing= */ false);
+                mShareDelegateSupplier, SingleWebFeedEntryPoint.OTHER, /* isFollowing= */ false,
+                mSignInInterstitialInitiator);
         mCreatorModel = mCreatorCoordinator.getCreatorModel();
 
-        mCreatorMediator =
-                new CreatorMediator(mActivity, mCreatorModel, mCreatorSnackbarController);
+        mCreatorMediator = new CreatorMediator(
+                mActivity, mCreatorModel, mCreatorSnackbarController, mSignInInterstitialInitiator);
     }
 
     @Test

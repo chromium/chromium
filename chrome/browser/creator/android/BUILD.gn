@@ -18,6 +18,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/creator/CreatorToolbarView.java",
     "java/src/org/chromium/chrome/browser/creator/CreatorToolbarViewBinder.java",
     "java/src/org/chromium/chrome/browser/creator/NewTabCreator.java",
+    "java/src/org/chromium/chrome/browser/creator/SignInInterstitialInitiator.java",
     "java/src/org/chromium/chrome/browser/creator/WebContentsCreator.java",
   ]
   deps = [

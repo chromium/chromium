@@ -85,6 +85,8 @@ public class CreatorCoordinatorTest {
     private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock
     private FeedStream mStreamMock;
+    @Mock
+    private SignInInterstitialInitiator mSignInInterstitialInitiator;
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -121,7 +123,7 @@ public class CreatorCoordinatorTest {
             String url, byte[] webFeedId, int entryPoint, boolean following) {
         return new CreatorCoordinator(mActivity, webFeedId, mSnackbarManager, mWindowAndroid,
                 mProfile, url, mCreatorWebContents, mCreatorOpenTab, mShareDelegateSupplier,
-                entryPoint, following);
+                entryPoint, following, mSignInInterstitialInitiator);
     }
 
     @Test

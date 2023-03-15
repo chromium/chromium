@@ -146,7 +146,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
             WindowAndroid windowAndroid, Profile profile, String url,
             WebContentsCreator creatorWebContents, NewTabCreator creatorOpenTab,
             UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier, int entryPoint,
-            boolean isFollowing) {
+            boolean isFollowing, SignInInterstitialInitiator signInInterstitialInitiator) {
         mActivity = activity;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
@@ -186,7 +186,8 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                 mCreatorModel, (CreatorToolbarView) mLayoutView, CreatorToolbarViewBinder::bind);
         setUpToolbarListener();
 
-        mMediator = new CreatorMediator(mActivity, mCreatorModel, mCreatorSnackbarController);
+        mMediator = new CreatorMediator(
+                mActivity, mCreatorModel, mCreatorSnackbarController, signInInterstitialInitiator);
     }
 
     /**

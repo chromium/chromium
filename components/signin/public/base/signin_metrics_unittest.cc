@@ -41,7 +41,8 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
     AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO,
     AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO,
-    AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO};
+    AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO,
+    AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW};
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_START_PAGE,
@@ -64,7 +65,8 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
     AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO,
     AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO,
-    AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO};
+    AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO,
+    AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW};
 
 class SigninMetricsTest : public ::testing::Test {
  public:
@@ -154,6 +156,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "DesktopSigninManager";
       case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
         return "ForYouFre";
+      case AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
+        return "CreatorFeedFollow";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

@@ -13,7 +13,9 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.creator.CreatorCoordinator;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
+import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -72,12 +74,15 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void showSyncConsentActivity(int signinAccessPoint) {
-        // TODO(crbug.com/1422024)
+        SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
+                mActivityContext, signinAccessPoint);
     }
 
     @Override
     public void showSignInInterstitial(int signinAccessPoint,
             BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {
-        // TODO(crbug.com/1422024)
+        SigninBottomSheetCoordinator signinCoordinator =
+                new SigninBottomSheetCoordinator(mWindowAndroid, mBottomSheetController, mProfile);
+        signinCoordinator.show();
     }
 }
