@@ -92,6 +92,7 @@ GPUAdapter::GPUAdapter(
   WGPUAdapterProperties properties = {};
   GetProcs().adapterGetProperties(handle_, &properties);
   is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
+  backend_type_ = properties.backendType;
 
   vendor_ = properties.vendorName;
   architecture_ = properties.architecture;
@@ -137,6 +138,10 @@ GPUSupportedFeatures* GPUAdapter::features() const {
 
 bool GPUAdapter::isFallbackAdapter() const {
   return is_fallback_adapter_;
+}
+
+WGPUBackendType GPUAdapter::backendType() const {
+  return backend_type_;
 }
 
 bool GPUAdapter::SupportsMultiPlanarFormats() const {

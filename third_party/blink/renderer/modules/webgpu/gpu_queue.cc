@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/external_texture_helper.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
@@ -678,14 +679,17 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   image = unaccelerated_image.get();
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1418291):
-// Using webgpu mailbox texture to upload cpu-backed resource on mac uploads all 0.
-// Disable that upload path if the image is not texture-backed.
-  if (!image->IsTextureBacked()) {
-    use_webgpu_mailbox_texture = false;
+  // TODO(crbug.com/1418291, crbug.com/1424119):
+  // Using a webgpu mailbox texture to upload a cpu-backed resource on Metal and
+  // OpenGLES uploads all zeros. Disable that upload path if the image is not
+  // texture-backed.
+  auto backendType = device()->adapter()->backendType();
+  if (backendType == WGPUBackendType_Metal ||
+      backendType == WGPUBackendType_OpenGLES) {
+    if (!image->IsTextureBacked()) {
+      use_webgpu_mailbox_texture = false;
+    }
   }
-#endif  // BUILDFLAG(IS_MAC)
 
   bool noop = copy_size.width == 0 || copy_size.height == 0 ||
               copy_size.depthOrArrayLayers == 0;
