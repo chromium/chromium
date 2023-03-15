@@ -68,20 +68,20 @@ std::unique_ptr<views::View> CreateIconView(
 // of the first row in the text that lives inside labels in the same row even if
 // the text spans multiple lines such as password notes.
 //
-//                <---icon size-->
-//       |        |--------------|
-//       |        |              |
-//       |        |--------------|
-//  line height   |  child view  |
-//       |        |--------------|
-//       |        |              |
-//       |        |--------------|
+//                <--child width-->
+//       |        |---------------|
+//       |        |               |
+//       |        |---------------|
+//  line height   |  child view   |
+//       |        |---------------|
+//       |        |               |
+//       |        |---------------|
 //
 std::unique_ptr<views::View> CreateWrappedView(
     std::unique_ptr<views::View> child_view) {
   auto wrapper = std::make_unique<views::BoxLayoutView>();
-  wrapper->SetPreferredSize(
-      gfx::Size(/*width=*/kIconSize, /*height=*/kDetailRowHeight));
+  wrapper->SetPreferredSize(gfx::Size(child_view->GetPreferredSize().width(),
+                                      /*height=*/kDetailRowHeight));
   wrapper->SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   wrapper->AddChildView(std::move(child_view));
   return wrapper;
@@ -124,6 +124,7 @@ std::unique_ptr<views::View> CreateDetailsRowWithActionButton(
                                              action_icon, kIconSize);
   action_button->SetTooltipText(action_button_tooltip_text);
   action_button->SetID(static_cast<int>(action_button_id));
+  views::InstallCircleHighlightPathGenerator(action_button.get());
   row->AddChildView(CreateWrappedView(std::move(action_button)));
   return row;
 }
@@ -141,8 +142,7 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
                                views::MaximumFlexSizeRule::kScaleToMaximum));
 
   auto* eye_icon = password_label_with_eye_icon_view->AddChildView(
-      std::make_unique<views::ToggleImageButton>(
-          views::Button::PressedCallback()));
+      CreateVectorToggleImageButton(views::Button::PressedCallback()));
   eye_icon->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD));
   eye_icon->SetToggledTooltipText(
@@ -154,7 +154,7 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
       eye_icon, views::kEyeIcon, ui::kColorIcon, ui::kColorIconDisabled);
   views::SetToggledImageFromVectorIconWithColorId(
       eye_icon, views::kEyeCrossedIcon, ui::kColorIcon, ui::kColorIconDisabled);
-
+  views::InstallCircleHighlightPathGenerator(eye_icon);
   eye_icon->SetCallback(
       base::BindRepeating(
           [](views::ToggleImageButton* toggle_button,
