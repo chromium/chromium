@@ -2737,7 +2737,7 @@
     'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'enable_dangling_raw_ptr_checks', 'enable_backup_ref_ptr_feature_flag',
+      'enable_dangling_raw_ptr_feature_flag',
     ],
 
     # Keep in sync with
