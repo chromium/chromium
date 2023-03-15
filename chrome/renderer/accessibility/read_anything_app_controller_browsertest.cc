@@ -647,44 +647,6 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
   OnActiveAXTreeIDChanged(tree_ids[2]);
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       OnActiveAXTreeIDChanged_PreviousActiveTreeDestroyed) {
-  ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
-  ui::AXTreeUpdate update_2;
-  SetUpdateTreeID(&update_2, tree_id_2);
-  update_2.root_id = 1;
-  update_2.nodes.resize(1);
-  update_2.nodes[0].id = 1;
-
-  ASSERT_EQ(1u, GetNumTrees());
-  ASSERT_TRUE(HasTree(tree_id_));
-
-  // Add update 2.
-  AccessibilityEventReceived({update_2});
-  ASSERT_EQ(2u, GetNumTrees());
-  ASSERT_TRUE(HasTree(tree_id_));
-  ASSERT_TRUE(HasTree(tree_id_2));
-  OnAXTreeDistilled({1});
-  EXPECT_CALL(*distiller_, Distill).Times(1);
-
-  // Change the active tree id to the same id. Nothing happens.
-  OnActiveAXTreeIDChanged(tree_id_);
-  ASSERT_EQ(2u, GetNumTrees());
-  ASSERT_TRUE(HasTree(tree_id_));
-  ASSERT_TRUE(HasTree(tree_id_2));
-
-  // Change the active tree id to tree id 2. The previously active tree id's
-  // tree is deleted.
-  OnActiveAXTreeIDChanged(tree_id_2);
-  ASSERT_EQ(1u, GetNumTrees());
-  ASSERT_TRUE(HasTree(tree_id_2));
-
-  // Change the active tree id to the same id. The previously active tree id's
-  // tree is deleted.
-  OnActiveAXTreeIDChanged(tree_id_);
-  ASSERT_EQ(0u, GetNumTrees());
-}
-
 TEST_F(ReadAnythingAppControllerTest, ModelUpdatesTreeState) {
   // Set up trees.
   ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
@@ -772,53 +734,6 @@ TEST_F(ReadAnythingAppControllerTest, AddAndRemoveTrees) {
   ASSERT_EQ(1u, GetNumTrees());
   ASSERT_TRUE(HasTree(tree_ids[1]));
   OnAXTreeDestroyed(tree_ids[1]);
-  ASSERT_EQ(0u, GetNumTrees());
-}
-
-TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_ChildTree) {
-  // Create three AXTreeUpdates. The first has tree ID tree_id_ and the others
-  // have two new tree IDs.
-  std::vector<ui::AXTreeID> tree_ids = {tree_id_,
-                                        ui::AXTreeID::CreateNewAXTreeID(),
-                                        ui::AXTreeID::CreateNewAXTreeID()};
-  std::vector<ui::AXTreeUpdate> updates;
-  for (int i = 0; i < 3; i++) {
-    ui::AXTreeUpdate update;
-    SetUpdateTreeID(&update, tree_ids[i]);
-    update.root_id = 1;
-    update.nodes.resize(1);
-    update.nodes[0].id = 1;
-    updates.push_back(update);
-  }
-
-  // Tree_ids[0] is the parent of tree_ids[1]. Tree_ids[1] is the parent of
-  // tree_ids[2].
-  updates[1].tree_data.parent_tree_id = tree_ids[0];
-  updates[2].tree_data.parent_tree_id = tree_ids[1];
-  updates[0].nodes[0].AddChildTreeId(tree_ids[1]);
-  updates[1].nodes[0].AddChildTreeId(tree_ids[2]);
-
-  // Start with 1 tree (the tree created in SetUp).
-  ASSERT_EQ(1u, GetNumTrees());
-  ASSERT_TRUE(HasTree(tree_id_));
-  AccessibilityEventReceived({updates[0]});
-  ASSERT_EQ(1u, GetNumTrees());
-  ASSERT_TRUE(HasTree(tree_id_));
-
-  // Add two trees.
-  AccessibilityEventReceived({updates[1]});
-  ASSERT_EQ(2u, GetNumTrees());
-  ASSERT_TRUE(HasTree(tree_id_));
-  ASSERT_TRUE(HasTree(tree_ids[0]));
-  AccessibilityEventReceived({updates[2]});
-  ASSERT_EQ(3u, GetNumTrees());
-  ASSERT_TRUE(HasTree(tree_id_));
-  ASSERT_TRUE(HasTree(tree_ids[0]));
-  ASSERT_TRUE(HasTree(tree_ids[1]));
-
-  // Remove the grandparent tree (tree_ids[0]. When it is removed, its
-  // child (tree_ids[1]) and its child's child (tree_ids[2]) are both removed.
-  OnAXTreeDestroyed(tree_ids[0]);
   ASSERT_EQ(0u, GetNumTrees());
 }
 

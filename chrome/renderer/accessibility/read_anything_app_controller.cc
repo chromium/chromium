@@ -345,7 +345,6 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
       model_.ContainsTree(model_.active_tree_id())) {
     Distill();
   }
-  OnAXTreeDestroyed(previous_active_tree_id);
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -360,11 +359,6 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     // distillation request.
     model_.SetActiveTreeId(ui::AXTreeIDUnknown());
     model_.SetActiveUkmSourceId(ukm::kInvalidSourceId);
-  }
-  std::set<ui::AXTreeID> child_tree_ids =
-      model_.GetTreeFromId(tree_id)->GetAllChildTreeIds();
-  for (const auto& child_tree_id : child_tree_ids) {
-    OnAXTreeDestroyed(child_tree_id);
   }
   model_.EraseTree(tree_id);
 }
