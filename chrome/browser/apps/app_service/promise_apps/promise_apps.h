@@ -11,12 +11,14 @@
 namespace apps {
 
 // Indicates the status of the app installation that the promise app represents.
-ENUM(PromiseStatus,
-     kUnknown,
-     kPending,      // Waiting for the installation process to start.
-     kDownloading,  // Downloading app package.
-     kInstalling    // Installing app package.
-)
+enum class PromiseStatus {
+  kUnknown,
+  kPending,      // Waiting for the installation process to start.
+  kDownloading,  // Downloading app package.
+  kInstalling,   // Installing app package.
+};
+
+std::string EnumToString(PromiseStatus);
 
 // A promise app is a barebones app object created to show an app's icon and
 // name in the Launcher/Shelf while the package is currently installing

@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
+#include "components/services/app_service/public/cpp/macros.h"
 
 namespace apps {
+
+APP_ENUM_TO_STRING(PromiseStatus, kUnknown, kPending, kDownloading, kInstalling)
 
 PromiseAppPtr PromiseApp::Clone() const {
   auto promise_app = std::make_unique<PromiseApp>(package_id);
