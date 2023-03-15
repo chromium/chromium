@@ -39,7 +39,8 @@ class MainThreadScrollingReasonsTest : public PaintTestConfigurations,
                                        public testing::Test {
  public:
   MainThreadScrollingReasonsTest() : base_url_("http://www.test.com/") {
-    helper_.InitializeWithSettings(&ConfigureSettings);
+    helper_.Initialize();
+    GetFrame()->GetSettings()->SetPreferCompositingToLCDTextForTesting(true);
     GetWebView()->MainFrameViewWidget()->Resize(gfx::Size(320, 240));
     GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
@@ -106,11 +107,6 @@ class MainThreadScrollingReasonsTest : public PaintTestConfigurations,
  protected:
   String base_url_;
   frame_test_helpers::WebViewHelper helper_;
-
- private:
-  static void ConfigureSettings(WebSettings* settings) {
-    settings->SetPreferCompositingToLCDTextEnabled(true);
-  }
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(MainThreadScrollingReasonsTest);
@@ -298,7 +294,7 @@ TEST_P(MainThreadScrollingReasonsTest, ReportBackgroundAttachmentFixed) {
 // kHasBackgroundAttachmentFixedObjects should be updated on all frames
 TEST_P(MainThreadScrollingReasonsTest,
        RecalculateMainThreadScrollingReasonsUponResize) {
-  GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  GetFrame()->GetSettings()->SetPreferCompositingToLCDTextForTesting(false);
   RegisterMockedHttpURLLoad("has-non-layer-viewport-constrained-objects.html");
   RegisterMockedHttpURLLoad("white-1x1.png");
   NavigateTo(base_url_ + "has-non-layer-viewport-constrained-objects.html");
@@ -389,7 +385,7 @@ class NonCompositedMainThreadScrollingReasonsTest
 
   void TestNonCompositedReasons(const AtomicString& style_class,
                                 const uint32_t reason) {
-    GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+    GetFrame()->GetSettings()->SetPreferCompositingToLCDTextForTesting(false);
     Document* document = GetFrame()->GetDocument();
     Element* container = document->getElementById("scroller1");
     ForceFullCompositingUpdate();
@@ -434,7 +430,7 @@ class NonCompositedMainThreadScrollingReasonsTest
 
     if ((reason & kLCDTextRelatedReasons) &&
         !(reason & ~kLCDTextRelatedReasons)) {
-      GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+      GetFrame()->GetSettings()->SetPreferCompositingToLCDTextForTesting(true);
       ForceFullCompositingUpdate();
       EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
           scrollable_area->GetNonCompositedMainThreadScrollingReasons());
@@ -505,7 +501,7 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest,
   // With "will-change:transform" we composite elements with
   // LCDTextRelatedReasons only. For elements with other NonCompositedReasons,
   // we don't composite them.
-  GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  GetFrame()->GetSettings()->SetPreferCompositingToLCDTextForTesting(false);
   Document* document = GetFrame()->GetDocument();
   Element* container = document->getElementById("scroller1");
   ASSERT_TRUE(container);

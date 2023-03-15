@@ -30,10 +30,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(ViewPainterFixedBackgroundTest);
 
 void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
     bool prefer_compositing_to_lcd_text) {
-  if (prefer_compositing_to_lcd_text) {
-    Settings* settings = GetDocument().GetFrame()->GetSettings();
-    settings->SetPreferCompositingToLCDTextEnabled(true);
-  }
+  SetPreferCompositingToLCDText(prefer_compositing_to_lcd_text);
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar { display: none; }
@@ -185,8 +182,7 @@ class ViewPainterTouchActionRectTest : public ViewPainterTest {
  public:
   void SetUp() override {
     ViewPainterTest::SetUp();
-    Settings* settings = GetDocument().GetFrame()->GetSettings();
-    settings->SetPreferCompositingToLCDTextEnabled(true);
+    SetPreferCompositingToLCDText(true);
   }
 };
 

@@ -281,8 +281,7 @@ TEST_P(CompositingReasonFinderTest, CompositingReasonsForAnimationInline) {
 }
 
 TEST_P(CompositingReasonFinderTest, DontPromoteEmptyIframe) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
 
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>

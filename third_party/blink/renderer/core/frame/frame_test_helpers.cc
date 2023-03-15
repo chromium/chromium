@@ -474,6 +474,15 @@ WebViewImpl* WebViewHelper::InitializeWithSettings(
   return InitializeWithOpener(nullptr, nullptr, nullptr, update_settings_func);
 }
 
+// static
+void WebViewHelper::UpdateAndroidCompositingSettings(WebSettings* settings) {
+  settings->SetLCDTextPreference(LCDTextPreference::kIgnored);
+  settings->SetViewportMetaEnabled(true);
+  settings->SetViewportEnabled(true);
+  settings->SetMainFrameResizesAreOrientationChanges(true);
+  settings->SetShrinksViewportContentToFit(true);
+}
+
 WebViewImpl* WebViewHelper::InitializeAndLoad(
     const std::string& url,
     TestWebFrameClient* web_frame_client,

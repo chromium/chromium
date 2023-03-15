@@ -54,15 +54,11 @@ class ViewTransitionTest : public testing::Test,
  public:
   ViewTransitionTest() : ScopedViewTransitionForTest(true) {}
 
-  static void ConfigureCompositingWebView(WebSettings* settings) {
-    settings->SetPreferCompositingToLCDTextEnabled(true);
-  }
-
   void SetUp() override {
     web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
-    web_view_helper_->Initialize(nullptr, nullptr,
-                                 &ConfigureCompositingWebView);
+    web_view_helper_->Initialize();
     web_view_helper_->Resize(gfx::Size(200, 200));
+    GetDocument().GetSettings()->SetPreferCompositingToLCDTextForTesting(true);
   }
 
   void TearDown() override { web_view_helper_.reset(); }

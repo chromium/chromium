@@ -303,7 +303,7 @@ TEST_P(CullRectUpdaterTest, ScrollingLayerCullRect) {
 }
 
 TEST_P(CullRectUpdaterTest, NonCompositedScrollingLayerCullRect) {
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  SetPreferCompositingToLCDText(false);
   SetBodyInnerHTML(R"HTML(
     <style>
       div::-webkit-scrollbar { width: 5px; }
@@ -360,7 +360,7 @@ TEST_P(CullRectUpdaterTest, TallScrolledLayerCullRect) {
 }
 
 TEST_P(CullRectUpdaterTest, WholeDocumentCullRect) {
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+  SetPreferCompositingToLCDText(true);
   GetDocument().GetSettings()->SetMainFrameClipsContent(false);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -434,7 +434,7 @@ TEST_P(CullRectUpdaterTest, FixedPositionUnderClipPathWillChangeTransform) {
 }
 
 TEST_P(CullRectUpdaterTest, AbsolutePositionUnderNonContainingStackingContext) {
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  SetPreferCompositingToLCDText(false);
   SetBodyInnerHTML(R"HTML(
     <div id="scroller" style="width: 200px; height: 200px; overflow: auto;
                               position: relative">
@@ -497,7 +497,7 @@ TEST_P(CullRectUpdaterTest, StackedChildOfNonStackingContextScroller) {
 }
 
 TEST_P(CullRectUpdaterTest, ContentsCullRectCoveringWholeContentsRect) {
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <div id="scroller" style="width: 400px; height: 400px; overflow: scroll">
       <div style="width: 600px; height: 7000px"></div>
@@ -539,7 +539,7 @@ TEST_P(CullRectUpdaterTest, ContentsCullRectCoveringWholeContentsRect) {
 }
 
 TEST_P(CullRectUpdaterTest, SVGForeignObject) {
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  SetPreferCompositingToLCDText(false);
   SetBodyInnerHTML(R"HTML(
     <div id="scroller" style="width: 100px; height: 100px; overflow: scroll">
       <svg id="svg" style="width: 100px; height: 4000px">
@@ -606,7 +606,7 @@ TEST_P(CullRectUpdaterTest, PerspectiveDescendants) {
 
 // Test case for crbug.com/1382842.
 TEST_P(CullRectUpdaterTest, UpdateOnCompositedScrollingStatusChange) {
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  SetPreferCompositingToLCDText(false);
   SetBodyInnerHTML(R"HTML(
     <style>body {position: absolute}</style>
     <div id="scroller" style="width: 100px; height: 100px;
@@ -628,7 +628,7 @@ TEST_P(CullRectUpdaterTest, UpdateOnCompositedScrollingStatusChange) {
 }
 
 TEST_P(CullRectUpdaterTest, StickyPositionInCompositedScroller) {
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <div id="scroller" style="width: 300px; height: 300px; overflow: scroll">
       <div style="height: 600px"></div>
@@ -684,7 +684,7 @@ TEST_P(CullRectUpdaterTest, StickyPositionInCompositedScroller) {
 }
 
 TEST_P(CullRectUpdaterTest, StickyPositionInNonCompositedScroller) {
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  SetPreferCompositingToLCDText(false);
   SetBodyInnerHTML(R"HTML(
     <div id="scroller" style="width: 300px; height: 300px; overflow: scroll">
       <div style="height: 600px"></div>

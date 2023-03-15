@@ -208,8 +208,7 @@ TEST_F(LocalFrameViewTest, CanHaveScrollbarsIfScrollingAttrEqualsNoChanged) {
 
 TEST_F(LocalFrameViewTest,
        MainThreadScrollingForBackgroundFixedAttachmentWithCompositing) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>

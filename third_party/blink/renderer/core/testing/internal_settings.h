@@ -123,6 +123,7 @@ class InternalSettings final : public InternalSettingsGenerated,
   void setPrimaryHoverType(const String&, ExceptionState&);
   void SetDnsPrefetchLogging(bool, ExceptionState&);
   void SetPreloadLogging(bool, ExceptionState&);
+  void setPreferCompositingToLCDTextEnabled(bool, ExceptionState&);
 
   void Trace(Visitor*) const override;
 

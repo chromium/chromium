@@ -55,4 +55,5 @@ interface InternalSettings : InternalSettingsGenerated {
     [RaisesException] void setPresentationReceiver(boolean enabled);
     [RaisesException] void setAutoplayPolicy(DOMString policy);
     [RaisesException] void setUniversalAccessFromFileURLs(boolean enabled);
+    [RaisesException] void setPreferCompositingToLCDTextEnabled(boolean enabled);
 };

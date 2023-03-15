@@ -352,6 +352,11 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   WebViewImpl* InitializeWithSettings(
       void (*update_settings_func)(WebSettings*));
 
+  WebViewImpl* InitializeWithAndroidSettings() {
+    return InitializeWithSettings(&UpdateAndroidCompositingSettings);
+  }
+  static void UpdateAndroidCompositingSettings(WebSettings*);
+
   // Same as Initialize() but also performs the initial load of the url. Only
   // returns once the load is complete.
   WebViewImpl* InitializeAndLoad(

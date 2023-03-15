@@ -531,4 +531,11 @@ void InternalSettings::setUniversalAccessFromFileURLs(
   GetSettings()->SetAllowUniversalAccessFromFileURLs(enabled);
 }
 
+void InternalSettings::setPreferCompositingToLCDTextEnabled(
+    bool enabled,
+    ExceptionState& exception_state) {
+  InternalSettingsGuardForSettings();
+  GetSettings()->SetPreferCompositingToLCDTextForTesting(enabled);
+}
+
 }  // namespace blink

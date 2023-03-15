@@ -118,4 +118,9 @@ void Settings::Invalidate(SettingsDelegate::ChangeType change_type) {
     delegate_->SettingsChanged(change_type);
 }
 
+void Settings::SetPreferCompositingToLCDTextForTesting(bool enabled) {
+  SetLCDTextPreference(enabled ? LCDTextPreference::kIgnored
+                               : LCDTextPreference::kStronglyPreferred);
+}
+
 }  // namespace blink

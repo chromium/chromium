@@ -49,13 +49,6 @@ class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
         GetDocument().View()->GetPaintArtifactCompositor()->RootLayer());
   }
 
-  void SetPreferCompositingToLCDText(bool enable) {
-    GetDocument()
-        .GetFrame()
-        ->GetSettings()
-        ->SetPreferCompositingToLCDTextEnabled(enable);
-  }
-
  private:
   std::unique_ptr<LayerTreeHostEmbedder> layer_tree_;
 };

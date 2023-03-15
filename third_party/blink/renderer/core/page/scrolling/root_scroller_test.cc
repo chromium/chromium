@@ -73,12 +73,8 @@ class RootScrollerTest : public testing::Test,
 
   static void ConfigureSettings(WebSettings* settings) {
     settings->SetJavaScriptEnabled(true);
-    settings->SetPreferCompositingToLCDTextEnabled(true);
-    // Android settings.
-    settings->SetViewportEnabled(true);
-    settings->SetViewportMetaEnabled(true);
-    settings->SetShrinksViewportContentToFit(true);
-    settings->SetMainFrameResizesAreOrientationChanges(true);
+    frame_test_helpers::WebViewHelper::UpdateAndroidCompositingSettings(
+        settings);
   }
 
   void RegisterMockedHttpURLLoad(const String& file_name) {
@@ -450,7 +446,7 @@ TEST_F(RootScrollerTest, RemoveCurrentRootScroller) {
 // OuterViewport, we need something to replace them with.
 TEST_F(RootScrollerTest, AlwaysCreateCompositedScrollingLayers) {
   Initialize();
-  GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  GetPage().GetSettings().SetPreferCompositingToLCDTextForTesting(false);
 
   WebURL base_url = url_test_helpers::ToKURL("http://www.test.com/");
   frame_test_helpers::LoadHTMLString(GetWebView()->MainFrameImpl(),

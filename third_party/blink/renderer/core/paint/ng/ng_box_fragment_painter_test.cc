@@ -46,7 +46,7 @@ class NGBoxFragmentPainterTest : public PaintControllerPaintTest {
 INSTANTIATE_PAINT_TEST_SUITE_P(NGBoxFragmentPainterTest);
 
 TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
-  GetPage().GetSettings().SetPreferCompositingToLCDTextEnabled(false);
+  SetPreferCompositingToLCDText(false);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>

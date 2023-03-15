@@ -2495,9 +2495,8 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
   const auto* box = GetLayoutBox();
   bool needs_composited_scrolling = true;
   if (!force_prefer_compositing_to_lcd_text &&
-      !box->GetDocument()
-           .GetSettings()
-           ->GetPreferCompositingToLCDTextEnabled()) {
+      box->GetDocument().GetSettings()->GetLCDTextPreference() ==
+          LCDTextPreference::kStronglyPreferred) {
     if (!box->TextIsKnownToBeOnOpaqueBackground()) {
       non_composited_main_thread_scrolling_reasons_ |=
           cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;

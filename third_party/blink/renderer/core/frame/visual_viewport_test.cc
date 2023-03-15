@@ -78,14 +78,6 @@ namespace blink {
 
 namespace {
 
-void ConfigureAndroidCompositing(WebSettings* settings) {
-  settings->SetPreferCompositingToLCDTextEnabled(true);
-  settings->SetViewportMetaEnabled(true);
-  settings->SetViewportEnabled(true);
-  settings->SetMainFrameResizesAreOrientationChanges(true);
-  settings->SetShrinksViewportContentToFit(true);
-}
-
 const cc::EffectNode* GetEffectNode(const cc::Layer* layer) {
   return layer->layer_tree_host()->property_trees()->effect_tree().Node(
       layer->effect_tree_index());
@@ -96,11 +88,8 @@ class VisualViewportTest : public testing::Test,
  public:
   VisualViewportTest() : base_url_("http://www.test.com/") {}
 
-  void InitializeWithDesktopSettings(
-      void (*override_settings_func)(WebSettings*) = nullptr) {
-    if (!override_settings_func)
-      override_settings_func = &ConfigureSettings;
-    helper_.Initialize(nullptr, nullptr, override_settings_func);
+  void InitializeWithDesktopSettings() {
+    helper_.InitializeWithSettings(&ConfigureSettings);
     WebView()->SetDefaultPageScaleLimits(1, 4);
   }
 
@@ -108,7 +97,7 @@ class VisualViewportTest : public testing::Test,
       void (*override_settings_func)(WebSettings*) = nullptr) {
     if (!override_settings_func)
       override_settings_func = &ConfigureAndroidSettings;
-    helper_.Initialize(nullptr, nullptr, override_settings_func);
+    helper_.InitializeWithSettings(override_settings_func);
     WebView()->SetDefaultPageScaleLimits(0.25f, 5);
   }
 
@@ -159,15 +148,13 @@ class VisualViewportTest : public testing::Test,
 
   static void ConfigureSettings(WebSettings* settings) {
     settings->SetJavaScriptEnabled(true);
-    settings->SetPreferCompositingToLCDTextEnabled(true);
+    settings->SetLCDTextPreference(LCDTextPreference::kIgnored);
   }
 
   static void ConfigureAndroidSettings(WebSettings* settings) {
     ConfigureSettings(settings);
-    settings->SetViewportEnabled(true);
-    settings->SetViewportMetaEnabled(true);
-    settings->SetShrinksViewportContentToFit(true);
-    settings->SetMainFrameResizesAreOrientationChanges(true);
+    frame_test_helpers::WebViewHelper::UpdateAndroidCompositingSettings(
+        settings);
   }
 
   const DisplayItemClient& ScrollingBackgroundClient(const Document* document) {
@@ -1592,7 +1579,7 @@ TEST_P(VisualViewportTest, TestTopControlHidingResizeDoesntClampMainFrame) {
   EXPECT_EQ(500, frame_view.LayoutViewport()->GetScrollOffset().y());
 }
 
-static void configureHiddenScrollbarsSettings(WebSettings* settings) {
+static void ConfigureHiddenScrollbarsSettings(WebSettings* settings) {
   VisualViewportTest::ConfigureAndroidSettings(settings);
   settings->SetHideScrollbars(true);
 }
@@ -1601,7 +1588,7 @@ static void configureHiddenScrollbarsSettings(WebSettings* settings) {
 // layer when hideScrollbars WebSetting is true.
 TEST_P(VisualViewportTest,
        TestScrollbarsNotAttachedWhenHideScrollbarsSettingIsTrue) {
-  InitializeWithAndroidSettings(configureHiddenScrollbarsSettings);
+  InitializeWithAndroidSettings(ConfigureHiddenScrollbarsSettings);
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 150));
   NavigateTo("about:blank");
 
@@ -1703,8 +1690,7 @@ TEST_P(VisualViewportTest, ElementBoundsInWidgetSpaceAccountsForViewport) {
 // Test that the various window.scroll and document.body.scroll properties and
 // methods don't change with the visual viewport.
 TEST_P(VisualViewportTest, visualViewportIsInert) {
-  WebViewImpl* web_view_impl =
-      helper_.InitializeWithSettings(&ConfigureAndroidCompositing);
+  WebViewImpl* web_view_impl = helper_.InitializeWithAndroidSettings();
 
   web_view_impl->MainFrameViewWidget()->Resize(gfx::Size(200, 300));
 
@@ -2023,8 +2009,7 @@ TEST_P(VisualViewportTest, ResizeWithScrollAnchoring) {
 // Make sure a composited background-attachment:fixed background gets resized
 // by browser controls.
 TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
-  WebViewImpl* web_view_impl =
-      helper_.InitializeWithSettings(&ConfigureAndroidCompositing);
+  WebViewImpl* web_view_impl = helper_.InitializeWithAndroidSettings();
 
   int page_width = 640;
   int page_height = 480;
@@ -2085,19 +2070,16 @@ TEST_P(VisualViewportTest, ResizeCompositedAndFixedBackground) {
   EXPECT_EQ(page_height, background_layer->bounds().height());
 }
 
-static void ConfigureAndroidNonCompositing(WebSettings* settings) {
-  settings->SetPreferCompositingToLCDTextEnabled(false);
-  settings->SetViewportMetaEnabled(true);
-  settings->SetViewportEnabled(true);
-  settings->SetMainFrameResizesAreOrientationChanges(true);
-  settings->SetShrinksViewportContentToFit(true);
+static void ConfigureViewportNonCompositing(WebSettings* settings) {
+  frame_test_helpers::WebViewHelper::UpdateAndroidCompositingSettings(settings);
+  settings->SetLCDTextPreference(LCDTextPreference::kStronglyPreferred);
 }
 
 // Make sure a non-composited background-attachment:fixed background gets
 // resized by browser controls.
 TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
   WebViewImpl* web_view_impl =
-      helper_.InitializeWithSettings(&ConfigureAndroidNonCompositing);
+      helper_.InitializeWithSettings(&ConfigureViewportNonCompositing);
 
   int page_width = 640;
   int page_height = 480;
@@ -2173,8 +2155,7 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
 // Make sure a browser control resize with background-attachment:not-fixed
 // background doesn't cause invalidation or layout.
 TEST_P(VisualViewportTest, ResizeNonFixedBackgroundNoLayoutOrInvalidation) {
-  WebViewImpl* web_view_impl =
-      helper_.InitializeWithSettings(&ConfigureAndroidCompositing);
+  WebViewImpl* web_view_impl = helper_.InitializeWithAndroidSettings();
 
   int page_width = 640;
   int page_height = 480;
@@ -2234,8 +2215,7 @@ TEST_P(VisualViewportTest, ResizeNonFixedBackgroundNoLayoutOrInvalidation) {
 }
 
 TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
-  WebViewImpl* web_view_impl =
-      helper_.InitializeWithSettings(&ConfigureAndroidCompositing);
+  WebViewImpl* web_view_impl = helper_.InitializeWithAndroidSettings();
 
   int page_width = 320;
   int page_height = 590;
@@ -2423,14 +2403,8 @@ class VisualViewportSimTest : public SimTest {
 
   void SetUp() override {
     SimTest::SetUp();
-
-    // Use settings that resemble the Android configuration.
-    WebView().GetSettings()->SetViewportEnabled(true);
-    WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
-    WebView().GetSettings()->SetViewportMetaEnabled(true);
-    WebView().GetSettings()->SetViewportEnabled(true);
-    WebView().GetSettings()->SetMainFrameResizesAreOrientationChanges(true);
-    WebView().GetSettings()->SetShrinksViewportContentToFit(true);
+    frame_test_helpers::WebViewHelper::UpdateAndroidCompositingSettings(
+        WebView().GetSettings());
     WebView().SetDefaultPageScaleLimits(0.25f, 5);
   }
 };

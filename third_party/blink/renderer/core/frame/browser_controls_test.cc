@@ -104,12 +104,8 @@ class BrowserControlsTest : public testing::Test,
 
   static void ConfigureSettings(WebSettings* settings) {
     settings->SetJavaScriptEnabled(true);
-    settings->SetPreferCompositingToLCDTextEnabled(true);
-    // Android settings
-    settings->SetViewportEnabled(true);
-    settings->SetViewportMetaEnabled(true);
-    settings->SetShrinksViewportContentToFit(true);
-    settings->SetMainFrameResizesAreOrientationChanges(true);
+    frame_test_helpers::WebViewHelper::UpdateAndroidCompositingSettings(
+        settings);
   }
 
   void RegisterMockedHttpURLLoad(const std::string& file_name) {
@@ -196,14 +192,8 @@ class BrowserControlsSimTest : public SimTest {
 
   void SetUp() override {
     SimTest::SetUp();
-
-    // Use settings that resemble the Android configuration.
-    WebView().GetSettings()->SetViewportEnabled(true);
-    WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
-    WebView().GetSettings()->SetViewportMetaEnabled(true);
-    WebView().GetSettings()->SetViewportEnabled(true);
-    WebView().GetSettings()->SetMainFrameResizesAreOrientationChanges(true);
-    WebView().GetSettings()->SetShrinksViewportContentToFit(true);
+    frame_test_helpers::WebViewHelper::UpdateAndroidCompositingSettings(
+        WebView().GetSettings());
     WebView().SetDefaultPageScaleLimits(0.25f, 5);
     Compositor().LayerTreeHost()->UpdateBrowserControlsState(
         cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kShown,

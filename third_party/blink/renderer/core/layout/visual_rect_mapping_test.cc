@@ -684,8 +684,7 @@ TEST_P(VisualRectMappingTest, ContainerAndTargetDifferentFlippedWritingMode) {
 
 TEST_P(VisualRectMappingTest,
        DifferentPaintInvalidaitionContainerForAbsolutePosition) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
 
   SetBodyInnerHTML(R"HTML(
     <div id='stacking-context' style='opacity: 0.9; background: blue;
@@ -725,8 +724,7 @@ TEST_P(VisualRectMappingTest,
 
 TEST_P(VisualRectMappingTest,
        ContainerOfAbsoluteAbovePaintInvalidationContainer) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
 
   SetBodyInnerHTML(
       "<div id='container' style='position: absolute; top: 88px; left: 99px'>"
@@ -1122,8 +1120,7 @@ TEST_P(VisualRectMappingTest, PerspectivePlusScroll) {
 
 TEST_P(VisualRectMappingTest, FixedContentsInIframe) {
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <style> * { margin:0; } </style>
     <iframe src='http://test.com' width='500' height='500' frameBorder='0'>
@@ -1160,8 +1157,7 @@ TEST_P(VisualRectMappingTest, FixedContentsInIframe) {
 
 TEST_P(VisualRectMappingTest, FixedContentsWithScrollOffset) {
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <style>body { margin:0; } ::-webkit-scrollbar { display:none; }</style>
     <div id='space' style='height:10px;'></div>
@@ -1192,8 +1188,7 @@ TEST_P(VisualRectMappingTest, FixedContentsWithScrollOffset) {
 }
 
 TEST_P(VisualRectMappingTest, FixedContentsUnderViewWithScrollOffset) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <style>body { margin:0; } ::-webkit-scrollbar { display:none; }</style>
     <div id='fixed' style='

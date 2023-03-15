@@ -113,6 +113,8 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
 
   static std::string ToSimpleLayoutTree(const LayoutObject& layout_object);
 
+  void SetPreferCompositingToLCDText(bool enable);
+
  protected:
   void LoadAhem();
   void LoadNoto();

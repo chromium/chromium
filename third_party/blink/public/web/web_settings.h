@@ -42,6 +42,7 @@
 
 namespace blink {
 
+enum class LCDTextPreference;
 class WebString;
 
 // WebSettings is owned by the WebView and allows code to modify the settings
@@ -91,7 +92,7 @@ class WebSettings {
   virtual bool ShrinksViewportContentToFit() const = 0;
   virtual bool ViewportEnabled() const = 0;
   virtual void SetAccelerated2dCanvasMSAASampleCount(int) = 0;
-  virtual void SetPreferCompositingToLCDTextEnabled(bool) = 0;
+  virtual void SetLCDTextPreference(LCDTextPreference) = 0;
   // Not implemented yet, see http://crbug.com/178119
   virtual void SetAcceleratedCompositingForTransitionEnabled(bool) {}
   // If set to true, allows frames with an https origin to display passive

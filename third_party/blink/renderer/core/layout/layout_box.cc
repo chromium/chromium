@@ -8237,9 +8237,10 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
   // If we care about LCD text, paint root backgrounds into scrolling contents
   // layer even if style suggests otherwise. (For non-root scrollers, we just
   // avoid compositing - see PLSA::ComputeNeedsCompositedScrolling.)
-  if (IsA<LayoutView>(this)) {
-    if (!GetDocument().GetSettings()->GetPreferCompositingToLCDTextEnabled())
-      return kBackgroundPaintInContentsSpace;
+  if (IsA<LayoutView>(this) &&
+      GetDocument().GetSettings()->GetLCDTextPreference() ==
+          LCDTextPreference::kStronglyPreferred) {
+    return kBackgroundPaintInContentsSpace;
   }
 
   // Inset box shadow is painted in the scrolling area above the background, and

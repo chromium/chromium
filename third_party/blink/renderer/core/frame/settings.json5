@@ -165,8 +165,9 @@
     },
 
     {
-      name: "preferCompositingToLCDTextEnabled",
-      initial: false,
+      name: "LCDTextPreference",
+      type: "LCDTextPreference",
+      initial: "LCDTextPreference::kStronglyPreferred",
       invalidate: ["AcceleratedCompositing"],
     },
 

@@ -96,12 +96,14 @@ void PaintArtifactCompositor::WillBeRemovedFromFrame() {
   root_layer_->RemoveAllChildren();
 }
 
-void PaintArtifactCompositor::SetPrefersLCDText(bool prefers) {
-  if (prefers_lcd_text_ == prefers)
+void PaintArtifactCompositor::SetLCDTextPreference(
+    LCDTextPreference preference) {
+  if (lcd_text_preference_ == preference) {
     return;
+  }
   SetNeedsUpdate(PaintArtifactCompositorUpdateReason::
                      kPaintArtifactCompositorPrefersLCDText);
-  prefers_lcd_text_ = prefers;
+  lcd_text_preference_ = preference;
 }
 
 std::unique_ptr<JSONArray> PaintArtifactCompositor::GetPendingLayersAsJSON()
@@ -369,8 +371,10 @@ bool PaintArtifactCompositor::DecompositeEffect(
         return false;
       const auto& previous_sibling = pending_layers_[layer_index - 1];
       if (previous_sibling.DrawsContent() &&
-          !previous_sibling.CanMerge(layer, *upcast_state, prefers_lcd_text_))
+          !previous_sibling.CanMerge(layer, *upcast_state,
+                                     lcd_text_preference_)) {
         return false;
+      }
     }
   }
 
@@ -469,7 +473,7 @@ void PaintArtifactCompositor::LayerizeGroup(
     for (wtf_size_t candidate_index = pending_layers_.size() - 1;
          candidate_index-- > first_layer_in_current_group;) {
       PendingLayer& candidate_layer = pending_layers_[candidate_index];
-      if (candidate_layer.Merge(new_layer, prefers_lcd_text_)) {
+      if (candidate_layer.Merge(new_layer, lcd_text_preference_)) {
         pending_layers_.pop_back();
         break;
       }

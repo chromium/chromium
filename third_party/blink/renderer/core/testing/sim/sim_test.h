@@ -75,6 +75,8 @@ class SimTest : public testing::Test {
       bool is_for_scalable_page,
       SimCompositor* compositor);
 
+  void SetPreferCompositingToLCDText(bool enabled);
+
  private:
   frame_test_helpers::TestWebFrameWidget* CreateTestWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,

@@ -17,8 +17,7 @@ namespace blink {
 using ScrollableAreaPainterTest = PaintControllerPaintTestBase;
 
 TEST_F(ScrollableAreaPainterTest, OverlayScrollbars) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <div id="target" style="overflow: scroll; width: 50px; height: 50px">
       <div style="width: 200px; height: 200px"></div>

@@ -4221,8 +4221,8 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
     // order to send IPCs that query and change compositing state. So
     // WebFrameWidgetImpl::Resize() must come after this call, as it runs the
     // entire document lifecycle.
-    View()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-        widget_base_->ComputePreferCompositingToLCDText());
+    View()->GetSettings()->SetLCDTextPreference(
+        widget_base_->ComputeLCDTextPreference());
   }
 
   // When the device scale changes, the size and position of the popup would

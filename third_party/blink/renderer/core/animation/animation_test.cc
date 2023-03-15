@@ -2256,7 +2256,7 @@ TEST_P(AnimationPendingAnimationsTest,
 
 TEST_P(AnimationAnimationTestCompositing,
        ScrollLinkedAnimationNotCompositedIfSourceIsNotComposited) {
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  SetPreferCompositingToLCDText(false);
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { overflow: scroll; width: 100px; height: 100px; }

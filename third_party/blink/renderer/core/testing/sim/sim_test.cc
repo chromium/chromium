@@ -219,4 +219,8 @@ frame_test_helpers::TestWebFrameWidget* SimTest::CreateTestWebFrameWidget(
       compositor_.get());
 }
 
+void SimTest::SetPreferCompositingToLCDText(bool enabled) {
+  GetDocument().GetSettings()->SetPreferCompositingToLCDTextForTesting(enabled);
+}
+
 }  // namespace blink

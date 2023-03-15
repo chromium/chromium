@@ -391,15 +391,9 @@ class WebFrameTest : public testing::Test {
         WebString::FromUTF8(file_name), WebString::FromUTF8(mime_type));
   }
 
-  static void ConfigureCompositingWebView(WebSettings* settings) {
-    settings->SetPreferCompositingToLCDTextEnabled(true);
-  }
-
   static void ConfigureAndroid(WebSettings* settings) {
-    settings->SetViewportMetaEnabled(true);
-    settings->SetViewportEnabled(true);
-    settings->SetMainFrameResizesAreOrientationChanges(true);
-    settings->SetShrinksViewportContentToFit(true);
+    frame_test_helpers::WebViewHelper::UpdateAndroidCompositingSettings(
+        settings);
     settings->SetViewportStyle(mojom::blink::ViewportStyle::kMobile);
   }
 
@@ -3574,7 +3568,11 @@ TEST_F(WebFrameTest, updateOverlayScrollbarLayers)
   int view_height = 500;
 
   frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.Initialize(nullptr, nullptr, &ConfigureCompositingWebView);
+  web_view_helper.Initialize();
+  web_view_helper.GetWebView()
+      ->GetPage()
+      ->GetSettings()
+      .SetPreferCompositingToLCDTextForTesting(true);
 
   web_view_helper.Resize(gfx::Size(view_width, view_height));
   frame_test_helpers::LoadFrame(web_view_helper.GetWebView()->MainFrameImpl(),
@@ -8169,7 +8167,11 @@ TEST_F(WebFrameTest, FirstNonBlankSubframeNavigation) {
 TEST_F(WebFrameTest, overflowHiddenRewrite) {
   RegisterMockedHttpURLLoad("non-scrollable.html");
   frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.Initialize(nullptr, nullptr, &ConfigureCompositingWebView);
+  web_view_helper.Initialize();
+  web_view_helper.GetWebView()
+      ->GetPage()
+      ->GetSettings()
+      .SetPreferCompositingToLCDTextForTesting(true);
 
   web_view_helper.Resize(gfx::Size(100, 100));
   frame_test_helpers::LoadFrame(web_view_helper.GetWebView()->MainFrameImpl(),

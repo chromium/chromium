@@ -2243,8 +2243,7 @@ TEST_P(ScrollbarsTest,
 }
 
 TEST_P(ScrollbarsTest, PLSADisposeShouldClearPointerInLayers) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

@@ -3656,14 +3656,12 @@ TEST_F(MiddleClickWebViewTest, MiddleClickAutoscrollCursor) {
   web_view_helper_.Reset();
 }
 
-static void ConfigueCompositingWebView(WebSettings* settings) {
-  settings->SetPreferCompositingToLCDTextEnabled(true);
-}
-
 TEST_F(WebViewTest, ShowPressOnTransformedLink) {
   frame_test_helpers::WebViewHelper web_view_helper;
-  WebViewImpl* web_view_impl =
-      web_view_helper.InitializeWithSettings(&ConfigueCompositingWebView);
+  WebViewImpl* web_view_impl = web_view_helper.Initialize();
+  web_view_impl->GetPage()
+      ->GetSettings()
+      .SetPreferCompositingToLCDTextForTesting(true);
 
   int page_width = 640;
   int page_height = 480;

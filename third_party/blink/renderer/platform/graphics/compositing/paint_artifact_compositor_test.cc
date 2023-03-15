@@ -86,7 +86,8 @@ class PaintArtifactCompositorTest : public testing::Test,
     paint_artifact_compositor_ = std::make_unique<PaintArtifactCompositor>(
         scroll_callbacks_.GetWeakPtr());
     // Prefer lcd-text by default for tests.
-    paint_artifact_compositor_->SetPrefersLCDText(true);
+    paint_artifact_compositor_->SetLCDTextPreference(
+        LCDTextPreference::kStronglyPreferred);
 
     // Uses a LayerTreeHostClient that will make a LayerTreeFrameSink to allow
     // the compositor to run and submit frames.

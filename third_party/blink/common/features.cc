@@ -859,7 +859,14 @@ const base::FeatureParam<CheckOfflineCapabilityMode>
 // means losing lcd text.
 BASE_FEATURE(kPreferCompositingToLCDText,
              "PreferCompositingToLCDText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// On Android we never have LCD text. On Chrome OS we prefer composited
+// scrolling for better scrolling performance.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
              "LogUnexpectedIPCPostedToBackForwardCachedDocuments",

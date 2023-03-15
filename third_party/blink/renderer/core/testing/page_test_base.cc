@@ -323,4 +323,8 @@ std::string PageTestBase::ToSimpleLayoutTree(
   return ostream.str();
 }
 
+void PageTestBase::SetPreferCompositingToLCDText(bool enable) {
+  GetPage().GetSettings().SetPreferCompositingToLCDTextForTesting(enable);
+}
+
 }  // namespace blink

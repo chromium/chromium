@@ -914,7 +914,7 @@ TEST_P(FrameThrottlingTest, ScrollingCoordinatorShouldSkipThrottledFrame) {
 
 TEST_P(FrameThrottlingTest, ScrollingCoordinatorShouldSkipThrottledLayer) {
   WebView().GetSettings()->SetJavaScriptEnabled(true);
-  WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+  SetPreferCompositingToLCDText(true);
 
   // Create a hidden frame which is throttled and has a touch handler inside a
   // composited layer.
@@ -958,7 +958,7 @@ TEST_P(FrameThrottlingTest, ScrollingCoordinatorShouldSkipThrottledLayer) {
 
 TEST_P(FrameThrottlingTest,
        ScrollingCoordinatorShouldSkipCompositedThrottledFrame) {
-  WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+  SetPreferCompositingToLCDText(true);
 
   // Create a hidden frame which is throttled.
   SimRequest main_resource("https://example.com/", "text/html");
@@ -1065,7 +1065,7 @@ TEST_P(FrameThrottlingTest, DumpThrottledFrame) {
 }
 
 TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
-  WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+  SetPreferCompositingToLCDText(true);
 
   // Create a hidden frame which is throttled.
   SimRequest main_resource("https://example.com/", "text/html");
@@ -1175,7 +1175,7 @@ TEST_P(FrameThrottlingTest, ThrottleSubtreeAtomically) {
 }
 
 TEST_P(FrameThrottlingTest, SkipPaintingLayersInThrottledFrames) {
-  WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+  SetPreferCompositingToLCDText(true);
 
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");

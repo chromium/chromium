@@ -283,8 +283,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
 // Test that will-change: transform applied to the scroller will cause the
 // scrolling contents layer to be promoted.
 TEST_P(MAYBE_PaintLayerScrollableAreaTest, ScrollLayerOnPointerEvents) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { overflow: scroll; height: 100px; width: 100px; }
@@ -997,8 +996,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest,
        ViewScrollWithFixedAttachmentBackgroundPreferCompositingToLCDText) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       html, #fixed-background {
@@ -1462,9 +1460,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, SetSnapContainerDataNeedsUpdate) {
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest,
        RootScrollbarShouldUseParentOfOverscrollNodeAsTransformNode) {
-  auto& document = GetDocument();
-  document.GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
+  SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     ::-webkit-scrollbar {
@@ -1490,9 +1486,8 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   )HTML");
 
   {
-    const auto* root_scrollable = document.View()->LayoutViewport();
-    const auto& visual_viewport =
-        document.View()->GetPage()->GetVisualViewport();
+    const auto* root_scrollable = GetDocument().View()->LayoutViewport();
+    const auto& visual_viewport = GetPage().GetVisualViewport();
 
     const auto& paint_chunks = ContentPaintChunks();
     bool found_root_scrollbar = false;

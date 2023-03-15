@@ -486,8 +486,8 @@ void WebSettingsImpl::SetAntialiasedClips2dCanvasEnabled(bool enabled) {
   settings_->SetAntialiasedClips2dCanvasEnabled(enabled);
 }
 
-void WebSettingsImpl::SetPreferCompositingToLCDTextEnabled(bool enabled) {
-  dev_tools_emulator_->SetPreferCompositingToLCDTextEnabled(enabled);
+void WebSettingsImpl::SetLCDTextPreference(LCDTextPreference preference) {
+  dev_tools_emulator_->SetLCDTextPreference(preference);
 }
 
 void WebSettingsImpl::SetHideDownloadUI(bool hide) {

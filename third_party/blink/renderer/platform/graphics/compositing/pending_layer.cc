@@ -203,7 +203,7 @@ static constexpr float kMergeSparsityAreaTolerance = 10000;
 
 bool PendingLayer::MergeInternal(const PendingLayer& guest,
                                  const PropertyTreeState& guest_state,
-                                 bool prefers_lcd_text,
+                                 LCDTextPreference lcd_text_preference,
                                  bool dry_run) {
   DCHECK_EQ(&Chunks().GetPaintArtifact(), &guest.Chunks().GetPaintArtifact());
   if (ChunkRequiresOwnLayer() || guest.ChunkRequiresOwnLayer())
@@ -282,7 +282,8 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
     // This is in the 'if' block because if guest.has_decomposited_blend_mode_
     // is true, we'll lose LCD text anyway due to the exotic blend mode
     // regardless of whether it's decomposited.
-    if (prefers_lcd_text && !merged_text_known_to_be_on_opaque_background) {
+    if (lcd_text_preference == LCDTextPreference::kStronglyPreferred &&
+        !merged_text_known_to_be_on_opaque_background) {
       if (has_text_ && text_known_to_be_on_opaque_background_)
         return false;
       if (guest.has_text_ && guest.text_known_to_be_on_opaque_background_)
