@@ -25,6 +25,7 @@
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -280,9 +281,9 @@ void DlpClipboardNotifier::ShowToast(const std::string& id,
       /*visible_on_lock_screen=*/false,
       /*has_dismiss_button=*/true,
       /*custom_dismiss_text=*/
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCK_TOAST_BUTTON));
-  toast.is_managed = true;
-  toast.dismiss_callback = base::BindRepeating(&OnToastClicked);
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCK_TOAST_BUTTON),
+      /*dismiss_callback=*/base::BindRepeating(&OnToastClicked),
+      /*leading_icon=*/ash::kSystemMenuBusinessIcon);
   ash::ToastManager::Get()->Show(std::move(toast));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

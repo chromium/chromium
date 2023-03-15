@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace aura {
 class Window;
@@ -51,16 +52,18 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   static constexpr int kOffset = 8;
 
   // Creates the Toast overlay UI. `text` is the message to be shown, and
-  // `dismiss_text` is the message for the button to dismiss the toast message.
-  // The dismiss button will only be displayed if `dismiss_text` is not empty.
-  // `dismiss_callback` will be called when the button is pressed. If
-  // `is_managed` is true, a managed icon will be added to the toast.
+  // `dismiss_text` is the dismiss button's text. The dismiss button will only
+  // be displayed if `dismiss_text` is not empty. `dismiss_callback` will be
+  // called when the dismiss button is pressed. An icon will show on the left
+  // side if `leading_icon` is not empty.
+  // To test different Toast UI variations, enable debug shortcuts by building
+  // with flag `--ash-debug-shortcuts` and use command "Shift + Ctrl + Alt + O".
   ToastOverlay(Delegate* delegate,
                const std::u16string& text,
                const std::u16string& dismiss_text,
+               const gfx::VectorIcon& leading_icon,
                base::TimeDelta duration,
                bool show_on_lock_screen,
-               bool is_managed,
                bool persist_on_hover,
                aura::Window* root_window,
                base::RepeatingClosure dismiss_callback);

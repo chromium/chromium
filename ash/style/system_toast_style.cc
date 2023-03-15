@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
@@ -38,14 +39,19 @@ namespace {
 
 // UI constants in DIP (Density Independent Pixel).
 constexpr int kToastTextMaximumWidth = 512;
-constexpr int kOneLineHorizontalSpacing = 16;
-constexpr int kTwoLineHorizontalSpacing = 24;
-constexpr int kSpacingBetweenLabelAndButton = 16;
-constexpr int kOnelineButtonPadding = 2;
-constexpr int kTwolineButtonRightSpacing = 12;
-constexpr int kToastLabelVerticalSpacing = 8;
-constexpr int kManagedIconSize = 32;
-constexpr int kTwolineVerticalPadding = 12;
+
+constexpr int kOneLineHorizontalPadding = 16;
+constexpr int kTwoLineHorizontalPadding = 24;
+
+constexpr int kOneLineVerticalPadding = 8;
+constexpr int kTwoLineVerticalPadding = 12;
+
+constexpr int kOneLineButtonPadding = 2;
+constexpr int kTwoLineButtonRightPadding = 12;
+
+constexpr int kLeadingIconSize = 20;
+constexpr int kLeadingIconLeftPadding = 18;
+constexpr int kLeadingIconRightPadding = 14;
 
 // The label inside SystemToastStyle, which allows two lines at maximum.
 class SystemToastInnerLabel : public views::Label {
@@ -73,18 +79,43 @@ class SystemToastInnerLabel : public views::Label {
 BEGIN_METADATA(SystemToastInnerLabel, views::Label)
 END_METADATA
 
-// Returns the vertical padding for the layout given button presence and
-// `two_line`.
-int ComputeVerticalSpacing(bool has_button, bool two_line) {
-  if (two_line)
-    return kTwolineVerticalPadding;
+// Returns the vertical padding for the layout given the presence of the dismiss
+// button and whether the toast is multi-line.
+int ComputeVerticalPadding(bool has_button, bool two_line) {
+  if (two_line) {
+    return kTwoLineVerticalPadding;
+  }
 
   // For one line, the button is taller so it determines the height of the toast
   // so we use the button's padding.
-  if (has_button)
-    return kOnelineButtonPadding;
+  return has_button ? kOneLineButtonPadding : kOneLineVerticalPadding;
+}
 
-  return kToastLabelVerticalSpacing;
+// Computes the outer insets for the Box Layout container that holds toast
+// elements. Horizontal spacing may vary depending if there's a dismiss button
+// or a leading icon present.
+gfx::Insets ComputeInsets(bool has_button, bool two_line, bool has_icon) {
+  int left_inset;
+  int right_inset;
+
+  if (has_icon) {
+    left_inset = kLeadingIconLeftPadding;
+  } else {
+    left_inset =
+        two_line ? kTwoLineHorizontalPadding : kOneLineHorizontalPadding;
+  }
+
+  if (has_button) {
+    right_inset = two_line ? kTwoLineButtonRightPadding : kOneLineButtonPadding;
+  } else {
+    right_inset =
+        two_line ? kTwoLineHorizontalPadding : kOneLineHorizontalPadding;
+  }
+
+  const int vertical_insets = ComputeVerticalPadding(has_button, two_line);
+
+  return gfx::Insets::TLBR(vertical_insets, left_inset, vertical_insets,
+                           right_inset);
 }
 
 }  // namespace
@@ -92,18 +123,21 @@ int ComputeVerticalSpacing(bool has_button, bool two_line) {
 SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
                                    const std::u16string& text,
                                    const std::u16string& dismiss_text,
-                                   const bool is_managed)
-    : scoped_a11y_overrider_(
+                                   const gfx::VectorIcon& leading_icon)
+    : leading_icon_(&leading_icon),
+      scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
 
-  if (is_managed) {
-    managed_icon_ = AddChildView(std::make_unique<views::ImageView>());
-    managed_icon_->SetPreferredSize(
-        gfx::Size(kManagedIconSize, kManagedIconSize));
+  if (!leading_icon_->is_empty()) {
+    leading_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+    leading_icon_view_->SetPreferredSize(gfx::Size(
+        kLeadingIconSize + kLeadingIconRightPadding, kLeadingIconSize));
+    leading_icon_view_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0, 0, kLeadingIconRightPadding)));
   }
 
   label_ = AddChildView(std::make_unique<SystemToastInnerLabel>(text));
@@ -120,19 +154,10 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
   // are needed.
   label_->GetPreferredSize();
   const bool two_line = label_->GetRequiredLines() > 1;
-  const int vertical_spacing = ComputeVerticalSpacing(!!button_, two_line);
-
-  auto insets =
-      gfx::Insets::VH(vertical_spacing, two_line ? kTwoLineHorizontalSpacing
-                                                 : kOneLineHorizontalSpacing);
-  if (button_) {
-    insets.set_right(two_line ? kTwolineButtonRightSpacing
-                              : kOnelineButtonPadding);
-  }
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, insets,
-      button_ ? kSpacingBetweenLabelAndButton : 0));
+      views::BoxLayout::Orientation::kHorizontal,
+      ComputeInsets(!!button_, two_line, !leading_icon.is_empty())));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->SetFlexForView(label_, 1);
@@ -140,11 +165,9 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
   int toast_height = GetPreferredSize().height();
   const float toast_corner_radius = toast_height / 2.0f;
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(toast_corner_radius));
-  if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        toast_corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
-  }
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      toast_corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
 
   // Since system toast has a very large corner radius, we should use the shadow
   // on texture layer. Refer to `ash::SystemShadowOnTextureLayer` for more
@@ -199,10 +222,10 @@ void SystemToastStyle::AddedToWidget() {
 void SystemToastStyle::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  if (managed_icon_) {
-    managed_icon_->SetImage(gfx::CreateVectorIcon(
-        kSystemMenuBusinessIcon,
-        GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary)));
+  if (leading_icon_view_) {
+    leading_icon_view_->SetImage(gfx::CreateVectorIcon(
+        *leading_icon_,
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)));
   }
 
   SchedulePaint();

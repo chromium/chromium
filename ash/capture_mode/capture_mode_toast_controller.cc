@@ -171,8 +171,8 @@ void CaptureModeToastController::BuildCaptureToastWidget(
           kShellWindowId_MenuContainer)));
   toast_contents_view_ =
       capture_toast_widget_->SetContentsView(std::make_unique<SystemToastStyle>(
-          /*dismiss_callback=*/base::DoNothing(), label, /*dismiss_text=*/u"",
-          /*is_managed=*/false));
+          /*dismiss_callback=*/base::DoNothing(), label,
+          /*dismiss_text=*/std::u16string()));
 
   // We animate the `capture_toast_widget_` explicitly in `ShowCaptureToast()`
   // and `MaybeDismissCaptureToast()`. Any default visibility animations added

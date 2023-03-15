@@ -16,6 +16,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -231,6 +232,35 @@ void HandleTuckFloatedWindow(AcceleratorAction action) {
                                                             /*velocity_y=*/0.f);
 }
 
+// Toast debug shortcut constants.
+const std::u16string oneline_toast_text = u"SystemUI toast text string";
+const std::u16string multiline_toast_text =
+    u"SystemUI toast text string that breaks to two lines due to accomodate "
+    u"long strings or translations. The text container has a max-width of "
+    u"512px.";
+
+void HandleShowToast() {
+  // Iterates through all toast variations, which are a combination of having
+  // multi-line text, dismiss button, and a leading icon.
+  // `has_multiline_text` changes value every 4 iterations.
+  // `has_dismiss_button` changes value every 2 iterations.
+  // `has_leading_icon` changes value every iteration.
+  static int index = 0;
+  bool has_multiline_text = (index / 4) % 2;
+  bool has_dismiss_button = (index / 2) % 2;
+  bool has_leading_icon = index % 2;
+  index++;
+
+  Shell::Get()->toast_manager()->Show(ToastData(
+      /*id=*/"id", ToastCatalogName::kDebugCommand,
+      has_multiline_text ? multiline_toast_text : oneline_toast_text,
+      ToastData::kDefaultToastDuration,
+      /*visible_on_lock_screen=*/true, has_dismiss_button,
+      /*custom_dismiss_text=*/u"Button",
+      /*dismiss_callback=*/base::RepeatingClosure(),
+      has_leading_icon ? kSystemMenuBusinessIcon : gfx::kNoneIcon));
+}
+
 }  // namespace
 
 void PrintUIHierarchies() {
@@ -277,11 +307,7 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       HandlePrintWindowHierarchy();
       break;
     case DEBUG_SHOW_TOAST:
-      Shell::Get()->toast_manager()->Show(ToastData(
-          /*id=*/"id", ToastCatalogName::kDebugCommand, /*text=*/u"Toast",
-          ToastData::kDefaultToastDuration,
-          /*visible_on_lock_screen=*/false, /*has_dismiss_button=*/true,
-          /*custom_dismiss_text=*/u"Dismiss"));
+      HandleShowToast();
       break;
     case DEBUG_SYSTEM_UI_STYLE_VIEWER:
       SystemUIComponentsStyleViewerView::CreateAndShowWidget();

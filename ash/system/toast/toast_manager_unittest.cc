@@ -9,6 +9,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -16,6 +17,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/system_toast_style.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
@@ -34,6 +36,7 @@
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget.h"
 
@@ -139,6 +142,13 @@ class ToastManagerImplTest : public AshTestBase {
     return overlay ? overlay->dismiss_text_ : std::u16string();
   }
 
+  bool CurrentToastHasLeadingIcon() {
+    ToastOverlay* overlay =
+        GetCurrentOverlay(Shell::GetRootWindowForNewWindows());
+    return overlay && overlay->overlay_view_ &&
+           !overlay->overlay_view_->leading_icon_->is_empty();
+  }
+
   void ClickDismissButton(
       aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
     views::LabelButton* dismiss_button = GetDismissButton(root_window);
@@ -170,6 +180,14 @@ class ToastManagerImplTest : public AshTestBase {
                               /*visible_on_lock_screen=*/false,
                               /*has_dismiss_button=*/true, dismiss_text));
     return id;
+  }
+
+  void ShowToastWithLeadingIcon(const gfx::VectorIcon& icon) {
+    manager()->Show(ToastData(
+        "id", ToastCatalogName::kToastManagerUnittest, u"text",
+        ToastData::kDefaultToastDuration, /*visible_on_lock_screen=*/false,
+        /*has_dismiss_button=*/false, /*custom_dismiss_text=*/u"",
+        /*dismiss_callback=*/base::DoNothing(), icon));
   }
 
   void CancelToast(const std::string& id) { manager()->Cancel(id); }
@@ -1150,6 +1168,14 @@ TEST_F(ToastManagerImplTest,
 
   for (auto* root_window : Shell::GetAllRootWindows())
     EXPECT_FALSE(GetCurrentOverlay(root_window));
+}
+
+// Tests that toasts add a leading icon when one is provided.
+TEST_F(ToastManagerImplTest, ToastWithLeadingIcon) {
+  ShowToastWithLeadingIcon(gfx::kNoneIcon);
+  EXPECT_FALSE(CurrentToastHasLeadingIcon());
+  ShowToastWithLeadingIcon(kSystemMenuBusinessIcon);
+  EXPECT_TRUE(CurrentToastHasLeadingIcon());
 }
 
 }  // namespace ash
