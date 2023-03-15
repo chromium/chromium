@@ -398,9 +398,13 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_WebGLDisplayP3 [ Failu
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLDefaultWorker [ RetryOnFailure ]
 
-# Flakes on Pixel 4, times out on Pixel 6
-crbug.com/1383180 [ android android-pixel-6 android-webview-instrumentation angle-disabled no-passthrough ] Pixel_MediaRecorderFrom2DCanvas [ Failure ]
-crbug.com/1383180 [ android android-pixel-6 ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
+# Flakes on Pixel 4 and Pixel 6
+# finder:group-start crbug.com/1383180
+crbug.com/1383180 [ android android-pixel-4 android-chromium ] Pixel_MediaRecorderFrom2DCanvas [ RetryOnFailure ]
+crbug.com/1383180 [ android android-pixel-6 android-chromium ] Pixel_MediaRecorderFrom2DCanvas [ RetryOnFailure ]
+crbug.com/1383180 [ android android-pixel-4 android-chromium ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
+crbug.com/1383180 [ android android-pixel-6 android-chromium ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
+# finder:group-end
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
