@@ -15,7 +15,6 @@
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_month_view.h"
-#include "ash/system/time/calendar_up_next_view.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/time/date_helper.h"
@@ -30,16 +29,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
-#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
-#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/interpolated_transform.h"
@@ -72,7 +67,6 @@ constexpr int kEventListViewVerticalPadding = 6;
 constexpr int kMonthHeaderLabelTopPadding = 14;
 constexpr int kMonthHeaderLabelBottomPadding = 2;
 constexpr int kEventListViewHorizontalOffset = 1;
-constexpr int kUpNextAnimationYOffset = 20;
 
 // The offset for `month_label_` to make it align with `month_header`.
 constexpr int kMonthLabelPaddingOffset = -1;
@@ -161,9 +155,6 @@ constexpr char kCalendarSlidingSurfaceOpenEventListAnimationHistogram[] =
 constexpr char kUpNextViewOpenEventListAnimationHistogram[] =
     "Ash.CalendarView.OpenEventList.UpNextView.AnimationSmoothness";
 
-constexpr char kShowUpNextViewAnimationHistogram[] =
-    "Ash.CalendarView.ShowUpNextView.AnimationSmoothness";
-
 // The overridden `Label` view used in `CalendarView`.
 class CalendarLabel : public views::Label {
  public:
@@ -216,6 +207,84 @@ void ResetLayer(views::View* view) {
   view->layer()->SetOpacity(1.0f);
   view->layer()->SetTransform(gfx::Transform());
 }
+
+// Provides a layer mask over the `scroll_view_` that stops the calendar from
+// showing underneath the `up_next_view_`, if a transparent color is used as
+// the background color.
+// TODO: b/265057469 Remove layer mask if the cros.sys.system-on-base dark
+// theme colour is updated to be opaque.
+class UpNextViewMask : public ui::LayerOwner,
+                       public ui::LayerDelegate,
+                       public views::ViewObserver {
+ public:
+  UpNextViewMask(views::ScrollView* scroll_view,
+                 CalendarUpNextView* up_next_view)
+      : scroll_view_(scroll_view), up_next_view_(up_next_view) {
+    SetLayer(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->set_delegate(this);
+
+    if (!scroll_view_->layer()) {
+      scroll_view_->SetPaintToLayer();
+      scroll_view_->layer()->SetFillsBoundsOpaquely(false);
+    }
+
+    scroll_view_->layer()->SetMaskLayer(layer());
+
+    scroll_view_->AddObserver(this);
+    up_next_view_->AddObserver(this);
+
+    // Up next view is added after the `scroll_view_` already exists so we need
+    // to manually set the layer's bounds initially.
+    if (!scroll_view_->bounds().IsEmpty()) {
+      OnViewBoundsChanged(scroll_view_);
+    }
+  }
+
+  ~UpNextViewMask() override {
+    scroll_view_->RemoveObserver(this);
+    up_next_view_->RemoveObserver(this);
+  }
+
+  // ui::LayerDelegate:
+  // We handle the views size dynamically when painting the layer so we don't
+  // need to do anything here.
+  void OnDeviceScaleFactorChanged(float, float) override {}
+
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    ui::PaintRecorder recorder(context, layer()->size());
+    recorder.canvas()->DrawColor(SK_ColorBLACK);
+
+    gfx::Rect up_next_view_bounds(up_next_view_->GetVisibleBounds());
+    views::View::ConvertRectToScreen(up_next_view_, &up_next_view_bounds);
+
+    recorder.canvas()->Translate(gfx::Vector2d(
+        up_next_view_bounds.x() - scroll_view_->GetBoundsInScreen().x(),
+        up_next_view_bounds.y() - scroll_view_->GetBoundsInScreen().y()));
+
+    cc::PaintFlags flags;
+    flags.setBlendMode(SkBlendMode::kClear);
+    flags.setAntiAlias(true);
+    recorder.canvas()->DrawPath(up_next_view_->GetClipPath(), flags);
+  }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* view) override {
+    if (view == scroll_view_) {
+      layer()->SetBounds(scroll_view_->layer()->bounds());
+      return;
+    }
+
+    if (view == up_next_view_) {
+      scroll_view_->layer()->SchedulePaint(
+          gfx::Rect(scroll_view_->layer()->size()));
+    }
+  }
+
+  // Owned by `CalendarView`.
+  views::ScrollView* const scroll_view_;
+  CalendarUpNextView* const up_next_view_;
+};
 
 }  // namespace
 
@@ -381,145 +450,6 @@ void CalendarHeaderView::UpdateHeaders(const std::u16string& month,
 BEGIN_METADATA(CalendarHeaderView, views::View)
 END_METADATA
 
-// Provides a layer mask over the `scroll_view_` that stops the calendar from
-// showing underneath the `up_next_view_` or `event_list_view_`.
-// This is required for Jelly as the background color in dark mode is
-// transparent and we want to show the dynamic colors from the wallpaper coming
-// through, but not the Calendar's `scroll_view_` contents.
-class CalendarSurfaceLayerMask : public ui::LayerOwner,
-                                 public ui::LayerDelegate,
-                                 public views::ViewObserver {
- public:
-  CalendarSurfaceLayerMask(views::ScrollView* scroll_view,
-                           CalendarEventListView* event_list_view,
-                           CalendarUpNextView* up_next_view,
-                           views::View* calendar_sliding_surface)
-      : scroll_view_(scroll_view),
-        event_list_view_(event_list_view),
-        up_next_view_(up_next_view),
-        calendar_sliding_surface_(calendar_sliding_surface) {
-    SetLayer(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
-    layer()->SetFillsBoundsOpaquely(false);
-    layer()->set_delegate(this);
-
-    if (!scroll_view_->layer()) {
-      scroll_view_->SetPaintToLayer();
-      scroll_view_->layer()->SetFillsBoundsOpaquely(false);
-    }
-
-    scroll_view_->layer()->SetMaskLayer(layer());
-
-    scroll_view_->AddObserver(this);
-    if (event_list_view_) {
-      event_list_view_->AddObserver(this);
-    }
-    if (up_next_view_) {
-      up_next_view_->AddObserver(this);
-    }
-    calendar_sliding_surface_->AddObserver(this);
-
-    // `up_next_view_` and `event_list_view_` are added after the `scroll_view_`
-    // already exists so we need to manually set the layer's bounds initially.
-    if (!scroll_view_->bounds().IsEmpty()) {
-      OnViewBoundsChanged(scroll_view_);
-    }
-  }
-
-  ~CalendarSurfaceLayerMask() override {
-    scroll_view_->RemoveObserver(this);
-    DCHECK(scroll_view_->layer());
-    scroll_view_->DestroyLayer();
-
-    if (event_list_view_) {
-      event_list_view_->RemoveObserver(this);
-    }
-    if (up_next_view_) {
-      up_next_view_->RemoveObserver(this);
-    }
-    calendar_sliding_surface_->RemoveObserver(this);
-  }
-
-  // ui::LayerDelegate:
-  // We handle the views size dynamically when painting the layer so we don't
-  // need to do anything here.
-  void OnDeviceScaleFactorChanged(float, float) override {}
-
-  void OnPaintLayer(const ui::PaintContext& context) override {
-    ui::PaintRecorder recorder(context, layer()->size());
-    recorder.canvas()->DrawColor(SK_ColorBLACK);
-
-    gfx::Rect calendar_sliding_surface_bounds(
-        calendar_sliding_surface_->size());
-    views::View::ConvertRectToScreen(calendar_sliding_surface_,
-                                     &calendar_sliding_surface_bounds);
-    old_y_offset_ = CurrentYOffset();
-    recorder.canvas()->Translate(
-        gfx::Vector2d(calendar_sliding_surface_bounds.x() -
-                          scroll_view_->GetBoundsInScreen().x(),
-                      old_y_offset_));
-
-    cc::PaintFlags flags;
-    flags.setBlendMode(SkBlendMode::kClear);
-    flags.setAntiAlias(true);
-
-    // If the `up_next_view_` is showing then draw the layer mask based on the
-    // `up_next_view_` clip path. This is so the mask is perfectly aligned to
-    // the contours of the `up_next_view_`.
-    if (up_next_view_) {
-      recorder.canvas()->DrawPath(up_next_view_->GetClipPath(), flags);
-      return;
-    }
-
-    // Otherwise draw a rectangle the size of the the sliding surface.
-    recorder.canvas()->DrawRect(
-        gfx::RectF(calendar_sliding_surface_bounds.width(),
-                   calendar_sliding_surface_bounds.height()),
-        flags);
-  }
-
-  // views::ViewObserver:
-  void OnViewBoundsChanged(views::View* view) override {
-    if (view == scroll_view_) {
-      layer()->SetBounds(scroll_view_->layer()->bounds());
-      return;
-    }
-
-    scroll_view_->layer()->SchedulePaint(
-        gfx::Rect(scroll_view_->layer()->size()));
-  }
-
-  void OnViewLayerTransformed(views::View* view) override {
-    if (old_y_offset_ != CurrentYOffset()) {
-      OnViewBoundsChanged(nullptr);
-    }
-  }
-
-  // Returns the currently calculated y offset of the
-  // `calendar_sliding_surface_` view to the `scroll_view_`.
-  int CurrentYOffset() {
-    gfx::Rect calendar_sliding_surface_bounds(
-        calendar_sliding_surface_->size());
-    views::View::ConvertRectToScreen(calendar_sliding_surface_,
-                                     &calendar_sliding_surface_bounds);
-
-    return calendar_sliding_surface_bounds.y() -
-           scroll_view_->GetBoundsInScreen().y();
-  }
-
- private:
-  // Owned by `CalendarView`.
-  views::ScrollView* const scroll_view_;
-  // Can be null if the view isn't showing.
-  CalendarEventListView* const event_list_view_;
-  // Can be null if the view isn't showing.
-  CalendarUpNextView* const up_next_view_;
-  views::View* const calendar_sliding_surface_;
-
-  // Cache the previous y offset. Used to calculate if we need to redraw the
-  // layer mask whilst animating.
-  int old_y_offset_;
-};
-
 CalendarView::CalendarView(DetailedViewDelegate* delegate,
                            UnifiedSystemTrayController* controller)
     : TrayDetailedView(delegate),
@@ -626,8 +556,6 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   AddChildView(std::move(month_header));
 
   // Add scroll view.
-  // Note the `CalendarSurfaceLayerMask` will add a layer to the
-  // `scroll_view_`'s viewport when being created and destroy it after.
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetAllowKeyboardScrolling(false);
   scroll_view_->SetBackgroundColor(absl::nullopt);
@@ -694,9 +622,6 @@ CalendarView::~CalendarView() {
   // Removes child views including month views and event list to remove their
   // dependency from `CalendarViewController`, since these views are destructed
   // after the controller.
-  if (calendar_surface_layer_mask_) {
-    calendar_surface_layer_mask_.reset();
-  }
   if (event_list_view_) {
     calendar_sliding_surface_->RemoveChildViewT(event_list_view_);
     event_list_view_ = nullptr;
@@ -1276,8 +1201,6 @@ void CalendarView::OpenEventList() {
   const int previous_surface_y = calendar_sliding_surface_->y();
   SetCalendarSlidingSurfaceBounds(true);
 
-  MaybeCreateLayerMask();
-
   set_should_months_animate(false);
   gfx::Vector2dF moving_up_location = gfx::Vector2dF(
       0, -PositionOfSelectedDate() + scroll_view_->GetVisibleRect().y());
@@ -1291,9 +1214,9 @@ void CalendarView::OpenEventList() {
       up_next_view_ ? previous_surface_y - calendar_sliding_surface_->y()
                     : calendar_sliding_surface_->y();
 
-  std::unique_ptr<ui::InterpolatedTranslation> list_view_sliding_up =
-      std::make_unique<ui::InterpolatedTranslation>(
-          gfx::PointF(0.f, y_transform_start_position), gfx::PointF());
+  gfx::Transform list_view_moving;
+  list_view_moving.Translate(gfx::Vector2dF(0, y_transform_start_position));
+  calendar_sliding_surface_->SetTransform(list_view_moving);
 
   // Tracks animation smoothness. For now, we only track animation smoothness
   // for 1 month and 1 label since all 2 month views and 2 label views are
@@ -1310,6 +1233,8 @@ void CalendarView::OpenEventList() {
           calendar_sliding_surface_,
           kCalendarSlidingSurfaceOpenEventListAnimationHistogram);
 
+  // TODO: b/265057469 Fix issue with transparent event list view when animating
+  // in dark mode.
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -1327,9 +1252,8 @@ void CalendarView::OpenEventList() {
       .SetTransform(next_next_month_, month_moving, gfx::Tween::EASE_OUT_2)
       .At(base::Milliseconds(0))
       .SetDuration(kAnimationDurationForEventsMoving)
-      .SetInterpolatedTransform(calendar_sliding_surface_,
-                                std::move(list_view_sliding_up),
-                                gfx::Tween::EASE_IN_OUT_2);
+      .SetTransform(calendar_sliding_surface_, gfx::Transform(),
+                    gfx::Tween::EASE_OUT_2);
 
   if (up_next_view_) {
     auto up_next_reporter = calendar_metrics::CreateAnimationReporter(
@@ -1375,10 +1299,11 @@ void CalendarView::CloseEventList() {
   // bottom of the CalendarView.
   const int previous_surface_y = calendar_sliding_surface_->y();
   SetCalendarSlidingSurfaceBounds(false);
-  std::unique_ptr<ui::InterpolatedTranslation> list_view_sliding_down =
-      std::make_unique<ui::InterpolatedTranslation>(
-          gfx::PointF(0.f, previous_surface_y - calendar_sliding_surface_->y()),
-          gfx::PointF());
+  gfx::Transform list_view_moving;
+  const int y_start_position =
+      previous_surface_y - calendar_sliding_surface_->y();
+  list_view_moving.Translate(gfx::Vector2dF(0, y_start_position));
+  calendar_sliding_surface_->SetTransform(list_view_moving);
 
   auto event_list_reporter = calendar_metrics::CreateAnimationReporter(
       event_list_view_, kCloseEventListAnimationHistogram);
@@ -1397,9 +1322,8 @@ void CalendarView::CloseEventList() {
                          weak_factory_.GetWeakPtr()))
       .Once()
       .SetDuration(kAnimationDurationForClosingEvents)
-      .SetInterpolatedTransform(calendar_sliding_surface_,
-                                std::move(list_view_sliding_down),
-                                gfx::Tween::FAST_OUT_SLOW_IN)
+      .SetTransform(calendar_sliding_surface_, gfx::Transform(),
+                    gfx::Tween::FAST_OUT_SLOW_IN)
       // Fade out the event list view.
       .At(kEventListAnimationStartDelay)
       .SetDuration(kAnimationDurationForClosingEvents)
@@ -1931,10 +1855,17 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   // Clip the height to a bit more than the height of a row.
   ClipScrollViewHeight(ScrollViewState::EVENT_LIST_SHOWING);
 
-  if (up_next_view_) {
+  if (up_next_view_ && up_next_view_mask_) {
     // Once the animation is complete, the `up_next_view_` needs to be invisible
     // otherwise ChromeVox will pick it up.
     up_next_view_->SetVisible(false);
+
+    // Remove the layer mask, otherwise it repositions to the top of the
+    // scrollview and hides the content when the event list view closes. We
+    // don't need the layer mask when the event list is open as it hides the up
+    // next view.
+    scroll_view_->layer()->SetMaskLayer(nullptr);
+    up_next_view_mask_.reset();
   }
 
   if (!should_months_animate_) {
@@ -1974,12 +1905,16 @@ void CalendarView::OnCloseEventListAnimationComplete() {
   if (focused_view && Contains(focused_view)) {
     FocusPreferredDateCellViewOrFirstVisible(/*prefer_today=*/false);
   }
-  if (!up_next_view_ && calendar_surface_layer_mask_) {
-    calendar_surface_layer_mask_.reset();
-  }
+
   calendar_sliding_surface_->RemoveChildViewT(event_list_view_);
   event_list_view_ = nullptr;
   calendar_view_controller_->OnEventListClosed();
+
+  if (up_next_view_ && !up_next_view_mask_) {
+    // Add the layer mask back in.
+    up_next_view_mask_ =
+        std::make_unique<UpNextViewMask>(scroll_view_, up_next_view_);
+  }
 
   up_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
@@ -2093,6 +2028,10 @@ int CalendarView::CalculateFirstFullyVisibleRow() {
 }
 
 void CalendarView::SetCalendarSlidingSurfaceBounds(bool event_list_view_open) {
+  if (!calendar_sliding_surface_->GetVisible()) {
+    calendar_sliding_surface_->SetVisible(true);
+  }
+
   const int x_position = scroll_view_->x() + kEventListViewHorizontalOffset;
   const int width = scroll_view_->GetVisibleRect().width() -
                     kEventListViewHorizontalOffset * 2;
@@ -2144,8 +2083,6 @@ void CalendarView::MaybeShowUpNextView() {
           base::BindRepeating(&CalendarView::OpenEventListForTodaysDate,
                               base::Unretained(this))));
 
-  MaybeCreateLayerMask();
-
   // If the `event_list_view_` is currently showing and the `up_next_view_` is
   // not, then early return. In this scenario we want the up next view to be
   // there when the user closes the `event_list_view_` but we don't want all the
@@ -2160,27 +2097,36 @@ void CalendarView::MaybeShowUpNextView() {
   ClipScrollViewHeight(ScrollViewState::UP_NEXT_SHOWING);
   SetCalendarSlidingSurfaceBounds(false);
 
-  // Translate the up next view `kUpNextAnimationYOffset` off the screen and
-  // animate sliding up.
-  std::unique_ptr<ui::InterpolatedTranslation> up_next_sliding_up =
-      std::make_unique<ui::InterpolatedTranslation>(
-          gfx::PointF(0.f, kUpNextAnimationYOffset), gfx::PointF());
-
-  auto up_next_view_reporter = calendar_metrics::CreateAnimationReporter(
-      up_next_view_, kShowUpNextViewAnimationHistogram);
+  // Translate the up next view 20px off the screen so it animates sliding up.
+  gfx::Transform up_next_view_slide_up;
+  up_next_view_slide_up.Translate(gfx::Vector2dF(0, 20));
+  calendar_sliding_surface_->SetTransform(up_next_view_slide_up);
 
   // Animate the `up_next_view_` in.
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&CalendarView::OnShowUpNextComplete,
+                              weak_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(&CalendarView::OnShowUpNextComplete,
+                                weak_factory_.GetWeakPtr()))
       .Once()
       .SetOpacity(up_next_view_, 0.f)
       .At(base::Milliseconds(0))
       .SetDuration(kAnimationDurationForClosingEvents)
       .SetOpacity(up_next_view_, 1.f)
-      .SetInterpolatedTransform(calendar_sliding_surface_,
-                                std::move(up_next_sliding_up),
-                                gfx::Tween::FAST_OUT_SLOW_IN_2);
+      .SetTransform(calendar_sliding_surface_, gfx::Transform(),
+                    gfx::Tween::FAST_OUT_SLOW_IN_2);
+}
+
+void CalendarView::OnShowUpNextComplete() {
+  if (is_destroying_) {
+    return;
+  }
+  // TODO: b/265057469 Remove layer mask if the cros.sys.system-on-base dark
+  // theme colour is updated to be opaque.
+  up_next_view_mask_ =
+      std::make_unique<UpNextViewMask>(scroll_view_, up_next_view_);
 }
 
 void CalendarView::RemoveUpNextView() {
@@ -2188,16 +2134,13 @@ void CalendarView::RemoveUpNextView() {
     return;
   }
 
-  if (calendar_surface_layer_mask_ && !event_list_view_) {
-    calendar_surface_layer_mask_.reset();
-  }
+  up_next_view_mask_.reset();
 
   calendar_sliding_surface_->RemoveChildViewT(up_next_view_);
   up_next_view_ = nullptr;
 
   SetCalendarSlidingSurfaceBounds(event_list_view_);
-  ClipScrollViewHeight(event_list_view_ ? ScrollViewState::EVENT_LIST_SHOWING
-                                        : ScrollViewState::FULL_HEIGHT);
+  ClipScrollViewHeight(ScrollViewState::FULL_HEIGHT);
 }
 
 void CalendarView::OpenEventListForTodaysDate() {
@@ -2232,14 +2175,6 @@ void CalendarView::ClipScrollViewHeight(ScrollViewState state_to_change_to) {
     case ScrollViewState::EVENT_LIST_SHOWING:
       scroll_view_->ClipHeightTo(0, calendar_view_controller_->row_height());
       break;
-  }
-}
-
-void CalendarView::MaybeCreateLayerMask() {
-  if (!calendar_surface_layer_mask_) {
-    calendar_surface_layer_mask_ = std::make_unique<CalendarSurfaceLayerMask>(
-        scroll_view_, event_list_view_, up_next_view_,
-        calendar_sliding_surface_);
   }
 }
 

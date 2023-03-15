@@ -1240,17 +1240,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.CalendarView.ShowUpNextView.AnimationSmoothness" units="%"
-    expires_after="2023-09-18">
-  <owner>newcomer@google.com</owner>
-  <owner>samcackett@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Animation smoothness recorded when the up next view is shown. 60 fps is 100%
-    smoothness and so ideally we should see smoothness &gt; 80%.
-  </summary>
-</histogram>
-
 <histogram
     name="Ash.CalendarView.{Animation}.{CalendarChildView}.AnimationSmoothness"
     units="%" expires_after="2023-09-18">

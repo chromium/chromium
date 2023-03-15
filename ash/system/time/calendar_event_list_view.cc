@@ -192,7 +192,7 @@ void CalendarEventListView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto color =
       features::IsCalendarJellyEnabled() && chromeos::features::IsJellyEnabled()
-          ? GetColorProvider()->GetColor((cros_tokens::kCrosSysSystemOnBase))
+          ? GetColorProvider()->GetColor((cros_tokens::kCrosSysSurfaceVariant))
           : GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque);
   SetBackground(views::CreateSolidBackground(color));
 }
@@ -200,9 +200,8 @@ void CalendarEventListView::OnThemeChanged() {
 void CalendarEventListView::Layout() {
   views::View::Layout();
 
-  if (gradient_helper_) {
+  if (gradient_helper_)
     gradient_helper_->UpdateGradientMask();
-  }
 }
 
 void CalendarEventListView::OnSelectedDateUpdated() {
@@ -263,18 +262,15 @@ void CalendarEventListView::UpdateListItems() {
     // If we have some events to display, then add them to the `content_view_`
     // and early return (the following methods in `UpdateListItems` handle empty
     // state etc).
-    if (!multi_day_events.empty()) {
+    if (!multi_day_events.empty())
       content_view_->AddChildView(CreateChildEventListView(multi_day_events));
-    }
-    if (!all_other_events.empty()) {
+    if (!all_other_events.empty())
       content_view_->AddChildView(CreateChildEventListView(all_other_events));
-    }
 
     content_view_->InvalidateLayout();
 
-    if (!multi_day_events.empty() || !all_other_events.empty()) {
+    if (!multi_day_events.empty() || !all_other_events.empty())
       return;
-    }
   } else {
     std::list<google_apis::calendar::CalendarEvent> events =
         calendar_view_controller_->SelectedDateEvents();
@@ -308,9 +304,8 @@ void CalendarEventListView::UpdateListItems() {
   // getting its value leads to a crash. Only set accessible name when
   // `selected_date_` has value, since if `event_list_view_` is closed, there'll
   // be no need to set the accessible name.
-  if (!calendar_view_controller_->selected_date().has_value()) {
+  if (!calendar_view_controller_->selected_date().has_value())
     return;
-  }
   empty_button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_NO_EVENT_BUTTON_ACCESSIBLE_DESCRIPTION,
       calendar_utils::GetMonthNameAndDayOfMonth(
