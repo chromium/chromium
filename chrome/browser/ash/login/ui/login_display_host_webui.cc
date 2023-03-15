@@ -1081,6 +1081,21 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   input_method::InputMethodManager* manager =
       input_method::InputMethodManager::Get();
 
+  // Set up keyboards. For example, when `locale` is "en-US", enable US qwerty
+  // and US dvorak keyboard layouts.
+  if (g_browser_process && g_browser_process->local_state()) {
+    manager->GetActiveIMEState()->SetInputMethodLoginDefault();
+
+    PrefService* prefs = g_browser_process->local_state();
+    // Apply owner preferences for tap-to-click and mouse buttons swap for
+    // login screen.
+    system::InputDeviceSettings::Get()->SetPrimaryButtonRight(
+        prefs->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight));
+    system::InputDeviceSettings::Get()->SetPointingStickPrimaryButtonRight(
+        prefs->GetBoolean(prefs::kOwnerPrimaryPointingStickButtonRight));
+    system::InputDeviceSettings::Get()->SetTapToClick(
+        prefs->GetBoolean(prefs::kOwnerTapToClickEnabled));
+  }
   system::InputDeviceSettings::Get()->SetNaturalScroll(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNaturalScrollDefault));

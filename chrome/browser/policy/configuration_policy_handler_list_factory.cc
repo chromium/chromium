@@ -1004,7 +1004,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     nullptr,
     base::Value::Type::BOOLEAN },
   { key::kDeviceLoginScreenPrimaryMouseButtonSwitch,
-    ::prefs::kOwnerPrimaryMouseButtonRight,
+    nullptr,
     base::Value::Type::BOOLEAN },
   { key::kDeviceLoginScreenDefaultSpokenFeedbackEnabled,
     nullptr,
