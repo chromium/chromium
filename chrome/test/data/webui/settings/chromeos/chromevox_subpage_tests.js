@@ -65,6 +65,34 @@ suite('ChromeVoxSubpageTests', function() {
       secondaryValue: true,
       type: ControlType.TOGGLE,
     },
+    {
+      id: 'enableSpeechLoggingToggle',
+      prefKey: 'settings.a11y.chromevox.enable_speech_logging',
+      defaultValue: false,
+      secondaryValue: true,
+      type: ControlType.TOGGLE,
+    },
+    {
+      id: 'enableEarconLoggingToggle',
+      prefKey: 'settings.a11y.chromevox.enable_earcon_logging',
+      defaultValue: false,
+      secondaryValue: true,
+      type: ControlType.TOGGLE,
+    },
+    {
+      id: 'enableBrailleLoggingToggle',
+      prefKey: 'settings.a11y.chromevox.enable_braille_logging',
+      defaultValue: false,
+      secondaryValue: true,
+      type: ControlType.TOGGLE,
+    },
+    {
+      id: 'enableEventStreamLoggingToggle',
+      prefKey: 'settings.a11y.chromevox.enable_event_stream_logging',
+      defaultValue: false,
+      secondaryValue: true,
+      type: ControlType.TOGGLE,
+    },
   ];
 
   settingsControls.forEach(control => {

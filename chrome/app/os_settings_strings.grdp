@@ -1145,6 +1145,18 @@
   <message name="IDS_SETTINGS_CHROMEVOX_LANGUAGE_SWITCHING" desc="In the ChromeVox settings subpage, the label for the toggle to enable ChromeVox language switching.">
     Automatically switch ChromeVox voice based on language
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_MENU_ENABLE_SPEECH_LOGGING" desc="In the ChromeVox settings subpage, under developer options the label for the toggle that enables speech logging.">
+    Enable speech logging
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_MENU_ENABLE_EARCON_LOGGING" desc="In the ChromeVox settings subpage, under developer options the label for the toggle that enables earcon logging.">
+    Enable earcon logging
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_MENU_ENABLE_BRAILLE_LOGGING" desc="In the ChromeVox settings subpage, under developer options the label for the toggle that enables braille logging.">
+    Enable braille logging
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_MENU_ENABLE_EVENT_STREAM_LOGGING" desc="In the ChromeVox settings subpage, under developer options the label for the toggle that enables event stream logging.">
+    Enable event stream logging
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
     Full-screen magnifier
   </message>
