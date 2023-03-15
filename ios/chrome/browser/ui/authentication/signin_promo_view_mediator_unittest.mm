@@ -102,7 +102,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY((id)title_label_);
   }
 
-  void CreateMediator(signin_metrics::AccessPoint accessPoint) {
+  void CreateMediator(signin_metrics::AccessPoint access_point) {
     consumer_ = OCMStrictProtocolMock(@protocol(SigninPromoViewConsumer));
     mediator_ = [[SigninPromoViewMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
@@ -110,7 +110,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                                               chrome_browser_state_.get())
                           authService:GetAuthenticationService()
                           prefService:chrome_browser_state_.get()->GetPrefs()
-                          accessPoint:accessPoint
+                          accessPoint:access_point
                             presenter:nil];
     mediator_.consumer = consumer_;
 
@@ -202,6 +202,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
     OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
+    OCMExpect([signin_promo_view_ stopSignInSpinner]);
     if (style == SigninPromoViewStyleCompactTitled) {
       OCMExpect([signin_promo_view_
           setNonProfileImage:[UIImage imageNamed:kPromoViewImageName]]);
@@ -258,6 +259,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
     OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
+    OCMExpect([signin_promo_view_ stopSignInSpinner]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     switch (style) {
       case SigninPromoViewStyleStandard: {
@@ -305,6 +307,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
     OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
+    OCMExpect([signin_promo_view_ stopSignInSpinner]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     EXPECT_NE(nil, image_view_profile_image_);
   }

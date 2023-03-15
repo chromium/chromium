@@ -598,7 +598,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
                           userEmail:self.identity.userEmail
                       userGivenName:self.identity.userGivenName
                           userImage:self.identityAvatar
-                     hasCloseButton:hasCloseButton];
+                     hasCloseButton:hasCloseButton
+                   hasSignInSpinner:NO];
   }
   if (self.identity) {
     return [[SigninPromoViewConfigurator alloc]
@@ -606,14 +607,16 @@ const char* AlreadySeenSigninViewPreferenceKey(
                           userEmail:self.identity.userEmail
                       userGivenName:self.identity.userGivenName
                           userImage:self.identityAvatar
-                     hasCloseButton:hasCloseButton];
+                     hasCloseButton:hasCloseButton
+                   hasSignInSpinner:NO];
   }
   return [[SigninPromoViewConfigurator alloc]
       initWithSigninPromoViewMode:SigninPromoViewModeNoAccounts
                         userEmail:nil
                     userGivenName:nil
                         userImage:nil
-                   hasCloseButton:hasCloseButton];
+                   hasCloseButton:hasCloseButton
+                 hasSignInSpinner:NO];
 }
 
 - (void)signinPromoViewIsVisible {

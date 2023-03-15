@@ -61,6 +61,11 @@
 // Resets the view to be reused.
 - (void)prepareForReuse;
 
+// Starts the spinner on top of the primary button, and disables all buttons.
+- (void)startSignInSpinner;
+// Stops the spinner on top of the primary button, and enables all buttons.
+- (void)stopSignInSpinner;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_CELLS_SIGNIN_PROMO_VIEW_H_

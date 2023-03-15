@@ -104,3 +104,25 @@ TEST_F(SigninPromoViewTest, ChangeLayout) {
 
   // TODO(crbug.com/1412758): Test new promo styles.
 }
+
+// Tests that buttons are disabled or enabled when the spinner started or
+// stopped.
+TEST_F(SigninPromoViewTest, StartAndStopSpinner) {
+  UIWindow* currentWindow = GetAnyKeyWindow();
+  SigninPromoView* view =
+      [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  view.mode = SigninPromoViewModeNoAccounts;
+  [currentWindow.rootViewController.view addSubview:view];
+  view.mode = SigninPromoViewModeSigninWithAccount;
+  EXPECT_TRUE(view.primaryButton.enabled);
+  EXPECT_TRUE(view.secondaryButton.enabled);
+  EXPECT_TRUE(view.closeButton.enabled);
+  [view startSignInSpinner];
+  EXPECT_FALSE(view.primaryButton.enabled);
+  EXPECT_FALSE(view.secondaryButton.enabled);
+  EXPECT_FALSE(view.closeButton.enabled);
+  [view stopSignInSpinner];
+  EXPECT_TRUE(view.primaryButton.enabled);
+  EXPECT_TRUE(view.secondaryButton.enabled);
+  EXPECT_TRUE(view.closeButton.enabled);
+}

@@ -81,4 +81,9 @@ const CGFloat kMargin = 16;
   return self;
 }
 
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  [self.signinPromoView prepareForReuse];
+}
+
 @end

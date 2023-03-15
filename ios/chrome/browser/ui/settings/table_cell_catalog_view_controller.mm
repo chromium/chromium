@@ -558,6 +558,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       GetSizeForIdentityAvatarSize(IdentityAvatarSize::SmallSize);
   signinPromoAvatar =
       ResizeImage(signinPromoAvatar, avatarSize, ProjectionMode::kFill);
+  // Sign-in promo with an email and a name.
   TableViewSigninPromoItem* signinPromo =
       [[TableViewSigninPromoItem alloc] initWithType:ItemTypeAccount];
   signinPromo.configurator = [[SigninPromoViewConfigurator alloc]
@@ -565,18 +566,31 @@ typedef NS_ENUM(NSInteger, ItemType) {
                         userEmail:@"jonhdoe@example.com"
                     userGivenName:@"John Doe"
                         userImage:signinPromoAvatar
-                   hasCloseButton:NO];
+                   hasCloseButton:NO
+                 hasSignInSpinner:NO];
   signinPromo.text = @"Signin promo text example";
   [model addItem:signinPromo toSectionWithIdentifier:SectionIdentifierAccount];
-
+  // Sign-in promo without an email and name.
   signinPromo = [[TableViewSigninPromoItem alloc] initWithType:ItemTypeAccount];
   signinPromo.configurator = [[SigninPromoViewConfigurator alloc]
       initWithSigninPromoViewMode:SigninPromoViewModeNoAccounts
                         userEmail:nil
                     userGivenName:nil
                         userImage:nil
-                   hasCloseButton:YES];
+                   hasCloseButton:YES
+                 hasSignInSpinner:NO];
   signinPromo.text = @"Signin promo text example";
+  [model addItem:signinPromo toSectionWithIdentifier:SectionIdentifierAccount];
+  // Sign-in promo with spinner.
+  signinPromo = [[TableViewSigninPromoItem alloc] initWithType:ItemTypeAccount];
+  signinPromo.configurator = [[SigninPromoViewConfigurator alloc]
+      initWithSigninPromoViewMode:SigninPromoViewModeSigninWithAccount
+                        userEmail:@"jonhdoe@example.com"
+                    userGivenName:@"John Doe"
+                        userImage:signinPromoAvatar
+                   hasCloseButton:NO
+                 hasSignInSpinner:YES];
+  signinPromo.text = @"Signin promo with spinner";
   [model addItem:signinPromo toSectionWithIdentifier:SectionIdentifierAccount];
 
   UIImage* defaultAvatar = ios::provider::GetSigninDefaultAvatar();

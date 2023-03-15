@@ -146,6 +146,9 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
 
 @implementation SigninPromoView {
   signin_metrics::AccessPoint _accessPoint;
+  // Activity indicator shown on top of the primary button.
+  // See `startSignInSpinner` and `stopSignInSpinner`.
+  UIActivityIndicatorView* _activityIndicatorView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -365,6 +368,42 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
 
 - (void)prepareForReuse {
   self.delegate = nil;
+  if (_activityIndicatorView) {
+    [self stopSignInSpinner];
+  }
+}
+
+- (void)startSignInSpinner {
+  if (_activityIndicatorView) {
+    return;
+  }
+  self.primaryButton.titleLabel.alpha = 0;
+  _activityIndicatorView = [[UIActivityIndicatorView alloc] init];
+  _activityIndicatorView.color = UIColor.whiteColor;
+  _activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:_activityIndicatorView];
+  [NSLayoutConstraint activateConstraints:@[
+    [_activityIndicatorView.centerXAnchor
+        constraintEqualToAnchor:self.primaryButton.centerXAnchor],
+    [_activityIndicatorView.centerYAnchor
+        constraintEqualToAnchor:self.primaryButton.centerYAnchor],
+  ]];
+  self.primaryButton.enabled = NO;
+  self.secondaryButton.enabled = NO;
+  self.closeButton.enabled = NO;
+  [_activityIndicatorView startAnimating];
+}
+
+- (void)stopSignInSpinner {
+  if (!_activityIndicatorView) {
+    return;
+  }
+  self.primaryButton.titleLabel.alpha = 1.;
+  [_activityIndicatorView removeFromSuperview];
+  _activityIndicatorView = nil;
+  self.primaryButton.enabled = YES;
+  self.secondaryButton.enabled = YES;
+  self.closeButton.enabled = YES;
 }
 
 #pragma mark - NSObject(Accessibility)
@@ -387,14 +426,17 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
 }
 
 - (BOOL)accessibilityActivate {
+  if (!self.primaryButton.enabled) {
+    return NO;
+  }
   [self accessibilityPrimaryAction:nil];
   return YES;
 }
 
 - (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
   NSMutableArray* actions = [NSMutableArray array];
-
-  if (self.mode == SigninPromoViewModeSigninWithAccount) {
+  if (self.secondaryButton.enabled &&
+      self.mode == SigninPromoViewModeSigninWithAccount) {
     NSString* secondaryActionName =
         [self.secondaryButton titleForState:UIControlStateNormal];
     UIAccessibilityCustomAction* secondaryCustomAction =
@@ -404,8 +446,7 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
                 selector:@selector(accessibilitySecondaryAction:)];
     [actions addObject:secondaryCustomAction];
   }
-
-  if (!self.closeButton.hidden) {
+  if (self.closeButton.enabled && !self.closeButton.hidden) {
     NSString* closeActionName =
         l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_CLOSE_ACCESSIBILITY);
     UIAccessibilityCustomAction* closeCustomAction =
@@ -415,7 +456,6 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
                 selector:@selector(accessibilityCloseAction:)];
     [actions addObject:closeCustomAction];
   }
-
   return actions;
 }
 
@@ -763,15 +803,18 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
 }
 
 - (void)accessibilityPrimaryAction:(id)unused {
+  DCHECK(self.primaryButton.enabled);
   [self.primaryButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)accessibilitySecondaryAction:(id)unused {
+  DCHECK(self.secondaryButton.enabled);
   [self.secondaryButton
       sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)accessibilityCloseAction:(id)unused {
+  DCHECK(self.closeButton.enabled);
   [self.closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 

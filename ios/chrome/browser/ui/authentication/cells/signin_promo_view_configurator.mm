@@ -50,13 +50,18 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
 
 @end
 
-@implementation SigninPromoViewConfigurator
+@implementation SigninPromoViewConfigurator {
+  // Shows a spinner on top of the primary button, and disables ther buttons if
+  // set to YES.
+  BOOL _hasSignInSpinner;
+}
 
 - (instancetype)initWithSigninPromoViewMode:(SigninPromoViewMode)viewMode
                                   userEmail:(NSString*)userEmail
                               userGivenName:(NSString*)userGivenName
                                   userImage:(UIImage*)userImage
-                             hasCloseButton:(BOOL)hasCloseButton {
+                             hasCloseButton:(BOOL)hasCloseButton
+                           hasSignInSpinner:(BOOL)hasSignInSpinner {
   self = [super init];
   if (self) {
     DCHECK(userEmail || (!userEmail && !userGivenName && !userImage));
@@ -65,6 +70,7 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
     _userEmail = [userEmail copy];
     _userImage = [userImage copy];
     _hasCloseButton = hasCloseButton;
+    _hasSignInSpinner = hasSignInSpinner;
   }
   return self;
 }
@@ -85,6 +91,11 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
       [self configureCompactPromoView:signinPromoView withStyle:promoViewStyle];
       break;
     }
+  }
+  if (_hasSignInSpinner) {
+    [signinPromoView startSignInSpinner];
+  } else {
+    [signinPromoView stopSignInSpinner];
   }
 }
 
