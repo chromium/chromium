@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/include_polymer.gni")
+import("//ui/webui/webui_features.gni")
 
 import("../tools/build_cr_component.gni")
 
@@ -117,4 +118,6 @@ build_cr_component("build") {
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
+
+  optimize = optimize_webui
 }
