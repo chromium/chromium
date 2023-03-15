@@ -118,12 +118,6 @@ bool DeltaFileBackend::Init() {
   }
   CHECK(db_);
 
-  UMA_HISTOGRAM_COUNTS_1M("Search.HistoryReport.DeltaFile.LevelDBEntries",
-                          usage_report_util::DatabaseEntries(db_.get()));
-
-  UMA_HISTOGRAM_COUNTS_1M("Search.HistoryReport.DeltaFile.LastSeqNo",
-                          GetLastSeqNo(db_.get()));
-
   return true;
 }
 
