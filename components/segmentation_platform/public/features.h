@@ -41,6 +41,9 @@ BASE_DECLARE_FEATURE(kContextualPageActions);
 // Feature flag for enabling search user segment.
 BASE_DECLARE_FEATURE(kSegmentationPlatformSearchUser);
 
+// Feature flag for device switcher segment.
+BASE_DECLARE_FEATURE(kSegmentationPlatformDeviceSwitcher);
+
 // Feature flag for enabling price tracking action feature.
 BASE_DECLARE_FEATURE(kContextualPageActionPriceTracking);
 
