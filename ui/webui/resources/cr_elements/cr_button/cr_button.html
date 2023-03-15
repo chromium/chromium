@@ -180,7 +180,7 @@
         inset: 0;
         pointer-events: none;
         position: absolute;
-        z-index: -1;
+        z-index: 0;
       }
 
       :host-context([chrome-refresh-2023]):host(:hover) #background {
@@ -219,6 +219,19 @@
             rgba(var(--cr-fallback-color-on-surface-rgb), .12));
       }
 
+      #content {
+        display: contents;
+      }
+
+      :host-context([chrome-refresh-2023]) #content {
+        display: inline;
+        z-index: 2;
+      }
+
+      :host-context([chrome-refresh-2023]) ::slotted(*) {
+        z-index: 2;
+      }
+
       #hoverBackground {
         display: none;
       }
@@ -230,6 +243,7 @@
         inset: 0;
         pointer-events: none;
         position: absolute;
+        z-index: 1;
       }
 
       :host(.action-button) {
@@ -317,13 +331,17 @@
         top: var(--paper-ripple-top, 0);
         width: var(--paper-ripple-width);
       }
+
+      :host-context([chrome-refresh-2023]) paper-ripple {
+        z-index: 1;
+      }
     </style>
 
     <div id="background"></div>
     <slot id="prefixIcon" name="prefix-icon"
         on-slotchange="onPrefixIconSlotChanged_">
     </slot>
-    <slot></slot>
+    <span id="content"><slot></slot></span>
     <slot id="suffixIcon" name="suffix-icon"
         on-slotchange="onSuffixIconSlotChanged_">
     </slot>
