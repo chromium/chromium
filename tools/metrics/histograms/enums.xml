@@ -60458,6 +60458,7 @@ from previous Chrome versions.
       label="AccessibilityInternalsPageImprovements:enabled"/>
   <int value="-871450829"
       label="ThreadedScrollPreventRenderingStarvation:disabled"/>
+  <int value="-871419968" label="FilesTrashDrive:enabled"/>
   <int value="-870994173" label="NtpChromeCartModule:enabled"/>
   <int value="-870120067" label="EnableSearchBoxSelection:enabled"/>
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
@@ -60613,6 +60614,7 @@ from previous Chrome versions.
   <int value="-785528415" label="FedCm:disabled"/>
   <int value="-784584916" label="SyncEnableHistoryDataType:enabled"/>
   <int value="-784199026" label="EnableFilesAppCopyImage:enabled"/>
+  <int value="-783999903" label="FilesTrashDrive:disabled"/>
   <int value="-783890018" label="LacrosProfileMigrationForAnyUser:disabled"/>
   <int value="-783093620" label="WebViewHitTestInBlinkOnTouchStart:enabled"/>
   <int value="-781625651"

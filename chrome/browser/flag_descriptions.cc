@@ -5571,6 +5571,10 @@ const char kFilesTrashName[] = "Enable Files Trash.";
 const char kFilesTrashDescription[] =
     "Enable trash for My files volume in Files App.";
 
+const char kFilesTrashDriveName[] = "Enable Files Trash for Drive.";
+const char kFilesTrashDriveDescription[] =
+    "Enable trash for Drive volume in Files App.";
+
 const char kForceSpectreVariant2MitigationName[] =
     "Force Spectre variant 2 mitigagtion";
 const char kForceSpectreVariant2MitigationDescription[] =

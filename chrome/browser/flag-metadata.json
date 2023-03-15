@@ -3922,6 +3922,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "files-trash-drive",
+    "owners": [ "benreich", "joelhockey", "simmonsjosh@google.com" ],
+    "expiry_milestone": 119
+  },
+  {
     "name": "fill-on-account-select",
     "owners": [ "kazinova@google.com", "vasilii" ],
     "expiry_milestone": 116

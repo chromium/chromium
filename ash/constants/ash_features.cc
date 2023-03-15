@@ -914,6 +914,11 @@ BASE_FEATURE(kFilesSinglePartitionFormat,
 // Enable files app trash.
 BASE_FEATURE(kFilesTrash, "FilesTrash", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable files app trash for Drive.
+BASE_FEATURE(kFilesTrashDrive,
+             "FilesTrashDrive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables first party Vietnamese input method.
 BASE_FEATURE(kFirstPartyVietnameseInput,
              "FirstPartyVietnameseInput",

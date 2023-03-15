@@ -3201,6 +3201,9 @@ extern const char kFilesSinglePartitionFormatDescription[];
 extern const char kFilesTrashName[];
 extern const char kFilesTrashDescription[];
 
+extern const char kFilesTrashDriveName[];
+extern const char kFilesTrashDriveDescription[];
+
 extern const char kFirstPartyVietnameseInputName[];
 extern const char kFirstPartyVietnameseInputDescription[];
 
