@@ -603,10 +603,9 @@ void ArcMetricsService::ReportDnsQueryResult(mojom::ArcDnsQuery query,
   base::UmaHistogramBoolean(metric_name, success);
 }
 
-void ArcMetricsService::ReportImageCopyPasteCompatAction(
+void ArcMetricsService::ReportImageCopyPasteCompatActionDeprecated(
     mojom::ArcImageCopyPasteCompatAction action_type) {
-  base::UmaHistogramEnumeration("Arc.ImageCopyPasteCompatOperationType",
-                                action_type);
+  // Intentionally no-op. This metric was deprecated.
 }
 
 void ArcMetricsService::NotifyLowMemoryKill() {

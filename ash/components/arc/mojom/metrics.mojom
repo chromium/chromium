@@ -444,13 +444,14 @@ interface MetricsHost {
   [MinVersion=14] ReportMainAccountHashMigrationMetrics@17(
       MainAccountHashMigrationStatus status);
 
+  // DEPRECATED: this method will be removed once the other end is cleaned up.
   // Reports the operation type (copy & paste or drag & drop) and the source of
   // the image (from browser or Files app) when image copy-paste app compat is
   // triggered.
   // Image copy-paste app compat is a feature that allows insertion of images to
   // Android apps through commitContent IME API or Android intent, when the app
   // don't support images in the clipboard.
-  [MinVersion=15] ReportImageCopyPasteCompatAction@18(
+  [MinVersion=15] ReportImageCopyPasteCompatActionDeprecated@18(
       ArcImageCopyPasteCompatAction action_type);
 
   // Reports occurrence of one event in the ARC networking stack.
