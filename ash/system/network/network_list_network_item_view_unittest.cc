@@ -800,4 +800,39 @@ TEST_F(NetworkListNetworkItemViewTest, NetworkIconAnimating) {
                    .isNull());
 }
 
+TEST_F(NetworkListNetworkItemViewTest, WiFiIcon) {
+  NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
+      kWiFiName, NetworkType::kWiFi, ConnectionStateType::kConnecting);
+
+  UpdateViewForNetwork(wifi_network);
+
+  gfx::ImageSkia image = static_cast<views::ImageView*>(
+                             network_list_network_item_view()->left_view())
+                             ->GetImage();
+
+  gfx::Image default_image =
+      gfx::Image(network_icon::GetImageForNonVirtualNetwork(
+          wifi_network.get(), network_icon::ICON_TYPE_LIST, false));
+
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(image), default_image));
+}
+
+TEST_F(NetworkListNetworkItemViewTest, CellularIcon) {
+  NetworkStatePropertiesPtr cellular_network =
+      CreateStandaloneNetworkProperties(kCellularName, NetworkType::kCellular,
+                                        ConnectionStateType::kConnected);
+
+  UpdateViewForNetwork(cellular_network);
+
+  gfx::ImageSkia image = static_cast<views::ImageView*>(
+                             network_list_network_item_view()->left_view())
+                             ->GetImage();
+
+  gfx::Image default_image =
+      gfx::Image(network_icon::GetImageForNonVirtualNetwork(
+          cellular_network.get(), network_icon::ICON_TYPE_LIST, false));
+
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(image), default_image));
+}
+
 }  // namespace ash

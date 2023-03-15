@@ -170,22 +170,32 @@ gfx::ImageSkia GetNetworkImageForNetwork(
     const NetworkStatePropertiesPtr& network_properties) {
   gfx::ImageSkia network_image;
 
-  const gfx::ImageSkia image = network_icon::GetImageForNonVirtualNetwork(
-      network_properties.get(), network_icon::ICON_TYPE_LIST,
-      /*badge_vpn=*/false);
-
-  if (NetworkTypeMatchesType(network_properties->type, NetworkType::kMobile) &&
-      network_properties->connection_state ==
-          ConnectionStateType::kNotConnected) {
-    // Mobile icons which are not connecting or connected should display a small
-    // "X" icon superimposed so that it is clear that they are disconnected.
-    const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary);
-    network_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
-        image, gfx::CreateVectorIcon(kNetworkMobileNotConnectedXIcon,
-                                     image.height(), icon_color));
+  if (IsCellularNetworkUnActivated(network_properties) &&
+      Shell::Get()->session_controller()->login_status() ==
+          LoginStatus::NOT_LOGGED_IN) {
+    network_image =
+        network_icon::GetImageForPSimPendingActivationWhileLoggedOut(
+            network_icon::ICON_TYPE_LIST);
   } else {
-    network_image = image;
+    const gfx::ImageSkia image = network_icon::GetImageForNonVirtualNetwork(
+        network_properties.get(), network_icon::ICON_TYPE_LIST,
+        /*badge_vpn=*/false);
+
+    if (NetworkTypeMatchesType(network_properties->type,
+                               NetworkType::kMobile) &&
+        network_properties->connection_state ==
+            ConnectionStateType::kNotConnected) {
+      // Mobile icons which are not connecting or connected should display a
+      // small "X" icon superimposed so that it is clear that they are
+      // disconnected.
+      const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary);
+      network_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
+          image, gfx::CreateVectorIcon(kNetworkMobileNotConnectedXIcon,
+                                       image.height(), icon_color));
+    } else {
+      network_image = image;
+    }
   }
 
   // When the network is disabled, its appearance should be grayed out to

@@ -478,6 +478,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "unified_menu_brightness_low.icon",
     "unified_menu_brightness_medium.icon",
     "unified_menu_cast.icon",
+    "unified_menu_cellular_unactivated.icon",
     "unified_menu_dark_mode.icon",
     "unified_menu_dark_mode_off.icon",
     "unified_menu_do_not_disturb.icon",

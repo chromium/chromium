@@ -69,6 +69,11 @@ ASH_EXPORT gfx::ImageSkia GetImageForVPN(
 // a cross in the center.
 ASH_EXPORT gfx::ImageSkia GetImageForWiFiNoConnections(IconType icon_type);
 
+// Returns an image for an unactivated PSim when device is not logged in or in
+// OOBE.
+ASH_EXPORT gfx::ImageSkia GetImageForPSimPendingActivationWhileLoggedOut(
+    IconType icon_type);
+
 // Returns an image for a Wi-Fi network, either full strength or strike-through
 // based on |enabled|.
 ASH_EXPORT gfx::ImageSkia GetImageForWiFiEnabledState(

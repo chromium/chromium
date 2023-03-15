@@ -529,6 +529,12 @@ gfx::ImageSkia GetImageForWiFiNoConnections(IconType icon_type) {
                                GetDefaultColorForIconType(icon_type));
 }
 
+gfx::ImageSkia GetImageForPSimPendingActivationWhileLoggedOut(
+    IconType icon_type) {
+  return gfx::CreateVectorIcon(kUnifiedMenuCellularUnactivatedIcon,
+                               GetDefaultColorForIconType(icon_type));
+}
+
 gfx::ImageSkia GetImageForWiFiEnabledState(bool enabled, IconType icon_type) {
   if (!enabled) {
     return gfx::CreateVectorIcon(kUnifiedMenuWifiOffIcon, kUnifiedTrayIconSize,
