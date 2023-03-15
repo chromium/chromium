@@ -306,6 +306,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'InternetPage', 'internet_page_tests.js',
    {enabled: ['ash::features::kApnRevamp']}
  ],
+ [
+   'InternetPageTetherConnectionDialog',
+   'internet_page/tether_connection_dialog_test.js'
+ ],
  ['InternetSubpage', 'internet_subpage_tests.js'],
  ['KerberosAccounts', 'kerberos_accounts_test.js'],
  ['KerberosPage', 'kerberos_page_test.js'],
@@ -472,7 +476,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
  ['SwitchAccessSubpage', 'switch_access_subpage_tests.js'],
- ['TetherConnectionDialog', 'tether_connection_dialog_test.js'],
  [
    'TextToSpeechPage',
    'text_to_speech_page_tests.js',

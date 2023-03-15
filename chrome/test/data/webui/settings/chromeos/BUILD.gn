@@ -170,7 +170,6 @@ test_files = [
   "test_privacy_hub_browser_proxy.js",
   "test_profile_info_browser_proxy.js",
   "test_select_to_speak_subpage_browser_proxy.js",
-  "tether_connection_dialog_test.js",
   "text_to_speech_page_tests.js",
   "text_to_speech_subpage_tests.js",
   "timezone_subpage_test.js",
@@ -213,6 +212,8 @@ test_files = [
   "app_management/toggle_row_test.js",
 
   "date_time_page/timezone_selector_test.ts",
+
+  "internet_page/tether_connection_dialog_test.ts",
 
   "os_a11y_page/audio_and_captions_page_tests.ts",
   "os_a11y_page/tts_subpage_test.ts",
