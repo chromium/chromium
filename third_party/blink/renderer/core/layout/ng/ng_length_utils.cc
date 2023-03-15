@@ -1188,15 +1188,22 @@ LogicalSize ComputeReplacedSize(
                                                  override_available_size, mode,
                                                  anchor_evaluator);
 
-  if (node.Style().LogicalWidth().IsPercentOrCalc())
-    size.inline_size *= svg_root->LogicalSizeScaleFactorForPercentageLengths();
+  if (node.Style().LogicalWidth().IsPercentOrCalc()) {
+    double factor = svg_root->LogicalSizeScaleFactorForPercentageLengths();
+    if (factor != 1.0) {
+      size.inline_size *= factor;
+    }
+  }
 
   const Length& logical_height = node.Style().LogicalHeight();
   if (svg_root->IsDocumentElement() && logical_height.IsPercentOrCalc()) {
     LayoutUnit height = ValueForLength(
         logical_height,
         node.GetDocument().GetLayoutView()->ViewLogicalHeightForPercentages());
-    height *= svg_root->LogicalSizeScaleFactorForPercentageLengths();
+    double factor = svg_root->LogicalSizeScaleFactorForPercentageLengths();
+    if (factor != 1.0) {
+      height *= factor;
+    }
     size.block_size = height;
   }
   return size;

@@ -456,6 +456,21 @@ TEST_F(NGLengthUtilsTestWithNode, TestIndefinitePercentages) {
                                         LayoutUnit(120)));
 }
 
+TEST_F(NGLengthUtilsTestWithNode, ComputeReplacedSizeSvgNoScaling) {
+  SetBodyInnerHTML(R"HTML(
+<style>
+svg {
+  width: 100%;
+  margin-left: 9223372036854775807in;
+}
+span {
+  display: inline-flex;
+}
+</style>
+<span><svg></svg></span>)HTML");
+  // Pass if no DCHECK failures in NGBlockNode::FinishLayout().
+}
+
 TEST_F(NGLengthUtilsTest, TestMargins) {
   ComputedStyleBuilder builder(*initial_style_);
   builder.SetMarginTop(Length::Percent(10));

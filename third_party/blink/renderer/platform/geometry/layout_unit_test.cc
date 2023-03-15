@@ -236,6 +236,15 @@ TEST(LayoutUnitTest, LayoutUnitMultiplication) {
             (overflow_int_size_t * LayoutUnit(4)).ToInt());
   EXPECT_EQ(kIntMaxForLayoutUnit,
             (LayoutUnit(4) * overflow_int_size_t).ToInt());
+
+  {
+    // Multiple by float 1.0 can produce a different value.
+    LayoutUnit source = LayoutUnit::FromRawValue(2147483009);
+    EXPECT_NE(source, LayoutUnit(source * 1.0f));
+    LayoutUnit updated = source;
+    updated *= 1.0f;
+    EXPECT_NE(source, updated);
+  }
 }
 
 TEST(LayoutUnitTest, LayoutUnitDivision) {
