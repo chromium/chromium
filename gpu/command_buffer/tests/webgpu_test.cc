@@ -102,8 +102,9 @@ void WebGPUTest::Initialize(const Options& options) {
   gpu_preferences.enable_unsafe_webgpu = options.enable_unsafe_webgpu;
   gpu_preferences.texture_target_exception_list =
       gpu::CreateBufferUsageAndFormatExceptionList();
-  // Disable the blocklist so even blocked adapters may be tested.
-  gpu_preferences.disabled_dawn_features_list = {"adapter_blocklist"};
+  if (!options.adapter_blocklist) {
+    gpu_preferences.disabled_dawn_features_list = {"adapter_blocklist"};
+  }
 
   gpu_service_holder_ =
       std::make_unique<viz::TestGpuServiceHolder>(gpu_preferences);
@@ -440,6 +441,7 @@ TEST_F(WebGPUTest, ExplicitFallbackAdapterIsDisallowed) {
   auto options = WebGPUTest::Options();
   options.force_fallback_adapter = true;
   options.enable_unsafe_webgpu = false;
+  options.adapter_blocklist = true;
   // Initialize attempts to create an adapter.
   Initialize(options);
 

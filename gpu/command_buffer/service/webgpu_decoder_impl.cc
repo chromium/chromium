@@ -1244,16 +1244,6 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
   const dawn::native::Adapter& adapter =
       dawn_adapters_[requested_adapter_index];
 
-  // TODO(crbug.com/1266550): Hide CPU adapters until WebGPU fallback adapters
-  // are fully tested.
-  WGPUAdapterProperties properties = {};
-  adapter.GetProperties(&properties);
-  if (properties.adapterType == WGPUAdapterType_CPU && !enable_unsafe_webgpu_) {
-    callback(WGPURequestAdapterStatus_Unavailable, nullptr,
-             "No available adapters.", userdata);
-    return;
-  }
-
   // Callback takes ownership of the reference. Add a ref to pass to the
   // callback.
   dawn::native::GetProcs().adapterReference(adapter.Get());
