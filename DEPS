@@ -789,7 +789,7 @@ deps = {
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + '115afd20206ed5ade2f4103e56ce05603312ac2e',
+    'url': Var('chromium_git') + '/website.git' + '@' + 'ae51fc4de3bac18c90ea3d542897914b1d97ff40',
   },
 
   'src/ios/third_party/earl_grey2/src': {
