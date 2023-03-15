@@ -813,16 +813,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.Prefetching.DownloadedFileSize" units="KiB"
-    expires_after="2021-06-25">
-  <owner>carlosk@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Actual size of archive file successfully downloaded by offline page
-    prefetching.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.Prefetching.DownloadExpectedFileSize" units="KiB"
     expires_after="2021-06-25">
   <owner>carlosk@chromium.org</owner>
@@ -832,18 +822,6 @@ chromium-metrics-reviews@google.com.
     started being downloaded by offline page prefetching. Sizes reported in this
     metric are less than the sizes reported in DownloadedFileSize due to content
     gzip encoding.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Prefetching.DownloadFinishedUpdate"
-    enum="OfflinePrefetchDownloadFinishedOutcome" expires_after="2021-06-25">
-  <owner>carlosk@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Reports the possible outcomes of an archive download finishing and its
-    respective prefetch item being updated in the store. Downloads are expected
-    to succeed or fail but a respective item should always exist and be updated.
-    The &quot;item not found&quot; cases are exceptions.
   </summary>
 </histogram>
 

@@ -75687,13 +75687,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="22" label="above 200%"/>
 </enum>
 
-<enum name="OfflinePrefetchDownloadFinishedOutcome">
-  <int value="0" label="Download sucessful, item updated"/>
-  <int value="1" label="Download failed, item updated"/>
-  <int value="2" label="Download sucessful, item not found"/>
-  <int value="3" label="Download failed, item not found"/>
-</enum>
-
 <enum name="OfflinePrefetchItemErrorCode">
   <summary>
     Error codes representing the reason why a prefetch item was finalized.

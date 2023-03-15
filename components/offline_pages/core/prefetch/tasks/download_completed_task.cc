@@ -31,16 +31,6 @@ enum class DownloadOutcome {
   kMaxValue = DOWNLOAD_FAILED_ITEM_NOT_FOUND,
 };
 
-DownloadOutcome GetDownloadOutcome(bool successful_download,
-                                   bool row_was_updated) {
-  if (successful_download) {
-    return row_was_updated ? DownloadOutcome::DOWNLOAD_SUCCEEDED_ITEM_UPDATED
-                           : DownloadOutcome::DOWNLOAD_SUCCEEDED_ITEM_NOT_FOUND;
-  }
-  return row_was_updated ? DownloadOutcome::DOWNLOAD_FAILED_ITEM_UPDATED
-                         : DownloadOutcome::DOWNLOAD_FAILED_ITEM_NOT_FOUND;
-}
-
 using UpdateInfo = DownloadCompletedTask::UpdateInfo;
 
 // Updates a prefetch item after its archive was successfully downloaded.
@@ -124,9 +114,6 @@ DownloadCompletedTask::~DownloadCompletedTask() {}
 
 void DownloadCompletedTask::Run() {
   if (download_result_.success) {
-    // Reports downloaded file size in KiB (accepting values up to 100 MiB).
-    UMA_HISTOGRAM_COUNTS_100000("OfflinePages.Prefetching.DownloadedFileSize",
-                                download_result_.file_size / 1024);
     prefetch_store_->Execute(
         base::BindOnce(&UpdatePrefetchItemOnDownloadSuccessSync,
                        download_result_.download_id, download_result_.file_path,
@@ -156,11 +143,6 @@ void DownloadCompletedTask::OnPrefetchItemUpdated(bool successful_download,
     prefetch_dispatcher_->ItemDownloaded(update_info.offline_id,
                                          update_info.client_id);
   }
-
-  DownloadOutcome status =
-      GetDownloadOutcome(successful_download, update_info.success);
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.Prefetching.DownloadFinishedUpdate",
-                            status);
 
   TaskComplete();
 }
