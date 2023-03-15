@@ -14,6 +14,7 @@ source_set("feed_promos") {
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/ntp/metrics",

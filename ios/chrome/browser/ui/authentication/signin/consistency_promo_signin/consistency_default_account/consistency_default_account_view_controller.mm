@@ -168,6 +168,10 @@ constexpr CGFloat kContentSpacing = 16.;
       signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO) {
     label.text =
         l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
+  } else if (self.accessPoint == signin_metrics::AccessPoint::
+                                     ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO) {
+    label.text =
+        l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL);
   } else {
     label.text =
         l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
