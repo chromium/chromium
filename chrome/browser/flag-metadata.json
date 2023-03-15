@@ -5280,6 +5280,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-inspire-me",
+    "owners": ["ender", "pnoland", "gangwu"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-keep-secondary-zero-suggest",
     "owners": [ "ender@google.com", "mahmadi@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 115

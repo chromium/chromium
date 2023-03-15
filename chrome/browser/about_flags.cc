@@ -1473,6 +1473,41 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kOmniboxInspireMeWith5Trends[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "5"},
+    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "0"}};
+const FeatureEntry::FeatureParam kOmniboxInspireMeWith5Related[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "0"},
+    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "5"}};
+const FeatureEntry::FeatureParam kOmniboxInspireMeWith5Mixed[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "2"},
+    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "3"}};
+const FeatureEntry::FeatureParam kOmniboxInspireMeWith10Trends[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "10"},
+    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "0"}};
+const FeatureEntry::FeatureParam kOmniboxInspireMeWith10Related[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "0"},
+    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "10"}};
+const FeatureEntry::FeatureParam kOmniboxInspireMeWith10Mixed[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "5"},
+    {OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "5"}};
+
+const FeatureEntry::FeatureVariation kOmniboxInspireMeVariants[] = {
+    {"5 Trends", kOmniboxInspireMeWith5Trends,
+     std::size(kOmniboxInspireMeWith5Trends), nullptr},
+    {"5 Related", kOmniboxInspireMeWith5Related,
+     std::size(kOmniboxInspireMeWith5Related), nullptr},
+    {"3 Related + 2 Trends", kOmniboxInspireMeWith5Mixed,
+     std::size(kOmniboxInspireMeWith5Mixed), nullptr},
+    {"10 Trends", kOmniboxInspireMeWith10Trends,
+     std::size(kOmniboxInspireMeWith10Trends), nullptr},
+    {"10 Related", kOmniboxInspireMeWith10Related,
+     std::size(kOmniboxInspireMeWith10Related), nullptr},
+    {"5 Related + 5 Trends", kOmniboxInspireMeWith10Mixed,
+     std::size(kOmniboxInspireMeWith10Mixed), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceTitle[] = {
     {"OmniboxBookmarkPathsUiReplaceTitle", "true"}};
 const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceUrl[] = {
@@ -5437,6 +5472,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID)
+    {"omnibox-inspire-me", flag_descriptions::kOmniboxInspireMeName,
+     flag_descriptions::kOmniboxInspireMeDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kInspireMe,
+                                    kOmniboxInspireMeVariants,
+                                    "OmniboxBundledExperimentV1")},
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
     {"omnibox-on-device-head-suggestions",
      flag_descriptions::kOmniboxOnDeviceHeadSuggestionsName,

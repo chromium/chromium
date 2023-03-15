@@ -212,6 +212,8 @@ static_library("browser") {
     "on_device_tail_tokenizer.h",
     "open_tab_provider.cc",
     "open_tab_provider.h",
+    "page_classification_functions.cc",
+    "page_classification_functions.h",
     "query_tile_provider.cc",
     "query_tile_provider.h",
     "remote_suggestions_service.cc",

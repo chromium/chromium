@@ -59845,6 +59845,7 @@ from previous Chrome versions.
   <int value="-1212855900" label="enable-all-bookmarks-view"/>
   <int value="-1212273428" label="enable-experimental-app-list"/>
   <int value="-1212167260" label="disable-app-window-cycling"/>
+  <int value="-1210667312" label="OmniboxInspireMe:enabled"/>
   <int value="-1209720026" label="AppMenuMobileSiteOption:disabled"/>
   <int value="-1208501269" label="AutofillScanThemeDialog:enabled"/>
   <int value="-1208044478" label="InheritNativeThemeFromParentWidget:enabled"/>
@@ -65276,6 +65277,7 @@ from previous Chrome versions.
   <int value="1835931933" label="ShareUsageRankingFixedMore:enabled"/>
   <int value="1835970010" label="UrlScoringModel:enabled"/>
   <int value="1836557489" label="EnableDangerousDownloadDialog:disabled"/>
+  <int value="1836729140" label="OmniboxInspireMe:disabled"/>
   <int value="1836774441" label="SameAppWindowCycle:enabled"/>
   <int value="1836916996" label="OmniboxShortcutExpanding:disabled"/>
   <int value="1837330563" label="WebPaymentsMinimalUI:disabled"/>
