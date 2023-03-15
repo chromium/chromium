@@ -10,6 +10,10 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gl/buildflags.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 #if BUILDFLAG(USE_DAWN)
 #include "third_party/dawn/include/dawn/webgpu.h"  // nogncheck
 #endif
@@ -38,6 +42,15 @@ bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties) {
 bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties,
                                 const std::string& blocklist) {
 #if BUILDFLAG(USE_DAWN)
+#if BUILDFLAG(IS_MAC)
+  constexpr uint32_t kAMDVendorID = 0x1002;
+  // Blocklisted due to crbug.com/tint/1094
+  if (!base::mac::IsAtLeastOS13() && properties.vendorID == kAMDVendorID &&
+      properties.backendType == WGPUBackendType_Metal) {
+    return true;
+  }
+#endif
+
   auto U32ToHexString = [](uint32_t value) {
     std::ostringstream o;
     o << std::hex << value;
