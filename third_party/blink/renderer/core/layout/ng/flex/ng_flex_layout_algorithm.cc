@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/layout/layout_button.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_data.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_item_iterator.h"
@@ -1097,7 +1096,8 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
   Vector<EBreakBetween> row_break_between_outputs;
   HeapVector<NGFlexLine> flex_line_outputs;
   HeapVector<Member<LayoutBox>> oof_children;
-  bool broke_before_row = false;
+  NGFlexBreakTokenData::NGFlexBreakBeforeRow break_before_row =
+      NGFlexBreakTokenData::kNotBreakBeforeRow;
   ClearCollectionScope<HeapVector<NGFlexLine>> scope(&flex_line_outputs);
 
   bool use_empty_line_block_size;
@@ -1107,7 +1107,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
     total_intrinsic_block_size_ = flex_data->intrinsic_block_size;
     flex_line_outputs = flex_data->flex_lines;
     row_break_between_outputs = flex_data->row_break_between;
-    broke_before_row = flex_data->broke_before_row;
+    break_before_row = flex_data->break_before_row;
     oof_children = flex_data->oof_children;
 
     use_empty_line_block_size =
@@ -1148,7 +1148,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 
     NGLayoutResult::EStatus status =
         GiveItemsFinalPositionAndSizeForFragmentation(
-            &flex_line_outputs, &row_break_between_outputs, &broke_before_row);
+            &flex_line_outputs, &row_break_between_outputs, &break_before_row);
     if (status != NGLayoutResult::kSuccess)
       return container_builder_.Abort(status);
 
@@ -1211,7 +1211,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
         MakeGarbageCollected<NGFlexBreakTokenData>(
             container_builder_.GetBreakTokenData(), flex_line_outputs,
             row_break_between_outputs, oof_children,
-            total_intrinsic_block_size_, broke_before_row));
+            total_intrinsic_block_size_, break_before_row));
   }
 
 #if DCHECK_IS_ON()
@@ -1546,11 +1546,11 @@ NGLayoutResult::EStatus
 NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     HeapVector<NGFlexLine>* flex_line_outputs,
     Vector<EBreakBetween>* row_break_between_outputs,
-    bool* broke_before_row) {
+    NGFlexBreakTokenData::NGFlexBreakBeforeRow* break_before_row) {
   DCHECK(InvolvedInBlockFragmentation(container_builder_));
   DCHECK(flex_line_outputs);
   DCHECK(row_break_between_outputs);
-  DCHECK(broke_before_row);
+  DCHECK(break_before_row);
 
   NGFlexItemIterator item_iterator(*flex_line_outputs, BreakToken(),
                                    is_column_);
@@ -1572,9 +1572,11 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
 
   BaselineAccumulator baseline_accumulator(Style());
-  for (auto entry = item_iterator.NextItem(*broke_before_row);
+  bool broke_before_row =
+      *break_before_row != NGFlexBreakTokenData::kNotBreakBeforeRow;
+  for (auto entry = item_iterator.NextItem(broke_before_row);
        NGFlexItem* flex_item = entry.flex_item;
-       entry = item_iterator.NextItem(*broke_before_row)) {
+       entry = item_iterator.NextItem(broke_before_row)) {
     wtf_size_t flex_item_idx = entry.flex_item_idx;
     wtf_size_t flex_line_idx = entry.flex_line_idx;
     NGFlexLine& line_output = (*flex_line_outputs)[flex_line_idx];
@@ -1626,11 +1628,56 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         // the item or row expanded by. This allows for things like margins
         // and alignment offsets to not get sliced by a forced break.
         line_output.item_offset_adjustment += previously_consumed_block_size;
-      } else if (!is_column_ && flex_item_idx == 0 && *broke_before_row) {
-        LayoutUnit total_row_block_offset =
-            row_block_offset + line_output.item_offset_adjustment;
-        line_output.item_offset_adjustment +=
-            previously_consumed_block_size - total_row_block_offset;
+      } else if (!is_column_ && flex_item_idx == 0 && broke_before_row) {
+        // If this is the first time we are handling a break before a row,
+        // adjust the offset of items in the row to accommodate the break. The
+        // following cases need to be considered:
+        //
+        // 1. If we are not the first line in the container, and the previous
+        // sibling row overflowed the fragmentainer in the block axis, flex
+        // items in the current row should be adjusted upward in the block
+        // direction to account for the overflowed content.
+        //
+        // 2. Otherwise, the current row gap should be decreased by the amount
+        // of extra space in the previous fragmentainer remaining after the
+        // block-end of the previous row. The reason being that we should not
+        // clamp row gaps between breaks, similarly to how flex item margins are
+        // handled during fragmentation.
+        //
+        // 3. If the entire row gap was accounted for in the previous
+        // fragmentainer, the block-offsets of the flex items in the current row
+        // will need to be adjusted downward in the block direction to
+        // accommodate the extra space consumed by the container.
+        if (*break_before_row ==
+            NGFlexBreakTokenData::kAtStartOfBreakBeforeRow) {
+          // Calculate the amount of space remaining in the previous
+          // fragmentainer after the block-end of the previous flex row, if any.
+          LayoutUnit previous_row_end =
+              is_first_line
+                  ? LayoutUnit()
+                  : (*flex_line_outputs)[flex_line_idx - 1].LineCrossEnd();
+          LayoutUnit fragmentainer_space_remaining =
+              (previously_consumed_block_size - previous_row_end)
+                  .ClampNegativeToZero();
+
+          // If there was any remaining space after the previous flex line,
+          // determine how much of the row gap was consumed in the previous
+          // fragmentainer, if any.
+          LayoutUnit consumed_row_gap;
+          if (fragmentainer_space_remaining) {
+            LayoutUnit total_row_block_offset =
+                row_block_offset + line_output.item_offset_adjustment;
+            LayoutUnit row_gap = total_row_block_offset - previous_row_end;
+            DCHECK_GE(row_gap, LayoutUnit());
+            consumed_row_gap = std::min(row_gap, fragmentainer_space_remaining);
+          }
+
+          // Adjust the item offsets to account for any overflow or consumed row
+          // gap in the previous fragmentainer.
+          LayoutUnit row_adjustment = previously_consumed_block_size -
+                                      previous_row_end - consumed_row_gap;
+          line_output.item_offset_adjustment += row_adjustment;
+        }
       } else {
         LayoutUnit total_item_block_offset =
             offset.block_offset + line_output.item_offset_adjustment;
@@ -1666,8 +1713,9 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         container_builder_.AddBreakBeforeChild(flex_item->ng_input_node,
                                                kBreakAppealPerfect,
                                                /* is_forced_break */ false);
-        if (early_break_->Type() == NGEarlyBreak::kLine)
-          *broke_before_row = true;
+        if (early_break_->Type() == NGEarlyBreak::kLine) {
+          *break_before_row = NGFlexBreakTokenData::kAtStartOfBreakBeforeRow;
+        }
         ConsumeRemainingFragmentainerSpace(previously_consumed_block_size,
                                            &line_output);
         // For column flex containers, continue to the next column. For rows,
@@ -1743,29 +1791,36 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       if (!is_column_) {
         has_container_separation =
             offset.block_offset > row_block_offset &&
-            (!item_break_token || (*broke_before_row && flex_item_idx == 0 &&
+            (!item_break_token || (broke_before_row && flex_item_idx == 0 &&
                                    item_break_token->IsBreakBefore()));
         // Don't attempt to break before a row if the fist item is resuming
         // layout. In which case, the row should be resuming layout, as well.
         if (flex_item_idx == 0 &&
             (!item_break_token ||
-             (item_break_token->IsBreakBefore() && *broke_before_row))) {
+             (item_break_token->IsBreakBefore() && broke_before_row))) {
           // Rows have no layout result, so if the row breaks before, we
           // will break before the first item in the row instead.
           bool row_container_separation = has_processed_first_line_;
-          bool is_first_for_row = !item_break_token || *broke_before_row;
+          bool is_first_for_row = !item_break_token || broke_before_row;
           NGBreakStatus row_break_status = BreakBeforeRowIfNeeded(
-              line_output, (*row_break_between_outputs)[flex_line_idx],
-              flex_line_idx, flex_item->ng_input_node, row_container_separation,
+              line_output, row_block_offset,
+              (*row_break_between_outputs)[flex_line_idx], flex_line_idx,
+              flex_item->ng_input_node, row_container_separation,
               is_first_for_row);
           if (row_break_status == NGBreakStatus::kBrokeBefore) {
             ConsumeRemainingFragmentainerSpace(previously_consumed_block_size,
                                                &line_output);
-            *broke_before_row = true;
+            if (broke_before_row) {
+              *break_before_row =
+                  NGFlexBreakTokenData::kPastStartOfBreakBeforeRow;
+            } else {
+              *break_before_row =
+                  NGFlexBreakTokenData::kAtStartOfBreakBeforeRow;
+            }
             DCHECK_EQ(status, NGLayoutResult::kSuccess);
             break;
           }
-          *broke_before_row = false;
+          *break_before_row = NGFlexBreakTokenData::kNotBreakBeforeRow;
           if (row_break_status == NGBreakStatus::kNeedsEarlierBreak) {
             status = NGLayoutResult::kNeedsEarlierBreak;
             break;
@@ -1955,7 +2010,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   }
 
   if (!container_builder_.HasInflowChildBreakInside() &&
-      !item_iterator.NextItem(*broke_before_row).flex_item) {
+      !item_iterator.NextItem(broke_before_row).flex_item) {
     container_builder_.SetHasSeenAllChildren();
   }
 
@@ -2538,6 +2593,7 @@ void NGFlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
 
 NGBreakStatus NGFlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
     const NGFlexLine& row,
+    LayoutUnit row_block_offset,
     EBreakBetween row_break_between,
     wtf_size_t row_index,
     NGLayoutInputNode child,
@@ -2547,9 +2603,7 @@ NGBreakStatus NGFlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
   DCHECK(InvolvedInBlockFragmentation(container_builder_));
 
   LayoutUnit fragmentainer_block_offset =
-      ConstraintSpace().FragmentainerOffset() + row.cross_axis_offset;
-  if (BreakToken())
-    fragmentainer_block_offset -= BreakToken()->ConsumedBlockSize();
+      ConstraintSpace().FragmentainerOffset() + row_block_offset;
 
   if (has_container_separation) {
     if (IsForcedBreakValue(ConstraintSpace(), row_break_between)) {

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/flexible_box_algorithm.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 
 namespace blink {
@@ -96,7 +97,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
       HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs,
-      bool* broke_before_row);
+      NGFlexBreakTokenData::NGFlexBreakBeforeRow* break_before_row);
   NGLayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
                                                 wtf_size_t flex_line_idx,
                                                 LogicalOffset offset,
@@ -137,10 +138,12 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // a layout result, so when breaking before a row, we will insert a
   // fragmentainer break before the first child in a row. |child| should be
   // those associated with the first child in the row. |row|,
-  // |row_break_between|, |row_index|, |has_container_separation| and
-  // |is_first_for_row| are specific to the row itself. See
+  // |row_block_offset|, |row_break_between|, |row_index|,
+  // |has_container_separation| and |is_first_for_row| are specific to the row
+  // itself. See
   // |::blink::BreakBeforeChildIfNeeded()| for more documentation.
   NGBreakStatus BreakBeforeRowIfNeeded(const NGFlexLine& row,
+                                       LayoutUnit row_block_offset,
                                        EBreakBetween row_break_between,
                                        wtf_size_t row_index,
                                        NGLayoutInputNode child,
