@@ -4075,7 +4075,7 @@
     },
     {
       "id": 403,
-      "description": "Disable hardware MFT Av1 encoder on machines with multiple GPUs",
+      "description": "Disable hardware MFT Av1 encoder on machines with multiple GPUs except Intel alchemist GPUs",
       "cr_bugs": [1367038],
       "os": {
         "type": "win"
@@ -4084,6 +4084,19 @@
         "op": ">",
         "value": "2"
       },
+      "exceptions": [
+        {
+          "vendor_id": "0x8086",
+          "multi_gpu_category":"any",
+          "intel_gpu_series": [
+            "alchemist"
+          ],
+          "driver_version": {
+            "op": ">=",
+            "value": "31.0.101.4146"
+          }
+        }
+      ],
       "features": [
         "disable_accelerated_av1_encode"
       ]
