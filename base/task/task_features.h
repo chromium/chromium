@@ -59,6 +59,12 @@ BASE_EXPORT void InitializeTaskLeeway();
 BASE_EXPORT TimeDelta GetTaskLeewayForCurrentThread();
 BASE_EXPORT TimeDelta GetDefaultTaskLeeway();
 
+// Controls the max number of delayed tasks that can run before selecting an
+// immediate task in sequence manager.
+BASE_EXPORT BASE_DECLARE_FEATURE(kMaxDelayedStarvationTasks);
+extern const BASE_EXPORT base::FeatureParam<int>
+    kMaxDelayedStarvationTasksParam;
+
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_

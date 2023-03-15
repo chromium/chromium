@@ -296,6 +296,7 @@ void SequenceManagerImpl::InitializeFeatures() {
   g_explicit_high_resolution_timer_win =
       FeatureList::IsEnabled(kExplicitHighResolutionTimerWin);
 #endif  // BUILDFLAG(IS_WIN)
+  TaskQueueSelector::InitializeFeatures();
 }
 
 // static

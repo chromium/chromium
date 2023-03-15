@@ -11,6 +11,7 @@
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
+#include "base/task/task_features.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,6 +19,9 @@
 namespace base {
 namespace sequence_manager {
 namespace internal {
+
+std::atomic_int TaskQueueSelector::g_max_delayed_starvation_tasks =
+    TaskQueueSelector::kDefaultMaxDelayedStarvationTasks;
 
 TaskQueueSelector::TaskQueueSelector(
     scoped_refptr<const AssociatedThreadId> associated_thread,
@@ -33,6 +37,12 @@ TaskQueueSelector::TaskQueueSelector(
 }
 
 TaskQueueSelector::~TaskQueueSelector() = default;
+
+// static
+void TaskQueueSelector::InitializeFeatures() {
+  g_max_delayed_starvation_tasks.store(kMaxDelayedStarvationTasksParam.Get(),
+                                       std::memory_order_relaxed);
+}
 
 void TaskQueueSelector::AddQueue(internal::TaskQueueImpl* queue,
                                  TaskQueue::QueuePriority priority) {

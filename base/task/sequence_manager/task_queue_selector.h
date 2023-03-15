@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <atomic>
 #include <vector>
 
 #include "base/base_export.h"
@@ -38,6 +39,8 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   TaskQueueSelector(const TaskQueueSelector&) = delete;
   TaskQueueSelector& operator=(const TaskQueueSelector&) = delete;
   ~TaskQueueSelector() override;
+
+  static void InitializeFeatures();
 
   // Called to register a queue that can be selected. This function is called
   // on the main thread.
@@ -108,7 +111,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
 
   // Maximum number of delayed tasks tasks which can be run while there's a
   // waiting non-delayed task.
-  static const int kMaxDelayedStarvationTasks = 3;
+  static const int kDefaultMaxDelayedStarvationTasks = 3;
 
   // Tracks which priorities are currently active, meaning there are pending
   // runnable tasks with that priority. Because there are only a handful of
@@ -167,7 +170,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   template <typename SetOperation>
   WorkQueue* ChooseWithPriority(TaskQueue::QueuePriority priority) const {
     // Select an immediate work queue if we are starving immediate tasks.
-    if (immediate_starvation_count_ >= kMaxDelayedStarvationTasks) {
+    if (immediate_starvation_count_ >= g_max_delayed_starvation_tasks) {
       WorkQueue* queue =
           ChooseImmediateOnlyWithPriority<SetOperation>(priority);
       if (queue)
@@ -240,6 +243,9 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   std::vector<int> non_empty_set_counts_;
 
   static constexpr const int kMaxNonEmptySetCount = 2;
+  // An atomic is used here because InitializeFeatures() can race with
+  // SequenceManager reading this.
+  static std::atomic_int g_max_delayed_starvation_tasks;
 
   // List of active priorities, which is used to work out which priority to run
   // next.

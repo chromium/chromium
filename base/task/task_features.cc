@@ -85,4 +85,11 @@ BASE_EXPORT TimeDelta GetDefaultTaskLeeway() {
   return g_task_leeway.load(std::memory_order_relaxed);
 }
 
+BASE_FEATURE(kMaxDelayedStarvationTasks,
+             "MaxDelayedStarvationTasks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kMaxDelayedStarvationTasksParam{
+    &kMaxDelayedStarvationTasks, "count", 3};
+
 }  // namespace base
