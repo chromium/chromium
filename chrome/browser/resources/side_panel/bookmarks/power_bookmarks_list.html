@@ -298,16 +298,12 @@
   </div>
 </cr-dialog>
 
-<cr-lazy-render id="contextMenu">
-  <template>
-    <power-bookmarks-context-menu
-        on-delete-clicked="onContextMenuDeleteClicked_"
-        on-disabled-feature="showDisabledFeatureDialog_"
-        on-edit-clicked="onContextMenuEditClicked_"
-        on-rename-clicked="setRenamingId_">
-    </power-bookmarks-context-menu>
-  </template>
-</cr-lazy-render>
+<power-bookmarks-context-menu id="contextMenu"
+    on-delete-clicked="onContextMenuDeleteClicked_"
+    on-disabled-feature="showDisabledFeatureDialog_"
+    on-edit-clicked="onContextMenuEditClicked_"
+    on-rename-clicked="setRenamingId_">
+</power-bookmarks-context-menu>
 
 <cr-lazy-render id="deletionToast">
   <template>

@@ -59,7 +59,7 @@ export interface SortOption {
 
 export interface PowerBookmarksListElement {
   $: {
-    contextMenu: CrLazyRenderElement<PowerBookmarksContextMenuElement>,
+    contextMenu: PowerBookmarksContextMenuElement,
     deletionToast: CrLazyRenderElement<CrToastElement>,
     powerBookmarksContainer: HTMLElement,
     shownBookmarksIronList: IronListElement,
@@ -639,11 +639,11 @@ export class PowerBookmarksListElement extends PolymerElement {
     const priceTrackingEligible =
         this.isPriceTrackingEligible_(event.detail.bookmark);
     if (event.detail.event.button === 0) {
-      this.$.contextMenu.get().showAt(
+      this.$.contextMenu.showAt(
           event.detail.event, [event.detail.bookmark], priceTracked,
           priceTrackingEligible);
     } else {
-      this.$.contextMenu.get().showAtPosition(
+      this.$.contextMenu.showAtPosition(
           event.detail.event, [event.detail.bookmark], priceTracked,
           priceTrackingEligible);
     }
@@ -762,7 +762,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onEditMenuClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.$.contextMenu.get().showAt(
+    this.$.contextMenu.showAt(
         event, this.selectedBookmarks_.slice(), false, false);
   }
 
