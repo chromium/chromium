@@ -36,17 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void SetConsumer(AuthStatusConsumer* consumer) override;
   void AuthenticateToCheck(const UserContext& context,
                            base::OnceClosure success_callback) override;
-  void AuthenticateToUnlockWebAuthnSecret(
-      const UserContext& context,
-      base::OnceClosure success_callback) override;
-  void StartFingerprintAuthSession(
-      const AccountId& account_id,
-      base::OnceCallback<void(bool)> callback) override;
-  void EndFingerprintAuthSession() override;
-  void AuthenticateWithFingerprint(
-      const UserContext& context,
-      base::OnceCallback<void(user_data_auth::CryptohomeErrorCode)> callback)
-      override;
   void TransformKeyIfNeeded(const UserContext& user_context,
                             ContextCallback callback) override;
 
@@ -68,13 +57,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
                            const UserContext& context,
                            base::OnceClosure success_callback,
                            absl::optional<ReplyType> reply);
-
-  void OnStartFingerprintAuthSessionComplete(
-      base::OnceCallback<void(bool)> callback,
-      absl::optional<user_data_auth::StartFingerprintAuthSessionReply> reply);
-  void OnFingerprintScanComplete(
-      base::OnceCallback<void(user_data_auth::CryptohomeErrorCode)> callback,
-      absl::optional<user_data_auth::CheckKeyReply> reply);
 
   bool salt_obtained_;
   std::string system_salt_;

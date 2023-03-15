@@ -46,18 +46,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
               (const ::user_data_auth::CheckKeyRequest& request,
                CheckKeyCallback callback),
               (override));
-  MOCK_METHOD(
-      void,
-      StartFingerprintAuthSession,
-      (const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
-       StartFingerprintAuthSessionCallback callback),
-      (override));
-  MOCK_METHOD(
-      void,
-      EndFingerprintAuthSession,
-      (const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
-       EndFingerprintAuthSessionCallback callback),
-      (override));
   MOCK_METHOD(void,
               StartMigrateToDircrypto,
               (const ::user_data_auth::StartMigrateToDircryptoRequest& request,

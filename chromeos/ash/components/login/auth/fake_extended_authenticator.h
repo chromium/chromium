@@ -27,17 +27,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void SetConsumer(AuthStatusConsumer* consumer) override;
   void AuthenticateToCheck(const UserContext& context,
                            base::OnceClosure success_callback) override;
-  void AuthenticateToUnlockWebAuthnSecret(
-      const UserContext& context,
-      base::OnceClosure success_callback) override;
-  void StartFingerprintAuthSession(
-      const AccountId& account_id,
-      base::OnceCallback<void(bool)> callback) override;
-  void EndFingerprintAuthSession() override;
-  void AuthenticateWithFingerprint(
-      const UserContext& context,
-      base::OnceCallback<void(::user_data_auth::CryptohomeErrorCode)> callback)
-      override;
   void TransformKeyIfNeeded(const UserContext& user_context,
                             ContextCallback callback) override;
 

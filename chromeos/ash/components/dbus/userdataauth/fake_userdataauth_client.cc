@@ -718,18 +718,6 @@ void FakeUserDataAuthClient::CheckKey(
   }
 }
 
-void FakeUserDataAuthClient::StartFingerprintAuthSession(
-    const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
-    StartFingerprintAuthSessionCallback callback) {
-  ::user_data_auth::StartFingerprintAuthSessionReply reply;
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-}
-void FakeUserDataAuthClient::EndFingerprintAuthSession(
-    const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
-    EndFingerprintAuthSessionCallback callback) {
-  ::user_data_auth::EndFingerprintAuthSessionReply reply;
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-}
 void FakeUserDataAuthClient::StartMigrateToDircrypto(
     const ::user_data_auth::StartMigrateToDircryptoRequest& request,
     StartMigrateToDircryptoCallback callback) {

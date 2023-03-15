@@ -59,10 +59,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using CheckKeyCallback =
       chromeos::DBusMethodCallback<::user_data_auth::CheckKeyReply>;
 
-  using StartFingerprintAuthSessionCallback = chromeos::DBusMethodCallback<
-      ::user_data_auth::StartFingerprintAuthSessionReply>;
-  using EndFingerprintAuthSessionCallback = chromeos::DBusMethodCallback<
-      ::user_data_auth::EndFingerprintAuthSessionReply>;
   using GetSupportedKeyPoliciesCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::GetSupportedKeyPoliciesReply>;
   using GetAccountDiskUsageCallback =
@@ -178,16 +174,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Try authenticating with key in user's vault.
   virtual void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
                         CheckKeyCallback callback) = 0;
-
-  // Starts a fingerprint auth session.
-  virtual void StartFingerprintAuthSession(
-      const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
-      StartFingerprintAuthSessionCallback callback) = 0;
-
-  // Ends a fingerprint auth session.
-  virtual void EndFingerprintAuthSession(
-      const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
-      EndFingerprintAuthSessionCallback callback) = 0;
 
   // Instructs cryptohome to migrate the vault from eCryptfs to Dircrypto.
   virtual void StartMigrateToDircrypto(

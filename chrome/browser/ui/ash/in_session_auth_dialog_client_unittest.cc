@@ -101,10 +101,6 @@ class InSessionAuthDialogClientTest : public testing::Test {
                                                std::move(callback));
   }
 
-  bool GetLastUnlockWebAuthnSecret() const {
-    return fake_authenticator_->last_unlock_webauthn_secret();
-  }
-
   void ConfigureExistingUserWithPassword(const AccountId& user,
                                          const std::string& password) {
     Key key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password);
@@ -155,10 +151,8 @@ TEST_F(InSessionAuthDialogClientTest, WrongPassword) {
   expected_user_context.SetKey(key);
 
   SetExpectedContext(expected_user_context);
-  if (ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
-    ConfigureExistingUserWithPassword(user->GetAccountId(), kPassword);
-    StartAuthSessionForActiveUser();
-  };
+  ConfigureExistingUserWithPassword(user->GetAccountId(), kPassword);
+  StartAuthSessionForActiveUser();
 
   base::RunLoop run_loop;
 
@@ -183,10 +177,8 @@ TEST_F(InSessionAuthDialogClientTest, PasswordAuthSuccess) {
 
   SetExpectedContext(expected_user_context);
 
-  if (ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
-    ConfigureExistingUserWithPassword(user->GetAccountId(), kPassword);
-    StartAuthSessionForActiveUser();
-  };
+  ConfigureExistingUserWithPassword(user->GetAccountId(), kPassword);
+  StartAuthSessionForActiveUser();
 
   base::RunLoop run_loop;
 
@@ -199,9 +191,6 @@ TEST_F(InSessionAuthDialogClientTest, PasswordAuthSuccess) {
 
   run_loop.RunUntilIdle();
   EXPECT_TRUE(result);
-  if (!ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
-    EXPECT_TRUE(GetLastUnlockWebAuthnSecret());
-  }
 }
 
 }  // namespace

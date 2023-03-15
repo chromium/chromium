@@ -167,8 +167,6 @@ AuthorizationRequest CreateAuthorizationRequestFromKeyDef(
       auth_request.mutable_key_delegate()->set_dbus_object_path(
           cryptohome::kCryptohomeKeyDelegateServicePath);
       break;
-    case KeyDefinition::TYPE_FINGERPRINT:
-      break;
     case KeyDefinition::TYPE_PUBLIC_MOUNT:
       break;
   }
@@ -198,9 +196,6 @@ void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key) {
       }
       break;
 
-    case KeyDefinition::TYPE_FINGERPRINT:
-      data->set_type(KeyData::KEY_TYPE_FINGERPRINT);
-      break;
     case KeyDefinition::TYPE_PUBLIC_MOUNT:
       data->set_type(KeyData::KEY_TYPE_KIOSK);
       break;

@@ -29,34 +29,6 @@ void FakeExtendedAuthenticator::AuthenticateToCheck(
                         std::move(success_callback));
 }
 
-void FakeExtendedAuthenticator::AuthenticateToUnlockWebAuthnSecret(
-    const UserContext& context,
-    base::OnceClosure success_callback) {
-  DoAuthenticateToCheck(context, /*unlock_webauthn_secret=*/true,
-                        std::move(success_callback));
-}
-
-void FakeExtendedAuthenticator::StartFingerprintAuthSession(
-    const AccountId& account_id,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(expected_user_context_.GetAccountId() == account_id);
-}
-
-void FakeExtendedAuthenticator::EndFingerprintAuthSession() {}
-
-void FakeExtendedAuthenticator::AuthenticateWithFingerprint(
-    const UserContext& context,
-    base::OnceCallback<void(::user_data_auth::CryptohomeErrorCode)> callback) {
-  if (expected_user_context_ != context) {
-    std::move(callback).Run(::user_data_auth::CryptohomeErrorCode::
-                                CRYPTOHOME_ERROR_FINGERPRINT_RETRY_REQUIRED);
-    return;
-  }
-
-  std::move(callback).Run(
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
-}
-
 void FakeExtendedAuthenticator::TransformKeyIfNeeded(
     const UserContext& user_context,
     ContextCallback callback) {
@@ -68,7 +40,6 @@ void FakeExtendedAuthenticator::DoAuthenticateToCheck(
     const UserContext& context,
     bool unlock_webauthn_secret,
     base::OnceClosure success_callback) {
-  last_unlock_webauthn_secret_ = unlock_webauthn_secret;
   if (expected_user_context_ == context) {
     if (success_callback)
       std::move(success_callback).Run();

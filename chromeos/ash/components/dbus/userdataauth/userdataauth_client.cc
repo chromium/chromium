@@ -131,22 +131,6 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
-  void StartFingerprintAuthSession(
-      const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
-      StartFingerprintAuthSessionCallback callback) override {
-    CallProtoMethod(::user_data_auth::kStartFingerprintAuthSession,
-                    ::user_data_auth::kUserDataAuthInterface, request,
-                    std::move(callback));
-  }
-
-  void EndFingerprintAuthSession(
-      const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
-      EndFingerprintAuthSessionCallback callback) override {
-    CallProtoMethod(::user_data_auth::kEndFingerprintAuthSession,
-                    ::user_data_auth::kUserDataAuthInterface, request,
-                    std::move(callback));
-  }
-
   void StartMigrateToDircrypto(
       const ::user_data_auth::StartMigrateToDircryptoRequest& request,
       StartMigrateToDircryptoCallback callback) override {

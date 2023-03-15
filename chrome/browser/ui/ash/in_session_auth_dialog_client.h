@@ -141,10 +141,6 @@ class InSessionAuthDialogClient
 
   void OnPasswordAuthSuccess(const ash::UserContext& user_context);
 
-  void OnFingerprintAuthDone(
-      base::OnceCallback<void(bool, ash::FingerprintState)> callback,
-      user_data_auth::CryptohomeErrorCode error);
-
   // Passed as a callback to `CryptohomePinEngine::InPinAuthAvailable`
   // Takes back ownership of the `user_context` that was borrowed by
   // `CryptohomePinEngine` and notifies callers of pin availability status.

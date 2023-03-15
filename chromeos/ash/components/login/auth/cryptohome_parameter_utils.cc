@@ -56,8 +56,6 @@ KeyDefinition CreateAuthorizationKeyDefFromUserContext(
       break;
     case KeyDefinition::TYPE_CHALLENGE_RESPONSE:
       break;
-    case KeyDefinition::TYPE_FINGERPRINT:
-      break;
     case KeyDefinition::TYPE_PUBLIC_MOUNT:
       break;
   }

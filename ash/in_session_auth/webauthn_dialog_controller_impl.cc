@@ -50,23 +50,19 @@ void WebAuthNDialogControllerImpl::ShowAuthenticationDialog(
                      weak_factory_.GetWeakPtr(), account_id, origin_name,
                      auth_methods, source_window);
 
-  if (ash::features::IsUseAuthsessionForWebAuthNEnabled()) {
-    auto on_auth_session_started = [](base::OnceClosure continuation,
-                                      bool is_auth_session_started) {
-      if (!is_auth_session_started) {
-        LOG(ERROR)
-            << "Failed to start cryptohome auth session, exiting dialog early";
-        return;
-      }
-      std::move(continuation).Run();
-    };
+  auto on_auth_session_started = [](base::OnceClosure continuation,
+                                    bool is_auth_session_started) {
+    if (!is_auth_session_started) {
+      LOG(ERROR)
+          << "Failed to start cryptohome auth session, exiting dialog early";
+      return;
+    }
+    std::move(continuation).Run();
+  };
 
-    client_->StartAuthSession(
-        base::BindOnce(on_auth_session_started, std::move(continuation)));
-    return;
-  }
-
-  std::move(continuation).Run();
+  client_->StartAuthSession(
+      base::BindOnce(on_auth_session_started, std::move(continuation)));
+  return;
 }
 
 void WebAuthNDialogControllerImpl::CheckAuthFactorAvailability(
@@ -165,9 +161,7 @@ void WebAuthNDialogControllerImpl::DestroyAuthenticationDialog() {
 }
 
 void WebAuthNDialogControllerImpl::ProcessFinalCleanups() {
-  if (ash::features::IsUseAuthsessionForWebAuthNEnabled())
-    client_->InvalidateAuthSession();
-
+  client_->InvalidateAuthSession();
   dialog_.reset();
   source_window_tracker_.RemoveAll();
 }
