@@ -39,9 +39,7 @@ void InitializeSkia() {
     SkGraphics::Init();
   }
 
-  if (cmd.HasSwitch(switches::kForceSkiaAnalyticAntialiasing)) {
-    SkGraphics::SetPathAnalyticAADecider([](const SkPath&) { return true; });
-  }
+  InitializeSkiaAnalyticAntialiasing();
 
   const int kMB = 1024 * 1024;
   size_t font_cache_limit;
@@ -79,6 +77,14 @@ void InitializeSkia() {
 
   SkGraphics::SetResourceCacheSingleAllocationByteLimit(
       kImageCacheSingleAllocationByteLimit);
+}
+
+void InitializeSkiaAnalyticAntialiasing() {
+  const base::CommandLine& cmd = *base::CommandLine::ForCurrentProcess();
+
+  if (cmd.HasSwitch(switches::kForceSkiaAnalyticAntialiasing)) {
+    SkGraphics::SetPathAnalyticAADecider([](const SkPath&) { return true; });
+  }
 }
 
 }  // namespace content

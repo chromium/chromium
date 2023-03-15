@@ -738,6 +738,11 @@ void BrowserMainLoop::PostCreateMainMessageLoop() {
     InitSkiaEventTracer();
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         skia::SkiaMemoryDumpProvider::GetInstance(), "Skia", nullptr);
+
+    // For in-browser tests, we still need to call this to respect the
+    // force-skia-analytic-aa switch
+    // https://crbug.com/1421297
+    InitializeSkiaAnalyticAntialiasing();
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
