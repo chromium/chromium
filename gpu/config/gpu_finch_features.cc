@@ -5,6 +5,7 @@
 #include "gpu/config/gpu_finch_features.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_switches.h"
@@ -381,6 +382,12 @@ BASE_FEATURE(kPassthroughYuvRgbConversion,
 BASE_FEATURE(kCmdDecoderAlwaysGetSizeFromSourceTexture,
              "CmdDecoderAlwaysGetSizeFromSourceTexture",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When the application is in background, whether to perform immediate GPU
+// cleanup when executing deferred requests.
+BASE_FEATURE(kGpuCleanupInBackground,
+             "GpuCleanupInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID)

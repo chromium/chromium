@@ -1272,6 +1272,7 @@ void GpuServiceImpl::OnForegroundedOnMainThread() {
       UpdateGPUInfoGL();
     }
   }
+  gpu_channel_manager_->OnApplicationForegounded();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

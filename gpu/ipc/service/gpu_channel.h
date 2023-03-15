@@ -158,6 +158,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // Executes a DeferredRequest that was previously received and has now been
   // scheduled by the scheduler.
   void ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params);
+  void PerformImmediateCleanup();
 
   void WaitForTokenInRange(
       int32_t routing_id,

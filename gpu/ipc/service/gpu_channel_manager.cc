@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 
@@ -59,6 +60,11 @@
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
+
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/vulkan/vulkan_device_queue.h"
+#include "gpu/vulkan/vulkan_fence_helper.h"
+#endif
 
 namespace gpu {
 
@@ -776,6 +782,34 @@ void GpuChannelManager::OnApplicationBackgrounded() {
 
   // Release all skia caching when the application is backgrounded.
   SkGraphics::PurgeAllCaches();
+  if (base::FeatureList::IsEnabled(features::kGpuCleanupInBackground)) {
+    // At that point, no frames are going to be produced. Make sure that
+    // e.g. pending SharedImage deletions happens promptly.
+    PerformImmediateCleanup();
+  }
+  application_backgrounded_ = true;
+}
+
+void GpuChannelManager::OnApplicationForegounded() {
+  application_backgrounded_ = false;
+}
+
+void GpuChannelManager::PerformImmediateCleanup() {
+  TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!shared_context_state_) {
+    return;
+  }
+
+#if BUILDFLAG(ENABLE_VULKAN)
+  if (shared_context_state_->GrContextIsVulkan()) {
+    DCHECK(vulkan_context_provider_);
+    auto* fence_helper =
+        vulkan_context_provider_->GetDeviceQueue()->GetFenceHelper();
+    fence_helper->PerformImmediateCleanup();
+  }
+#endif
+  shared_context_state_->gr_context()->flushAndSubmit(true);
 }
 
 void GpuChannelManager::HandleMemoryPressure(

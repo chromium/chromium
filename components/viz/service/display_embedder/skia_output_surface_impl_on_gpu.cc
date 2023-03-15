@@ -10,6 +10,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -48,6 +49,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/vulkan/buildflags.h"
@@ -334,6 +336,7 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseAsyncReadResultHelpers() {
 }
 
 SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
+  TRACE_EVENT0("cc", __PRETTY_FUNCTION__);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // We need to have context current or lost during the destruction.
@@ -366,6 +369,7 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   // before deleting ImplOnGpu's other member variables.
   shared_image_factory_.reset();
   if (has_context) {
+    TRACE_EVENT0("viz", "Cleanup");
     absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
@@ -380,6 +384,18 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
         context_state_->progress_reporter());
     gr_context()->flush(flush_info);
     gr_context()->submit(true);
+
+#if BUILDFLAG(ENABLE_VULKAN)
+    // No frame will come for us, make sure that all the cleanup is done.
+    if (base::FeatureList::IsEnabled(features::kGpuCleanupInBackground) &&
+        context_state_->GrContextIsVulkan()) {
+      DCHECK(context_state_->vk_context_provider());
+      auto* fence_helper = context_state_->vk_context_provider()
+                               ->GetDeviceQueue()
+                               ->GetFenceHelper();
+      fence_helper->PerformImmediateCleanup();
+    }
+#endif
   }
 
   sync_point_client_state_->Destroy();

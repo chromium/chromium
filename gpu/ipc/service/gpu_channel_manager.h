@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/gr_cache_controller.h"
@@ -182,6 +183,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 #endif
 
   void OnApplicationBackgrounded();
+  void OnApplicationForegounded();
+  bool application_backgrounded() const { return application_backgrounded_; }
+  // Make sure that delayed cleanup is happening now. Expensive.
+  void PerformImmediateCleanup();
 
   MailboxManager* mailbox_manager() const { return mailbox_manager_.get(); }
 
@@ -404,6 +409,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
   // Count of context lost.
   int context_lost_count_ = 0;
+
+  bool application_backgrounded_ = false;
 
   THREAD_CHECKER(thread_checker_);
 

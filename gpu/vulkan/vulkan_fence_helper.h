@@ -122,9 +122,12 @@ class COMPONENT_EXPORT(VULKAN) VulkanFenceHelper {
   template <typename T>
   void EnqueueVulkanObjectCleanupForSubmittedWork(std::unique_ptr<T> obj);
 
- private:
+  // Careful: this may be very slow, because it synchronizes everything. It is
+  // intended for cleanup prior to destruction, or when latency is not a concern
+  // (e.g. when the whole application is backgrounded on Android).
   void PerformImmediateCleanup();
 
+ private:
   const raw_ptr<VulkanDeviceQueue> device_queue_;
 
   std::vector<CleanupTask> tasks_pending_fence_;

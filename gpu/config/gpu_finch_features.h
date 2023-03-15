@@ -94,6 +94,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kPassthroughYuvRgbConversion);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kCmdDecoderAlwaysGetSizeFromSourceTexture);
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kGpuCleanupInBackground);
+
 GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
