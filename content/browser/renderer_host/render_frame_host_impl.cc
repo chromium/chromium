@@ -4027,6 +4027,11 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
 }
 
 bool RenderFrameHostImpl::IsMainFrameThirdPartyStoragePartitioningEnabled() {
+  // If we're in the main frame the state of third-party storage partitioning
+  // doesn't matter as the StorageKey will be first-party no matter what.
+  if (is_main_frame()) {
+    return false;
+  }
   RuntimeFeatureStateDocumentData* rfs_document_data_for_storage_key =
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(GetMainFrame());
 
@@ -4040,8 +4045,10 @@ bool RenderFrameHostImpl::IsMainFrameThirdPartyStoragePartitioningEnabled() {
   }
   // If the enterprise policy blocks, we have directive to override the
   // current value of net::features::ThirdPartyStoragePartitioning.
+  // We can safely read the last comitted-origin (even during navigation)
+  // as we know we are not in the main-frame since that case is filtered above.
   if (!GetContentClient()->browser()->IsThirdPartyStoragePartitioningAllowed(
-          GetBrowserContext())) {
+          GetBrowserContext(), GetMainFrame()->GetLastCommittedOrigin())) {
     return false;
   }
   return blink::StorageKey::IsThirdPartyStoragePartitioningEnabled();

@@ -1,0 +1,29 @@
+caption: Block third-party storage partitioning for these origins
+desc: |-
+  Allows you to set a list of url patterns that specify top-level (the url in the tab's address bar) origins which block third-party storage partitioning (partitioning of cross-origin iframe storage).
+            If this policy is left not set or a top-level origin doesn't match then the value from <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME">DefaultThirdPartyStoragePartitioningSetting</ph> will be used.
+            For detailed information on valid patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+            Note that patterns you list here are treated as origins, not URLs, so you should not specify a path.
+            For detailed information on third-party storage partitioning, please see https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.
+example_value:
+- www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- arichiv@chromium.org
+- potassium-katabolism@google.com
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+# TODO(crbug.com/1422357): Deprecate this when origin trial ends (likely M123)
+- android:113-
+- chrome.*:113-
+- chrome_os:113-
+tags: []
+type: list

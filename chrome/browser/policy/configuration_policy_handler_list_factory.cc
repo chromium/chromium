@@ -306,6 +306,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultThirdPartyStoragePartitioningSetting,
     prefs::kManagedDefaultThirdPartyStoragePartitioningSetting,
     base::Value::Type::INTEGER },
+  { key::kThirdPartyStoragePartitioningBlockedForOrigins,
+    prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
+    base::Value::Type::LIST },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

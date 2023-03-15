@@ -107,6 +107,9 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::LOCAL_FONTS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedLocalFontsBlockedForUrls,
          ContentSettingsType::LOCAL_FONTS, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
+         ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
+         CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -148,6 +151,7 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedWindowManagementBlockedForUrls,
     prefs::kManagedLocalFontsAllowedForUrls,
     prefs::kManagedLocalFontsBlockedForUrls,
+    prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
 };
 
 // The following preferences are only used to indicate if a default content

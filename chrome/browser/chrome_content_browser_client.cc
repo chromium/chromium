@@ -7537,7 +7537,8 @@ bool ChromeContentBrowserClient::AreIsolatedWebAppsEnabled(
 }
 
 bool ChromeContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    const url::Origin& top_level_origin) {
   const HostContentSettingsMap* const content_settings =
       HostContentSettingsMapFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
@@ -7546,8 +7547,9 @@ bool ChromeContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
     // should be blocked, but isn't the final word on if it's allowed.
     return true;
   }
-  return content_settings->GetDefaultContentSetting(
-             ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, nullptr) ==
+  return content_settings->GetContentSetting(
+             top_level_origin.GetURL(), top_level_origin.GetURL(),
+             ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING) ==
          CONTENT_SETTING_ALLOW;
 }
 

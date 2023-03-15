@@ -79,6 +79,7 @@ extern const char kManagedWindowManagementAllowedForUrls[];
 extern const char kManagedWindowManagementBlockedForUrls[];
 extern const char kManagedLocalFontsAllowedForUrls[];
 extern const char kManagedLocalFontsBlockedForUrls[];
+extern const char kManagedThirdPartyStoragePartitioningBlockedForOrigins[];
 
 extern const char kEnableQuietNotificationPermissionUi[];
 extern const char kQuietNotificationPermissionUiEnablingMethod[];

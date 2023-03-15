@@ -1442,7 +1442,8 @@ bool ContentBrowserClient::AreIsolatedWebAppsEnabled(
 }
 
 bool ContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext*,
+    const url::Origin&) {
   return true;
 }
 

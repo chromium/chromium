@@ -1089,6 +1089,7 @@ policies:
   1088: ClientSidePhishingProtectionAllowed
   1089: UserAvatarCustomizationSelectorsEnabled
   1090: DefaultThirdPartyStoragePartitioningSetting
+  1091: ThirdPartyStoragePartitioningBlockedForOrigins
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1136,3 +1137,4 @@ atomic_groups:
   44: BrowserIdle
   45: PrivacySandbox
   46: KerberosPrefilledConfig
+  47: ThirdPartyStoragePartitioningSettings

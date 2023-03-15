@@ -143,6 +143,8 @@ const char kManagedLocalFontsAllowedForUrls[] =
     "profile.managed_local_fonts_allowed_for_urls";
 const char kManagedLocalFontsBlockedForUrls[] =
     "profile.managed_local_fonts_blocked_for_urls";
+const char kManagedThirdPartyStoragePartitioningBlockedForOrigins[] =
+    "profile.managed_third_party_storage_partitioning_blocked_for_origins";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests.

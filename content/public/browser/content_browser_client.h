@@ -2397,7 +2397,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // from being enabled if it returns false. If it returns true, then
   // we fallback on the base feature to determine if partitioning is on.
   virtual bool IsThirdPartyStoragePartitioningAllowed(
-      content::BrowserContext* browser_context);
+      content::BrowserContext* browser_context,
+      const url::Origin& top_level_origin);
 };
 
 }  // namespace content

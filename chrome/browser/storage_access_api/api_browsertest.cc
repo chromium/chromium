@@ -55,6 +55,8 @@ using testing::Gt;
 namespace {
 
 constexpr char kHostA[] = "a.test";
+constexpr char kOriginA[] = "https://a.test";
+constexpr char kUrlA[] = "https://a.test/random.path";
 constexpr char kHostASubdomain[] = "subdomain.a.test";
 constexpr char kHostB[] = "b.test";
 constexpr char kHostBSubdomain[] = "subdomain.b.test";
@@ -1263,10 +1265,11 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithCHIPSBrowserTest,
 
 class StorageAccessAPIEnterprisePolicyBrowserTest
     : public StorageAccessAPIBaseBrowserTest,
-      public testing::WithParamInterface<std::tuple<ContentSetting, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<const char*, ContentSetting, bool>> {
  public:
   StorageAccessAPIEnterprisePolicyBrowserTest()
-      : StorageAccessAPIBaseBrowserTest(std::get<1>(GetParam())) {}
+      : StorageAccessAPIBaseBrowserTest(std::get<2>(GetParam())) {}
 
   void SetUpInProcessBrowserTestFixture() override {
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
@@ -1274,25 +1277,38 @@ class StorageAccessAPIEnterprisePolicyBrowserTest
     SetPolicy(&policies,
               policy::key::kDefaultThirdPartyStoragePartitioningSetting,
               base::Value(GetContentSetting()));
+    base::Value::List origins;
+    origins.Append(base::Value(GetContentOrigin()));
+    SetPolicy(&policies,
+              policy::key::kThirdPartyStoragePartitioningBlockedForOrigins,
+              base::Value(std::move(origins)));
     UpdateProviderPolicy(policies);
   }
 
   bool ExpectPartitionedStorage() const {
+    // We only expect storage to be partitioned if the base::Feature is enabled
+    // and the default content setting isn't BLOCK and the origin block list
+    // doesn't match a.test (paths are ignored)
     return IsStoragePartitioned() &&
-           GetContentSetting() != CONTENT_SETTING_BLOCK;
+           GetContentSetting() != CONTENT_SETTING_BLOCK &&
+           GetContentOrigin() != kHostA && GetContentOrigin() != kOriginA &&
+           GetContentOrigin() != kUrlA;
   }
 
  private:
-  ContentSetting GetContentSetting() const { return std::get<0>(GetParam()); }
+  ContentSetting GetContentSetting() const { return std::get<1>(GetParam()); }
+  const char* GetContentOrigin() const { return std::get<0>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     StorageAccessAPIEnterprisePolicyBrowserTest,
-    testing::Combine(testing::Values(CONTENT_SETTING_DEFAULT,
-                                     CONTENT_SETTING_ALLOW,
-                                     CONTENT_SETTING_BLOCK),
-                     testing::Bool()));
+    testing::Combine(
+        testing::Values(kHostA, kOriginA, kUrlA, kHostASubdomain, kHostB, ""),
+        testing::Values(CONTENT_SETTING_DEFAULT,
+                        CONTENT_SETTING_ALLOW,
+                        CONTENT_SETTING_BLOCK),
+        testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIEnterprisePolicyBrowserTest,
                        PartitionedStorage) {

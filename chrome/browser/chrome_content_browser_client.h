@@ -866,7 +866,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context) override;
 
   bool IsThirdPartyStoragePartitioningAllowed(
-      content::BrowserContext* browser_context) override;
+      content::BrowserContext* browser_context,
+      const url::Origin& top_level_origin) override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

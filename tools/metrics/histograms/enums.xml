@@ -32945,6 +32945,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1088" label="ClientSidePhishingProtectionAllowed"/>
   <int value="1089" label="UserAvatarCustomizationSelectorsEnabled"/>
   <int value="1090" label="DefaultThirdPartyStoragePartitioningSetting"/>
+  <int value="1091" label="ThirdPartyStoragePartitioningBlockedForOrigins"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -82385,6 +82386,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="44" label="BrowserIdle"/>
   <int value="45" label="PrivacySandbox"/>
   <int value="46" label="KerberosPrefilledConfig"/>
+  <int value="47" label="ThirdPartyStoragePartitioningSettings"/>
 </enum>
 
 <enum name="PolicyLoadStatus">
