@@ -47,4 +47,38 @@ TEST_F(WaylandOutputTest, NameAndDescriptionFallback) {
   EXPECT_EQ(wl_output->description(), kWlOutputDescription);
 }
 
+TEST_F(WaylandOutputTest, WaylandOutputIsReady) {
+  auto* output_manager = connection_->wayland_output_manager();
+  const auto* primary_output = output_manager->GetPrimaryOutput();
+
+  // Create a new output but suppress metrics.
+  wl::TestOutput* test_output = nullptr;
+  PostToServerAndWait([&test_output](wl::TestWaylandServerThread* server) {
+    test_output = server->CreateAndInitializeOutput(
+        wl::TestOutputMetrics({0, 0, 800, 600}));
+    ASSERT_TRUE(test_output);
+    test_output->set_suppress_implicit_flush(true);
+  });
+  const auto& all_outputs = output_manager->GetAllOutputs();
+  ASSERT_EQ(2u, all_outputs.size());
+
+  // Get the newly created WaylandOutput.
+  auto pair_it = base::ranges::find_if_not(all_outputs, [&](auto& pair) {
+    return pair.first == primary_output->output_id();
+  });
+  ASSERT_NE(all_outputs.end(), pair_it);
+  const auto* new_output = pair_it->second.get();
+  EXPECT_NE(nullptr, new_output);
+
+  // The output should not be marked ready since metrics and specifically the
+  // wl_output.done event has not yet been received.
+  EXPECT_FALSE(new_output->IsReady());
+
+  // Flush metrics and the output should enter the ready state.
+  PostToServerAndWait([&test_output](wl::TestWaylandServerThread* server) {
+    test_output->Flush();
+  });
+  EXPECT_TRUE(new_output->IsReady());
+}
+
 }  // namespace ui

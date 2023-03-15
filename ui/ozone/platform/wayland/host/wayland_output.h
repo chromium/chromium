@@ -116,8 +116,9 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
     return color_management_output_.get();
   }
 
-  // Tells if the output has already received necessary screen information such
-  // as physical screen dimensions in the global compositor space.
+  // Returns true if the output has all the state information available
+  // necessary to represent its associated display. This information arrives
+  // asynchronously via events across potentially multiple wayland objects.
   bool IsReady() const;
 
   wl_output* get_output() { return output_.get(); }
@@ -126,6 +127,9 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   void SetScaleFactorForTesting(float scale_factor);
 
   void TriggerDelegateNotifications();
+
+  XDGOutput* xdg_output_for_testing() { return xdg_output_.get(); }
+  WaylandZAuraOutput* aura_output_for_testing() { return aura_output_.get(); }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
@@ -161,6 +165,11 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   static void OutputHandleDescription(void* data,
                                       struct wl_output* wl_output,
                                       const char* description);
+
+  // Tracks whether this wl_output is considered "ready". I.e. it has received
+  // all of its relevant state from the server followed by a wl_output.done
+  // event.
+  bool is_ready_ = false;
 
   const Id output_id_ = 0;
   wl::Object<wl_output> output_;

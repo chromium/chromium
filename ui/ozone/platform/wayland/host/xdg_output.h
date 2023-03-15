@@ -29,9 +29,12 @@ class XDGOutput {
   const std::string& description() const { return description_; }
   const std::string& name() const { return name_; }
 
-  // Tells if the output has already received necessary screen information to
-  // generate Display.
+  // Returns true if all state defined by this extension necessary to correctly
+  // represent the Display has successfully arrived from the server.
   bool IsReady() const;
+
+  // Called after wl_output.done event has been received for this output.
+  void OnDone();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
@@ -52,6 +55,11 @@ class XDGOutput {
   static void OutputHandleDescription(void* data,
                                       struct zxdg_output_v1* zxdg_output_v1,
                                       const char* description);
+
+  // Tracks whether this xdg_output is considered "ready". I.e. it has received
+  // all of its relevant Display state from the server followed by a
+  // wl_output.done event.
+  bool is_ready_ = false;
 
   wl::Object<zxdg_output_v1> xdg_output_;
   absl::optional<gfx::Point> logical_position_;

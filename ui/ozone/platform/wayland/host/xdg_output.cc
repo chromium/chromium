@@ -51,7 +51,13 @@ void XDGOutput::OutputHandleDone(void* data,
 }
 
 bool XDGOutput::IsReady() const {
-  return !logical_size_.IsEmpty();
+  return is_ready_;
+}
+
+void XDGOutput::OnDone() {
+  // If `logical_size` has been set the server must have propagated all the
+  // necessary state events for this xdg_output.
+  is_ready_ = !logical_size_.IsEmpty();
 }
 
 // static

@@ -176,7 +176,7 @@ bool WaylandOutput::IsReady() const {
   // The aura output requires both the logical size and the display ID
   // to become ready. If a client that uses xdg_output but not aura_output
   // needs different condition for readiness, this needs to be updated.
-  return !physical_size_.IsEmpty() &&
+  return is_ready_ &&
          (!aura_output_ ||
           (xdg_output_ && xdg_output_->IsReady() && aura_output_->IsReady()));
 }
@@ -250,8 +250,19 @@ void WaylandOutput::OutputHandleMode(void* data,
 
 // static
 void WaylandOutput::OutputHandleDone(void* data, struct wl_output* wl_output) {
-  if (auto* output = static_cast<WaylandOutput*>(data))
+  if (auto* output = static_cast<WaylandOutput*>(data)) {
+    output->is_ready_ = true;
+
+    if (auto& xdg_output = output->xdg_output_) {
+      xdg_output->OnDone();
+    }
+
+    if (auto& aura_output = output->aura_output_) {
+      aura_output->OnDone();
+    }
+
     output->TriggerDelegateNotifications();
+  }
 }
 
 // static
