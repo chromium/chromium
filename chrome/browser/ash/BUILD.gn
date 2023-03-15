@@ -1919,6 +1919,8 @@ source_set("ash") {
     "login/ui/login_screen_extension_ui/web_dialog_view.h",
     "login/ui/login_screen_extension_ui/window.cc",
     "login/ui/login_screen_extension_ui/window.h",
+    "login/ui/login_ui_pref_controller.cc",
+    "login/ui/login_ui_pref_controller.h",
     "login/ui/login_web_dialog.cc",
     "login/ui/login_web_dialog.h",
     "login/ui/oobe_dialog_size_utils.cc",

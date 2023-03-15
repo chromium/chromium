@@ -189,6 +189,7 @@ bool IsAuthError(SigninError error) {
 LoginDisplayHostCommon::LoginDisplayHostCommon()
     : keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
+      login_ui_pref_controller_(std::make_unique<LoginUIPrefController>()),
       wizard_context_(std::make_unique<WizardContext>()) {
   // Close the login screen on app termination (for the case where shutdown
   // occurs before login completes).
@@ -721,6 +722,7 @@ void LoginDisplayHostCommon::Cleanup() {
   SigninProfileHandler::Get()->ClearSigninProfile(base::DoNothing());
   app_terminating_subscription_ = {};
   BrowserList::RemoveObserver(this);
+  login_ui_pref_controller_.reset();
 }
 
 void LoginDisplayHostCommon::OnAppTerminating() {

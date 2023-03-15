@@ -28,6 +28,6 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:81-
+- chrome_os:113-
 tags: []
 type: main

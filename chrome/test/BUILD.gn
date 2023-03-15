@@ -4000,6 +4000,7 @@ if (!is_android) {
         "../browser/ash/login/ui/captive_portal_dialog_delegate_browsertest.cc",
         "../browser/ash/login/ui/captive_portal_window_browsertest.cc",
         "../browser/ash/login/ui/login_feedback_browsertest.cc",
+        "../browser/ash/login/ui/login_ui_pref_controller_browsertest.cc",
         "../browser/ash/login/ui/login_web_dialog_browsertest.cc",
         "../browser/ash/login/ui/simple_web_view_dialog_browsertest.cc",
         "../browser/ash/login/ui/user_adding_screen_browsertest.cc",
