@@ -30,7 +30,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
@@ -90,7 +89,6 @@ public class WebXrVrInputTest {
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @DisabledTest(message = "https://crbug.com/1409794")
     public void testScreenTapsNotRegistered_WebXr() throws InterruptedException {
         screenTapsNotRegisteredImpl("webxr_test_screen_taps_not_registered", mWebXrVrTestFramework);
     }
@@ -126,7 +124,6 @@ public class WebXrVrInputTest {
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @DisabledTest(message = "https://crbug.com/1418902")
     public void testControllerClicksRegisteredOnDaydream_WebXr() {
         EmulatedVrController controller = new EmulatedVrController(mTestRule.getActivity());
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
