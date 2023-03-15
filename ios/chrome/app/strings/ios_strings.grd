@@ -959,7 +959,7 @@ See your search engine’s instructions for deleting your search history, if app
         Sign in to manage the content you see
       </message>
       <message name="IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL" desc="Label of the feed card sign-in only promo UI. [iOS only]">
-        You can manage your preferences after you sign in to Chrome with your Google Account.
+        Sign in to manage your preferences.
       </message>
       <message name="IDS_IOS_FEED_CUSTOM_SEARCH_ENGINE_LABEL" desc="Message informing users with custom search engines that the feed is provided by Google.">
         Provided by Google
