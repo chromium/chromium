@@ -219,7 +219,8 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     case PasswordCheckStateDismissedWarnings:
       return [UIColor colorNamed:kYellow500Color];
     case PasswordCheckStateSafe:
-      return [UIColor colorNamed:kGreenColor];
+      return [UIColor
+          colorNamed:IsPasswordCheckupEnabled() ? kGreen500Color : kGreenColor];
     case PasswordCheckStateDefault:
     case PasswordCheckStateRunning:
     case PasswordCheckStateDisabled:
