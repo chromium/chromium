@@ -103,6 +103,9 @@ IN_PROC_BROWSER_TEST_F(LacrosPrimaryAshSyncTest, AshSyncsAllTypes) {
   } else {
     expected_active_types.Put(syncer::TYPED_URLS);
   }
+  if (base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType)) {
+    expected_active_types.Put(syncer::CONTACT_INFO);
+  }
 
   if (base::FeatureList::IsEnabled(power_bookmarks::kPowerBookmarkBackend)) {
     expected_active_types.Put(syncer::POWER_BOOKMARK);

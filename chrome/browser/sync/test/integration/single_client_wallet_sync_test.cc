@@ -1183,7 +1183,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   EXPECT_EQ(kDefaultBillingAddressID, cards[0]->billing_address_id());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ConvertServerAddress) {
+// AutofillAccountProfilesUnionView deprecates support for server profiles.
+// TODO(crbug.com/1348294): Remove when launched.
+class SingleClientWalletServerAddressSyncTest
+    : public SingleClientWalletSyncTest {
+ public:
+  SingleClientWalletServerAddressSyncTest() {
+    features_.InitAndDisableFeature(
+        autofill::features::kAutofillAccountProfilesUnionView);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientWalletServerAddressSyncTest,
+                       ConvertServerAddress) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1"),
        CreateDefaultSyncPaymentsCustomerData()});
