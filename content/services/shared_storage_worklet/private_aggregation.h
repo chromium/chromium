@@ -5,13 +5,14 @@
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_PRIVATE_AGGREGATION_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_PRIVATE_AGGREGATION_H_
 
+#include <vector>
+
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
-#include "v8/include/v8-forward.h"
 
 namespace gin {
 class Arguments;
@@ -34,6 +35,10 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
 
   const char* GetTypeName() override;
 
+  // Flushes any Private Aggregation contributions and resets the local state.
+  // Should be called whenever an operation finishes running.
+  void FlushAndReset();
+
  private:
   void SendHistogramReport(gin::Arguments* args);
   void EnableDebugMode(gin::Arguments* args);
@@ -51,7 +56,8 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
   // Defaults to debug mode being disabled.
   blink::mojom::DebugModeDetails debug_mode_details_;
 
-  base::WeakPtrFactory<PrivateAggregation> weak_ptr_factory_{this};
+  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+      private_aggregation_contributions_;
 };
 
 }  // namespace shared_storage_worklet

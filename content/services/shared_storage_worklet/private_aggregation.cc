@@ -52,15 +52,7 @@ void PrivateAggregation::SendHistogramReport(gin::Arguments* args) {
     return;
   }
 
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-      contributions;
-  contributions.push_back(std::move(contribution));
-
-  private_aggregation_host_->SendHistogramReport(
-      std::move(contributions),
-      // TODO(alexmt): consider allowing this to be set
-      blink::mojom::AggregationServiceMode::kDefault,
-      debug_mode_details_.Clone());
+  private_aggregation_contributions_.push_back(std::move(contribution));
 }
 
 void PrivateAggregation::EnableDebugMode(gin::Arguments* args) {
@@ -78,6 +70,20 @@ void PrivateAggregation::EnsureUseCountersAreRecorded() {
         {blink::mojom::WebFeature::kPrivateAggregationApiAll,
          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage});
   }
+}
+
+void PrivateAggregation::FlushAndReset() {
+  if (!private_aggregation_contributions_.empty()) {
+    private_aggregation_host_->SendHistogramReport(
+        std::move(private_aggregation_contributions_),
+        // TODO(alexmt): consider allowing this to be set
+        blink::mojom::AggregationServiceMode::kDefault,
+        debug_mode_details_.Clone());
+  }
+
+  private_aggregation_contributions_.clear();
+  debug_mode_details_.is_enabled = false;
+  debug_mode_details_.debug_key.reset();
 }
 
 }  // namespace shared_storage_worklet

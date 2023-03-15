@@ -2362,11 +2362,12 @@ class SharedStoragePrivateAggregationTest
 
   std::string ExecuteScriptReturningError(
       const std::string& script_body,
-      bool expected_use_counter_called = true) {
+      bool flush_and_reset_private_aggregation = true) {
     EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport).Times(0);
 
     std::string error_message;
-    ExecuteScript(script_body, &error_message);
+    ExecuteScript(script_body, &error_message,
+                  flush_and_reset_private_aggregation);
     EXPECT_FALSE(error_message.empty());
 
     // These tests all invoke sendHistogramReport (albeit incorrectly), so the
@@ -2376,13 +2377,20 @@ class SharedStoragePrivateAggregationTest
   }
 
  private:
-  void ExecuteScript(const std::string& script_body, std::string* out_error) {
+  void ExecuteScript(const std::string& script_body,
+                     std::string* out_error,
+                     bool flush_and_reset_private_aggregation = true) {
     WorkletV8Helper::HandleScope scope(Isolate());
     v8::Local<v8::Context> context = LocalContext();
     v8::Context::Scope context_scope(context);
 
     WorkletV8Helper::CompileAndRunScript(
         LocalContext(), script_body, GURL("https://example.test"), out_error);
+
+    if (flush_and_reset_private_aggregation) {
+      // Ensures that Private Aggregation is flushed and reset after.
+      SimulateRunOperation("", {});
+    }
   }
 };
 
@@ -2479,23 +2487,11 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleRequests) {
                  contributions,
              blink::mojom::AggregationServiceMode aggregation_mode,
              blink::mojom::DebugModeDetailsPtr debug_mode_details) {
-            ASSERT_EQ(contributions.size(), 1u);
+            ASSERT_EQ(contributions.size(), 2u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
-            EXPECT_EQ(aggregation_mode,
-                      blink::mojom::AggregationServiceMode::kDefault);
-            ASSERT_FALSE(debug_mode_details.is_null());
-            EXPECT_EQ(*debug_mode_details, blink::mojom::DebugModeDetails());
-          }))
-      .WillOnce(testing::Invoke(
-          [](std::vector<
-                 blink::mojom::AggregatableReportHistogramContributionPtr>
-                 contributions,
-             blink::mojom::AggregationServiceMode aggregation_mode,
-             blink::mojom::DebugModeDetailsPtr debug_mode_details) {
-            ASSERT_EQ(contributions.size(), 1u);
-            EXPECT_EQ(contributions[0]->bucket, 3);
-            EXPECT_EQ(contributions[0]->value, 4);
+            EXPECT_EQ(contributions[1]->bucket, 3);
+            EXPECT_EQ(contributions[1]->value, 4);
             EXPECT_EQ(aggregation_mode,
                       blink::mojom::AggregationServiceMode::kDefault);
             ASSERT_FALSE(debug_mode_details.is_null());
@@ -2580,7 +2576,8 @@ TEST_F(SharedStoragePrivateAggregationTest,
       R"(
         privateAggregation.enableDebugMode({debug_key: 1234n});
         privateAggregation.enableDebugMode();
-      )");
+      )",
+      /*flush_and_reset_private_aggregation=*/false);
 
   EXPECT_EQ(error_str,
             "https://example.test/:3 Uncaught TypeError: enableDebugMode may "
@@ -2619,25 +2616,11 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
                  contributions,
              blink::mojom::AggregationServiceMode aggregation_mode,
              blink::mojom::DebugModeDetailsPtr debug_mode_details) {
-            ASSERT_EQ(contributions.size(), 1u);
+            ASSERT_EQ(contributions.size(), 2u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
-            EXPECT_EQ(aggregation_mode,
-                      blink::mojom::AggregationServiceMode::kDefault);
-            EXPECT_EQ(debug_mode_details,
-                      blink::mojom::DebugModeDetails::New(
-                          /*is_enabled=*/true,
-                          /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
-          }))
-      .WillOnce(testing::Invoke(
-          [](std::vector<
-                 blink::mojom::AggregatableReportHistogramContributionPtr>
-                 contributions,
-             blink::mojom::AggregationServiceMode aggregation_mode,
-             blink::mojom::DebugModeDetailsPtr debug_mode_details) {
-            ASSERT_EQ(contributions.size(), 1u);
-            EXPECT_EQ(contributions[0]->bucket, 3);
-            EXPECT_EQ(contributions[0]->value, 4);
+            EXPECT_EQ(contributions[1]->bucket, 3);
+            EXPECT_EQ(contributions[1]->value, 4);
             EXPECT_EQ(aggregation_mode,
                       blink::mojom::AggregationServiceMode::kDefault);
             EXPECT_EQ(debug_mode_details,

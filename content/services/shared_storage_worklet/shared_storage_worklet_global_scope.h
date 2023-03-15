@@ -73,6 +73,8 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
 
   friend class SharedStorageWorkletGlobalScopeTest;
 
+  void FlushAndResetPrivateAggregation();
+
   v8::Isolate* Isolate();
 
   v8::Local<v8::Context> LocalContext();

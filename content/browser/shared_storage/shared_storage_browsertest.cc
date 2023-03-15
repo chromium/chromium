@@ -4957,19 +4957,11 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_CALL(mock_callback(), Run)
       .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
                                     PrivateAggregationBudgetKey budget_key) {
-        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
+        ASSERT_EQ(request.payload_contents().contributions.size(), 2u);
         EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
         EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
-        EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
-        EXPECT_EQ(budget_key.origin(), a_test_origin_);
-        EXPECT_EQ(budget_key.api(),
-                  PrivateAggregationBudgetKey::Api::kSharedStorage);
-      }))
-      .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
-                                    PrivateAggregationBudgetKey budget_key) {
-        ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 3);
-        EXPECT_EQ(request.payload_contents().contributions[0].value, 4);
+        EXPECT_EQ(request.payload_contents().contributions[1].bucket, 3);
+        EXPECT_EQ(request.payload_contents().contributions[1].value, 4);
         EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
         EXPECT_EQ(budget_key.origin(), a_test_origin_);
         EXPECT_EQ(budget_key.api(),

@@ -180,7 +180,10 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 
   WorkletV8Helper::HandleScope scope(Isolate());
   url_selection_operation_handler_->RunOperation(
-      LocalContext(), name, urls, serialized_data, std::move(callback));
+      LocalContext(), name, urls, serialized_data,
+      std::move(callback).Then(base::BindOnce(
+          &SharedStorageWorkletGlobalScope::FlushAndResetPrivateAggregation,
+          weak_ptr_factory_.GetWeakPtr())));
 }
 
 void SharedStorageWorkletGlobalScope::RunOperation(
@@ -199,7 +202,10 @@ void SharedStorageWorkletGlobalScope::RunOperation(
 
   WorkletV8Helper::HandleScope scope(Isolate());
   unnamed_operation_handler_->RunOperation(
-      LocalContext(), name, serialized_data, std::move(callback));
+      LocalContext(), name, serialized_data,
+      std::move(callback).Then(base::BindOnce(
+          &SharedStorageWorkletGlobalScope::FlushAndResetPrivateAggregation,
+          weak_ptr_factory_.GetWeakPtr())));
 }
 
 void SharedStorageWorkletGlobalScope::Register(gin::Arguments* args) {
@@ -255,6 +261,12 @@ void SharedStorageWorkletGlobalScope::Register(gin::Arguments* args) {
 
   operation_definition_map_.emplace(
       name, v8::Global<v8::Function>(isolate, run_function.As<v8::Function>()));
+}
+
+void SharedStorageWorkletGlobalScope::FlushAndResetPrivateAggregation() {
+  if (private_aggregation_) {
+    private_aggregation_->FlushAndReset();
+  }
 }
 
 v8::Isolate* SharedStorageWorkletGlobalScope::Isolate() {
