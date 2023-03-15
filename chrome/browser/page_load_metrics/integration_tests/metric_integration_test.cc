@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -35,7 +36,12 @@ using ukm::TestUkmRecorder;
 using ukm::builders::PageLoad;
 using ukm::mojom::UkmEntry;
 
-MetricIntegrationTest::MetricIntegrationTest() = default;
+MetricIntegrationTest::MetricIntegrationTest() {
+  // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+  // disable this feature.
+  feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+}
+
 MetricIntegrationTest::~MetricIntegrationTest() = default;
 
 void MetricIntegrationTest::SetUpOnMainThread() {

@@ -9,6 +9,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 
 namespace base {
@@ -165,6 +166,7 @@ class MetricIntegrationTest : public InProcessBrowserTest {
 
   const ukm::mojom::UkmEntryPtr GetEntry();
 
+  base::test::ScopedFeatureList feature_list_;
   absl::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   absl::optional<base::HistogramTester> histogram_tester_;
 };

@@ -185,7 +185,9 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {ukm::kUkmFeature, blink::features::kPortals,
          blink::features::kPortalsCrossOrigin},
-        {});
+        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // disable this feature.
+        {features::kHttpsUpgrades});
   }
 
   PageLoadMetricsBrowserTest(const PageLoadMetricsBrowserTest&) = delete;

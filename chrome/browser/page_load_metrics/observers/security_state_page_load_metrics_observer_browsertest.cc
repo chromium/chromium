@@ -25,6 +25,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
@@ -78,6 +79,7 @@ class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("accounts-google.com", "127.0.0.1");
+
     LookalikeTestHelper::SetUpLookalikeTestParams();
   }
 
@@ -85,8 +87,24 @@ class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
     LookalikeTestHelper::TearDownLookalikeTestParams();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
  protected:
   void StartHttpsServer(net::EmbeddedTestServer::ServerCertificate cert) {
+    if (cert == net::EmbeddedTestServer::CERT_OK) {
+      mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    }
+
     https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_test_server_->SetSSLConfig(cert);
@@ -152,6 +170,7 @@ class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_test_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Https) {
@@ -239,8 +258,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, ReloadPage) {
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
                        SafetyTipSiteEngagement) {
   const std::string kSiteEngagementHistogramPrefix = "Security.SiteEngagement.";
-
-  StartHttpServer();
+  StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
 
   struct TestCase {
     // The URL to navigate to.
@@ -248,8 +266,9 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     // If true, url is expected to show a safety tip.
     bool expect_safety_tip;
   } kTestCases[] = {
-      {http_test_server()->GetURL("/simple.html"), false},
-      {http_test_server()->GetURL("accounts-google.com", "/simple.html"), true},
+      {https_test_server()->GetURL("/simple.html"), false},
+      {https_test_server()->GetURL("accounts-google.com", "/simple.html"),
+       true},
   };
 
   // The histogram should be recorded regardless of whether the page is flagged
