@@ -830,6 +830,7 @@ if (is_win || is_mac || is_linux) {
 
       data += [
         "//chrome/test/data/updater/Keystone.ticketstore",
+        "//chrome/test/data/updater/Keystone.withlaunchservicechecker.ticketstore",
         "//chrome/test/data/updater/Keystone.legacy.ticketstore",
         "//chrome/test/data/updater/updater_setup_test_dmg.dmg",
         "//chrome/test/data/updater/setup_test_preinstallfailure/.preinstall",

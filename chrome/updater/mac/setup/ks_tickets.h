@@ -21,7 +21,7 @@ class FilePath;
 @interface KSTicket : NSObject <NSSecureCoding>
 
 @property(nonnull, nonatomic, readonly) NSString* productID;
-@property(nonnull, nonatomic, readonly)
+@property(nullable, nonatomic, readonly)
     KSPathExistenceChecker* existenceChecker;
 @property(nullable, nonatomic, readonly) NSURL* serverURL;
 @property(nonnull, nonatomic, readonly) NSDate* creationDate;

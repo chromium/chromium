@@ -15,6 +15,14 @@
 NSString* const kCRUTicketBrandKey = @"KSBrandID";
 NSString* const kCRUTicketTagKey = @"KSChannelID";
 
+@interface KSLaunchServicesExistenceChecker : NSObject <NSSecureCoding>
+@property(nonnull, readonly) NSString* bundle_id;
+@end
+
+@interface KSSpotlightExistenceChecker : NSObject <NSSecureCoding>
+@property(nonnull, readonly) NSString* query;
+@end
+
 @implementation KSTicketStore
 
 + (nullable NSDictionary<NSString*, KSTicket*>*)readStoreWithPath:
@@ -30,7 +38,7 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
                                              options:0  // Use normal IO
                                                error:&error];
   if (!storeData) {
-    VLOG(0) << "Failed to decode ticket store at "
+    VLOG(0) << "Failed to load ticket store at "
             << base::SysNSStringToUTF8(path) << ": " << error;
     return nil;
   }
@@ -39,30 +47,30 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
   }
 
   NSDictionary* store = nil;
-  @try {  // Unarchiver can throw
-    NSKeyedUnarchiver* unpacker =
-        [[[NSKeyedUnarchiver alloc] initForReadingFromData:storeData
-                                                     error:&error] autorelease];
-    if (!unpacker) {
-      VLOG(0) << base::SysNSStringToUTF8(
-          [NSString stringWithFormat:@"Ticket error %@", error]);
-      return nil;
-    }
-    unpacker.requiresSecureCoding = YES;
-    NSSet* classes =
-        [NSSet setWithObjects:[NSDictionary class], [KSTicket class],
-                              [KSPathExistenceChecker class], [NSArray class],
-                              [NSURL class], nil];
-    store = [unpacker decodeObjectOfClasses:classes
-                                     forKey:NSKeyedArchiveRootObjectKey];
-    [unpacker finishDecoding];
-  } @catch (id e) {
+  NSKeyedUnarchiver* unpacker =
+      [[[NSKeyedUnarchiver alloc] initForReadingFromData:storeData
+                                                   error:&error] autorelease];
+  if (!unpacker) {
     VLOG(0) << base::SysNSStringToUTF8(
-        [NSString stringWithFormat:@"Ticket exception %@", e]);
+        [NSString stringWithFormat:@"Ticket error %@", error]);
     return nil;
   }
+  unpacker.requiresSecureCoding = YES;
+  NSSet* classes =
+      [NSSet setWithObjects:[NSDictionary class], [KSTicket class],
+                            [KSPathExistenceChecker class],
+                            [KSLaunchServicesExistenceChecker class],
+                            [KSSpotlightExistenceChecker class],
+                            [NSArray class], [NSURL class], nil];
+  store = [unpacker decodeObjectOfClasses:classes
+                                   forKey:NSKeyedArchiveRootObjectKey];
+  [unpacker finishDecoding];
   if (!store || ![store isKindOfClass:[NSDictionary class]]) {
     VLOG(0) << "Ticket store is not a dictionary.";
+    return nil;
+  }
+  if (unpacker.error) {
+    VLOG(0) << "Error unpacking ticket store: " << unpacker.error;
     return nil;
   }
   return store;
@@ -85,14 +93,8 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
 
 - (instancetype)initWithCoder:(NSCoder*)coder {
   if ((self = [super init])) {
-    @try {
-      path_ = [[coder decodeObjectOfClass:[NSString class]
-                                   forKey:@"path"] retain];
-    } @catch (id e) {
-      VLOG(0) << base::SysNSStringToUTF8(
-          [NSString stringWithFormat:@"Coder exception %@", e]);
-      return nil;
-    }
+    path_ = [[coder decodeObjectOfClass:[NSString class]
+                                 forKey:@"path"] retain];
   }
   return self;
 }
@@ -112,6 +114,72 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
   // Formatting must stay the same in ksadmin output.
   return [NSString
       stringWithFormat:@"<%@:0x222222222222 path=%@>", [self class], path_];
+}
+
+@end
+
+@implementation KSLaunchServicesExistenceChecker
+
+@synthesize bundle_id = bundle_id_;
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (void)dealloc {
+  [bundle_id_ release];
+  [super dealloc];
+}
+
+- (instancetype)initWithCoder:(NSCoder*)coder {
+  if ((self = [super init])) {
+    bundle_id_ = [[coder decodeObjectOfClass:[NSString class]
+                                      forKey:@"bundle_id"] retain];
+  }
+  return self;
+}
+
+- (void)encodeWithCoder:(NSCoder*)coder {
+  NOTREACHED();
+}
+
+- (NSString*)description {
+  // Formatting must stay the same in ksadmin output.
+  return [NSString stringWithFormat:@"<%@:0x222222222222 bundle_id=%@>",
+                                    [self class], bundle_id_];
+}
+
+@end
+
+@implementation KSSpotlightExistenceChecker
+
+@synthesize query = query_;
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (void)dealloc {
+  [query_ release];
+  [super dealloc];
+}
+
+- (instancetype)initWithCoder:(NSCoder*)coder {
+  if ((self = [super init])) {
+    query_ = [[coder decodeObjectOfClass:[NSString class]
+                                  forKey:@"query"] retain];
+  }
+  return self;
+}
+
+- (void)encodeWithCoder:(NSCoder*)coder {
+  NOTREACHED();
+}
+
+- (NSString*)description {
+  // Formatting must stay the same in ksadmin output.
+  return [NSString
+      stringWithFormat:@"<%@:0x222222222222 query=%@>", [self class], query_];
 }
 
 @end
@@ -167,45 +235,41 @@ NSString* const kKSTicketCohortNameKey = @"CohortName";
 
 - (instancetype)initWithCoder:(NSCoder*)coder {
   if ((self = [super init])) {
-    @try {
-      productID_ = [[coder decodeObjectOfClass:[NSString class]
-                                        forKey:@"product_id"] retain];
-      version_ = [[coder decodeObjectOfClass:[NSString class]
-                                      forKey:@"version"] retain];
+    productID_ = [[coder decodeObjectOfClass:[NSString class]
+                                      forKey:@"product_id"] retain];
+    version_ = [[coder decodeObjectOfClass:[NSString class]
+                                    forKey:@"version"] retain];
+    if ([[coder decodeObjectForKey:@"existence_checker"]
+            isKindOfClass:[KSPathExistenceChecker class]]) {
       existenceChecker_ =
           [[coder decodeObjectOfClass:[KSPathExistenceChecker class]
                                forKey:@"existence_checker"] retain];
-      serverURL_ = [[self decodeServerURL:coder] retain];
-      creationDate_ = [[coder decodeObjectOfClass:[NSDate class]
-                                           forKey:@"creation_date"] retain];
-      serverType_ = [[coder decodeObjectOfClass:[NSString class]
-                                         forKey:@"serverType"] retain];
-      tag_ = [[coder decodeObjectOfClass:[NSString class]
-                                  forKey:@"tag"] retain];
-      tagPath_ = [[coder decodeObjectOfClass:[NSString class]
-                                      forKey:@"tagPath"] retain];
-      tagKey_ = [[coder decodeObjectOfClass:[NSString class]
-                                     forKey:@"tagKey"] retain];
-      brandPath_ = [[coder decodeObjectOfClass:[NSString class]
-                                        forKey:@"brandPath"] retain];
-      brandKey_ = [[coder decodeObjectOfClass:[NSString class]
-                                       forKey:@"brandKey"] retain];
-      versionPath_ = [[coder decodeObjectOfClass:[NSString class]
-                                          forKey:@"versionPath"] retain];
-      versionKey_ = [[coder decodeObjectOfClass:[NSString class]
-                                         forKey:@"versionKey"] retain];
-      cohort_ = [[coder decodeObjectOfClass:[NSString class]
-                                     forKey:kKSTicketCohortKey] retain];
-      cohortHint_ = [[coder decodeObjectOfClass:[NSString class]
-                                         forKey:kKSTicketCohortHintKey] retain];
-      cohortName_ = [[coder decodeObjectOfClass:[NSString class]
-                                         forKey:kKSTicketCohortNameKey] retain];
-      ticketVersion_ = [coder decodeInt32ForKey:@"ticketVersion"];
-    } @catch (id e) {
-      VLOG(0) << base::SysNSStringToUTF8(
-          [NSString stringWithFormat:@"Coder exception %@", e]);
-      return nil;
     }
+    serverURL_ = [[self decodeServerURL:coder] retain];
+    creationDate_ = [[coder decodeObjectOfClass:[NSDate class]
+                                         forKey:@"creation_date"] retain];
+    serverType_ = [[coder decodeObjectOfClass:[NSString class]
+                                       forKey:@"serverType"] retain];
+    tag_ = [[coder decodeObjectOfClass:[NSString class] forKey:@"tag"] retain];
+    tagPath_ = [[coder decodeObjectOfClass:[NSString class]
+                                    forKey:@"tagPath"] retain];
+    tagKey_ = [[coder decodeObjectOfClass:[NSString class]
+                                   forKey:@"tagKey"] retain];
+    brandPath_ = [[coder decodeObjectOfClass:[NSString class]
+                                      forKey:@"brandPath"] retain];
+    brandKey_ = [[coder decodeObjectOfClass:[NSString class]
+                                     forKey:@"brandKey"] retain];
+    versionPath_ = [[coder decodeObjectOfClass:[NSString class]
+                                        forKey:@"versionPath"] retain];
+    versionKey_ = [[coder decodeObjectOfClass:[NSString class]
+                                       forKey:@"versionKey"] retain];
+    cohort_ = [[coder decodeObjectOfClass:[NSString class]
+                                   forKey:kKSTicketCohortKey] retain];
+    cohortHint_ = [[coder decodeObjectOfClass:[NSString class]
+                                       forKey:kKSTicketCohortHintKey] retain];
+    cohortName_ = [[coder decodeObjectOfClass:[NSString class]
+                                       forKey:kKSTicketCohortNameKey] retain];
+    ticketVersion_ = [coder decodeInt32ForKey:@"ticketVersion"];
   }
   return self;
 }

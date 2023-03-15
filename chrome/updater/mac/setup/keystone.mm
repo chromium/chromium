@@ -224,8 +224,10 @@ void MigrateKeystoneTickets(
       registration.app_id = base::SysNSStringToUTF8(ticket.productID);
       registration.version =
           base::Version(base::SysNSStringToUTF8([ticket determineVersion]));
-      registration.existence_checker_path =
-          base::mac::NSStringToFilePath(ticket.existenceChecker.path);
+      if (ticket.existenceChecker) {
+        registration.existence_checker_path =
+            base::mac::NSStringToFilePath(ticket.existenceChecker.path);
+      }
       registration.brand_code =
           base::SysNSStringToUTF8([ticket determineBrand]);
       if ([ticket.brandKey isEqualToString:kCRUTicketBrandKey]) {
