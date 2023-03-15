@@ -42412,6 +42412,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4500" label="SpeculationRulesEagernessConservative"/>
   <int value="4501" label="SpeculationRulesEagernessModerate"/>
   <int value="4502" label="SpeculationRulesEagernessEager"/>
+  <int value="4503" label="URLSetPortCheckOverflow"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

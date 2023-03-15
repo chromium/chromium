@@ -182,6 +182,7 @@ class PLATFORM_EXPORT KURL {
   void RemovePort();
   void SetPort(uint16_t);
   void SetPort(const String&);
+  void SetPort(const String&, bool* value_overflow_out);
 
   // Input is like "foo.com" or "foo.com:8000".
   void SetHostAndPort(const String&);

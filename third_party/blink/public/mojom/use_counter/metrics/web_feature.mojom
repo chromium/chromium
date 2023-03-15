@@ -3841,6 +3841,7 @@ enum WebFeature {
   kSpeculationRulesEagernessConservative = 4500,
   kSpeculationRulesEagernessModerate = 4501,
   kSpeculationRulesEagernessEager = 4502,
+  kURLSetPortCheckOverflow = 4503,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

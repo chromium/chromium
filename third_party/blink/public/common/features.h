@@ -1028,6 +1028,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRuntimeFeatureStateControllerApplyFeatureDiff);
 
+// Disallow setting URL ports with a value that will overflow.
+// See https://crbug.com/1416017
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kURLSetPortCheckOverflow);
+
 }  // namespace features
 }  // namespace blink
 

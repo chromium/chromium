@@ -1687,6 +1687,9 @@ BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial,
 BASE_FEATURE(kRuntimeFeatureStateControllerApplyFeatureDiff,
              "RuntimeFeatureStateControllerApplyFeatureDiff",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kURLSetPortCheckOverflow,
+             "URLSetPortCheckOverflow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace blink

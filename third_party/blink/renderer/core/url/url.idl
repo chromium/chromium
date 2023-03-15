@@ -40,7 +40,7 @@
     attribute USVString password;
     attribute USVString host;
     attribute USVString hostname;
-    attribute USVString port;
+    [CallWith=ExecutionContext] attribute USVString port;
     attribute USVString pathname;
     attribute USVString search;
     [SameObject] readonly attribute URLSearchParams searchParams;
