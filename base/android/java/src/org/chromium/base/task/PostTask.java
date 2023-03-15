@@ -7,7 +7,6 @@ package org.chromium.base.task;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,13 +93,7 @@ public class PostTask {
      * @param delay The delay in milliseconds before the task can be run.
      */
     public static void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
-        if (!sNativeInitialized) {
-            getTaskExecutorForTraits(taskTraits).postDelayedTask(taskTraits, task, delay);
-        } else {
-            PostTaskJni.get().postDelayedTask(taskTraits.mPriority, taskTraits.mMayBlock,
-                    taskTraits.mUseThreadPool, taskTraits.mExtensionId, taskTraits.mExtensionData,
-                    task, delay, task.getClass().getName());
-        }
+        getTaskExecutorForTraits(taskTraits).postDelayedTask(taskTraits, task, delay);
     }
 
     /**
@@ -290,12 +283,5 @@ public class PostTask {
         if (taskCount > 0) {
             Log.w(TAG, "%d background task(s) existed after test finished.", taskCount);
         }
-    }
-
-    @NativeMethods
-    interface Natives {
-        void postDelayedTask(int priority, boolean mayBlock, boolean useThreadPool,
-                byte extensionId, byte[] extensionData, Runnable task, long delay,
-                String runnableClassName);
     }
 }
