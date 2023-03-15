@@ -914,4 +914,31 @@ TEST_F(MultitaskMenuTest, HoverWhenMenuAlreadyShown) {
   EXPECT_EQ(multitask_menu, GetMultitaskMenu());
 }
 
+TEST_F(MultitaskMenuTest, CloseOnClickOutside) {
+  // Snap the window to half so we can click outside the window bounds.
+  ShowMultitaskMenu();
+  GetEventGenerator()->MoveMouseTo(GetMultitaskMenu()
+                                       ->multitask_menu_view()
+                                       ->half_button_for_testing()
+                                       ->GetBoundsInScreen()
+                                       .left_center());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+
+  ShowMultitaskMenu();
+  MultitaskMenu* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+
+  // Click on a point outside the menu on the screen below.
+  gfx::Point offset_point(multitask_menu->multitask_menu_view()
+                              ->GetBoundsInScreen()
+                              .bottom_right());
+  offset_point.Offset(10, 10);
+  DCHECK(!GetWidget()->GetWindowBoundsInScreen().Contains(offset_point));
+  GetEventGenerator()->MoveMouseTo(offset_point);
+  GetEventGenerator()->ClickLeftButton();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(GetMultitaskMenu());
+}
+
 }  // namespace ash

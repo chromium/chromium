@@ -234,7 +234,7 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
   menu_view_ =
       widget_->SetContentsView(std::make_unique<TabletModeMultitaskMenuView>(
-          window_, base::BindRepeating(&TabletModeMultitaskMenu::Reset,
+          window_, base::BindRepeating(&TabletModeMultitaskMenu::AnimateFadeOut,
                                        weak_factory_.GetWeakPtr())));
 
   // Set the widget on the top center of the window.
@@ -285,8 +285,8 @@ void TabletModeMultitaskMenu::Animate(bool show) {
   }
   views::AnimationBuilder()
       .OnEnded(show ? base::DoNothing()
-                    : base::BindOnce(&TabletModeMultitaskMenu::Reset,
-                                     weak_factory_.GetWeakPtr()))
+                    : base::BindRepeating(&TabletModeMultitaskMenu::Reset,
+                                          weak_factory_.GetWeakPtr()))
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
@@ -304,8 +304,8 @@ void TabletModeMultitaskMenu::AnimateFadeOut() {
   if (view_layer->GetAnimator()->is_animating())
     return;
   views::AnimationBuilder()
-      .OnEnded(base::BindOnce(&TabletModeMultitaskMenu::Reset,
-                              weak_factory_.GetWeakPtr()))
+      .OnEnded(base::BindRepeating(&TabletModeMultitaskMenu::Reset,
+                                   weak_factory_.GetWeakPtr()))
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()

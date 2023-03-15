@@ -20,11 +20,13 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -71,14 +73,60 @@ std::unique_ptr<views::View> CreateButtonContainer(
 
 }  // namespace
 
-MultitaskMenuView::MultitaskMenuView(
-    aura::Window* window,
-    base::RepeatingClosure on_any_button_pressed,
-    uint8_t buttons)
-    : window_(window),
-      on_any_button_pressed_(std::move(on_any_button_pressed)) {
+// -----------------------------------------------------------------------------
+// MultitaskMenuView::MenuPreTargetHandler:
+
+class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
+ public:
+  MenuPreTargetHandler(aura::Window* menu_window,
+                       base::RepeatingClosure close_callback)
+      : menu_window_(menu_window), close_callback_(std::move(close_callback)) {
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        this, ui::EventTarget::Priority::kSystem);
+  }
+
+  ~MenuPreTargetHandler() override {
+    aura::Env::GetInstance()->RemovePreTargetHandler(this);
+  }
+
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    // TODO(b/266441890): Consider closing the menu on ET_MOUSE_MOVED.
+    if (event->type() == ui::ET_MOUSE_PRESSED) {
+      ProcessPressedEvent(*event);
+    }
+  }
+
+  void OnTouchEvent(ui::TouchEvent* event) override {
+    if (event->type() == ui::ET_TOUCH_PRESSED) {
+      ProcessPressedEvent(*event);
+    }
+  }
+
+  void ProcessPressedEvent(const ui::LocatedEvent& event) {
+    const gfx::Point screen_location = event.target()->GetScreenLocation(event);
+    // If the event is out of menu bounds, close the menu.
+    if (!menu_window_->GetBoundsInScreen().Contains(screen_location)) {
+      close_callback_.Run();
+    }
+  }
+
+ private:
+  // The multitask menu that is currently shown. Guaranteed to outlive `this`,
+  // which will get destroyed when the menu is destructed in `close_callback_`.
+  aura::Window* const menu_window_;
+
+  base::RepeatingClosure close_callback_;
+};
+
+// -----------------------------------------------------------------------------
+// MultitaskMenuView:
+
+MultitaskMenuView::MultitaskMenuView(aura::Window* window,
+                                     base::RepeatingClosure close_callback,
+                                     uint8_t buttons)
+    : window_(window), close_callback_(std::move(close_callback)) {
   DCHECK(window);
-  DCHECK(on_any_button_pressed_);
+  DCHECK(close_callback_);
   SetUseDefaultFillLayout(true);
 
   // The display orientation. This determines whether menu is in
@@ -165,7 +213,16 @@ MultitaskMenuView::MultitaskMenuView(
       feedback_button_, gfx::Insets(), kButtonHeight / kButtonRadDivisor);
 }
 
-MultitaskMenuView::~MultitaskMenuView() = default;
+MultitaskMenuView::~MultitaskMenuView() {
+  event_handler_.reset();
+}
+
+void MultitaskMenuView::AddedToWidget() {
+  // When the menu widget is shown, we install `MenuPreTargetHandler` to close
+  // the menu on any events outside.
+  event_handler_ = std::make_unique<MultitaskMenuView::MenuPreTargetHandler>(
+      GetWidget()->GetNativeWindow(), close_callback_);
+}
 
 void MultitaskMenuView::OnThemeChanged() {
   // Must be called at the beginning of the function.
@@ -186,7 +243,7 @@ void MultitaskMenuView::OnThemeChanged() {
 
 void MultitaskMenuView::SplitButtonPressed(SnapDirection direction) {
   SnapController::Get()->CommitSnap(window_, direction, kDefaultSnapRatio);
-  on_any_button_pressed_.Run();
+  close_callback_.Run();
   RecordMultitaskMenuActionType(MultitaskMenuActionType::kHalfSplitButton);
 }
 
@@ -195,7 +252,7 @@ void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
                                     direction == SnapDirection::kPrimary
                                         ? kTwoThirdSnapRatio
                                         : kOneThirdSnapRatio);
-  on_any_button_pressed_.Run();
+  close_callback_.Run();
 
   base::RecordAction(base::UserMetricsAction(
       direction == SnapDirection::kPrimary ? kPartialSplitTwoThirdsUserAction
@@ -206,13 +263,13 @@ void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
 void MultitaskMenuView::FullScreenButtonPressed() {
   auto* widget = views::Widget::GetWidgetForNativeWindow(window_);
   widget->SetFullscreen(!widget->IsFullscreen());
-  on_any_button_pressed_.Run();
+  close_callback_.Run();
   RecordMultitaskMenuActionType(MultitaskMenuActionType::kFullscreenButton);
 }
 
 void MultitaskMenuView::FloatButtonPressed() {
   FloatControllerBase::Get()->ToggleFloat(window_);
-  on_any_button_pressed_.Run();
+  close_callback_.Run();
   RecordMultitaskMenuActionType(MultitaskMenuActionType::kFloatButton);
 }
 

@@ -291,6 +291,31 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseMultitaskMenuOnTap) {
   EXPECT_FALSE(GetMultitaskMenu());
 }
 
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseOnDoubleTapDivider) {
+  auto window1 = CreateTestWindow(gfx::Rect(800, 600));
+  auto window2 = CreateTestWindow(gfx::Rect(800, 600));
+
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  split_view_controller->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
+
+  // Open the menu on one of the windows.
+  ShowMultitaskMenu(*window1);
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  // Double tap on the divider center.
+  const gfx::Point divider_center =
+      split_view_controller->split_view_divider()
+          ->GetDividerBoundsInScreen(/*is_dragging=*/false)
+          .CenterPoint();
+  GetEventGenerator()->GestureTapAt(divider_center);
+  GetEventGenerator()->GestureTapAt(divider_center);
+  ASSERT_FALSE(GetMultitaskMenu());
+}
+
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
   auto window = CreateTestWindow();
 

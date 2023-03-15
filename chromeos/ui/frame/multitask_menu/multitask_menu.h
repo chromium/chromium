@@ -60,6 +60,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       parent_window_observation_{this};
+
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 };
 

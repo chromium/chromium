@@ -49,6 +49,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   SplitButtonView* partial_button() { return partial_button_.get(); }
   views::LabelButton* feedback_button() { return feedback_button_.get(); }
 
+  // views::View:
+  void AddedToWidget() override;
+
   // For testing.
   SplitButtonView* half_button_for_testing() {
     return half_button_for_testing_.get();
@@ -64,6 +67,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   void OnThemeChanged() override;
 
  private:
+  class MenuPreTargetHandler;
+
   // Callbacks for the buttons in the multitask menu view.
   void SplitButtonPressed(SnapDirection direction);
   void PartialButtonPressed(SnapDirection direction);
@@ -81,8 +86,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // The window which the buttons act on. It is guaranteed to outlive `this`.
   aura::Window* const window_;
 
-  // Runs after any of the buttons are pressed.
-  base::RepeatingClosure on_any_button_pressed_;
+  // Runs after any of the buttons are pressed, or a press out of the menu
+  // bounds.
+  base::RepeatingClosure close_callback_;
+
+  std::unique_ptr<MenuPreTargetHandler> event_handler_;
 };
 
 }  // namespace chromeos
