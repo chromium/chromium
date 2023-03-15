@@ -83,6 +83,21 @@ const base::FeatureParam<int>
       0,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
+
+BASE_FEATURE(kHeuristicMemorySaver,
+             "HeuristicMemorySaver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kHeuristicMemorySaverHeartbeatSeconds{
+    &kHeuristicMemorySaver, "heartbeat_seconds", 10};
+
+const base::FeatureParam<int>
+    kHeuristicMemorySaverAvailableMemoryThresholdPercent{
+        &kHeuristicMemorySaver, "threshold_percent", 5};
+
+const base::FeatureParam<int> kHeuristicMemorySaverMinimumMinutesInBackground{
+    &kHeuristicMemorySaver, "minimum_minutes_in_background", 120};
+
 #endif
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,

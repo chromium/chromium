@@ -67,6 +67,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/power_monitor/battery_state_sampler.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
+#include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
@@ -178,9 +179,23 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyModeAvailable)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::HighEfficiencyModePolicy>());
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kHeuristicMemorySaver)) {
+      graph->PassToGraph(
+          std::make_unique<
+              performance_manager::policies::HeuristicMemorySaverPolicy>(
+              performance_manager::features::
+                  kHeuristicMemorySaverAvailableMemoryThresholdPercent.Get(),
+              base::Seconds(performance_manager::features::
+                                kHeuristicMemorySaverHeartbeatSeconds.Get()),
+              base::Minutes(
+                  performance_manager::features::
+                      kHeuristicMemorySaverMinimumMinutesInBackground.Get())));
+    } else {
+      graph->PassToGraph(
+          std::make_unique<
+              performance_manager::policies::HighEfficiencyModePolicy>());
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

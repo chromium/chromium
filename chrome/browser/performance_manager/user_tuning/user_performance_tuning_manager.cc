@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
+#include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
@@ -68,12 +69,21 @@ class HighEfficiencyModeToggleDelegateImpl
  public:
   void ToggleHighEfficiencyMode(bool enabled) override {
     performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(
-                       [](bool enabled, performance_manager::Graph* graph) {
-                         policies::HighEfficiencyModePolicy::GetInstance()
-                             ->OnHighEfficiencyModeChanged(enabled);
-                       },
-                       enabled));
+        FROM_HERE,
+        base::BindOnce(
+            [](bool enabled, performance_manager::Graph* graph) {
+              if (base::FeatureList::IsEnabled(
+                      performance_manager::features::kHeuristicMemorySaver)) {
+                CHECK(policies::HeuristicMemorySaverPolicy::GetInstance());
+                policies::HeuristicMemorySaverPolicy::GetInstance()->SetActive(
+                    enabled);
+              } else {
+                CHECK(policies::HighEfficiencyModePolicy::GetInstance());
+                policies::HighEfficiencyModePolicy::GetInstance()
+                    ->OnHighEfficiencyModeChanged(enabled);
+              }
+            },
+            enabled));
   }
 
   ~HighEfficiencyModeToggleDelegateImpl() override = default;

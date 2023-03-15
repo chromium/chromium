@@ -75,6 +75,26 @@ extern const base::FeatureParam<base::TimeDelta>
 // 23% actual battery level).
 extern const base::FeatureParam<int>
     kBatterySaverModeThresholdAdjustmentForDisplayLevel;
+
+// When enabled, the memory saver policy used is HeuristicMemorySaverPolicy.
+BASE_DECLARE_FEATURE(kHeuristicMemorySaver);
+
+// Controls the interval at which HeuristicMemorySaverPolicy checks whether the
+// amount of available memory is smaller than the discarding threshold.
+extern const base::FeatureParam<int> kHeuristicMemorySaverHeartbeatSeconds;
+
+// The percentage of available physical memory at which
+// HeuristicMemorySaverPolicy will start discarding tabs. For example, setting
+// this param to 10 will cause HeuristicMemorySaverPolicy to discard tabs
+// periodically as long as the available system memory is under 10%.
+extern const base::FeatureParam<int>
+    kHeuristicMemorySaverAvailableMemoryThresholdPercent;
+
+// The minimum amount of minutes a tab has to spend in the background before
+// HeuristicMemorySaverPolicy will consider it eligible for discarding.
+extern const base::FeatureParam<int>
+    kHeuristicMemorySaverMinimumMinutesInBackground;
+
 #endif
 
 // Policy that evicts the BFCache of pages that become non visible or the

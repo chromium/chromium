@@ -1,0 +1,92 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
+
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+
+namespace performance_manager::policies {
+
+namespace {
+HeuristicMemorySaverPolicy* g_heuristic_memory_saver_policy = nullptr;
+}  // namespace
+
+HeuristicMemorySaverPolicy::HeuristicMemorySaverPolicy(
+    uint64_t pmf_threshold_percent,
+    base::TimeDelta heartbeat_interval,
+    base::TimeDelta minimum_time_in_background,
+    AvailableMemoryCallback available_memory_cb,
+    TotalMemoryCallback total_memory_cb)
+    : pmf_threshold_percent_(pmf_threshold_percent),
+      heartbeat_interval_(heartbeat_interval),
+      minimum_time_in_background_(minimum_time_in_background),
+      available_memory_cb_(available_memory_cb),
+      total_memory_cb_(total_memory_cb) {
+  CHECK(!g_heuristic_memory_saver_policy);
+  g_heuristic_memory_saver_policy = this;
+}
+
+HeuristicMemorySaverPolicy::~HeuristicMemorySaverPolicy() {
+  CHECK_EQ(this, g_heuristic_memory_saver_policy);
+  g_heuristic_memory_saver_policy = nullptr;
+}
+
+// static
+HeuristicMemorySaverPolicy* HeuristicMemorySaverPolicy::GetInstance() {
+  return g_heuristic_memory_saver_policy;
+}
+
+// GraphOwned:
+void HeuristicMemorySaverPolicy::OnPassedToGraph(Graph* graph) {
+  graph_ = graph;
+}
+
+void HeuristicMemorySaverPolicy::OnTakenFromGraph(Graph* graph) {
+  SetActive(false);
+  graph_ = nullptr;
+}
+
+void HeuristicMemorySaverPolicy::SetActive(bool active) {
+  is_active_ = active;
+
+  if (is_active_) {
+    heartbeat_timer_.Start(
+        FROM_HERE, heartbeat_interval_,
+        base::BindRepeating(&HeuristicMemorySaverPolicy::OnHeartbeatCallback,
+                            base::Unretained(this)));
+  } else {
+    heartbeat_timer_.Stop();
+  }
+}
+
+bool HeuristicMemorySaverPolicy::IsActive() const {
+  return is_active_;
+}
+
+void HeuristicMemorySaverPolicy::OnHeartbeatCallback() {
+  uint64_t available_memory = available_memory_cb_.Run();
+  uint64_t total_physical_memory = total_memory_cb_.Run();
+
+  if (static_cast<float>(available_memory) /
+          static_cast<float>(total_physical_memory) * 100.f <
+      static_cast<float>(pmf_threshold_percent_)) {
+    PageDiscardingHelper::GetFromGraph(graph_)->DiscardAPage(
+        /*post_discard_cb=*/base::DoNothing(),
+        /*discard_reason=*/::mojom::LifecycleUnitDiscardReason::PROACTIVE,
+        /*minimum_time_in_background=*/minimum_time_in_background_);
+  }
+}
+
+// static
+uint64_t
+HeuristicMemorySaverPolicy::DefaultGetAmountOfAvailablePhysicalMemory() {
+  return base::SysInfo::AmountOfAvailablePhysicalMemory();
+}
+
+// static
+uint64_t HeuristicMemorySaverPolicy::DefaultGetAmountOfPhysicalMemory() {
+  return base::SysInfo::AmountOfPhysicalMemory();
+}
+
+}  // namespace performance_manager::policies

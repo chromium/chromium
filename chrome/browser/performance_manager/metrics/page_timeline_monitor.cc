@@ -22,6 +22,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -131,16 +132,9 @@ void PageTimelineMonitor::CollectSlice() {
           page_live_state_data->IsConnectedToBluetoothDevice();
     }
 
-    ukm::builders::PerformanceManager_PageTimelineState(source_id)
-        .SetSliceId(slice_id)
-#if !BUILDFLAG(IS_ANDROID)
-        .SetHighEfficiencyMode(performance_manager::policies::
-                                   HighEfficiencyModePolicy::GetInstance() &&
-                               performance_manager::policies::
-                                   HighEfficiencyModePolicy::GetInstance()
-                                       ->IsHighEfficiencyDiscardingEnabled())
-        .SetBatterySaverMode(battery_saver_enabled_)
-#endif  // !BUILDFLAG(IS_ANDROID)
+    ukm::builders::PerformanceManager_PageTimelineState builder(source_id);
+
+    builder.SetSliceId(slice_id)
         .SetIsActiveTab(is_active_tab)
         .SetTimeSinceLastSlice(ukm::GetSemanticBucketMinForDurationTiming(
             time_since_last_slice.InMilliseconds()))
@@ -159,8 +153,21 @@ void PageTimelineMonitor::CollectSlice() {
         .SetIsConnectedToDevice(is_connected_to_device)
         .SetIsPlayingAudio(page_node->IsAudible())
         .SetResidentSetSize(page_node->EstimateResidentSetSize())
-        .SetTabId(curr_info->tab_id)
-        .Record(ukm::UkmRecorder::Get());
+        .SetTabId(curr_info->tab_id);
+
+#if !BUILDFLAG(IS_ANDROID)
+    bool high_efficiency_mode_active =
+        (policies::HighEfficiencyModePolicy::GetInstance() &&
+         policies::HighEfficiencyModePolicy::GetInstance()
+             ->IsHighEfficiencyDiscardingEnabled()) ||
+        (policies::HeuristicMemorySaverPolicy::GetInstance() &&
+         policies::HeuristicMemorySaverPolicy::GetInstance()->IsActive());
+
+    builder.SetHighEfficiencyMode(high_efficiency_mode_active)
+        .SetBatterySaverMode(battery_saver_enabled_);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+    builder.Record(ukm::UkmRecorder::Get());
   }
 }
 
