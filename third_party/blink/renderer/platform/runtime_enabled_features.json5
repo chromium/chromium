@@ -1247,7 +1247,8 @@
     },
     {
       name: "FastPositionIterator",
-      status: "stable",
+      // Not enabled due to a RTL issue. crbug.com/1421016.
+      status: "test",
       base_feature: "FastPositionIterator",
     },
     {
