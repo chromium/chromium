@@ -56,7 +56,6 @@ class NoStatePrefetchHelper
   int prefetch_count_ = 0;
   bool prefetch_finished_ = false;
   base::TimeTicks start_time_;
-  base::TimeTicks parsed_time_;
 
   base::WeakPtrFactory<NoStatePrefetchHelper> weak_factory_{this};
 };

@@ -54,7 +54,6 @@ bool NoStatePrefetchHelper::IsPrefetching(
 }
 
 void NoStatePrefetchHelper::DidDispatchDOMContentLoadedEvent() {
-  parsed_time_ = base::TimeTicks::Now();
   prefetch_finished_ = true;
   if (prefetch_count_ == 0)
     SendPrefetchFinished();
@@ -76,17 +75,12 @@ void NoStatePrefetchHelper::AddThrottle(PrerenderURLLoaderThrottle& throttle) {
 
 void NoStatePrefetchHelper::OnThrottleDestroyed() {
   if (--prefetch_count_ == 0 && prefetch_finished_) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "Prerender.NoStatePrefetchRendererLifetimeExtension",
-        base::TimeTicks::Now() - parsed_time_);
     SendPrefetchFinished();
   }
 }
 
 void NoStatePrefetchHelper::SendPrefetchFinished() {
   DCHECK(prefetch_count_ == 0 && prefetch_finished_);
-  UMA_HISTOGRAM_MEDIUM_TIMES("Prerender.NoStatePrefetchRendererParseTime",
-                             parsed_time_ - start_time_);
 
   mojo::Remote<mojom::PrerenderCanceler> canceler;
   render_frame()->GetBrowserInterfaceBroker()->GetInterface(

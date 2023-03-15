@@ -1849,23 +1849,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="Prerender.NoStatePrefetchRendererLifetimeExtension" units="ms"
-    expires_after="M77">
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Time a prefetch renderer is kept alive after parsing to wait for
-    subresources to finish loading.
-  </summary>
-</histogram>
-
-<histogram name="Prerender.NoStatePrefetchRendererParseTime" units="ms"
-    expires_after="M81">
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Time between prefetch renderer startup and when parsing is complete.
-  </summary>
-</histogram>
-
 <histogram name="Prerender.NoStatePrefetchResponseTypes"
     enum="NoStatePrefetchResponseType" expires_after="M85">
   <owner>droger@chromium.org</owner>
