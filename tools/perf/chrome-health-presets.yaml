@@ -13,7 +13,7 @@ presets:
           - mac-m1_mini_2020-perf
           - linux-perf
           - win-10-perf
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - Speedometer2
       - benchmark: rendering.desktop
@@ -34,7 +34,7 @@ presets:
           - motionmark_ramp_suits
       - benchmark: rendering.mobile
         configs:
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - motionmark_ramp_canvas_arcs
           - motionmark_ramp_canvas_lines
@@ -55,7 +55,7 @@ presets:
           - motionmark_ramp_composite
       - benchmark: rendering.mobile.notracing
         configs:
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - motionmark_ramp_composite
       - benchmark: jetstream2
@@ -64,7 +64,7 @@ presets:
           - mac-m1_mini_2020-perf
           - linux-perf
           - win-10-perf
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - JetStream2
   chrome_health_pgo:
@@ -75,7 +75,7 @@ presets:
           - mac-m1_mini_2020-perf-pgo
           - linux-perf-pgo
           - win-10-perf-pgo
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - Speedometer2
       - benchmark: rendering.desktop
@@ -95,7 +95,7 @@ presets:
           - motionmark_ramp_suits
       - benchmark: rendering.mobile
         configs:
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - motionmark_ramp_canvas_arcs
           - motionmark_ramp_canvas_lines
@@ -115,7 +115,7 @@ presets:
           - motionmark_ramp_composite
       - benchmark: rendering.mobile.notracing
         configs:
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - motionmark_ramp_composite
       - benchmark: jetstream2
@@ -124,18 +124,47 @@ presets:
           - mac-m1_mini_2020-perf-pgo
           - linux-perf-pgo
           - win-10-perf-pgo
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
+        stories:
+          - JetStream2
+  android_only:
+    telemetry_batch_experiment:
+      - benchmark: speedometer2
+        configs:
+          - android-pixel6-perf-pgo
+        stories:
+          - Speedometer2
+      - benchmark: rendering.mobile
+        configs:
+          - android-pixel6-perf-pgo
+        stories:
+          - motionmark_ramp_canvas_arcs
+          - motionmark_ramp_canvas_lines
+          - motionmark_ramp_design
+          - motionmark_ramp_images
+          - motionmark_ramp_leaves
+          - motionmark_ramp_multiply
+          - motionmark_ramp_paths
+          - motionmark_ramp_suits
+      - benchmark: rendering.mobile.notracing
+        configs:
+          - android-pixel6-perf-pgo
+        stories:
+          - motionmark_ramp_composite
+      - benchmark: jetstream2
+        configs:
+          - android-pixel6-perf-pgo
         stories:
           - JetStream2
   speedometer2:
     telemetry_batch_experiment:
-      - benchmark: speedometer2-chrome-health
+      - benchmark: speedometer2
         configs:
           - mac-laptop_low_end-perf
           - mac-m1_mini_2020-perf
           - linux-perf
           - win-10-perf
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - Speedometer2
   speedometer2_pgo:
@@ -146,9 +175,53 @@ presets:
           - mac-m1_mini_2020-perf-pgo
           - linux-perf-pgo
           - win-10-perf-pgo
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - Speedometer2
+  motionmark_pgo:
+    telemetry_batch_experiment:
+      - benchmark: rendering.desktop
+        configs:
+          - mac-laptop_low_end-perf-pgo
+          - mac-m1_mini_2020-perf-pgo
+          - linux-perf-pgo
+          - win-10-perf-pgo
+        stories:
+          - motionmark_ramp_canvas_arcs
+          - motionmark_ramp_canvas_lines
+          - motionmark_ramp_design
+          - motionmark_ramp_focus
+          - motionmark_ramp_images
+          - motionmark_ramp_leaves
+          - motionmark_ramp_multiply
+          - motionmark_ramp_paths
+          - motionmark_ramp_suits
+      - benchmark: rendering.mobile
+        configs:
+          - android-pixel6-perf-pgo
+        stories:
+          - motionmark_ramp_canvas_arcs
+          - motionmark_ramp_canvas_lines
+          - motionmark_ramp_design
+          - motionmark_ramp_focus
+          - motionmark_ramp_images
+          - motionmark_ramp_leaves
+          - motionmark_ramp_multiply
+          - motionmark_ramp_paths
+          - motionmark_ramp_suits
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - mac-laptop_low_end-perf-pgo
+          - mac-m1_mini_2020-perf-pgo
+          - linux-perf-pgo
+          - win-10-perf-pgo
+        stories:
+          - motionmark_ramp_composite
+      - benchmark: rendering.mobile.notracing
+        configs:
+          - android-pixel6-perf-pgo
+        stories:
+          - motionmark_ramp_composite
   motionmark:
     telemetry_batch_experiment:
       - benchmark: rendering.desktop
@@ -169,7 +242,7 @@ presets:
           - motionmark_ramp_suits
       - benchmark: rendering.mobile
         configs:
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - motionmark_ramp_canvas_arcs
           - motionmark_ramp_canvas_lines
@@ -190,7 +263,7 @@ presets:
           - motionmark_ramp_composite
       - benchmark: rendering.mobile.notracing
         configs:
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - motionmark_ramp_composite
   motionmark-composite-pgo:
@@ -205,7 +278,7 @@ presets:
           - motionmark_ramp_composite
       - benchmark: rendering.mobile.notracing
         configs:
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - motionmark_ramp_composite
   jetstream2:
@@ -216,7 +289,7 @@ presets:
           - mac-m1_mini_2020-perf
           - linux-perf
           - win-10-perf
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - JetStream2
   jetstream2-pgo:
@@ -227,182 +300,91 @@ presets:
           - mac-m1_mini_2020-perf-pgo
           - linux-perf-pgo
           - win-10-perf-pgo
-          - android-pixel4-perf
+          - android-pixel6-perf-pgo
         stories:
           - JetStream2
-  cwv-ch:
+  mac-laptop-pgo:
     telemetry_batch_experiment:
-      - benchmark: loading.desktop
+      - benchmark: speedometer2
         configs:
-          - mac-laptop_low_end-perf
-          - mac-m1_mini_2020-perf
-          - linux-perf
-          - win-10-perf
+          - mac-laptop_low_end-perf-pgo
         stories:
-          - AirBnB_cold
-          - AllRecipes_cold
-      - benchmark: loading.mobile
+          - Speedometer2
+      - benchmark: jetstream2
         configs:
-          - android-pixel4-perf
+          - mac-laptop_low_end-perf-pgo
         stories:
-          - Amazon
-          - Dailymotion
-  cwv-all:
+          - JetStream2
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - mac-laptop_low_end-perf-pgo
+        stories:
+          - motionmark_ramp_composite
+  mac-m1-pgo:
     telemetry_batch_experiment:
-      - benchmark: loading.desktop
+      - benchmark: speedometer2
         configs:
-          - mac-laptop_low_end-perf
-          - mac-m1_mini_2020-perf
-          - win-10-perf
+          - mac-m1_mini_2020-perf-pgo
         stories:
-          - 24h_cold
-          - 24h_warm
-          - AirBnB_cold
-          - AirBnB_warm
-          - Aljayyash_cold
-          - Aljayyash_warm
-          - AllRecipes_cold
-          - AllRecipes_warm
-          - ArsTechnica_cold
-          - ArsTechnica_warm
-          - Baidu_cold
-          - Baidu_warm
-          - Bhaskar_cold
-          - Bhaskar_warm
-          - Chosun_cold
-          - Chosun_warm
-          - Colorado.edu_cold
-          - Colorado.edu_warm
-          - Danawa_cold
-          - Danawa_warm
-          - Daum_cold
-          - Daum_warm
-          - Donga_cold
-          - Donga_warm
-          - Economist_cold
-          - Economist_warm
-          - Elmundo_cold
-          - Elmundo_warm
-          - FC2Blog_cold
-          - FC2Blog_warm
-          - FIFA_cold
-          - FIFA_warm
-          - FarsNews_cold
-          - FarsNews_warm
-          - Flickr_cold
-          - Flickr_warm
-          - FlipKart_cold
-          - FlipKart_warm
-          - Free.fr_cold
-          - Free.fr_warm
-          - HTML5Rocks_cold
-          - HTML5Rocks_warm
-          - Haraj_cold
-          - Haraj_warm
-          - HatenaBookmark_cold
-          - HatenaBookmark_warm
-          - IGN_cold
-          - IGN_warm
-          - IMDB_cold
-          - IMDB_warm
-          - IndiaTimes_cold
-          - IndiaTimes_warm
-          - Kakaku_cold
-          - Kakaku_warm
-          - Kenh14_cold
-          - Kenh14_warm
-          - Mercadolivre_cold
-          - Mercadolivre_warm
-          - Naver_cold
-          - Naver_warm
-          - Orange_cold
-          - Orange_warm
-          - Pantip_cold
-          - Pantip_warm
-          - PremierLeague_cold
-          - PremierLeague_warm
-          - QQ_cold
-          - QQ_warm
-          - REI_cold
-          - REI_warm
-          - Ruten_cold
-          - Ruten_warm
-          - Sina_cold
-          - Sina_warm
-          - Taobao_cold
-          - Taobao_warm
-          - TheOnion_cold
-          - TheOnion_warm
-          - TheVerge_cold
-          - TheVerge_warm
-          - TicketMaster_cold
-          - TicketMaster_warm
-          - Vietnamnet_cold
-          - Vietnamnet_warm
-          - Vnexpress_cold
-          - Vnexpress_warm
-          - Yandex_cold
-          - Yandex_warm
-          - amazon.co.jp_cold
-          - amazon.co.jp_warm
-          - ja.wikipedia_cold
-          - ja.wikipedia_warm
-          - money.cnn_cold
-          - money.cnn_warm
-          - ru.wikipedia_cold
-          - ru.wikipedia_warm
-          - uol.com.br_cold
-          - uol.com.br_warm
-          - yahoo.co.jp_cold
-          - yahoo.co.jp_warm
-      - benchmark: loading.mobile
+          - Speedometer2
+      - benchmark: jetstream2
         configs:
-          - android-pixel4-perf
+          - mac-m1_mini_2020-perf-pgo
         stories:
-          - 58Pic
-          - Amazon
-          - BOLNoticias
-          - Baidu
-          - Bradesco
-          - Dailymotion
-          - Dawn
-          - DevOpera_cold
-          - DevOpera_hot
-          - DevOpera_warm
-          - Dramaq
-          - EnquiryIndianRail
-          - Facebook
-          - FlipBoard_cold
-          - FlipBoard_hot
-          - FlipBoard_warm
-          - FlipKart_cold
-          - FlipKart_hot
-          - FlipKart_warm
-          - FranceTVInfo
-          - G1
-          - GSShop
-          - GoogleBrazil
-          - GoogleIndia
-          - GoogleIndonesia
-          - GoogleRedirectToGoogleJapan
-          - Hongkiat
-          - KapanLagi
-          - Kaskus
-          - LocalMoxie
-          - Locanto
-          - OLX
-          - QQNews
-          - SlideShare
-          - Suumo_cold
-          - Suumo_hot
-          - Suumo_warm
-          - Thairath
-          - TheStar
-          - TribunNews
-          - Twitter
-          - VoiceMemos_cold
-          - VoiceMemos_hot
-          - VoiceMemos_warm
-          - Wikipedia
-          - YahooNews
-          - Youtube
+          - JetStream2
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - mac-m1_mini_2020-perf-pgo
+        stories:
+          - motionmark_ramp_composite
+  linux-pgo:
+    telemetry_batch_experiment:
+      - benchmark: speedometer2
+        configs:
+          - linux-perf-pgo
+        stories:
+          - Speedometer2
+      - benchmark: jetstream2
+        configs:
+          - linux-perf-pgo
+        stories:
+          - JetStream2
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - linux-perf-pgo
+        stories:
+          - motionmark_ramp_composite
+  win-10-pgo:
+    telemetry_batch_experiment:
+      - benchmark: speedometer2
+        configs:
+          - win-10-perf-pgo
+        stories:
+          - Speedometer2
+      - benchmark: jetstream2
+        configs:
+          - win-10-perf-pgo
+        stories:
+          - JetStream2
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - win-10-perf-pgo
+        stories:
+          - motionmark_ramp_composite
+  pixel6:
+    telemetry_batch_experiment:
+      - benchmark: speedometer2
+        configs:
+          - android-pixel6-perf-pgo
+        stories:
+          - Speedometer2
+      - benchmark: jetstream2
+        configs:
+          - android-pixel6-perf-pgo
+        stories:
+          - JetStream2
+      - benchmark: rendering.mobile.notracing
+        configs:
+          - android-pixel6-perf-pgo
+        stories:
+          - motionmark_ramp_composite
