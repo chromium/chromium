@@ -266,10 +266,10 @@ const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
 const FeatureEntry::FeatureParam kFeedHeaderSettingDisabledStickyHeader[] = {
     {kDisableStickyHeaderForFollowingFeed, "true"}};
 const FeatureEntry::FeatureParam kFeedHeaderSettingReducedHeight[] = {
-    {kOverrideFeedHeaderHeight, "43"}};
+    {kOverrideFeedHeaderHeight, "30"}};
 const FeatureEntry::FeatureParam kFeedHeaderSettingAllImprovements[] = {
     {kDisableStickyHeaderForFollowingFeed, "true"},
-    {kOverrideFeedHeaderHeight, "43"}};
+    {kOverrideFeedHeaderHeight, "30"}};
 
 const FeatureEntry::FeatureVariation kFeedHeaderSettingsVariations[] = {
     {"Disable sticky header", kFeedHeaderSettingDisabledStickyHeader,

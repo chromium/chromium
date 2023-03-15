@@ -1117,7 +1117,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     ];
   }
 
-  [self.feedHeaderViewController toggleBackgroundBlur:YES animated:YES];
+  [self.feedHeaderViewController
+      toggleBackgroundBlur:[self.ntpContentDelegate isContentHeaderSticky]
+                  animated:YES];
   [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
 }
 
@@ -1609,8 +1611,10 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   self.collectionView.contentOffset = CGPointMake(0, offset);
   self.scrolledIntoFeed = offset > [self offsetWhenScrolledIntoFeed];
   if (self.feedHeaderViewController) {
-    [self.feedHeaderViewController toggleBackgroundBlur:self.scrolledIntoFeed
-                                               animated:NO];
+    [self.feedHeaderViewController
+        toggleBackgroundBlur:(self.scrolledIntoFeed &&
+                              [self.ntpContentDelegate isContentHeaderSticky])
+                    animated:NO];
   }
 }
 
