@@ -34,13 +34,13 @@ struct UrlIdentity {
 
   // Formatting options for default type.
   enum class DefaultFormatOptions {
-    // TODO(zelin): We cannot set kOmitCryptographicScheme = kMinValue because
-    // kMaxValue cannot be equal to kMinValue for the EnumSet below. Once we add
-    // another enum value, make kMinValue non-unique.
-    kMinValue = 0,
+    kMinValue,
     // Omit cryptographic scheme. (i.e. https and wss)
-    kOmitCryptographicScheme,
-    kMaxValue = kOmitCryptographicScheme
+    kOmitCryptographicScheme = kMinValue,
+    // Returns the hostname in unicode. Returns ASCII hostname if not IDN or
+    // invalid.
+    kHostname,
+    kMaxValue = kHostname
   };
 
   struct FormatOptions {

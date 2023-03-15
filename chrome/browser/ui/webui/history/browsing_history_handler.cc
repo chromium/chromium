@@ -29,6 +29,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -49,7 +50,6 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
-#include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -171,6 +171,13 @@ bool IsEntryInRemoteUserData(
   return false;
 }
 
+// Expected URL types for CreateUrlIdentity().
+constexpr UrlIdentity::TypeSet allowed_types = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
+    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
+constexpr UrlIdentity::FormatOptions url_identity_options{
+    .default_options = {UrlIdentity::DefaultFormatOptions::kHostname}};
+
 // Converts `entry` to a base::Value::Dict to be owned by the caller.
 base::Value::Dict HistoryEntryToValue(
     const BrowsingHistoryService::HistoryEntry& entry,
@@ -181,7 +188,13 @@ base::Value::Dict HistoryEntryToValue(
   base::Value::Dict result;
   SetHistoryEntryUrlAndTitle(entry, &result);
 
-  std::u16string domain = url_formatter::IDNToUnicode(entry.url.host());
+  // UrlIdentity holds a user-identifiable string for a URL. We will display
+  // this string to the user.
+  std::u16string domain =
+      UrlIdentity::CreateFromUrl(profile, entry.url, allowed_types,
+                                 url_identity_options)
+          .name;
+
   // When the domain is empty, use the scheme instead. This allows for a
   // sensible treatment of e.g. file: URLs when group by domain is on.
   if (domain.empty())

@@ -141,6 +141,13 @@ TEST_F(UrlIdentityTest, DefaultFormatOptionsTest) {
            .type = Type::kDefault,
            .name = u"example.com",
        }},
+      {GURL("https://abc.example.com"),
+       {Type::kDefault},
+       {.default_options = {DefaultFormatOptions::kHostname}},
+       {
+           .type = Type::kDefault,
+           .name = u"abc.example.com",
+       }},
   };
 
   for (const auto& test_case : test_cases) {

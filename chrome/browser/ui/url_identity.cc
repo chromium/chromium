@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -38,6 +39,8 @@ UrlIdentity CreateDefaultUrlIdentityFromUrl(const GURL& url,
           DefaultFormatOptions::kOmitCryptographicScheme)) {
     name = url_formatter::FormatUrlForSecurityDisplay(
         url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  } else if (options.default_options.Has(DefaultFormatOptions::kHostname)) {
+    name = url_formatter::IDNToUnicode(url.host());
   } else {
     name = url_formatter::FormatUrlForSecurityDisplay(url);
   }
