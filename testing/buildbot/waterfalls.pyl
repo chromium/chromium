@@ -4350,7 +4350,6 @@
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
-          'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
       'Android FYI Release (Samsung A13)': {
