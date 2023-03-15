@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -557,6 +558,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstoreGetWebGLStatusTest, Blocked) {
 class ExtensionWebstorePrivateGetReferrerChainApiTest
     : public ExtensionWebstorePrivateApiTest {
  public:
+  ExtensionWebstorePrivateGetReferrerChainApiTest() {
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("redirect1.com", "127.0.0.1");
     host_resolver()->AddRule("redirect2.com", "127.0.0.1");
@@ -578,6 +585,9 @@ class ExtensionWebstorePrivateGetReferrerChainApiTest
 
     return GURL(redirect_chain + GetTestServerURL(path).spec());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the GetReferrerChain API returns the redirect information.
