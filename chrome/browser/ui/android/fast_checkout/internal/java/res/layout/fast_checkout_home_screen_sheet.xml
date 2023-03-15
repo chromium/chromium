@@ -139,12 +139,26 @@ found in the LICENSE file.
                 android:importantForAccessibility="no"
                 app:srcCompat="@drawable/mc_card" />
 
-            <TextView
-                android:id="@+id/fast_checkout_sheet_selected_credit_card_header"
+            <LinearLayout
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+                <TextView
+                    android:id="@+id/fast_checkout_sheet_selected_credit_card_header"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                <ImageView
+                    android:id="@+id/fast_checkout_gpay_icon"
+                    android:layout_width="@dimen/fast_checkout_google_pay_icon_width"
+                    android:layout_height="@dimen/fast_checkout_google_pay_icon_height"
+                    android:paddingTop="@dimen/fast_checkout_google_pay_icon_margin_padding_top"
+                    app:srcCompat="@drawable/google_pay"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
             <ImageView
               android:id="@+id/fast_checkout_expand_icon_credit_card"
               android:layout_width="wrap_content"

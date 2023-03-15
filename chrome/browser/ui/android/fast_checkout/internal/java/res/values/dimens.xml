@@ -14,6 +14,9 @@ found in the LICENSE file.
     <dimen name="fast_checkout_credit_card_icon_margin_horizontal">12dp</dimen>
     <dimen name="fast_checkout_credit_card_icon_height">20dp</dimen>
     <dimen name="fast_checkout_credit_card_icon_width">32dp</dimen>
+    <dimen name="fast_checkout_google_pay_icon_height">20dp</dimen>
+    <dimen name="fast_checkout_google_pay_icon_width">49dp</dimen>
+    <dimen name="fast_checkout_google_pay_icon_margin_padding_top">4dp</dimen>
     <dimen name="fast_checkout_inner_corner_radius">4dp</dimen>
     <dimen name="fast_checkout_outer_corner_radius">16dp</dimen>
     <dimen name="fast_checkout_product_icon_height">32dp</dimen>

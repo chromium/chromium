@@ -63,7 +63,7 @@ public class FastCheckoutHomeScreenViewTest {
                     /*city=*/"New York", /*postalCode=*/"12345", /*email=*/"john.moe@gmail.com",
                     /*phoneNumber=*/"+1-345-543-645");
     private static final FastCheckoutCreditCard sSelectedCreditCard =
-            FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"123",
+            FastCheckoutTestUtils.createDetailedLocalCreditCard(/*guid=*/"123",
                     /*origin=*/"https://example.com", /*name=*/"John Moe", /*number=*/"75675675656",
                     /*obfuscatedNumber=*/"5656", /*month=*/"05", /*year=*/"2031",
                     /*issuerIconString=*/"visaCC");

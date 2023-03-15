@@ -92,13 +92,13 @@ public class FastCheckoutDetailScreenViewTest {
                     /*phoneNumber=*/"+1-345-333-319");
 
     private static final FastCheckoutCreditCard sSampleCard1 =
-            FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"123",
+            FastCheckoutTestUtils.createDetailedLocalCreditCard(/*guid=*/"123",
                     /*origin=*/"https://example.com", /*name=*/"John Moe", /*number=*/"75675675656",
                     /*obfuscatedNumber=*/"5656", /*month=*/"05", /*year=*/"2031",
                     /*issuerIconString=*/"visaCC");
 
     private static final FastCheckoutCreditCard sSampleCard2 =
-            FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"154",
+            FastCheckoutTestUtils.createDetailedLocalCreditCard(/*guid=*/"154",
                     /*origin=*/"https://example.fr", /*name=*/"Jane Doe",
                     /*number=*/"4564565541234",
                     /*obfuscatedNumber*/ "1234", /*month=*/"10", /*year=*/"2025",
@@ -249,12 +249,12 @@ public class FastCheckoutDetailScreenViewTest {
     public void testRecyclerViewBindsCreditCardDataToItemView() {
         ModelList models = mModel.get(CREDIT_CARD_MODEL_LIST);
         FastCheckoutCreditCard sampleCardNoName =
-                FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"123",
+                FastCheckoutTestUtils.createDetailedLocalCreditCard(/*guid=*/"123",
                         /*origin=*/"https://example.at", /*name=*/"", /*number=*/"23423423432",
                         /*obfuscatedNumber=*/"34326", /*month=*/"05", /*year=*/"2035",
                         /*issuerIconString=*/"visaCC");
         FastCheckoutCreditCard sampleCardEmptyFields =
-                FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"7534",
+                FastCheckoutTestUtils.createDetailedLocalCreditCard(/*guid=*/"7534",
                         /*origin=*/"", /*name=*/"", /*number=*/"",
                         /*obfuscatedNumber=*/"", /*month=*/"05", /*year=*/"2035",
                         /*issuerIconString=*/"visaCC");

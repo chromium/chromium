@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * The {@link BottomSheetContent} for Fast Checkout.
@@ -33,6 +34,11 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
     FastCheckoutSheetContent(FastCheckoutSheetState state, View contentView) {
         mState = state;
         mContentView = contentView;
+
+        // Apply RTL layout changes for tests.
+        int layoutDirection = LocalizationUtils.isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL
+                                                              : View.LAYOUT_DIRECTION_LTR;
+        mContentView.setLayoutDirection(layoutDirection);
     }
 
     @Override

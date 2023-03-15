@@ -77,12 +77,12 @@ public class FastCheckoutIntegrationTest {
                     /*phoneNumber=*/"+1-205-333-009")};
 
     private static final FastCheckoutCreditCard[] DUMMY_CARDS = {
-            FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"154",
+            FastCheckoutTestUtils.createDetailedLocalCreditCard(/*guid=*/"154",
                     /*origin=*/"https://example.fr", /*name=*/"Frederic Profiletest",
                     /*number=*/"4111111111111",
                     /*obfuscatedNumber*/ "1111", /*month=*/"11", /*year=*/"2023",
                     /*issuerIconString=*/"dinersCC"),
-            FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"431",
+            FastCheckoutTestUtils.createDetailedLocalCreditCard(/*guid=*/"431",
                     /*origin=*/"https://example.fr", /*name=*/"Jane Doe",
                     /*number=*/"4564565541234",
                     /*obfuscatedNumber*/ "1234", /*month=*/"10", /*year=*/"2025",

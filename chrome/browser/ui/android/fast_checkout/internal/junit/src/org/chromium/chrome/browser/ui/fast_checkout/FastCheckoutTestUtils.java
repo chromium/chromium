@@ -30,10 +30,10 @@ class FastCheckoutTestUtils {
     }
 
     /** Creates a detailed {@link FastCheckoutCreditCard}.  */
-    static FastCheckoutCreditCard createDetailedCreditCard(String guid, String origin, String name,
-            String number, String obfuscatedNumber, String month, String year,
-            String issuerIconString) {
-        return new FastCheckoutCreditCard(guid, origin, /* isLocal= */ true,
+    static FastCheckoutCreditCard createDetailedCreditCard(String guid, String origin,
+            boolean isLocal, String name, String number, String obfuscatedNumber, String month,
+            String year, String issuerIconString) {
+        return new FastCheckoutCreditCard(guid, origin, /* isLocal= */ isLocal,
                 /* isCached= */ true, name, number, obfuscatedNumber, month, year,
                 /* basicCardIssuerNetwork= */ "visa", issuerIconString,
                 /* billingAddressId= */ "john",
@@ -43,9 +43,17 @@ class FastCheckoutTestUtils {
                 /* productDescription= */ "");
     }
 
+    /** Creates a detailed local {@link FastCheckoutCreditCard}.  */
+    static FastCheckoutCreditCard createDetailedLocalCreditCard(String guid, String origin,
+            String name, String number, String obfuscatedNumber, String month, String year,
+            String issuerIconString) {
+        return createDetailedCreditCard(guid, origin, /* isLocal= */ true, name, number,
+                obfuscatedNumber, month, year, issuerIconString);
+    }
+
     /** Creates a simple {@link FastCheckoutCreditCard}.  */
     static FastCheckoutCreditCard createDummyCreditCard(String guid, String origin, String number) {
-        return createDetailedCreditCard(guid, origin, /* name= */ "John Doe", number,
+        return createDetailedLocalCreditCard(guid, origin, /* name= */ "John Doe", number,
                 /* obfuscatedNumber= */ "1111", /* month= */ "12", /* year= */ "2050",
                 /* issuerIconString= */ "visaCC");
     }
