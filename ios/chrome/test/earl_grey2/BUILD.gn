@@ -90,6 +90,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/policy_url_blocking:eg2_tests",
     "//ios/chrome/browser/prerender:eg2_tests",
     "//ios/chrome/browser/safe_browsing:eg2_tests",
+    "//ios/chrome/browser/supervised_user:eg2_tests",
     "//ios/chrome/browser/ui/autofill:eg2_tests",
     "//ios/chrome/browser/ui/autofill/form_input_accessory:eg2_tests",
     "//ios/chrome/browser/ui/autofill/manual_fill:eg2_tests",

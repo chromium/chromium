@@ -9,7 +9,10 @@ source_set("supervised_user") {
     "kids_chrome_management_client_factory.mm",
     "supervised_user_settings_service_factory.h",
     "supervised_user_settings_service_factory.mm",
+    "supervised_user_url_filter_tab_helper.h",
+    "supervised_user_url_filter_tab_helper.mm",
   ]
+
   deps = [
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
@@ -18,6 +21,8 @@ source_set("supervised_user") {
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
+    "//ios/net",
+    "//net",
     "//services/network/public/cpp",
   ]
 }
@@ -36,4 +41,24 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/web/public/test",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "supervised_user_url_filter_egtest.mm" ]
+  deps = [
+    "//base",
+    "//components/supervised_user/core/common",
+    "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
