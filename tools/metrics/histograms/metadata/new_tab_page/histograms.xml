@@ -559,6 +559,9 @@ chromium-metrics-reviews@google.com.
     can be different from the position observed by the user, e.g. when the user
     dismissed some suggestions from the list or requested more that got inserted
     in the middle of the feed.
+
+    iOS: Reported per click on card in the feed. Does not include position
+    information and thus can only be used as a total count of clicks.
   </summary>
 </histogram>
 
