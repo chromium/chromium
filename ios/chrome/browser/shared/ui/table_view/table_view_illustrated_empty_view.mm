@@ -183,8 +183,9 @@ NSAttributedString* GetAttributedMessage(NSString* message) {
   }
 
   self.isAccessibilityElement = YES;
-  self.accessibilityLabel = [NSString
-      stringWithFormat:@"%@ - %@", self.title ?: @"", self.subtitle ?: @""];
+  self.accessibilityLabel =
+      [NSString stringWithFormat:@"%@ - %@", self.title ?: @"",
+                                 self.subtitle.string ?: @""];
 
   // Vertical stack view that holds the image, title and subtitle.
   UIStackView* verticalStack =
