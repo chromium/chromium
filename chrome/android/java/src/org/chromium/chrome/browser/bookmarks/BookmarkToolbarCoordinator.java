@@ -35,11 +35,11 @@ class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.BOOKMARK_MODEL, bookmarkModel);
         mModel.set(BookmarkToolbarProperties.BOOKMARK_OPENER, bookmarkOpener);
         mModel.set(BookmarkToolbarProperties.SELECTION_DELEGATE, selectionDelegate);
-        mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_STATE, BookmarkUiMode.LOADING);
+        mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING);
         mModel.set(BookmarkToolbarProperties.IS_DIALOG_UI, isDialogUi);
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
-        mMediator =
-                new BookmarkToolbarMediator(mModel, bookmarkItemsAdapter, bookmarkDelegateSupplier);
+        mMediator = new BookmarkToolbarMediator(
+                mModel, bookmarkItemsAdapter, bookmarkDelegateSupplier, selectionDelegate);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

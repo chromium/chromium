@@ -44,6 +44,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private BookmarkId mCurrentFolderId;
     private BookmarkItem mCurrentFolder;
     private @BookmarkUiMode int mBookmarkUiMode;
+    private boolean mSoftKeyboardVisible;
     // Whether the selection ui is currently showing. This isn't captured by an explicit
     // BookmarkUiMode.
     private boolean mIsSelectionUiShowing;
@@ -96,7 +97,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         }
 
         if (mBookmarkUiMode == BookmarkUiMode.SEARCHING) {
-            showSearchView(/*showKeyboard=*/true);
+            showSearchView(mSoftKeyboardVisible);
         } else {
             hideSearchView(/*notify=*/false);
         }
@@ -108,6 +109,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     }
 
     void setSoftKeyboardVisible(boolean visible) {
+        mSoftKeyboardVisible = visible;
         if (!visible) hideKeyboard();
     }
 

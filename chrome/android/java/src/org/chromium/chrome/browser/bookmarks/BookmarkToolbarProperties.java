@@ -22,7 +22,7 @@ class BookmarkToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     /** UI state properties. */
-    static final WritableObjectPropertyKey<Integer> BOOKMARK_UI_STATE =
+    static final WritableObjectPropertyKey<Integer> BOOKMARK_UI_MODE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
     static final WritableObjectPropertyKey<Boolean> SOFT_KEYBOARD_VISIBLE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
@@ -40,6 +40,6 @@ class BookmarkToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {BOOKMARK_MODEL, BOOKMARK_OPENER, SELECTION_DELEGATE,
-            BOOKMARK_UI_STATE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED, CURRENT_FOLDER,
+            BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED, CURRENT_FOLDER,
             OPEN_SEARCH_UI_RUNNABLE, OPEN_FOLDER_CALLBACK};
 }

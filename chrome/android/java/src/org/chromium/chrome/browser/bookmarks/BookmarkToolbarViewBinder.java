@@ -21,9 +21,9 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.SELECTION_DELEGATE) {
             bookmarkToolbar.setSelectionDelegate(
                     model.get(BookmarkToolbarProperties.SELECTION_DELEGATE));
-        } else if (key == BookmarkToolbarProperties.BOOKMARK_UI_STATE) {
+        } else if (key == BookmarkToolbarProperties.BOOKMARK_UI_MODE) {
             bookmarkToolbar.setBookmarkUiMode(
-                    model.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE));
+                    model.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE));
         } else if (key == BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE) {
             bookmarkToolbar.setSoftKeyboardVisible(Boolean.TRUE.equals(
                     model.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE)));

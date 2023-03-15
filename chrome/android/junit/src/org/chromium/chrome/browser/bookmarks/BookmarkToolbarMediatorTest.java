@@ -58,7 +58,7 @@ public class BookmarkToolbarMediatorTest {
                          .with(BookmarkToolbarProperties.BOOKMARK_MODEL, mBookmarkModel)
                          .with(BookmarkToolbarProperties.BOOKMARK_OPENER, mBookmarkOpener)
                          .with(BookmarkToolbarProperties.SELECTION_DELEGATE, mSelectionDelegate)
-                         .with(BookmarkToolbarProperties.BOOKMARK_UI_STATE, BookmarkUiMode.LOADING)
+                         .with(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING)
                          .with(BookmarkToolbarProperties.IS_DIALOG_UI, false)
                          .with(BookmarkToolbarProperties.DRAG_ENABLED, false)
                          .with(BookmarkToolbarProperties.OPEN_SEARCH_UI_RUNNABLE,
@@ -67,28 +67,29 @@ public class BookmarkToolbarMediatorTest {
                          .build();
 
         mMediator = new BookmarkToolbarMediator(
-                mModel, mBookmarkItemsAdapter, mBookmarkDelegateSupplier);
+                mModel, mBookmarkItemsAdapter, mBookmarkDelegateSupplier, mSelectionDelegate);
     }
 
     @Test
     public void bookmarkDelegateAvailableSetsUpObserver() {
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
         Mockito.verify(mBookmarkDelegate).addUiObserver(mMediator);
+        Mockito.verify(mSelectionDelegate).addObserver(mMediator);
     }
 
     @Test
     public void onStateChangedUpdatesModel() {
         mMediator.onUiModeChanged(BookmarkUiMode.LOADING);
         Assert.assertEquals(BookmarkUiMode.LOADING,
-                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE).intValue());
+                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE).intValue());
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
         Assert.assertEquals(BookmarkUiMode.SEARCHING,
-                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE).intValue());
+                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE).intValue());
 
         mMediator.onUiModeChanged(BookmarkUiMode.FOLDER);
         Assert.assertEquals(BookmarkUiMode.FOLDER,
-                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE).intValue());
+                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE).intValue());
     }
 
     @Test
@@ -98,5 +99,15 @@ public class BookmarkToolbarMediatorTest {
 
         mMediator.onDestroy();
         Mockito.verify(mBookmarkDelegate).removeUiObserver(mMediator);
+        Mockito.verify(mSelectionDelegate).removeObserver(mMediator);
+    }
+
+    @Test
+    public void selectionStateChangeHidesKeyboard() {
+        mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
+        Assert.assertEquals(true, mModel.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
+
+        mMediator.onSelectionStateChange(null);
+        Assert.assertEquals(false, mModel.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE));
     }
 }
