@@ -4581,6 +4581,37 @@ void EventRewriterTest::DontRewriteIfNotRewritten(int right_click_flags) {
     EXPECT_EQ(right_click_flags, right_click_flags & result.flags());
     EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
   }
+
+  // Still rewrite to right button, even if the modifier key is already
+  // released when the mouse release event happens
+  // This is for regressions such as:
+  // https://crbug.com/1399284
+  // https://crbug.com/1417079
+  {
+    ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                         ui::EventTimeForNow(), right_click_flags,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    ui::EventTestApi test_press(&press);
+    test_press.set_source_device_id(kTouchpadId1);
+    // Sanity check.
+    EXPECT_EQ(ui::ET_MOUSE_PRESSED, press.type());
+    EXPECT_EQ(right_click_flags, press.flags());
+    const ui::MouseEvent result = RewriteMouseButtonEvent(press);
+    EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & result.flags());
+    EXPECT_NE(right_click_flags, right_click_flags & result.flags());
+    EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, result.changed_button_flags());
+  }
+  {
+    ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::EventTestApi test_release(&release);
+    test_release.set_source_device_id(kTouchpadId1);
+    const ui::MouseEvent result = RewriteMouseButtonEvent(release);
+    EXPECT_TRUE(ui::EF_RIGHT_MOUSE_BUTTON & result.flags());
+    EXPECT_NE(right_click_flags, right_click_flags & result.flags());
+    EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, result.changed_button_flags());
+  }
 }
 
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick) {

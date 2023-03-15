@@ -1276,6 +1276,18 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
   *matched_mask = 0;
   *matched_alt_deprecation = false;
 
+  // If currently only mouse left button is still pressed, while Alt or Search
+  // is not, then we need to look deeper. Here we piggyback on an existing
+  // instance variable `pressed_device_ids_` to check whether the previous
+  // remapped event is a remapped mouse right button press event. If yes,
+  // then even currently the Alt or Search is not pressed, we still proceed to
+  // remap to a mouse right button event. Also, in this case, this event
+  // has to be a release event. this change is for regressions such as:
+  // https://crbug.com/1399284, https://crbug.com/1417079
+  const bool release_without_modifier =
+      AreFlagsSet(flags, EF_LEFT_MOUSE_BUTTON) &&
+      pressed_device_ids_.count(mouse_event.source_device_id()) &&
+      mouse_event.type() == ET_MOUSE_RELEASED;
   // TODO(crbug.com/1179893): When enabling the deprecate alt click flag by
   // default, decide whether kUseSearchClickForRightClick being disabled
   // should be able to override it.
@@ -1286,6 +1298,8 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
   if (use_search_key) {
     if (AreFlagsSet(flags, kSearchLeftButton)) {
       *matched_mask = kSearchLeftButton;
+    } else if (release_without_modifier) {
+      *matched_mask = kSearchLeftButton;
     } else if (AreFlagsSet(flags, kAltLeftButton) &&
                is_alt_down_remapping_enabled_) {
       // When the alt variant is deprecated, report when it would have matched.
@@ -1294,8 +1308,13 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
            pressed_device_ids_.count(mouse_event.source_device_id())) &&
           IsFromTouchpadDevice(mouse_event);
     }
-  } else {
-    if (AreFlagsSet(flags, kAltLeftButton) && is_alt_down_remapping_enabled_) {
+  } else if (is_alt_down_remapping_enabled_) {
+    // If currently both Alt key and mouse left button are still pressed,
+    // then this would be an easy case, let's still proceed to remap it
+    // to a mouse right button press or release event.
+    if (AreFlagsSet(flags, kAltLeftButton)) {
+      *matched_mask = kAltLeftButton;
+    } else if (release_without_modifier) {
       *matched_mask = kAltLeftButton;
     }
   }
