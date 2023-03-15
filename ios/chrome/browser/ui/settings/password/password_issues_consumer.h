@@ -6,13 +6,13 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_ISSUES_CONSUMER_H_
 
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/settings/password/password_issue.h"
+#import "ios/chrome/browser/ui/settings/password/password_issue_group.h"
 
 // Consumer for the Password Issues Screen.
 @protocol PasswordIssuesConsumer <NSObject>
 
 // Pass password issues to the consumer.
-- (void)setPasswordIssues:(NSArray<PasswordIssue*>*)passwords;
+- (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordGroups;
 
 // Sets the navigation bar title.
 - (void)setNavigationBarTitle:(NSString*)title;

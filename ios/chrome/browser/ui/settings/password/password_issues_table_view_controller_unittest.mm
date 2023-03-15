@@ -75,15 +75,15 @@ class PasswordIssuesTableViewControllerTest
     form.submit_element = u"signIn";
     form.signon_realm = "http://www.example.com/";
     form.scheme = password_manager::PasswordForm::Scheme::kHtml;
-    NSMutableArray* passwords = [[NSMutableArray alloc] init];
-    [passwords
-        addObject:[[PasswordIssue alloc]
-                      initWithCredential:password_manager::CredentialUIEntry(
-                                             form)]];
+    PasswordIssue* password_issue = [[PasswordIssue alloc]
+        initWithCredential:password_manager::CredentialUIEntry(form)];
+    PasswordIssueGroup* issue_group =
+        [[PasswordIssueGroup alloc] initWithHeaderText:nil
+                                        passwordIssues:@[ password_issue ]];
 
     PasswordIssuesTableViewController* passwords_controller =
         static_cast<PasswordIssuesTableViewController*>(controller());
-    [passwords_controller setPasswordIssues:passwords];
+    [passwords_controller setPasswordIssues:@[ issue_group ]];
   }
 
   FakePasswordIssuesPresenter* presenter() { return presenter_; }

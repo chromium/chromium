@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   CrURL* _headerURL;
 }
 
-@property(nonatomic) NSArray<id<PasswordIssue>>* passwords;
+@property(nonatomic, strong) NSArray<PasswordIssue*>* passwords;
 
 @end
 
@@ -191,8 +191,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - PasswordIssuesConsumer
 
-- (void)setPasswordIssues:(NSArray<id<PasswordIssue>>*)passwords {
-  self.passwords = passwords;
+- (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordGroups {
+  // TODO(crbug.com/1406540): Replace passwords with passwordGroups to display
+  // all groups.
+  self.passwords =
+      passwordGroups.count == 0 ? @[] : passwordGroups[0].passwordIssues;
   [self reloadData];
 }
 

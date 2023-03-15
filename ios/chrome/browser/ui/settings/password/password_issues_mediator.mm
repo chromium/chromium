@@ -37,6 +37,94 @@ using password_manager::CredentialUIEntry;
 using password_manager::WarningType;
 using password_manager::features::IsPasswordCheckupEnabled;
 
+namespace {
+
+// Maps CredentialUIEntry to PasswordIssue and sorts them by website and
+// username.
+NSArray<PasswordIssue*>* GetSortedPasswordIssues(
+    const std::vector<CredentialUIEntry>& insecure_credentials) {
+  NSMutableArray<PasswordIssue*>* passwords = [[NSMutableArray alloc] init];
+  for (auto credential : insecure_credentials) {
+    [passwords addObject:[[PasswordIssue alloc] initWithCredential:credential]];
+  }
+
+  NSSortDescriptor* origin = [[NSSortDescriptor alloc] initWithKey:@"website"
+                                                         ascending:YES];
+  NSSortDescriptor* username = [[NSSortDescriptor alloc] initWithKey:@"username"
+                                                           ascending:YES];
+
+  return [passwords sortedArrayUsingDescriptors:@[ origin, username ]];
+}
+
+// Creates a `PasswordIssueGroup` for each set of issues with the same password.
+// Issues in the same group are sorted by their position in `password_issues`.
+// Groups are sorted by the position of their first issue in `password_issues`.
+NSArray<PasswordIssueGroup*>* GroupIssuesByPassword(
+    NSArray<PasswordIssue*>* password_issues) {
+  // Holds issues with the same password.
+  // Used for tracking the order of each group.
+  NSMutableArray<NSMutableArray<PasswordIssue*>*>* same_password_issues =
+      [NSMutableArray array];
+  // Used for grouping issues by passsword.
+  NSMutableDictionary<NSString*, NSMutableArray*>* issue_groups =
+      [NSMutableDictionary dictionary];
+
+  for (PasswordIssue* issue in password_issues) {
+    NSString* password = base::SysUTF16ToNSString(issue.credential.password);
+
+    NSMutableArray<PasswordIssue*>* issues_in_group =
+        [issue_groups objectForKey:password];
+    // Add issue to existing group with same password.
+    if (issues_in_group) {
+      [issues_in_group addObject:issue];
+    } else {
+      // First issue with this password, add it to its own group.
+      issues_in_group = [NSMutableArray arrayWithObject:issue];
+      [same_password_issues addObject:issues_in_group];
+      issue_groups[password] = issues_in_group;
+    }
+  }
+
+  // Map issue groups to PasswordIssueGroups.
+  NSMutableArray<PasswordIssueGroup*>* password_issue_groups =
+      [NSMutableArray arrayWithCapacity:same_password_issues.count];
+  [same_password_issues
+      enumerateObjectsUsingBlock:^(NSMutableArray<PasswordIssue*>* issues,
+                                   NSUInteger index, BOOL* stop) {
+        // TODO(crbug.com/1406540): Add header for each group.
+        [password_issue_groups
+            addObject:[[PasswordIssueGroup alloc] initWithHeaderText:nil
+                                                      passwordIssues:issues]];
+      }];
+
+  return password_issue_groups;
+}
+
+// Maps CredentialUIEntry to PasswordIssue sorted and grouped according to their
+// `warning_type`.
+NSArray<PasswordIssueGroup*>* GetPasswordIssueGroups(
+    WarningType warning_type,
+    const std::vector<CredentialUIEntry>& insecure_credentials) {
+  if (insecure_credentials.empty()) {
+    return @[];
+  }
+
+  // Sort by website and username.
+  NSArray<PasswordIssue*>* sorted_issues =
+      GetSortedPasswordIssues(insecure_credentials);
+
+  // Reused issues are grouped by passwords.
+  if (warning_type == WarningType::kReusedPasswordsWarning) {
+    return GroupIssuesByPassword(sorted_issues);
+  } else {
+    // Other types are all displayed in the same group without header.
+    return @[ [[PasswordIssueGroup alloc] initWithHeaderText:nil
+                                              passwordIssues:sorted_issues] ];
+  }
+}
+
+}  // namespace
+
 @interface PasswordIssuesMediator () <PasswordCheckObserver,
                                       SavedPasswordsPresenterObserver> {
   WarningType _warningType;
@@ -153,37 +241,26 @@ using password_manager::features::IsPasswordCheckupEnabled;
     insecureCredentials = _manager->GetInsecureCredentials();
   }
 
-  NSMutableArray* passwords = [[NSMutableArray alloc] init];
-  for (auto credential : insecureCredentials) {
-    [passwords addObject:[[PasswordIssue alloc] initWithCredential:credential]];
-  }
-
-  NSSortDescriptor* origin = [[NSSortDescriptor alloc] initWithKey:@"website"
-                                                         ascending:YES];
-  NSSortDescriptor* username = [[NSSortDescriptor alloc] initWithKey:@"username"
-                                                           ascending:YES];
+  [self.consumer setPasswordIssues:GetPasswordIssueGroups(_warningType,
+                                                          insecureCredentials)];
 
   [self.consumer
-      setPasswordIssues:[passwords
-                            sortedArrayUsingDescriptors:@[ origin, username ]]];
-
-  [self.consumer
-      setNavigationBarTitle:
-          [self navigationBarTitleForNumberOfIssues:passwords.count]];
+      setNavigationBarTitle:[self navigationBarTitleForNumberOfIssues:
+                                      insecureCredentials.size()]];
 }
 
 // Computes the navigation bar title based on `_context`, number of issues and
 // feature flags.
-- (NSString*)navigationBarTitleForNumberOfIssues:(NSUInteger)numberOfIssues {
+- (NSString*)navigationBarTitleForNumberOfIssues:(long)numberOfIssues {
   if (IsPasswordCheckupEnabled()) {
     switch (_warningType) {
       case WarningType::kWeakPasswordsWarning:
         return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-            IDS_IOS_WEAK_PASSWORD_ISSUES_TITLE, (long)numberOfIssues));
+            IDS_IOS_WEAK_PASSWORD_ISSUES_TITLE, numberOfIssues));
 
       case WarningType::kCompromisedPasswordsWarning:
         return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-            IDS_IOS_COMPROMISED_PASSWORD_ISSUES_TITLE, (long)numberOfIssues));
+            IDS_IOS_COMPROMISED_PASSWORD_ISSUES_TITLE, numberOfIssues));
 
       case WarningType::kDismissedWarningsWarning:
         return l10n_util::GetNSString(

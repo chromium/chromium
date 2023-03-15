@@ -79,6 +79,8 @@ source_set("password_ui") {
     "password_issue.mm",
     "password_issue_content_item.h",
     "password_issue_content_item.mm",
+    "password_issue_group.h",
+    "password_issue_group.mm",
     "password_issues_consumer.h",
     "password_issues_presenter.h",
     "password_issues_table_view_controller.h",

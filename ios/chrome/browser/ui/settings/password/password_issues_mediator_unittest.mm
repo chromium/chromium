@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_issues_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -50,10 +51,23 @@ constexpr char kExampleCom[] = "https://example.com";
 constexpr char kExampleCom2[] = "https://example2.com";
 constexpr char kExampleCom3[] = "https://example3.com";
 
+constexpr NSString* kExampleString = @"example.com";
+constexpr NSString* kExample2String = @"example2.com";
+constexpr NSString* kExample3String = @"example3.com";
+
 constexpr char kUsername[] = "alice";
 constexpr char kUsername2[] = "bob";
 
 constexpr char kPassword[] = "s3cre3t";
+constexpr char kPassword2[] = "s3cre3t2";
+
+NSString* GetUsername() {
+  return base::SysUTF8ToNSString(kUsername);
+}
+
+NSString* GetUsername2() {
+  return base::SysUTF8ToNSString(kUsername2);
+}
 
 // Returns a URL with localized according to the Application Locale.
 GURL GetLocalizedURL(const GURL& original) {
@@ -67,7 +81,7 @@ GURL GetLocalizedURL(const GURL& original) {
 // consumer methods are called correctly.
 @interface FakePasswordIssuesConsumer : NSObject <PasswordIssuesConsumer>
 
-@property(nonatomic) NSArray<PasswordIssue*>* passwords;
+@property(nonatomic, strong) NSArray<PasswordIssueGroup*>* passwordIssueGroups;
 
 @property(nonatomic, assign) BOOL passwordIssuesListChangedWasCalled;
 
@@ -81,8 +95,8 @@ GURL GetLocalizedURL(const GURL& original) {
 
 @implementation FakePasswordIssuesConsumer
 
-- (void)setPasswordIssues:(NSArray<PasswordIssue*>*)passwords {
-  _passwords = passwords;
+- (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordIssueGroups {
+  _passwordIssueGroups = passwordIssueGroups;
   _passwordIssuesListChangedWasCalled = YES;
 }
 
@@ -161,6 +175,31 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     store()->AddLogin(form);
   }
 
+  void CheckIssue(NSUInteger group = 0,
+                  NSUInteger index = 0,
+                  NSString* expected_website = kExampleString,
+                  NSString* expected_username = GetUsername()) {
+    ASSERT_LT(group, consumer().passwordIssueGroups.count);
+
+    PasswordIssueGroup* issue_group = consumer().passwordIssueGroups[group];
+    ASSERT_LT(index, issue_group.passwordIssues.count);
+
+    PasswordIssue* issue = issue_group.passwordIssues[index];
+
+    EXPECT_NSEQ(expected_username, issue.username);
+    EXPECT_NSEQ(expected_website, issue.website);
+  }
+
+  void CheckGroupsCount(NSUInteger expected_count) {
+    EXPECT_EQ(expected_count, consumer().passwordIssueGroups.count);
+  }
+
+  void CheckGroupSize(NSUInteger group, NSUInteger expected_size) {
+    ASSERT_LT(group, consumer().passwordIssueGroups.count);
+    EXPECT_EQ(expected_size,
+              consumer().passwordIssueGroups[group].passwordIssues.count);
+  }
+
   TestPasswordStore* store() { return store_.get(); }
 
   FakePasswordIssuesConsumer* consumer() { return consumer_; }
@@ -180,7 +219,7 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
 
 // Tests that changes to password store are reflected to the consumer.
 TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesChanged) {
-  EXPECT_EQ(0u, [[consumer() passwords] count]);
+  CheckGroupsCount(0);
   consumer().passwordIssuesListChangedWasCalled = NO;
 
   MakeTestPasswordIssue();
@@ -188,12 +227,9 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesChanged) {
 
   EXPECT_TRUE([consumer() passwordIssuesListChangedWasCalled]);
 
-  EXPECT_EQ(1u, [[consumer() passwords] count]);
-
-  PasswordIssue* password = [[consumer() passwords] objectAtIndex:0];
-
-  EXPECT_NSEQ(@"alice", password.username);
-  EXPECT_NSEQ(@"example.com", password.website);
+  CheckGroupsCount(1);
+  CheckGroupSize(/*group=*/0, /*expected_size=*/1);
+  CheckIssue();
 }
 
 // Tests that changes to password store are not sent to the consumer if the
@@ -204,7 +240,7 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesChangedNotCalled) {
 
   CreateMediator(WarningType::kCompromisedPasswordsWarning);
 
-  EXPECT_EQ(0u, [[consumer() passwords] count]);
+  CheckGroupsCount(0);
   consumer().passwordIssuesListChangedWasCalled = NO;
 
   // Add other types of insecure passwords that shouldn't be sent to the
@@ -225,12 +261,10 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesChangedNotCalled) {
 
   EXPECT_TRUE([consumer() passwordIssuesListChangedWasCalled]);
 
-  EXPECT_EQ(1u, [[consumer() passwords] count]);
-
-  PasswordIssue* password = [consumer() passwords].firstObject;
-
-  EXPECT_NSEQ(@"bob", password.username);
-  EXPECT_NSEQ(@"example.com", password.website);
+  CheckGroupsCount(1);
+  CheckGroupSize(/*group=*/0, /*expected_size=*/1);
+  CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExampleString,
+             /*expected_username=*/GetUsername2());
 }
 
 // Tests that only passwords issues of the current warning type are sent to the
@@ -256,30 +290,23 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
   // Send only compromised passwords to consumer.
   CreateMediator(WarningType::kCompromisedPasswordsWarning);
 
-  PasswordIssue* password = [consumer() passwords].firstObject;
-  EXPECT_NSEQ(@"bob", password.username);
-  EXPECT_NSEQ(@"example.com", password.website);
+  CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExampleString,
+             /*expected_username=*/GetUsername2());
 
   // Send only weak passwords to consumer.
   CreateMediator(WarningType::kWeakPasswordsWarning);
 
-  password = [consumer() passwords].firstObject;
-  EXPECT_NSEQ(@"alice", password.username);
-  EXPECT_NSEQ(@"example.com", password.website);
+  CheckIssue();
 
   // Send only reused passwords to consumer.
   CreateMediator(WarningType::kReusedPasswordsWarning);
 
-  password = [consumer() passwords].firstObject;
-  EXPECT_NSEQ(@"alice", password.username);
-  EXPECT_NSEQ(@"example2.com", password.website);
+  CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExample2String);
 
   // Send only dismissed passwords to consumer.
   CreateMediator(WarningType::kDismissedWarningsWarning);
 
-  password = [consumer() passwords].firstObject;
-  EXPECT_NSEQ(@"alice", password.username);
-  EXPECT_NSEQ(@"example3.com", password.website);
+  CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExample3String);
 }
 
 /// Tests the mediator sets the consumer title for compromised passwords.
@@ -435,34 +462,68 @@ TEST_F(PasswordIssuesMediatorTest, TestSetConsumerDismissedHeader) {
 
 // Tests that passwords are sorted properly.
 TEST_F(PasswordIssuesMediatorTest, TestPasswordSorting) {
-  EXPECT_EQ(0u, [[consumer() passwords] count]);
+  CheckGroupsCount(0);
 
   MakeTestPasswordIssue(kExampleCom3);
   MakeTestPasswordIssue(kExampleCom2, kUsername2);
   RunUntilIdle();
-  EXPECT_EQ(2u, [[consumer() passwords] count]);
 
-  EXPECT_NSEQ(@"example2.com",
-              [[consumer() passwords] objectAtIndex:0].website);
-  EXPECT_NSEQ(@"example3.com",
-              [[consumer() passwords] objectAtIndex:1].website);
+  CheckGroupsCount(1);
+  CheckGroupSize(/*group=*/0, /*expected_size=*/2);
+
+  CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExample2String,
+             /*expected_username=*/GetUsername2());
+  CheckIssue(/*group=*/0, /*index=*/1, /*expected_website=*/kExample3String);
 
   MakeTestPasswordIssue(kExampleCom, kUsername2);
   MakeTestPasswordIssue(kExampleCom);
   RunUntilIdle();
 
-  EXPECT_EQ(4u, [[consumer() passwords] count]);
-  EXPECT_NSEQ(@"alice", [[consumer() passwords] objectAtIndex:0].username);
-  EXPECT_NSEQ(@"example.com", [[consumer() passwords] objectAtIndex:0].website);
+  CheckGroupsCount(1);
+  CheckGroupSize(/*group=*/0, /*expected_size=*/4);
 
-  EXPECT_NSEQ(@"bob", [[consumer() passwords] objectAtIndex:1].username);
-  EXPECT_NSEQ(@"example.com", [[consumer() passwords] objectAtIndex:1].website);
+  CheckIssue();
+  CheckIssue(/*group=*/0, /*index=*/1, /*expected_website=*/kExampleString,
+             /*expected_username=*/GetUsername2());
+  CheckIssue(/*group=*/0, /*index=*/2, /*expected_website=*/kExample2String,
+             /*expected_username=*/GetUsername2());
+  CheckIssue(/*group=*/0, /*index=*/3, /*expected_website=*/kExample3String);
+}
 
-  EXPECT_NSEQ(@"bob", [[consumer() passwords] objectAtIndex:2].username);
-  EXPECT_NSEQ(@"example2.com",
-              [[consumer() passwords] objectAtIndex:2].website);
+// Tests that reused password issues are grouped by password.
+TEST_F(PasswordIssuesMediatorTest, TestReusedPasswordsGrouping) {
+  CreateMediator(WarningType::kReusedPasswordsWarning);
+  CheckGroupsCount(0);
 
-  EXPECT_NSEQ(@"alice", [[consumer() passwords] objectAtIndex:3].username);
-  EXPECT_NSEQ(@"example3.com",
-              [[consumer() passwords] objectAtIndex:3].website);
+  // Create group of reused passwords.
+  MakeTestPasswordIssue(kExampleCom3, kUsername, kPassword,
+                        InsecureType::kReused);
+  MakeTestPasswordIssue(kExampleCom2, kUsername2, kPassword,
+                        InsecureType::kReused);
+  MakeTestPasswordIssue(kExampleCom2, kUsername, kPassword,
+                        InsecureType::kReused);
+
+  // Create another group of reused passwords.
+  MakeTestPasswordIssue(kExampleCom, kUsername2, kPassword2,
+                        InsecureType::kReused);
+  MakeTestPasswordIssue(kExampleCom3, kUsername2, kPassword2,
+                        InsecureType::kReused);
+
+  RunUntilIdle();
+
+  CheckGroupsCount(2);
+
+  // Validate first group.
+  CheckGroupSize(/*group=*/0, /*expected_size=*/2);
+  CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExampleString,
+             /*expected_username=*/GetUsername2());
+  CheckIssue(/*group=*/0, /*index=*/1, /*expected_website=*/kExample3String,
+             /*expected_username=*/GetUsername2());
+
+  // Validate second group.
+  CheckGroupSize(/*group=*/1, /*expected_size=*/3);
+  CheckIssue(/*group=*/1, /*index=*/0, /*expected_website=*/kExample2String);
+  CheckIssue(/*group=*/1, /*index=*/1, /*expected_website=*/kExample2String,
+             /*expected_username=*/GetUsername2());
+  CheckIssue(/*group=*/1, /*index=*/2, /*expected_website=*/kExample3String);
 }
