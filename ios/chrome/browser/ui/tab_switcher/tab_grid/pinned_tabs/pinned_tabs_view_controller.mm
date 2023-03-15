@@ -126,6 +126,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.collectionView reloadData];
 
   [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
+  [self scrollCollectionViewToSelectedItemAnimated:NO];
 
   // Update the delegate, in case it wasn't set when `items` was populated.
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
@@ -270,6 +271,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   [self.collectionView reloadData];
   [self selectCollectionViewItemWithID:_selectedItemID animated:YES];
+  [self scrollCollectionViewToSelectedItemAnimated:YES];
 }
 
 - (void)insertItem:(TabSwitcherItem*)item
@@ -321,6 +323,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self deselectCollectionViewItemWithID:_selectedItemID animated:NO];
   _selectedItemID = selectedItemID;
   [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
+  [self scrollCollectionViewToSelectedItemAnimated:NO];
 }
 
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
@@ -873,7 +876,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.collectionView
       selectItemAtIndexPath:itemIndexPath
                    animated:animated
-             scrollPosition:UICollectionViewScrollPositionCenteredHorizontally];
+             scrollPosition:UICollectionViewScrollPositionNone];
 }
 
 // Deselects the collection view's item with `itemID`.
