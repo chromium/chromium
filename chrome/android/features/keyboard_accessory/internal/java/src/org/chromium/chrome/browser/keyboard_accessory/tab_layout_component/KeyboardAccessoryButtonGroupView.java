@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.widget.LinearLayout;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -71,6 +72,18 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
         });
         mButtons.add(button);
         addView(button);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        // The parent, which is KeyboardAccessoryModernView's recycler view may measure
+        // StickyLastItemDecoration offsets before the buttons are added. Notify the parent to
+        // recalculate the offset during each measurement.
+        // TODO(crbug.com/1424789): Find a better alternative.
+        if (getParent() == null || !(getParent() instanceof RecyclerView)) return;
+        RecyclerView parent = (RecyclerView) getParent();
+        parent.post(parent::invalidateItemDecorations);
     }
 
     void removeAllButtons() {
