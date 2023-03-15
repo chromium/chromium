@@ -5,8 +5,7 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_SECURITY_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_SECURITY_HANDLER_H_
 
-#include <unordered_map>
-
+#include "base/containers/flat_map.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/security.h"
 #include "content/public/browser/certificate_request_result_type.h"
@@ -56,7 +55,7 @@ class SecurityHandler : public DevToolsDomainHandler,
                               CertErrorCallback callback);
 
  private:
-  using CertErrorCallbackMap = std::unordered_map<int, CertErrorCallback>;
+  using CertErrorCallbackMap = base::flat_map<int, CertErrorCallback>;
 
   void AttachToRenderFrameHost();
   void FlushPendingCertificateErrorNotifications();
