@@ -320,14 +320,6 @@ class BaseSearchProviderTest : public testing::Test,
 
   void ClearAllResults();
 
-  // See description above class for details of these fields.
-  raw_ptr<TemplateURL> default_t_url_ = nullptr;
-  const std::u16string term1_ = u"term1";
-  GURL term1_url_;
-  raw_ptr<TemplateURL> keyword_t_url_ = nullptr;
-  const std::u16string keyword_term_ = u"keyword";
-  GURL keyword_url_;
-
   // SearchProviderFeatureTestComponent must come before BrowserTaskEnvironment,
   // to avoid a possible race.
   SearchProviderFeatureTestComponent feature_test_component_;
@@ -339,6 +331,15 @@ class BaseSearchProviderTest : public testing::Test,
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestAutocompleteProviderClient> client_;
   scoped_refptr<SearchProviderForTest> provider_;
+
+  // See description above class for details of these fields.
+  // TemplateURLs can not outlive `profile_`.
+  raw_ptr<TemplateURL> default_t_url_ = nullptr;
+  const std::u16string term1_ = u"term1";
+  GURL term1_url_;
+  raw_ptr<TemplateURL> keyword_t_url_ = nullptr;
+  const std::u16string keyword_term_ = u"keyword";
+  GURL keyword_url_;
 
   // If not nullptr, OnProviderUpdate quits the current |run_loop_|.
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
