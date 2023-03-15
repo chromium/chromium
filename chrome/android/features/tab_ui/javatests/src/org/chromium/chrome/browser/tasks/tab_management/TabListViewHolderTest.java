@@ -627,6 +627,24 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    public void testCloseButtonDescription() {
+        ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
+        ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
+
+        Assert.assertNull(listActionButton.getContentDescription());
+        Assert.assertNull(gridActionButton.getContentDescription());
+
+        String closeTabDescription = "Close tab";
+        mGridModel.set(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING, closeTabDescription);
+
+        Assert.assertEquals(closeTabDescription, listActionButton.getContentDescription());
+        Assert.assertEquals(closeTabDescription, gridActionButton.getContentDescription());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
     public void testClickToClose() {
         ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
         ImageView listActionButton = mTabListView.findViewById(R.id.end_button);

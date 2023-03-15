@@ -65,6 +65,10 @@ class TabListViewBinder {
                     model.get(TabProperties.TAB_CLOSED_LISTENER).run(tabId);
                 });
             }
+        } else if (TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
+            fastView.findViewById(R.id.end_button)
+                    .setContentDescription(
+                            model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING));
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             int selectedTabBackground =
                     model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
