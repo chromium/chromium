@@ -530,7 +530,6 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     auto signature = IntAndOptionalCallback();
     std::vector<v8::Local<v8::Value>> v8_args =
         StringToV8Vector(context, "[1, null]");
-    v8::Local<v8::Function> callback;
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
     EXPECT_FALSE(parse_result.error);
@@ -625,7 +624,6 @@ TEST_F(APISignatureTest, ParseIgnoringSchemaWithPromises) {
     // Test with omitting the optional callback.
     std::vector<v8::Local<v8::Value>> v8_args =
         StringToV8Vector(context, "[1, null]");
-    v8::Local<v8::Function> callback;
     APISignature::JSONParseResult parse_result =
         int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
                                                                   v8_args);
@@ -658,7 +656,6 @@ TEST_F(APISignatureTest, ParseIgnoringSchemaWithPromises) {
     context_allows_promises = false;
     std::vector<v8::Local<v8::Value>> v8_args =
         StringToV8Vector(context, "[1, null]");
-    v8::Local<v8::Function> callback;
     APISignature::JSONParseResult parse_result =
         int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
                                                                   v8_args);

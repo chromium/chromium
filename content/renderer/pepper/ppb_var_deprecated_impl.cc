@@ -155,7 +155,6 @@ PP_Var GetProperty(PP_Var var, PP_Var name, PP_Var* exception) {
   if (try_catch.HasException())
     return PP_MakeUndefined();
 
-  v8::Local<v8::Value> result;
   ScopedPPVar result_var =
       try_catch.FromV8Maybe(accessor.GetObject()->Get(context, v8_name));
   if (try_catch.HasException())

@@ -162,7 +162,6 @@ void ChromeSetting::HandleFunction(const std::string& method_name,
   if (!access_checker_->HasAccessOrThrowError(context, full_name))
     return;
 
-  v8::Local<v8::Function> callback;
   std::string error;
   const APISignature* signature = type_refs_->GetTypeMethodSignature(full_name);
   APISignature::JSONParseResult parse_result =
