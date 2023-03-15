@@ -327,10 +327,12 @@ deps: Lists any targets responsible for generating |input_files|,
 manifest_files: List of manifest files listing additional files that should be
                 added to the grd.
 grdp_files: List of .grdp files that should be included in the grd. Generally
-            such files are also created with generate_grd().
+            such files are also created with generate_grd(). This option can
+            only be used if a .grd file is produced, since .grdp files can't be
+            nested.
 grd_prefix: The prefix to use for the grd resource IDs. Resources will be named
             with the following pattern: IDR_GRD_PREFIX_INPUT_FILE_PATH
-out_grd: The output grd file to write.
+out_grd: The output grd file to write. Must end with either '.grd' or '.grdp'.
 resource_path_rewrites: Paths to rewrite. In general, the path in input_files,
                         or the path listed in a manifest, will be used as the
                         resource path, i.e. "foo/bar.js" will have that path
