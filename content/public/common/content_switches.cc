@@ -31,6 +31,14 @@ const char kAndroidFontsPath[]          = "android-fonts-path";
 const char kAttributionReportingDebugMode[] =
     "attribution-reporting-debug-mode";
 
+// Bypasses the dialog prompting the user for permission to capture
+// cameras and microphones. Useful in automatic tests of video-conferencing
+// Web applications.
+// This is nearly identical to kUseFakeUIForMediaStream, with the exception
+// being that this flag does NOT affect screen-capture.
+const char kAutoAcceptCameraAndMicrophoneCapture[] =
+    "auto-accept-camera-and-microphone-capture";
+
 // Causes the browser process to crash on startup.
 const char kBrowserCrashTest[]              = "crash-test";
 

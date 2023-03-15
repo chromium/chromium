@@ -1602,13 +1602,29 @@ MediaStreamManager::MediaStreamManager(
       conditional_focus_window_(GetConditionalFocusWindow()),
 #endif
       audio_system_(audio_system) {
+  bool use_fake_ui_factory = false;
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeUIForMediaStream)) {
+    use_fake_ui_factory = true;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAutoAcceptCameraAndMicrophoneCapture)) {
+    // Crashing the browser process is actually the user-friendly thing to do,
+    // as it informs the user of their mistake early.
+    CHECK(!use_fake_ui_factory) << "Mutually exclusive command line flags.";
+    use_fake_ui_factory = true;
+    use_fake_ui_only_for_camera_and_microphone_ = true;
+  }
+
+  if (use_fake_ui_factory) {
     fake_ui_factory_ = base::BindRepeating([] {
       return std::make_unique<FakeMediaStreamUIProxy>(
           /*tests_use_fake_render_frame_hosts=*/false);
     });
   }
+
   if (base::FeatureList::IsEnabled(media::kUseFakeDeviceForMediaStream)) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFakeDeviceForMediaStream);
@@ -4448,9 +4464,17 @@ void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
 
 bool MediaStreamManager::ShouldUseFakeUIProxy(
     MediaStreamType stream_type) const {
-  return fake_ui_factory_ &&
-         (stream_type != MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
-          use_fake_ui_for_gum_desktop_capture_);
+  if (!fake_ui_factory_) {
+    return false;
+  }
+
+  if (use_fake_ui_only_for_camera_and_microphone_) {
+    return stream_type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
+           stream_type == MediaStreamType::DEVICE_VIDEO_CAPTURE;
+  }
+
+  return stream_type != MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
+         use_fake_ui_for_gum_desktop_capture_;
 }
 
 std::unique_ptr<MediaStreamUIProxy> MediaStreamManager::MakeFakeUIProxy(

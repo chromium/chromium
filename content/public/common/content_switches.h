@@ -22,6 +22,7 @@ CONTENT_EXPORT extern const char kAllowLoopbackInPeerConnection[];
 CONTENT_EXPORT extern const char kAllowSyncXHRInPageDismissal[];
 CONTENT_EXPORT extern const char kAndroidFontsPath[];
 CONTENT_EXPORT extern const char kAttributionReportingDebugMode[];
+CONTENT_EXPORT extern const char kAutoAcceptCameraAndMicrophoneCapture[];
 CONTENT_EXPORT extern const char kBrowserCrashTest[];
 CONTENT_EXPORT extern const char kBrowserStartupDialog[];
 CONTENT_EXPORT extern const char kBrowserSubprocessPath[];

@@ -770,12 +770,18 @@ class CONTENT_EXPORT MediaStreamManager
   // tests / web tests via the command line flag --use-fake-ui-for-media-stream.
   base::RepeatingCallback<std::unique_ptr<FakeMediaStreamUIProxy>(void)>
       fake_ui_factory_;
+
   // The fake UI doesn't work for getUserMedia desktop captures, so in general
   // we won't use it for them, even if fake_ui_factory_ is set (see
   // crbug.com/919485).
   // Some unittests do still require the fake ui to be used for all captures, so
   // set this indicator to true.
   bool use_fake_ui_for_gum_desktop_capture_ = false;
+
+  // If `true`, the fake UI factory is used only for cameras and microphones,
+  // and NOT for any form of screen-capture, regardless if that screen-capture
+  // is getDisplayMedia-driven or getUserMedia-driven.
+  bool use_fake_ui_only_for_camera_and_microphone_ = false;
 
   // Observes changes of captured tabs' CaptureHandleConfig and reports
   // this changes back to their capturers. This object lives on the UI thread
