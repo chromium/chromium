@@ -14662,20 +14662,5 @@
                 }
             ]
         }
-    ],
-    "ZeroCopyTabCaptureStudyWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230222",
-                    "enable_features": [
-                        "ZeroCopyTabCapture"
-                    ]
-                }
-            ]
-        }
     ]
 }
