@@ -242266,7 +242266,7 @@
        ]
       ],
       "nth-child-in-shadow-root.html": [
-       "443a12d229f793c201248583934fa3c05d7f81af",
+       "9e6a5b129a37576f310266525c35c2cf7af0bcea",
        [
         null,
         [
@@ -242343,6 +242343,19 @@
         {}
        ]
       ],
+      "nth-child-of-in-shadow-root.html": [
+       "1e949a3bd0e991d97d3ae87fc7420c81047477e6",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/nth-child-of-in-shadow-root-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "nth-child-of-sibling.html": [
        "5beaad6a58108dde8607e9940c4fb017e4056ab2",
        [
@@ -242396,7 +242409,7 @@
        ]
       ],
       "nth-last-child-in-shadow-root.html": [
-       "890abfe99720b056f068a52e76e7b1580189ffb2",
+       "a14f4765674cb45cc3b93f48125606a278612d24",
        [
         null,
         [
@@ -242454,6 +242467,19 @@
         [
          [
           "/css/selectors/invalidation/nth-last-child-of-in-ancestor-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "nth-last-child-of-in-shadow-root.html": [
+       "d403111785723ce4e96d4273c224a8d9d5e7b108",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/nth-last-child-of-in-shadow-root-ref.html",
           "=="
          ]
         ],
@@ -265759,16 +265785,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "6b410e2a8e898bf82c7e7451b85d7df3a3ec217c",
-     []
-    ],
-    "mtime.json": [
-     "a979d0f5b0bf777a3d9e3f6695bca6f95b5ff78c",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -330573,7 +330589,7 @@
        []
       ],
       "nth-child-in-shadow-root-ref.html": [
-       "f28d358cdc53d71501fd35c0c6dc2db41e042b2b",
+       "5e9600ad0e1c751ff37a9fe8d74ffe04b03b264b",
        []
       ],
       "nth-child-of-attr-largedom-ref.html": [
@@ -330596,6 +330612,10 @@
        "a4e4b7fd9fc44bd189aba0423d536dcb82201a9f",
        []
       ],
+      "nth-child-of-in-shadow-root-ref.html": [
+       "f28d358cdc53d71501fd35c0c6dc2db41e042b2b",
+       []
+      ],
       "nth-child-of-sibling-ref.html": [
        "0388fc7c5ab112271e3b2d54293765c8ad87eff0",
        []
@@ -330609,7 +330629,7 @@
        []
       ],
       "nth-last-child-in-shadow-root-ref.html": [
-       "3eb330f58c50ed9c3cc5aefd67477e05dd1a9c33",
+       "c7adfe35579b1308658045dc8571aee8cceefe57",
        []
       ],
       "nth-last-child-of-attr-ref.html": [
@@ -330626,6 +330646,10 @@
       ],
       "nth-last-child-of-in-ancestor-ref.html": [
        "21e6ae0f6f8c50a6d10f91b755cb35cf91713672",
+       []
+      ],
+      "nth-last-child-of-in-shadow-root-ref.html": [
+       "3eb330f58c50ed9c3cc5aefd67477e05dd1a9c33",
        []
       ],
       "nth-last-child-of-sibling-ref.html": [
@@ -357486,7 +357510,7 @@
         []
        ],
        "popover-utils.js": [
-        "7eb9e6327a285bbb880ae53c5e92c60b746cc7c0",
+        "b8b5817851167e9e985ca1a3f54d03a517ed9ef1",
         []
        ]
       }
@@ -543097,7 +543121,7 @@
        ]
       ],
       "popover-attribute-all-elements.html": [
-       "5fceee88c09400b8f9bad131db4ef77ce65ffafc",
+       "9ee659962b8997cca1813a26a068736c7d94699a",
        [
         null,
         {
@@ -543107,7 +543131,7 @@
        ]
       ],
       "popover-attribute-basic.html": [
-       "c5937cd3237e55b04d93798ad4271a2cca0a22d7",
+       "56d746e9dbe93bb663b44d7cf08ae679e1cacf57",
        [
         null,
         {
@@ -620839,171 +620863,6 @@
         [
          "script",
          "/webcodecs/image-decoder-utils.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "per-frame-qp-encoding.https.any.js": [
-     "3207fa8356c83ef9566348f9246d0f6570068615",
-     [
-      "webcodecs/per-frame-qp-encoding.https.any.html?av1",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/video-encoder-utils.js"
-        ],
-        [
-         "variant",
-         "?av1"
-        ],
-        [
-         "variant",
-         "?vp9_p0"
-        ],
-        [
-         "variant",
-         "?vp9_p2"
-        ]
-       ]
-      }
-     ],
-     [
-      "webcodecs/per-frame-qp-encoding.https.any.html?vp9_p0",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/video-encoder-utils.js"
-        ],
-        [
-         "variant",
-         "?av1"
-        ],
-        [
-         "variant",
-         "?vp9_p0"
-        ],
-        [
-         "variant",
-         "?vp9_p2"
-        ]
-       ]
-      }
-     ],
-     [
-      "webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/video-encoder-utils.js"
-        ],
-        [
-         "variant",
-         "?av1"
-        ],
-        [
-         "variant",
-         "?vp9_p0"
-        ],
-        [
-         "variant",
-         "?vp9_p2"
-        ]
-       ]
-      }
-     ],
-     [
-      "webcodecs/per-frame-qp-encoding.https.any.worker.html?av1",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/video-encoder-utils.js"
-        ],
-        [
-         "variant",
-         "?av1"
-        ],
-        [
-         "variant",
-         "?vp9_p0"
-        ],
-        [
-         "variant",
-         "?vp9_p2"
-        ]
-       ]
-      }
-     ],
-     [
-      "webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p0",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/video-encoder-utils.js"
-        ],
-        [
-         "variant",
-         "?av1"
-        ],
-        [
-         "variant",
-         "?vp9_p0"
-        ],
-        [
-         "variant",
-         "?vp9_p2"
-        ]
-       ]
-      }
-     ],
-     [
-      "webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,dedicatedworker"
-        ],
-        [
-         "script",
-         "/webcodecs/video-encoder-utils.js"
-        ],
-        [
-         "variant",
-         "?av1"
-        ],
-        [
-         "variant",
-         "?vp9_p0"
-        ],
-        [
-         "variant",
-         "?vp9_p2"
         ]
        ]
       }

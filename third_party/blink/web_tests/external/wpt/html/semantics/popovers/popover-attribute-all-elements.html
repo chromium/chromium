@@ -24,7 +24,7 @@ window.onload = () => {
       element.setAttribute('popover','auto');
       document.body.appendChild(element);
       t.add_cleanup(() => element.remove());
-      assertIsFunctionalPopover(element);
+      assertIsFunctionalPopover(element, true);
     }, `A <${tag} popover> element should behave as a popover.`);
     test((t) => {
       const element = document.createElement(tag);
@@ -39,7 +39,7 @@ window.onload = () => {
       element.setAttribute('popover','auto');
       document.body.appendChild(element);
       t.add_cleanup(() => element.remove());
-      assert_equals(window.getComputedStyle(element).display, "none", "Element isn't rendered because of the [popover]:closed UA sheet rule");
+      assertIsFunctionalPopover(element, false);
     }, `A <${tag} popover> element should not be rendered.`);
   });
   done();
