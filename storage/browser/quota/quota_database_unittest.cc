@@ -51,10 +51,10 @@ static const blink::mojom::StorageType kTemp =
 static const blink::mojom::StorageType kSync =
     blink::mojom::StorageType::kSyncable;
 
-static const storage::mojom::StorageType kStorageTemp =
-    storage::mojom::StorageType::kTemporary;
-static const storage::mojom::StorageType kStorageSync =
-    storage::mojom::StorageType::kSyncable;
+static const blink::mojom::StorageType kStorageTemp =
+    blink::mojom::StorageType::kTemporary;
+static const blink::mojom::StorageType kStorageSync =
+    blink::mojom::StorageType::kSyncable;
 
 static constexpr char kDatabaseName[] = "QuotaManager";
 

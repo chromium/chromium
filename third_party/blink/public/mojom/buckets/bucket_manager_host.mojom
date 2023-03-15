@@ -10,17 +10,11 @@ import "third_party/blink/public/mojom/file_system_access/file_system_access_dir
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
 import "third_party/blink/public/mojom/locks/lock_manager.mojom";
+import "third_party/blink/public/mojom/quota/quota_types.mojom";
 
 // Implementation of the proposed "Storage Buckets API".
 //
 // Proposal: https://github.com/WICG/storage-buckets
-
-// The durability policy to apply to a single StorageBucket. The values are
-// persisted to the quota DB and must not be changed.
-enum BucketDurability {
-  kRelaxed = 0,
-  kStrict = 1,
-};
 
 enum BucketError {
   kUnknown = 0,

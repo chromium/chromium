@@ -1,0 +1,18 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "components/services/storage/public/mojom/buckets/bucket_info.mojom";
+import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
+
+// Interface for an observer of the QuotaManager. QuotaManager calls these
+// functions to notify the observer of events. This is used by Devtools.
+interface QuotaManagerObserver {
+    // Called when a bucket is created or updated.
+    OnCreateOrUpdateBucket(BucketInfo bucket_info);
+
+    // Called when a bucket is deleted.
+    OnDeleteBucket(BucketLocator bucket_locator);
+};

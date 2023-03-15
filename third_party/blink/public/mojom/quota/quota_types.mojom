@@ -20,6 +20,13 @@ enum StorageType {
   kUnknown = 4,
 };
 
+// The durability policy to apply to a single StorageBucket. The values are
+// persisted to the quota DB and must not be changed.
+enum BucketDurability {
+  kRelaxed = 0,
+  kStrict = 1,
+};
+
 // These values need to match core/dom/exception_code.h.
 enum QuotaStatusCode {
   kOk = 0,

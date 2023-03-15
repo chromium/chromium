@@ -115,8 +115,7 @@ mojom::BucketTableEntryPtr BucketTableEntryFromSqlStatement(
   mojom::BucketTableEntryPtr entry = mojom::BucketTableEntry::New();
   entry->bucket_id = statement.ColumnInt64(0);
   entry->storage_key = statement.ColumnString(1);
-  entry->type =
-      static_cast<storage::mojom::StorageType>(statement.ColumnInt(2));
+  entry->type = static_cast<blink::mojom::StorageType>(statement.ColumnInt(2));
   entry->name = statement.ColumnString(3);
   entry->use_count = statement.ColumnInt(4);
   entry->last_accessed = statement.ColumnTime(5);

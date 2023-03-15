@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
+import "third_party/blink/public/mojom/quota/quota_types.mojom";
+
+// Snapshot of a bucket's information in the quota database.
+//
+// Properties that can be updated by the Storage Buckets API, like
+// `expiration` and `quota`, may get out of sync with the database. The
+// database is the source of truth.
+struct BucketInfo {
+    int64 id;
+    blink.mojom.StorageKey storage_key;
+    blink.mojom.StorageType type;
+    string name;
+    mojo_base.mojom.Time expiration;
+    uint64 quota;
+    bool persistent;
+    blink.mojom.BucketDurability durability;
+};

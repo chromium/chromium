@@ -87,8 +87,9 @@ void QuotaManagerProxy::BindInternalsHandler(
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_)
+  if (quota_manager_impl_) {
     quota_manager_impl_->BindInternalsHandler(std::move(receiver));
+  }
 }
 
 void QuotaManagerProxy::UpdateOrCreateBucket(
@@ -409,8 +410,9 @@ void QuotaManagerProxy::NotifyBucketAccessed(const BucketLocator& bucket,
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_)
+  if (quota_manager_impl_) {
     quota_manager_impl_->NotifyBucketAccessed(bucket, access_time);
+  }
 }
 
 void QuotaManagerProxy::NotifyBucketModified(
@@ -454,8 +456,9 @@ void QuotaManagerProxy::NotifyWriteFailed(const StorageKey& storage_key) {
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_)
+  if (quota_manager_impl_) {
     quota_manager_impl_->NotifyWriteFailed(storage_key);
+  }
 }
 
 void QuotaManagerProxy::SetUsageCacheEnabled(QuotaClientType client_id,
@@ -604,8 +607,9 @@ void QuotaManagerProxy::WithdrawOverridesForHandle(int handle_id) {
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_)
+  if (quota_manager_impl_) {
     quota_manager_impl_->WithdrawOverridesForHandle(handle_id);
+  }
 }
 
 void QuotaManagerProxy::GetOverrideHandleId(
@@ -636,6 +640,23 @@ void QuotaManagerProxy::InvalidateQuotaManagerImpl(
 
   DCHECK(quota_manager_impl_) << __func__ << " called multiple times";
   quota_manager_impl_ = nullptr;
+}
+
+void QuotaManagerProxy::AddObserver(
+    mojo::PendingRemote<storage::mojom::QuotaManagerObserver> observer) {
+  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
+    quota_manager_impl_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&QuotaManagerProxy::AddObserver, this,
+                                  std::move(observer)));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
+  if (!quota_manager_impl_) {
+    return;
+  }
+
+  quota_manager_impl_->AddObserver(std::move(observer));
 }
 
 }  // namespace storage

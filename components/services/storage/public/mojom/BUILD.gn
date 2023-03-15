@@ -64,6 +64,7 @@ source_set("tests") {
   testonly = true
   sources = [
     "buckets/bucket_id_mojom_traits_unittest.cc",
+    "buckets/bucket_info_mojom_traits_unittest.cc",
     "buckets/bucket_locator_mojom_traits_unittest.cc",
   ]
   deps = [

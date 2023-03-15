@@ -241,6 +241,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // This method may only be called on the QuotaManagerImpl sequence.
   void InvalidateQuotaManagerImpl(base::PassKey<QuotaManagerImpl>);
 
+  // Adds an observer which is notified of changes to the QuotaManager.
+  void AddObserver(
+      mojo::PendingRemote<storage::mojom::QuotaManagerObserver> observer);
+
  protected:
   friend class base::RefCountedThreadSafe<QuotaManagerProxy>;
   friend class base::DeleteHelper<QuotaManagerProxy>;

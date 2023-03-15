@@ -17,9 +17,14 @@ build_webui("build") {
     "quota_internals_browser_proxy.ts",
   ]
 
-  mojo_files_deps = [ "//storage/browser/quota:mojo_bindings_ts__generator" ]
-  mojo_files =
-      [ "$root_gen_dir/storage/browser/quota/quota_internals.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//storage/browser/quota:mojo_bindings_ts__generator",
+    "//third_party/blink/public/mojom/quota:quota_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/storage/browser/quota/quota_internals.mojom-webui.ts",
+    "$root_gen_dir/third_party/blink/public/mojom/quota/quota_types.mojom-webui.ts",
+  ]
 
   ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [

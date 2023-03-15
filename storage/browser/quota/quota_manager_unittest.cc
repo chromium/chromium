@@ -33,6 +33,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -51,6 +52,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -66,10 +68,10 @@ namespace {
 const StorageType kTemp = StorageType::kTemporary;
 const StorageType kSync = StorageType::kSyncable;
 
-const storage::mojom::StorageType kStorageTemp =
-    storage::mojom::StorageType::kTemporary;
-const storage::mojom::StorageType kStorageSync =
-    storage::mojom::StorageType::kSyncable;
+const blink::mojom::StorageType kStorageTemp =
+    blink::mojom::StorageType::kTemporary;
+const blink::mojom::StorageType kStorageSync =
+    blink::mojom::StorageType::kSyncable;
 
 // Values in bytes.
 const int64_t kAvailableSpaceForApp = 13377331U;
@@ -575,13 +577,74 @@ class QuotaManagerImplTest : public testing::Test {
   }
   const QuotaSettings& settings() const { return settings_; }
 
+  void SetupQuotaManagerObserver() {
+    quota_manager_observer_run_loop_ = std::make_unique<base::RunLoop>();
+    quota_manager_observer_test_ =
+        std::make_unique<QuotaManagerObserverTest>(weak_factory_.GetWeakPtr());
+  }
+
+  void RunUntilObserverNotifies() {
+    quota_manager_observer_run_loop_->Run();
+    quota_manager_observer_run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
  protected:
+  enum ObserverNotifyType {
+    kCreateOrUpdate,
+    kDelete,
+  };
+  struct ObserverNotification {
+    explicit ObserverNotification(BucketInfo bucket)
+        : type(ObserverNotifyType::kCreateOrUpdate), bucket_info(bucket) {}
+    explicit ObserverNotification(BucketLocator locator)
+        : type(ObserverNotifyType::kDelete), bucket_locator(locator) {}
+    ObserverNotifyType type;
+    absl::optional<BucketInfo> bucket_info;
+    absl::optional<BucketLocator> bucket_locator;
+  };
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   scoped_refptr<QuotaManagerImpl> quota_manager_impl_;
+  std::vector<ObserverNotification> observer_notifications_;
 
  private:
+  class QuotaManagerObserverTest : storage::mojom::QuotaManagerObserver {
+   public:
+    explicit QuotaManagerObserverTest(base::WeakPtr<QuotaManagerImplTest> owner)
+        : owner_(owner) {
+      owner_->quota_manager_impl_->AddObserver(
+          receiver_.BindNewPipeAndPassRemote());
+    }
+
+    QuotaManagerObserverTest(const QuotaManagerObserverTest&) = delete;
+    QuotaManagerObserverTest& operator=(const QuotaManagerObserverTest&) =
+        delete;
+
+    ~QuotaManagerObserverTest() override = default;
+
+    void OnCreateOrUpdateBucket(
+        const storage::BucketInfo& bucket_info) override {
+      owner_->observer_notifications_.emplace_back(bucket_info);
+      QuitRunLoop();
+    }
+
+    void OnDeleteBucket(const storage::BucketLocator& bucket_locator) override {
+      owner_->observer_notifications_.emplace_back(bucket_locator);
+      QuitRunLoop();
+    }
+
+   private:
+    void QuitRunLoop() {
+      if (owner_->quota_manager_observer_run_loop_) {
+        owner_->quota_manager_observer_run_loop_->Quit();
+      }
+    }
+    base::WeakPtr<QuotaManagerImplTest> owner_;
+    mojo::Receiver<storage::mojom::QuotaManagerObserver> receiver_{this};
+  };
+
   base::Time IncrementMockTime() {
     ++mock_time_counter_;
     return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
@@ -596,6 +659,8 @@ class QuotaManagerImplTest : public testing::Test {
   int64_t available_space_;
   absl::optional<BucketLocator> eviction_bucket_;
   QuotaSettings settings_;
+  std::unique_ptr<QuotaManagerObserverTest> quota_manager_observer_test_;
+  std::unique_ptr<base::RunLoop> quota_manager_observer_run_loop_;
 
   int additional_callback_count_;
 
@@ -2221,8 +2286,9 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
                      ToStorageKey("http://foo.com/"), kSync)
                      .usage);
 
-  for (const ClientBucketData& data : kData)
+  for (const ClientBucketData& data : kData) {
     NotifyDefaultBucketAccessed(ToStorageKey(data.origin), data.type);
+  }
   task_environment_.RunUntilIdle();
 
   auto bucket =
@@ -2395,8 +2461,9 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
 
   const BucketTableEntries& entries = DumpBucketTable();
   for (const auto& entry : entries) {
-    if (entry->type != kStorageTemp)
+    if (entry->type != kStorageTemp) {
       continue;
+    }
 
     absl::optional<StorageKey> storage_key =
         StorageKey::Deserialize(entry->storage_key);
@@ -2491,8 +2558,9 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
 
   const BucketTableEntries& entries = DumpBucketTable();
   for (const auto& entry : entries) {
-    if (entry->type != kStorageSync)
+    if (entry->type != kStorageSync) {
       continue;
+    }
 
     absl::optional<StorageKey> storage_key =
         StorageKey::Deserialize(entry->storage_key);
@@ -3524,4 +3592,88 @@ TEST_F(QuotaManagerImplTest, SimulateStoragePressure_Incognito) {
   EXPECT_FALSE(callback_ran);
 }
 
+TEST_F(QuotaManagerImplTest,
+       QuotaManagerObserver_NotifiedOnAddedChangedAndDeleted) {
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  QuotaDatabase::SetClockForTesting(clock.get());
+  clock->SetNow(base::Time::Now());
+
+  SetupQuotaManagerObserver();
+
+  BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
+
+  // Create bucket.
+  auto bucket = UpdateOrCreateBucket(params);
+  RunUntilObserverNotifies();
+
+  ASSERT_TRUE(bucket.has_value());
+  ASSERT_EQ(observer_notifications_.size(), 1U);
+  ObserverNotification notification = observer_notifications_[0];
+  ASSERT_EQ(notification.type, kCreateOrUpdate);
+  ASSERT_EQ(notification.bucket_info, bucket.value());
+  observer_notifications_.clear();
+
+  params.persistent = true;
+  params.expiration = clock->Now() + base::Days(1);
+
+  // Update bucket.
+  auto updated_bucket = UpdateOrCreateBucket(params);
+  RunUntilObserverNotifies();
+
+  ASSERT_TRUE(updated_bucket.has_value());
+  ASSERT_EQ(observer_notifications_.size(), 1U);
+  notification = observer_notifications_[0];
+  ASSERT_EQ(notification.type, kCreateOrUpdate);
+  EXPECT_EQ(notification.bucket_info, updated_bucket.value());
+  EXPECT_EQ(notification.bucket_info->persistent, params.persistent);
+  EXPECT_EQ(notification.bucket_info->expiration, params.expiration);
+  observer_notifications_.clear();
+
+  // Delete bucket.
+  auto status =
+      DeleteBucketData(bucket->ToBucketLocator(), AllQuotaClientTypes());
+  RunUntilObserverNotifies();
+
+  ASSERT_EQ(status, QuotaStatusCode::kOk);
+  ASSERT_EQ(observer_notifications_.size(), 1U);
+  notification = observer_notifications_[0];
+  ASSERT_EQ(notification.type, kDelete);
+  EXPECT_EQ(notification.bucket_locator, updated_bucket->ToBucketLocator());
+
+  QuotaDatabase::SetClockForTesting(nullptr);
+}
+
+TEST_F(QuotaManagerImplTest, QuotaManagerObserver_NotifiedOnExpired) {
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  QuotaDatabase::SetClockForTesting(clock.get());
+  clock->SetNow(base::Time::Now());
+
+  SetupQuotaManagerObserver();
+
+  BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
+  params.expiration = clock->Now() + base::Days(5);
+
+  auto bucket = UpdateOrCreateBucket(params);
+  RunUntilObserverNotifies();
+
+  ASSERT_TRUE(bucket.has_value());
+  ASSERT_EQ(observer_notifications_.size(), 1U);
+  ObserverNotification notification = observer_notifications_[0];
+  ASSERT_EQ(notification.type, kCreateOrUpdate);
+  ASSERT_EQ(notification.bucket_info, bucket.value());
+  observer_notifications_.clear();
+
+  clock->Advance(base::Days(20));
+  base::test::TestFuture<QuotaStatusCode> future;
+  quota_manager_impl_->EvictExpiredBuckets(future.GetCallback());
+  EXPECT_EQ(QuotaStatusCode::kOk, future.Get());
+
+  EXPECT_FALSE(GetBucketById(bucket->id).has_value());
+  ASSERT_EQ(observer_notifications_.size(), 1U);
+  notification = observer_notifications_[0];
+  ASSERT_EQ(notification.type, kDelete);
+  EXPECT_EQ(notification.bucket_locator, bucket->ToBucketLocator());
+
+  QuotaDatabase::SetClockForTesting(nullptr);
+}
 }  // namespace storage
