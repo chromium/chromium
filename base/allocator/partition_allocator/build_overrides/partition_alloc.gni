@@ -13,7 +13,6 @@ import("//build_overrides/build.gni")
 use_partition_alloc_as_malloc_default = false
 use_allocator_shim_default = false
 enable_backup_ref_ptr_support_default = false
-enable_mte_checked_ptr_support_default = false
 put_ref_count_in_previous_slot_default = true
 enable_backup_ref_ptr_slow_checks_default = false
 enable_dangling_raw_ptr_checks_default = false
