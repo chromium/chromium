@@ -260,7 +260,8 @@ class HistogramRule : public BackgroundTracingRule,
         base::BindOnce(
             &BackgroundTracingManagerImpl::OnRuleTriggered,
             base::Unretained(&BackgroundTracingManagerImpl::GetInstance()),
-            this, BackgroundTracingManager::StartedFinalizingCallback()));
+            base::UnsafeDanglingUntriaged(this),
+            BackgroundTracingManager::StartedFinalizingCallback()));
   }
 
   void AbortTracing() {
