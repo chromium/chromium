@@ -41,6 +41,16 @@ interface ExtractingTasks {
   params: chrome.fileManagerPrivate.IOTaskParams;
 }
 
+/**
+ * Small helper function that makes easier to flip from Store to non-Store
+ * tasks.
+ */
+function shouldUseStore() {
+  // Enabling the Store by default, meaning when the experimental flag is ON we
+  // fallback to the legacy version.
+  return !util.isFilesAppExperimental();
+}
+
 export class TaskController {
   private fileTransferController_: FileTransferController|null = null;
   private taskHistory_: TaskHistory;
@@ -65,7 +75,7 @@ export class TaskController {
   private lastSelectedEntries_: Entry[];
   private store_: Store;
   private selectionFilesData_: FileData[] = [];
-  private selectionKeys_: FileKey[]|undefined = [];
+  private selectionKeys_: FileKey[] = [];
   private selectionTasks_: StoreFileTasks|undefined;
 
   constructor(
@@ -84,7 +94,7 @@ export class TaskController {
     this.lastSelectedEntries_ = [];
     this.store_ = getStore();
 
-    if (util.isFilesAppExperimental()) {
+    if (shouldUseStore()) {
       this.store_.subscribe(this);
     } else {
       // These events are superseded by the store.
@@ -108,16 +118,20 @@ export class TaskController {
   }
 
   onStateChanged(newState: State) {
-    const keys = newState.currentDirectory?.selection.keys;
+    const keys = newState.currentDirectory?.selection.keys ?? [];
     const tasks = newState.currentDirectory?.selection.fileTasks;
-    if (keys !== this.selectionKeys_) {
+    if (keys !== this.selectionKeys_ &&
+        (keys.length > 0 || this.selectionKeys_.length > 0)) {
       this.selectionKeys_ = keys;
       this.selectionFilesData_ = getFilesData(newState, keys ?? []);
       // Kickoff the async/ActionsProducer to fetch the tasks for the new
       // selection.
-      if (util.isFilesAppExperimental()) {
+      if (shouldUseStore()) {
         this.tasks_ = null;
-        this.store_.dispatch(fetchFileTasks(this.selectionFilesData_));
+        // Only fetch if there is anything to fetch.
+        if (keys.length > 0) {
+          this.store_.dispatch(fetchFileTasks(this.selectionFilesData_));
+        }
         // Hides the button while fetching the tasks.
         this.maybeHideButton();
       }
@@ -191,7 +205,8 @@ export class TaskController {
             format = extensions[0]!;
           }
 
-          // Change default was clicked. We should open "change default" dialog.
+          // Change default was clicked. We should open "change default"
+          // dialog.
           tasks.showTaskPicker(
               this.ui_.defaultTaskPicker, str('CHANGE_DEFAULT_MENU_ITEM'),
               strf('CHANGE_DEFAULT_CAPTION', format),
@@ -247,8 +262,8 @@ export class TaskController {
 
   /**
    * Populate the #tasks-menu with the open-with tasks. The menu is managed by
-   * the top task menu Open combobutton, but it is also used as the right-click
-   * open-with context menu.
+   * the top task menu Open combobutton, but it is also used as the
+   * right-click open-with context menu.
    */
   private updateTasksDropdown_(fileTasks: FileTasks) {
     const combobutton = this.ui_.taskMenuButton;
@@ -290,7 +305,8 @@ export class TaskController {
       // default is not set by policy, we show an item to change default task.
       if (defaultTask && !fileTasks.getPolicyDefaultHandlerStatus()) {
         combobutton.addSeparator();
-        // TODO(greengrape): Ensure that the passed object is a `DropdownItem`.
+        // TODO(greengrape): Ensure that the passed object is a
+        // `DropdownItem`.
         const changeDefaultMenuItem = combobutton.addDropDownItem({
           type: TaskMenuItemType.CHANGE_DEFAULT_TASK,
           label: str('CHANGE_DEFAULT_MENU_ITEM'),
@@ -303,7 +319,8 @@ export class TaskController {
   }
 
   /**
-   * Creates sorted array of available task descriptions such as title and icon.
+   * Creates sorted array of available task descriptions such as title and
+   * icon.
    *
    * @param fileTasks File Tasks to create items.
    * @return Created array can be used to feed combobox, menus and so on.
@@ -318,7 +335,8 @@ export class TaskController {
         const title = task.title + ' ' + str('DEFAULT_TASK_LABEL');
         items.push(createDropdownItem(
             task, title, /*bold=*/ true, /*isDefault=*/ true,
-            /*isPolicyDefault=*/ !!fileTasks.getPolicyDefaultHandlerStatus()));
+            /*isPolicyDefault=*/
+            !!fileTasks.getPolicyDefaultHandlerStatus()));
       } else {
         items.push(createDropdownItem(task));
       }
@@ -377,9 +395,9 @@ export class TaskController {
   }
 
   /**
-   * Get MIME type for an entry. This method first tries to obtain the MIME type
-   * from metadata. If it fails, this falls back to obtain the MIME type from
-   * its content or name.
+   * Get MIME type for an entry. This method first tries to obtain the MIME
+   * type from metadata. If it fails, this falls back to obtain the MIME type
+   * from its content or name.
    * @param entry An entry to obtain its mime type.
    */
   private async getMimeType_(entry: Entry): Promise<string> {
@@ -416,12 +434,12 @@ export class TaskController {
   }
 
   /**
-   * Explicitly removes the cached tasks first and and re-calculates the current
-   * tasks.
+   * Explicitly removes the cached tasks first and and re-calculates the
+   * current tasks.
    */
   private clearCacheAndUpdateTasks_() {
     this.tasks_ = null;
-    if (util.isFilesAppExperimental()) {
+    if (shouldUseStore()) {
       // Dispatch an empty fetch to invalidate any ongoing fetch.
       this.store_.dispatch(fetchFileTasks([]));
     }
@@ -431,7 +449,7 @@ export class TaskController {
   private maybeHideButton(): boolean {
     const selection = this.selectionHandler_.selection;
     // For the Store version the other conditions are checked in the store.
-    const shouldDisableTasks = util.isFilesAppExperimental() ?
+    const shouldDisableTasks = shouldUseStore() ?
         (this.selectionTasks_?.tasks ?? []).length === 0 :
         (
             // File Picker/Save As doesn't show the "Open" button.
@@ -483,7 +501,7 @@ export class TaskController {
   }
 
   async getFileTasks(): Promise<FileTasks> {
-    if (util.isFilesAppExperimental()) {
+    if (shouldUseStore()) {
       return this.getFileTasksStore_();
     }
     const selection = this.selectionHandler_.selection;

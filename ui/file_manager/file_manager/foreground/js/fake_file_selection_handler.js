@@ -4,6 +4,9 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
+import {Store} from '../../externs/ts/store.js';
+import {updateDirectoryContent, updateSelection} from '../../state/actions/current_directory.js';
+
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
 
 /**
@@ -19,7 +22,12 @@ export class FakeFileSelectionHandler {
 
   computeAdditionalCallback() {}
 
-  updateSelection(entries, mimeTypes) {
+  /**
+   * @param entries {!Array<Entry|FilesAppEntry>}
+   * @param mimeTypes {!Array<string>}
+   * @param store {Store=}
+   */
+  updateSelection(entries, mimeTypes, store = null) {
     this.selection = /** @type {!FileSelection} */ ({
       entries: entries,
       mimeTypes: mimeTypes,
@@ -30,6 +38,16 @@ export class FakeFileSelectionHandler {
         });
       },
     });
+
+    if (store) {
+      // Make sure that the entry is in the directory content.
+      store.dispatch(updateDirectoryContent({entries}));
+      // Mark the entry as selected.
+      store.dispatch(updateSelection({
+        selectedKeys: entries.map(e => e.toURL()),
+        entries,
+      }));
+    }
   }
 
   addEventListener(...args) {

@@ -22,7 +22,7 @@ export class Store {
   subscribe(observer) {}
 
   /** @param {!StoreObserver} observer */
-  usubscribe(observer) {}
+  unsubscribe(observer) {}
 
   /** @return {!State} */
   getState() {}
