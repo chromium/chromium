@@ -282,8 +282,12 @@ class TouchEventConverterEvdevTest : public testing::Test {
     ui::DeviceDataManager::CreateInstance();
   }
 
-  void TearDown() override {
+  void TearDown() override { TearDownDevice(); }
+
+  void TearDownDevice() {
     device_.reset();
+    dispatcher_.reset();
+    shared_palm_state_.reset();
   }
 
   void UpdateTime(struct input_event* queue, long count, timeval time) const {
@@ -751,6 +755,7 @@ TEST_F(TouchEventConverterEvdevTest, ShouldRemoveContactsWhenDisabled) {
 TEST_F(TouchEventConverterEvdevTest, ToolTypePalmNotCancelTouch) {
   // By default, we use TOOL_TYPE_PALM as a cancellation signal for all touches.
   // We disable that behavior and want to see all touches registered as usual.
+  TearDownDevice();
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitWithFeatures(
       {}, {kEnablePalmOnMaxTouchMajor, kEnablePalmOnToolTypePalm,
@@ -847,6 +852,7 @@ TEST_F(TouchEventConverterEvdevTest, MaxMajorNotCancelTouch) {
   // By default, tests disable single-cancel and enable palm on touch_major ==
   // major_max. So we disable that behavior: and expect to see a RELEASED rather
   // than cancelled.
+  TearDownDevice();
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitWithFeatures(
       {}, {kEnablePalmOnMaxTouchMajor, kEnableSingleCancelTouch});
