@@ -6,5 +6,6 @@
 #define MOJO_PUBLIC_RUST_SYSTEM_WRAPPER_H_
 
 #include "mojo/public/c/system/core.h"
+#include "mojo/public/c/system/thunks.h"
 
 #endif  // MOJO_PUBLIC_RUST_SYSTEM_WRAPPER_H_

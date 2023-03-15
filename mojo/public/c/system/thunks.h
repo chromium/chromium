@@ -441,6 +441,10 @@ struct MojoSystemThunks {
 
 typedef struct MojoSystemThunks MojoSystemThunks32;
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+
 MOJO_SYSTEM_EXPORT const struct MojoSystemThunks2*
 MojoEmbedderGetSystemThunks2();
 
@@ -448,5 +452,9 @@ MOJO_SYSTEM_EXPORT const MojoSystemThunks32* MojoEmbedderGetSystemThunks32();
 
 MOJO_SYSTEM_EXPORT void MojoEmbedderSetSystemThunks(
     const struct MojoSystemThunks2* system_thunks);
+
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
 
 #endif  // MOJO_PUBLIC_C_SYSTEM_THUNKS_H_

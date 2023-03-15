@@ -24,7 +24,7 @@ use mojo::system;
 macro_rules! validation_tests {
     ($($name:ident => $req_type:ident;)*) => {
         $(
-        mojo_test!($name, {
+        stubbed_mojo_test!($name, {
             let data = include_str!(concat!("../../../interfaces/bindings/tests/data/validation/",
                                             stringify!($name),
                                             ".data"));

@@ -25,18 +25,30 @@ rust_unit_test("mojo_rust_system_tests") {
   ]
 }
 
+rust_unit_test("mojo_rust_encoding_tests") {
+  testonly = true
+  crate_root = "encoding/lib.rs"
+  sources = [
+    "encoding/encoding.rs",
+    "encoding/lib.rs",
+    "encoding/mojom_validation.rs",
+    "encoding/regression.rs",
+    "encoding/validation.rs",
+  ]
+  deps = [
+    ":c_test_support",
+    ":test_util",
+    "//mojo/public/c/system",
+    "//mojo/public/rust:mojo_rust",
+    "//mojo/public/rust:mojo_rust_system_test_support",
+  ]
+}
+
 rust_unit_test("mojo_rust_integration_tests") {
   testonly = true
   allow_unsafe = true
   crate_root = "integration/lib.rs"
-  sources = [
-    "integration/encoding.rs",
-    "integration/integration.rs",
-    "integration/lib.rs",
-    "integration/mojom_validation.rs",
-    "integration/regression.rs",
-    "integration/validation.rs",
-  ]
+  sources = [ "integration/lib.rs" ]
   deps = [
     ":c_test_support",
     ":test_util",

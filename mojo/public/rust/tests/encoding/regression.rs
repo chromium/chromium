@@ -59,7 +59,7 @@ impl<T: MojomEncodable> MojomStruct for StructA<T> {}
 // Fixed size arrays have complex and unsafe semantics to ensure
 // there are no memory leaks. We test this behavior here to make
 // sure memory isn't becoming corrupted.
-mojo_test!(regression_fixed_size_array_error_propagates_safely, {
+stubbed_mojo_test!(regression_fixed_size_array_error_propagates_safely, {
     let handle1 = unsafe { system::acquire(0) };
     let handle2 = unsafe { system::acquire(0) };
     let handle3 = unsafe { system::acquire(0) };
@@ -77,7 +77,7 @@ mojo_test!(regression_fixed_size_array_error_propagates_safely, {
 // For the only handle that should drop, we make the handle some
 // random number which is potentially a valid handle. When on
 // drop() we try to close it, we should panic.
-mojo_test!(
+stubbed_mojo_test!(
     regression_fixed_size_array_verify_drop,
     // Ignore this test, it panics while panicking
     #[ignore]

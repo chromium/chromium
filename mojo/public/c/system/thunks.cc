@@ -858,8 +858,6 @@ MojoSystemThunks32 g_thunks_32 = {
     MojoSetDefaultProcessErrorHandler,
 };
 
-}  // extern "C"
-
 const MojoSystemThunks2* MojoEmbedderGetSystemThunks2() {
   return &g_thunks;
 }
@@ -881,3 +879,5 @@ void MojoEmbedderSetSystemThunks(const MojoSystemThunks2* thunks) {
 
   g_thunks = *thunks;
 }
+
+}  // extern "C"

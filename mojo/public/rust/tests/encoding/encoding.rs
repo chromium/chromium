@@ -39,7 +39,7 @@ use std::collections::HashMap;
 macro_rules! encoding_tests {
     ($($name:ident { MessageHeader => $header_cls:expr, $req_type:ident => $cls:expr } )*) => {
         $(
-        mojo_test!($name, {
+        stubbed_mojo_test!($name, {
             let data = include_str!(concat!("../../../interfaces/bindings/tests/data/validation/",
                                             stringify!($name),
                                             ".data"));

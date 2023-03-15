@@ -18,6 +18,7 @@ rust_unit_tests_group("mojo_rust_tests") {
   deps = []
   if (can_build_rust_unit_tests) {
     deps += [
+      "//mojo/public/rust/tests:mojo_rust_encoding_tests",
       "//mojo/public/rust/tests:mojo_rust_integration_tests",
       "//mojo/public/rust/tests:mojo_rust_system_tests",
     ]
@@ -66,6 +67,22 @@ rust_static_library("mojo_rust_system") {
   bindgen_output = get_target_outputs(":mojo_c_system_binding")
   inputs = bindgen_output
   rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(bindgen_output[0]) ]
+}
+
+rust_static_library("mojo_rust_system_test_support") {
+  testonly = true
+  crate_root = "system/test_support/lib.rs"
+  crate_name = "mojo_system_test_support"
+
+  # Calls Mojo FFI functions.
+  allow_unsafe = true
+
+  sources = [ "system/test_support/lib.rs" ]
+
+  deps = [
+    ":mojo_rust_system",
+    "//mojo/public/c/system",
+  ]
 }
 
 rust_static_library("mojo_rust_bindings") {
