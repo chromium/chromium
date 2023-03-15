@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "command_buffer/common/constants.h"
 #include "command_buffer/common/sync_token.h"
+#include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/webgpu_cmd_helper.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
@@ -45,36 +46,46 @@
 
 namespace gpu::cmdbuf::fuzzing {
 
-CmdBufFuzz::CmdBufFuzz() : base::TestSuite(0, nullptr) {
+/* One-time fuzzer initialization. Called only once during fuzzer startup. */
+CmdBufFuzz::CmdBufFuzz() : base::TestSuite(0, (char**)nullptr) {
+  CommandLineInit();
   GfxInit();
 }
 
-void CmdBufFuzz::GfxInit() {
-  VLOG(3) << "Detecting platform specific features and setting preferences "
-             "accordingly";
-  gpu::GpuPreferences preferences;
-  preferences.enable_webgpu = true;
-  preferences.disable_software_rasterizer = false;
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
+/* Enable WebGPU features and disable GPU hardware acceleration. */
+void CmdBufFuzz::CommandLineInit() {
   [[maybe_unused]] auto* command_line = base::CommandLine::ForCurrentProcess();
-  /* --disable-gpu: force software rendering
+  //--disable-gpu to force software rendering
   command_line->AppendSwitchASCII(switches::kDisableGpu, "1");
-  */
+  // --use-webgpu-adapter=swiftshader
+  command_line->AppendSwitchASCII(
+      switches::kUseWebGPUAdapter,
+      switches::kVulkanImplementationNameSwiftshader);
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
   //--enable-features=Vulkan
   command_line->AppendSwitchASCII(switches::kEnableFeatures,
                                   gl::kANGLEImplementationVulkanName);
   //--use-vulkan=swiftshader
   command_line->AppendSwitchASCII(
       switches::kUseVulkan, switches::kVulkanImplementationNameSwiftshader);
-  // --use-webgpu-adapter=swiftshader
-  command_line->AppendSwitchASCII(
-      switches::kUseWebGPUAdapter,
-      switches::kVulkanImplementationNameSwiftshader);
-  preferences.gr_context_type = gpu::GrContextType::kVulkan;
-  // Use SwiftShader so fuzzer can work without a physical GPU
-  preferences.use_vulkan = gpu::VulkanImplementationName::kSwiftshader;
-  preferences.use_webgpu_adapter = WebGPUAdapterName::kSwiftShader;
 #endif
+}
+
+/* Initialize the graphics stack in single-process mode with WebGPU. */
+void CmdBufFuzz::GfxInit() {
+  VLOG(3) << "GfxInit() started";
+
+  VLOG(3) << "Detecting platform specific features and setting preferences "
+             "accordingly";
+  gpu::GpuPreferences preferences;
+  preferences.enable_webgpu = true;
+  preferences.disable_software_rasterizer = false;
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
+  preferences.gr_context_type = gpu::GrContextType::kVulkan;
+  // Use SwiftShader so fuzzing can work without a physical GPU.
+  preferences.use_vulkan = gpu::VulkanImplementationName::kSwiftshader;
+#endif
+  preferences.use_webgpu_adapter = WebGPUAdapterName::kSwiftShader;
   preferences.enable_unsafe_webgpu = true;
   preferences.enable_gpu_service_logging_gpu = true;
 
@@ -82,7 +93,7 @@ void CmdBufFuzz::GfxInit() {
   // required to use gpu::CreateBufferUsageAndFormatExceptionList().
 
   // TODO(bookholt): It's not obvious whether having legit values from
-  // gpu::CreateBufferUsageAndFormatExceptionList() is really required for
+  // gpu::CreateBufferUsageAndFormatExceptionList() is really desired for
   // fuzzing, but it's a starting point.
 
   // TODO(bookholt): OS specific windowing init.
@@ -106,10 +117,12 @@ void CmdBufFuzz::GfxInit() {
       SharedMemoryLimits::ForWebGPUContext());
   /*
      WebGPUInProcessContext does a lot of handy setup and uses threads to
-     simulate cross-process communication. It's not a 100% match to a real
-     browser instance (e.g. it uses a char* as backing memory for the
-     CommandBuffer's RingBuffer instead of a platform specific shared memory
-     implementation), but it's a good starting point.
+     simulate cross-process communication in a single process binary, but it's
+     not a 100% match to a real browser instance. E.g. it uses a char* as
+     backing memory for the CommandBuffer's RingBuffer instead of a
+     platform-specific shared memory implementation, and it bypasses Mojo
+     entirely, but it's compatible with our single-process fuzze_test build
+     target, so it's a decent starting point.
 
      The thinking is to let WebGPUInProcessContext create a working WebGPU
      Context with associated data structures and then we'll tune or replace
@@ -161,16 +174,14 @@ void CmdBufFuzz::GfxInit() {
   // command_buffer_->SetGetBuffer(command_buffer_id_);
   webgpu_impl_ = webgpu_context_->GetImplementation();
 
-  VLOG(3) << "Startup init complete";
+  VLOG(3) << "GfxInit complete";
 }
 
 CmdBufFuzz::~CmdBufFuzz() = default;
 
+/* Per-test case setup. */
 void CmdBufFuzz::RuntimeInit() {
-  // TODO: WebGPU decoder init
-  // command_buffer_->set_handler(decoder_.get());
-
-  // initialize command buffer
+  // Verify command buffer is ready for the new test case.
   if (!cmd_helper_->HaveRingBuffer()) {
     VLOG(3) << "CommandBuffer (re-)init";
     cmd_helper_->Initialize(shared_memory_limits_->command_buffer_size);
@@ -182,6 +193,7 @@ void CmdBufFuzz::RuntimeInit() {
   }
 }
 
+/* Deserialize a proto message from a test case into a gpu::SyncToken. */
 gpu::SyncToken CmdBufFuzz::SyncTokenFromProto(fuzzing::SyncToken token_proto) {
   // TODO(bookholt): Pick buffer_id from a narrower range of sensible values.
   CommandBufferId buffer_id =
@@ -198,15 +210,16 @@ gpu::SyncToken CmdBufFuzz::SyncTokenFromProto(fuzzing::SyncToken token_proto) {
   return sync_token;
 }
 
+/* Dummy SignalSyncToken callback function. */
 void CmdBufFuzz::SignalSyncTokenCallback() {}
 
+/* Fuzzing happens here. */
 void CmdBufFuzz::RunCommandBuffer(fuzzing::CmdBufSession session) {
   if (!session.actions_size()) {
     VLOG(3) << "Empty test case :(";
     return;
   }
 
-  // Do per-testcase setup.
   RuntimeInit();
 
   while (action_index_ < session.actions_size()) {
@@ -326,8 +339,8 @@ void CmdBufFuzz::RunCommandBuffer(fuzzing::CmdBufSession session) {
           case fuzzing::InProcessCommandBufferOp::kSetLock: {
             VLOG(3) << "kSetLock: unsupported op";
             // Interesting feature to fuzz, but unsupported by
-            // InProcessCommandBuffer :(
-            // TODO(bookholt): support for SetLock would require either
+            // InProcessCommandBuffer :( TODO(bookholt): support for SetLock
+            // would require either
             // - adding libfuzzer support to BrowserTests or
             // - snapshot fuzzing support
             break;
@@ -341,9 +354,9 @@ void CmdBufFuzz::RunCommandBuffer(fuzzing::CmdBufSession session) {
 
           case fuzzing::InProcessCommandBufferOp::kGetNamespaceID: {
             VLOG(3) << "kGetNamespaceID: unsupported op";
-            // Valid values in gpu/command_buffer/common/constants.h
-            // Calling this function is a NOOP from a fuzzer perspective, but
-            // other CommandBufferOps will want to implement it.
+            // Valid values in gpu/command_buffer/common/constants.h Calling
+            // this function is a NOOP from a fuzzer perspective, but other
+            // CommandBufferOps will want to implement it.
             break;
           }
 
@@ -487,8 +500,8 @@ void CmdBufFuzz::RunCommandBuffer(fuzzing::CmdBufSession session) {
 
           case fuzzing::InProcessCommandBufferOp::kGetTransferCacheForTest: {
             VLOG(3) << "kGetTransferCacheForTest";
-            // TODO(bookholt): Worth a think about refactoring to make use
-            // of the TransferCache.
+            // TODO(bookholt): Worth a think about refactoring to make use of
+            // the TransferCache.
             command_buffer_->GetTransferCacheForTest();
             break;
           }
@@ -513,8 +526,8 @@ void CmdBufFuzz::RunCommandBuffer(fuzzing::CmdBufSession session) {
 
           case fuzzing::InProcessCommandBufferOp::kGetSharedImageInterface: {
             VLOG(3) << "kGetSharedImageInterface: unsupported op";
-            // TODO(bookholt): Worth a think about refactoring to make use
-            // of the gpu::SharedImageInterface.
+            // TODO(bookholt): Worth a think about refactoring to make use of
+            // the gpu::SharedImageInterface.
             command_buffer_->GetSharedImageInterface();
             break;
           }
@@ -534,26 +547,32 @@ void CmdBufFuzz::RunCommandBuffer(fuzzing::CmdBufSession session) {
       // does. Investigate how/why LPM generates this value and consider tuning
       // to avoid it because it seems like a waste of performance.
       case fuzzing::Action::ACTION_NOT_SET: {
-        DLOG(ERROR) << "No Action set";
+        DLOG(WARNING) << "No Action set";
       } break;
     }
     action_index_++;
   }
 
   //  Prepare for next testcase.
-  Reset();
+  if (!Reset()) {
+    // See crbug.com/1424591
+    VLOG(1) << "Test case reset failed. Re-initializing graphics.";
+    // Re-initialize the graphics stack to (hopefully!) avoid sync problems.
+    GfxInit();
+    return;
+  }
 }
 
-void CmdBufFuzz::CmdBufReset() {
-  // webgpu_cmd_helper_->FreeRingBuffer();
-  // memset(buffer_->memory(), 0, kCommandBufferSize);
-  cmd_helper_->Finish();
+/* Make CommandBuffer ready for the next test case. */
+bool CmdBufFuzz::CmdBufReset() {
+  // Wait for handling of commands from the previous test case to complete.
+  return cmd_helper_->Finish();
 }
 
-void CmdBufFuzz::Reset() {
+/* Clean up from the last test case and get ready for the next one. */
+bool CmdBufFuzz::Reset() {
   action_index_ = 0;
-  // Wait for in-flight commands to finish
-  CmdBufReset();
+  return CmdBufReset();
 }
 
 // Keeper of global fuzzing state
@@ -561,16 +580,18 @@ CmdBufFuzz* wgpuf_setup;
 
 }  // namespace gpu::cmdbuf::fuzzing
 
+/* One-time early initialization at process startup. */
 extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
-  logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
-  CHECK(base::i18n::InitializeICU());
-  base::CommandLine::Init(*argc, *argv);
-  mojo::core::Init();
+  logging::SetMinLogLevel(logging::LOGGING_VERBOSE);  // Enable logging.
+  CHECK(base::i18n::InitializeICU());  // Unicode support for cmd line parsing.
+  base::CommandLine::Init(*argc, *argv);  // Parse cmd line args.
+  mojo::core::Init();  // Initialize Mojo; probably unnecessary.
 
   gpu::cmdbuf::fuzzing::wgpuf_setup = new gpu::cmdbuf::fuzzing::CmdBufFuzz();
   return 0;
 }
 
+/* Fuzzer entry point. Called on every iteration with a fresh test case. */
 DEFINE_PROTO_FUZZER(gpu::cmdbuf::fuzzing::CmdBufSession& session) {
   gpu::cmdbuf::fuzzing::wgpuf_setup->RunCommandBuffer(session);
   return;

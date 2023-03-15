@@ -43,14 +43,15 @@ class CmdBufFuzz : public base::TestSuite {
  public:
   CmdBufFuzz();
   ~CmdBufFuzz() override;
+  void CommandLineInit();
   void GfxInit();
 
   void RuntimeInit();
-  void Reset();
+  bool Reset();
 
   // CommandBuffer ops
   void RunCommandBuffer(cmdbuf::fuzzing::CmdBufSession);
-  void CmdBufReset();
+  bool CmdBufReset();
   gpu::SyncToken SyncTokenFromProto(cmdbuf::fuzzing::SyncToken token_proto);
   void SignalSyncTokenCallback();
 
