@@ -88,32 +88,50 @@ void FontMatchingMetrics::Initialize() {
 
 void FontMatchingMetrics::ReportSuccessfulFontFamilyMatch(
     const AtomicString& font_family_name) {
+  if (font_family_name.IsNull()) {
+    return;
+  }
   successful_font_families_.insert(font_family_name);
 }
 
 void FontMatchingMetrics::ReportFailedFontFamilyMatch(
     const AtomicString& font_family_name) {
+  if (font_family_name.IsNull()) {
+    return;
+  }
   failed_font_families_.insert(font_family_name);
 }
 
 void FontMatchingMetrics::ReportSystemFontFamily(
     const AtomicString& font_family_name) {
+  if (font_family_name.IsNull()) {
+    return;
+  }
   system_font_families_.insert(font_family_name);
 }
 
 void FontMatchingMetrics::ReportWebFontFamily(
     const AtomicString& font_family_name) {
+  if (font_family_name.IsNull()) {
+    return;
+  }
   web_font_families_.insert(font_family_name);
 }
 
 void FontMatchingMetrics::ReportSuccessfulLocalFontMatch(
     const AtomicString& font_name) {
+  if (font_name.IsNull()) {
+    return;
+  }
   local_fonts_succeeded_.insert(font_name);
   ReportLocalFontExistenceByUniqueNameOnly(font_name, /*font_exists=*/true);
 }
 
 void FontMatchingMetrics::ReportFailedLocalFontMatch(
     const AtomicString& font_name) {
+  if (font_name.IsNull()) {
+    return;
+  }
   local_fonts_failed_.insert(font_name);
   ReportLocalFontExistenceByUniqueNameOnly(font_name, /*font_exists=*/false);
 }
@@ -121,6 +139,9 @@ void FontMatchingMetrics::ReportFailedLocalFontMatch(
 void FontMatchingMetrics::ReportLocalFontExistenceByUniqueNameOnly(
     const AtomicString& font_name,
     bool font_exists) {
+  if (font_name.IsNull()) {
+    return;
+  }
   if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontExistenceByUniqueNameOnly)) {
     return;

@@ -181,7 +181,7 @@ void FontFaceCache::IncrementVersion() {
 FontFaceCache::CapabilitiesSet* FontFaceCache::SegmentedFacesByFamily::Find(
     const AtomicString& family) const {
   const auto it = map_.find(family);
-  if (it == map_.end() || it->value->IsEmpty()) {
+  if (it == map_.end()) {
     return nullptr;
   }
   return it->value;
@@ -190,10 +190,6 @@ FontFaceCache::CapabilitiesSet* FontFaceCache::SegmentedFacesByFamily::Find(
 CSSSegmentedFontFace* FontFaceCache::Get(
     const FontDescription& font_description,
     const AtomicString& family) {
-  if (family.empty()) {
-    return nullptr;
-  }
-
   CapabilitiesSet* family_faces = segmented_faces_.Find(family);
   if (!family_faces) {
     return nullptr;

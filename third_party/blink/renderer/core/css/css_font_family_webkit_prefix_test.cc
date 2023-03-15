@@ -104,18 +104,17 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
 
   // If empty standard font is specified, counter is never triggered.
   GetGenericGenericFontFamilySettings().UpdateStandard(g_empty_atom);
-  LoadPageWithFontFamilyValue("initial");
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
-  LoadPageWithFontFamilyValue("-webkit-body");
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
-  LoadPageWithFontFamilyValue("-webkit-body, serif");
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
-  LoadPageWithFontFamilyValue("serif, -webkit-body");
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
+
+  for (String font_family_value :
+       {"initial", "-webkit-body", "-webkit-body, serif",
+        "serif, -webkit-body"}) {
+    LoadPageWithFontFamilyValue(font_family_value);
+    ASSERT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody))
+        << "font-family: " << font_family_value
+        << "; lead to counting use of -webkit-body generic family despite "
+           "generic family being configured to empty family name in settings.";
+  }
 
   // Implementation via FontDescription::GenericFamilyType is weird, here the
   // last specified generic family is set by FontBuilder. So FontSelector will

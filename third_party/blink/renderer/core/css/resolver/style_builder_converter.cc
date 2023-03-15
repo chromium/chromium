@@ -256,9 +256,17 @@ static bool ConvertFontFamilyName(
                cssValueID == CSSValueID::kMath) {
       family_name = font_family_names::kMath;
     }
+    // Something went wrong with the conversion or retrieving the name from
+    // preferences for the specific generic family.
+    if (family_name.empty()) {
+      return false;
+    }
   }
 
-  return !family_name.empty();
+  // Empty font family names (converted from CSSFontFamilyValue above) are
+  // acceptable for defining and matching against
+  // @font-faces, compare https://github.com/w3c/csswg-drafts/issues/4510.
+  return !family_name.IsNull();
 }
 
 FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(

@@ -233,8 +233,7 @@ FontFace* FontFace::Create(Document* document,
                                       AtRuleDescriptorID::LineGapOverride) &&
       font_face->SetPropertyFromStyle(properties,
                                       AtRuleDescriptorID::SizeAdjust) &&
-      font_face->GetFontSelectionCapabilities().IsValid() &&
-      !font_face->family().empty()) {
+      font_face->GetFontSelectionCapabilities().IsValid()) {
     font_face->InitCSSFontFace(document->GetExecutionContext(), *src);
     return font_face;
   }

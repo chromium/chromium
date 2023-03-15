@@ -162,31 +162,34 @@ scoped_refptr<FontData> FontFallbackList::GetFontData(
 
   for (; curr_family; curr_family = curr_family->Next()) {
     family_index_++;
-    if (!curr_family->FamilyName().empty()) {
-      if (!GetFontSelector()) {
+    if (!GetFontSelector()) {
+      // Don't query system fonts for empty font family name.
+      if (!curr_family->FamilyName().empty()) {
         if (auto result = FontCache::Get().GetFontData(
-                font_description, curr_family->FamilyName()))
+                font_description, curr_family->FamilyName())) {
           return result;
-        continue;
+        }
       }
-
-      scoped_refptr<FontData> result =
-          GetFontSelector()->GetFontData(font_description, *curr_family);
-      if (!result) {
-        result = FontCache::Get().GetFontData(font_description,
-                                              curr_family->FamilyName());
-        GetFontSelector()->ReportFontLookupByUniqueOrFamilyName(
-            curr_family->FamilyName(), font_description,
-            DynamicTo<SimpleFontData>(result.get()));
-      }
-      if (result) {
-        GetFontSelector()->ReportSuccessfulFontFamilyMatch(
-            curr_family->FamilyName());
-        return result;
-      }
-
-      GetFontSelector()->ReportFailedFontFamilyMatch(curr_family->FamilyName());
+      continue;
     }
+
+    scoped_refptr<FontData> result =
+        GetFontSelector()->GetFontData(font_description, *curr_family);
+    // Don't query system fonts for empty font family name.
+    if (!result && !curr_family->FamilyName().empty()) {
+      result = FontCache::Get().GetFontData(font_description,
+                                            curr_family->FamilyName());
+      GetFontSelector()->ReportFontLookupByUniqueOrFamilyName(
+          curr_family->FamilyName(), font_description,
+          DynamicTo<SimpleFontData>(result.get()));
+    }
+    if (result) {
+      GetFontSelector()->ReportSuccessfulFontFamilyMatch(
+          curr_family->FamilyName());
+      return result;
+    }
+
+    GetFontSelector()->ReportFailedFontFamilyMatch(curr_family->FamilyName());
   }
   family_index_ = kCAllFamiliesScanned;
 
