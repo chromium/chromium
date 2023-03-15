@@ -17,6 +17,7 @@
 #include "media/cdm/win/test/media_foundation_clear_key_activate.h"
 #include "media/cdm/win/test/media_foundation_clear_key_decryptor.h"
 #include "media/cdm/win/test/media_foundation_clear_key_guids.h"
+#include "media/cdm/win/test/media_foundation_clear_key_output_policy.h"
 
 namespace media {
 
@@ -90,8 +91,18 @@ STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::GetPolicy(
     _In_ MFPOLICYMANAGER_ACTION action,
     _COM_Outptr_ IMFOutputPolicy** policy) {
   DVLOG_FUNC(1);
-  NOTIMPLEMENTED();
-  return E_NOTIMPL;
+  RETURN_IF_FAILED(GetShutdownStatus());
+
+  *policy = nullptr;
+
+  ComPtr<IMFOutputPolicy> output_policy;
+  RETURN_IF_FAILED(
+      (MakeAndInitialize<MediaFoundationClearKeyOutputPolicy, IMFOutputPolicy>(
+          &output_policy, action)));
+
+  *policy = output_policy.Detach();
+
+  return S_OK;
 }
 
 STDMETHODIMP MediaFoundationClearKeyInputTrustAuthority::BindAccess(
