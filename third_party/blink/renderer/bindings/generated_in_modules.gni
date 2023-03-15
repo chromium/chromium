@@ -421,8 +421,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state_descriptor.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_extent_3d_dict.cc",

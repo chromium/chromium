@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_state_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_target_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_fragment_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_multisample_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_primitive_state.h"
