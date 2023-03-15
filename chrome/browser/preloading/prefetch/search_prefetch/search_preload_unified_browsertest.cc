@@ -359,6 +359,10 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     return search_prefetch_service_;
   }
 
+  void ShutDownSearchServer() {
+    ASSERT_TRUE(search_engine_server_.ShutdownAndWaitUntilComplete());
+  }
+
  private:
   AutocompleteMatch CreateSearchSuggestionMatch(
       const std::string& original_query,
@@ -371,10 +375,12 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     match.search_terms_args->original_query = base::UTF8ToUTF16(original_query);
     match.destination_url = GetSearchUrl(search_terms, UrlType::kReal);
     match.keyword = base::UTF8ToUTF16(original_query);
-    if (prerender_hint == PrerenderHint::kEnabled)
+    if (prerender_hint == PrerenderHint::kEnabled) {
       match.RecordAdditionalInfo("should_prerender", "true");
-    if (prefetch_hint == PrefetchHint::kEnabled)
+    }
+    if (prefetch_hint == PrefetchHint::kEnabled) {
       match.RecordAdditionalInfo("should_prefetch", "true");
+    }
     return match;
   }
 
@@ -1797,6 +1803,59 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   // No prerender requests went through network.
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
+}
+
+// Tests that once prefetch encountered error, prerender would be canceled as
+// well.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
+                       PrefetchErrorCancelsPrerender) {
+  base::HistogramTester histogram_tester;
+  set_service_deferral_type(SearchPreloadTestResponseDeferralType::kDeferBody);
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+
+  std::string search_query_1 = "pre";
+  std::string prerender_query = "prerender";
+  GURL expected_prefetch_url =
+      GetSearchUrl(prerender_query, UrlType::kPrefetch);
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  ChangeAutocompleteResult(search_query_1, prerender_query,
+                           PrerenderHint::kDisabled, PrefetchHint::kEnabled);
+
+  // Wait until prefetch request succeeds.
+  absl::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(expected_prefetch_url));
+  EXPECT_TRUE(prefetch_status.has_value());
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prefetch_url),
+                           {SearchPrefetchStatus::kCanBeServed});
+  std::string search_query_2 = "prer";
+  ChangeAutocompleteResult(search_query_2, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+
+  // The suggestion service should hint `expected_prefetch_url`, and
+  // prerendering for this url should start.
+  registry_observer.WaitForTrigger(expected_prerender_url);
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), expected_prerender_url);
+
+  ShutDownSearchServer();
+  prerender_observer.WaitForDestroyed();
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prefetch_url),
+                           {SearchPrefetchStatus::kRequestFailed});
+  // TODO(crbug.com/1400881): We should have another metric to track the
+  // cancellation reason.
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "DefaultSearchEngine",
+      /*SearchPrefetchStatus::kPrefetchServedForRealNavigation*/ 16, 1);
 }
 
 // Edge case: when the prerendering navigation is still reading from the cache,
