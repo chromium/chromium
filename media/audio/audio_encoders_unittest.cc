@@ -28,16 +28,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
-
-// The AAC tests are failing on Arm64. Disable the AAC part of these tests until
-// those failures can be fixed. TOOO(https://crbug.com/1424215): FIx tests,
-// and/or investigate if AAC support should be turned off in Chrome for Arm64
-// Windows, or if these are an issue with the tests.
-#if !defined(ARCH_CPU_ARM64)
 #define HAS_AAC_ENCODER 1
 #endif
-
-#endif  // IS_WIN
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/filters/mac/audio_toolbox_audio_encoder.h"
