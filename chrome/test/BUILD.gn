@@ -4655,6 +4655,8 @@ if (!is_android) {
     }
     if (enable_print_preview) {
       sources += [
+        "../browser/printing/browser_printing_context_factory_for_test.cc",
+        "../browser/printing/browser_printing_context_factory_for_test.h",
         "../browser/printing/pdf_nup_converter_client_browsertest.cc",
         "../browser/printing/print_browsertest.cc",
         "../browser/printing/print_preview_dialog_controller_browsertest.cc",

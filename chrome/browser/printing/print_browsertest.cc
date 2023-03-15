@@ -26,6 +26,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
@@ -159,137 +160,6 @@ const PrinterSemanticCapsAndDefaults::Paper kTestPaper{
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 constexpr char kFakeDmToken[] = "fake-dm-token";
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-
-std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
-    PrintingContext::Delegate* delegate,
-    bool skip_system_calls,
-    const std::string& printer_name) {
-  auto context =
-      std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
-
-  context->SetDeviceSettings(printer_name,
-                             MakeDefaultPrintSettings(printer_name));
-  return context;
-}
-
-class BrowserPrintingContextFactoryForTest
-    : public PrintingContextFactoryForTest {
- public:
-  std::unique_ptr<PrintingContext> CreatePrintingContext(
-      PrintingContext::Delegate* delegate,
-      bool skip_system_calls) override {
-    auto context = MakeDefaultTestPrintingContext(delegate, skip_system_calls,
-                                                  printer_name_);
-
-    if (cancels_in_new_document_) {
-      context->SetNewDocumentCancels();
-    }
-    if (failed_error_for_new_document_)
-      context->SetNewDocumentFails();
-    if (access_denied_errors_for_new_document_)
-      context->SetNewDocumentBlockedByPermissions();
-#if BUILDFLAG(IS_WIN)
-    if (access_denied_errors_for_render_page_)
-      context->SetOnRenderPageBlockedByPermissions();
-    if (failed_error_for_render_page_number_) {
-      context->SetOnRenderPageFailsForPage(
-          failed_error_for_render_page_number_);
-    }
-#endif
-    if (access_denied_errors_for_render_document_)
-      context->SetOnRenderDocumentBlockedByPermissions();
-    if (access_denied_errors_for_document_done_)
-      context->SetDocumentDoneBlockedByPermissions();
-
-    if (fail_on_use_default_settings_)
-      context->SetUseDefaultSettingsFails();
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-    if (cancel_on_ask_user_for_settings_)
-      context->SetAskUserForSettingsCanceled();
-#endif
-
-    context->SetUserSettings(*MakeUserModifiedPrintSettings(printer_name_));
-
-    context->SetOnNewDocumentCallback(base::BindRepeating(
-        &BrowserPrintingContextFactoryForTest::OnNewDocument,
-        base::Unretained(this)));
-
-    return std::move(context);
-  }
-
-  void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
-    printer_name_ = printer_name;
-  }
-
-  void SetCancelErrorOnNewDocument(bool cause_errors) {
-    cancels_in_new_document_ = cause_errors;
-  }
-
-  void SetFailedErrorOnNewDocument(bool cause_errors) {
-    failed_error_for_new_document_ = cause_errors;
-  }
-
-  void SetAccessDeniedErrorOnNewDocument(bool cause_errors) {
-    access_denied_errors_for_new_document_ = cause_errors;
-  }
-
-#if BUILDFLAG(IS_WIN)
-  void SetAccessDeniedErrorOnRenderPage(bool cause_errors) {
-    access_denied_errors_for_render_page_ = cause_errors;
-  }
-
-  void SetFailedErrorForRenderPage(uint32_t page_number) {
-    failed_error_for_render_page_number_ = page_number;
-  }
-#endif
-
-  void SetAccessDeniedErrorOnRenderDocument(bool cause_errors) {
-    access_denied_errors_for_render_document_ = cause_errors;
-  }
-
-  void SetAccessDeniedErrorOnDocumentDone(bool cause_errors) {
-    access_denied_errors_for_document_done_ = cause_errors;
-  }
-
-  void SetFailErrorOnUseDefaultSettings() {
-    fail_on_use_default_settings_ = true;
-  }
-
-#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
-  void SetCancelErrorOnAskUserForSettings() {
-    cancel_on_ask_user_for_settings_ = true;
-  }
-#endif
-
-  void OnNewDocument(const PrintSettings& settings) {
-    ++new_document_called_count_;
-    document_print_settings_ = settings;
-  }
-
-  int new_document_called_count() { return new_document_called_count_; }
-
-  const absl::optional<PrintSettings>& document_print_settings() const {
-    return document_print_settings_;
-  }
-
- private:
-  std::string printer_name_;
-  bool cancels_in_new_document_ = false;
-  bool failed_error_for_new_document_ = false;
-  bool access_denied_errors_for_new_document_ = false;
-#if BUILDFLAG(IS_WIN)
-  bool access_denied_errors_for_render_page_ = false;
-  uint32_t failed_error_for_render_page_number_ = 0;
-#endif
-  bool access_denied_errors_for_render_document_ = false;
-  bool access_denied_errors_for_document_done_ = false;
-  bool fail_on_use_default_settings_ = false;
-#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
-  bool cancel_on_ask_user_for_settings_ = false;
-#endif
-  int new_document_called_count_ = 0;
-  absl::optional<PrintSettings> document_print_settings_;
-};
 
 class TestPrintRenderFrame
     : public mojom::PrintRenderFrameInterceptorForTesting {
