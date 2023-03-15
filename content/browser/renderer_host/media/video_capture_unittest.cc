@@ -316,6 +316,10 @@ class VideoCaptureTest : public testing::Test,
     base::RunLoop().RunUntilIdle();
   }
 
+  MediaStreamManager* media_stream_manager() const {
+    return media_stream_manager_.get();
+  }
+
  private:
   std::unique_ptr<FakeMediaStreamUIProxy> CreateFakeUI() {
     return std::make_unique<FakeMediaStreamUIProxy>(
@@ -419,6 +423,21 @@ TEST_F(VideoCaptureTest, IncrementMatchesDecrementCalls) {
   host->NotifyStreamRemoved();
   host->NotifyAllStreamsRemoved();
   EXPECT_EQ(0u, host->number_of_active_streams_);
+}
+
+TEST_F(VideoCaptureTest, RegisterAndUnregisterWithMediaStreamManager) {
+  {
+    mojo::Remote<media::mojom::VideoCaptureHost> client;
+    VideoCaptureHost::Create(0 /* render_process_id */, media_stream_manager(),
+                             client.BindNewPipeAndPassReceiver());
+    EXPECT_TRUE(client.is_bound());
+    EXPECT_EQ(media_stream_manager()->num_video_capture_hosts(), 1u);
+  }
+
+  base::RunLoop().RunUntilIdle();
+  // At this point, the pipe is closed and the VideoCaptureHost should be
+  // removed from MediaStreamManager.
+  EXPECT_EQ(media_stream_manager()->num_video_capture_hosts(), 0u);
 }
 
 }  // namespace content

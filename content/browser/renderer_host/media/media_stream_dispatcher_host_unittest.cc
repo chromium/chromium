@@ -1332,6 +1332,24 @@ TEST_F(MediaStreamDispatcherHostTest, GetOpenDeviceSucceeds) {
       })));
   loop.Run();
 }
+
+TEST_F(MediaStreamDispatcherHostTest,
+       RegisterAndUnregisterWithMediaStreamManager) {
+  {
+    mojo::Remote<blink::mojom::MediaStreamDispatcherHost> client;
+    MediaStreamDispatcherHost::Create(kProcessId, kRenderId,
+                                      media_stream_manager_.get(),
+                                      client.BindNewPipeAndPassReceiver());
+    EXPECT_TRUE(client.is_bound());
+    EXPECT_EQ(media_stream_manager_->num_dispatcher_hosts(), 1u);
+  }
+
+  task_environment_.RunUntilIdle();
+  // At this point, the pipe is closed and the MediaStreamDispatcherHost should
+  // be removed from MediaStreamManager.
+  EXPECT_EQ(media_stream_manager_->num_dispatcher_hosts(), 0u);
+}
+
 // TODO(crbug.com/1300883): Add test cases for multi stream generation.
 
 class MediaStreamDispatcherHostStreamTypeCombinationTest

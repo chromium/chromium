@@ -3765,6 +3765,8 @@ void MediaStreamManager::WillDestroyCurrentMessageLoop() {
   media_devices_manager_ = nullptr;
   media_stream_manager = nullptr;
   requests_.clear();
+  dispatcher_hosts_.Clear();
+  video_capture_hosts_.Clear();
 }
 
 void MediaStreamManager::NotifyDevicesChanged(
@@ -4214,6 +4216,20 @@ void MediaStreamManager::SetCapturedDisplaySurfaceFocus(
                               is_from_timer);
 }
 #endif
+
+void MediaStreamManager::RegisterDispatcherHost(
+    std::unique_ptr<blink::mojom::MediaStreamDispatcherHost> host,
+    mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  dispatcher_hosts_.Add(std::move(host), std::move(receiver));
+}
+
+void MediaStreamManager::RegisterVideoCaptureHost(
+    std::unique_ptr<media::mojom::VideoCaptureHost> host,
+    mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  video_capture_hosts_.Add(std::move(host), std::move(receiver));
+}
 
 // static
 PermissionControllerImpl* MediaStreamManager::GetPermissionController(

@@ -40,6 +40,8 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/permission_controller.h"
 #include "media/base/video_facing.h"
+#include "media/capture/mojom/video_capture.mojom.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
@@ -436,6 +438,16 @@ class CONTENT_EXPORT MediaStreamManager
                                       bool is_from_timer);
 #endif
 
+  void RegisterDispatcherHost(
+      std::unique_ptr<blink::mojom::MediaStreamDispatcherHost> host,
+      mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver);
+  size_t num_dispatcher_hosts() const { return dispatcher_hosts_.size(); }
+
+  void RegisterVideoCaptureHost(
+      std::unique_ptr<media::mojom::VideoCaptureHost> host,
+      mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver);
+  size_t num_video_capture_hosts() const { return video_capture_hosts_.size(); }
+
  private:
   friend class MediaStreamManagerTest;
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest, DesktopCaptureDeviceStopped);
@@ -796,6 +808,10 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Provider of system power change logging to the WebRTC logs.
   MediaStreamPowerLogger power_logger_;
+
+  mojo::UniqueReceiverSet<blink::mojom::MediaStreamDispatcherHost>
+      dispatcher_hosts_;
+  mojo::UniqueReceiverSet<media::mojom::VideoCaptureHost> video_capture_hosts_;
 
   GenerateStreamTestCallback generate_stream_test_callback_;
 };

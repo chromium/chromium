@@ -248,7 +248,7 @@ void MediaStreamDispatcherHost::Create(
     mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  mojo::MakeSelfOwnedReceiver(
+  media_stream_manager->RegisterDispatcherHost(
       std::make_unique<MediaStreamDispatcherHost>(
           render_process_id, render_frame_id, media_stream_manager),
       std::move(receiver));

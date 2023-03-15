@@ -261,6 +261,75 @@ class MockMediaStreamUIProxy : public FakeMediaStreamUIProxy {
                     ResponseCallback& response_callback));
 };
 
+class TestMediaStreamDispatcherHost
+    : public blink::mojom::MediaStreamDispatcherHost {
+  void GenerateStreams(
+      int32_t request_id,
+      const blink::StreamControls& controls,
+      bool user_gesture,
+      blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
+      GenerateStreamsCallback callback) override {}
+  void CancelRequest(int32_t request_id) override {}
+  void StopStreamDevice(
+      const std::string& device_id,
+      const absl::optional<base::UnguessableToken>& session_id) override {}
+  void OpenDevice(int32_t request_id,
+                  const std::string& device_id,
+                  blink::mojom::MediaStreamType type,
+                  OpenDeviceCallback callback) override {}
+  void CloseDevice(const std::string& label) override {}
+  void SetCapturingLinkSecured(
+      const absl::optional<base::UnguessableToken>& session_id,
+      blink::mojom::MediaStreamType type,
+      bool is_secure) override {}
+  void OnStreamStarted(const std::string& label) override {}
+
+#if !BUILDFLAG(IS_ANDROID)
+  void FocusCapturedSurface(const std::string& label, bool focus) override {}
+  void Crop(const base::UnguessableToken& device_id,
+            const base::Token& crop_id,
+            uint32_t crop_version,
+            CropCallback callback) override {}
+#endif
+
+  void GetOpenDevice(int32_t page_request_id,
+                     const base::UnguessableToken& session_id,
+                     const base::UnguessableToken& transfer_id,
+                     GetOpenDeviceCallback callback) override {}
+  void KeepDeviceAliveForTransfer(
+      const base::UnguessableToken& session_id,
+      const base::UnguessableToken& transfer_id,
+      base::OnceCallback<void(bool device_found)> callback) override {}
+};
+
+class TestVideoCaptureHost : public media::mojom::VideoCaptureHost {
+  void Start(const base::UnguessableToken& device_id,
+             const base::UnguessableToken& session_id,
+             const media::VideoCaptureParams& params,
+             mojo::PendingRemote<media::mojom::VideoCaptureObserver> observer)
+      override {}
+  void Stop(const base::UnguessableToken& device_id) override {}
+  void Pause(const base::UnguessableToken& device_id) override {}
+  void Resume(const base::UnguessableToken& device_id,
+              const base::UnguessableToken& session_id,
+              const media::VideoCaptureParams& params) override {}
+  void RequestRefreshFrame(const base::UnguessableToken& device_id) override {}
+  void ReleaseBuffer(const base::UnguessableToken& device_id,
+                     int32_t buffer_id,
+                     const media::VideoCaptureFeedback& feedback) override {}
+  void GetDeviceSupportedFormats(
+      const base::UnguessableToken& device_id,
+      const base::UnguessableToken& session_id,
+      GetDeviceSupportedFormatsCallback callback) override {}
+  void GetDeviceFormatsInUse(const base::UnguessableToken& device_id,
+                             const base::UnguessableToken& session_id,
+                             GetDeviceFormatsInUseCallback callback) override {}
+  void OnLog(const base::UnguessableToken& device_id,
+             const std::string& reason) override {}
+  void OnFrameDropped(const base::UnguessableToken& device_id,
+                      media::VideoCaptureFrameDropReason reason) override {}
+};
+
 }  // namespace
 
 class MediaStreamManagerTest : public ::testing::Test
@@ -1254,6 +1323,49 @@ TEST_F(MediaStreamManagerTest, MultiCaptureIntermediateErrorOnOpening) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_CALL(*this, MultiCaptureStopped(_));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+TEST_F(MediaStreamManagerTest, RegisterUnregisterHosts) {
+  mojo::Remote<blink::mojom::MediaStreamDispatcherHost> dispatcher_client1;
+  media_stream_manager_->RegisterDispatcherHost(
+      std::make_unique<TestMediaStreamDispatcherHost>(),
+      dispatcher_client1.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(media_stream_manager_->num_dispatcher_hosts(), 1u);
+
+  mojo::Remote<media::mojom::VideoCaptureHost> video_capture_client1;
+  media_stream_manager_->RegisterVideoCaptureHost(
+      std::make_unique<TestVideoCaptureHost>(),
+      video_capture_client1.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(media_stream_manager_->num_video_capture_hosts(), 1u);
+
+  mojo::Remote<blink::mojom::MediaStreamDispatcherHost> dispatcher_client2;
+  media_stream_manager_->RegisterDispatcherHost(
+      std::make_unique<TestMediaStreamDispatcherHost>(),
+      dispatcher_client2.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(media_stream_manager_->num_dispatcher_hosts(), 2u);
+
+  mojo::Remote<media::mojom::VideoCaptureHost> video_capture_client2;
+  media_stream_manager_->RegisterVideoCaptureHost(
+      std::make_unique<TestVideoCaptureHost>(),
+      video_capture_client2.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(media_stream_manager_->num_video_capture_hosts(), 2u);
+
+  // Closing a pipe unregisters the corresponding host.
+  dispatcher_client1.reset();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(media_stream_manager_->num_dispatcher_hosts(), 1u);
+
+  video_capture_client1.reset();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(media_stream_manager_->num_video_capture_hosts(), 1u);
+
+  // Shutting down MediaStreamManager disconnects the remaining pipes.
+  EXPECT_TRUE(dispatcher_client2.is_connected());
+  EXPECT_TRUE(video_capture_client2.is_connected());
+  media_stream_manager_->WillDestroyCurrentMessageLoop();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(dispatcher_client2.is_connected());
+  EXPECT_FALSE(video_capture_client2.is_connected());
 }
 
 class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
