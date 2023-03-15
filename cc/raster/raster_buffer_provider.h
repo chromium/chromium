@@ -41,6 +41,21 @@ class CC_EXPORT RasterBufferProvider {
   // a placeholder for the skia native format.
   static void PlaybackToMemory(
       void* memory,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      size_t stride,
+      const RasterSource* raster_source,
+      const gfx::Rect& canvas_bitmap_rect,
+      const gfx::Rect& canvas_playback_rect,
+      const gfx::AxisTransform2d& transform,
+      const gfx::ColorSpace& target_color_space,
+      bool gpu_compositing,
+      const RasterSource::PlaybackSettings& playback_settings);
+
+  // Deprecated version of the above that takes in ResourceFormat.
+  // TODO(crbug.com/1378708): Eliminate this variant.
+  static void PlaybackToMemory(
+      void* memory,
       viz::ResourceFormat format,
       const gfx::Size& size,
       size_t stride,

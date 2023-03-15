@@ -68,6 +68,24 @@ bool IsSupportedPlaybackToMemoryFormat(viz::ResourceFormat format) {
 // static
 void RasterBufferProvider::PlaybackToMemory(
     void* memory,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    size_t stride,
+    const RasterSource* raster_source,
+    const gfx::Rect& canvas_bitmap_rect,
+    const gfx::Rect& canvas_playback_rect,
+    const gfx::AxisTransform2d& transform,
+    const gfx::ColorSpace& target_color_space,
+    bool gpu_compositing,
+    const RasterSource::PlaybackSettings& playback_settings) {
+  return PlaybackToMemory(memory, format.resource_format(), size, stride,
+                          raster_source, canvas_bitmap_rect,
+                          canvas_playback_rect, transform, target_color_space,
+                          gpu_compositing, playback_settings);
+}
+
+void RasterBufferProvider::PlaybackToMemory(
+    void* memory,
     viz::ResourceFormat format,
     const gfx::Size& size,
     size_t stride,

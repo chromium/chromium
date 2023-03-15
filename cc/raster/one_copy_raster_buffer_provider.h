@@ -84,7 +84,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const gfx::Rect& raster_dirty_rect,
       const gfx::AxisTransform2d& transform,
       const gfx::Size& resource_size,
-      viz::ResourceFormat resource_format,
+      viz::SharedImageFormat format,
       const gfx::ColorSpace& color_space,
       const RasterSource::PlaybackSettings& playback_settings,
       uint64_t previous_content_id,
@@ -122,7 +122,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
 
     // These fields are for use on the worker thread.
     const gfx::Size resource_size_;
-    const viz::ResourceFormat resource_format_;
+    const viz::SharedImageFormat format_;
     const gfx::ColorSpace color_space_;
     const uint64_t previous_content_id_;
     const gpu::SyncToken before_raster_sync_token_;
@@ -140,7 +140,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const gfx::Rect& raster_full_rect,
       const gfx::Rect& raster_dirty_rect,
       const gfx::AxisTransform2d& transform,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::ColorSpace& dst_color_space,
       const RasterSource::PlaybackSettings& playback_settings,
       uint64_t previous_content_id,
@@ -148,7 +148,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   gpu::SyncToken CopyOnWorkerThread(StagingBuffer* staging_buffer,
                                     const RasterSource* raster_source,
                                     const gfx::Rect& rect_to_copy,
-                                    viz::ResourceFormat resource_format,
+                                    viz::SharedImageFormat format,
                                     const gfx::Size& resource_size,
                                     gpu::Mailbox* mailbox,
                                     GLenum mailbox_texture_target,
