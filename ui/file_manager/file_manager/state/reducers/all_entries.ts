@@ -360,6 +360,7 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
         case VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT:
           return EntryType.ENTRY_LIST;
         case VolumeManagerCommon.RootType.CROSTINI:
+        case VolumeManagerCommon.RootType.ANDROID_FILES:
           return EntryType.PLACEHOLDER;
         case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
         case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
@@ -436,6 +437,7 @@ export function getMyFiles(state: State):
     myFilesEntryList = new EntryList(
         str('MY_FILES_ROOT_LABEL'), VolumeManagerCommon.RootType.MY_FILES);
     appendEntry(state, myFilesEntryList);
+    state.uiEntries = [...state.uiEntries, myFilesEntryList.toURL()];
   }
 
   return {
@@ -484,6 +486,9 @@ function volumeNestingEntries(
         // Also remove it from the children field.
         myFilesFileData.children = myFilesFileData.children.filter(
             childKey => childKey !== childEntry.toURL());
+        // And remove it from the uiEntries if existed.
+        state.uiEntries = state.uiEntries.filter(
+            uiEntryKey => uiEntryKey !== childEntry.toURL());
       }
     }
     appendChildIfNotExisted(myFilesEntry, newVolumeEntry);
@@ -513,6 +518,9 @@ function volumeNestingEntries(
         appendChildIfNotExisted(myFilesVolumeEntry!, childEntry);
         myFilesEntryList.removeChildEntry(childEntry);
       }
+      // Remove MyFiles entry list from the uiEntries.
+      state.uiEntries = state.uiEntries.filter(
+          uiEntryKey => uiEntryKey !== myFilesEntryListKey);
     }
   }
 
@@ -527,6 +535,7 @@ function volumeNestingEntries(
           str('DRIVE_DIRECTORY_LABEL'),
           VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
       appendEntry(state, googleDrive);
+      state.uiEntries = [...state.uiEntries, googleDrive.toURL()];
     }
     appendChildIfNotExisted(googleDrive, myDrive!);
 
@@ -559,7 +568,7 @@ function volumeNestingEntries(
         fakeEntries[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME];
     if (fakeSharedWithMe) {
       appendEntry(state, fakeSharedWithMe);
-      state.uiEntries.push(fakeSharedWithMe.toURL());
+      state.uiEntries = [...state.uiEntries, fakeSharedWithMe.toURL()];
       appendChildIfNotExisted(googleDrive, fakeSharedWithMe);
     }
 
@@ -567,7 +576,7 @@ function volumeNestingEntries(
     const fakeOffline = fakeEntries[VolumeManagerCommon.RootType.DRIVE_OFFLINE];
     if (fakeOffline) {
       appendEntry(state, fakeOffline);
-      state.uiEntries.push(fakeOffline.toURL());
+      state.uiEntries = [...state.uiEntries, fakeOffline.toURL()];
       appendChildIfNotExisted(googleDrive, fakeOffline);
     }
   }
@@ -591,6 +600,7 @@ function volumeNestingEntries(
             volumeMetadata.driveLabel || '',
             VolumeManagerCommon.RootType.REMOVABLE, volumeMetadata.devicePath);
         appendEntry(state, parentEntry);
+        state.uiEntries = [...state.uiEntries, parentEntry.toURL()];
         // Removable devices with group, its parent should always be ejectable.
         state.allEntries[parentKey].isEjectable = true;
       }
