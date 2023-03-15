@@ -118,6 +118,7 @@ To get Chrome OS System Colors, an element must:
 
 /* Input and Textarea */
 :host-context(body.jelly-enabled) cr-input,
+:host-context(body.jelly-enabled) cr-search-field::part(searchInput),
 :host-context(body.jelly-enabled) cr-textarea {
   --cr-input-background-color: var(--cros-sys-input_field_dark);
   --cr-input-error-color: var(--cros-sys-error);
@@ -133,6 +134,20 @@ To get Chrome OS System Colors, an element must:
   --cr-radio-button-unchecked-color: var(--cros-sys-on_surface);
   --cr-radio-button-unchecked-ripple-color:
       var(--cros-sys-ripple_neutral_on_subtle);
+}
+
+/* Search field */
+:host-context(body.jelly-enabled) cr-search-field {
+  --cr-search-field-clear-icon-fill: var(--cros-sys-primary);
+  --cr-search-field-clear-icon-margin-end: 6px;
+  --cr-search-field-input-border-bottom: none;
+  --cr-search-field-input-padding-start: 8px;
+  --cr-search-field-input-underline-border-radius: 4px;
+  --cr-search-field-search-icon-display: none;
+  --cr-search-field-search-icon-fill: var(--cros-sys-primary);
+  --cr-search-field-search-icon-inline-display: block;
+  --cr-search-field-search-icon-inline-margin-start: 6px;
+  border-radius: 4px;
 }
 
 /* Toggle */
