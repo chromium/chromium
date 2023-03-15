@@ -20,6 +20,7 @@
 
 class GrVkSecondaryCBDrawContext;
 class SkColorSpace;
+class SkImage;
 
 namespace gpu {
 class VulkanImage;

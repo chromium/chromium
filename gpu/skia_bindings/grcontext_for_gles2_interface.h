@@ -9,6 +9,8 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 
+class GrDirectContext;
+
 namespace gpu {
 struct Capabilities;
 class ContextSupport;
@@ -46,7 +48,7 @@ class GrContextForGLES2Interface : public GrContextOptions::ShaderErrorHandler {
   void FreeGpuResources();
 
  private:
-  sk_sp<class GrDirectContext> gr_context_;
+  sk_sp<GrDirectContext> gr_context_;
   raw_ptr<gpu::ContextSupport> context_support_;
 };
 
