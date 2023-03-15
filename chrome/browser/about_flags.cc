@@ -6886,14 +6886,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFencedFramesDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFencedFrames)},
 
-    {"enable-portals", flag_descriptions::kEnablePortalsName,
-     flag_descriptions::kEnablePortalsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kPortals)},
-    {"enable-portals-cross-origin",
-     flag_descriptions::kEnablePortalsCrossOriginName,
-     flag_descriptions::kEnablePortalsCrossOriginDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kPortalsCrossOrigin)},
-
     {"storage-access-api", flag_descriptions::kStorageAccessAPIName,
      flag_descriptions::kStorageAccessAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kStorageAccessAPI)},

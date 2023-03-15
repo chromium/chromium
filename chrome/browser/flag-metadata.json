@@ -2942,16 +2942,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "enable-portals",
-    "owners": [ "jbroman", "//third_party/blink/renderer/core/html/portal/OWNERS" ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "enable-portals-cross-origin",
-    "owners": [ "jbroman", "//third_party/blink/renderer/core/html/portal/OWNERS" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-power-sounds",
     "owners": [ "afakhry", "bicioglu", "hongyulong", "nupurjain" ],
     "expiry_milestone": 123
