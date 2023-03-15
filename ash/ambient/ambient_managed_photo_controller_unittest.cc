@@ -15,7 +15,6 @@
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/test/in_process_image_decoder.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,7 +24,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -50,20 +48,6 @@ MATCHER_P(BackedBySameImageAs, photo_with_details, "") {
 
 class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
  public:
-  void CreateTestImageJpegFile(base::FilePath path,
-                               size_t width,
-                               size_t height,
-                               SkColor color) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(8, 8);
-    bitmap.eraseColor(color);
-    std::vector<unsigned char> data;
-    ASSERT_TRUE(gfx::JPEGCodec::Encode(bitmap, /*quality=*/50, &data));
-    size_t bytes_written = base::WriteFile(
-        path, reinterpret_cast<const char*>(data.data()), data.size());
-    ASSERT_EQ(data.size(), bytes_written);
-  }
-
   void CreateTestData() {
     bool success = temp_dir_.CreateUniqueTempDir();
     ASSERT_TRUE(success);

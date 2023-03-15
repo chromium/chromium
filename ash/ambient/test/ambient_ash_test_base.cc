@@ -32,6 +32,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -47,6 +49,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/label.h"
@@ -662,6 +665,20 @@ void AmbientAshTestBase::SetPhotoDownloadDelay(base::TimeDelta delay) {
       photo_controller()->get_photo_cache_for_testing());
 
   photo_cache->SetPhotoDownloadDelay(delay);
+}
+
+void AmbientAshTestBase::CreateTestImageJpegFile(base::FilePath path,
+                                                 size_t width,
+                                                 size_t height,
+                                                 SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(color);
+  std::vector<unsigned char> data;
+  ASSERT_TRUE(gfx::JPEGCodec::Encode(bitmap, /*quality=*/50, &data));
+  size_t bytes_written = base::WriteFile(
+      path, reinterpret_cast<const char*>(data.data()), data.size());
+  ASSERT_EQ(data.size(), bytes_written);
 }
 
 }  // namespace ash

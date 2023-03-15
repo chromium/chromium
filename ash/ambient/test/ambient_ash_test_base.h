@@ -212,6 +212,11 @@ class AmbientAshTestBase : public AshTestBase {
 
   void SetPhotoDownloadDelay(base::TimeDelta delay);
 
+  void CreateTestImageJpegFile(base::FilePath path,
+                               size_t width,
+                               size_t height,
+                               SkColor color);
+
  private:
   void SpinWaitForAmbientViewAvailable(
       const base::RepeatingClosure& quit_closure);
