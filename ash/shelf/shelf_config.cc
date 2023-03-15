@@ -18,6 +18,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
 
@@ -480,19 +482,33 @@ SkColor ShelfConfig::GetShelfControlButtonColor(
 }
 
 SkColor ShelfConfig::GetMaximizedShelfColor(const views::Widget* widget) const {
-  return SkColorSetA(GetDefaultShelfColor(widget), 0xFF);  // 100% opacity
+  if (!chromeos::features::IsJellyEnabled()) {
+    return SkColorSetA(GetDefaultShelfColor(widget), 0xFF);  // 100% opacity
+  }
+  return widget->GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBase);
 }
 
 ui::ColorId ShelfConfig::GetShelfBaseLayerColorId() const {
-  if (!in_tablet_mode_)
-    return kColorAshShieldAndBase80;
+  if (!chromeos::features::IsJellyEnabled()) {
+    if (!in_tablet_mode_) {
+      return kColorAshShieldAndBase80;
+    }
 
-  if (!is_in_app_)
-    return kColorAshShieldAndBase60;
+    if (!is_in_app_) {
+      return kColorAshShieldAndBase60;
+    }
 
-  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-             ? kColorAshShieldAndBase90
-             : kColorAshShieldAndBaseOpaque;
+    return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+               ? kColorAshShieldAndBase90
+               : kColorAshShieldAndBaseOpaque;
+  }
+
+  if (in_tablet_mode_ && is_in_app_) {
+    // In tablet mode with an app, we use the same opaque color as maximized.
+    return cros_tokens::kCrosSysSystemBase;
+  }
+
+  return cros_tokens::kCrosSysSystemBaseElevated;
 }
 
 SkColor ShelfConfig::GetDefaultShelfColor(const views::Widget* widget) const {
