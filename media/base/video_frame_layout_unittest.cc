@@ -308,4 +308,50 @@ TEST(VideoFrameLayout, EqualOperator) {
   EXPECT_NE(*layout, *different_layout);
 }
 
+TEST(VideoFrameLayout, FitsInContiguousBufferOfSize) {
+  auto coded_size = gfx::Size(320, 180);
+
+  std::vector<int32_t> strides = {384, 192, 192};
+  std::vector<size_t> offsets = {0, 200, 300};
+  std::vector<size_t> sizes = {200, 100, 100};
+  std::vector<ColorPlaneLayout> planes(strides.size());
+  for (size_t i = 0; i < strides.size(); i++) {
+    planes[i].stride = strides[i];
+    planes[i].offset = offsets[i];
+    planes[i].size = sizes[i];
+  }
+
+  auto layout =
+      VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_I420, coded_size, planes);
+  ASSERT_TRUE(layout.has_value());
+
+  EXPECT_TRUE(
+      layout->FitsInContiguousBufferOfSize(sizes[0] + sizes[1] + sizes[2]));
+
+  // Validate single plane size exceeds data size.
+  EXPECT_FALSE(layout->FitsInContiguousBufferOfSize(1));
+
+  // Validate sum of planes exceeds data size.
+  EXPECT_FALSE(layout->FitsInContiguousBufferOfSize(sizes[0] + sizes[1]));
+
+  // Validate offset exceeds plane size.
+  planes[2].offset = 301;
+  layout =
+      VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_I420, coded_size, planes);
+  ASSERT_TRUE(layout.has_value());
+  EXPECT_TRUE(
+      layout->FitsInContiguousBufferOfSize(sizes[0] + sizes[1] + sizes[2] + 1));
+  EXPECT_FALSE(layout->FitsInContiguousBufferOfSize(sizes[0]));
+
+  // Validate overflow.
+  planes[0].offset = 0;
+  planes[0].size = planes[1].size = planes[2].size =
+      std::numeric_limits<size_t>::max() / 2;
+  layout =
+      VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_I420, coded_size, planes);
+  ASSERT_TRUE(layout.has_value());
+  EXPECT_FALSE(
+      layout->FitsInContiguousBufferOfSize(std::numeric_limits<size_t>::max()));
+}
+
 }  // namespace media
