@@ -442,12 +442,11 @@ enum MetricEventType {
   APP_INSTALLED = 7;
   APP_UNINSTALLED = 8;
   APP_LAUNCHED = 9;
-  DEPRECATED_NETWORK_STATE_CHANGE = 12 [deprecated = true];
   WIFI_SIGNAL_STRENGTH_LOW = 13;
   WIFI_SIGNAL_STRENGTH_RECOVERED = 14;
   NETWORK_STATE_CHANGE = 15;
 
-  reserved 2, 3, 10, 11;
+  reserved 2, 3, 10, 11, 12;
 }
 
 // App telemetry data.

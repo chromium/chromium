@@ -79,7 +79,7 @@ void NetworkEventsObserver::OnConnectionStateChanged(
 
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(
-      MetricEventType::DEPRECATED_NETWORK_STATE_CHANGE);
+      MetricEventType::NETWORK_STATE_CHANGE);
   auto* const connection_change_data =
       metric_data.mutable_telemetry_data()
           ->mutable_networks_telemetry()
