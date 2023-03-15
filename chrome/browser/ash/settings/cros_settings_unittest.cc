@@ -165,12 +165,12 @@ class CrosSettingsTest : public testing::Test {
 
 TEST_F(CrosSettingsTest, GetAndSetPref) {
   // False is the expected default value:
-  ExpectPref(kAccountsPrefEphemeralUsersEnabled, base::Value(false));
+  ExpectPref(kDevicePeripheralDataAccessEnabled, base::Value(false));
 
   // Make sure we can set the value to true:
   auto* oss = CreateOwnerSettingsService(kOwner);
-  oss->Set(kAccountsPrefEphemeralUsersEnabled, base::Value(true));
-  ExpectPref(kAccountsPrefEphemeralUsersEnabled, base::Value(true));
+  oss->Set(kDevicePeripheralDataAccessEnabled, base::Value(true));
+  ExpectPref(kDevicePeripheralDataAccessEnabled, base::Value(true));
 }
 
 TEST_F(CrosSettingsTest, SetAllowlistWithListOps) {

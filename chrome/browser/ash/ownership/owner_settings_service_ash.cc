@@ -594,14 +594,6 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
         list->Add(std::string(user.GetString()));
       }
     }
-  } else if (path == kAccountsPrefEphemeralUsersEnabled) {
-    em::EphemeralUsersEnabledProto* ephemeral_users_enabled =
-        settings.mutable_ephemeral_users_enabled();
-    if (value.is_bool()) {
-      ephemeral_users_enabled->set_ephemeral_users_enabled(value.GetBool());
-    } else {
-      NOTREACHED();
-    }
   } else if (path == kAllowRedeemChromeOsRegistrationOffers) {
     em::AllowRedeemChromeOsRegistrationOffersProto* allow_redeem_offers =
         settings.mutable_allow_redeem_offers();
@@ -655,6 +647,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
   } else {
     // The remaining settings don't support Set(), since they are not
     // intended to be customizable by the user:
+    //   kAccountsPrefEphemeralUsersEnabled
     //   kAccountsPrefFamilyLinkAccountsAllowed
     //   kAccountsPrefTransferSAMLCookies
     //   kDeviceAttestationEnabled
