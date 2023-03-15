@@ -35,10 +35,8 @@ CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
     case net::ERR_ACCESS_DENIED:
       return {DOMExceptionCode::kInvalidAccessError,
               "Access to the requested host is blocked."};
-    case net::ERR_BLOCKED_BY_RESPONSE:
-      return {
-          DOMExceptionCode::kInvalidAccessError,
-          "Access to the requested host is blocked by cross-origin policy."};
+    case net::ERR_NETWORK_ACCESS_DENIED:
+      return {DOMExceptionCode::kInvalidAccessError, "Firewall error."};
     default:
       return {DOMExceptionCode::kNetworkError, "Network Error."};
   }

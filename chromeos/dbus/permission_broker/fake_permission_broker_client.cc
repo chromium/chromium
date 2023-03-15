@@ -223,6 +223,10 @@ void FakePermissionBrokerClient::RequestTcpPortAccess(
     const std::string& interface,
     int lifeline_fd,
     ResultCallback callback) {
+  if (tcp_deny_all_) {
+    std::move(callback).Run(false);
+    return;
+  }
   std::move(callback).Run(
       RequestPortImpl(port, interface, tcp_deny_rule_set_, &tcp_hole_set_));
 }
@@ -232,6 +236,10 @@ void FakePermissionBrokerClient::RequestUdpPortAccess(
     const std::string& interface,
     int lifeline_fd,
     ResultCallback callback) {
+  if (udp_deny_all_) {
+    std::move(callback).Run(false);
+    return;
+  }
   std::move(callback).Run(
       RequestPortImpl(port, interface, udp_deny_rule_set_, &udp_hole_set_));
 }
@@ -240,12 +248,18 @@ void FakePermissionBrokerClient::ReleaseTcpPort(uint16_t port,
                                                 const std::string& interface,
                                                 ResultCallback callback) {
   std::move(callback).Run(tcp_hole_set_.erase(std::make_pair(port, interface)));
+  if (delegate_) {
+    delegate_->OnTcpPortReleased(port, interface);
+  }
 }
 
 void FakePermissionBrokerClient::ReleaseUdpPort(uint16_t port,
                                                 const std::string& interface,
                                                 ResultCallback callback) {
   std::move(callback).Run(udp_hole_set_.erase(std::make_pair(port, interface)));
+  if (delegate_) {
+    delegate_->OnUdpPortReleased(port, interface);
+  }
 }
 
 void FakePermissionBrokerClient::AddTcpDenyRule(uint16_t port,
@@ -253,9 +267,17 @@ void FakePermissionBrokerClient::AddTcpDenyRule(uint16_t port,
   tcp_deny_rule_set_.insert(std::make_pair(port, interface));
 }
 
+void FakePermissionBrokerClient::SetTcpDenyAll() {
+  tcp_deny_all_ = true;
+}
+
 void FakePermissionBrokerClient::AddUdpDenyRule(uint16_t port,
                                                 const std::string& interface) {
   udp_deny_rule_set_.insert(std::make_pair(port, interface));
+}
+
+void FakePermissionBrokerClient::SetUdpDenyAll() {
+  udp_deny_all_ = true;
 }
 
 bool FakePermissionBrokerClient::HasTcpHole(uint16_t port,
@@ -325,6 +347,10 @@ void FakePermissionBrokerClient::ReleaseUdpPortForward(
   auto rule = std::make_pair(in_port, in_interface);
   udp_forwarding_set_.erase(rule);
   std::move(callback).Run(true);
+}
+
+void FakePermissionBrokerClient::AttachDelegate(Delegate* delegate) {
+  delegate_ = delegate;
 }
 
 bool FakePermissionBrokerClient::RequestPortImpl(uint16_t port,

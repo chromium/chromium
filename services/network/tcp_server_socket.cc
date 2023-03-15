@@ -73,6 +73,13 @@ void TCPServerSocket::Accept(
     ProcessNextAccept();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void TCPServerSocket::AttachConnectionTracker(
+    mojo::PendingRemote<mojom::SocketConnectionTracker> connection_tracker) {
+  connection_tracker_ = std::move(connection_tracker);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void TCPServerSocket::SetSocketForTest(
     std::unique_ptr<net::ServerSocket> socket) {
   socket_ = std::move(socket);

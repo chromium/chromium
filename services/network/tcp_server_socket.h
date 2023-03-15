@@ -17,6 +17,10 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "services/network/public/mojom/socket_connection_tracker.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace net {
 class NetLog;
 class ServerSocket;
@@ -68,6 +72,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
   void Accept(mojo::PendingRemote<mojom::SocketObserver> observer,
               AcceptCallback callback) override;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void AttachConnectionTracker(
+      mojo::PendingRemote<mojom::SocketConnectionTracker>);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Replaces the underlying socket implementation with |socket| in tests.
   void SetSocketForTest(std::unique_ptr<net::ServerSocket> socket);
 
@@ -92,6 +101,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
   std::unique_ptr<net::StreamSocket> accepted_socket_;
   net::IPEndPoint accepted_address_;
   net::NetworkTrafficAnnotationTag traffic_annotation_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  mojo::PendingRemote<mojom::SocketConnectionTracker> connection_tracker_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<TCPServerSocket> weak_factory_{this};
 };

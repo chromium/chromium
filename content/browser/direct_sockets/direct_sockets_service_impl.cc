@@ -4,6 +4,8 @@
 
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/isolated_context_util.h"
@@ -15,6 +17,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -37,9 +40,18 @@
 #include <sys/socket.h>
 #endif  // BUILDFLAG(IS_POSIX)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "content/public/browser/firewall_hole_proxy.h"
+#include "services/network/public/mojom/socket_connection_tracker.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace content {
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool g_always_open_firewall_hole_for_testing = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr net::NetworkTrafficAnnotationTag kDirectSocketsTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("direct_sockets", R"(
@@ -124,11 +136,77 @@ bool ValidateAddressAndPort(RenderFrameHost& rfh,
 
 }  // namespace
 
+#if BUILDFLAG(IS_CHROMEOS)
+// This class inherits from SocketConnectionTracker so that all stored firewall
+// hole handles reference |this| in the internal ReceiverSet.
+class DirectSocketsServiceImpl::FirewallHoleDelegate
+    : public network::mojom::SocketConnectionTracker {
+ public:
+  void OpenTCPFirewallHole(
+      mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
+          connection_tracker,
+      OpenTCPServerSocketCallback callback,
+      int32_t result,
+      const absl::optional<net::IPEndPoint>& local_addr) {
+    if (result != net::OK) {
+      std::move(callback).Run(result, /*local_addr=*/absl::nullopt);
+      return;
+    }
+    if (local_addr->address().IsLoopback() &&
+        !g_always_open_firewall_hole_for_testing) {
+      std::move(callback).Run(net::OK, *local_addr);
+      return;
+    }
+    auto [callback_a, callback_b] =
+        base::SplitOnceCallback(std::move(callback));
+    content::OpenTCPFirewallHole(
+        "" /*all interfaces*/, local_addr->port(),
+        base::BindOnce(
+            &FirewallHoleDelegate::OnFirewallHoleOpened, GetWeakPtr(),
+            std::move(connection_tracker),
+            /*on_success=*/
+            base::BindOnce(std::move(callback_a), net::OK, *local_addr),
+            /*on_failure=*/
+            base::BindOnce(std::move(callback_b),
+                           net::ERR_NETWORK_ACCESS_DENIED, absl::nullopt)));
+  }
+
+  base::WeakPtr<FirewallHoleDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  void OnFirewallHoleOpened(
+      mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
+          connection_tracker,
+      base::OnceClosure on_success,
+      base::OnceClosure on_failure,
+      std::unique_ptr<content::FirewallHoleProxy> firewall_hole_proxy) {
+    if (!firewall_hole_proxy) {
+      std::move(on_failure).Run();
+      return;
+    }
+    receivers_.Add(this, std::move(connection_tracker),
+                   std::move(firewall_hole_proxy));
+    std::move(on_success).Run();
+  }
+
+  mojo::ReceiverSet<network::mojom::SocketConnectionTracker,
+                    std::unique_ptr<content::FirewallHoleProxy>>
+      receivers_;
+  base::WeakPtrFactory<FirewallHoleDelegate> weak_factory_{this};
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 DirectSocketsServiceImpl::DirectSocketsServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver)
     : DocumentService(*render_frame_host, std::move(receiver)),
-      resolver_(network::SimpleHostResolver::Create(GetNetworkContext())) {}
+      resolver_(network::SimpleHostResolver::Create(GetNetworkContext())) {
+#if BUILDFLAG(IS_CHROMEOS)
+  firewall_hole_delegate_ = std::make_unique<FirewallHoleDelegate>();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
 
 DirectSocketsServiceImpl::~DirectSocketsServiceImpl() = default;
 
@@ -269,10 +347,27 @@ void DirectSocketsServiceImpl::OpenTCPServerSocket(
     server_options->backlog = std::min<uint32_t>(options->backlog, SOMAXCONN);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
+      connection_tracker;
+  server_options->connection_tracker =
+      connection_tracker.InitWithNewPipeAndPassRemote();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   GetNetworkContext()->CreateTCPServerSocket(
       options->local_addr, std::move(server_options),
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
-      std::move(socket), std::move(callback));
+      std::move(socket),
+#if !BUILDFLAG(IS_CHROMEOS)
+      std::move(callback)
+#else   // BUILDFLAG(IS_CHROMEOS)
+      // On ChromeOS the original callback will be invoked after punching a
+      // firewall hole.
+      base::BindOnce(&FirewallHoleDelegate::OpenTCPFirewallHole,
+                     firewall_hole_delegate_->GetWeakPtr(),
+                     std::move(connection_tracker), std::move(callback))
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  );
 }
 
 // static
@@ -280,6 +375,13 @@ void DirectSocketsServiceImpl::SetNetworkContextForTesting(
     network::mojom::NetworkContext* network_context) {
   GetNetworkContextForTesting() = network_context;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// static
+void DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(bool value) {
+  g_always_open_firewall_hole_for_testing = value;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext()
     const {

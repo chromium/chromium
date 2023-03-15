@@ -89,6 +89,11 @@ void SocketFactory::CreateTCPServerSocket(
     mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
   auto socket =
       std::make_unique<TCPServerSocket>(this, net_log_, traffic_annotation);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (options->connection_tracker) {
+    socket->AttachConnectionTracker(std::move(options->connection_tracker));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   net::IPEndPoint local_addr_out;
   int result = socket->Listen(local_addr, options->backlog, &local_addr_out);
   if (result != net::OK) {

@@ -45,6 +45,10 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // The tests in this file use the Network Service implementation of
 // NetworkContext, to test sending and receiving of data over TCP sockets.
 
@@ -147,8 +151,9 @@ class ReadWriteWaiter {
       DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
 
       if (bytes_received_ == required_receive_bytes_) {
-        if (bytes_sent_ == required_send_bytes_)
+        if (bytes_sent_ == required_send_bytes_) {
           run_loop_.Quit();
+        }
         return;
       }
     }
@@ -186,8 +191,9 @@ class ReadWriteWaiter {
       DCHECK_EQ(mojo_result, MOJO_RESULT_OK);
 
       if (bytes_sent_ == required_send_bytes_) {
-        if (bytes_received_ == required_receive_bytes_)
+        if (bytes_received_ == required_receive_bytes_) {
           run_loop_.Quit();
+        }
         return;
       }
     }
@@ -616,6 +622,17 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
 
 class DirectSocketsTcpServerBrowserTest : public DirectSocketsTcpBrowserTest {
  public:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DirectSocketsTcpServerBrowserTest() {
+    chromeos::PermissionBrokerClient::InitializeFake();
+    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(true);
+  }
+
+  ~DirectSocketsTcpServerBrowserTest() override {
+    chromeos::PermissionBrokerClient::Shutdown();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // For TCPServerSocket support.
     // TODO(crbug.com/1408140): remove after TCPServerSocket is fully supported.
@@ -629,6 +646,67 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ExchangeTcpServer) {
                   .ExtractString(),
               testing::HasSubstr("succeeded"));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, HasFirewallHole) {
+  class DelegateImpl : public chromeos::FakePermissionBrokerClient::Delegate {
+   public:
+    DelegateImpl(uint16_t port, base::OnceClosure quit_closure)
+        : port_(port), quit_closure_(std::move(quit_closure)) {}
+
+    void OnTcpPortReleased(uint16_t port,
+                           const std::string& interface) override {
+      if (port == port_) {
+        ASSERT_EQ(interface, "");
+        ASSERT_TRUE(quit_closure_);
+        std::move(quit_closure_).Run();
+      }
+    }
+
+   private:
+    uint16_t port_;
+    base::OnceClosure quit_closure_;
+  };
+
+  auto* client = chromeos::FakePermissionBrokerClient::Get();
+
+  const std::string open_script = R"(
+    (async () => {
+      socket = new TCPServerSocket('127.0.0.1');
+      const { localPort } = await socket.opened;
+      return localPort;
+    })();
+  )";
+
+  const int32_t local_port = EvalJs(shell(), open_script).ExtractInt();
+  ASSERT_TRUE(client->HasTcpHole(local_port, "" /* all interfaces */));
+
+  base::RunLoop run_loop;
+  auto delegate =
+      std::make_unique<DelegateImpl>(local_port, run_loop.QuitClosure());
+  client->AttachDelegate(delegate.get());
+
+  EXPECT_TRUE(EvalJs(shell(), content::test::WrapAsync("socket.close()"))
+                  .error.empty());
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, FirewallHoleDenied) {
+  auto* client = chromeos::FakePermissionBrokerClient::Get();
+  client->SetTcpDenyAll();
+
+  const std::string open_script = R"(
+    (async () => {
+      socket = new TCPServerSocket('127.0.0.1');
+      return await socket.opened.catch(err => err.message);
+    })();
+  )";
+
+  EXPECT_THAT(EvalJs(shell(), open_script).ExtractString(),
+              testing::HasSubstr("Firewall"));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, OkOnClose) {
   ASSERT_EQ(true, EvalJs(shell(), R"(
@@ -673,11 +751,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ErrorOnRemoteReset) {
     })();
   )"));
 
-  auto future = GetAsyncJsRunner()->RunScript(R"(
-    (async () => {
-      return socket.closed.catch(() => 'ok');
-    })();
-  )");
+  auto future = GetAsyncJsRunner()->RunScript(
+      test::WrapAsync("return socket.closed.catch(() => 'ok')"));
   mock_network_context.ResetSocketReceiver();
 
   ASSERT_EQ("ok", future->Get());

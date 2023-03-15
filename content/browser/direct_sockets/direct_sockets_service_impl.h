@@ -59,6 +59,10 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
   // Testing:
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  static void SetAlwaysOpenFirewallHoleForTesting(bool value);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  private:
   DirectSocketsServiceImpl(
       RenderFrameHost*,
@@ -87,6 +91,11 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       const absl::optional<net::HostResolverEndpointResults>&);
 
   std::unique_ptr<network::SimpleHostResolver> resolver_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  class FirewallHoleDelegate;
+  std::unique_ptr<FirewallHoleDelegate> firewall_hole_delegate_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace content

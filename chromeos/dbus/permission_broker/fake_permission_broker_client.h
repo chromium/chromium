@@ -22,6 +22,16 @@ namespace chromeos {
 class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
     : public PermissionBrokerClient {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    virtual void OnTcpPortReleased(uint16_t port,
+                                   const std::string& interface) {}
+    virtual void OnUdpPortReleased(uint16_t port,
+                                   const std::string& interface) {}
+  };
+
   FakePermissionBrokerClient();
 
   FakePermissionBrokerClient(const FakePermissionBrokerClient&) = delete;
@@ -90,8 +100,14 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
   // Add a rule to have RequestTcpPortAccess fail.
   void AddTcpDenyRule(uint16_t port, const std::string& interface);
 
-  // Add a rule to have RequestTcpPortAccess fail.
+  // Unconditionally fail all RequestTcpPortAccess calls.
+  void SetTcpDenyAll();
+
+  // Add a rule to have RequestUdpPortAccess fail.
   void AddUdpDenyRule(uint16_t port, const std::string& interface);
+
+  // Unconditionally fail all RequestUdpPortAccess calls.
+  void SetUdpDenyAll();
 
   // Returns true if TCP port has a hole.
   bool HasTcpHole(uint16_t port, const std::string& interface);
@@ -104,6 +120,8 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
 
   // Returns true if UDP port is being forwarded.
   bool HasUdpPortForward(uint16_t port, const std::string& interface);
+
+  void AttachDelegate(Delegate* delegate);
 
  private:
   using RuleSet =
@@ -147,7 +165,12 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
   RuleSet tcp_deny_rule_set_;
   RuleSet udp_deny_rule_set_;
 
+  bool tcp_deny_all_ = false;
+  bool udp_deny_all_ = false;
+
   std::map<std::string, UsbInterfaces> clients_;
+
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   base::WeakPtrFactory<FakePermissionBrokerClient> weak_factory_{this};
 };
