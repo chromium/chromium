@@ -137,7 +137,7 @@ dictionary RTCRemoteInboundRtpStreamStats : RTCReceivedRtpStreamStats {
 
 // https://w3c.github.io/webrtc-stats/#sentrtpstats-dict*
 dictionary RTCSentRtpStreamStats : RTCRtpStreamStats {
-  unsigned long      packetsSent;
+  unsigned long long packetsSent;
   unsigned long long bytesSent;
 };
 
