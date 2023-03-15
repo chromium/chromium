@@ -36,6 +36,7 @@ ts_library("trusted_ts") {
   }
 
   deps = [
+    "//third_party/cros-components:cros_components_ts",
     ":worker_ts",
     "../../mojom:mojom_ts",
     "//third_party/material_web_components:library",
