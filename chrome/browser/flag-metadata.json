@@ -6794,9 +6794,9 @@
   {
     "name": "system-live-caption",
     "owners": [
-      "martis",
       "amoylan",
-      "abigailbklein"
+      "abigailbklein@google.com",
+      "robsc"
     ],
     "expiry_milestone": 120
   },
