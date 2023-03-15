@@ -86,7 +86,7 @@ class MEDIA_EXPORT VideoEncoder {
     EncodeOptions();
     EncodeOptions(const EncodeOptions&);
     ~EncodeOptions();
-    bool key_frame;
+    bool key_frame = false;
     // Per-frame codec-specific quantizer value.
     // Should only be used when encoder configured with kExternal bitrate mode.
     absl::optional<double> quantizer;
