@@ -1,4 +1,4 @@
-# Chromium Java style guide
+# Chromium Java Style Guide
 
 _For other languages, please see the [Chromium style
 guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
@@ -17,7 +17,7 @@ get to decide.
 
 ## Java 10 Language Features
 
-### Type deduction using `var`
+### Type Deduction using `var`
 
 A variable declaration can use the `var` keyword in place of the type (similar
 to the `auto` keyword in C++). In line with the [guidance for
@@ -38,6 +38,7 @@ try (var ignored = StrictModeContext.allowDiskWrites()) {
 ```
 
 ## Java 8 Language Features
+
 [D8] is used to rewrite some Java 7 & 8 language constructs in a way that is
 compatible with Java 6 (and thus all Android versions). Use of [these features]
 is encouraged.
@@ -88,6 +89,7 @@ try {
 ```
 
 ### Logging
+
 * Use `org.chromium.base.Log` instead of `android.util.Log`.
   * It provides `%s` support, and ensures log stripping works correctly.
 * Minimize the use of `Log.w()` and `Log.e()`.
@@ -101,6 +103,7 @@ Log.d(TAG, "There are %d cats", countCats());  // countCats() not stripped.
 ```
 
 ### Asserts
+
 The Chromium build system strips asserts in release builds (via ProGuard) and
 enables them in debug builds (or when `dcheck_always_on=true`) (via a [build
 step](https://codereview.chromium.org/2517203002)). You should use asserts in
@@ -129,7 +132,21 @@ if (BuildConfig.ENABLE_ASSERTS) {
 }
 ```
 
+### Streams
+
+Most uses of [Java 8 streams] are discouraged. If you can write your code as an
+explicit loop, then do so. The primary reason for this guidance is because the
+lambdas (and method references) needed for streams almost always result in
+larger binary size ([example](https://chromium-review.googlesource.com/c/chromium/src/+/4329952).
+
+The `parallel()` and `parallelStream()` APIs are simpler than their loop
+equivalents, but are are currently banned due to a lack of a compelling use case
+in Chrome. If you find one, please discuss on `java@chromium.org`.
+
+[Java 8 streams]: https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
+
 ### Finalizers
+
 In line with [Google's Java style guide](https://google.github.io/styleguide/javaguide.html#s6.4-finalizers),
 never override `Object.finalize()`.
 
@@ -143,6 +160,7 @@ method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/ma
 to ensure in debug builds and tests that `destroy()` is called.
 
 ### AndroidX Annotations
+
 * Use them! They are [documented here](https://developer.android.com/studio/write/annotations).
   * They generally improve readability.
   * Some make lint more useful.
@@ -182,7 +200,8 @@ Values of `Integer` type are also supported, which allows using a sentinel
 
 ## Tools
 
-### Automatically formatting edited files
+### Automatically Formatting Edited Files
+
 A checkout should give you clang-format to automatically format Java code.
 It is suggested that Clang's formatting of code should be accepted in code
 reviews.
@@ -190,6 +209,7 @@ reviews.
 You can run `git cl format` to apply the automatic formatting.
 
 ### IDE Setup
+
 For automatically using the correct style, follow the guide to set up your
 favorite IDE:
 
@@ -197,11 +217,13 @@ favorite IDE:
 * [Eclipse](https://chromium.googlesource.com/chromium/src/+/main/docs/eclipse.md)
 
 ### Checkstyle
+
 Checkstyle is automatically run by the build bots, and to ensure you do not have
 any surprises, you can also set up checkstyle locally using [this
 guide](https://sites.google.com/a/chromium.org/dev/developers/checkstyle).
 
 ### Lint
+
 Lint is run as part of the build. For more information, see
 [here](https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md).
 
@@ -211,15 +233,18 @@ Lint is run as part of the build. For more information, see
 * Use the same format as in the [C++ style guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#File-headers).
 
 ### TODOs
+
 * TODO should follow chromium convention. Examples:
   * `TODO(username): Some sentence here.`
   * `TODO(crbug.com/123456): Even better to use a bug for context.`
 
-### Code formatting
+### Code Formatting
+
 * Fields should not be explicitly initialized to default values (see
   [here](https://groups.google.com/a/chromium.org/d/topic/chromium-dev/ylbLOvLs0bs/discussion)).
 
-### Curly braces
+### Curly Braces
+
 Conditional braces should be used, but are optional if the conditional and the
 statement can be on a single line.
 
@@ -246,6 +271,7 @@ if (someConditional)
 ```
 
 ### Import Order
+
 * Static imports go before other imports.
 * Each import group must be separated by an empty line.
 
@@ -263,6 +289,7 @@ This is the order of the import groups:
 1. javax
 
 ## Test-only Code
+
 Functions used only for testing should be restricted to test-only usages
 with the testing suffixes supported [PRESUMBIT.py](https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py).
 `ForTesting` is the conventional suffix although similar patterns, such as
@@ -275,6 +302,7 @@ should guard the check with an `if (BuildConfig.IS_FOR_TEST)` so that our Java
 optimizer can still remove the call in non-test builds.
 
 ## Location
+
 "Top level directories" are defined as directories with a GN file, such as
 [//base](https://chromium.googlesource.com/chromium/src/+/main/base/)
 and
@@ -299,4 +327,5 @@ much like
 [//base/android/OWNERS](https://chromium.googlesource.com/chromium/src/+/main/base/android/OWNERS).
 
 ## Miscellany
+
 * Use UTF-8 file encodings and LF line endings.
