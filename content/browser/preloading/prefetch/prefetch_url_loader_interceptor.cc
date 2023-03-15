@@ -93,11 +93,11 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   loader_callback_ = std::move(callback);
   url_ = tenative_resource_request.url;
   GetPrefetch(url_, base::BindOnce(
-                        &PrefetchURLLoaderInterceptor::OnGotPrefetchToServce,
+                        &PrefetchURLLoaderInterceptor::OnGotPrefetchToServe,
                         weak_factory_.GetWeakPtr(), tenative_resource_request));
 }
 
-void PrefetchURLLoaderInterceptor::OnGotPrefetchToServce(
+void PrefetchURLLoaderInterceptor::OnGotPrefetchToServe(
     const network::ResourceRequest& tenative_resource_request,
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   // The |url_| might be different from |prefetch_container->GetURL()| because

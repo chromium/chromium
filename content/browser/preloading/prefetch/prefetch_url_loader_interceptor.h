@@ -57,7 +57,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
 
   // Checks the prefetch retrieved via |GetPrefetch| to see if it can be used
   // for |tenative_resource_request|.
-  void OnGotPrefetchToServce(
+  void OnGotPrefetchToServe(
       const network::ResourceRequest& tenative_resource_request,
       base::WeakPtr<PrefetchContainer> prefetch_container);
 
