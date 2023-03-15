@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -31,13 +32,14 @@ std::string ExtractURLFromURLFileContents(
   const std::string kURL("URL=");
 
   // Start by splitting the file content into lines.
-  std::vector<base::StringPiece> lines = base::SplitStringPiece(
+  std::vector<base::StringPiece> lines_vector = base::SplitStringPiece(
       file_contents, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  base::span<base::StringPiece> lines(lines_vector);
 
-  // Search for the [InternetShortcut] section by discarding lines until
-  // either it is found or there are no lines left.
-  while (!lines.empty() && lines[0] != kInternetShortcut) {
-    lines.erase(lines.begin());
+  // Search for the [InternetShortcut] section by discarding lines one by one
+  // until either the section is found or there are no lines left.
+  while (!lines.empty() && lines.front() != kInternetShortcut) {
+    lines = lines.subspan(1);
   }
 
   // At this point, either the section was found or there are no lines left. If
@@ -47,11 +49,11 @@ std::string ExtractURLFromURLFileContents(
   }
 
   // This is now the [InternetShortcut] section. Discard that section header.
-  lines.erase(lines.begin());
+  lines = lines.subspan(1);
 
   // At this point, examine the lines.
   while (!lines.empty()) {
-    const auto& line = *lines.begin();
+    const auto& line = lines.front();
 
     // If the line begins with a [ then a new section has begun, and there is no
     // URL to find in this file. Return.
@@ -68,7 +70,7 @@ std::string ExtractURLFromURLFileContents(
     }
 
     // Otherwise, this isn't a useful line; discard it and move on.
-    lines.erase(lines.begin());
+    lines = lines.subspan(1);
   }
 
   // If control has reached here, the file was searched and it contains no URL.
