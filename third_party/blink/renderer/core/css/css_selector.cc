@@ -73,15 +73,12 @@ unsigned MaximumSpecificity(const CSSSelector* first_selector) {
   return specificity;
 }
 
-#if !(defined(WIN32) && defined(_DEBUG))  // The debug ABI on Windows seems to
-                                          // pack bitfields differently.
 struct SameSizeAsCSSSelector {
   unsigned bitfields;
   void* pointers[1];
 };
 
 ASSERT_SIZE(CSSSelector, SameSizeAsCSSSelector);
-#endif
 
 void CSSSelector::CreateRareData() {
   DCHECK_NE(Match(), kTag);
