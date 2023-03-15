@@ -28,8 +28,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -45,6 +43,7 @@ import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
@@ -64,7 +63,6 @@ public class CustomTabBottomBarDelegate
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final BrowserControlsSizer mBrowserControlsSizer;
-    private final ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
     private final BrowserServicesIntentDataProvider mDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabNightModeStateController mNightModeStateController;
@@ -101,7 +99,6 @@ public class CustomTabBottomBarDelegate
     public CustomTabBottomBarDelegate(Activity activity, WindowAndroid windowAndroid,
             BrowserServicesIntentDataProvider dataProvider,
             BrowserControlsSizer browserControlsSizer,
-            ObservableSupplier<Integer> autofillUiBottomInsetSupplier,
             CustomTabNightModeStateController nightModeStateController,
             SystemNightModeMonitor systemNightModeMonitor, CustomTabActivityTabProvider tabProvider,
             CustomTabCompositorContentInitializer compositorContentInitializer) {
@@ -109,7 +106,6 @@ public class CustomTabBottomBarDelegate
         mWindowAndroid = windowAndroid;
         mDataProvider = dataProvider;
         mBrowserControlsSizer = browserControlsSizer;
-        mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
         mNightModeStateController = nightModeStateController;
         mSystemNightModeMonitor = systemNightModeMonitor;
         mTabProvider = tabProvider;
@@ -117,9 +113,9 @@ public class CustomTabBottomBarDelegate
 
         compositorContentInitializer.addCallback(this::addOverlayPanelManagerObserver);
 
-        Callback<Integer> insetObserver = this::onViewPortInsetChange;
+        Callback<ViewportInsets> insetObserver = this::onViewportInsetChange;
+        // TODO(REVIEW): Is it ok this doesn't remove itself?
         mWindowAndroid.getApplicationBottomInsetSupplier().addObserver(insetObserver);
-        mAutofillUiBottomInsetSupplier.addObserver(insetObserver);
     }
 
     /**
@@ -440,15 +436,12 @@ public class CustomTabBottomBarDelegate
         }
     }
 
-    private void onViewPortInsetChange(Integer integer) {
+    private void onViewportInsetChange(ViewportInsets insets) {
         if (mBottomBarView == null) return;
-        hideBottomBar(hasNonZeroInset(mAutofillUiBottomInsetSupplier)
-                || hasNonZeroInset(mWindowAndroid.getApplicationBottomInsetSupplier()));
-    }
+        boolean isKeyboardShowing = mWindowAndroid.getKeyboardDelegate().isKeyboardShowing(
+                mBottomBarView.getContext(), mBottomBarView);
 
-    private static boolean hasNonZeroInset(Supplier<Integer> insetSupplier) {
-        Integer inset = insetSupplier.get();
-        return inset != null && inset > 0;
+        hideBottomBar(insets.viewVisibleHeightInset > 0 || isKeyboardShowing);
     }
 
     /**

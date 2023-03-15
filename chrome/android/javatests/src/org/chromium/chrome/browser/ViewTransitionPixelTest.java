@@ -166,8 +166,6 @@ public class ViewTransitionPixelTest {
 
         double keyboardHeight = getKeyboardHeightDp();
 
-        // Use less than or equal since the keyboard may actually include accessories like the
-        // Autofill bar.
         if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
             assertWaitForVisualViewportHeight(mInitialVVHeight - keyboardHeight);
         } else if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT) {

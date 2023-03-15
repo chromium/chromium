@@ -33,7 +33,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -57,8 +56,6 @@ public class CustomTabBottomBarDelegateUnitTest {
     private WindowAndroid mWindowAndroid;
     @Mock
     private BrowserControlsSizer mBrowserControlsSizer;
-    @Mock
-    private ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
     @Mock
     private CustomTabNightModeStateController mNightModeStateController;
     @Mock
@@ -103,9 +100,8 @@ public class CustomTabBottomBarDelegateUnitTest {
         mIntentDataProvider = new CustomTabIntentDataProvider(
                 mIntent, mActivity, CustomTabsIntent.COLOR_SCHEME_LIGHT);
         mBottomBarDelegate = new CustomTabBottomBarDelegate(mActivity, mWindowAndroid,
-                mIntentDataProvider, mBrowserControlsSizer, mAutofillUiBottomInsetSupplier,
-                mNightModeStateController, mSystemNightModeMonitor, mTabProvider,
-                mCompositorContentInitializer);
+                mIntentDataProvider, mBrowserControlsSizer, mNightModeStateController,
+                mSystemNightModeMonitor, mTabProvider, mCompositorContentInitializer);
         when(mBottomBarView.findViewById(eq(R.id.bottombar_shadow))).thenReturn(mShadowView);
         mBottomBarDelegate.setBottomBarViewForTesting(mBottomBarView);
     }

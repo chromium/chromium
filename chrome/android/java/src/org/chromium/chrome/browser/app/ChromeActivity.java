@@ -235,6 +235,7 @@ import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -645,8 +646,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     getControlContainerHeightResource());
 
             mBottomContainer.initialize(getBrowserControlsManager(),
-                    getWindowAndroid().getApplicationBottomInsetSupplier(),
-                    mManualFillingComponentSupplier.get().getBottomInsetSupplier());
+                    getWindowAndroid().getApplicationBottomInsetSupplier());
 
             ShareDelegate shareDelegate =
                     new ShareDelegateImpl(mRootUiCoordinator.getBottomSheetController(),
@@ -2038,11 +2038,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         compositorViewHolder.setControlContainer(controlContainer);
         compositorViewHolder.setBrowserControlsManager(mBrowserControlsManagerSupplier.get());
         compositorViewHolder.setUrlBar(urlBar);
-        compositorViewHolder.setInsetObserverView(mInsetObserverViewSupplier.get());
+
+        ApplicationViewportInsetSupplier insetSupplier =
+                getWindowAndroid().getApplicationBottomInsetSupplier();
+        insetSupplier.setKeyboardInsetSupplier(
+                mInsetObserverViewSupplier.get().getSupplierForBottomInset());
+        insetSupplier.setKeyboardAccessoryInsetSupplier(
+                mManualFillingComponentSupplier.get().getBottomInsetSupplier());
+        compositorViewHolder.setApplicationViewportInsetSupplier(insetSupplier);
         compositorViewHolder.setAutofillUiBottomInsetSupplier(
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
-        compositorViewHolder.setApplicationViewportInsetSupplier(
-                getWindowAndroid().getApplicationBottomInsetSupplier());
 
         compositorViewHolder.setTopUiThemeColorProvider(
                 mRootUiCoordinator.getTopUiThemeColorProvider());

@@ -48,6 +48,7 @@ android_library("internal_java") {
     "//third_party/androidx:androidx_viewpager_viewpager_java",
     "//ui/android:ui_java",
     "//ui/android:ui_utils_java",
+    "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
   ]
   sources = [

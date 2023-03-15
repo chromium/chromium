@@ -93,6 +93,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -149,8 +150,6 @@ public class ManualFillingControllerTest {
     private final UserDataHost mUserDataHost = new UserDataHost();
     private final ApplicationViewportInsetSupplier mInsetSupplier =
             ApplicationViewportInsetSupplier.createForTests();
-    private final ObservableSupplierImpl<Integer> mKeyboardInsetSupplier =
-            new ObservableSupplierImpl<>();
 
     private static class MockActivityTabProvider extends ActivityTabProvider {
         public Tab mTab;
@@ -306,7 +305,6 @@ public class ManualFillingControllerTest {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
-        mInsetSupplier.addStackingSupplier(mKeyboardInsetSupplier);
         when(mMockWindow.getApplicationBottomInsetSupplier()).thenReturn(mInsetSupplier);
         when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any())).thenReturn(0);
         when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
@@ -734,6 +732,7 @@ public class ManualFillingControllerTest {
 
     @Test
     public void testDisplaysAccessoryOnlyWhenVerticalSpaceIsSufficient() {
+        mInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
         reset(mMockKeyboardAccessory);
         addBrowserTab(mMediator, 1234, null);
         SheetProviderHelper tabHelper = new SheetProviderHelper();
@@ -756,6 +755,17 @@ public class ManualFillingControllerTest {
         // Use a height that is too small but with a valid width (e.g. resized multi-window window).
         simulateLayoutSizeChange(2.0f, 300, 79);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
+
+        // Also test in RESIZES_VISUAL mode where the keyboard and accessory won't resize the
+        // WebContents.
+        mInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
+        when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any()))
+                .thenReturn(sFakeKeyboardInsetPx);
+        simulateLayoutSizeChange(2.0f, 300, sFakeKeyboardInsetPx / 2 + 48 + 79);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
+
+        simulateLayoutSizeChange(2.0f, 300, sFakeKeyboardInsetPx / 2 + 48 + 80);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
     }
 
     @Test
@@ -780,17 +790,28 @@ public class ManualFillingControllerTest {
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
     }
 
+    /**
+     * This tests the case where an accessory sheet is showing instead of a keyboard. The screen is
+     * rotated so that the amount of vertical space shrinks below the minimum allowed. Confirm that
+     * the accessory sheet's height is shrunken.
+     */
     @Test
     public void testRestrictsSheetSizeIfVerticalSpaceChanges() {
+        final int density = 2;
+        final int accessorySheetHeightDp = 100; // The height of a large keyboard.
+        final int minimumVisibleHeightDp = 128; // This is a constant from ManualFillingMediator.
+
         addBrowserTab(mMediator, 1234, null);
-        // Resize the screen from 300x128@2.f to 300x200@2.f.
-        setContentAreaDimensions(2.f, 200, 300);
+
+        // Resize the screen from 128x300@2.f to 200x300@2.f.
+        setContentAreaDimensions(density, 200, 300);
         mMediator.onLayoutChange(mMockContentView, 0, 0, 400, 600, 0, 0, 256, 600);
 
+        // No simulate showing the accessory sheet.
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
         when(mMockKeyboardAccessory.isShown()).thenReturn(true);
         when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(true);
-        when(mMockAccessorySheet.getHeight()).thenReturn(200); // Return height of a large keyboard.
+        when(mMockAccessorySheet.getHeight()).thenReturn(accessorySheetHeightDp * density);
         mModel.set(SHOW_WHEN_VISIBLE, true);
         mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET_V2);
         mController.registerSheetDataProvider(
@@ -801,14 +822,68 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.isShown()).thenReturn(true);
         when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(true);
         when(mMockAccessorySheet.isShown()).thenReturn(true);
-        when(mMockAccessorySheet.getHeight()).thenReturn(200); // Return height of a large keyboard.
+        when(mMockAccessorySheet.getHeight()).thenReturn(accessorySheetHeightDp * density);
 
-        // Set layout as if it was rotated: 200x300@2f.
-        mKeyboardInsetSupplier.set(sFakeKeyboardInsetPx); // Mediator has to check the density!
-        setContentAreaDimensions(2.f, 300, 200);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 600, 104, 0, 0, 400, 600);
-        verify(mMockAccessorySheet).setHeight(144); // == 2f * (200dp - 128dp)
-        mKeyboardInsetSupplier.set(0);
+        // Set layout as if it was rotated: 300x200@2f. The sheet does not inset WebContents since
+        // we're in the default RESIZES_VISUAL VirtualKeyboardMode. Even though contentsHeightDp >
+        // minimumVisibleHeightDp, test that the visible area is correctly deduced to be 200 - 100 <
+        // minimumVisibleHeightDp so the sheet should be restricted in height.
+        setContentAreaDimensions(density, 300, 200);
+        mMediator.onLayoutChange(mMockContentView, 0, 0, 600, 400, 0, 0, 400, 600);
+
+        // 200 - 128 = 72
+        int expectedSheetHeightDp = 200 - minimumVisibleHeightDp;
+        verify(mMockAccessorySheet).setHeight(density * expectedSheetHeightDp);
+    }
+
+    /**
+     * This tests the case where an accessory sheet is showing instead of a keyboard. The screen is
+     * rotated so that the amount of vertical space shrinks below the minimum allowed. Confirm that
+     * the accessory sheet's height is shrunken.
+     *
+     * This is the same test as above but with the keyboard in RESIZES_CONTENT mode, so that the
+     * WebContents height is insetted by the keyboard and its accessories.
+     */
+    @Test
+    public void testRestrictsSheetSizeIfVerticalSpaceChangesWithResizesContent() {
+        final int density = 2;
+        final int accessorySheetHeightDp = 100; // The height of a large keyboard.
+        final int minimumVisibleHeightDp = 128; // This is a constant from ManualFillingMediator.
+
+        mInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+        addBrowserTab(mMediator, 1234, null);
+        // Resize the screen from 128x300@2.f to 200x300@2.f.
+        setContentAreaDimensions(density, 200, 300);
+        mMediator.onLayoutChange(mMockContentView, 0, 0, 400, 600, 0, 0, 256, 600);
+
+        // No simulate showing the accessory sheet.
+        when(mMockKeyboardAccessory.empty()).thenReturn(false);
+        when(mMockKeyboardAccessory.isShown()).thenReturn(true);
+        when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(true);
+        when(mMockAccessorySheet.getHeight()).thenReturn(accessorySheetHeightDp * density);
+        mModel.set(SHOW_WHEN_VISIBLE, true);
+        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET_V2);
+        mController.registerSheetDataProvider(
+                mLastMockWebContents, AccessoryTabType.PASSWORDS, new PropertyProvider<>());
+        reset(mMockKeyboardAccessory, mMockAccessorySheet);
+
+        when(mMockKeyboardAccessory.empty()).thenReturn(false);
+        when(mMockKeyboardAccessory.isShown()).thenReturn(true);
+        when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(true);
+        when(mMockAccessorySheet.isShown()).thenReturn(true);
+        when(mMockAccessorySheet.getHeight()).thenReturn(accessorySheetHeightDp * density);
+
+        // Set layout as if it was rotated: 300x200@2f. The sheet causes a resize to the web
+        // contents so subtract the sheet height. contentsHeightDp < minimumVisibleHeightDp so the
+        // sheet should be restricted in height.
+        int contentsHeightDp = 200 - accessorySheetHeightDp;
+        setContentAreaDimensions(density, 300, contentsHeightDp);
+        mMediator.onLayoutChange(mMockContentView, 0, 0, 600, 400, 0, 0, 400, 600);
+
+        // 100 + 100 - 128 = 72
+        int expectedSheetHeightDp =
+                contentsHeightDp + accessorySheetHeightDp - minimumVisibleHeightDp;
+        verify(mMockAccessorySheet).setHeight(density * expectedSheetHeightDp);
     }
 
     @Test

@@ -5,6 +5,8 @@
 package org.chromium.ui.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +16,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 /** Unit tests for the ApplicationViewportInsetSupplier. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -34,102 +37,261 @@ public class ApplicationViewportInsetSupplierTest {
     }
 
     private ApplicationViewportInsetSupplier mWindowApplicationInsetSupplier;
-    private ObservableSupplierImpl<Integer> mFeatureInsetSupplier;
-    private CapturingCallback<Integer> mWindowInsetObserver;
+    private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier;
+    private CapturingCallback<ViewportInsets> mInsetObserver;
 
     @Before
     public void setUp() {
         mWindowApplicationInsetSupplier = new ApplicationViewportInsetSupplier();
-        mFeatureInsetSupplier = new ObservableSupplierImpl<>();
-        mWindowInsetObserver = new CapturingCallback<>();
+        mKeyboardInsetSupplier = new ObservableSupplierImpl<>();
 
-        mWindowApplicationInsetSupplier.addOverlappingSupplier(mFeatureInsetSupplier);
-        mWindowApplicationInsetSupplier.addObserver(mWindowInsetObserver);
+        mInsetObserver = new CapturingCallback<>();
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
+        mWindowApplicationInsetSupplier.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
+        mWindowApplicationInsetSupplier.addObserver(mInsetObserver);
+
+        // Clear the observer initially so tests can check whether it was called.
+        mInsetObserver.onResult(null);
     }
 
     @Test
     public void testSupplierDidNotSetValue() {
-        assertEquals("Observed value from supplier is incorrect.", (Integer) 0,
+        assertNotNull("Supplier should provide a non-null value even when unset.",
                 mWindowApplicationInsetSupplier.get());
+        assertEquals("Initial value for viewVisibleHeightInset is incorrect.", 0,
+                mWindowApplicationInsetSupplier.get().viewVisibleHeightInset);
+        assertEquals("Initial value for visualViewportBottomInset is incorrect.", 0,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
     }
 
     @Test
-    public void testSupplierTriggersObserver() {
-        mFeatureInsetSupplier.set(5);
-        assertEquals("Observed value from supplier is incorrect.", (Integer) 5,
-                mWindowInsetObserver.getCapturedValue());
+    public void testKeyboardTriggersObserver() {
+        mKeyboardInsetSupplier.set(5);
+        assertEquals("Keyboard does not insets the View's visible height.", 0,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("Keyboard insets the visual viewport in RESIZES_VISUAL mode.", 5,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(
+                VirtualKeyboardMode.OVERLAYS_CONTENT);
+
+        assertEquals("Keyboard does not inset the View's visible height.", 0,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("Keyboard does not inset the visual viewport in OVERLAYS_CONTENT mode.", 0,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+
+        assertEquals("Keyboard does not insetsthe View's visible height.", 0,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("Keyboard does not inset the visual viewport in RESIZES_CONTENT mode.", 0,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+
+        mKeyboardInsetSupplier.set(10);
+
+        assertEquals("Keyboard does not inset the View's visible height.", 0,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("Keyboard does not inset the visual viewport in RESIZES_CONTENT mode.", 0,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
     }
 
     @Test
-    public void testSupplierTriggersObserver_multipleSuppliers_2() {
-        ObservableSupplierImpl<Integer> secondSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addOverlappingSupplier(secondSupplier);
+    public void testKeyboardWithAccessory() {
+        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
 
-        mFeatureInsetSupplier.set(5);
-        secondSupplier.set(10);
+        mKeyboardInsetSupplier.set(10);
+        accessorySupplier.set(5);
 
-        assertEquals("Observed value should be the max of the two supplied.", (Integer) 10,
-                mWindowInsetObserver.getCapturedValue());
+        assertEquals("Only accessory insets the View's visible height.", 5,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("Both keyboard and accessory inset the visual viewport in RESIZES_VISUAL.", 15,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+
+        assertEquals("Only accessory insets the View's visible height.", 5,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals(
+                "Neither keyboard nor accessory resize the visual viewport in RESIZES_CONTENT mode.",
+                0, mInsetObserver.getCapturedValue().visualViewportBottomInset);
     }
 
     @Test
-    public void testSupplierTriggersObserver_multipleSuppliers_3() {
-        ObservableSupplierImpl<Integer> secondSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addOverlappingSupplier(secondSupplier);
-
-        ObservableSupplierImpl<Integer> thirdSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addOverlappingSupplier(thirdSupplier);
-
-        mFeatureInsetSupplier.set(5);
-        secondSupplier.set(20);
-        thirdSupplier.set(10);
-
-        assertEquals("Observed value should be the max of the three supplied.", (Integer) 20,
-                mWindowInsetObserver.getCapturedValue());
-    }
-
-    @Test
-    public void testSupplierTriggersObserver_setBeforeAdded() {
+    public void testSupplierSetBeforeAddingTriggersObserverOnAdd() {
         ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
         supplier.set(20);
 
-        mWindowApplicationInsetSupplier.addOverlappingSupplier(supplier);
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(supplier);
 
-        assertEquals("The observer should have been triggered after the supplier was added.",
-                (Integer) 20, mWindowInsetObserver.getCapturedValue());
+        assertEquals("The observer should have been triggered when the supplier was added.", 20,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
     }
 
     @Test
-    public void testSupplierRemoveTriggersEvent() {
-        ObservableSupplierImpl<Integer> secondSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addOverlappingSupplier(secondSupplier);
+    public void testRemovingSupplierTriggersObservers() {
+        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
 
-        ObservableSupplierImpl<Integer> thirdSupplier = new ObservableSupplierImpl<>();
-        mWindowApplicationInsetSupplier.addOverlappingSupplier(thirdSupplier);
+        mKeyboardInsetSupplier.set(20);
+        accessorySupplier.set(5);
 
-        mFeatureInsetSupplier.set(5);
-        secondSupplier.set(20);
-        thirdSupplier.set(10);
+        assertEquals("Observed value should come from accessory.", 5,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
 
-        assertEquals("Observed value should be the max of the three supplied.", (Integer) 20,
-                mWindowInsetObserver.getCapturedValue());
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(null);
 
-        mWindowApplicationInsetSupplier.removeSupplier(secondSupplier);
-
-        assertEquals("Observed value should be the max of the two remaining.", (Integer) 10,
-                mWindowInsetObserver.getCapturedValue());
+        assertEquals("Observed value should be 0 when accessory supplier removed.", 0,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
     }
 
     @Test
     public void testAllSuppliersRemoved() {
-        mFeatureInsetSupplier.set(5);
+        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
 
-        assertEquals("Observed value from supplier is incorrect.", (Integer) 5,
-                mWindowInsetObserver.getCapturedValue());
+        mKeyboardInsetSupplier.set(10);
+        accessorySupplier.set(5);
 
-        mWindowApplicationInsetSupplier.removeSupplier(mFeatureInsetSupplier);
+        assertEquals("View inset is correct.", 5,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("VisualViewport inset is correct.", 15,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
 
-        assertEquals("Observed value should be 0 with no suppliers attached.", (Integer) 0,
-                mWindowInsetObserver.getCapturedValue());
+        mWindowApplicationInsetSupplier.setKeyboardInsetSupplier(null);
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(null);
+
+        assertEquals("View inset should be 0 with no suppliers attached.", 0,
+                mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("VisualViewport inset should be 0 with no suppliers attached.", 0,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+    }
+
+    @Test
+    public void testVisualViewportBottomInset() {
+        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
+
+        assertEquals("VisualViewport inset initially 0", 0,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+
+        mKeyboardInsetSupplier.set(10);
+
+        assertEquals("Keyboard insets visual viewport", 10,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+
+        accessorySupplier.set(20);
+
+        assertEquals("Accessory insets visual viewport", 30,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(null);
+
+        assertEquals("Removing accessory removes visual viewport inset", 10,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setKeyboardInsetSupplier(null);
+
+        assertEquals("Removing keyboard removes visual viewport inset", 0,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+    }
+
+    @Test
+    public void testVisualViewportInsetWithVirtualKeyboardModes() {
+        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
+
+        assertEquals("VisualViewport inset initially 0", 0,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+
+        mKeyboardInsetSupplier.set(10);
+        assertEquals("Keyboard doesn't inset visual viewport with RESIZES_CONTENT", 0,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+
+        accessorySupplier.set(20);
+        assertEquals("Accessory doesn't inset visual viewport with RESIZES_CONTENT", 0,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(
+                VirtualKeyboardMode.OVERLAYS_CONTENT);
+
+        mKeyboardInsetSupplier.set(12);
+        assertEquals("Keyboard doesn't inset visual viewport with OVERLAYS_CONTENT", 0,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+
+        accessorySupplier.set(25);
+        assertEquals("Accessory doesn't inset visual viewport with OVERLAYS_CONTENT", 0,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
+        assertEquals("Accessory and keyboard inset visual viewport with RESIZES_VISUAL", 37,
+                mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
+    }
+
+    @Test
+    public void testTriggerVisualViewportObserver() {
+        assertNull("Observer initially uncalled", mInsetObserver.getCapturedValue());
+
+        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
+
+        mKeyboardInsetSupplier.set(10);
+
+        assertEquals("Keyboard triggers visual viewport observer", 10,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+
+        accessorySupplier.set(20);
+
+        assertEquals("Accessory triggers visual viewport observer", 30,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(null);
+
+        assertEquals("Removing accessory supplier triggers visual viewport observer", 10,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+
+        mWindowApplicationInsetSupplier.setKeyboardInsetSupplier(null);
+        assertEquals("Removing keyboard supplier triggers visual viewport observer", 0,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+    }
+
+    @Test
+    public void testTriggerObserverWithVirtualKeyboardModes() {
+        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
+        mKeyboardInsetSupplier.set(30);
+        accessorySupplier.set(15);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+
+        // Clear the observer so we can tell if it gets called.
+        mInsetObserver.onResult(null);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(
+                VirtualKeyboardMode.OVERLAYS_CONTENT);
+
+        assertNull("Changing to OVERLAYS_CONTENT doesn't trigger observer",
+                mInsetObserver.getCapturedValue());
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
+
+        assertEquals("Changing to RESIZES_VISUAL triggers observer", 45,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
+
+        // Clear the observer so we can tell if it gets called.
+        mInsetObserver.onResult(null);
+
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+
+        assertEquals("Changing from RESIZES_VISUAL triggers observer", 0,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
     }
 }

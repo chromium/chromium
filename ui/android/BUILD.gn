@@ -275,6 +275,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/base/TouchDevice.java",
     "java/src/org/chromium/ui/base/ViewAndroidDelegate.java",
     "java/src/org/chromium/ui/base/ViewUtils.java",
+    "java/src/org/chromium/ui/base/ViewportInsets.java",
     "java/src/org/chromium/ui/base/WindowAndroid.java",
     "java/src/org/chromium/ui/base/WindowDelegate.java",
     "java/src/org/chromium/ui/display/DisplayAndroid.java",
@@ -395,6 +396,7 @@ android_library("ui_no_recycler_view_java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//ui/base/cursor/mojom:cursor_type_java",
+    "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -554,6 +556,7 @@ robolectric_binary("ui_junit_tests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/mockito:mockito_java",
+    "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
     "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",

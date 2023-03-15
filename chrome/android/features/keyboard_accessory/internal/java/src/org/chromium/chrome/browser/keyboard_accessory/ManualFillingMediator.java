@@ -67,17 +67,17 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownPopupWindow;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.util.HashSet;
 
@@ -95,8 +95,8 @@ class ManualFillingMediator
     private SparseArray<AccessorySheetTabCoordinator> mSheets = new SparseArray<>();
     private PropertyModel mModel = ManualFillingProperties.createFillingModel();
     private WindowAndroid mWindowAndroid;
-    private Supplier<InsetObserverView> mInsetObserverViewSupplier;
-    private final ObservableSupplierImpl<Integer> mViewportInsetSupplier =
+    private ApplicationViewportInsetSupplier mApplicationViewportInsetSupplier;
+    private final ObservableSupplierImpl<Integer> mBottomInsetSupplier =
             new ObservableSupplierImpl<>();
     private final ManualFillingStateCache mStateCache = new ManualFillingStateCache();
     private final HashSet<Tab> mObservedTabs = new HashSet<>();
@@ -143,7 +143,7 @@ class ManualFillingMediator
 
     /** Default constructor */
     ManualFillingMediator() {
-        mViewportInsetSupplier.set(0);
+        mBottomInsetSupplier.set(0);
     }
 
     void initialize(KeyboardAccessoryCoordinator keyboardAccessory,
@@ -163,7 +163,7 @@ class ManualFillingMediator
         mAccessorySheet = accessorySheet;
         mAccessorySheet.setOnPageChangeListener(mKeyboardAccessory.getOnPageChangeListener());
         mAccessorySheet.setHeight(getIdealSheetHeight());
-        setInsetObserverViewSupplier(InsetObserverViewSupplier.from(mWindowAndroid));
+        mApplicationViewportInsetSupplier = mWindowAndroid.getApplicationBottomInsetSupplier();
         mActivity.findViewById(android.R.id.content).addOnLayoutChangeListener(this);
         mBackPressManager = backPressManager;
         mBackPressChangedSupplier.set(shouldHideOnBackPress());
@@ -204,7 +204,7 @@ class ManualFillingMediator
     }
 
     ObservableSupplier<Integer> getBottomInsetSupplier() {
-        return mViewportInsetSupplier;
+        return mBottomInsetSupplier;
     }
 
     @Override
@@ -388,16 +388,29 @@ class ManualFillingMediator
         if (mActivity == null) return false;
         WebContents webContents = mActivity.getCurrentWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
-        float height = webContents.getHeight(); // In dip. Includes top control elements only.
+        float height = webContents.getHeight(); // In dip. Already insetted by top/bottom controls.
 
-        // WebContents height ignores the soft keyboard — subtract the keyboard height:
-        height -= mWindowAndroid.getApplicationBottomInsetSupplier().get()
-                / mWindowAndroid.getDisplay().getDipScale();
-
-        // Don't consider the impact of the accessory as shown already. If we have space for a bar,
-        // we continue to have it. The sheet is never bigger than the an open keyboard — so if an
-        // open sheet affects the inset, we can safely ignore it, too.
-        height += mViewportInsetSupplier.get() / mWindowAndroid.getDisplay().getDipScale();
+        // TODO(https://crbug.com/1211066): This class shouldn't know about virtual keyboard mode.
+        // Move the browser controls into ApplicationViewportInsetSupplier and then do a simple
+        // inset on the CompositorViewHolder size (rather than WebContents) to remove this
+        // dependency.
+        if (mApplicationViewportInsetSupplier.getVirtualKeyboardMode()
+                == VirtualKeyboardMode.RESIZES_CONTENT) {
+            // If RESIZES_CONTENT is set, the soft keyboard and accessory *do* resize the
+            // webContents. Don't consider the impact of the accessory as shown already. If we have
+            // space for a bar, we continue to have it. The sheet is never bigger than an open
+            // keyboard — so if an open sheet affects the inset, we can safely ignore it, too.
+            height += mBottomInsetSupplier.get() / mWindowAndroid.getDisplay().getDipScale();
+        } else {
+            // If the mode is RESIZES_VISUAL or OVERLAYS_CONTENT then WebContents is not resized by
+            // the soft keyboard or the accessory. Subtract the keyboard height to get the visible
+            // area but ignore the accessory height for the reasons in the above comment.
+            if (getContentView() != null && getContentView().getRootView() != null) {
+                height -= mSoftKeyboardDelegate.calculateSoftKeyboardHeight(
+                                  getContentView().getRootView())
+                        / mWindowAndroid.getDisplay().getDipScale();
+            }
+        }
 
         return height >= MINIMAL_AVAILABLE_VERTICAL_SPACE // Allows for a bar if not shown yet.
                 && webContents.getWidth() >= MINIMAL_AVAILABLE_HORIZONTAL_SPACE;
@@ -634,7 +647,7 @@ class ManualFillingMediator
             newControlsOffset += mAccessorySheet.getHeight();
         }
         mKeyboardAccessory.setBottomOffset(newControlsOffset);
-        mViewportInsetSupplier.set(newControlsHeight);
+        mBottomInsetSupplier.set(newControlsHeight);
     }
 
     /**
@@ -693,16 +706,12 @@ class ManualFillingMediator
 
     /**
      * Uses the keyboard (if available) to determine the height of the accessory sheet.
-     * @param rootView Root view of the current content view -- used to estimate the height unless
-     *                 the more reliable InsetObserver is available.
+     * @param rootView Root view of the current content view.
      * @return The estimated keyboard height or enough space to display at least three suggestions.
      */
     private @Px int calculateAccessorySheetHeight(View rootView) {
-        InsetObserverView insetObserver = mInsetObserverViewSupplier.get();
         int minimalSheetHeight = getIdealSheetHeight();
-        int newSheetHeight = insetObserver != null
-                ? insetObserver.getSystemWindowInsetsBottom()
-                : mSoftKeyboardDelegate.calculateSoftKeyboardHeight(rootView);
+        int newSheetHeight = mSoftKeyboardDelegate.calculateSoftKeyboardHeight(rootView);
         newSheetHeight +=
                 ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY) ? getHeaderHeight() : 0;
         newSheetHeight = Math.max(newSheetHeight, minimalSheetHeight);
@@ -719,10 +728,28 @@ class ManualFillingMediator
         float density = mWindowAndroid.getDisplay().getDipScale();
         // The maximal height for the sheet ensures a minimal amount of WebContents space.
         @Px
-        int maxHeight = Math.round(density * webContents.getHeight());
-        maxHeight -= Math.round(density * MINIMAL_AVAILABLE_VERTICAL_SPACE);
-        if (mAccessorySheet.getHeight() <= maxHeight) return; // Sheet height needs no adjustment!
-        mAccessorySheet.setHeight(maxHeight);
+        int visibleViewportHeightPx = Math.round(density * webContents.getHeight());
+        // TODO(bokan): This class shouldn't know about virtual keyboard mode. Move the browser
+        // controls into ApplicationViewportInsetSupplier and then do a simple inset on the
+        // CompositorViewHolder size (rather than WebContents) to remove this dependency.
+        // https://crbug.com/1211066.
+        if (mApplicationViewportInsetSupplier.getVirtualKeyboardMode()
+                != VirtualKeyboardMode.RESIZES_CONTENT) {
+            // If the mode is RESIZES_VISUAL or OVERLAYS_CONTENT then WebContents is not resized by
+            // the soft keyboard or the accessory.
+            if (getContentView() != null && getContentView().getRootView() != null) {
+                visibleViewportHeightPx -= mSoftKeyboardDelegate.calculateSoftKeyboardHeight(
+                        getContentView().getRootView());
+                visibleViewportHeightPx -= mBottomInsetSupplier.get();
+            }
+        }
+        int minimumVerticalSpacePx = Math.round(density * MINIMAL_AVAILABLE_VERTICAL_SPACE);
+        if (visibleViewportHeightPx >= minimumVerticalSpacePx) return; // Sheet height needs no adjustment!
+
+        // Adjust the height such that the new visible height will be exactly
+        // MINIMAL_AVAILABLE_VERTICAL_SPACE.
+        mAccessorySheet.setHeight(
+                visibleViewportHeightPx + mAccessorySheet.getHeight() - minimumVerticalSpacePx);
         changeBottomControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
     }
 
@@ -898,11 +925,6 @@ class ManualFillingMediator
         idealHeight +=
                 ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY) ? getHeaderHeight() : 0;
         return idealHeight;
-    }
-
-    @VisibleForTesting
-    void setInsetObserverViewSupplier(Supplier<InsetObserverView> insetObserverViewSupplier) {
-        mInsetObserverViewSupplier = insetObserverViewSupplier;
     }
 
     @VisibleForTesting

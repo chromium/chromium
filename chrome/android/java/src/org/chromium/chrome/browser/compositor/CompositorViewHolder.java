@@ -69,7 +69,6 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -82,6 +81,7 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.ResourceManager;
@@ -101,9 +101,8 @@ import java.util.Set;
  */
 public class CompositorViewHolder extends FrameLayout
         implements ContentOffsetProvider, LayoutManagerHost, LayoutRenderHost, Invalidator.Host,
-                   BrowserControlsStateProvider.Observer, InsetObserverView.WindowInsetObserver,
-                   ChromeAccessibilityUtil.Observer, TabObscuringHandler.Observer,
-                   ViewGroup.OnHierarchyChangeListener {
+                   BrowserControlsStateProvider.Observer, ChromeAccessibilityUtil.Observer,
+                   TabObscuringHandler.Observer, ViewGroup.OnHierarchyChangeListener {
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
     private static final MutableFlagWithSafeDefault sDeferKeepScreenOnFlag =
             new MutableFlagWithSafeDefault(
@@ -170,7 +169,6 @@ public class CompositorViewHolder extends FrameLayout
     /** The toolbar control container. **/
     private @Nullable ControlContainer mControlContainer;
 
-    private InsetObserverView mInsetObserverView;
     private ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
     private boolean mShowingFullscreen;
     private Runnable mSystemUiFullscreenResizeRunnable;
@@ -202,7 +200,14 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mInGesture;
     private boolean mContentViewScrolling;
     private ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier;
-    private final Callback<Integer> mBottomInsetObserver = (inset) -> bottomInsetChanged();
+
+    // Handler for changes to viewport insets.
+    private Callback<ViewportInsets> mOnViewportInsetsChanged = (unused) -> {
+        // TODO(bokan): This needs to be called in non-fullscreen cases too. e.g. When showing a
+        // keyboard accessory sheet, the inset will change without causing a View layout so the
+        // WebContents size is not updated.
+        if (mShowingFullscreen) handleWindowInsetChanged();
+    };
 
     /**
      * Tracks whether geometrychange event is fired for the active tab when the keyboard
@@ -561,115 +566,59 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /**
-     * Set the InsetObserverView that can be monitored for changes to the window insets from Android
-     * system UI.
-     */
-    public void setInsetObserverView(InsetObserverView view) {
-        if (mInsetObserverView != null) {
-            mInsetObserverView.removeObserver(this);
-        }
-        mInsetObserverView = view;
-        if (mInsetObserverView != null) {
-            mInsetObserverView.addObserver(this);
-            handleWindowInsetChanged();
-        }
-        updateApplicationViewportInsetSuppliers();
-    }
-
-    /**
      * A supplier providing an inset that resizes the page in addition or instead of the keyboard.
-     * This is inset is used by autofill UI as addition to bottom controls.
+     * This is inset is used to add to browser bottom controls until the
+     * ApplicationViewportInsetSupplier integrates them.
      * @param autofillUiBottomInsetSupplier A {@link ObservableSupplier<Integer>}.
      */
     public void setAutofillUiBottomInsetSupplier(
             ObservableSupplier<Integer> autofillUiBottomInsetSupplier) {
         mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
-        mAutofillUiBottomInsetSupplier.addObserver(mBottomInsetObserver);
-        updateApplicationViewportInsetSuppliers();
     }
 
     /**
-     * Sets the ApplicationViewportInsetSupplier.
-     * This object manages inset suppliers that should inset the visual viewport
-     * of the current page (i.e. allow scrolling but don't affect layout). This
-     * class manages adding and removing observers from this object as needed.
+     * Sets the ApplicationViewportInsetSupplier that will notify CompositorViewHolder when the
+     * WebContent must be resized by viewport insets.
      */
     public void setApplicationViewportInsetSupplier(ApplicationViewportInsetSupplier supplier) {
         assert mApplicationBottomInsetSupplier == null;
         mApplicationBottomInsetSupplier = supplier;
-        mApplicationBottomInsetSupplier.addObserver(mBottomInsetObserver);
-        updateApplicationViewportInsetSuppliers();
+        mApplicationBottomInsetSupplier.setVirtualKeyboardMode(mVirtualKeyboardMode);
+        mApplicationBottomInsetSupplier.addObserver(mOnViewportInsetsChanged);
     }
 
-    // Ensures the keyboard-related inset suppliers are either registered or unregistered with the
-    // ApplicationViewportInsetSupplier. The ApplicationViewportInsetSupplier is responsible for
-    // insetting the visual viewport so the keyboard insets should only be applied to it if the
-    // keyboard resizes only the visual viewport (otherwise the visual viewport and web contents
-    // size are resized together).
-    private void updateApplicationViewportInsetSuppliers() {
-        if (mApplicationBottomInsetSupplier == null) return;
-
-        if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
-            if (mAutofillUiBottomInsetSupplier != null) {
-                mApplicationBottomInsetSupplier.addStackingSupplier(mAutofillUiBottomInsetSupplier);
-            }
-            if (mInsetObserverView != null) {
-                mApplicationBottomInsetSupplier.addStackingSupplier(
-                        mInsetObserverView.getSupplierForBottomInset());
-            }
-        } else {
-            if (mAutofillUiBottomInsetSupplier != null) {
-                mApplicationBottomInsetSupplier.removeSupplier(mAutofillUiBottomInsetSupplier);
-            }
-            if (mInsetObserverView != null) {
-                mApplicationBottomInsetSupplier.removeSupplier(
-                        mInsetObserverView.getSupplierForBottomInset());
-            }
-        }
-    }
-
-    @Override
-    public void onInsetChanged(int left, int top, int right, int bottom) {
-        if (mShowingFullscreen) handleWindowInsetChanged();
-    }
-
+    // This method is called when any viewport insets change but is needed to watch for keyboard
+    // state changes while fullscreened and is used to simulate a view resize. This is only needed
+    // if the page has opted in to keyboard resizes.
     private void handleWindowInsetChanged() {
-        // The InsetObserverView is used to monitor keyboard resizes while
-        // fullscreened to simulate a view resize. This is unneeded when the
-        // OSK resizes only the visual viewport.
-        if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
-            return;
+        if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT) {
+            // Notify the WebContents that the size has changed.
+            updateWebContentsSize(getCurrentTab());
+
+            // Notify the compositor layout that the size has changed.  The layout does not drive
+            // the WebContents sizing, so this needs to be done in addition to the above size
+            // update.
+            onViewportChanged();
+        } else if (mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT) {
+            // Call updateWebContentsSize for OVERLAYS_CONTENT to ensure the virtual-keyboard
+            // geometrychange event is dispatched.
+            // TODO(bokan): The viewport doesn't change size in OVERLAYS_CONTENT so we should factor
+            // the event dispatch code out of there.
+            updateWebContentsSize(getCurrentTab());
         }
-
-        // Notify the WebContents that the size has changed.
-        updateWebContentsSize(getCurrentTab());
-
-        // Notify the compositor layout that the size has changed.  The layout does not drive
-        // the WebContents sizing, so this needs to be done in addition to the above size update.
-        onViewportChanged();
     }
-
-    @Override
-    public void onSafeAreaChanged(Rect area) {}
 
     /**
      * Should be called for cleanup when the CompositorView instance is no longer used.
      */
     public void shutDown() {
         setTab(null);
-        if (mApplicationBottomInsetSupplier != null && mBottomInsetObserver != null) {
-            mApplicationBottomInsetSupplier.removeObserver(mBottomInsetObserver);
-        }
-        if (mAutofillUiBottomInsetSupplier != null && mBottomInsetObserver != null) {
-            mAutofillUiBottomInsetSupplier.removeObserver(mBottomInsetObserver);
+        if (mApplicationBottomInsetSupplier != null) {
+            mApplicationBottomInsetSupplier.removeObserver(mOnViewportInsetsChanged);
         }
 
         mCompositorView.shutDown();
         if (mLayoutManager != null) mLayoutManager.destroy();
-        if (mInsetObserverView != null) {
-            mInsetObserverView.removeObserver(this);
-            mInsetObserverView = null;
-        }
         if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();
         if (mContentView != null) {
             mContentView.removeOnHierarchyChangeListener(this);
@@ -933,42 +882,61 @@ public class CompositorViewHolder extends FrameLayout
         int width = viewportSize.x;
         int height = viewportSize.y;
 
-        // The view size takes into account of the browser controls whose height
-        // should be subtracted from the view if they are visible, therefore shrink
-        // Blink-side view size.
-        // TODO(https://crbug.com/1211066): Centralize the logic for calculating bottom insets.
-        final int totalMinHeight = getKeyboardBottomInsetForControlsPixels()
-                + (mBrowserControlsManager != null
-                                ? mBrowserControlsManager.getTopControlsMinHeight()
-                                        + mBrowserControlsManager.getBottomControlsMinHeight()
-                                : 0);
-        int controlsHeight = mControlsResizeView
-                ? getTopControlsHeightPixels() + getBottomControlsHeightPixels()
-                : totalMinHeight;
+        // The view size takes into account of the browser controls whose height should be
+        // subtracted from the view if they are visible, therefore shrink Blink-side view size.
+        // TODO(https://crbug.com/1211066): Centralize the logic for calculating bottom insets by
+        // merging them into ApplicationBottomInsetSupplier.
+        int controlsInsets = 0;
+        if (mBrowserControlsManager != null) {
+            int controlsMinHeight = mBrowserControlsManager.getTopControlsMinHeight()
+                    + mBrowserControlsManager.getBottomControlsMinHeight();
+            int controlsHeight = mBrowserControlsManager.getTopControlsHeight()
+                    + mBrowserControlsManager.getBottomControlsHeight();
+            controlsInsets = mControlsResizeView ? controlsHeight : controlsMinHeight;
+        }
+
+        // The system keyboard itself has already shrunk the View so its contribution is already
+        // included in `height`; viewVisibleHeightInset includes only the accessory inset.
+        // TODO(bokan): This method currently applies logic, based on mVirtualKeyboardMode, to
+        // compute the right inset/outset to use for the WebContents size. Move this logic into
+        // ApplicationViewportInsetSupplier.
+        int keyboardAccessoryInset = mApplicationBottomInsetSupplier != null
+                ? mApplicationBottomInsetSupplier.get().viewVisibleHeightInset
+                : 0;
+
+        int viewportInsets = controlsInsets + keyboardAccessoryInset;
 
         if (isAttachedToWindow(view)) {
-            // If overlay content flag is set and the keyboard is shown or hidden then resize the
-            // visual/layout viewports in WebContents to match the previous size so there
-            // isn't a change in size after the keyboard is raised or hidden.
-            // Also the geometrychange event should only fire to the foreground tab.
             int keyboardHeight = 0;
 
+            // If the VirtualKeyboardMode is set to OVERLAYS_CONTENT or RESIZES_VISUAL, the
+            // WebContents size will not match the View size when the keyboard is showing (these
+            // modes mean "keyboard doesn't resize web content"). In that case, add the shown
+            // keyboard height to the WebContents size to keep it from being resized.
             boolean vkModePreservesWebContentsHeight =
                     mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT
                     || mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL;
 
             // In fullscreen, the keyboard doesn't resize the view so there's no need to adjust the
-            // layout height by the keyboard height to keep it from changing in response.
-            if (!mShowingFullscreen && vkModePreservesWebContentsHeight) {
-                // During orientation changes, width of the |WebContents| changes to match the width
-                // of the screen and so does the keyboard. We fire geometrychange with the updated
-                // keyboard size as well as resize the viewport so the height resize doesn't affect
-                // the |WebContents|.
-                keyboardHeight = KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(
-                        this.getRootView());
-                height += keyboardHeight;
+            // layout height by the keyboard height to keep it from changing in response (but we do
+            // have to add back in keyboardAccessoryInset to avoid insetting by it).
+            if (vkModePreservesWebContentsHeight) {
+                // TODO(bokan): We could probably remove this special case if we remove the
+                // RESIZES_CONTENT case in getViewport. Then ApplicationViewportInsetSupplier can
+                // compute this outset for us.
+                if (!mShowingFullscreen) {
+                    keyboardHeight =
+                            KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(
+                                    this.getRootView());
+                }
+                height += keyboardHeight + keyboardAccessoryInset;
             }
-            webContents.setSize(width, height - controlsHeight);
+
+            webContents.setSize(width, height - viewportInsets);
+
+            // Dispatch the geometrychange JavaScript event to the page.
+            // TODO(bokan): This doesn't belong in updateWebContentsSize. Ideally the content/ layer
+            // would listen to changes in keyboard state and dispatch this event itself.
             if (mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT) {
                 notifyVirtualKeyboardOverlayGeometryChangeEvent(width, keyboardHeight, webContents);
             }
@@ -980,7 +948,7 @@ public class CompositorViewHolder extends FrameLayout
             view.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
             view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-            webContents.setSize(view.getWidth(), view.getHeight() - controlsHeight);
+            webContents.setSize(view.getWidth(), view.getHeight() - viewportInsets);
             requestRender();
         }
     }
@@ -1139,22 +1107,6 @@ public class CompositorViewHolder extends FrameLayout
             // SynchronizeVisualProperties in a partly-updated state.
             onControlsResizeViewChanged(getWebContents(), mControlsResizeView);
         }
-    }
-
-    /**
-     * Called when keyboard-related UI insets the bottom of the viewport
-     */
-    private void bottomInsetChanged() {
-        // updateViewportSize only needs to be called if OSK related UI
-        // actually resizes the view. Otherwise the inset only resizes the
-        // visual viewport which is communicated to the renderer by observing
-        // the inset provider in TabViewAndroidDelegate. This is a no-op in
-        // CompositorViewHolder.
-        if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
-            return;
-        }
-
-        updateViewportSize();
     }
 
     // View.OnHierarchyChangeListener implementation
@@ -1405,27 +1357,17 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public int getBottomControlsHeightPixels() {
-        return getKeyboardBottomInsetForControlsPixels()
-                + (mBrowserControlsManager != null
-                                ? mBrowserControlsManager.getBottomControlsHeight()
-                                : 0);
-    }
-
-    /**
-     * If there is keyboard extension or replacement available, this method returns the inset that
-     * resizes the page in addition to the bottom controls height.
-     * @return The inset height in pixels.
-     */
-    private int getKeyboardBottomInsetForControlsPixels() {
-        // If the OSK mode resizes only the visual viewport avoid insetting the the container.
-        if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
-            return 0;
+        int bottomControlsHeight = mBrowserControlsManager != null
+                ? mBrowserControlsManager.getBottomControlsHeight()
+                : 0;
+        int keyboardAccessoryHeight = 0;
+        // TODO(bokan): This preserves behavior but this method is used to determine UI insets so
+        // this shouldn't depend on VirtualKeyboardMode
+        if (mVirtualKeyboardMode != VirtualKeyboardMode.RESIZES_VISUAL) {
+            keyboardAccessoryHeight = mAutofillUiBottomInsetSupplier.get();
         }
 
-        return mAutofillUiBottomInsetSupplier != null
-                        && mAutofillUiBottomInsetSupplier.get() != null
-                ? mAutofillUiBottomInsetSupplier.get()
-                : 0;
+        return bottomControlsHeight + keyboardAccessoryHeight;
     }
 
     /**
@@ -1632,16 +1574,10 @@ public class CompositorViewHolder extends FrameLayout
 
         if (mVirtualKeyboardMode == newMode) return;
 
-        @VirtualKeyboardMode.EnumType
-        int oldMode = mVirtualKeyboardMode;
         mVirtualKeyboardMode = newMode;
 
-        // If we're going into or out of the default OSK resizes visual viewport mode
-        // we're changing whether the ApplicationViewportInsetSupplier needs to listen to
-        // the keyboard since its responsible for insetting the visual viewport.
-        if (oldMode == VirtualKeyboardMode.RESIZES_VISUAL
-                || newMode == VirtualKeyboardMode.RESIZES_VISUAL) {
-            updateApplicationViewportInsetSuppliers();
+        if (mApplicationBottomInsetSupplier != null) {
+            mApplicationBottomInsetSupplier.setVirtualKeyboardMode(mVirtualKeyboardMode);
         }
     }
 

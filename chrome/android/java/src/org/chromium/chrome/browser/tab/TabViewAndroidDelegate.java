@@ -10,12 +10,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -34,10 +35,10 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
      * The inset for the bottom of the Visual Viewport in pixels, or 0 for no insetting.
      * This is the source of truth for the application viewport inset for this embedder.
      */
-    private int mApplicationViewportInsetBottomPx;
+    private int mVisualViewportInsetBottomPx;
 
     /** The inset supplier the observer is currently attached to. */
-    private ObservableSupplier<Integer> mCurrentInsetSupplier;
+    private ApplicationViewportInsetSupplier mCurrentInsetSupplier;
 
     TabViewAndroidDelegate(Tab tab, ContentView containerView) {
         super(containerView);
@@ -50,7 +51,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         }
 
-        Callback<Integer> insetObserver = (inset) -> updateInsetViewportBottom();
+        Callback<ViewportInsets> insetObserver = (unused) -> updateVisualViewportBottomInset();
         mCurrentInsetSupplier = tab.getWindowAndroid().getApplicationBottomInsetSupplier();
         mCurrentInsetSupplier.addObserver(insetObserver);
 
@@ -61,21 +62,22 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
                     mCurrentInsetSupplier =
                             tab.getWindowAndroid().getApplicationBottomInsetSupplier();
                     mCurrentInsetSupplier.addObserver(insetObserver);
+                    updateVisualViewportBottomInset();
                 } else {
                     mCurrentInsetSupplier.removeObserver(insetObserver);
                     mCurrentInsetSupplier = null;
-                    updateInsetViewportBottom();
+                    updateVisualViewportBottomInset();
                 }
             }
 
             @Override
             public void onShown(Tab tab, int type) {
-                updateInsetViewportBottom();
+                updateVisualViewportBottomInset();
             }
 
             @Override
             public void onHidden(Tab tab, int reason) {
-                updateInsetViewportBottom();
+                updateVisualViewportBottomInset();
             }
         });
     }
@@ -105,13 +107,14 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     }
 
     /** Sets the Visual Viewport bottom inset. */
-    private void updateInsetViewportBottom() {
-        int inset =
-                mTab.isHidden() || mCurrentInsetSupplier == null ? 0 : mCurrentInsetSupplier.get();
+    private void updateVisualViewportBottomInset() {
+        int inset = mTab.isHidden() || mCurrentInsetSupplier == null
+                ? 0
+                : mCurrentInsetSupplier.get().visualViewportBottomInset;
 
-        if (inset == mApplicationViewportInsetBottomPx) return;
+        if (inset == mVisualViewportInsetBottomPx) return;
 
-        mApplicationViewportInsetBottomPx = inset;
+        mVisualViewportInsetBottomPx = inset;
 
         if (mTab.getWebContents() == null
                 || mTab.getWebContents().getRenderWidgetHostView() == null) {
@@ -122,8 +125,10 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     }
 
     @Override
+    // TODO(bokan): "Viewport Inset" is overloaded. Rename to make it clearer this is a "visual
+    // viewport" inset. Also the RenderWidgetHostView call above.
     protected int getViewportInsetBottom() {
-        return mApplicationViewportInsetBottomPx;
+        return mVisualViewportInsetBottomPx;
     }
 
     @Override

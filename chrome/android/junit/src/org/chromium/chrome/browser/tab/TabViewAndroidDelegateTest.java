@@ -33,6 +33,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 /** Unit tests for the TabViewAndroidDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,17 +60,20 @@ public class TabViewAndroidDelegateTest {
     private ContentView mContentView;
 
     private ApplicationViewportInsetSupplier mApplicationInsetSupplier;
-    private ObservableSupplierImpl<Integer> mFeatureInsetSupplier;
+    private ObservableSupplierImpl<Integer> mVisualViewportInsetSupplier;
     private TabViewAndroidDelegate mViewAndroidDelegate;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mFeatureInsetSupplier = new ObservableSupplierImpl<>();
+        mVisualViewportInsetSupplier = new ObservableSupplierImpl<>();
 
         mApplicationInsetSupplier = ApplicationViewportInsetSupplier.createForTests();
-        mApplicationInsetSupplier.addOverlappingSupplier(mFeatureInsetSupplier);
+
+        // The the keyboard only insets the visual viewport while in RESIZES_VISUAL mode.
+        mApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
+        mApplicationInsetSupplier.setKeyboardInsetSupplier(mVisualViewportInsetSupplier);
 
         when(mWindowAndroid.getApplicationBottomInsetSupplier())
                 .thenReturn(mApplicationInsetSupplier);
@@ -82,14 +86,14 @@ public class TabViewAndroidDelegateTest {
 
     @Test
     public void testInset() {
-        mFeatureInsetSupplier.set(10);
+        mVisualViewportInsetSupplier.set(10);
         assertEquals("The bottom inset for the tab should be non-zero.", 10,
                 mViewAndroidDelegate.getViewportInsetBottom());
     }
 
     @Test
     public void testInset_afterHidden() {
-        mFeatureInsetSupplier.set(10);
+        mVisualViewportInsetSupplier.set(10);
 
         when(mTab.isHidden()).thenReturn(true);
 
@@ -100,7 +104,7 @@ public class TabViewAndroidDelegateTest {
 
     @Test
     public void testInset_afterDetachAndAttach() {
-        mFeatureInsetSupplier.set(10);
+        mVisualViewportInsetSupplier.set(10);
 
         assertEquals("The bottom inset for the tab should be non-zero.", 10,
                 mViewAndroidDelegate.getViewportInsetBottom());

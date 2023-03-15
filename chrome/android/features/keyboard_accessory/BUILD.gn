@@ -183,5 +183,6 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_utils_java",
+    "//ui/base/ime/mojom:mojom_java",
   ]
 }

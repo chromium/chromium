@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -47,12 +48,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.util.ArrayList;
@@ -108,6 +110,8 @@ public class CompositorViewHolderUnitTest {
     private Context mContext;
     private CompositorViewHolder mCompositorViewHolder;
     private BrowserControlsManager mBrowserControlsManager;
+    private ApplicationViewportInsetSupplier mViewportInsets;
+    private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier;
 
     @Before
     public void setUp() {
@@ -117,6 +121,10 @@ public class CompositorViewHolderUnitTest {
 
         // Setup the mock keyboard.
         KeyboardVisibilityDelegate.setInstance(mMockKeyboard);
+
+        mViewportInsets = ApplicationViewportInsetSupplier.createForTests();
+        mKeyboardInsetSupplier = new ObservableSupplierImpl<>();
+        mViewportInsets.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
 
         // Setup for BrowserControlsManager which initiates content/control offset changes
         // for CompositorViewHolder.
@@ -139,6 +147,7 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder = spy(new CompositorViewHolder(mContext));
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);
+        mCompositorViewHolder.setApplicationViewportInsetSupplier(mViewportInsets);
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getContentView()).thenReturn(mContentView);
@@ -343,6 +352,7 @@ public class CompositorViewHolderUnitTest {
 
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
         when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
@@ -360,6 +370,7 @@ public class CompositorViewHolderUnitTest {
         // Hide the keyboard.
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(false);
         when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(0);
+        mKeyboardInsetSupplier.set(0);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
 
@@ -379,6 +390,7 @@ public class CompositorViewHolderUnitTest {
         // Simulate the keyboard being hidden
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(false);
         when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(0);
+        mKeyboardInsetSupplier.set(0);
         when(mCompositorViewHolder.getWidth()).thenReturn(viewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(viewportHeight);
 
@@ -404,6 +416,7 @@ public class CompositorViewHolderUnitTest {
 
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
         when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
@@ -429,6 +442,7 @@ public class CompositorViewHolderUnitTest {
 
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
         when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
@@ -455,6 +469,7 @@ public class CompositorViewHolderUnitTest {
 
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
         when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        mKeyboardInsetSupplier.set(KEYBOARD_HEIGHT);
         when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
         when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
 
