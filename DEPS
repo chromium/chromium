@@ -38,7 +38,6 @@ gclient_gn_args = [
   'checkout_android',
   'checkout_android_prebuilts_build_tools',
   'checkout_android_native_support',
-  'checkout_google_benchmark', # TODO(https://crbug.com/1404759): Remove.
   'checkout_ios_webkit',
   'checkout_nacl',
   'checkout_openxr',
@@ -100,10 +99,6 @@ vars = {
 
   # Checkout fuzz archive. Should not need in builders.
   'checkout_clusterfuzz_data': False,
-
-  # Always check out Google Benchmark.
-  # TODO(https://crbug.com/1404759): Remove.
-  'checkout_google_benchmark': True,
 
   # By default, checkout JavaScript coverage node modules. These packages
   # are used to post-process raw v8 coverage reports into IstanbulJS compliant
