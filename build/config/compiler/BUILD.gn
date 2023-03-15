@@ -885,10 +885,6 @@ config("compiler") {
     # https://github.com/rust-lang/rust/issues/71668
     "-Dunsafe_op_in_unsafe_fn",
 
-    # Turn warnings into the "deny" lint level, which produce compiler errors.
-    # The equivalent of -Werror for clang/gcc.
-    "-Dwarnings",
-
     # To make Rust .d files compatible with ninja
     "-Zdep-info-omit-d-target",
 
@@ -1736,6 +1732,15 @@ config("chromium_code") {
     if (is_clang) {
       # Enable extra warnings for chromium_code when we control the compiler.
       cflags += [ "-Wextra" ]
+    }
+
+    if (treat_warnings_as_errors) {
+      # Turn rustc warnings into the "deny" lint level, which produce compiler
+      # errors. The equivalent of -Werror for clang/gcc.
+      #
+      # Note we apply the actual lint flags in config("compiler"). All warnings
+      # are suppressed in third-party crates.
+      rustflags = [ "-Dwarnings" ]
     }
 
     # In Chromium code, we define __STDC_foo_MACROS in order to get the
