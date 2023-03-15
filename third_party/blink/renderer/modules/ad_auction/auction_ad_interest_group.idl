@@ -22,14 +22,14 @@ dictionary AuctionAdInterestGroup {
 
   double priority;
   boolean enableBiddingSignalsPrioritization;
-  record<USVString, double> priorityVector;
-  record<USVString, double> prioritySignalsOverrides;
+  record<DOMString, double> priorityVector;
+  record<DOMString, double> prioritySignalsOverrides;
 
   // Do not use the "enum" type for `sellerCapabilities`, since it throws on
   // unsupported enum values, making forward compatibility more difficult for
   // API users.
-  record<USVString, sequence<USVString>> sellerCapabilities;
-  USVString executionMode;
+  record<USVString, sequence<DOMString>> sellerCapabilities;
+  DOMString executionMode;
   USVString biddingLogicUrl;
   USVString biddingWasmHelperUrl;
   USVString updateUrl;
@@ -41,6 +41,6 @@ dictionary AuctionAdInterestGroup {
   any userBiddingSignals;
   sequence<AuctionAd> ads;
   sequence<AuctionAd> adComponents;
-  record<USVString, AuctionAdInterestGroupSize> adSizes;
-  record<USVString, sequence<USVString>> sizeGroups;
+  record<DOMString, AuctionAdInterestGroupSize> adSizes;
+  record<DOMString, sequence<DOMString>> sizeGroups;
 };

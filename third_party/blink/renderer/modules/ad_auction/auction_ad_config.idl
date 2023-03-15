@@ -49,8 +49,8 @@ dictionary AuctionAdConfig {
   // TODO(crbug.com/1402467): Use `bigint` instead of `any` when supported by
   // WebIDL parser.
   sequence<any> auctionReportBuyerKeys;
-  record<USVString, AuctionReportBuyersConfig> auctionReportBuyers;
-  sequence<USVString> requiredSellerCapabilities;
+  record<DOMString, AuctionReportBuyersConfig> auctionReportBuyers;
+  sequence<DOMString> requiredSellerCapabilities;
 
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;
