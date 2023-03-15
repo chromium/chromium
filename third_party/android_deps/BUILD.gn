@@ -1531,6 +1531,15 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_mockito_mockito_subclass_java") {
+    jar_path = "libs/org_mockito_mockito_subclass/mockito-subclass-5.1.1.jar"
+    output_name = "org_mockito_mockito_subclass"
+    supports_android = true
+    testonly = true
+    deps = [ ":org_mockito_mockito_core_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_robolectric_java") {
     jar_path = "libs/org_robolectric_robolectric/robolectric-4.8.1.jar"
     output_name = "org_robolectric_robolectric"

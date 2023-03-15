@@ -202,8 +202,7 @@ class ChromiumDepGraph {
             licenseName: 'The MIT License'),
         org_mockito_mockito_subclass: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
-            licenseName: 'The MIT License',
-            overrideLatest: true),
+            licenseName: 'The MIT License'),
         org_objenesis_objenesis: new PropertyOverride(
             url: 'http://objenesis.org/index.html',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
