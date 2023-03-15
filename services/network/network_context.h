@@ -339,7 +339,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::IPEndPoint& addr,
       mojom::RestrictedUDPSocketMode mode,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      mojom::UDPSocketOptionsPtr options,
+      mojom::RestrictedUDPSocketParamsPtr params,
       mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
       mojo::PendingRemote<mojom::UDPSocketListener> listener,
       mojom::NetworkContext::CreateRestrictedUDPSocketCallback callback)

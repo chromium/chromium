@@ -3267,7 +3267,7 @@ TEST_F(NetworkContextTest, CreateRestrictedUDPSocket) {
     network_context->CreateRestrictedUDPSocket(
         server_addr, mojom::RestrictedUDPSocketMode::BOUND,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        /*options=*/nullptr, server_socket.BindNewPipeAndPassReceiver(),
+        /*params=*/nullptr, server_socket.BindNewPipeAndPassReceiver(),
         socket_listener_receiver.BindNewPipeAndPassRemote(),
         create_future.GetCallback());
     ASSERT_EQ(create_future.Get<0>(), net::OK);
@@ -3287,7 +3287,7 @@ TEST_F(NetworkContextTest, CreateRestrictedUDPSocket) {
     network_context->CreateRestrictedUDPSocket(
         server_addr, mojom::RestrictedUDPSocketMode::CONNECTED,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        /*options=*/nullptr, client_socket.BindNewPipeAndPassReceiver(),
+        /*params=*/nullptr, client_socket.BindNewPipeAndPassReceiver(),
         client_listener_receiver.BindNewPipeAndPassRemote(),
         create_future.GetCallback());
     ASSERT_EQ(create_future.Get<0>(), net::OK);

@@ -88,13 +88,14 @@ void MockNetworkContext::CreateRestrictedUDPSocket(
     const net::IPEndPoint& addr,
     network::mojom::RestrictedUDPSocketMode mode,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    network::mojom::UDPSocketOptionsPtr options,
+    network::mojom::RestrictedUDPSocketParamsPtr params,
     mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     CreateRestrictedUDPSocketCallback callback) {
   auto socket = CreateMockUDPSocket(std::move(listener));
   DCHECK_EQ(mode, network::mojom::RestrictedUDPSocketMode::CONNECTED);
-  socket->Connect(addr, std::move(options), std::move(callback));
+  socket->Connect(addr, params ? std::move(params->socket_options) : nullptr,
+                  std::move(callback));
   restricted_udp_socket_ = std::make_unique<MockRestrictedUDPSocket>(
       std::move(socket), std::move(receiver));
 }

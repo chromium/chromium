@@ -6,12 +6,18 @@ module network.mojom;
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/udp_socket.mojom";
 
 // The mode that RestrictedUDPSocket is operating in.
 // See Connect() and Bind() methods of network.mojom.UDPSocket for more details.
 enum RestrictedUDPSocketMode {
   CONNECTED,
   BOUND,
+};
+
+struct RestrictedUDPSocketParams {
+  // These options will be passed to the OS to configure the actual UDP Socket.
+  UDPSocketOptions? socket_options;
 };
 
 // This wraps network.mojom.UDPSocket, exposing only the functionality needed

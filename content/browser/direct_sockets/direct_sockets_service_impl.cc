@@ -232,17 +232,20 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
     return;
   }
 
-  auto underlying_socket_options = network::mojom::UDPSocketOptions::New();
-  underlying_socket_options->send_buffer_size = options->send_buffer_size;
-  underlying_socket_options->receive_buffer_size = options->receive_buffer_size;
+  auto socket_options = network::mojom::UDPSocketOptions::New();
+  socket_options->send_buffer_size = options->send_buffer_size;
+  socket_options->receive_buffer_size = options->receive_buffer_size;
+
+  auto params = network::mojom::RestrictedUDPSocketParams::New();
+  params->socket_options = std::move(socket_options);
 
   GetNetworkContext()->CreateRestrictedUDPSocket(
       options->local_addr,
       /*mode=*/network::mojom::RestrictedUDPSocketMode::BOUND,
       /*traffic_annotation=*/
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
-      /*options=*/std::move(underlying_socket_options), std::move(receiver),
-      std::move(listener), std::move(callback));
+      std::move(params), std::move(receiver), std::move(listener),
+      std::move(callback));
 }
 
 void DirectSocketsServiceImpl::OpenTCPServerSocket(
@@ -331,9 +334,12 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
 
   DCHECK(resolved_addresses && !resolved_addresses->empty());
 
-  auto underlying_socket_options = network::mojom::UDPSocketOptions::New();
-  underlying_socket_options->send_buffer_size = options->send_buffer_size;
-  underlying_socket_options->receive_buffer_size = options->receive_buffer_size;
+  auto socket_options = network::mojom::UDPSocketOptions::New();
+  socket_options->send_buffer_size = options->send_buffer_size;
+  socket_options->receive_buffer_size = options->receive_buffer_size;
+
+  auto params = network::mojom::RestrictedUDPSocketParams::New();
+  params->socket_options = std::move(socket_options);
 
   const net::IPEndPoint& peer_addr = resolved_addresses->front();
   GetNetworkContext()->CreateRestrictedUDPSocket(
@@ -341,8 +347,8 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
       /*mode=*/network::mojom::RestrictedUDPSocketMode::CONNECTED,
       /*traffic_annotation=*/
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
-      /*options=*/std::move(underlying_socket_options),
-      std::move(restricted_udp_socket_receiver), std::move(listener),
+      std::move(params), std::move(restricted_udp_socket_receiver),
+      std::move(listener),
       base::BindOnce(
           [](OpenConnectedUDPSocketCallback callback, net::IPEndPoint peer_addr,
              int result, const absl::optional<net::IPEndPoint>& local_addr) {

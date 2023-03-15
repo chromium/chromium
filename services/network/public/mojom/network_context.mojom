@@ -1117,7 +1117,7 @@ interface NetworkContext {
                   pending_remote<UDPSocketListener>? listener);
 
   // Creates a Restricted UDP socket that wraps an internal UDP Socket connected
-  // or bound to |addr| with |options| depending on the provided |mode|.
+  // or bound to |addr| with |params| depending on the provided |mode|.
   //
   // The socket created can only be used for the purpose specified in
   // |traffic_annotation|, and cannot be re-used for other purposes.
@@ -1135,7 +1135,7 @@ interface NetworkContext {
       IPEndPoint addr,
       RestrictedUDPSocketMode mode,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
-      UDPSocketOptions? options,
+      RestrictedUDPSocketParams? params,
       pending_receiver<RestrictedUDPSocket> receiver,
       pending_remote<UDPSocketListener>? listener)
       => (int32 result, IPEndPoint? local_addr_out);

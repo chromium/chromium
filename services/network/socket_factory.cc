@@ -57,7 +57,7 @@ void SocketFactory::CreateRestrictedUDPSocket(
     const net::IPEndPoint& addr,
     mojom::RestrictedUDPSocketMode mode,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    mojom::UDPSocketOptionsPtr options,
+    mojom::RestrictedUDPSocketParamsPtr params,
     mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<mojom::UDPSocketListener> listener,
     std::unique_ptr<SimpleHostResolver> resolver,
@@ -65,10 +65,14 @@ void SocketFactory::CreateRestrictedUDPSocket(
   auto udp_socket = std::make_unique<UDPSocket>(std::move(listener), net_log_);
   switch (mode) {
     case mojom::RestrictedUDPSocketMode::BOUND:
-      udp_socket->Bind(addr, std::move(options), std::move(callback));
+      udp_socket->Bind(addr, /*options=*/
+                       params ? std::move(params->socket_options) : nullptr,
+                       std::move(callback));
       break;
     case mojom::RestrictedUDPSocketMode::CONNECTED:
-      udp_socket->Connect(addr, std::move(options), std::move(callback));
+      udp_socket->Connect(addr, /*options=*/
+                          params ? std::move(params->socket_options) : nullptr,
+                          std::move(callback));
       break;
   }
   restricted_udp_socket_receivers_.Add(

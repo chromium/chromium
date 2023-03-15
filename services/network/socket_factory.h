@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
       const net::IPEndPoint& addr,
       mojom::RestrictedUDPSocketMode mode,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      mojom::UDPSocketOptionsPtr options,
+      mojom::RestrictedUDPSocketParamsPtr params,
       mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
       mojo::PendingRemote<mojom::UDPSocketListener> listener,
       std::unique_ptr<SimpleHostResolver> resolver,

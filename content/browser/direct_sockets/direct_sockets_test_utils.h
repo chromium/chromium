@@ -103,7 +103,7 @@ class MockNetworkContext : public network::TestNetworkContextWithHostResolver {
       const net::IPEndPoint& addr,
       network::mojom::RestrictedUDPSocketMode mode,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      network::mojom::UDPSocketOptionsPtr options,
+      network::mojom::RestrictedUDPSocketParamsPtr params,
       mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
       CreateRestrictedUDPSocketCallback callback) override;
