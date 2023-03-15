@@ -2355,21 +2355,6 @@ TEST_F(MLGraphBuilderTest, Resample2dTest) {
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "The values of axes are invalid.");
   }
-  {
-    // Test throwing error when one value of axes is negative.
-    auto* input =
-        BuildInput(builder, "input", {1, 1, 2, 4},
-                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
-    auto* options = MLResample2dOptions::Create();
-    options->setAxes({-1, 2});
-    auto* output =
-        builder->resample2d(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The values of axes are invalid.");
-  }
 }
 
 MLOperand* BuildTranspose(V8TestingScope& scope,
@@ -2441,22 +2426,6 @@ TEST_F(MLGraphBuilderTest, TransposeTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "Two or more values are same in the permutation sequence.");
-  }
-  {
-    // Test throwing error when one value in permutation is negative.
-    auto* input =
-        BuildInput(builder, "input", {1, 2, 3}, V8MLOperandType::Enum::kInt32,
-                   scope.GetExceptionState());
-    auto* options = MLTransposeOptions::Create();
-    options->setPermutation({0, 2, -1});
-    auto* output =
-        builder->transpose(input, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(
-        scope.GetExceptionState().Message(),
-        "The values in permutation must be within the range from 0 to (2).");
   }
   {
     // Test throwing error when one value in permutation is greater than

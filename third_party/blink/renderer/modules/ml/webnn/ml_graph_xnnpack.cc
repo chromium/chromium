@@ -917,7 +917,7 @@ xnn_status DefineXnnNodeForResample2d(
     return xnn_status_unsupported_parameter;
   }
 
-  const Vector<int32_t> default_axes({2, 3});
+  const Vector<uint32_t> default_axes({2, 3});
   // XNNPACK resize bilinear node only supports axes = {1, 2}.
   // TODO(crbug.com/1273291): Support axes = {2, 3} by transposing the
   // input tensor.
@@ -959,11 +959,11 @@ xnn_status DefineXnnNodeForTranspose(
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose,
   // When permutation is not specified, it’s set to [N-1, ..., 0], where N is
   // the rank of the input tensor.
-  Vector<int32_t> default_permutation(input_rank);
+  Vector<uint32_t> default_permutation(input_rank);
   for (wtf_size_t i = 0; i < input_rank - 1; i++) {
     default_permutation[i] = input_rank - 1 - i;
   }
-  const Vector<int32_t> permutation =
+  const Vector<uint32_t> permutation =
       options->getPermutationOr(std::move(default_permutation));
 
   // The current WebNN spec defines the value of permutation as signed
@@ -971,7 +971,7 @@ xnn_status DefineXnnNodeForTranspose(
   // And an issue has been filed to track it:
   // https://github.com/webmachinelearning/webnn/issues/317
   Vector<size_t> xnn_permutation(input_rank);
-  base::ranges::transform(permutation, xnn_permutation.begin(), [](int32_t p) {
+  base::ranges::transform(permutation, xnn_permutation.begin(), [](uint32_t p) {
     return base::checked_cast<size_t>(p);
   });
   const uint32_t flags = 0;

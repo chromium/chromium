@@ -59,11 +59,11 @@ dictionary MLResample2dOptions {
   MLInterpolationMode mode = "nearest-neighbor";
   sequence<float> scales;
   sequence<[EnforceRange] unsigned long> sizes;
-  sequence<long> axes;
+  sequence<[EnforceRange] unsigned long> axes;
 };
 
 dictionary MLTransposeOptions{
-  sequence<long> permutation;
+  sequence<[EnforceRange] unsigned long> permutation;
 };
 
 [
