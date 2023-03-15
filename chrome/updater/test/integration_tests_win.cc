@@ -901,9 +901,15 @@ void InitializeBundle(UpdaterScope scope,
   bundle_web = bundle;
 }
 
-HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
-                        int expected_final_state,
-                        HRESULT expected_error_code) {
+HRESULT DoUpdate(UpdaterScope scope,
+                 const base::win::ScopedBstr& appid,
+                 int expected_final_state,
+                 HRESULT expected_error_code) {
+  Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
+  InitializeBundle(scope, bundle);
+  EXPECT_TRUE(bundle);
+  EXPECT_HRESULT_SUCCEEDED(bundle->createInstalledApp(appid.Get()));
+  EXPECT_HRESULT_SUCCEEDED(bundle->checkForUpdate());
   bool done = false;
   static const base::TimeDelta kExpirationTimeout =
       2 * TestTimeouts::action_max_timeout();
@@ -912,25 +918,19 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
   LONG state_value = 0;
   LONG error_code = 0;
   while (!done && (timer.Elapsed() < kExpirationTimeout)) {
-    EXPECT_TRUE(bundle);
-
     Microsoft::WRL::ComPtr<IDispatch> app_dispatch;
     EXPECT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
     Microsoft::WRL::ComPtr<IAppWeb> app;
     EXPECT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
-
     Microsoft::WRL::ComPtr<IDispatch> state_dispatch;
     EXPECT_HRESULT_SUCCEEDED(app->get_currentState(&state_dispatch));
     Microsoft::WRL::ComPtr<ICurrentState> state;
     EXPECT_HRESULT_SUCCEEDED(state_dispatch.As(&state));
+    EXPECT_HRESULT_SUCCEEDED(state->get_stateValue(&state_value));
 
     std::wstring state_description;
     std::wstring extra_data;
-
-    EXPECT_HRESULT_SUCCEEDED(state->get_stateValue(&state_value));
-
     done = state_value == expected_final_state;
-
     switch (state_value) {
       case STATE_INIT:
         state_description = L"Initializating...";
@@ -939,11 +939,9 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
       case STATE_WAITING_TO_CHECK_FOR_UPDATE:
       case STATE_CHECKING_FOR_UPDATE: {
         state_description = L"Checking for update...";
-
         Microsoft::WRL::ComPtr<IDispatch> current_version_web_dispatch;
         EXPECT_HRESULT_SUCCEEDED(
             app->get_currentVersionWeb(&current_version_web_dispatch));
-
         extra_data = base::StrCat(
             {L"[Current Version: ",
              GetAppVersionWebString(current_version_web_dispatch), L"]"});
@@ -955,11 +953,9 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
         Microsoft::WRL::ComPtr<IDispatch> next_version_web_dispatch;
         EXPECT_HRESULT_SUCCEEDED(
             app->get_nextVersionWeb(&next_version_web_dispatch));
-
         extra_data = base::StrCat(
             {L"[Next Version: ",
              GetAppVersionWebString(next_version_web_dispatch), L"]"});
-
         if (!done) {
           EXPECT_HRESULT_SUCCEEDED(bundle->install());
         }
@@ -973,16 +969,12 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
 
       case STATE_DOWNLOADING: {
         state_description = L"Downloading...";
-
         ULONG bytes_downloaded = 0;
         state->get_bytesDownloaded(&bytes_downloaded);
-
         ULONG total_bytes_to_download = 0;
         state->get_totalBytesToDownload(&total_bytes_to_download);
-
         LONG download_time_remaining_ms = 0;
         state->get_downloadTimeRemainingMs(&download_time_remaining_ms);
-
         extra_data = base::StringPrintf(
             L"[Bytes downloaded: %d][Bytes total: %d][Time remaining: %d]",
             bytes_downloaded, total_bytes_to_download,
@@ -997,28 +989,22 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
         state_description = L"Download completed!";
         ULONG bytes_downloaded = 0;
         state->get_bytesDownloaded(&bytes_downloaded);
-
         ULONG total_bytes_to_download = 0;
         state->get_totalBytesToDownload(&total_bytes_to_download);
-
         extra_data =
             base::StringPrintf(L"[Bytes downloaded: %d][Bytes total: %d]",
                                bytes_downloaded, total_bytes_to_download);
-
         EXPECT_HRESULT_SUCCEEDED(bundle->install());
-
         break;
       }
 
       case STATE_WAITING_TO_INSTALL:
       case STATE_INSTALLING: {
         state_description = L"Installing...";
-
         LONG install_progress = 0;
         state->get_installProgress(&install_progress);
         LONG install_time_remaining_ms = 0;
         state->get_installTimeRemainingMs(&install_time_remaining_ms);
-
         extra_data =
             base::StringPrintf(L"[Install Progress: %d][Time remaining: %d]",
                                install_progress, install_time_remaining_ms);
@@ -1039,17 +1025,13 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
 
       case STATE_ERROR: {
         state_description = L"Error!";
-
         EXPECT_HRESULT_SUCCEEDED(state->get_errorCode(&error_code));
-
         base::win::ScopedBstr completion_message;
         EXPECT_HRESULT_SUCCEEDED(
             state->get_completionMessage(completion_message.Receive()));
-
         LONG installer_result_code = 0;
         EXPECT_HRESULT_SUCCEEDED(
             state->get_installerResultCode(&installer_result_code));
-
         extra_data = base::StringPrintf(
             L"[errorCode: %d][completionMessage: %ls][installerResultCode: %d]",
             error_code, completion_message.Get(), installer_result_code);
@@ -1074,19 +1056,7 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
       << kExpirationTimeout;
   EXPECT_EQ(expected_final_state, state_value);
   EXPECT_EQ(expected_error_code, error_code);
-
   return S_OK;
-}
-
-HRESULT DoUpdate(UpdaterScope scope,
-                 const base::win::ScopedBstr& appid,
-                 int expected_final_state,
-                 HRESULT expected_error_code) {
-  Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
-  InitializeBundle(scope, bundle);
-  EXPECT_HRESULT_SUCCEEDED(bundle->createInstalledApp(appid.Get()));
-  EXPECT_HRESULT_SUCCEEDED(bundle->checkForUpdate());
-  return DoLoopUntilDone(bundle, expected_final_state, expected_error_code);
 }
 
 void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
