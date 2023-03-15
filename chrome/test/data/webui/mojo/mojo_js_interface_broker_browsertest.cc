@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/data/grit/webui_generated_test_resources.h"
+#include "chrome/test/data/grit/webui_test_resources.h"
 #include "chrome/test/data/webui/mojo/foobar.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -51,11 +51,10 @@ class FooUI : public content::WebUIController, public ::test::mojom::Foo {
     content::WebUIDataSource* data_source =
         content::WebUIDataSource::CreateAndAdd(
             web_ui->GetWebContents()->GetBrowserContext(), "foo");
-    data_source->SetDefaultResource(
-        IDR_WEBUI_MOJO_MOJO_JS_INTERFACE_BROKER_TEST_FOO_HTML);
+    data_source->SetDefaultResource(IDR_MOJO_JS_INTERFACE_BROKER_TEST_FOO_HTML);
     data_source->AddResourcePath("foobar.mojom-webui.js",
-                                 IDR_WEBUI_MOJO_FOOBAR_MOJOM_WEBUI_JS);
-    data_source->AddResourcePath("main.js", IDR_WEBUI_MOJO_MAIN_JS);
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
 
     // Allow Foo to embed chrome-untrusted://bar.
     data_source->OverrideContentSecurityPolicy(
@@ -96,15 +95,14 @@ class BarUI : public ui::UntrustedWebUIController, public ::test::mojom::Bar {
     content::WebUIDataSource* data_source =
         content::WebUIDataSource::CreateAndAdd(
             web_ui->GetWebContents()->GetBrowserContext(), kBarURL);
-    data_source->SetDefaultResource(
-        IDR_WEBUI_MOJO_MOJO_JS_INTERFACE_BROKER_TEST_BAR_HTML);
+    data_source->SetDefaultResource(IDR_MOJO_JS_INTERFACE_BROKER_TEST_BAR_HTML);
 
     // Allow Foo to embed this UI.
     data_source->AddFrameAncestor(GURL(kFooURL));
 
     data_source->AddResourcePath("foobar.mojom-webui.js",
-                                 IDR_WEBUI_MOJO_FOOBAR_MOJOM_WEBUI_JS);
-    data_source->AddResourcePath("main.js", IDR_WEBUI_MOJO_MAIN_JS);
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
     // If requested path is "error", trigger an error page.
     data_source->SetRequestFilter(
         base::BindRepeating(
@@ -142,8 +140,7 @@ class BuzUI : public ui::UntrustedWebUIController {
     content::WebUIDataSource* data_source =
         content::WebUIDataSource::CreateAndAdd(
             web_ui->GetWebContents()->GetBrowserContext(), kBuzURL);
-    data_source->SetDefaultResource(
-        IDR_WEBUI_MOJO_MOJO_JS_INTERFACE_BROKER_TEST_BUZ_HTML);
+    data_source->SetDefaultResource(IDR_MOJO_JS_INTERFACE_BROKER_TEST_BUZ_HTML);
   }
 };
 

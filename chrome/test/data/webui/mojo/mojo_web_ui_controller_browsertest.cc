@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/data/grit/webui_generated_test_resources.h"
+#include "chrome/test/data/grit/webui_test_resources.h"
 #include "chrome/test/data/webui/mojo/foobar.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -42,12 +42,11 @@ class FooUI : public ui::MojoWebUIController, public ::test::mojom::Foo {
     content::WebUIDataSource* data_source =
         content::WebUIDataSource::CreateAndAdd(
             web_ui->GetWebContents()->GetBrowserContext(), "foo");
-    data_source->SetDefaultResource(
-        IDR_WEBUI_MOJO_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
+    data_source->SetDefaultResource(IDR_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
     data_source->DisableContentSecurityPolicy();
     data_source->AddResourcePath("foobar.mojom-webui.js",
-                                 IDR_WEBUI_MOJO_FOOBAR_MOJOM_WEBUI_JS);
-    data_source->AddResourcePath("main.js", IDR_WEBUI_MOJO_MAIN_JS);
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
   }
 
   FooUI(const FooUI&) = delete;
@@ -82,12 +81,11 @@ class FooBarUI : public ui::MojoWebUIController,
     content::WebUIDataSource* data_source =
         content::WebUIDataSource::CreateAndAdd(
             web_ui->GetWebContents()->GetBrowserContext(), "foobar");
-    data_source->SetDefaultResource(
-        IDR_WEBUI_MOJO_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
+    data_source->SetDefaultResource(IDR_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
     data_source->DisableContentSecurityPolicy();
     data_source->AddResourcePath("foobar.mojom-webui.js",
-                                 IDR_WEBUI_MOJO_FOOBAR_MOJOM_WEBUI_JS);
-    data_source->AddResourcePath("main.js", IDR_WEBUI_MOJO_MAIN_JS);
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
   }
 
   FooBarUI(const FooBarUI&) = delete;

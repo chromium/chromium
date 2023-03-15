@@ -578,6 +578,9 @@
     "META": {"sizes": {"includes": [1400],}},
     "includes": [2810],
   },
+  "chrome/test/data/webui_test_resources.grd": {
+    "includes": [2820],
+  },
   # END chrome/ miscellaneous section.
 
   # START chromeos/ section.
