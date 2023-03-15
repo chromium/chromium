@@ -1561,6 +1561,20 @@ int ConvertFastPairVersionToInt(absl::optional<DeviceFastPairVersion> version) {
 // changes. The metrics team plans on implementing a way to mock out the
 // structured metrics client in the near future. We should follow up and
 // implement proper tests for these functions once that is available.
+void RecordStructuredDiscoveryNotificationShown(const Device& device) {
+  QP_LOG(INFO) << __func__;
+  int model_id;
+  if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
+    return;
+  }
+  int version = ConvertFastPairVersionToInt(device.version());
+  metrics::structured::events::v2::fast_pair::DiscoveryNotificationShown()
+      .SetProtocol(static_cast<int>(device.protocol()))
+      .SetModelId(model_id)
+      .SetFastPairVersion(version)
+      .Record();
+}
+
 void RecordStructuredPairingStarted(const Device& device) {
   QP_LOG(INFO) << __func__;
   int model_id;

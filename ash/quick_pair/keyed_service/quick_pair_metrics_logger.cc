@@ -314,6 +314,7 @@ void QuickPairMetricsLogger::OnDeviceFound(scoped_refptr<Device> device) {
       *device, FastPairEngagementFlowEvent::kDiscoveryUiShown);
   GetDeviceMetadataAndLogEngagementFunnelWithMetadata(
       device, FastPairEngagementFlowEvent::kDiscoveryUiShown);
+  RecordStructuredDiscoveryNotificationShown(*device);
 }
 
 void QuickPairMetricsLogger::OnPairingStart(scoped_refptr<Device> device) {

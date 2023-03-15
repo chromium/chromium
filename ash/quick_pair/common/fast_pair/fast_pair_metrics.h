@@ -476,6 +476,9 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordSavedDevicesCount(int num_devices);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordStructuredDiscoveryNotificationShown(const Device& device);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordStructuredPairingStarted(const Device& device);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

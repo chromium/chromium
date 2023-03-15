@@ -10,6 +10,27 @@
     Metrics for the ChromeOS Fast Pair implementation.
   </summary>
 
+  <event name="DiscoveryNotificationShown">
+    <summary>
+      The user is shown a notification which can start the pairing process.
+    </summary>
+    <metric name="Protocol" type="int">
+      <summary>
+        The pairing protocol of the discovered device.
+      </summary>
+    </metric>
+    <metric name="FastPairVersion" type="int">
+      <summary>
+        The Fast Pair spec version the device implements.
+      </summary>
+    </metric>
+    <metric name="ModelId" type="int">
+      <summary>
+        The model ID of the discovered device.
+      </summary>
+    </metric>
+  </event>
+
   <event name="PairingStart">
     <summary>
       The starting of the pairing process.
