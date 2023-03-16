@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -244,9 +245,17 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
   if (exception_state.HadException())
     return;
   keep_alive_ = this;
-  loader->Start(handle,
-                MakeGarbageCollected<LoaderClient>(
-                    ExecutionContext::From(script_state_), this, client));
+
+  auto* execution_context = GetExecutionContext();
+  if (execution_context) {
+    virtual_time_pauser_ =
+        execution_context->GetScheduler()->CreateWebScopedVirtualTimePauser(
+            "ResponseBody",
+            WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant);
+    virtual_time_pauser_.PauseVirtualTime();
+  }
+  loader->Start(handle, MakeGarbageCollected<LoaderClient>(execution_context,
+                                                           this, client));
 }
 
 void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
@@ -442,6 +451,7 @@ void BodyStreamBuffer::RaiseOOMError() {
 
 void BodyStreamBuffer::CancelConsumer() {
   side_data_blob_.reset();
+  virtual_time_pauser_.UnpauseVirtualTime();
   if (consumer_) {
     consumer_->Cancel();
     consumer_ = nullptr;
@@ -500,6 +510,7 @@ void BodyStreamBuffer::ProcessData() {
 
 void BodyStreamBuffer::EndLoading() {
   DCHECK(loader_);
+  virtual_time_pauser_.UnpauseVirtualTime();
   keep_alive_.Clear();
   loader_ = nullptr;
 }

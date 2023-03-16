@@ -1,0 +1,16 @@
+Tests that Virtual Time is paused while reading fetch response body at once
+Request to http://test.com/index.html, type: Document
+Request to http://test.com/fetch/array-buffer, type: XHR
+Request to http://test.com/fetch/blob, type: XHR
+Request to http://test.com/fetch/form-data, type: XHR
+Request to http://test.com/fetch/json, type: XHR
+Request to http://test.com/fetch/text, type: XHR
+[
+    [0] : started
+    [1] : got array buffer: 42
+    [2] : got blob
+    [3] : got form data: {key:value},{key2:value2}
+    [4] : got json: {"key":"value"}
+    [5] : got text: text
+    [6] : PASS: all done
+]
