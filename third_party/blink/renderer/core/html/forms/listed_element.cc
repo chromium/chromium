@@ -146,7 +146,7 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
 
   // Trigger for elements outside of forms.
   if (!form_ && insertion_point.isConnected())
-    element.GetDocument().DidAssociateFormControl(&element);
+    element.GetDocument().DidAddOrRemoveFormRelatedElement(&element);
 
   InvalidateShadowIncludingAncestorForms(insertion_point);
 }
@@ -187,6 +187,14 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
   }
 
   InvalidateShadowIncludingAncestorForms(insertion_point);
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAutofillDetectRemovedFormControls) &&
+      insertion_point.isConnected()) {
+    // We don't insist on form_ being non-null as the form does not take care of
+    // reporting the removal.
+    element.GetDocument().DidAddOrRemoveFormRelatedElement(&element);
+  }
 }
 
 HTMLFormElement* ListedElement::FindAssociatedForm(
@@ -252,7 +260,7 @@ void ListedElement::WillChangeForm() {
 void ListedElement::DidChangeForm() {
   if (!form_was_set_by_parser_ && form_ && form_->isConnected()) {
     auto& element = ToHTMLElement();
-    element.GetDocument().DidAssociateFormControl(&element);
+    element.GetDocument().DidAddOrRemoveFormRelatedElement(&element);
   }
   FormOwnerSetNeedsValidityCheck();
 }

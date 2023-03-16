@@ -45,7 +45,7 @@ class ChromeRenderViewTest : public content::RenderViewTest {
   // Use when overriding CreateContentRendererClient.
   void InitChromeContentRendererClient(ChromeContentRendererClient* client);
 
-  void WaitForAutofillDidAssociateFormControl();
+  void WaitForAutofillDidAddOrRemoveFormRelatedElements();
 
   raw_ptr<autofill::TestPasswordAutofillAgent> password_autofill_agent_ =
       nullptr;

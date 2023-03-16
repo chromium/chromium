@@ -39,6 +39,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 
 using base::ASCIIToUTF16;
@@ -880,10 +881,35 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
   }
 }
 
+class AutofillAcrossIframesTest_SubmissionBase
+    : public AutofillAcrossIframesTest {
+ public:
+  [[nodiscard]] AssertionResult SubmitInArbitraryIframe() {
+    bool submitted = false;
+    AssertionResult result = AssertionFailure() << "No frame found";
+    main_frame()->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+      if (!rfh->IsInPrimaryMainFrame() && !submitted) {
+        result = SubmitInFrame(rfh);
+        submitted = true;
+      }
+    });
+    return result ? main_autofill_manager()->WaitForSubmission(1) : result;
+  }
+
+  [[nodiscard]] AssertionResult SubmitInMainFrame() {
+    AssertionResult result = SubmitInFrame(main_frame());
+    return result ? main_autofill_manager()->WaitForSubmission(1) : result;
+  }
+
+  [[nodiscard]] AssertionResult SubmitInFrame(content::RenderFrameHost* rfh) {
+    return content::ExecJs(rfh, R"(document.forms[0].submit();)");
+  }
+};
+
 // Test fixture for detecting form submission. The parameter indicates whether
 // the submission occurs in the main frame or an iframe.
 class AutofillAcrossIframesTest_Submission
-    : public AutofillAcrossIframesTest,
+    : public AutofillAcrossIframesTest_SubmissionBase,
       public ::testing::WithParamInterface<bool> {
  public:
   bool submission_happens_in_main_frame() const { return GetParam(); }
@@ -915,27 +941,6 @@ class AutofillAcrossIframesTest_Submission
                            hostnames[0], hostnames[1], hostnames[2]));
     return NavigateToUrl("/", /*num_fields=*/4);
   }
-
-  [[nodiscard]] AssertionResult SubmitInIframe() {
-    bool submitted = false;
-    AssertionResult result = AssertionFailure() << "No frame found";
-    main_frame()->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-      if (!rfh->IsInPrimaryMainFrame() && !submitted) {
-        result = SubmitInFrame(rfh);
-        submitted = true;
-      }
-    });
-    return result ? main_autofill_manager()->WaitForSubmission(1) : result;
-  }
-
-  [[nodiscard]] AssertionResult SubmitInMainFrame() {
-    AssertionResult result = SubmitInFrame(main_frame());
-    return result ? main_autofill_manager()->WaitForSubmission(1) : result;
-  }
-
-  [[nodiscard]] AssertionResult SubmitInFrame(content::RenderFrameHost* rfh) {
-    return content::ExecJs(rfh, R"(document.forms[0].submit();)");
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillAcrossIframesTest,
@@ -950,11 +955,147 @@ IN_PROC_BROWSER_TEST_P(AutofillAcrossIframesTest_Submission,
   ASSERT_THAT(FillForm(*form, *form->field(1)),
               ElementsAre(kNameFull, kNumber, kExp, kCvc));
   ASSERT_TRUE(submission_happens_in_main_frame() ? SubmitInMainFrame()
-                                                 : SubmitInIframe());
+                                                 : SubmitInArbitraryIframe());
   EXPECT_THAT(main_autofill_manager()->submitted_form(),
               Optional(Field(&FormData::fields,
                              ElementsAre(HasValue(kNameFull), HasValue(kNumber),
                                          HasValue(kExp), HasValue(kCvc)))));
+}
+
+// Test fixture for a case where on load each iframe contains a full credit card
+// form (cc-name, cc-number, cc-exp, cc-csc), but then after load the fields are
+// removed such that the remaining form contains a credit card form in which
+// each field type exists only once.
+// This is an integration test for b:245749889.
+class AutofillAcrossIframesTest_FullIframes
+    : public AutofillAcrossIframesTest_SubmissionBase {
+ public:
+  AutofillAcrossIframesTest_FullIframes() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kAutofillDetectRemovedFormControls);
+  }
+
+  [[nodiscard]] const FormStructure* LoadForm() {
+    SetUrlContent("/iframe.html", R"(
+        <div>
+        <form>
+        <input autocomplete=cc-name>
+        <input autocomplete=cc-number>
+        <input autocomplete=cc-exp>
+        <input autocomplete=cc-csc>
+        </form>
+        <div>
+        <script>
+          function deleteAllInputsButIndex(idx) {
+            const fields = [...document.getElementsByTagName('INPUT')];
+            for (let i = 0; i < fields.length; ++i) {
+              if (i != idx) {
+                fields[i].parentNode.removeChild(fields[i]);
+              }
+            }
+          }
+          function deleteForm() {
+            document.getElementsByTagName('FORM')[0].remove();
+          }
+          function deleteParentOfForm() {
+            document.getElementsByTagName('DIV')[0].remove();
+          }
+        </script>)");
+    SetUrlContent("/submit.html", "<h1>Submitted</h1>");
+    SetUrlContent("/", R"(
+        <script>
+          function removeFields() {
+            for (let i = 0; i < 4; ++i) {
+              document.getElementsByTagName("IFRAME")[i]
+                  .contentWindow
+                  .deleteAllInputsButIndex(i);
+            }
+          }
+        </script>
+        <form method=GET action=submit.html>
+        <iframe src="iframe.html"></iframe>
+        <iframe src="iframe.html"></iframe>
+        <iframe src="iframe.html"></iframe>
+        <iframe src="iframe.html"></iframe>
+        </form>)");
+    return NavigateToUrl("/", /*num_fields=*/4 * 4);
+  }
+
+  [[nodiscard]] const FormStructure* FormAfterRemovalOfExtraFields() {
+    // A core part of this test is in the following lines: We check that after
+    // removing fields, the BrowserAutofillAgent learns about that.
+    if (!content::ExecuteScript(web_contents(), "removeFields();")) {
+      ADD_FAILURE() << "Failed to call removeFields();";
+      return nullptr;
+    }
+    return GetOrWaitForFormWithFocusableFields(
+        /*num_fields=*/4,
+        /*click_to_reparse=*/false);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that autofilling on a main-origin field fills all same-origin fields.
+IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes, FillAll) {
+  ASSERT_TRUE(LoadForm());
+  const FormStructure* form = FormAfterRemovalOfExtraFields();
+  ASSERT_TRUE(form);
+  EXPECT_THAT(FillForm(*form, *form->field(0)),
+              ElementsAre(kNameFull, kNumber, kExp, kCvc));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes, Submit) {
+  ASSERT_TRUE(LoadForm());
+  const FormStructure* form = FormAfterRemovalOfExtraFields();
+  ASSERT_TRUE(form);
+  ASSERT_THAT(FillForm(*form, *form->field(0)),
+              ElementsAre(kNameFull, kNumber, kExp, kCvc));
+  ASSERT_TRUE(SubmitInMainFrame());
+  EXPECT_THAT(main_autofill_manager()->submitted_form(),
+              Optional(Field(&FormData::fields,
+                             ElementsAre(HasValue(kNameFull), HasValue(kNumber),
+                                         HasValue(kExp), HasValue(kCvc)))));
+}
+
+// Tests that the Autofill Manager notices if an entire <form> is removed.
+IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes,
+                       DetectFormRemoval) {
+  // This loads 4 iframes, each containing a <form> element with 4 fields.
+  ASSERT_TRUE(LoadForm());
+
+  // This removes the entire <form> element for the first iframe.
+  ASSERT_TRUE(content::ExecuteScript(web_contents(), R"(
+      document.getElementsByTagName("IFRAME")[0]
+        .contentWindow
+        .deleteForm();
+  )"));
+
+  // As a consequence only 3 forms of 4 fields remain.
+  EXPECT_TRUE(GetOrWaitForFormWithFocusableFields(
+      /*num_fields=*/3 * 4,
+      /*click_to_reparse=*/false));
+}
+
+// Tests that the Autofill Manager notices if the parent containing a <form> is
+// removed.
+IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes,
+                       DetectParentOfFormRemoval) {
+  // This loads 4 iframes, each containing a <form> element with 4 fields.
+  ASSERT_TRUE(LoadForm());
+
+  // This removes the entire <form> element for the first iframe.
+  ASSERT_TRUE(content::ExecuteScript(web_contents(), R"(
+      document.getElementsByTagName("IFRAME")[0]
+        .contentWindow
+        .deleteParentOfForm();
+  )"));
+
+  // As a consequence only 3 forms of 4 fields remain.
+  EXPECT_TRUE(GetOrWaitForFormWithFocusableFields(
+      /*num_fields=*/3 * 4,
+      /*click_to_reparse=*/false));
 }
 
 }  // namespace autofill

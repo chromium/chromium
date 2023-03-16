@@ -63,7 +63,7 @@ class WebAutofillClient {
   // Called when the user interacts with the page after a load.
   virtual void UserGestureObserved() {}
 
-  virtual void DidAssociateFormControlsDynamically() {}
+  virtual void DidAddOrRemoveFormRelatedElementsDynamically() {}
   virtual void AjaxSucceeded() {}
   // Called when |element| is in autofilled state and the value has been changed
   // by JavaScript. |old_value| contains the value before being changed.

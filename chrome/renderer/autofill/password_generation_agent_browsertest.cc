@@ -821,7 +821,7 @@ TEST_F(PasswordGenerationAgentTest, DynamicFormTest) {
       "form.appendChild(first_password);"
       "form.appendChild(second_password);"
       "document.body.appendChild(form);");
-  WaitForAutofillDidAssociateFormControl();
+  WaitForAutofillDidAddOrRemoveFormRelatedElements();
 
   // This needs to come after the DOM has been modified.
   SetFoundFormEligibleForGeneration(

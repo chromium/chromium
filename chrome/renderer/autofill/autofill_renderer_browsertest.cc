@@ -248,7 +248,7 @@ TEST_F(AutofillRendererTest, SendForms) {
       "newForm.appendChild(newEmail);"
       "document.body.appendChild(newForm);");
 
-  WaitForAutofillDidAssociateFormControl();
+  WaitForAutofillDidAddOrRemoveFormRelatedElements();
   ASSERT_TRUE(fake_driver_.forms());
   forms = *(fake_driver_.forms());
   ASSERT_EQ(1UL, forms.size());
@@ -308,7 +308,7 @@ TEST_F(AutofillRendererTest, DynamicallyAddedUnownedFormElements) {
 
   ExecuteJavaScriptForTests("AddFields()");
 
-  WaitForAutofillDidAssociateFormControl();
+  WaitForAutofillDidAddOrRemoveFormRelatedElements();
   ASSERT_TRUE(fake_driver_.forms());
   forms = *(fake_driver_.forms());
   ASSERT_EQ(1UL, forms.size());

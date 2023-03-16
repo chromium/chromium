@@ -1161,9 +1161,10 @@ void ChromeClientImpl::SetPanAction(LocalFrame* frame,
   widget->SetPanAction(pan_action);
 }
 
-void ChromeClientImpl::DidAssociateFormControlsAfterLoad(LocalFrame* frame) {
+void ChromeClientImpl::DidAddOrRemoveFormRelatedElementsAfterLoad(
+    LocalFrame* frame) {
   if (auto* fill_client = AutofillClientFromFrame(frame))
-    fill_client->DidAssociateFormControlsDynamically();
+    fill_client->DidAddOrRemoveFormRelatedElementsDynamically();
 }
 
 void ChromeClientImpl::ShowVirtualKeyboardOnElementFocus(LocalFrame& frame) {

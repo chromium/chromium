@@ -985,7 +985,7 @@ void AutofillAgent::HidePopup() {
   GetAutofillDriver().HidePopup();
 }
 
-void AutofillAgent::DidAssociateFormControlsDynamically() {
+void AutofillAgent::DidAddOrRemoveFormRelatedElementsDynamically() {
   // If the control flow is here than the document was at least loaded. The
   // whole page doesn't have to be loaded.
   ProcessForms();

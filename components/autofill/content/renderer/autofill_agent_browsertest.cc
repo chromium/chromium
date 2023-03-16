@@ -260,7 +260,7 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
         R"(document.forms[0].appendChild(document.createElement('input'));)");
     content::RunAllTasksUntilIdle();
     // Called explicitly because the event is throttled.
-    test_api().DidAssociateFormControlsDynamically();
+    test_api().DidAddOrRemoveFormRelatedElementsDynamically();
   }
 }
 
@@ -275,7 +275,7 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedForm) {
     ExecuteJavaScriptForTests(R"(document.forms[0].remove();)");
     content::RunAllTasksUntilIdle();
     // Called explicitly because the event is throttled.
-    test_api().DidAssociateFormControlsDynamically();
+    test_api().DidAddOrRemoveFormRelatedElementsDynamically();
   }
 }
 

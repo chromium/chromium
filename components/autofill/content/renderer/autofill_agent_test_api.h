@@ -15,8 +15,8 @@ class AutofillAgentTestApi {
     DCHECK(agent_);
   }
 
-  void DidAssociateFormControlsDynamically() {
-    agent_->DidAssociateFormControlsDynamically();
+  void DidAddOrRemoveFormRelatedElementsDynamically() {
+    agent_->DidAddOrRemoveFormRelatedElementsDynamically();
   }
 
  private:

@@ -148,7 +148,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
  protected:
   // blink::WebAutofillClient:
-  void DidAssociateFormControlsDynamically() override;
+  void DidAddOrRemoveFormRelatedElementsDynamically() override;
 
  private:
   class DeferringAutofillDriver;

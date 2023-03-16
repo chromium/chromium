@@ -133,7 +133,10 @@ class AutofillTest : public InProcessBrowserTest {
         {AutofillManagerEvent::kFormsSeen}};
   };
 
-  AutofillTest() = default;
+  AutofillTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kAutofillDetectRemovedFormControls);
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -263,7 +266,25 @@ class AutofillTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  TestAutofillManager* autofill_manager() {
+    return autofill_manager(web_contents()->GetPrimaryMainFrame());
+  }
+
+  TestAutofillManager* autofill_manager(content::RenderFrameHost* rfh) {
+    return autofill_manager_injector_[rfh];
+  }
+
+  const FormStructure* WaitForFormWithNFields(size_t n) {
+    return WaitForMatchingForm(autofill_manager(),
+                               base::BindRepeating(
+                                   [](size_t n, const FormStructure& form) {
+                                     return form.active_field_count() == n;
+                                   },
+                                   n));
+  }
+
  private:
+  base::test::ScopedFeatureList feature_list_;
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
@@ -584,6 +605,23 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 
   ASSERT_GT(num_of_profiles,
             static_cast<int>(personal_data_manager()->GetProfiles().size()));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillTest, DynamicForm_DiscoverRemovedFormFields) {
+  // Load a form that contains 3 fields.
+  GURL url = embedded_test_server()->GetURL(
+      "/autofill/dynamic_form_element_removed.html");
+  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  ui_test_utils::NavigateToURL(&params);
+  ASSERT_TRUE(WaitForFormWithNFields(3))
+      << "Waiting for form before field removal";
+
+  // Remove one field via JavaScript and expect that the AutofillManager learns
+  // about this.
+  ASSERT_TRUE(content::ExecuteScript(web_contents(), "RemoveCity();"));
+  EXPECT_TRUE(WaitForFormWithNFields(2))
+      << "Waiting for after before field removal";
 }
 
 // Accessibility Tests

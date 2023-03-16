@@ -803,10 +803,10 @@ Document::Document(const DocumentInit& initializer,
       worklet_animation_controller_(
           MakeGarbageCollected<WorkletAnimationController>(this)),
       template_document_host_(nullptr),
-      did_associate_form_controls_timer_(
+      did_add_or_remove_form_related_elements_timer_(
           GetTaskRunner(TaskType::kInternalLoading),
           this,
-          &Document::DidAssociateFormControlsTimerFired),
+          &Document::DidAddOrRemoveFormRelatedElementsTimerFired),
       parser_sync_policy_(kAllowDeferredParsing),
       // Use the source id from the document initializer if it is available.
       // Otherwise, generate a new source id to cover any cases that don't
@@ -8305,24 +8305,26 @@ Document& Document::EnsureTemplateDocument() {
   return *template_document_.Get();
 }
 
-void Document::DidAssociateFormControl(Element* element) {
+void Document::DidAddOrRemoveFormRelatedElement(Element* element) {
   if (!GetFrame() || !GetFrame()->GetPage() || !HasFinishedParsing())
     return;
 
   // We add a slight delay because this could be called rapidly.
-  if (!did_associate_form_controls_timer_.IsActive()) {
-    did_associate_form_controls_timer_.StartOneShot(base::Milliseconds(300),
-                                                    FROM_HERE);
+  if (!did_add_or_remove_form_related_elements_timer_.IsActive()) {
+    did_add_or_remove_form_related_elements_timer_.StartOneShot(
+        base::Milliseconds(300), FROM_HERE);
   }
 }
 
-void Document::DidAssociateFormControlsTimerFired(TimerBase* timer) {
-  DCHECK_EQ(timer, &did_associate_form_controls_timer_);
+void Document::DidAddOrRemoveFormRelatedElementsTimerFired(TimerBase* timer) {
+  DCHECK_EQ(timer, &did_add_or_remove_form_related_elements_timer_);
   if (!GetFrame() || !GetFrame()->GetPage())
     return;
 
-  GetFrame()->GetPage()->GetChromeClient().DidAssociateFormControlsAfterLoad(
-      GetFrame());
+  GetFrame()
+      ->GetPage()
+      ->GetChromeClient()
+      .DidAddOrRemoveFormRelatedElementsAfterLoad(GetFrame());
 }
 
 float Document::DevicePixelRatio() const {
@@ -8735,7 +8737,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(use_elements_needing_update_);
   visitor->Trace(template_document_);
   visitor->Trace(template_document_host_);
-  visitor->Trace(did_associate_form_controls_timer_);
+  visitor->Trace(did_add_or_remove_form_related_elements_timer_);
   visitor->Trace(user_action_elements_);
   visitor->Trace(svg_extensions_);
   visitor->Trace(layout_view_);

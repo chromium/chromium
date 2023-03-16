@@ -70,7 +70,7 @@ class MockAutofillAgent : public AutofillAgent {
   MockAutofillAgent& operator=(const MockAutofillAgent&) = delete;
   ~MockAutofillAgent() override = default;
 
-  void WaitForAutofillDidAssociateFormControl() {
+  void WaitForAutofillDidAddOrRemoveFormRelatedElements() {
     DCHECK(run_loop_ == nullptr);
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
@@ -78,8 +78,8 @@ class MockAutofillAgent : public AutofillAgent {
   }
 
  private:
-  void DidAssociateFormControlsDynamically() override {
-    AutofillAgent::DidAssociateFormControlsDynamically();
+  void DidAddOrRemoveFormRelatedElementsDynamically() override {
+    AutofillAgent::DidAddOrRemoveFormRelatedElementsDynamically();
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -162,7 +162,7 @@ void ChromeRenderViewTest::InitChromeContentRendererClient(
 #endif
 }
 
-void ChromeRenderViewTest::WaitForAutofillDidAssociateFormControl() {
+void ChromeRenderViewTest::WaitForAutofillDidAddOrRemoveFormRelatedElements() {
   static_cast<MockAutofillAgent*>(autofill_agent_)
-      ->WaitForAutofillDidAssociateFormControl();
+      ->WaitForAutofillDidAddOrRemoveFormRelatedElements();
 }

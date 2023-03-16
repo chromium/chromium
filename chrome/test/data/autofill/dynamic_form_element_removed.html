@@ -1,0 +1,15 @@
+<!-- A page that is used to test that a dynamic form parsing works properly. -->
+<body>
+  <form name="addr1.1" id="form1" action="https://example.com/" method="post">
+    Name: <input type="text" name="firstname" id="firstname" autocomplete="given-name"><br>
+    Address: <input type="text" name="address1" id="address1"><br>
+    City: <input type="text" name="city" id="city"><br>
+  </form>
+</body>
+
+<script>
+function RemoveCity() {
+  let city = document.getElementById('city');
+  city.parentElement.removeChild(city);
+}
+</script>
