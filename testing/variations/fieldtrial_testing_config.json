@@ -11848,7 +11848,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230313",
                     "enable_features": [
                         "StylusPointerAdjustment",
                         "StylusRichGestures"
