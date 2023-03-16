@@ -1331,6 +1331,13 @@ TEST_F(DesktopWidgetTestInteractive, EventHandlersClearedOnWidgetMinimize) {
   EXPECT_TRUE(GetGestureHandler(root_view));
 
   widget->Minimize();
+  {
+    views::test::PropertyWaiter minimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized,
+                            base::Unretained(widget.get())),
+        true);
+    EXPECT_TRUE(minimize_waiter.Wait());
+  }
   EXPECT_FALSE(GetGestureHandler(root_view));
 }
 #endif
