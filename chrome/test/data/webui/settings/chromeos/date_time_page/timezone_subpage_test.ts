@@ -4,29 +4,25 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
+import {SettingsRadioGroupElement, TimezoneSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+suite('<timezone-subpage>', function() {
+  let timezoneSubpage: TimezoneSubpageElement;
 
-suite('TimezoneSubpageTests', function() {
-  /** @type {TimezoneSubpage} */
-  let timezoneSubpage = null;
-
-  setup(function() {
-    PolymerTest.clearBody();
-
+  setup(async function() {
     const prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
 
-    return CrSettingsPrefs.initialized.then(function() {
-      timezoneSubpage = document.createElement('timezone-subpage');
-      timezoneSubpage.prefs = prefElement.prefs;
-      document.body.appendChild(timezoneSubpage);
-    });
+    await CrSettingsPrefs.initialized;
+    timezoneSubpage = document.createElement('timezone-subpage');
+    timezoneSubpage.prefs = prefElement.prefs;
+    document.body.appendChild(timezoneSubpage);
   });
 
   teardown(function() {
@@ -37,7 +33,9 @@ suite('TimezoneSubpageTests', function() {
 
   test('Timezone autodetect by geolocation radio', async () => {
     const timezoneRadioGroup =
-        assert(timezoneSubpage.shadowRoot.querySelector('#timeZoneRadioGroup'));
+        timezoneSubpage.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+            '#timeZoneRadioGroup');
+    assert(timezoneRadioGroup);
 
     // Resolve timezone by geolocation is on.
     timezoneSubpage.setPrefValue(
@@ -52,16 +50,20 @@ suite('TimezoneSubpageTests', function() {
     assertEquals('false', timezoneRadioGroup.selected);
 
     // Set timezone autodetect on by clicking the 'on' radio.
-    const timezoneAutodetectOn = assert(
-        timezoneSubpage.shadowRoot.querySelector('#timeZoneAutoDetectOn'));
+    const timezoneAutodetectOn =
+        timezoneSubpage.shadowRoot!.querySelector<HTMLElement>(
+            '#timeZoneAutoDetectOn');
+    assert(timezoneAutodetectOn);
     timezoneAutodetectOn.click();
     assertTrue(timezoneSubpage
                    .getPref('generated.resolve_timezone_by_geolocation_on_off')
                    .value);
 
     // Turn timezone autodetect off by clicking the 'off' radio.
-    const timezoneAutodetectOff = assert(
-        timezoneSubpage.shadowRoot.querySelector('#timeZoneAutoDetectOff'));
+    const timezoneAutodetectOff =
+        timezoneSubpage.shadowRoot!.querySelector<HTMLElement>(
+            '#timeZoneAutoDetectOff');
+    assert(timezoneAutodetectOff);
     timezoneAutodetectOff.click();
     assertFalse(timezoneSubpage
                     .getPref('generated.resolve_timezone_by_geolocation_on_off')
@@ -78,8 +80,9 @@ suite('TimezoneSubpageTests', function() {
     Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE, params);
 
     const deepLinkElement =
-        timezoneSubpage.shadowRoot.querySelector('#timeZoneAutoDetectOn')
-            .shadowRoot.querySelector('#button');
+        timezoneSubpage.shadowRoot!.querySelector('#timeZoneAutoDetectOn')!
+            .shadowRoot!.querySelector<HTMLElement>('#button');
+    assert(deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

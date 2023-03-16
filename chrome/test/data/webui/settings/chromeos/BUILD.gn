@@ -172,7 +172,6 @@ test_files = [
   "test_select_to_speak_subpage_browser_proxy.js",
   "text_to_speech_page_tests.js",
   "text_to_speech_subpage_tests.js",
-  "timezone_subpage_test.js",
   "utils.ts",
 
   # Subfolder files.
@@ -212,6 +211,7 @@ test_files = [
   "app_management/toggle_row_test.js",
 
   "date_time_page/timezone_selector_test.ts",
+  "date_time_page/timezone_subpage_test.ts",
 
   "internet_page/tether_connection_dialog_test.ts",
 

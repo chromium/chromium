@@ -30,7 +30,7 @@ import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser
 import {TimezoneSelectorElement} from './timezone_selector.js';
 import {getTemplate} from './timezone_subpage.html.js';
 
-interface TimezoneSubpageElement {
+export interface TimezoneSubpageElement {
   $: {
     timezoneSelector: TimezoneSelectorElement,
     timeZoneResolveMethodDropdown: SettingsDropdownMenuElement,
@@ -40,7 +40,7 @@ interface TimezoneSubpageElement {
 const TimezoneSubpageElementBase = DeepLinkingMixin(
     RouteObserverMixin(PrefsMixin(WebUiListenerMixin(PolymerElement))));
 
-class TimezoneSubpageElement extends TimezoneSubpageElementBase {
+export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   static get is() {
     return 'timezone-subpage';
   }
