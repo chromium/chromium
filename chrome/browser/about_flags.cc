@@ -5635,10 +5635,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxGM3SteadyStateTextStyleDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateTextStyle)},
 
-    {"omnibox-grouping-framework",
-     flag_descriptions::kOmniboxGroupingFrameworkName,
+    {"omnibox-grouping-framework-zps",
+     flag_descriptions::kOmniboxGroupingFrameworkZPSName,
      flag_descriptions::kOmniboxGroupingFrameworkDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kGroupingFramework)},
+     FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForZPS)},
+
+    {"omnibox-grouping-framework-non-zps",
+     flag_descriptions::kOmniboxGroupingFrameworkNonZPSName,
+     flag_descriptions::kOmniboxGroupingFrameworkDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForNonZPS)},
 
     {"optimization-guide-debug-logs",
      flag_descriptions::kOptimizationGuideDebugLogsName,

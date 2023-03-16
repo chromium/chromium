@@ -257,7 +257,7 @@ void AutocompleteResultTest::AssertResultMatches(
     const AutocompleteResult& result,
     const TestData* expected,
     size_t expected_count) {
-    ASSERT_EQ(expected_count, result.size());
+  ASSERT_EQ(expected_count, result.size());
   for (size_t i = 0; i < expected_count; ++i)
     AssertMatch(*(result.begin() + i), expected[i], i);
 }
@@ -2726,15 +2726,16 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
   zero_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   // NOTE:
-  // The tests below do not verify the behavior with the Grouping Framework
-  // disabled. This is intentional: Suggestion Groups make no sense outside of
+  // The tests below verify the behavior with the Grouping Framework for ZPS
+  // enabled. This is intentional: Suggestion Groups make no sense outside of
   // the grouping framework.
 
   {
     SCOPED_TRACE("Inspire Me Disabled");
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({omnibox::kGroupingFramework},
-                                  {omnibox::kInspireMe});
+    feature_list.InitWithFeatures(
+        {omnibox::kGroupingFrameworkForZPS},
+        {omnibox::kGroupingFrameworkForNonZPS, omnibox::kInspireMe});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -2755,12 +2756,12 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
     SCOPED_TRACE("Inspire Me Enabled with no queries");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFramework, {}},
+        {{omnibox::kGroupingFrameworkForZPS, {}},
          {omnibox::kInspireMe,
           {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "0"},
            {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
             "0"}}}},
-        {});
+        {omnibox::kGroupingFrameworkForNonZPS});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -2780,12 +2781,12 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
     SCOPED_TRACE("Inspire Me Enabled with 1 Trend and 0 Related query");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFramework, {}},
+        {{omnibox::kGroupingFrameworkForZPS, {}},
          {omnibox::kInspireMe,
           {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "0"},
            {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
             "1"}}}},
-        {});
+        {omnibox::kGroupingFrameworkForNonZPS});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -2806,12 +2807,12 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
     SCOPED_TRACE("Inspire Me Enabled with 0 Trend and 1 Related query");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFramework, {}},
+        {{omnibox::kGroupingFrameworkForZPS, {}},
          {omnibox::kInspireMe,
           {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "1"},
            {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
             "0"}}}},
-        {});
+        {omnibox::kGroupingFrameworkForNonZPS});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -2832,12 +2833,12 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
     SCOPED_TRACE("Inspire Me Enabled with 1 Trend and 1 Related query");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFramework, {}},
+        {{omnibox::kGroupingFrameworkForZPS, {}},
          {omnibox::kInspireMe,
           {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "1"},
            {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
             "1"}}}},
-        {});
+        {omnibox::kGroupingFrameworkForNonZPS});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -2859,12 +2860,12 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
     SCOPED_TRACE("Inspire Me Enabled with 5 Trends and 5 Related queries");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFramework, {}},
+        {{omnibox::kGroupingFrameworkForZPS, {}},
          {omnibox::kInspireMe,
           {{OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.name, "5"},
            {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
             "5"}}}},
-        {});
+        {omnibox::kGroupingFrameworkForNonZPS});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);

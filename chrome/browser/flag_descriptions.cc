@@ -2128,7 +2128,10 @@ const char kOmniboxGM3SteadyStateTextStyleName[] =
 const char kOmniboxGM3SteadyStateTextStyleDescription[] =
     "Updates Omnibox steady state text style to comply with GM3 guidelines.";
 
-const char kOmniboxGroupingFrameworkName[] = "Omnibox Grouping Framework";
+const char kOmniboxGroupingFrameworkZPSName[] =
+    "Omnibox Grouping Framework for ZPS";
+const char kOmniboxGroupingFrameworkNonZPSName[] =
+    "Omnibox Grouping Framework for Typed Suggestions";
 const char kOmniboxGroupingFrameworkDescription[] =
     "Enables an alternative grouping implementation for omnibox "
     "autocompletion.";

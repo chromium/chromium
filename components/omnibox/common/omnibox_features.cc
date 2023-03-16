@@ -61,10 +61,16 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
              "OmniboxRemoveSuggestionsFromClipboard",
              enabled_by_default_android_only);
 
-// When enabled, uses the grouping framework (i.e.
+// When enabled, uses the grouping framework with zero prefix suggestions (i.e.
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
-BASE_FEATURE(kGroupingFramework,
-             "OmniboxGroupingFramework",
+BASE_FEATURE(kGroupingFrameworkForZPS,
+             "OmniboxGroupingFrameworkForZPS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, uses the grouping framework with prefixed suggestions (i.e.
+// autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
+BASE_FEATURE(kGroupingFrameworkForNonZPS,
+             "OmniboxGroupingFrameworkForNonZPS",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Demotes the relevance scores when comparing suggestions based on the

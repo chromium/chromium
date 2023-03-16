@@ -60742,6 +60742,7 @@ from previous Chrome versions.
   <int value="-719147284" label="ExperimentalProductivityFeatures:disabled"/>
   <int value="-718884399" label="NewTabPageUIMd:enabled"/>
   <int value="-718626298" label="SysInternals:enabled"/>
+  <int value="-718485659" label="OmniboxGroupingFrameworkForNonZPS:enabled"/>
   <int value="-717339133" label="AutofillEnableCvcForVcnYellowPath:disabled"/>
   <int value="-716965886" label="NtpRealboxRoundedCorners:disabled"/>
   <int value="-716953514" label="disable-password-separated-signin-flow"/>
@@ -61596,6 +61597,7 @@ from previous Chrome versions.
   <int value="-236433493" label="ArcKeyboardShortcutHelperIntegration:enabled"/>
   <int value="-236071174" label="NearbyShareVisibilityReminder:disabled"/>
   <int value="-235949168" label="DrawPredictedInkPoint:enabled"/>
+  <int value="-235843754" label="OmniboxGroupingFrameworkForNonZPS:disabled"/>
   <int value="-234966279" label="PointerEvent:disabled"/>
   <int value="-234687894"
       label="NonValidatingReloadOnRefreshContentV2:disabled"/>
@@ -61783,6 +61785,7 @@ from previous Chrome versions.
   <int value="-122492389" label="enable-browser-task-scheduler"/>
   <int value="-122458532" label="FilesExtractArchive:enabled"/>
   <int value="-121563330" label="SecurePaymentConfirmationBrowser:disabled"/>
+  <int value="-120988078" label="OmniboxGroupingFrameworkForZPS:enabled"/>
   <int value="-120521482" label="DirectManipulationStylus:enabled"/>
   <int value="-120430245" label="EnableExpKitTextClassifier:enabled"/>
   <int value="-120091289" label="CrostiniAppSearch:enabled"/>
@@ -63299,6 +63302,7 @@ from previous Chrome versions.
   <int value="725579946"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:disabled"/>
   <int value="725870294" label="RequestUnbufferedDispatch:disabled"/>
+  <int value="726654750" label="OmniboxGroupingFrameworkForZPS:disabled"/>
   <int value="726764779" label="WebXRGamepadSupport:enabled"/>
   <int value="726958205" label="ToolbarMicIphAndroid:enabled"/>
   <int value="727134828" label="SidePanelJourneysQueryless:disabled"/>

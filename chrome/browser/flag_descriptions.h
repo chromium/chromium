@@ -1197,7 +1197,8 @@ extern const char kOmniboxGM3SteadyStateHeightDescription[];
 extern const char kOmniboxGM3SteadyStateTextStyleName[];
 extern const char kOmniboxGM3SteadyStateTextStyleDescription[];
 
-extern const char kOmniboxGroupingFrameworkName[];
+extern const char kOmniboxGroupingFrameworkNonZPSName[];
+extern const char kOmniboxGroupingFrameworkZPSName[];
 extern const char kOmniboxGroupingFrameworkDescription[];
 
 extern const char

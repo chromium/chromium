@@ -5270,7 +5270,12 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-grouping-framework",
+    "name": "omnibox-grouping-framework-non-zps",
+    "owners": ["manukh", "mahmadi", "ender", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "omnibox-grouping-framework-zps",
     "owners": ["manukh", "mahmadi", "ender", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120
   },
