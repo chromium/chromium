@@ -187,8 +187,8 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   void TearDown() override {
     // Order of destruction is important as BrowserAutofillManager relies on
     // PersonalDataManager to be around when it gets destroyed.
-    browser_autofill_manager_.reset();
     external_delegate_.reset();
+    browser_autofill_manager_.reset();
     autofill_driver_.reset();
   }
 
