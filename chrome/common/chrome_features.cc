@@ -687,6 +687,13 @@ BASE_FEATURE(kIsolatedWebAppDevMode,
              "IsolatedWebAppDevMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the requests in a third party context to domains included in
+// the Masked Domain List Component will use the Privacy Proxy to shield the
+// client's IP.
+BASE_FEATURE(kMaskedDomainList,
+             "MaskedDomainList",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kKioskEnableAppService,
              "KioskEnableAppService",
