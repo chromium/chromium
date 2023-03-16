@@ -36,7 +36,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
-#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
+#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #endif
 
 namespace {

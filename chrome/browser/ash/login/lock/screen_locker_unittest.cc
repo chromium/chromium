@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -55,6 +54,7 @@
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/audio/public/cpp/sounds/test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
 namespace ash {
 namespace {

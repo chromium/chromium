@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
 namespace ash {
 namespace input_method {

@@ -4350,8 +4350,6 @@ static_library("test_support") {
     "input_method/mock_candidate_window_controller.h",
     "input_method/mock_input_method_engine.cc",
     "input_method/mock_input_method_engine.h",
-    "input_method/mock_input_method_manager_impl.cc",
-    "input_method/mock_input_method_manager_impl.h",
     "input_method/stub_input_method_engine_observer.h",
     "lock_screen_apps/fake_lock_screen_profile_creator.cc",
     "lock_screen_apps/fake_lock_screen_profile_creator.h",

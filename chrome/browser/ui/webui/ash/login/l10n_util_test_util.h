@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
+#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
 namespace ash {
 

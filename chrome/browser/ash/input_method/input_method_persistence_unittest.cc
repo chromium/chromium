@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,6 +20,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
 namespace ash {
 namespace input_method {

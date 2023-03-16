@@ -892,6 +892,8 @@ static_library("test_support") {
       "ime/ash/mock_ime_input_context_handler.h",
       "ime/ash/mock_input_method_manager.cc",
       "ime/ash/mock_input_method_manager.h",
+      "ime/ash/mock_input_method_manager_impl.cc",
+      "ime/ash/mock_input_method_manager_impl.h",
     ]
     deps += [
       "//ui/base/ime/ash",

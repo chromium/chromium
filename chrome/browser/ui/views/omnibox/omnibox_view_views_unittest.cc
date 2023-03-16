@@ -64,11 +64,6 @@
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/input_method/input_method_configuration.h"
-#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
-#endif
-
 using gfx::Range;
 using metrics::OmniboxEventProto;
 

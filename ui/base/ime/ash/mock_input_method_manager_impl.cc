@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
+#include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
 #include <memory>
 #include <utility>
