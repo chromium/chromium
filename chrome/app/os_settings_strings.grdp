@@ -2613,23 +2613,23 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_TITLE" desc="In Device Settings, the title of the audio settings subpage.">
     Audio
   </message>
-  <message name="IDS_SETTINGS_AUDIO_VOLUME_TITLE" desc="In Device Settings, the title of the volume row under the output section in audio settings subpage." translateable="false">
+  <message name="IDS_SETTINGS_AUDIO_VOLUME_TITLE" desc="In Device Settings, the title of the volume row under the output section in audio settings subpage.">
     Volume
   </message>
   <message name="IDS_SETTINGS_AUDIO_OUTPUT_TITLE" desc="In Device Settings, the title of the output section of the audio settings subpage.">
     Output
   </message>
-  <message name="IDS_SETTINGS_AUDIO_OUTPUT_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the output section in audio settings subpage." translateable="false">
+  <message name="IDS_SETTINGS_AUDIO_OUTPUT_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the output section in audio settings subpage.">
     Speaker
   </message>
-  <message name="IDS_SETTINGS_AUDIO_INPUT_TITLE" desc="In Device Settings, the title of the input section of the audio settings subpage." translateable="false">
+  <message name="IDS_SETTINGS_AUDIO_INPUT_TITLE" desc="In Device Settings, the title of the input section of the audio settings subpage.">
     Input
   </message>
-  <message name="IDS_SETTINGS_AUDIO_INPUT_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the input section in audio settings subpage." translateable="false">
+  <message name="IDS_SETTINGS_AUDIO_INPUT_DEVICE_TITLE" desc="In Device Settings, the title of the device row under the input section in audio settings subpage.">
     Microphone
   </message>
-  <message name="IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE" desc="In Device Settings, the title of the slider under the input section in audio settings subpage. This slider controls the microphone's gain setting." translateable="false">
-    Gain
+  <message name="IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE" desc="In Device Settings, the title of the slider under the input section in audio settings subpage. This slider controls the microphone's gain setting.">
+    Volume
   </message>
   <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED" desc="In Device Settings, the aria label for the input mute button when not muted." translateable="false">
     Toggle mic. Mic is on, toggling will mute input.
@@ -2637,11 +2637,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED" desc="In Device Settings, the aria label for the input mute button when muted." translateable="false">
     Toggle mic. Mic is muted.
   </message>
-  <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED_BY_HARDWARE_SWITCH" desc="In Device Settings, the aria label for the input mute button when microphone mute switch is turned on." translateable="false">
-    Device's microphone button is turned off.
+  <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED_BY_HARDWARE_SWITCH" desc="In Device Settings, the aria label for the input mute button when microphone mute switch is turned on.">
+    Microphone is off on your device
   </message>
-  <message name="IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE" desc="In Device Settings, the title of the noise cancellation toggle under the input section in audio settings subpage." translateable="false">
-    Noise Cancellation
+  <message name="IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE" desc="In Device Settings, the title of the noise cancellation toggle under the input section in audio settings subpage.">
+    Noise cancellation
   </message>
   <message name="IDS_SETTINGS_AUDIO_DEVICE_FRONT_MIC_LABEL" desc="In Device Settings, the label used for the front microphone.">
     Front microphone
@@ -2670,17 +2670,17 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_DEVICE_MIC_JACK_LABEL" desc="In Device Settings, the label used for the mic jack device.">
     Mic jack
   </message>
-  <message name="IDS_SETTINGS_AUDIO_TOGGLE_TO_MUTE_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is unmuted." translateable="false">
-    Toggle to mute
+  <message name="IDS_SETTINGS_AUDIO_TOGGLE_TO_MUTE_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is unmuted.">
+    Turn off volume
   </message>
-  <message name="IDS_SETTINGS_AUDIO_TOGGLE_TO_UNMUTE_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted." translateable="false">
-    Toggle to unmute
+  <message name="IDS_SETTINGS_AUDIO_TOGGLE_TO_UNMUTE_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted.">
+    Turn on volume
   </message>
-  <message name="IDS_SETTINGS_AUDIO_MUTED_BY_POLICY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by enterprise policy." translateable="false">
-    Muted by policy
+  <message name="IDS_SETTINGS_AUDIO_MUTED_BY_POLICY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by enterprise policy.">
+    Muted by your administrator
   </message>
-  <message name="IDS_SETTINGS_AUDIO_MUTED_EXTERNALLY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by hardware/switch." translateable="false">
-    Muted by hardware/switch
+  <message name="IDS_SETTINGS_AUDIO_MUTED_EXTERNALLY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by hardware/switch.">
+    Microphone is off on your device
   </message>
   <message name="IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED" desc="In Device Settings, the aria label for the output mute button when not muted." translateable="false">
     Toggle volume. Volume is on, toggling will mute audio.

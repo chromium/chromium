@@ -965,7 +965,7 @@ suite('SettingsDevicePage', function() {
       const inputGainSubsectionHeader =
           audioPage.shadowRoot.querySelector('#audioInputGainLabel');
       assertTrue(isVisible(inputGainSubsectionHeader), 'audioInputGainLabel');
-      assertEquals('Gain', inputGainSubsectionHeader.textContent.trim());
+      assertEquals('Volume', inputGainSubsectionHeader.textContent.trim());
       const inputVolumeButton =
           audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
       assertTrue(isVisible(inputVolumeButton), 'audioInputGainMuteButton');
@@ -977,7 +977,7 @@ suite('SettingsDevicePage', function() {
               '#audioInputNoiseCancellationLabel');
       assertTrue(isVisible(noiseCancellationSubsectionHeader));
       assertEquals(
-          'Noise Cancellation',
+          'Noise cancellation',
           noiseCancellationSubsectionHeader.textContent.trim());
       const noiseCancellationToggle = audioPage.shadowRoot.querySelector(
           '#audioInputNoiseCancellationToggle');
