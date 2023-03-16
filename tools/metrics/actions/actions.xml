@@ -36891,6 +36891,8 @@ should be able to be added at any place in this file.
   <suffix name="PageZoom" label="For Page Zoom feature."/>
   <suffix name="PasswordsAccountStorage"
       label="For PasswordsAccountStorage feature."/>
+  <suffix name="PasswordsManagementBubbleAfterSave"
+      label="For password management bubble after save feature."/>
   <suffix name="PasswordSuggestions" label="For PasswordSuggestions feature."/>
   <suffix name="PerformanceNewBadge"
       label="For new badge next to Performance feature."/>

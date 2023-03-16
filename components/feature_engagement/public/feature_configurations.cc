@@ -55,6 +55,16 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHPasswordsManagementBubbleAfterSaveFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->trigger =
+        EventConfig("password_saved", Comparator(LESS_THAN, 1), 180, 180);
+    config->session_rate = Comparator(ANY, 0);
+    config->availability = Comparator(ANY, 0);
+    return config;
+  }
+
   if (kIPHProfileSwitchFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

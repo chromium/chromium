@@ -194,6 +194,9 @@ chromium-metrics-reviews@google.com.
       summary="educating users about the zoom option in the main menu"/>
   <variant name="IPH_PasswordsAccountStorage"
       summary="passwords account storage"/>
+  <variant name="IPH_PasswordsManagementBubbleAfterSave"
+      summary="educating the users about the password management bubble after
+               saving a password"/>
   <variant name="IPH_PasswordSuggestions"
       summary="the Autofill password suggestions on iOS"/>
   <variant name="IPH_PerformanceNewBadge"
