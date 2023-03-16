@@ -438,6 +438,17 @@ static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
   return base::TimeDelta();
 }
 
+base::TimeDelta Resource::FreshnessLifetime() const {
+  base::TimeDelta lifetime =
+      blink::FreshnessLifetime(GetResponse(), response_timestamp_);
+  for (const auto& redirect : redirect_chain_) {
+    base::TimeDelta redirect_lifetime = blink::FreshnessLifetime(
+        redirect.redirect_response_, response_timestamp_);
+    lifetime = std::min(lifetime, redirect_lifetime);
+  }
+  return lifetime;
+}
+
 static bool CanUseResponse(const ResourceResponse& response,
                            bool allow_stale,
                            base::Time response_timestamp) {

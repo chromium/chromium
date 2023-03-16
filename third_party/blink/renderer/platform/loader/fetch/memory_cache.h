@@ -157,6 +157,11 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   void UpdateFramePaintTimestamp();
 
+  // Called by the loader to notify that a new page is being loaded.
+  // The strong references the memory cache is holding for the current page
+  // will be moved to the previous generation.
+  void SavePageResourceStrongReferences(HeapVector<Member<Resource>> resources);
+
   // Take memory usage snapshot for tracing.
   bool OnMemoryDump(WebMemoryDumpLevelOfDetail, WebProcessMemoryDump*) override;
 
@@ -186,8 +191,10 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   void PruneResources(PruneStrategy);
   void PruneNow(PruneStrategy);
 
-  bool in_prune_resources_;
-  bool prune_pending_;
+  void RemovePageResourceStrongReference(uint32_t saved_page_token);
+
+  bool in_prune_resources_ = false;
+  bool prune_pending_ = false;
   base::TimeDelta max_prune_deferral_delay_;
   base::TimeTicks prune_time_stamp_;
   base::TimeTicks prune_frame_time_stamp_;
@@ -200,9 +207,17 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // The number of bytes currently consumed by resources in the cache.
   size_t size_;
 
+  // The size of strong reference to resources is not limited.
+  // The strong references will be removed when memory pressure is signaled.
+  HeapHashMap<uint32_t, Member<HeapVector<Member<Resource>>>>
+      saved_page_resources_;
+  uint32_t saved_page_token_ = 0;
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   friend class MemoryCacheTest;
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest, ResourceTimeout);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest, SaveSinglePage);
 };
 
 // Sets the global cache, used to swap in a test instance. Returns the old

@@ -301,6 +301,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   bool MustRevalidateDueToCacheHeaders(bool allow_stale) const;
   bool ShouldRevalidateStaleResponse() const;
   virtual bool CanUseCacheValidator() const;
+  base::TimeDelta FreshnessLifetime() const;
   bool IsCacheValidator() const { return is_revalidating_; }
   bool HasCacheControlNoStoreHeader() const;
   bool MustReloadDueToVaryHeader(const ResourceRequest& new_request) const;

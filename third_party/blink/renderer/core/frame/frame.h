@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -79,6 +80,7 @@ class HTMLFrameOwnerElement;
 class LayoutEmbeddedContent;
 class LocalFrame;
 class Page;
+class Resource;
 class SecurityContext;
 class Settings;
 class WindowProxy;
@@ -440,6 +442,9 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // frame tree. Otherwise returns `absl::nullopt`. This should not be called
   // on a detached frame.
   absl::optional<mojom::blink::FencedFrameMode> GetFencedFrameMode() const;
+
+  // Returns all the resources under the frame tree of this node.
+  HeapVector<Member<Resource>> AllResourcesUnderFrame();
 
  protected:
   // |inheriting_agent_factory| should basically be set to the parent frame or

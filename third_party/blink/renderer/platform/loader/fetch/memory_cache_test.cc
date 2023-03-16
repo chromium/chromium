@@ -30,8 +30,10 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -434,6 +436,65 @@ TEST_F(MemoryCacheTest, RemoveURLFromCache) {
 
   MemoryCache::Get()->RemoveURLFromCache(url2);
   EXPECT_FALSE(MemoryCache::Get()->Contains(resource2));
+}
+
+class MemoryCacheStrongReferenceTest
+    : public MemoryCacheTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> enable_features = {
+      features::kMemoryCacheStrongReference
+    };
+    if (GetParam()) {
+      enable_features.push_back(features::kMemoryCacheStrongReferenceSingleUnload);
+    }
+    scoped_feature_list_.InitWithFeatures(enable_features, {});
+    MemoryCacheTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(MemoryCacheStrongReferenceTest,
+                         MemoryCacheStrongReferenceTest,
+                         testing::Bool());
+
+TEST_P(MemoryCacheStrongReferenceTest, ResourceTimeout) {
+  const KURL url = KURL("http://test/resource1");
+  Member<FakeResource> resource =
+      MakeGarbageCollected<FakeResource>(url, ResourceType::kRaw);
+
+  ASSERT_EQ(MemoryCache::Get()->saved_page_resources_.size(), 0u);
+  MemoryCache::Get()->SavePageResourceStrongReferences(
+      HeapVector<Member<Resource>>{resource});
+  ASSERT_EQ(MemoryCache::Get()->saved_page_resources_.size(), 1u);
+  platform_->test_task_runner()->FastForwardBy(base::Minutes(5) +
+                                               base::Seconds(1));
+  ASSERT_EQ(MemoryCache::Get()->saved_page_resources_.size(), 0u);
+}
+
+TEST_P(MemoryCacheStrongReferenceTest, SaveSinglePage) {
+  const KURL url1 = KURL("http://test/resource1");
+  const KURL url2 = KURL("http://test/resource1");
+  Member<FakeResource> resource1 =
+      MakeGarbageCollected<FakeResource>(url1, ResourceType::kRaw);
+  Member<FakeResource> resource2 =
+      MakeGarbageCollected<FakeResource>(url2, ResourceType::kRaw);
+
+  MemoryCache::Get()->SavePageResourceStrongReferences(
+      HeapVector<Member<Resource>>{resource1});
+  ASSERT_EQ(MemoryCache::Get()->saved_page_resources_.size(), 1u);
+
+  MemoryCache::Get()->SavePageResourceStrongReferences(
+      HeapVector<Member<Resource>>{resource2});
+  if (base::FeatureList::IsEnabled(
+          features::kMemoryCacheStrongReferenceSingleUnload)) {
+    ASSERT_EQ(MemoryCache::Get()->saved_page_resources_.size(), 1u);
+  } else {
+    ASSERT_EQ(MemoryCache::Get()->saved_page_resources_.size(), 2u);
+  }
 }
 
 }  // namespace blink

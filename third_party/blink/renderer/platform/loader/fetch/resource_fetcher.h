@@ -92,7 +92,8 @@ struct ResourceLoaderOptions;
 // keep a ResourceFetcher alive past detach if scripts still reference the
 // Document.
 class PLATFORM_EXPORT ResourceFetcher
-    : public GarbageCollected<ResourceFetcher> {
+    : public GarbageCollected<ResourceFetcher>,
+      public MemoryPressureListener {
   USING_PRE_FINALIZER(ResourceFetcher, ClearPreloads);
 
  public:
@@ -122,8 +123,8 @@ class PLATFORM_EXPORT ResourceFetcher
   explicit ResourceFetcher(const ResourceFetcherInit&);
   ResourceFetcher(const ResourceFetcher&) = delete;
   ResourceFetcher& operator=(const ResourceFetcher&) = delete;
-  virtual ~ResourceFetcher();
-  virtual void Trace(Visitor*) const;
+  ~ResourceFetcher() override;
+  void Trace(Visitor*) const override;
 
   // - This function returns the same object throughout this fetcher's
   //   entire life.
@@ -183,6 +184,10 @@ class PLATFORM_EXPORT ResourceFetcher
   // non-inspector/non-tent-only contexts.
   const DocumentResourceMap& AllResources() const {
     return cached_resources_map_;
+  }
+
+  const HeapHashSet<Member<Resource>> MoveResourceStrongReferences() {
+    return std::move(document_resource_strong_refs_);
   }
 
   enum class ImageLoadBlockingPolicy {
@@ -339,6 +344,9 @@ class PLATFORM_EXPORT ResourceFetcher
   void CancelWebBundleSubresourceLoadersFor(
       const base::UnguessableToken& web_bundle_token);
 
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel) override;
+
  private:
   friend class ResourceCacheValidationSuppressor;
   enum class StopFetchingTarget {
@@ -398,6 +406,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void StopFetchingInternal(StopFetchingTarget);
   void StopFetchingIncludingKeepaliveLoaders();
+
+  void MaybeSaveResourceToStrongReference(Resource* resource);
 
   enum class RevalidationPolicy {
     kUse,
@@ -482,6 +492,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void WarnUnusedPreloads();
 
+  void RemoveImageStrongReference(Resource* image_resource);
+
   // Information about a resource fetch that had started but not completed yet.
   // Would be added to the response data when the response arrives.
   struct PendingResourceTimingInfo {
@@ -519,7 +531,12 @@ class PLATFORM_EXPORT ResourceFetcher
   const Member<ResourceLoadScheduler> scheduler_;
   Member<BackForwardCacheLoaderHelper> back_forward_cache_loader_helper_;
 
+  // Weak reference to all the fetched resources.
   DocumentResourceMap cached_resources_map_;
+
+  // document_resource_strong_refs_ keeps strong references for fonts, images,
+  // scripts and stylesheets within their freshness lifetime.
+  HeapHashSet<Member<Resource>> document_resource_strong_refs_;
 
   // |image_resources_| is the subset of all image resources for the document.
   HeapHashSet<WeakMember<Resource>> image_resources_;

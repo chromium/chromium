@@ -1714,5 +1714,17 @@ BASE_FEATURE(kURLSetPortCheckOverflow,
              "URLSetPortCheckOverflow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMemoryCacheStrongReference,
+             "MemoryCacheStrongReference",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMemoryCacheStrongReferenceSingleUnload,
+             "MemoryCacheStrongReferenceSingleUnload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMemoryCacheStrongReferenceFilterImages,
+             "MemoryCacheStrongReferenceFilterImages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink
