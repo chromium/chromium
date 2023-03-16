@@ -247,7 +247,6 @@ component("base") {
     "big_endian.h",
     "bit_cast.h",
     "bits.h",
-    "build_time.cc",
     "build_time.h",
     "callback_list.cc",
     "callback_list.h",
@@ -4004,7 +4003,7 @@ test("base_unittests") {
 }
 
 action("build_date") {
-  script = "//build/write_build_date_header.py"
+  script = "write_build_date_header.py"
 
   outputs = [ "$target_gen_dir/generated_build_date.h" ]
 

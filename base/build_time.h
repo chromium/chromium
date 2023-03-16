@@ -5,7 +5,7 @@
 #ifndef BASE_BUILD_TIME_H_
 #define BASE_BUILD_TIME_H_
 
-#include "base/base_export.h"
+#include "base/generated_build_date.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -23,7 +23,13 @@ namespace base {
 // Note: If the build is not official (i.e. is_official_build = false)
 // this time will be set to 5:00:00am on the most recent first Sunday
 // of a month.
-Time BASE_EXPORT GetBuildTime();
+constexpr Time GetBuildTime() {
+  // BASE_GENERATED_BUILD_DATE_TIMESTAMP is a Unix timestamp value. See
+  // //base/write_build_date_header.py and //build/compute_build_timestamp.py
+  // for details. On non-official builds, this will be first Sunday of the month
+  // at 5:00am UTC.
+  return Time::FromTimeT(BASE_GENERATED_BUILD_DATE_TIMESTAMP);
+}
 
 }  // namespace base
 
