@@ -5,6 +5,7 @@
 """File for testing flash_device.py."""
 
 import os
+import subprocess
 import unittest
 import unittest.mock as mock
 
@@ -15,6 +16,7 @@ _TEST_PRODUCT = 'test_product'
 _TEST_VERSION = 'test.version'
 
 
+# pylint: disable=too-many-public-methods,protected-access
 class FlashDeviceTest(unittest.TestCase):
     """Unittests for flash_device.py."""
 
@@ -263,6 +265,62 @@ class FlashDeviceTest(unittest.TestCase):
                                 should_pave=False)
         self.assertEqual(self._ffx_mock.call_count, 3)
 
+    # pylint: disable=no-self-use
+    def test_update_with_pave_timeout_defaults_to_flash(self) -> None:
+        """Test update falls back to flash if pave fails."""
+        with mock.patch('time.sleep'), \
+                mock.patch('os.path.exists', return_value=True), \
+                mock.patch('flash_device.running_unattended',
+                           return_value=True), \
+                mock.patch('flash_device.pave') as mock_pave, \
+                mock.patch('flash_device.flash') as mock_flash:
+            mock_pave.side_effect = subprocess.TimeoutExpired(
+                cmd='/some/cmd',
+                timeout=0,
+            )
+            flash_device.update(_TEST_IMAGE_DIR,
+                                'update',
+                                'some-target-id',
+                                should_pave=True)
+            mock_pave.assert_called_once_with(_TEST_IMAGE_DIR,
+                                              'some-target-id')
+            mock_flash.assert_called_once_with(_TEST_IMAGE_DIR,
+                                               'some-target-id', None)
+
+    def test_remove_stale_removes_stale_file_lock(self) -> None:
+        """Test remove_stale_flash_file_lock removes stale file lock."""
+        with mock.patch('time.time') as mock_time, \
+             mock.patch('os.remove') as mock_remove, \
+             mock.patch('os.stat') as mock_stat:
+            mock_time.return_value = 60 * 20
+            # Set st_mtime
+            mock_stat.return_value = os.stat_result((0, ) * 8 + (100, 0))
+            flash_device._remove_stale_flash_file_lock()
+            mock_stat.assert_called_once_with(flash_device._FF_LOCK)
+            mock_remove.assert_called_once_with(flash_device._FF_LOCK)
+
+    def test_remove_stale_does_not_remove_non_stale_file(self) -> None:
+        """Test remove_stale_flash_file_lock does not remove fresh file."""
+        with mock.patch('time.time') as mock_time, \
+             mock.patch('os.remove') as mock_remove, \
+             mock.patch('os.stat') as mock_stat:
+            mock_time.return_value = 60 * 10
+            # Set st_mtime
+            mock_stat.return_value = os.stat_result((0, ) * 8 + (100, 0))
+            flash_device._remove_stale_flash_file_lock()
+            mock_remove.assert_not_called()
+
+    def test_remove_stale_does_not_raise_file_not_found(self) -> None:
+        """Test remove_stale_flash_file_lock does not raise FileNotFound."""
+        with mock.patch('time.time'), \
+             mock.patch('os.remove'), \
+             mock.patch('os.stat') as mock_stat:
+            mock_stat.side_effect = FileNotFoundError
+            flash_device._remove_stale_flash_file_lock()
+            mock_stat.assert_called_once_with(flash_device._FF_LOCK)
+
+    # pylint: enable=no-self-use
+
     def test_main(self) -> None:
         """Tests |main| function."""
 
@@ -272,6 +330,7 @@ class FlashDeviceTest(unittest.TestCase):
             with mock.patch.dict(os.environ, {}):
                 flash_device.main()
         self.assertEqual(self._ffx_mock.call_count, 0)
+# pylint: enable=too-many-public-methods,protected-access
 
 
 if __name__ == '__main__':

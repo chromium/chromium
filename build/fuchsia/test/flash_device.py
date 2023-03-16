@@ -19,6 +19,13 @@ from common import check_ssh_config_file, find_image_in_sdk, \
 from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
     running_unattended, add_exec_to_file, get_host_arch
 from ffx_integration import ScopedFfxConfig
+from lockfile import lock
+
+# Flash-file lock. Used to restrict number of flash operations per host.
+# File lock should be marked as stale after 15 mins.
+_FF_LOCK = os.path.join('/tmp', 'flash.lock')
+_FF_LOCK_STALE_SECS = 60 * 15
+_FF_LOCK_ACQ_TIMEOUT = _FF_LOCK_STALE_SECS
 
 
 def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
@@ -106,8 +113,9 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     if running_unattended():
         flash_cmd = [
             os.path.join(system_image_dir, 'flash.sh'),
-            '--ssh-key=%s' % get_ssh_keys(),
+            '--ssh-key=%s' % get_ssh_keys()
         ]
+        # Target ID could be the nodename or the Serial number.
         if target_id:
             flash_cmd.extend(('-s', target_id))
         subprocess.run(flash_cmd, check=True, timeout=240)
@@ -122,11 +130,26 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
                     ])
 
 
+def _remove_stale_flash_file_lock() -> None:
+    """Check if flash file lock is stale, and delete if so."""
+    try:
+        stat = os.stat(_FF_LOCK)
+        if time.time() - stat.st_mtime > _FF_LOCK_STALE_SECS:
+            os.remove(_FF_LOCK)
+    except FileNotFoundError:
+        logging.info('No lock file found - assuming it is up for grabs')
+
+
 def flash(system_image_dir: str,
           target: Optional[str],
           serial_num: Optional[str] = None) -> None:
     """Flash the device."""
-    with ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'):
+    _remove_stale_flash_file_lock()
+    # Flash only with a file lock acquired.
+    # This prevents multiple fastboot binaries from flashing concurrently,
+    # which should increase the odds of flashing success.
+    with ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'), \
+        lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
         if serial_num:
             with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
                 run_ffx_command(('target', 'reboot', '-b'),
@@ -173,8 +196,15 @@ def update(system_image_dir: str,
                 run_ffx_command(('target', 'reboot', '-r'),
                                 target,
                                 check=False)
-            pave(system_image_dir, target)
-            time.sleep(180)
+            try:
+                pave(system_image_dir, target)
+                time.sleep(180)
+            except subprocess.TimeoutExpired:
+                # Fallback to flashing, just in case it might work.
+                # This could recover the device and make it usable.
+                # If it fails, device is unpaveable anyway, and should be taken
+                # out of fleet - this will do that.
+                flash(system_image_dir, target, serial_num)
         else:
             flash(system_image_dir, target, serial_num)
 
