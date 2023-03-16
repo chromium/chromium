@@ -5,6 +5,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/browser_container/edit_menu_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
@@ -486,19 +487,19 @@ id<GREYMatcher> OpenNewWindowMenuButton() {
 }
 
 id<GREYMatcher> SystemSelectionCallout() {
-  return [ChromeMatchersAppInterface systemSelectionCallout];
+  return [EditMenuAppInterface editMenuButtonMatcher];
 }
 
 id<GREYMatcher> SystemSelectionCalloutLinkToTextButton() {
-  return [ChromeMatchersAppInterface systemSelectionCalloutLinkToTextButton];
+  return [EditMenuAppInterface editMenuLinkToTextButtonMatcher];
 }
 
 id<GREYMatcher> SystemSelectionCalloutCopyButton() {
-  return [ChromeMatchersAppInterface systemSelectionCalloutCopyButton];
+  return [EditMenuAppInterface editMenuCopyButtonMatcher];
 }
 
 id<GREYMatcher> SystemSelectionCalloutOverflowButton() {
-  return [ChromeMatchersAppInterface systemSelectionCalloutOverflowButton];
+  return [EditMenuAppInterface editMenuNextButtonMatcher];
 }
 
 id<GREYMatcher> CopyActivityButton() {

@@ -118,3 +118,37 @@ source_set("unit_tests") {
     "//ui/strings:ui_strings_grit",
   ]
 }
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "edit_menu_app_interface.h",
+    "edit_menu_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "edit_menu_app_interface.h",
+    "edit_menu_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ui/base",
+  ]
+}

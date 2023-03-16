@@ -789,35 +789,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kToolsMenuNewWindowId);
 }
 
-+ (id<GREYMatcher>)systemSelectionCallout {
-  if (@available(iOS 16.0, *)) {
-    return grey_kindOfClass(NSClassFromString(@"_UIEditMenuListViewCell"));
-  } else {
-    return grey_kindOfClass(NSClassFromString(@"UICalloutBarButton"));
-  }
-}
-
-+ (id<GREYMatcher>)systemSelectionCalloutLinkToTextButton {
-  return grey_allOf(grey_accessibilityLabel(
-                        l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT)),
-                    [self systemSelectionCallout], nil);
-}
-
-+ (id<GREYMatcher>)systemSelectionCalloutCopyButton {
-  return grey_allOf(grey_accessibilityLabel(@"Copy"),
-                    [self systemSelectionCallout], nil);
-}
-
-+ (id<GREYMatcher>)systemSelectionCalloutOverflowButton {
-  if (@available(iOS 16.0, *)) {
-    return grey_allOf(
-        grey_accessibilityLabel(@"Forward"),
-        grey_kindOfClass(NSClassFromString(@"_UIEditMenuPageButton")), nil);
-  } else {
-    return grey_accessibilityID(@"show.next.items.menu.button");
-  }
-}
-
 + (id<GREYMatcher>)copyActivityButton {
   id<GREYMatcher> copyStaticText = [ChromeMatchersAppInterface
       staticTextWithAccessibilityLabel:l10n_util::GetNSString(
