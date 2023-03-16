@@ -214,13 +214,23 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
 
 // Testcase where the loader is deleted after it queued the parsing of
 // the script on V8 thread, but before that parsing completes.
+//
+// Also make sure that in this case we can cleanup without relying on main
+// thread event loop spinning, as that's needed for synchronizing with
+// v8 shutdown.
+// (See https://crbug.com/1421754)
 TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
   // Wedge the V8 thread so we can order loader deletion before script parsing.
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
 
+  scoped_refptr<AuctionV8Helper> v8_helper = std::move(v8_helper_);
+  base::WaitableEvent wait_for_v8_shutdown;
+  v8_helper->SetDestroyedCallback(
+      base::BindLambdaForTesting([&]() { wait_for_v8_shutdown.Signal(); }));
+
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   auto worklet_loader = std::make_unique<WorkletLoader>(
-      &url_loader_factory_, url_, v8_helper_,
+      &url_loader_factory_, url_, v8_helper,
       scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce([](WorkletLoader::Result worklet_script,
                         absl::optional<std::string> error_msg) {
@@ -229,6 +239,11 @@ TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
   run_loop_.RunUntilIdle();
   worklet_loader.reset();
   event_handle->Signal();
+
+  // Make sure that AuctionV8Helper can get shut down cleanly even though we
+  // are not spinning the event loop for main thread here.
+  v8_helper.reset();
+  wait_for_v8_shutdown.Wait();
 }
 
 TEST_F(WorkletLoaderTest, LoadWasmSuccess) {
