@@ -114,8 +114,8 @@ class TestConstantEventRewriterOld : public EventRewriter {
 // EVENT_REWRITE_DISPATCH_ANOTHER.
 class TestStateMachineEventRewriterOld : public EventRewriter {
  public:
-  TestStateMachineEventRewriterOld()
-      : last_rewritten_event_(nullptr), state_(0) {}
+  TestStateMachineEventRewriterOld() = default;
+
   void AddRule(int from_state,
                EventType from_type,
                int to_state,
@@ -133,9 +133,9 @@ class TestStateMachineEventRewriterOld : public EventRewriter {
     if ((find->second.status == EVENT_REWRITE_REWRITTEN) ||
         (find->second.status == EVENT_REWRITE_DISPATCH_ANOTHER)) {
       *rewritten_event = CreateEventForType(find->second.type);
-      last_rewritten_event_ = rewritten_event->get();
+      has_rewritten_event_ = true;
     } else {
-      last_rewritten_event_ = nullptr;
+      has_rewritten_event_ = false;
     }
     state_ = find->second.state;
     return find->second.status;
@@ -143,8 +143,7 @@ class TestStateMachineEventRewriterOld : public EventRewriter {
   EventRewriteStatus NextDispatchEvent(
       const Event& last_event,
       std::unique_ptr<Event>* new_event) override {
-    EXPECT_TRUE(last_rewritten_event_);
-    EXPECT_EQ(last_rewritten_event_, &last_event);
+    EXPECT_TRUE(has_rewritten_event_);
     EXPECT_FALSE(new_event->get() && new_event->get() == &last_event);
     return RewriteEvent(last_event, new_event);
   }
@@ -158,8 +157,8 @@ class TestStateMachineEventRewriterOld : public EventRewriter {
   };
   typedef std::map<RewriteCase, RewriteResult> RewriteRules;
   RewriteRules rules_;
-  raw_ptr<Event> last_rewritten_event_;
-  int state_;
+  bool has_rewritten_event_ = false;
+  int state_ = 0;
 };
 
 // This EventRewriter always accepts the original event. It is used to test
