@@ -41,10 +41,6 @@ suite('PerDeviceTouchpad', function() {
     let subsections = perDeviceTouchpadPage.shadowRoot.querySelectorAll(
         'settings-per-device-touchpad-subsection');
     assertEquals(fakeTouchpads.length, subsections.length);
-    for (let i = 0; i < subsections.length; i++) {
-      const name = subsections[i].shadowRoot.querySelector('h2').textContent;
-      assertEquals(fakeTouchpads[i].name, name);
-    }
 
     const newFakeTouchpads = fakeTouchpads.slice(1);
     provider.setFakeTouchpads(newFakeTouchpads);
@@ -52,9 +48,22 @@ suite('PerDeviceTouchpad', function() {
     subsections = perDeviceTouchpadPage.shadowRoot.querySelectorAll(
         'settings-per-device-touchpad-subsection');
     assertEquals(newFakeTouchpads.length, subsections.length);
-    for (let i = 0; i < subsections.length; i++) {
-      const name = subsections[i].shadowRoot.querySelector('h2').textContent;
-      assertEquals(newFakeTouchpads[i].name, name);
-    }
   });
+
+  test(
+      'Display correct name used for internal/external touchpads', async () => {
+        await initializePerDeviceTouchpadPage();
+        const subsections = perDeviceTouchpadPage.shadowRoot.querySelectorAll(
+            'settings-per-device-touchpad-subsection');
+        for (let i = 0; i < subsections.length; i++) {
+          const name =
+              subsections[i].shadowRoot.querySelector('h2').textContent;
+          if (fakeTouchpads[i].isExternal) {
+            assertEquals(fakeTouchpads[i].name, name);
+          } else {
+            assertTrue(subsections[i].i18nExists('builtInTouchpadName'));
+            assertEquals('Built-in Touchpad', name);
+          }
+        }
+      });
 });
