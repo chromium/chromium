@@ -616,69 +616,67 @@ group("web_view_resources") {
   ]
 }
 
-if (!is_fat_secondary_toolchain) {
-  _package_dir = "$root_out_dir/ios_web_view"
+_package_dir = "$root_out_dir/ios_web_view"
 
-  action("ios_web_view_generate_license") {
-    _license_path = "$_package_dir/LICENSE"
+action("ios_web_view_generate_license") {
+  _license_path = "$_package_dir/LICENSE"
 
-    script = "//tools/licenses/licenses.py"
-    inputs = [ "//buildtools/$host_os/gn" ]
-    outputs = [ _license_path ]
-    args = [
-      "license_file",
-      rebase_path(_license_path, root_build_dir),
-      "--gn-target",
-      "//ios/web_view",
-      "--gn-out-dir",
-      ".",
-      "--target-os",
-      "ios",
-    ]
-  }
+  script = "//tools/licenses/licenses.py"
+  inputs = [ "//buildtools/$host_os/gn" ]
+  outputs = [ _license_path ]
+  args = [
+    "license_file",
+    rebase_path(_license_path, root_build_dir),
+    "--gn-target",
+    "//ios/web_view",
+    "--gn-out-dir",
+    ".",
+    "--target-os",
+    "ios",
+  ]
+}
 
-  copy("ios_web_view_package_copy") {
-    sources = [
-      "$root_out_dir/$ios_web_view_output_name.framework",
-      "//AUTHORS",
-      "//chrome/VERSION",
-    ]
-    outputs = [ "$_package_dir/{{source_file_part}}" ]
+copy("ios_web_view_package_copy") {
+  sources = [
+    "$root_out_dir/$ios_web_view_output_name.framework",
+    "//AUTHORS",
+    "//chrome/VERSION",
+  ]
+  outputs = [ "$_package_dir/{{source_file_part}}" ]
+
+  deps = [ ":web_view" ]
+}
+
+if (enable_dsyms) {
+  action("ios_web_view_dsym_archive") {
+    script = "//chrome/tools/build/mac/archive_symbols.py"
+
+    # These are the dSYMs that will be archived. The sources list must be
+    # the target outputs that correspond to the dSYMs (since a dSYM is a
+    # directory it cannot be listed as a source file). The targets that
+    # generate both the dSYM and binary image are listed in deps.
+    _dsyms = [ "$root_out_dir/$ios_web_view_output_name.dSYM" ]
+
+    sources = [ "$root_out_dir/$ios_web_view_output_name.framework" ]
+
+    _output = "$_package_dir/$ios_web_view_output_name.dSYM.tar.bz2"
+
+    outputs = [ _output ]
+
+    args = [ rebase_path(_output, root_build_dir) ] +
+           rebase_path(_dsyms, root_build_dir)
 
     deps = [ ":web_view" ]
   }
-
-  if (enable_dsyms) {
-    action("ios_web_view_dsym_archive") {
-      script = "//chrome/tools/build/mac/archive_symbols.py"
-
-      # These are the dSYMs that will be archived. The sources list must be
-      # the target outputs that correspond to the dSYMs (since a dSYM is a
-      # directory it cannot be listed as a source file). The targets that
-      # generate both the dSYM and binary image are listed in deps.
-      _dsyms = [ "$root_out_dir/$ios_web_view_output_name.dSYM" ]
-
-      sources = [ "$root_out_dir/$ios_web_view_output_name.framework" ]
-
-      _output = "$_package_dir/$ios_web_view_output_name.dSYM.tar.bz2"
-
-      outputs = [ _output ]
-
-      args = [ rebase_path(_output, root_build_dir) ] +
-             rebase_path(_dsyms, root_build_dir)
-
-      deps = [ ":web_view" ]
-    }
-  } else {
-    group("ios_web_view_dsym_archive") {
-    }
+} else {
+  group("ios_web_view_dsym_archive") {
   }
+}
 
-  group("ios_web_view_package") {
-    deps = [
-      ":ios_web_view_dsym_archive",
-      ":ios_web_view_generate_license",
-      ":ios_web_view_package_copy",
-    ]
-  }
+group("ios_web_view_package") {
+  deps = [
+    ":ios_web_view_dsym_archive",
+    ":ios_web_view_generate_license",
+    ":ios_web_view_package_copy",
+  ]
 }
