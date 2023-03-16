@@ -1104,7 +1104,7 @@
     },
     {
       name: "CSSUpdateMediaFeature",
-      status: "experimental",
+      status: "stable",
     },
     // Support for `user-select:contain`.
     {
