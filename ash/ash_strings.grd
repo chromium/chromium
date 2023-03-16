@@ -6278,6 +6278,15 @@ New install
       <message name="ID_ASH_ECHE_APP_STREAMING_BUBBLE_TITLE" desc="The title appear on the top of app streaming bubble">
         From <ph name="PHONE_NAME">$1<ex>Pixel 7</ex></ph>
       </message>
+      <message name="IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TITLE" desc="The title of dialog that appears when there is a connection error trying to stream app">
+        Can't stream apps
+      </message>
+      <message name="IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_MAIN_TEXT" desc="The main description in the dialog that appears when there is a connection error trying to stream app">
+        This network doesn't support streaming apps from your phone. Try turning on your phone's hotspot. Learn more.
+      </message>
+      <message name="IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TURN_ON_HOTSPOT" desc="The button in the dialog that appears when there is a connection error trying to stream app to turn on hotspot">
+        Turn on hotspot
+      </message>
 
       <!-- Deferred update dialog -->
       <message name="IDS_DEFERRED_UPDATE_DIALOG_TITLE" desc="Title of the dialog for notifying deferred update available to be applied.">

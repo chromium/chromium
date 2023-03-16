@@ -1638,6 +1638,8 @@ component("ash") {
     "system/palette/tools/magnifier_mode.h",
     "system/pcie_peripheral/pcie_peripheral_notification_controller.cc",
     "system/pcie_peripheral/pcie_peripheral_notification_controller.h",
+    "system/phonehub/app_stream_connection_error_dialog.cc",
+    "system/phonehub/app_stream_connection_error_dialog.h",
     "system/phonehub/app_stream_launcher_item.cc",
     "system/phonehub/app_stream_launcher_item.h",
     "system/phonehub/app_stream_launcher_list_item.cc",

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/system/phonehub/phone_connected_view.h"
 #include "base/gtest_prod_util.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ui/views/controls/button/image_button.h"
@@ -28,7 +29,8 @@ class ASH_EXPORT PhoneHubRecentAppsView
  public:
   explicit PhoneHubRecentAppsView(
       phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler,
-      phonehub::PhoneHubManager* phone_hub_manager);
+      phonehub::PhoneHubManager* phone_hub_manager,
+      PhoneConnectedView* connected_view);
   ~PhoneHubRecentAppsView() override;
   PhoneHubRecentAppsView(PhoneHubRecentAppsView&) = delete;
   PhoneHubRecentAppsView operator=(PhoneHubRecentAppsView&) = delete;
@@ -73,6 +75,8 @@ class ASH_EXPORT PhoneHubRecentAppsView
   // Switch to full apps list view.
   void SwitchToFullAppsList();
 
+  void ShowConnectionErrorDialog();
+
   // Generate more apps button.
   std::unique_ptr<views::View> GenerateMoreAppsButton();
 
@@ -82,6 +86,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
       nullptr;
   phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
   PlaceholderView* placeholder_view_ = nullptr;
+  PhoneConnectedView* connected_view_ = nullptr;
 };
 
 }  // namespace ash

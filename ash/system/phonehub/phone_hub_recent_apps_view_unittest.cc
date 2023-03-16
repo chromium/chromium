@@ -5,6 +5,7 @@
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/phonehub/phone_connected_view.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -45,7 +46,8 @@ class RecentAppButtonsViewTest : public AshTestBase {
         /*disabled_features=*/{});
 
     phone_hub_recent_apps_view_ = std::make_unique<PhoneHubRecentAppsView>(
-        &fake_recent_apps_interaction_handler_, &fake_phone_hub_manager_);
+        &fake_recent_apps_interaction_handler_, &fake_phone_hub_manager_,
+        connected_view_);
   }
 
   void TearDown() override {
@@ -90,6 +92,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
   phonehub::FakeRecentAppsInteractionHandler
       fake_recent_apps_interaction_handler_;
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
+  PhoneConnectedView* connected_view_;
   base::test::ScopedFeatureList feature_list_;
 };
 
