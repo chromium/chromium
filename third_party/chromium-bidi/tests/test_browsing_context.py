@@ -15,8 +15,9 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree,
+                          read_JSON_message, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -101,10 +102,7 @@ async def test_browsingContext_noInitialLoadEvents(websocket):
 
 @pytest.mark.asyncio
 async def test_browsingContext_getTree_contextReturned(websocket, context_id):
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     assert result == {
         "contexts": [{
@@ -127,19 +125,11 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(
     })
     new_context_id = result["context"]
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     assert len(result['contexts']) == 2
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {
-            "root": new_context_id
-        }
-    })
+    result = await get_tree(websocket, new_context_id)
 
     assert result == {
         "contexts": [{
@@ -168,10 +158,7 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
             }
         })
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     assert result == {
         "contexts": [{
@@ -183,10 +170,13 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
     }
 
 
+# TODO(sadym): make offline.
+@pytest.mark.parametrize(
+    "nested_iframe",
+    ['https://example.com/', 'data:text/html,<h1>CHILD_PAGE</h1>'])
 @pytest.mark.asyncio
-async def test_browsingContext_getTreeWithNestedSameOriginContexts_contextsReturned(
-        websocket, context_id):
-    nested_iframe = 'data:text/html,<h1>CHILD_PAGE</h1>'
+async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
+        websocket, context_id, nested_iframe):
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
                               f'<iframe src="{nested_iframe}" />'
     await execute_command(
@@ -199,10 +189,7 @@ async def test_browsingContext_getTreeWithNestedSameOriginContexts_contextsRetur
             }
         })
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     assert {
         "contexts": [{
@@ -217,37 +204,25 @@ async def test_browsingContext_getTreeWithNestedSameOriginContexts_contextsRetur
         }]
     } == result
 
-
-# TODO(sadym): make offline.
-@pytest.mark.asyncio
-async def test_browsingContext_getTreeWithNestedCrossOriginContexts_contextsReturned(
-        websocket, context_id):
-    nested_iframe = 'https://example.com/'
-    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
-                              f'<iframe src="{nested_iframe}" />'
+    # Remove nested iframe.
     await execute_command(
         websocket, {
-            "method": "browsingContext.navigate",
+            "method": "script.evaluate",
             "params": {
-                "url": page_with_nested_iframe,
-                "wait": "complete",
-                "context": context_id
+                "expression": "document.querySelector('iframe').remove()",
+                "awaitPromise": True,
+                "target": {
+                    "context": context_id,
+                }
             }
         })
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     assert {
         "contexts": [{
             "context": context_id,
-            "children": [{
-                "context": ANY_STR,
-                "url": nested_iframe,
-                "children": []
-            }],
+            "children": [],
             "parent": None,
             "url": page_with_nested_iframe
         }]
@@ -285,10 +260,7 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginConte
             }
         })
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     assert {
         "contexts": [{
@@ -324,10 +296,7 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
             }
         })
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     assert {
         "contexts": [{
@@ -352,10 +321,7 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
             }
         })
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     assert {
         "contexts": [{
@@ -483,10 +449,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
                 "method"] == "browsingContext.contextCreated":
             events.append(resp)
 
-    tree = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    tree = await get_tree(websocket)
 
     assert {
         "contexts": [{
@@ -565,10 +528,7 @@ async def test_browsingContext_close_browsingContext_closed(
     resp = await read_JSON_message(websocket)
     assert resp == {"id": 12, "result": {}}
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     # Assert context is closed.
     assert result == {'contexts': []}
@@ -808,12 +768,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
         })
     assert resp == {'navigation': None, 'url': url_with_hash_1}
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {
-            "root": context_id
-        }
-    })
+    result = await get_tree(websocket, context_id)
 
     assert {
         "contexts": [{
@@ -835,12 +790,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
         })
     assert resp == {'navigation': None, 'url': url_with_hash_2}
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {
-            "root": context_id
-        }
-    })
+    result = await get_tree(websocket, context_id)
 
     assert {
         "contexts": [{
@@ -881,12 +831,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
         })
     assert resp == {'navigation': None, 'url': url_with_hash_1}
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {
-            "root": context_id
-        }
-    })
+    result = await get_tree(websocket, context_id)
 
     assert {
         "contexts": [{
@@ -908,12 +853,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
         })
     assert resp == {'navigation': None, 'url': url_with_hash_2}
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {
-            "root": context_id
-        }
-    })
+    result = await get_tree(websocket, context_id)
 
     assert {
         "contexts": [{

@@ -17,7 +17,7 @@ import os
 
 import pytest_asyncio
 import websockets
-from test_helpers import execute_command, goto_url
+from test_helpers import execute_command, get_tree, goto_url
 
 
 @pytest_asyncio.fixture
@@ -69,10 +69,7 @@ async def sandbox_realm(context_id, websocket):
 @pytest_asyncio.fixture
 async def context_id(websocket):
     """Return the context id from the first browsing context."""
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
     return result["contexts"][0]["context"]
 
 
@@ -99,12 +96,7 @@ async def page_with_nested_iframe_url():
 async def iframe_id(context_id, websocket, page_with_nested_iframe_url):
     """Navigate to a page with nested iframe of `about:blank`, and return the iframe BrowserContextId."""
     await goto_url(websocket, context_id, page_with_nested_iframe_url)
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {
-            "root": context_id
-        }
-    })
+    result = await get_tree(websocket, context_id)
 
     iframe_id = result["contexts"][0]["children"][0]["context"]
 

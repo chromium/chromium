@@ -85,6 +85,17 @@ async def set_html_content(websocket, context_id, html_content):
         })
 
 
+# Get the tree of browsing contexts.
+async def get_tree(websocket, context_id=None):
+    params = {}
+    if context_id is not None:
+        params["root"] = context_id
+    return await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": params
+    })
+
+
 # Open given URL in the given context.
 async def goto_url(websocket, context_id, url):
     await execute_command(

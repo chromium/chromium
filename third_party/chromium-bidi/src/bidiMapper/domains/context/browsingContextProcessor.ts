@@ -55,7 +55,7 @@ export class BrowsingContextProcessor {
     this.#realmStorage = realmStorage;
     this.#selfTargetId = selfTargetId;
 
-    this.#setTargetEventListeners(this.#cdpConnection.browserClient());
+    this.#setEventListeners(this.#cdpConnection.browserClient());
   }
 
   /**
@@ -63,15 +63,73 @@ export class BrowsingContextProcessor {
    * the targets and browsing contexts. This method is called for each CDP
    * session.
    */
-  #setTargetEventListeners(cdpClient: CdpClient) {
+  #setEventListeners(cdpClient: CdpClient) {
     cdpClient.on('Target.attachedToTarget', async (params) => {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
     });
     cdpClient.on('Target.detachedFromTarget', async (params) => {
       await this.#handleDetachedFromTargetEvent(params);
     });
+
+    cdpClient.on(
+      'Page.frameAttached',
+      async (params: Protocol.Page.FrameAttachedEvent) => {
+        await this.#handleFrameAttachedEvent(params);
+      }
+    );
+    cdpClient.on(
+      'Page.frameDetached',
+      async (params: Protocol.Page.FrameDetachedEvent) => {
+        await this.#handleFrameDetachedEvent(params);
+      }
+    );
   }
 
+  // { "method": "Page.frameAttached",
+  //   "params": {
+  //     "frameId": "0A639AB1D9A392DF2CE02C53CC4ED3A6",
+  //     "parentFrameId": "722BB0526C73B067A479BED6D0DB1156" } }
+  async #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
+    const parentBrowsingContext = this.#browsingContextStorage.findContext(
+      params.parentFrameId
+    );
+    if (parentBrowsingContext !== undefined) {
+      await BrowsingContextImpl.create(
+        parentBrowsingContext.cdpTarget,
+        this.#realmStorage,
+        params.frameId,
+        params.parentFrameId,
+        this.#eventManager,
+        this.#browsingContextStorage,
+        this.#logger
+      );
+    }
+  }
+
+  // { "method": "Page.frameDetached",
+  //   "params": {
+  //     "frameId": "0A639AB1D9A392DF2CE02C53CC4ED3A6",
+  //     "reason": "swap" } }
+  async #handleFrameDetachedEvent(params: Protocol.Page.FrameDetachedEvent) {
+    // In case of OOPiF no need in deleting BrowsingContext.
+    if (params.reason === 'swap') {
+      return;
+    }
+    await this.#browsingContextStorage.findContext(params.frameId)?.delete();
+  }
+
+  // { "method": "Target.attachedToTarget",
+  //   "params": {
+  //     "sessionId": "EA999F39BDCABD7D45C9FEB787413BBA",
+  //     "targetInfo": {
+  //       "targetId": "722BB0526C73B067A479BED6D0DB1156",
+  //       "type": "page",
+  //       "title": "about:blank",
+  //       "url": "about:blank",
+  //       "attached": true,
+  //       "canAccessOpener": false,
+  //       "browserContextId": "1B5244080EC3FF28D03BBDA73138C0E2" },
+  //     "waitingForDebugger": false } }
   async #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent,
     parentSessionCdpClient: CdpClient
@@ -96,16 +154,14 @@ export class BrowsingContextProcessor {
       JSON.stringify(params, null, 2)
     );
 
-    this.#setTargetEventListeners(targetCdpClient);
+    this.#setEventListeners(targetCdpClient);
 
     const cdpTarget = CdpTarget.create(
       targetInfo.targetId,
       targetCdpClient,
       sessionId,
       this.#realmStorage,
-      this.#eventManager,
-      this.#browsingContextStorage,
-      this.#logger
+      this.#eventManager
     );
 
     if (this.#browsingContextStorage.hasKnownContext(targetInfo.targetId)) {

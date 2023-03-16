@@ -17,7 +17,7 @@ from unittest.mock import ANY
 
 import pytest
 from anys import ANY_STR
-from test_helpers import execute_command, goto_url
+from test_helpers import execute_command, get_tree, goto_url
 
 
 @pytest.mark.asyncio
@@ -683,10 +683,7 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket, context_id):
         }
     } == result
 
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    result = await get_tree(websocket)
 
     # Assert 2 contexts are present.
     assert len(result['contexts']) == 2

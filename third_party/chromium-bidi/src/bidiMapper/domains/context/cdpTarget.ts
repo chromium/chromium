@@ -15,19 +15,14 @@
  * limitations under the License.
  *
  */
-import Protocol from 'devtools-protocol';
 
 import {CdpClient} from '../../CdpConnection';
 import {LogManager} from '../log/logManager';
 import {RealmStorage} from '../script/realmStorage';
 import {IEventManager} from '../events/EventManager';
 import {CDP} from '../../../protocol/protocol';
-import {LoggerFn} from '../../../utils/log';
 import {Deferred} from '../../../utils/deferred';
 import {NetworkProcessor} from '../network/networkProcessor';
-
-import {BrowsingContextImpl} from './browsingContextImpl';
-import {BrowsingContextStorage} from './browsingContextStorage';
 
 export class CdpTarget {
   readonly #targetUnblocked: Deferred<void>;
@@ -35,9 +30,6 @@ export class CdpTarget {
   readonly #cdpClient: CdpClient;
   readonly #eventManager: IEventManager;
   readonly #cdpSessionId: string;
-  readonly #realmStorage: RealmStorage;
-  readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #logger?: LoggerFn;
   #networkDomainActivated: boolean;
 
   static create(
@@ -45,18 +37,13 @@ export class CdpTarget {
     cdpClient: CdpClient,
     cdpSessionId: string,
     realmStorage: RealmStorage,
-    eventManager: IEventManager,
-    browsingContextStorage: BrowsingContextStorage,
-    logger?: LoggerFn
+    eventManager: IEventManager
   ) {
     const cdpTarget = new CdpTarget(
       targetId,
       cdpClient,
       cdpSessionId,
-      realmStorage,
-      eventManager,
-      browsingContextStorage,
-      logger
+      eventManager
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
@@ -72,18 +59,12 @@ export class CdpTarget {
     targetId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    realmStorage: RealmStorage,
-    eventManager: IEventManager,
-    browsingContextStorage: BrowsingContextStorage,
-    logger?: LoggerFn
+    eventManager: IEventManager
   ) {
     this.#targetId = targetId;
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
-    this.#realmStorage = realmStorage;
-    this.#browsingContextStorage = browsingContextStorage;
-    this.#logger = logger;
     this.#networkDomainActivated = false;
 
     this.#targetUnblocked = new Deferred();
@@ -161,20 +142,5 @@ export class CdpTarget {
         null
       );
     });
-
-    this.#cdpClient.on(
-      'Page.frameAttached',
-      async (params: Protocol.Page.FrameAttachedEvent) => {
-        await BrowsingContextImpl.create(
-          this,
-          this.#realmStorage,
-          params.frameId,
-          params.parentFrameId,
-          this.#eventManager,
-          this.#browsingContextStorage,
-          this.#logger
-        );
-      }
-    );
   }
 }
