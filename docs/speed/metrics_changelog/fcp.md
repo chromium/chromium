@@ -2,6 +2,8 @@
 
 This is a list of changes to [First Contentful Paint](https://web.dev/fcp).
 
+* Chrome 111
+  * Implementation optimizations: [Changes related to LCP, FCP and Paint Holding](2023_03_lcp_fcp.md)
 * Chrome 102
   * Implementation issue: [Changes related to FCP and document opacity](2022_04_fcp.md)
 * Chrome 99
