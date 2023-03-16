@@ -457,6 +457,7 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
       True,
       excluded_paths=(
         'ios/chrome/browser/ui/icons/symbol_helpers.mm',
+        'ios/chrome/search_widget_extension/',
       ),
     ),
 )
