@@ -6,6 +6,10 @@
 
 namespace sync_preferences {
 
+SyncablePrefMetadata::SyncablePrefMetadata(int syncable_pref_id,
+                                           syncer::ModelType model_type)
+    : syncable_pref_id_(syncable_pref_id), model_type_(model_type) {}
+
 bool SyncablePrefsDatabase::IsPreferenceSyncable(
     const std::string& pref_name) const {
   return GetSyncablePrefMetadata(pref_name).has_value();

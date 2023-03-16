@@ -540,7 +540,7 @@ void PrefModelAssociator::OnPrefValueChanged(const std::string& name) {
     base::UmaHistogramSparse("Sync.SyncablePrefValueChanged",
                              client_->GetSyncablePrefsDatabase()
                                  .GetSyncablePrefMetadata(name)
-                                 ->syncable_pref_id_);
+                                 ->syncable_pref_id());
   }
 
   sync_processor_->ProcessSyncChanges(FROM_HERE, changes);
