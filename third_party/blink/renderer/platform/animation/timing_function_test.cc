@@ -138,9 +138,17 @@ TEST_F(TimingFunctionTest, LinearOperatorEq) {
   scoped_refptr<TimingFunction> linear_timing2 = LinearTimingFunction::Shared();
   EXPECT_EQ(*linear_timing1, *linear_timing1);
   EXPECT_EQ(*linear_timing1, *linear_timing2);
-  std::vector<gfx::LinearEasingPoint> points{{0, 1}, {100, 1}};
-  const auto& linear_timing3 = LinearTimingFunction::Create(std::move(points));
-  EXPECT_EQ(*linear_timing1, *linear_timing3);
+  std::vector<gfx::LinearEasingPoint> points3{{0, 1}, {100, 1}};
+  const auto& linear_timing3 = LinearTimingFunction::Create(points3);
+  const auto& linear_timing4 = LinearTimingFunction::Create(std::move(points3));
+  std::vector<gfx::LinearEasingPoint> points5{{0, 1.1}, {100, 1}};
+  const auto& linear_timing5 = LinearTimingFunction::Create(std::move(points5));
+  std::vector<gfx::LinearEasingPoint> points6{{0, 1}, {50, .5}, {100, 1}};
+  const auto& linear_timing6 = LinearTimingFunction::Create(std::move(points6));
+  EXPECT_NE(*linear_timing1, *linear_timing3);
+  EXPECT_EQ(*linear_timing3, *linear_timing4);
+  EXPECT_NE(*linear_timing4, *linear_timing5);
+  EXPECT_NE(*linear_timing5, *linear_timing6);
 }
 
 TEST_F(TimingFunctionTest, CubicOperatorEq) {

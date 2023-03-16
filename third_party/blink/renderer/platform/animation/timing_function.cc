@@ -255,7 +255,10 @@ scoped_refptr<TimingFunction> CreateCompositorTimingFunctionFromCC(
 
 // Equals operators
 bool operator==(const LinearTimingFunction& lhs, const TimingFunction& rhs) {
-  return rhs.GetType() == TimingFunction::Type::LINEAR;
+  if (auto* rhs_func = DynamicTo<LinearTimingFunction>(rhs)) {
+    return lhs == *rhs_func;
+  }
+  return false;
 }
 
 bool operator==(const CubicBezierTimingFunction& lhs,
