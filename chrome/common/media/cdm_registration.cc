@@ -155,9 +155,10 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // On Android Widevine is done by MediaDrm, and should be supported on all
   // devices. Register Widevine without any capabilities so that it will be
   // checked the first time some page attempts to play protected content.
-  cdms->push_back(content::CdmInfo(kWidevineKeySystem,
-                                   Robustness::kSoftwareSecure, absl::nullopt,
-                                   kWidevineCdmType));
+  cdms->emplace_back(
+      kWidevineKeySystem, Robustness::kSoftwareSecure, absl::nullopt,
+      /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
+      kWidevineCdmType, base::Version(), base::FilePath());
 
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
@@ -216,9 +217,10 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // On Android Widevine is done by MediaDrm, and should be supported on all
   // devices. Register Widevine without any capabilities so that it will be
   // checked the first time some page attempts to play protected content.
-  cdms->push_back(content::CdmInfo(kWidevineKeySystem,
-                                   Robustness::kHardwareSecure, absl::nullopt,
-                                   kWidevineCdmType));
+  cdms->emplace_back(
+      kWidevineKeySystem, Robustness::kHardwareSecure, absl::nullopt,
+      /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
+      kWidevineCdmType, base::Version(), base::FilePath());
 
 #elif BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

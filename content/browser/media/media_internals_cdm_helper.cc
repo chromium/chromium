@@ -101,8 +101,10 @@ base::Value::Dict CdmInfoToDict(const CdmInfo& cdm_info) {
   dict.Set("key_system", cdm_info.key_system);
   dict.Set("robustness", GetCdmInfoRobustnessName(cdm_info.robustness));
   dict.Set("name", cdm_info.name);
-  dict.Set("version", cdm_info.version.GetString());
-  dict.Set("path", cdm_info.path.AsUTF8Unsafe());
+  dict.Set("version",
+           cdm_info.version.IsValid() ? cdm_info.version.GetString() : "N/A");
+  dict.Set("path",
+           cdm_info.path.empty() ? "N/A" : cdm_info.path.AsUTF8Unsafe());
   dict.Set("status", GetCdmInfoCapabilityStatusName(cdm_info.status));
 
   if (cdm_info.capability) {
