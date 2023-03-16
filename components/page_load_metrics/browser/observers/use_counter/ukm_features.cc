@@ -288,6 +288,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kSharedStorageAPI_SelectURL_Method,
           WebFeature::kTopicsAPI_BrowsingTopics_Method,
           WebFeature::kHTMLFencedFrameElement,
+          WebFeature::kAuthorizationCrossOrigin,
       }));
   return *opt_in_features;
 }
