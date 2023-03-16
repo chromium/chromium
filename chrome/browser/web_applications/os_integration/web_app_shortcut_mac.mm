@@ -71,6 +71,13 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
 
+#if defined(COMPONENT_BUILD)
+#include <mach-o/loader.h>
+
+#include "base/bits.h"
+#include "base/process/launch.h"
+#endif
+
 // A TerminationObserver observes a NSRunningApplication for when it
 // terminates. On termination, it will run the specified callback on the UI
 // thread and release itself.
@@ -795,6 +802,102 @@ std::list<BundleInfoPlist> SearchForBundlesById(const std::string& bundle_id) {
   return infos;
 }
 
+#if defined(COMPONENT_BUILD)
+// Adds `new_rpath` to the paths the binary at `executable_path` will look at
+// when loading shared libraries. Assumes there is enough room in the headers of
+// the binary to fit the added path.
+bool AddPathToRPath(const base::FilePath& executable_path,
+                    const base::FilePath& new_rpath) {
+  rpath_command new_rpath_command;
+  new_rpath_command.cmd = LC_RPATH;
+  // Size is size of the command struct + size of the path + a null terminator,
+  // all rounded up to a multiple of 8 bytes.
+  new_rpath_command.cmdsize = base::bits::AlignUp<uint32_t>(
+      sizeof new_rpath_command + new_rpath.value().size() + 1, 8);
+  new_rpath_command.path.offset = sizeof new_rpath_command;
+
+  base::File executable_file(executable_path, base::File::FLAG_OPEN |
+                                                  base::File::FLAG_WRITE |
+                                                  base::File::FLAG_READ);
+  if (!executable_file.IsValid()) {
+    LOG(ERROR) << "Failed to open executable file at: " << executable_path
+               << ", error: " << executable_file.error_details();
+    return false;
+  }
+
+  mach_header_64 header;
+  if (!executable_file.ReadAtCurrentPosAndCheck(
+          base::as_writable_bytes(base::make_span(&header, 1u))) ||
+      header.magic != MH_MAGIC_64 || header.filetype != MH_EXECUTE) {
+    LOG(ERROR) << "File at " << executable_path
+               << " is not a valid Mach-O executable";
+    return false;
+  }
+
+  // Read existing load commands.
+  std::vector<uint8_t> commands(header.sizeofcmds);
+  if (!executable_file.ReadAtCurrentPosAndCheck(base::make_span(commands))) {
+    LOG(ERROR) << "Failed to read load commands from " << executable_path;
+    return false;
+  }
+
+  // Scan over the commands, finding the first LC_RPATH command. We'll insert
+  // our new command right after it.
+  auto commands_it = commands.begin();
+  for (unsigned i = 0; i < header.ncmds; ++i) {
+    load_command cmd;
+    if (commands.end() - commands_it < int{sizeof cmd}) {
+      LOG(ERROR) << "Reached end of commands before getting all commands";
+      return false;
+    }
+    memcpy(&cmd, &*commands_it, sizeof cmd);
+    if (commands.end() - commands_it < cmd.cmdsize) {
+      LOG(ERROR) << "Command ends past the end of the load commands";
+      return false;
+    }
+    commands_it += cmd.cmdsize;
+
+    if (cmd.cmd == LC_RPATH) {
+      // Insert the new command, padding the extra space with `0` bytes.
+      auto it = commands.insert(commands_it, new_rpath_command.cmdsize, 0);
+      memcpy(&*it, &new_rpath_command, sizeof new_rpath_command);
+      memcpy(&*it + sizeof new_rpath_command, new_rpath.value().data(),
+             new_rpath.value().size());
+
+      header.ncmds++;
+      header.sizeofcmds += new_rpath_command.cmdsize;
+
+      // Write the updated header and commands back to the file.
+      if (!executable_file.WriteAndCheck(
+              0, base::as_bytes(base::make_span(&header, 1u))) ||
+          !executable_file.WriteAndCheck(sizeof header,
+                                         base::make_span(commands))) {
+        LOG(ERROR) << "Failed to write updated load commands to "
+                   << executable_path;
+        return false;
+      }
+
+      executable_file.Close();
+
+      // And finally re-sign the resulting binary.
+      std::string codesign_output;
+      std::vector<std::string> codesign_argv = {"codesign", "--force", "--sign",
+                                                "-", executable_path.value()};
+      if (!base::GetAppOutputAndError(base::CommandLine(codesign_argv),
+                                      &codesign_output)) {
+        LOG(ERROR) << "Failed to sign executable at " << executable_path << ": "
+                   << codesign_output;
+        return false;
+      }
+
+      return true;
+    }
+  }
+  LOG(ERROR) << "Did not find any LC_RPATH commands in " << executable_path;
+  return false;
+}
+#endif
+
 }  // namespace
 
 bool AppShimLaunchDisabled() {
@@ -987,6 +1090,23 @@ bool WebAppShortcutCreator::BuildShortcut(
     LOG(ERROR) << "Failed to copy executable: " << executable_path;
     return false;
   }
+
+#if defined(COMPONENT_BUILD)
+  // Test bots could have the build in a different path than where it was on a
+  // build bot. If this is the case in a component build, we'll need to fix the
+  // rpath of app_mode_loader to make sure it can still find its dynamic
+  // libraries.
+  base::FilePath rpath_to_add;
+  if (!base::PathService::Get(base::DIR_MODULE, &rpath_to_add)) {
+    LOG(ERROR) << "Failed to get module path";
+    return false;
+  }
+  if (!AddPathToRPath(
+          destination_executable_path.Append(executable_path.BaseName()),
+          rpath_to_add)) {
+    return false;
+  }
+#endif
 
 #if defined(ADDRESS_SANITIZER)
   const base::FilePath asan_library_path =
