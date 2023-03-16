@@ -642,8 +642,7 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   progress_.stage = Stage::kListingFiles;
   NotifyProgress();
 
-  drivefs_->StartSearchQuery(search_query_.BindNewPipeAndPassReceiver(),
-                             CreateMyDriveQuery());
+  StartSearchQuery();
   GetNextPage();
 }
 
@@ -675,6 +674,12 @@ void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
   SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PinManager::CheckFreeSpace, GetWeakPtr()),
       space_check_interval_);
+}
+
+void PinManager::StartSearchQuery() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  drivefs_->StartSearchQuery(search_query_.BindNewPipeAndPassReceiver(),
+                             CreateMyDriveQuery());
 }
 
 void PinManager::GetNextPage() {

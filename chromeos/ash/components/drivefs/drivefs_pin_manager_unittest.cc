@@ -4,14 +4,18 @@
 
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 
+#include <iomanip>
 #include <memory>
+#include <sstream>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -31,9 +35,11 @@ namespace {
 using base::BindOnce;
 using base::OnceCallback;
 using base::RunLoop;
+using base::Seconds;
 using base::SequencedTaskRunner;
 using base::test::RunClosure;
 using base::test::RunOnceCallback;
+using base::test::TaskEnvironment;
 using drive::FileError;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
@@ -60,6 +66,13 @@ using Path = base::FilePath;
 using CompletionCallback = base::MockOnceCallback<void(Stage)>;
 
 const FileError kFileOk = FileError::FILE_ERROR_OK;
+
+template <typename T>
+std::string ToString(const T& x) {
+  std::ostringstream oss;
+  oss << x;
+  return std::move(oss).str();
+}
 
 // Shorthand way to represent drive files with the information that is relevant
 // for the pinning manager.
@@ -139,7 +152,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
   void StartSearchQuery(mojo::PendingReceiver<SearchQuery> receiver,
                         mojom::QueryParametersPtr query_params) override {
-    search_receiver_.reset();
+    EXPECT_FALSE(search_receiver_.is_bound());
     OnStartSearchQuery(*query_params);
     search_receiver_.Bind(std::move(receiver));
   }
@@ -150,7 +163,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
   void GetNextPage(GetNextPageCallback callback) override {
     absl::optional<vector<QueryItemPtr>> items;
-    auto error = OnGetNextPage(&items);
+    const FileError error = OnGetNextPage(&items);
     SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, BindOnce(std::move(callback), error, std::move(items)));
   }
@@ -194,9 +207,9 @@ class MockObserver : public PinManager::Observer {
 
 class DriveFsPinManagerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
+  DriveFsPinManagerTest() {
+    logging::SetMinLogLevel(-3);
+    CHECK(temp_dir_.CreateUniqueTempDir());
     gcache_dir_ = temp_dir_.GetPath().Append("GCache");
   }
 
@@ -235,13 +248,35 @@ class DriveFsPinManagerTest : public testing::Test {
                                base::Unretained(&space_getter_));
   }
 
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   Path gcache_dir_;
   MockSpaceGetter space_getter_;
   MockDriveFs drivefs_;
 };
+
+// Tests the output operator for the Stage enum.
+TEST_F(DriveFsPinManagerTest, Stage) {
+  std::unordered_set<std::string> labels;
+  for (const Stage stage : {
+           Stage::kStopped,
+           Stage::kPaused,
+           Stage::kGettingFreeSpace,
+           Stage::kListingFiles,
+           Stage::kSyncing,
+           Stage::kSuccess,
+           Stage::kCannotGetFreeSpace,
+           Stage::kCannotListFiles,
+           Stage::kNotEnoughSpace,
+           Stage(-1),
+           Stage(-2),
+       }) {
+    const std::string label = ToString(stage);
+    EXPECT_NE(label, "");
+    EXPECT_TRUE(labels.insert(label).second)
+        << "Not unique: " << std::quoted(label);
+  }
+}
 
 // Tests PinManager::CanPin().
 TEST_F(DriveFsPinManagerTest, CanPin) {
@@ -1425,8 +1460,7 @@ TEST_F(DriveFsPinManagerTest, CannotListFiles) {
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
-      .WillOnce(
-          DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_FAILED)));
+      .WillOnce(Return(FileError::FILE_ERROR_FAILED));
   EXPECT_CALL(completion_callback, Run(Stage::kCannotListFiles))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
@@ -1622,6 +1656,85 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
   EXPECT_EQ(progress.required_space, 512 << 20);
   EXPECT_EQ(progress.pinned_bytes, 0);
   EXPECT_EQ(progress.pinned_files, 0);
+}
+
+// Tests PinManager::SetOnline().
+TEST_F(DriveFsPinManagerTest, SetOnline) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  manager.SetSpaceGetter(GetSpaceGetter());
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_TRUE(manager.is_online_);
+
+  manager.SetOnline(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_FALSE(manager.is_online_);
+
+  manager.SetOnline(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_TRUE(manager.is_online_);
+
+  manager.SetOnline(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_FALSE(manager.is_online_);
+
+  manager.Start();
+  EXPECT_EQ(manager.progress_.stage, Stage::kPaused);
+  EXPECT_FALSE(manager.is_online_);
+
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  manager.SetOnline(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+  EXPECT_TRUE(manager.is_online_);
+
+  manager.SetOnline(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPaused);
+  EXPECT_FALSE(manager.is_online_);
+
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _)).Times(1);
+  manager.SetOnline(true);
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+  EXPECT_TRUE(manager.is_online_);
+
+  manager.SetOnline(false);
+  EXPECT_EQ(manager.progress_.stage, Stage::kPaused);
+  EXPECT_FALSE(manager.is_online_);
+
+  manager.Stop();
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_FALSE(manager.is_online_);
+}
+
+// Tests PinManager::OnSearchResult() with transient errors.
+TEST_F(DriveFsPinManagerTest, OnTransientError) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kListingFiles;
+
+  EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
+  manager.StartSearchQuery();
+
+  EXPECT_CALL(drivefs_, OnGetNextPage(_))
+      .WillOnce(Return(FileError::FILE_ERROR_NO_CONNECTION));
+  manager.GetNextPage();
+  EXPECT_EQ(manager.progress_.stage, Stage::kListingFiles);
+
+  task_environment_.FastForwardBy(Seconds(4));
+  EXPECT_EQ(manager.progress_.stage, Stage::kListingFiles);
+  EXPECT_CALL(drivefs_, OnGetNextPage(_))
+      .WillOnce(Return(FileError::FILE_ERROR_SERVICE_UNAVAILABLE));
+  task_environment_.FastForwardBy(Seconds(1));
+  EXPECT_EQ(manager.progress_.stage, Stage::kListingFiles);
+
+  task_environment_.FastForwardBy(Seconds(4));
+  EXPECT_EQ(manager.progress_.stage, Stage::kListingFiles);
+  EXPECT_CALL(drivefs_, OnGetNextPage(_))
+      .WillOnce(Return(FileError::FILE_ERROR_NO_MEMORY));
+  task_environment_.FastForwardBy(Seconds(1));
+
+  EXPECT_EQ(manager.progress_.stage, Stage::kCannotListFiles);
 }
 
 TEST_F(DriveFsPinManagerTest,
