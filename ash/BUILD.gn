@@ -2659,6 +2659,7 @@ component("ash") {
     "//components/strings",
     "//components/sync",
     "//components/url_matcher",
+    "//components/user_education/common",
     "//components/user_manager",
     "//components/vector_icons",
     "//components/viz/client",

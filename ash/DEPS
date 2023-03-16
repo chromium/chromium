@@ -23,6 +23,7 @@ include_rules = [
   "+components/sync",
   "+components/ui_devtools",
   "+components/url_matcher",
+  "+components/user_education/common",
   "+components/vector_icons",
   "+components/version_info",
   "+components/viz/common",

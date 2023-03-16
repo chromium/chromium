@@ -5,11 +5,15 @@
 #ifndef ASH_USER_EDUCATION_USER_EDUCATION_DELEGATE_H_
 #define ASH_USER_EDUCATION_USER_EDUCATION_DELEGATE_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
+#include "base/functional/callback_forward.h"
+#include "components/user_education/common/tutorial_identifier.h"
 
 class AccountId;
+
+namespace ui {
+class ElementContext;
+}  // namespace ui
 
 namespace user_education {
 struct TutorialDescription;
@@ -25,10 +29,22 @@ class ASH_EXPORT UserEducationDelegate {
 
   // Registers the tutorial defined by the specified `tutorial_id` and
   // `tutorial_description` for the user associated with the given `account_id`.
+  // NOTE: Currently only the primary user profile is supported.
   virtual void RegisterTutorial(
       const AccountId& account_id,
-      const std::string& tutorial_id,
+      user_education::TutorialIdentifier tutorial_id,
       user_education::TutorialDescription tutorial_description) = 0;
+
+  // Starts the tutorial previously registered with the specified `tutorial_id`
+  // for the user associated with the given `account_id`. Any running tutorial
+  // is cancelled. One of either `completed_callback` or `aborted_callback` will
+  // be run on tutorial finish.
+  // NOTE: Currently only the primary user profile is supported.
+  virtual void StartTutorial(const AccountId& account_id,
+                             user_education::TutorialIdentifier tutorial_id,
+                             ui::ElementContext element_context,
+                             base::OnceClosure completed_callback,
+                             base::OnceClosure aborted_callback) = 0;
 };
 
 }  // namespace ash

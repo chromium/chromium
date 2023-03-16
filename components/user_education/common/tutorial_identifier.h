@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_IDENTIFIER_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_IDENTIFIER_H_
 
+#include <string>
+
 namespace user_education {
 
 // TutorialIdentifier is used as a handle for Tutorials.
