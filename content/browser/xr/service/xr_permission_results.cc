@@ -5,6 +5,7 @@
 #include "content/browser/xr/service/xr_permission_results.h"
 
 #include "base/containers/contains.h"
+#include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 

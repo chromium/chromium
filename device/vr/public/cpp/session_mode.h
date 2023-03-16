@@ -5,6 +5,7 @@
 #define DEVICE_VR_PUBLIC_CPP_SESSION_MODE_H_
 
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "device/vr/public/mojom/xr_session.mojom.h"
 
 namespace device {
 

@@ -6,6 +6,7 @@ module device.mojom;
 
 import "device/vr/public/mojom/browser_test_interfaces.mojom";
 import "device/vr/public/mojom/vr_service.mojom";
+import "device/vr/public/mojom/xr_session.mojom";
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
 import "gpu/ipc/common/sync_token.mojom";
