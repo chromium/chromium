@@ -52,7 +52,6 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
 
   // The orientation of the candidate view.
   ui::CandidateWindow::Orientation orientation_;
