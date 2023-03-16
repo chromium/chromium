@@ -3481,12 +3481,32 @@ bool AutofillTable::AddFormFieldValuesTime(
 bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
                                           std::vector<AutofillChange>* changes,
                                           base::Time time) {
+  // TODO(crbug.com/1424298): Remove once it is understood where the `false`
+  // results are coming from.
+  auto create_debug_info = [this](const char* failure_location) {
+    std::vector<std::string> message_parts = {base::StringPrintf(
+        "(Failure during %s, SQL error code = %d, table_exists = %d, ",
+        failure_location, db_->GetErrorCode(),
+        db_->DoesTableExist("autofill"))};
+
+    for (const char* kColumnName :
+         {"count", "date_last_used", "name", "value"}) {
+      message_parts.push_back(
+          base::StringPrintf("column %s exists = %d,", kColumnName,
+                             db_->DoesColumnExist("autofill", kColumnName)));
+    }
+
+    return base::StrCat(message_parts);
+  };
+
   sql::Statement s_exists(db_->GetUniqueStatement(
       "SELECT COUNT(*) FROM autofill WHERE name = ? AND value = ?"));
   s_exists.BindString16(0, element.name);
   s_exists.BindString16(1, element.value);
-  if (!s_exists.Step())
+  if (!s_exists.Step()) {
+    NOTREACHED() << create_debug_info("SELECT");
     return false;
+  }
 
   bool already_exists = s_exists.ColumnInt(0) > 0;
   if (already_exists) {
@@ -3496,8 +3516,10 @@ bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
     s.BindInt64(0, time.ToTimeT());
     s.BindString16(1, element.name);
     s.BindString16(2, element.value);
-    if (!s.Run())
+    if (!s.Run()) {
+      NOTREACHED() << create_debug_info("UPDATE");
       return false;
+    }
   } else {
     time_t time_as_time_t = time.ToTimeT();
     sql::Statement s;
@@ -3510,8 +3532,10 @@ bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
     s.BindInt64(3, time_as_time_t);
     s.BindInt64(4, time_as_time_t);
     s.BindInt(5, 1);
-    if (!s.Run())
+    if (!s.Run()) {
+      NOTREACHED() << create_debug_info("INSERT");
       return false;
+    }
   }
 
   AutofillChange::Type change_type =
