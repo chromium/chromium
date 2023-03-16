@@ -1585,7 +1585,7 @@ if (!is_android) {
 if (!is_android) {
   repack("browser_tests_pak") {
     testonly = true
-    sources = [ "$root_gen_dir/chrome/webui_generated_test_resources.pak" ]
+    sources = [ "$root_gen_dir/chrome/webui_test_resources.pak" ]
     output = "$root_out_dir/browser_tests.pak"
     deps = [ "//chrome/test/data/webui:resources" ]
   }

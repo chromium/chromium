@@ -90,7 +90,7 @@ ts_library("build_ts") {
 
 generate_grd("build_grdp") {
   testonly = true
-  grd_prefix = "webui_generated_test_chromeos"
+  grd_prefix = "webui_test_chromeos"
   out_grd = "$target_gen_dir/resources.grdp"
 
   deps = [ ":build_ts" ]

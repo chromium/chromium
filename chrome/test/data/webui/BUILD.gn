@@ -320,11 +320,12 @@ grit("resources") {
   source = "$target_gen_dir/resources.grd"
   deps = [ ":build_grd" ]
 
+  grd_prefix = "webui_test"
   outputs = [
-    "test/data/grit/webui_generated_test_resources.h",
-    "test/data/grit/webui_generated_test_resources_map.cc",
-    "test/data/grit/webui_generated_test_resources_map.h",
-    "webui_generated_test_resources.pak",
+    "test/data/grit/${grd_prefix}_resources.h",
+    "test/data/grit/${grd_prefix}_resources_map.cc",
+    "test/data/grit/${grd_prefix}_resources_map.h",
+    "${grd_prefix}_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
 }
@@ -336,7 +337,7 @@ mojom("web_ui_test_bindings") {
 
 generate_grd("build_chai_grdp") {
   testonly = true
-  grd_prefix = "webui_generated_test"
+  grd_prefix = "webui_test"
   out_grd = "$target_gen_dir/chai_resources.grdp"
   input_files_base_dir = rebase_path("//third_party/chaijs", "//")
   input_files = [ "chai.js" ]
@@ -344,7 +345,7 @@ generate_grd("build_chai_grdp") {
 
 generate_grd("build_mocha_grdp") {
   testonly = true
-  grd_prefix = "webui_generated_test"
+  grd_prefix = "webui_test"
   out_grd = "$target_gen_dir/mocha_resources.grdp"
   input_files_base_dir = rebase_path("//third_party/mocha", "//")
   input_files = [ "mocha.js" ]
@@ -352,7 +353,7 @@ generate_grd("build_mocha_grdp") {
 
 generate_grd("build_web_ui_test_mojo_grdp") {
   testonly = true
-  grd_prefix = "webui_generated_test"
+  grd_prefix = "webui_test"
   out_grd = "$target_gen_dir/web_ui_test_mojo_resources.grdp"
   input_files_base_dir =
       rebase_path("$root_gen_dir/mojom-webui/chrome/test/data/webui/",
@@ -364,7 +365,7 @@ generate_grd("build_web_ui_test_mojo_grdp") {
 if (is_chromeos_ash) {
   generate_grd("build_web_ui_test_mojo_lite_grdp") {
     testonly = true
-    grd_prefix = "webui"
+    grd_prefix = "webui_test"
     out_grd = "$target_gen_dir/web_ui_test_mojo_lite_resources.grdp"
     input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
     input_files = [ "web_ui_test.mojom-lite.js" ]
@@ -434,7 +435,7 @@ ts_library("build_ts") {
 
 generate_grd("build_grd") {
   testonly = true
-  grd_prefix = "webui_generated_test"
+  grd_prefix = "webui_test"
   output_files_base_dir = "test/data/grit"
   out_grd = "$target_gen_dir/resources.grd"
 

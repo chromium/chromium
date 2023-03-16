@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/data/grit/webui_generated_test_resources.h"
+#include "chrome/test/data/grit/webui_test_resources.h"
 #include "chrome/test/data/webui/mojo/foobar.mojom.h"
 #include "chrome/test/data/webui/mojo/mojo_file_system_access_test.mojom.h"
 #include "content/public/browser/browser_context.h"

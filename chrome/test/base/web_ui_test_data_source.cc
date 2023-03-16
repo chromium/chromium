@@ -6,8 +6,8 @@
 
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/data/grit/webui_generated_test_resources.h"
-#include "chrome/test/data/grit/webui_generated_test_resources_map.h"
+#include "chrome/test/data/grit/webui_test_resources.h"
+#include "chrome/test/data/grit/webui_test_resources_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -31,8 +31,8 @@ content::WebUIDataSource* CreateAndAddWebUITestDataSource(
       network::mojom::CSPDirectiveName::FrameAncestors,
       "frame-ancestors chrome://* 'self';");
 
-  source->AddResourcePaths(base::make_span(kWebuiGeneratedTestResources,
-                                           kWebuiGeneratedTestResourcesSize));
+  source->AddResourcePaths(
+      base::make_span(kWebuiTestResources, kWebuiTestResourcesSize));
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);

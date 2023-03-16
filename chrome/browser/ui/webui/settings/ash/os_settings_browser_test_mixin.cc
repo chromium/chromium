@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
-#include "chrome/test/data/grit/webui_generated_test_resources_map.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom.h"
 #include "content/public/browser/web_ui_data_source.h"

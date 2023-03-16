@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/web_ui_test_handler.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/data/grit/webui_generated_test_resources.h"
+#include "chrome/test/data/grit/webui_test_resources.h"
 #include "chrome/test/data/webui/web_ui_test.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -140,7 +140,7 @@ void MojoWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
       browser()->tab_strip_model()->GetActiveWebContents();
   std::string test_mojo_lite_js =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_WEBUI_WEB_UI_TEST_MOJOM_LITE_JS);
+          IDR_WEBUI_TEST_WEB_UI_TEST_MOJOM_LITE_JS);
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(test_mojo_lite_js), base::NullCallback());
 #else

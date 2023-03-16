@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/data/grit/webui_generated_test_resources.h"
+#include "chrome/test/data/grit/webui_test_resources.h"
 #include "chrome/test/data/webui/mojo/foobar.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
