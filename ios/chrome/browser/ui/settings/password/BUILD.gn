@@ -61,12 +61,15 @@ source_set("password") {
 source_set("common") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "account_storage_utils.cc",
+    "account_storage_utils.h",
     "saved_passwords_presenter_observer.h",
     "saved_passwords_presenter_observer.mm",
   ]
   deps = [
     "//base",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
   ]
 }
 
@@ -96,6 +99,7 @@ source_set("password_ui") {
     "passwords_settings_commands.h",
   ]
   deps = [
+    ":common",
     ":password_constants",
     ":title_view",
     "//base",

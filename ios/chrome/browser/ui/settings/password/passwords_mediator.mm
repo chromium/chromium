@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/ui/settings/password/account_storage_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
@@ -253,6 +254,18 @@ using password_manager::features::IsPasswordCheckupEnabled;
 - (BOOL)isSyncingPasswords {
   return password_manager_util::GetPasswordSyncState(_syncService) !=
          password_manager::SyncState::kNotSyncing;
+}
+
+- (BOOL)shouldShowLocalOnlyIconForCredential:
+    (const password_manager::CredentialUIEntry&)credential {
+  return password_manager::ShouldShowLocalOnlyIcon(
+      credential, password_manager_util::GetPasswordSyncState(_syncService));
+}
+
+- (BOOL)shouldShowLocalOnlyIconForGroup:
+    (const password_manager::AffiliatedGroup&)group {
+  return password_manager::ShouldShowLocalOnlyIconForGroup(
+      group, password_manager_util::GetPasswordSyncState(_syncService));
 }
 
 #pragma mark - PasswordCheckObserver

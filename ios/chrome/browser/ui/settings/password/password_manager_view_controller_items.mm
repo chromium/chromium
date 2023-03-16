@@ -9,14 +9,18 @@
 #import "base/check.h"
 #import "base/containers/span.h"
 #import "base/mac/foundation_util.h"
+#import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
@@ -43,6 +47,9 @@
 @property(nonatomic, strong, readonly)
     FaviconContainerView* faviconContainerView;
 
+// Icon indicating the data is local-only, right-aligned.
+@property(nonatomic, strong, readonly) UIImageView* localOnlyIcon;
+
 // The page URL used to asynchronously load the icon.
 @property(nonatomic, assign) GURL faviconPageURL;
 
@@ -61,6 +68,14 @@
   _titleLabel = [[UILabel alloc] init];
   _detailLabel = [[UILabel alloc] init];
   _faviconContainerView = [[FaviconContainerView alloc] init];
+  _localOnlyIcon = [[UIImageView alloc] init];
+  _localOnlyIcon.image = CustomSymbolWithPointSize(kCloudSlashSymbol, 20);
+  [_localOnlyIcon setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                    forAxis:UILayoutConstraintAxisHorizontal];
+  [_localOnlyIcon
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  _localOnlyIcon.accessibilityIdentifier = kLocalOnlyPasswordIconId;
 
   _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   _titleLabel.adjustsFontForContentSizeCategory = YES;
@@ -75,8 +90,8 @@
   ]];
   verticalStack.axis = UILayoutConstraintAxisVertical;
 
-  UIStackView* horizontalStack =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ verticalStack ]];
+  UIStackView* horizontalStack = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ verticalStack, _localOnlyIcon ]];
   horizontalStack.axis = UILayoutConstraintAxisHorizontal;
   horizontalStack.spacing = kTableViewSubViewHorizontalSpacing;
   horizontalStack.distribution = UIStackViewDistributionFill;
@@ -84,6 +99,7 @@
 
   _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
+  _localOnlyIcon.translatesAutoresizingMaskIntoConstraints = NO;
   [self.contentView addSubview:_faviconContainerView];
   [self.contentView addSubview:horizontalStack];
 
@@ -157,6 +173,8 @@
 }
 
 - (NSString*)accessibilityLabel {
+  // TODO(crbug.com/1392705): Include a label for _localOnlyIcon. This will
+  // require finding a new way to select these elements in egtests.
   return _detailLabel.text.length
              ? [NSString stringWithFormat:@"%@, %@", _titleLabel.text,
                                           _detailLabel.text]
@@ -194,6 +212,7 @@
   cell.detailLabel.hidden = !cell.detailLabel.text.length;
   // TODO(crbug.com/1355956): Use AffiliationGroup::GetIconURL() instead.
   cell.faviconPageURL = self.affiliatedGroup.GetCredentials().begin()->GetURL();
+  cell.localOnlyIcon.hidden = !self.showLocalOnlyIcon;
   if (styler.cellTitleColor) {
     cell.titleLabel.textColor = styler.cellTitleColor;
   }
@@ -237,6 +256,7 @@
   cell.detailLabel.text = self.detailText;
   cell.detailLabel.hidden = !cell.detailLabel.text.length;
   cell.faviconPageURL = self.credential.GetURL();
+  cell.localOnlyIcon.hidden = !self.showLocalOnlyIcon;
   if (styler.cellTitleColor) {
     cell.titleLabel.textColor = styler.cellTitleColor;
   }

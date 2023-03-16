@@ -12,6 +12,10 @@
 // The accessibility identifier of the password details table view.
 extern NSString* const kPasswordDetailsViewControllerId;
 
+// The accessibility identifier of the button to move local passwords to the
+// account.
+extern NSString* const kMovePasswordToAccountButtonId;
+
 // UI items for password details
 typedef NS_ENUM(NSInteger, PasswordDetailsItemType) {
   PasswordDetailsItemTypeWebsite = kItemTypeEnumZero,

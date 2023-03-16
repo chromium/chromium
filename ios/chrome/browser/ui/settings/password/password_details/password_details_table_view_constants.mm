@@ -10,3 +10,6 @@
 
 NSString* const kPasswordDetailsViewControllerId =
     @"PasswordDetailsTableViewId";
+
+NSString* const kMovePasswordToAccountButtonId =
+    @"kMovePasswordToAccountButtonId";

@@ -17,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -24,6 +25,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/ui/settings/password/account_storage_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
@@ -350,18 +352,19 @@ using base::SysNSStringToUTF16;
   NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
   std::vector<password_manager::CredentialUIEntry> insecureCredentials =
       _manager->GetInsecureCredentials();
-  for (password_manager::CredentialUIEntry credential : _credentials) {
+  for (const password_manager::CredentialUIEntry& credential : _credentials) {
     PasswordDetails* password =
         [[PasswordDetails alloc] initWithCredential:credential];
     password.compromised = base::Contains(insecureCredentials, credential);
-    // Move to account option is offered when a credential is not in account
-    // store. If the exact credential is stored in both profile and account
-    // it will not be offered, no need to bother the user.
+    // Only offer moving to the account if all of these hold.
+    // - The embedder of this page wants to support it.
+    // - The entry was flagged as local only in the top-level view.
+    // - The user is interested in saving passwords to the account, i.e. they
+    // are opted in to account storage.
     password.shouldOfferToMoveToAccount =
         _supportMoveToAccount && _isOptedInForAccountStorage &&
-        !credential.stored_in.contains(
-            password_manager::PasswordForm::Store::kAccountStore) &&
-        !credential.blocked_by_user;
+        ShouldShowLocalOnlyIcon(credential,
+                                _passwordManagerClient->GetPasswordSyncState());
     [passwords addObject:password];
   }
   [self.consumer setPasswords:passwords andTitle:_displayName];

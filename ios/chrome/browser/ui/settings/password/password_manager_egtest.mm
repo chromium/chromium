@@ -563,7 +563,8 @@ id<GREYMatcher> EditDoneButton() {
         password_manager::features::kEnablePasswordsAccountStorage);
   }
   if ([self isRunningTest:@selector
-            (testAccountStorageSwitchShownIfSignedInAndFlagEnabled)]) {
+            (testAccountStorageSwitchShownIfSignedInAndFlagEnabled)] ||
+      [self isRunningTest:@selector(testMovePasswordToAccount)]) {
     config.features_enabled.push_back(
         password_manager::features::kEnablePasswordsAccountStorage);
   }
@@ -3183,6 +3184,55 @@ id<GREYMatcher> EditDoneButton() {
                  grey_accessibilityID(
                      kPasswordSettingsAccountStorageSwitchTableViewId)]
       assertWithMatcher:grey_nil()];
+}
+
+- (void)testMovePasswordToAccount {
+  GREYAssert(
+      [PasswordSettingsAppInterface saveExamplePassword:@"localPassword"
+                                               userName:@"username"
+                                                 origin:@"https://local.com"],
+      @"Stored form was not found in the PasswordStore results.");
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  OpenPasswordManager();
+
+  // `passwordMatcher` includes grey_sufficientlyVisible() because there are
+  // other invisible cells when password details is closed later.
+  id<GREYMatcher> passwordMatcher =
+      grey_allOf([self groupingEnabled]
+                     ? ButtonWithAccessibilityLabel(@"local.com")
+                     : ButtonWithAccessibilityLabel(@"local.com, username"),
+                 grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> localIconMatcher =
+      grey_allOf(grey_accessibilityID(kLocalOnlyPasswordIconId),
+                 grey_ancestor(passwordMatcher), nil);
+  [[EarlGrey selectElementWithMatcher:localIconMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:passwordMatcher]
+      performAction:grey_tap()];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kMovePasswordToAccountButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kMovePasswordToAccountButtonId)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kMovePasswordToAccountButtonId)]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:localIconMatcher]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

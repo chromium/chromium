@@ -165,6 +165,22 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
   }
 }
 
+template <typename T>
+bool AreStoresEqual(const T& lhs, const T& rhs) {
+  return base::ranges::equal(lhs, rhs, {},
+                             &password_manager::CredentialUIEntry::stored_in,
+                             &password_manager::CredentialUIEntry::stored_in);
+}
+
+bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
+                    const std::vector<password_manager::AffiliatedGroup>& rhs) {
+  return base::ranges::equal(
+      lhs, rhs,
+      AreStoresEqual<base::span<const password_manager::CredentialUIEntry>>,
+      &password_manager::AffiliatedGroup::GetCredentials,
+      &password_manager::AffiliatedGroup::GetCredentials);
+}
+
 // The size of trailing symbol icons for safe/insecure state. Used when
 // kIOSPasswordCheckup feature is disabled.
 constexpr NSInteger kTrailingSymbolSizeWithoutCheckup = 18;
@@ -1099,6 +1115,8 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   CredentialTableViewItem* passwordItem =
       [[CredentialTableViewItem alloc] initWithType:ItemTypeSavedPassword];
   passwordItem.credential = credential;
+  passwordItem.showLocalOnlyIcon =
+      [self.delegate shouldShowLocalOnlyIconForCredential:credential];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
@@ -1117,6 +1135,8 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   AffiliatedGroupTableViewItem* passwordItem =
       [[AffiliatedGroupTableViewItem alloc] initWithType:ItemTypeSavedPassword];
   passwordItem.affiliatedGroup = affiliatedGroup;
+  passwordItem.showLocalOnlyIcon =
+      [self.delegate shouldShowLocalOnlyIconForGroup:affiliatedGroup];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
@@ -1135,6 +1155,8 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   CredentialTableViewItem* passwordItem =
       [[CredentialTableViewItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.credential = credential;
+  passwordItem.showLocalOnlyIcon =
+      [self.delegate shouldShowLocalOnlyIconForCredential:credential];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return passwordItem;
@@ -1264,7 +1286,10 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     _passwords = std::move(passwords);
     [self hideLoadingSpinnerBackground];
   } else {
-    if (_passwords == passwords && _blockedSites == blockedSites) {
+    // The CredentialUIEntry equality operator ignores the password stores, but
+    // this UI cares, c.f. password_manager::ShouldShowLocalOnlyIcon().
+    if (_passwords == passwords && _blockedSites == blockedSites &&
+        AreStoresEqual(_passwords, passwords)) {
       return;
     }
 
@@ -1287,8 +1312,11 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     _affiliatedGroups = affiliatedGroups;
     [self hideLoadingSpinnerBackground];
   } else {
+    // The AffiliatedGroup equality operator ignores the password stores, but
+    // this UI cares, see password_manager::ShouldShowLocalOnlyIcon().
     if (_affiliatedGroups == affiliatedGroups &&
-        _blockedSites == blockedSites) {
+        _blockedSites == blockedSites &&
+        AreStoresEqual(_affiliatedGroups, affiliatedGroups)) {
       return;
     }
 

@@ -413,6 +413,7 @@ const int kMaxNoteCharAmount = 1000;
                        ? [UIColor colorNamed:kTextSecondaryColor]
                        : [UIColor colorNamed:kBlueColor];
   item.enabled = !self.tableView.editing;
+  item.accessibilityIdentifier = kMovePasswordToAccountButtonId;
   return item;
 }
 

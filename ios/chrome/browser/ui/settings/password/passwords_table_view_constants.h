@@ -43,6 +43,10 @@ extern NSString* const kAddPasswordButtonId;
 // Delete button accessibility identifier for Password Details.
 extern NSString* const kDeleteButtonForPasswordDetailsId;
 
+// The accessibility identifier of the icon that informs the user a password is
+// only stored locally and not backed up to any account.
+extern NSString* const kLocalOnlyPasswordIconId;
+
 // Sections of the password settings
 typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,

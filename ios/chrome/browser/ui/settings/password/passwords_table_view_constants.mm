@@ -42,3 +42,5 @@ NSString* const kPasswordIssuesTableViewId = @"kPasswordIssuesTableViewId";
 
 NSString* const kDeleteButtonForPasswordDetailsId =
     @"kDeleteButtonForPasswordDetailsId";
+
+NSString* const kLocalOnlyPasswordIconId = @"kLocalOnlyPasswordIconId";

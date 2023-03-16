@@ -28,6 +28,8 @@ typedef NS_ENUM(NSInteger, FaviconType) {
 
 @property(nonatomic, assign) password_manager::AffiliatedGroup affiliatedGroup;
 
+@property(nonatomic, assign) BOOL showLocalOnlyIcon;
+
 @property(nonatomic, strong, readonly) NSString* title;
 
 @property(nonatomic, strong, readonly) NSString* detailText;
@@ -35,7 +37,8 @@ typedef NS_ENUM(NSInteger, FaviconType) {
 @end
 
 // TODO(crbug.com/1359392): Once kPasswordsGrouping launches, this will only
-// serve for blocked websites. Rename, DCHECK blocked_by_user, drop detailText.
+// serve for blocked websites. Rename, DCHECK blocked_by_user, drop detailText
+// and showLocalOnlyIcon.
 //
 // Represents either:
 // - A single saved password (pre kPasswordsGrouping launch).
@@ -44,6 +47,8 @@ typedef NS_ENUM(NSInteger, FaviconType) {
 
 @property(nonatomic, assign) password_manager::CredentialUIEntry credential;
 
+@property(nonatomic, assign) BOOL showLocalOnlyIcon;
+
 @property(nonatomic, strong, readonly) NSString* title;
 
 @property(nonatomic, strong, readonly) NSString* detailText;
@@ -51,10 +56,10 @@ typedef NS_ENUM(NSInteger, FaviconType) {
 @end
 
 // Common cell for AffiliatedGroupTableViewItem and CredentialTableViewItem.
-//  ________________________________
-// |  [favicon or]  Title           |
-// |  [monogram  ]  Optional text   |
-//  ________________________________
+//  ___________________________________________________
+// |  [favicon or]  Title            [Optional local]  |
+// |  [monogram  ]  Optional text    [password icon ]  |
+//  ___________________________________________________|
 @interface PasswordFormContentCell : TableViewCell
 
 @property(nonatomic, assign, readonly) FaviconType faviconTypeForMetrics;
