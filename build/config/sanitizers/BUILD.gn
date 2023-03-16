@@ -172,7 +172,10 @@ config("default_sanitizer_ldflags") {
       sanitizers += [ "hwaddress" ]
     }
     if (is_lsan) {
-      sanitizers += [ "leak" ]
+      # In Chromium, is_lsan always implies is_asan. ASAN includes LSAN.
+      # It seems harmless to pass both options to clang, but it doesn't
+      # work on rustc, so apply this option to clang only.
+      ldflags += [ "-fsanitize=leak" ]
     }
     if (is_tsan) {
       sanitizers += [ "thread" ]
