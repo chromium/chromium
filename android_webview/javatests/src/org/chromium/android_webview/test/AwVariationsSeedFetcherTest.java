@@ -59,6 +59,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
 public class AwVariationsSeedFetcherTest {
+    private static final int HTTP_OK = 200;
     private static final int HTTP_NOT_FOUND = 404;
     private static final int HTTP_NOT_MODIFIED = 304;
     private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
@@ -372,8 +373,10 @@ public class AwVariationsSeedFetcherTest {
     public void testFetch() throws IOException, TimeoutException {
         try {
             TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            mDownloader.fetchResult = HTTP_OK;
 
-            fetcher.onStartJob(null);
+            when(mMockJobParameters.getExtras()).thenReturn(new PersistableBundle());
+            fetcher.onStartJob(mMockJobParameters);
 
             Assert.assertFalse("neededReschedule should be false before making a request",
                     fetcher.neededReschedule());
@@ -466,7 +469,9 @@ public class AwVariationsSeedFetcherTest {
             mDownloader.fetchResult = HTTP_NOT_FOUND;
 
             TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
-            fetcher.onStartJob(null);
+            PersistableBundle jobInfoExtras = new PersistableBundle();
+            when(mMockJobParameters.getExtras()).thenReturn(jobInfoExtras);
+            fetcher.onStartJob(mMockJobParameters);
             fetcher.helper.waitForCallback(
                     "Timeout out waiting for AwVariationsSeedFetcher to call downloadContent", 0);
 
@@ -500,7 +505,8 @@ public class AwVariationsSeedFetcherTest {
 
             mClock.timestamp += JOB_DELAY;
             TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
-            fetcher.onStartJob(null);
+            when(mMockJobParameters.getExtras()).thenReturn(new PersistableBundle());
+            fetcher.onStartJob(mMockJobParameters);
             fetcher.helper.waitForCallback(
                     "Timeout out waiting for AwVariationsSeedFetcher to call downloadContent", 0);
 
@@ -537,7 +543,8 @@ public class AwVariationsSeedFetcherTest {
 
             mClock.timestamp += JOB_DELAY;
             TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
-            fetcher.onStartJob(null);
+            when(mMockJobParameters.getExtras()).thenReturn(new PersistableBundle());
+            fetcher.onStartJob(mMockJobParameters);
             fetcher.helper.waitForCallback(
                     "Timeout out waiting for AwVariationsSeedFetcher to call downloadContent", 0);
 

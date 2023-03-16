@@ -18,6 +18,7 @@ java_group("espresso_all_java") {
     ":espresso_idling_java",
     ":espresso_intents_java",
     ":espresso_web_java",
+    ":replacement_usage_tracker_java",
   ]
 }
 
@@ -87,5 +88,17 @@ android_java_prebuilt("espresso_web_java") {
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:org_ccil_cowan_tagsoup_tagsoup_java",
     "//third_party/hamcrest:hamcrest_core_java",
+  ]
+}
+
+# espresso depends on UsageTracker which had an API change in
+# androidx.test:runner. Copy over the old UsageTracker code as a noop
+# replacement to prevent compile/runtime failures.
+android_library("replacement_usage_tracker_java") {
+  testonly = true
+  chromium_code = false
+  sources = [
+    "nojetify/java/android/support/test/internal/runner/tracker/UsageTracker.java",
+    "nojetify/java/android/support/test/internal/runner/tracker/UsageTrackerRegistry.java",
   ]
 }

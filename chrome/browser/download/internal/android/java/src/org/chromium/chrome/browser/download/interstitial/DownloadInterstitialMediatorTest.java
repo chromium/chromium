@@ -31,11 +31,11 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.download.home.StubbedOfflineContentProvider;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
@@ -58,7 +58,7 @@ import java.util.Map;
  * Unit tests for the {@link DownloadInterstitialMediator}. Modifies the page state through the
  * {@link PropertyModel} and observes changes to the mediator/model.
  */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 public class DownloadInterstitialMediatorTest {
     private static final String DOWNLOAD_BUTTON_TEXT = "Download";
     private static final String CANCEL_BUTTON_TEXT = "Cancel";

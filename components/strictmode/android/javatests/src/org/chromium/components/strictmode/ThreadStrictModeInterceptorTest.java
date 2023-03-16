@@ -73,8 +73,7 @@ public class ThreadStrictModeInterceptorTest {
 
     private void doDiskWrite() {
         File dataDir = ContextCompat.getDataDir(InstrumentationRegistry.getTargetContext());
-        File prefsDir = new File(dataDir, "shared_prefs");
-        File outFile = new File(prefsDir, "random.txt");
+        File outFile = new File(dataDir, "random.txt");
         try (FileOutputStream out = new FileOutputStream(outFile)) {
             out.write(1);
         } catch (Exception e) {

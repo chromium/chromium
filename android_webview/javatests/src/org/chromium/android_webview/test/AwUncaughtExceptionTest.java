@@ -101,7 +101,7 @@ public class AwUncaughtExceptionTest {
     // as our UI thread isn't the Main Looper thread, so we have to disable them.
     private void disableLifecycleThreadAssertion() throws Exception {
         ActivityLifecycleMonitor monitor = ActivityLifecycleMonitorRegistry.getInstance();
-        Field declawThreadCheck = monitor.getClass().getDeclaredField("mDeclawThreadCheck");
+        Field declawThreadCheck = monitor.getClass().getDeclaredField("declawThreadCheck");
         declawThreadCheck.setAccessible(true);
         declawThreadCheck.set(monitor, true);
     }

@@ -13,6 +13,7 @@ import zipfile
 
 import javac_output_processor
 from util import build_utils
+import compile_java
 
 
 def ProcessJavacOutput(output, target_name):
@@ -76,75 +77,84 @@ def main(argv):
   # Turbine is run only on .java files.
   java_files = [f for f in files if f.endswith('.java')]
 
-  cmd = build_utils.JavaCmd() + [
-      '-classpath', options.turbine_jar_path, 'com.google.turbine.main.Main'
-  ]
-  javac_cmd = [
-      # We currently target JDK 11 everywhere.
-      '--release',
-      '11',
-  ]
+  with build_utils.TempDir() as intermediate_dir:
+    if java_files:
+      # Rewrite instances of android.support.test to androidx.test. See
+      # https://crbug.com/1223832
+      java_files = compile_java.MaybeRewriteAndroidSupport(
+          java_files, intermediate_dir)
 
-  # Turbine reads lists from command line args by consuming args until one
-  # starts with double dash (--). Thus command line args should be grouped
-  # together and passed in together.
-  if options.processors:
-    cmd += ['--processors']
-    cmd += options.processors
+    cmd = build_utils.JavaCmd() + [
+        '-classpath', options.turbine_jar_path, 'com.google.turbine.main.Main'
+    ]
+    javac_cmd = [
+        # We currently target JDK 11 everywhere.
+        '--release',
+        '11',
+    ]
 
-  if options.processorpath:
-    cmd += ['--processorpath']
-    cmd += options.processorpath
+    # Turbine reads lists from command line args by consuming args until one
+    # starts with double dash (--). Thus command line args should be grouped
+    # together and passed in together.
+    if options.processors:
+      cmd += ['--processors']
+      cmd += options.processors
 
-  if options.processor_args:
-    for arg in options.processor_args:
-      javac_cmd.extend(['-A%s' % arg])
+    if options.processorpath:
+      cmd += ['--processorpath']
+      cmd += options.processorpath
 
-  if options.classpath:
-    cmd += ['--classpath']
-    cmd += options.classpath
+    if options.processor_args:
+      for arg in options.processor_args:
+        javac_cmd.extend(['-A%s' % arg])
 
-  if options.java_srcjars:
-    cmd += ['--source_jars']
-    cmd += options.java_srcjars
+    if options.classpath:
+      cmd += ['--classpath']
+      cmd += options.classpath
 
-  if java_files:
-    # Use jar_path to ensure paths are relative (needed for goma).
-    files_rsp_path = options.jar_path + '.java_files_list.txt'
-    with open(files_rsp_path, 'w') as f:
-      f.write(' '.join(java_files))
-    # Pass source paths as response files to avoid extremely long command lines
-    # that are tedius to debug.
-    cmd += ['--sources']
-    cmd += ['@' + files_rsp_path]
+    if options.java_srcjars:
+      cmd += ['--source_jars']
+      cmd += options.java_srcjars
 
-  cmd += ['--javacopts']
-  cmd += javac_cmd
-  cmd += ['--']  # Terminate javacopts
+    if java_files:
+      # Use jar_path to ensure paths are relative (needed for goma).
+      files_rsp_path = options.jar_path + '.java_files_list.txt'
+      with open(files_rsp_path, 'w') as f:
+        f.write(' '.join(java_files))
+      # Pass source paths as response files to avoid extremely long command
+      # lines that are tedius to debug.
+      cmd += ['--sources']
+      cmd += ['@' + files_rsp_path]
 
-  # Use AtomicOutput so that output timestamps are not updated when outputs
-  # are not changed.
-  with build_utils.AtomicOutput(options.jar_path) as output_jar, \
-      build_utils.AtomicOutput(options.generated_jar_path) as generated_jar:
-    cmd += ['--output', output_jar.name, '--gensrc_output', generated_jar.name]
+    cmd += ['--javacopts']
+    cmd += javac_cmd
+    cmd += ['--']  # Terminate javacopts
 
-    process_javac_output_partial = functools.partial(
-        ProcessJavacOutput, target_name=options.target_name)
+    # Use AtomicOutput so that output timestamps are not updated when outputs
+    # are not changed.
+    with build_utils.AtomicOutput(options.jar_path) as output_jar, \
+        build_utils.AtomicOutput(options.generated_jar_path) as generated_jar:
+      cmd += [
+          '--output', output_jar.name, '--gensrc_output', generated_jar.name
+      ]
 
-    logging.debug('Command: %s', cmd)
-    start = time.time()
-    build_utils.CheckOutput(cmd,
-                            print_stdout=True,
-                            stdout_filter=process_javac_output_partial,
-                            stderr_filter=process_javac_output_partial,
-                            fail_on_output=options.warnings_as_errors)
-    end = time.time() - start
-    logging.info('Header compilation took %ss', end)
-    if options.kotlin_jar_path:
-      with zipfile.ZipFile(output_jar.name, 'a') as out_zip:
-        build_utils.MergeZips(
-            out_zip, [options.kotlin_jar_path],
-            path_transform=lambda p: p if p.endswith('.class') else None)
+      process_javac_output_partial = functools.partial(
+          ProcessJavacOutput, target_name=options.target_name)
+
+      logging.debug('Command: %s', cmd)
+      start = time.time()
+      build_utils.CheckOutput(cmd,
+                              print_stdout=True,
+                              stdout_filter=process_javac_output_partial,
+                              stderr_filter=process_javac_output_partial,
+                              fail_on_output=options.warnings_as_errors)
+      end = time.time() - start
+      logging.info('Header compilation took %ss', end)
+      if options.kotlin_jar_path:
+        with zipfile.ZipFile(output_jar.name, 'a') as out_zip:
+          build_utils.MergeZips(out_zip, [options.kotlin_jar_path],
+                                path_transform=lambda p: p
+                                if p.endswith('.class') else None)
 
   if options.depfile:
     # GN already knows of the java files, so avoid listing individual java files

@@ -17,10 +17,15 @@
 ../../../third_party/colorama/src/colorama/winterm.py
 ../../../tools/android/modularization/convenience/lookup_dep.py
 ../../gn_helpers.py
+../../print_python_deps.py
 ../list_java_targets.py
 ../pylib/__init__.py
 ../pylib/constants/__init__.py
+compile_java.py
 javac_output_processor.py
 turbine.py
 util/__init__.py
 util/build_utils.py
+util/jar_info_utils.py
+util/md5_check.py
+util/server_utils.py

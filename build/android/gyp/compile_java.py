@@ -14,6 +14,7 @@ import shutil
 import sys
 import time
 import zipfile
+import pathlib
 
 import javac_output_processor
 from util import build_utils
@@ -459,6 +460,48 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
   logging.info('Completed all steps in _OnStaleMd5')
 
 
+def _DoRewriteAndroidSupport(source_file, contents, intermediates_out_dir):
+  source_path = pathlib.Path(source_file)
+  package_idx = -1
+  for index, part in enumerate(source_path.parts):
+    if part in ('org', 'com'):
+      # start of package
+      package_idx = index
+      break
+  else:
+    # if it is a weird package, at least strip ../../
+    if source_path.parts[0] == '..':
+      package_idx = 2
+  source_with_pkg_rel_path = pathlib.Path(*source_path.parts[package_idx:])
+  target_path = pathlib.Path(intermediates_out_dir, source_with_pkg_rel_path)
+  build_utils.MakeDirectory(target_path.parent)
+  output_lines = re.sub(r'android\.support\.test\.', 'androidx.test.', contents)
+  with open(target_path, 'w') as output:
+    output.write(output_lines)
+  return str(target_path)
+
+
+def MaybeRewriteAndroidSupport(java_files, intermediates_out_dir):
+  processed_files = []
+  for source_file in java_files:
+    # Only process test related files. Also, ignore /nojetify/ to allow for
+    # unjetified files to exist in the repo.
+    if not re.search(r'[Tt]est', source_file) or '/nojetify/' in source_file:
+      processed_files.append(source_file)
+      continue
+    with open(source_file) as f:
+      source_file_contents = f.read()
+      m = re.search(r'import\s+(static )?android\.support\.test.*',
+                    source_file_contents)
+      if not m:
+        processed_files.append(source_file)
+      else:
+        processed_files.append(
+            _DoRewriteAndroidSupport(source_file, source_file_contents,
+                                     intermediates_out_dir))
+  return processed_files
+
+
 def _RunCompiler(changes,
                  options,
                  javac_cmd,
@@ -533,9 +576,9 @@ def _RunCompiler(changes,
                                            options.jar_info_exclude_globs)
 
     if intermediates_out_dir is None:
-      input_srcjars_dir = os.path.join(temp_dir, 'input_srcjars')
-    else:
-      input_srcjars_dir = os.path.join(intermediates_out_dir, 'input_srcjars')
+      intermediates_out_dir = temp_dir
+
+    input_srcjars_dir = os.path.join(intermediates_out_dir, 'input_srcjars')
 
     if java_srcjars:
       logging.info('Extracting srcjars to %s', input_srcjars_dir)
@@ -564,6 +607,12 @@ def _RunCompiler(changes,
       info_file_context.SubmitFiles(kt_files)
 
     if java_files:
+      input_modified_dir = os.path.join(intermediates_out_dir,
+                                        'input_rewritten')
+      # Rewrite instances of android.support.test to androidx.test. See
+      # https://crbug.com/1223832
+      java_files = MaybeRewriteAndroidSupport(java_files, input_modified_dir)
+
       # Don't include the output directory in the initial set of args since it
       # being in a temp dir makes it unstable (breaks md5 stamping).
       cmd = list(javac_cmd)

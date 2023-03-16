@@ -20,18 +20,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.internal.runner.RunnerArgs;
-import android.support.test.internal.runner.TestExecutor;
-import android.support.test.internal.runner.TestLoader;
-import android.support.test.internal.runner.TestRequest;
-import android.support.test.internal.runner.TestRequestBuilder;
-import android.support.test.runner.AndroidJUnitRunner;
 import android.text.TextUtils;
 
 import androidx.core.content.ContextCompat;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.internal.runner.RunnerArgs;
+import androidx.test.internal.runner.TestExecutor;
+import androidx.test.internal.runner.TestRequestBuilder;
+import androidx.test.runner.AndroidJUnitRunner;
 
 import dalvik.system.DexFile;
+
+import org.junit.runner.Request;
+import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -52,6 +53,8 @@ import org.chromium.build.annotations.MainDex;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -248,7 +251,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             Bundle junit3Arguments = new Bundle(InstrumentationRegistry.getArguments());
             junit3Arguments.putString(ARGUMENT_NOT_ANNOTATION, "org.junit.runner.RunWith");
             addTestListPackage(junit3Arguments);
-            TestRequest listJUnit3TestRequest = createListTestRequest(junit3Arguments);
+            Request listJUnit3TestRequest = createListTestRequest(junit3Arguments);
             results = executorBuilder.build().execute(listJUnit3TestRequest);
 
             Bundle junit4Arguments = new Bundle(InstrumentationRegistry.getArguments());
@@ -262,7 +265,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             // to use its own log-only class runner instead of BaseJUnit4ClassRunner.
             junit4Arguments.remove(ARGUMENT_LOG_ONLY);
 
-            TestRequest listJUnit4TestRequest = createListTestRequest(junit4Arguments);
+            Request listJUnit4TestRequest = createListTestRequest(junit4Arguments);
             results.putAll(executorBuilder.build().execute(listJUnit4TestRequest));
             listener.saveTestsToJson(
                     InstrumentationRegistry.getArguments().getString(LIST_ALL_TESTS_FLAG));
@@ -276,7 +279,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         finish(Activity.RESULT_OK, results);
     }
 
-    private TestRequest createListTestRequest(Bundle arguments) {
+    private Request createListTestRequest(Bundle arguments) {
         ArrayList<DexFile> dexFiles = new ArrayList<>();
         try {
             Class<?> bootstrapClass =
@@ -294,7 +297,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             }
         }
         RunnerArgs runnerArgs =
-                new RunnerArgs.Builder().fromManifest(this).fromBundle(arguments).build();
+                new RunnerArgs.Builder().fromManifest(this).fromBundle(this, arguments).build();
         TestRequestBuilder builder;
         if (!dexFiles.isEmpty()) {
             builder = new DexFileTestRequestBuilder(this, arguments, dexFiles);
@@ -302,7 +305,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             builder = new TestRequestBuilder(this, arguments);
         }
         builder.addFromRunnerArgs(runnerArgs);
-        builder.addApkToScan(getContext().getPackageCodePath());
+        builder.addPathToScan(getContext().getPackageCodePath());
 
         // Ignore tests from framework / support library classes.
         builder.removeTestPackage("android");
@@ -375,7 +378,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
 
         @Override
-        public TestRequest build() {
+        public Request build() {
             // If a test class was requested, then no need to iterate class loader.
             if (!mHasClassList) {
                 // builder.addApkToScan uses new DexFile(path) under the hood, which on Dalvik OS's
@@ -398,8 +401,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         private void scanDexFilesForTestClasses() {
             Log.i(TAG, "Scanning loaded dex files for test classes.");
             // Mirror TestRequestBuilder.getClassNamesFromClassPath().
-            TestLoader loader = new TestLoader();
-            loader.setClassLoader(new ForgivingClassLoader());
             for (DexFile dexFile : mDexFiles) {
                 Enumeration<String> classNames = dexFile.entries();
                 while (classNames.hasMoreElements()) {
@@ -420,7 +421,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                         // android-kitkat-arm-rel from 41s -> 23s.
                         continue;
                     }
-                    if (!className.contains("$") && loader.loadIfTest(className) != null) {
+                    if (!className.contains("$") && checkIfTest(className)) {
                         addTestClass(className);
                     }
                 }
@@ -478,6 +479,85 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                 throw new ClassNotFoundException(name, e);
             }
         }
+    }
+
+    private static boolean checkIfTest(String className) {
+        Class<?> loadedClass = tryLoadClass(className);
+        if (loadedClass != null && isTestClass(loadedClass)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static Class<?> tryLoadClass(String className) {
+        try {
+            return Class.forName(
+                    className, false, BaseChromiumAndroidJUnitRunner.class.getClassLoader());
+        } catch (NoClassDefFoundError e) {
+            // Do nothing.
+        } catch (ClassNotFoundException e) {
+            // Do nothing.
+        }
+        return null;
+    }
+
+    // Copied from android.support.test.runner code.
+    private static boolean isTestClass(Class<?> loadedClass) {
+        try {
+            if (Modifier.isAbstract(loadedClass.getModifiers())) {
+                Log.d(TAG,
+                        String.format(
+                                "Skipping abstract class %s: not a test", loadedClass.getName()));
+                return false;
+            }
+            if (junit.framework.Test.class.isAssignableFrom(loadedClass)) {
+                // ensure that if a TestCase, it has at least one test method otherwise
+                // TestSuite will throw error
+                if (junit.framework.TestCase.class.isAssignableFrom(loadedClass)) {
+                    return hasJUnit3TestMethod(loadedClass);
+                }
+                return true;
+            }
+            if (loadedClass.isAnnotationPresent(RunWith.class)) {
+                return true;
+            }
+            for (Method testMethod : loadedClass.getMethods()) {
+                if (testMethod.isAnnotationPresent(org.junit.Test.class)) {
+                    return true;
+                }
+            }
+            Log.d(TAG, String.format("Skipping class %s: not a test", loadedClass.getName()));
+            return false;
+        } catch (Exception e) {
+            // Defensively catch exceptions - Will throw runtime exception if it cannot load
+            // methods.
+            Log.w(TAG, String.format("%s in isTestClass for %s", e, loadedClass.getName()));
+            return false;
+        } catch (Error e) {
+            // defensively catch Errors too
+            Log.w(TAG, String.format("%s in isTestClass for %s", e, loadedClass.getName()));
+            return false;
+        }
+    }
+
+    private static boolean hasJUnit3TestMethod(Class<?> loadedClass) {
+        for (Method testMethod : loadedClass.getMethods()) {
+            if (isPublicTestMethod(testMethod)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // copied from junit.framework.TestSuite
+    private static boolean isPublicTestMethod(Method m) {
+        return isTestMethod(m) && Modifier.isPublic(m.getModifiers());
+    }
+
+    // copied from junit.framework.TestSuite
+    private static boolean isTestMethod(Method m) {
+        return m.getParameterTypes().length == 0 && m.getName().startsWith("test")
+                && m.getReturnType().equals(Void.TYPE);
     }
 
     @Override
@@ -681,7 +761,10 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             // WebView prefs need to stay because webview tests have no (good) way of hooking
             // SharedPreferences for instantiated WebViews.
             if (!f.getName().endsWith("multidex.version.xml")
-                    && !f.getName().equals("WebViewChromiumPrefs.xml")) {
+                    && !f.getName().equals("WebViewChromiumPrefs.xml")
+                    && !f.getName().equals("org.chromium.android_webview.devui.MainActivity.xml")
+                    && !f.getName().equals("AwComponentUpdateServicePreferences.xml")
+                    && !f.getName().equals("ComponentsProviderServicePreferences.xml")) {
                 if (check) {
                     badFiles.add(f);
                 } else {

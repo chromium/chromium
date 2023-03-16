@@ -4,103 +4,21 @@
 
 import("//build/config/android/rules.gni")
 
-android_library("runner_java") {
-  chromium_code = false
+# Alias to androidx.test:runner while migrating.
+# See https://crbug.com/1223832
+java_group("runner_java") {
   testonly = true
-  sources = [
-    "exposed-instrumentation-api-provided/src/main/java/android/support/test/internal/runner/hidden/ExposedInstrumentationApi.java",
-    "runner/src/main/java/android/support/test/InstrumentationRegistry.java",
-    "runner/src/main/java/android/support/test/annotation/Beta.java",
-    "runner/src/main/java/android/support/test/filters/FlakyTest.java",
-    "runner/src/main/java/android/support/test/filters/RequiresDevice.java",
-    "runner/src/main/java/android/support/test/filters/SdkSuppress.java",
-    "runner/src/main/java/android/support/test/internal/runner/AndroidRunnerBuilder.java",
-    "runner/src/main/java/android/support/test/internal/runner/ClassPathScanner.java",
-    "runner/src/main/java/android/support/test/internal/runner/RunnerArgs.java",
-    "runner/src/main/java/android/support/test/internal/runner/TestExecutor.java",
-    "runner/src/main/java/android/support/test/internal/runner/TestLoader.java",
-    "runner/src/main/java/android/support/test/internal/runner/TestRequest.java",
-    "runner/src/main/java/android/support/test/internal/runner/TestRequestBuilder.java",
-    "runner/src/main/java/android/support/test/internal/runner/intent/IntentMonitorImpl.java",
-    "runner/src/main/java/android/support/test/internal/runner/intercepting/DefaultInterceptingActivityFactory.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/AndroidJUnit3Builder.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/AndroidSuiteBuilder.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/AndroidTestResult.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/AndroidTestSuite.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/DelegatingFilterableTestSuite.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/DelegatingTestResult.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/DelegatingTestSuite.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/JUnit38ClassRunner.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/NoExecTestResult.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/NoExecTestSuite.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit3/NonLeakyTestSuite.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit4/AndroidAnnotatedBuilder.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit4/AndroidJUnit4Builder.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit4/AndroidJUnit4ClassRunner.java",
-    "runner/src/main/java/android/support/test/internal/runner/junit4/NonExecutingJUnit4ClassRunner.java",
-    "runner/src/main/java/android/support/test/internal/runner/lifecycle/ActivityLifecycleMonitorImpl.java",
-    "runner/src/main/java/android/support/test/internal/runner/lifecycle/ApplicationLifecycleMonitorImpl.java",
-    "runner/src/main/java/android/support/test/internal/runner/listener/ActivityFinisherRunListener.java",
-    "runner/src/main/java/android/support/test/internal/runner/listener/CoverageListener.java",
-    "runner/src/main/java/android/support/test/internal/runner/listener/DelayInjector.java",
-    "runner/src/main/java/android/support/test/internal/runner/listener/InstrumentationResultPrinter.java",
-    "runner/src/main/java/android/support/test/internal/runner/listener/InstrumentationRunListener.java",
-    "runner/src/main/java/android/support/test/internal/runner/listener/LogRunListener.java",
-    "runner/src/main/java/android/support/test/internal/runner/listener/SuiteAssignmentPrinter.java",
-    "runner/src/main/java/android/support/test/internal/runner/tracker/AnalyticsBasedUsageTracker.java",
-    "runner/src/main/java/android/support/test/internal/runner/tracker/UsageTracker.java",
-    "runner/src/main/java/android/support/test/internal/runner/tracker/UsageTrackerRegistry.java",
-    "runner/src/main/java/android/support/test/internal/util/AndroidRunnerParams.java",
-    "runner/src/main/java/android/support/test/internal/util/Checks.java",
-    "runner/src/main/java/android/support/test/runner/AndroidJUnit4.java",
-    "runner/src/main/java/android/support/test/runner/AndroidJUnitRunner.java",
-    "runner/src/main/java/android/support/test/runner/MonitoringInstrumentation.java",
-    "runner/src/main/java/android/support/test/runner/intent/IntentCallback.java",
-    "runner/src/main/java/android/support/test/runner/intent/IntentMonitor.java",
-    "runner/src/main/java/android/support/test/runner/intent/IntentMonitorRegistry.java",
-    "runner/src/main/java/android/support/test/runner/intent/IntentStubber.java",
-    "runner/src/main/java/android/support/test/runner/intent/IntentStubberRegistry.java",
-    "runner/src/main/java/android/support/test/runner/intercepting/InterceptingActivityFactory.java",
-    "runner/src/main/java/android/support/test/runner/intercepting/SingleActivityFactory.java",
-    "runner/src/main/java/android/support/test/runner/lifecycle/ActivityLifecycleCallback.java",
-    "runner/src/main/java/android/support/test/runner/lifecycle/ActivityLifecycleMonitor.java",
-    "runner/src/main/java/android/support/test/runner/lifecycle/ActivityLifecycleMonitorRegistry.java",
-    "runner/src/main/java/android/support/test/runner/lifecycle/ApplicationLifecycleCallback.java",
-    "runner/src/main/java/android/support/test/runner/lifecycle/ApplicationLifecycleMonitor.java",
-    "runner/src/main/java/android/support/test/runner/lifecycle/ApplicationLifecycleMonitorRegistry.java",
-    "runner/src/main/java/android/support/test/runner/lifecycle/ApplicationStage.java",
-    "runner/src/main/java/android/support/test/runner/lifecycle/Stage.java",
-  ]
+
+  # Also depend on androidx.test:monitor for InstrumentationRegistry.
   deps = [
-    ":exposed_instrumentation_api_publish_java",
-    "//third_party/android_deps:com_android_support_support_annotations_java",
-    "//third_party/android_deps:guava_android_java",
-    "//third_party/android_sdk:android_test_base_java",
-    "//third_party/junit",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
   ]
-  jar_excluded_patterns = [ "*/ExposedInstrumentationApi.class" ]
 }
 
-android_library("exposed_instrumentation_api_publish_java") {
-  chromium_code = false
+# Alias to androidx.test:rules while migrating.
+# See https://crbug.com/1223832
+java_group("rules_java") {
   testonly = true
-  sources = [ "exposed-instrumentation-api-publish/src/main/java/android/support/test/internal/runner/hidden/ExposedInstrumentationApi.java" ]
-}
-
-android_library("rules_java") {
-  chromium_code = false
-  testonly = true
-  sources = [
-    "rules/src/main/java/android/support/test/annotation/UiThreadTest.java",
-    "rules/src/main/java/android/support/test/internal/statement/UiThreadStatement.java",
-    "rules/src/main/java/android/support/test/rule/ActivityTestRule.java",
-    "rules/src/main/java/android/support/test/rule/DisableOnAndroidDebug.java",
-    "rules/src/main/java/android/support/test/rule/ServiceTestRule.java",
-    "rules/src/main/java/android/support/test/rule/UiThreadTestRule.java",
-  ]
-  deps = [
-    "//third_party/android_deps:com_android_support_support_annotations_java",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/junit",
-  ]
+  deps = [ "//third_party/androidx:androidx_test_rules_java" ]
 }
