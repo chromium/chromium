@@ -109,12 +109,6 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
   EXPECT_FALSE(IsPageMissingFile(page6));
 
   histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Persistent.ExpiredEntryCount", 2, 1);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Persistent.MissingFileCount", 2, 1);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Persistent.ReappearedFileCount", 2, 1);
-  histogram_tester()->ExpectUniqueSample(
       "OfflinePages.ConsistencyCheck.Persistent.Result",
       static_cast<int>(SyncOperationResult::SUCCESS), 1);
 }
@@ -148,8 +142,6 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
       store(), archive_manager(), base::Time::Now(), callback.Get()));
 
   EXPECT_FALSE(store_test_util()->GetPageByOfflineId(page.offline_id));
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Persistent.ExpiredEntryCount", 1, 1);
   histogram_tester()->ExpectUniqueSample(
       "OfflinePages.ConsistencyCheck.Persistent.Result",
       static_cast<int>(SyncOperationResult::SUCCESS), 1);

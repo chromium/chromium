@@ -544,36 +544,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.ConsistencyCheck.Persistent.ExpiredEntryCount"
-    units="entries" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of DB entries (in persistent namespaces) that have been missing their
-    files for longer than 365 days, and deleted during maintenance task.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.ConsistencyCheck.Persistent.MissingFileCount"
-    units="files" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of files that are found missing during maintenance task, which is
-    also the number of DB entries that are updated with valid file missing time.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.ConsistencyCheck.Persistent.ReappearedFileCount"
-    units="files" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of files that were marked as missing reappeared in the file system,
-    which is also the number of DB entries that removes file missing time.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.ConsistencyCheck.Persistent.Result"
     enum="OfflinePagesSyncOperationResult" expires_after="2021-06-25">
   <owner>dimich@chromium.org</owner>
