@@ -528,6 +528,10 @@ const char kEnterpriseEnrollmentModulusLimit[] =
 // This is only usable on test builds.
 const char kDisallowPolicyBlockDevMode[] = "disallow-policy-block-dev-mode";
 
+// Ignore the profile creation time when determining whether to show the end of
+// life notification incentive. This is meant to make manual testing easier.
+const char kEolIgnoreProfileCreationTime[] = "eol-ignore-profile-creation-time";
+
 // Reset the end of life notification prefs to their default value, at the
 // start of the user session. This is meant to make manual testing easier.
 const char kEolResetDismissedPrefs[] = "eol-reset-dismissed-prefs";

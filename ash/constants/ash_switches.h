@@ -177,6 +177,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnrollmentModulusLimit[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisallowPolicyBlockDevMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEolIgnoreProfileCreationTime[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEolResetDismissedPrefs[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kExtensionInstallEventChromeLogForTests[];
