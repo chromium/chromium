@@ -425,13 +425,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   EXPECT_EQ(install_observer.Wait(), app_id);
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 
+  auto* provider0 = WebAppProvider::GetForTest(GetProfile(0));
   auto* provider1 = WebAppProvider::GetForTest(GetProfile(1));
   WebAppRegistrar& registrar1 = provider1->registrar_unsafe();
   EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kStandalone);
 
   DisplayModeChangeWaiter display_mode_change_waiter(registrar1);
-  provider1->sync_bridge_unsafe().SetAppUserDisplayMode(
+  provider0->sync_bridge_unsafe().SetAppUserDisplayMode(
       app_id, mojom::UserDisplayMode::kTabbed,
       /*is_user_action=*/true);
   display_mode_change_waiter.Wait();

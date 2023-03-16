@@ -197,12 +197,15 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void MergeLocalAppsToSync(const syncer::EntityChangeList& entity_data,
                             syncer::MetadataChangeList* metadata_change_list);
 
-  void PrepareLocalUpdateFromSyncChange(const syncer::EntityChange& change,
-                                        RegistryUpdateData* update_local_data);
+  void PrepareLocalUpdateFromSyncChange(
+      const syncer::EntityChange& change,
+      RegistryUpdateData* update_local_data,
+      std::vector<AppId>& apps_display_mode_changed);
 
   // Update registrar and Install/Uninstall missing/excessive local apps.
   void ApplySyncChangesToRegistrar(
-      std::unique_ptr<RegistryUpdateData> update_local_data);
+      std::unique_ptr<RegistryUpdateData> update_local_data,
+      const std::vector<AppId>& apps_display_mode_changed);
 
   void MaybeUninstallAppsPendingUninstall();
   void MaybeInstallAppsFromSyncAndPendingInstallation();
