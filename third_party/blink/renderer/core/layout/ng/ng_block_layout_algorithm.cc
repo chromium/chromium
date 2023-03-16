@@ -876,14 +876,16 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
         ExclusionSpace().ClearanceOffsetIncludingInitialLetter(EClear::kBoth));
   }
 
+  LayoutUnit block_end_border_padding = BorderScrollbarPadding().block_end;
+
   // If line clamping occurred, the intrinsic block-size comes from the
   // intrinsic block-size at the time of the clamp.
   if (intrinsic_block_size_when_clamped_) {
     DCHECK(container_builder_.BfcBlockOffset());
-    intrinsic_block_size_ = *intrinsic_block_size_when_clamped_ +
-                            BorderScrollbarPadding().block_end;
+    intrinsic_block_size_ =
+        *intrinsic_block_size_when_clamped_ + block_end_border_padding;
     end_margin_strut = NGMarginStrut();
-  } else if (BorderScrollbarPadding().block_end ||
+  } else if (block_end_border_padding ||
              previous_inflow_position->self_collapsing_child_had_clearance ||
              ConstraintSpace().IsNewFormattingContext()) {
     // The end margin strut of an in-flow fragment contributes to the size of
@@ -938,7 +940,15 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
           previous_inflow_position->logical_block_offset + margin_strut_sum);
     }
 
-    intrinsic_block_size_ += BorderScrollbarPadding().block_end;
+    if ((BreakToken() && BreakToken()->IsAtBlockEnd()) ||
+        (container_builder_.HasInflowChildBreakInside() &&
+         !container_builder_.IsKnownToFitInFragmentainer())) {
+      // The block-end edge isn't in this fragment. We either haven't got there
+      // yet, or we're past it (and are overflowing). So don't add trailing
+      // border/padding.
+      block_end_border_padding = LayoutUnit();
+    }
+    intrinsic_block_size_ += block_end_border_padding;
     end_margin_strut = NGMarginStrut();
   } else {
     // Update our intrinsic block size to be just past the block-end border edge
@@ -1040,7 +1050,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   }
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    NGBreakStatus status = FinalizeForFragmentation();
+    NGBreakStatus status = FinalizeForFragmentation(block_end_border_padding);
     if (status != NGBreakStatus::kContinue) {
       if (status == NGBreakStatus::kNeedsEarlierBreak)
         return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
@@ -2386,7 +2396,8 @@ void NGBlockLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
   }
 }
 
-NGBreakStatus NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
+NGBreakStatus NGBlockLayoutAlgorithm::FinalizeForFragmentation(
+    LayoutUnit block_end_border_padding_added) {
   if (Node().IsInlineFormattingContextRoot() && !early_break_ &&
       ConstraintSpace().HasBlockFragmentation()) {
     if (container_builder_.HasInflowChildBreakInside() ||
@@ -2428,7 +2439,7 @@ NGBreakStatus NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
     space_left = FragmentainerSpaceLeft(ConstraintSpace());
 
   return FinishFragmentation(Node(), ConstraintSpace(),
-                             BorderPadding().block_end, space_left,
+                             block_end_border_padding_added, space_left,
                              &container_builder_);
 }
 
