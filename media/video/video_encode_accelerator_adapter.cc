@@ -850,8 +850,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   bool erased_active_encode = false;
   for (auto it = active_encodes_.begin(); it != active_encodes_.end(); ++it) {
     if ((*it)->timestamp == result.timestamp) {
-      result.color_space =
-          metadata.encoded_color_space.value_or((*it)->color_space);
+      result.color_space = (*it)->color_space;
       std::move((*it)->done_callback).Run(EncoderStatus::Codes::kOk);
       active_encodes_.erase(it);
       erased_active_encode = true;

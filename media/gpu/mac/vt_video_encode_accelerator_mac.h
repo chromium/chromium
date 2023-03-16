@@ -19,7 +19,6 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/webrtc/common_video/include/bitrate_adjuster.h"
-#include "ui/gfx/color_space.h"
 
 namespace media {
 
@@ -107,8 +106,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // encodes have been completed.
   void MaybeRunFlushCallback();
 
-  void SetEncoderColorSpace();
-
   base::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
 
   gfx::Size input_visible_size_;
@@ -155,10 +152,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // pending encodes have been returned.
   int pending_encodes_ = 0;
   FlushCallback pending_flush_cb_;
-
-  // Color space of the first frame sent to Encode().
-  absl::optional<gfx::ColorSpace> encoder_color_space_;
-  bool can_set_encoder_color_space_ = true;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
