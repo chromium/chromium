@@ -4533,7 +4533,8 @@ crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvasClearRect.html [ Failur
 crbug.com/1088007 virtual/gpu/fast/canvas/OffscreenCanvasClearRectPartial.html [ Failure Pass ]
 
 # Sheriff 2020-06-09
-crbug.com/1093003 [ Mac ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Failure Pass ]
+crbug.com/1093003 [ Mac10.14 ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Pass Timeout ]
+crbug.com/1093003 [ Mac10.13 ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Pass Timeout ]
 
 # Ecosystem-Infra Rotation 2020-06-15
 crbug.com/924472 external/wpt/css/css-transforms/transform-box/cssbox-content-box.html [ Failure ]
