@@ -87,6 +87,8 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
   TabStripModel* tab_strip_model_for_creation = browser->tab_strip_model();
 
   std::vector<content::WebContents*> opened_web_contents;
+  std::vector<std::pair<content::WebContents*, base::GUID>>
+      local_and_saved_tab_mapping;
   for (const SavedTabGroupTab& saved_tab : saved_group->saved_tabs()) {
     if (!saved_tab.url().is_valid()) {
       continue;
@@ -101,15 +103,9 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
       continue;
     }
 
-    base::Token token =
-        listener_.GetOrCreateTrackedIDForWebContents(browser, created_contents);
-    SavedTabGroupTab tab(*model_.Get(saved_tab.saved_group_guid())
-                              ->GetTab(saved_tab.saved_tab_guid()));
-    tab.SetLocalTabID(token);
-
-    model_.ReplaceTabInGroupAt(saved_tab.saved_group_guid(),
-                               saved_tab.saved_tab_guid(), std::move(tab));
     opened_web_contents.emplace_back(created_contents);
+    local_and_saved_tab_mapping.emplace_back(created_contents,
+                                             saved_tab.saved_tab_guid());
   }
 
   // If no tabs were opened, then there's nothing to do.
@@ -150,16 +146,17 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
   // Set the groups visual data after the tab strip is in its final state. This
   // ensures the tab group's bounds are correctly set. crbug/1408814.
   group->SetVisualData(visual_data, /*is_customized=*/true);
+
+  listener_.ConnectToLocalTabGroup(*model_.Get(saved_group_guid),
+                                   local_and_saved_tab_mapping);
 }
 
 void SavedTabGroupKeyedService::SaveGroup(
-    const tab_groups::TabGroupId& group_id,
-    Browser* browser) {
-  Browser* browser_owning_tab_group =
-      browser ? browser : listener_.GetBrowserWithTabGroupId(group_id);
-  CHECK(browser_owning_tab_group);
+    const tab_groups::TabGroupId& group_id) {
+  Browser* browser = listener_.GetBrowserWithTabGroupId(group_id);
+  CHECK(browser);
 
-  TabStripModel* tab_strip_model = browser_owning_tab_group->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
   CHECK(tab_strip_model);
   CHECK(tab_strip_model->group_model());
 
@@ -170,9 +167,10 @@ void SavedTabGroupKeyedService::SaveGroup(
                                 tab_group->visual_data()->color(), {},
                                 absl::nullopt, absl::nullopt, tab_group->id());
 
-  // Build the SavedTabGroupTabs, track the webcontents, and add them to the
-  // group.
+  // Build the SavedTabGroupTabs and add them to the SavedTabGroup.
   const gfx::Range tab_range = tab_group->ListTabs();
+  std::vector<std::pair<content::WebContents*, base::GUID>>
+      local_and_saved_tab_mapping;
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
     content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
     CHECK(web_contents);
@@ -181,15 +179,19 @@ void SavedTabGroupKeyedService::SaveGroup(
         SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
             web_contents, saved_tab_group.saved_guid());
 
-    base::Token token = listener_.GetOrCreateTrackedIDForWebContents(
-        browser_owning_tab_group, web_contents);
-    saved_tab_group_tab.SetLocalTabID(token);
+    local_and_saved_tab_mapping.emplace_back(
+        web_contents, saved_tab_group_tab.saved_tab_guid());
 
     saved_tab_group.AddTab(std::move(saved_tab_group_tab),
                            /*update_tab_positions=*/true);
   }
 
+  const base::GUID saved_group_guid = saved_tab_group.saved_guid();
   model_.Add(std::move(saved_tab_group));
+
+  // Link the local group to the saved group in the listener.
+  listener_.ConnectToLocalTabGroup(*model_.Get(saved_group_guid),
+                                   local_and_saved_tab_mapping);
 }
 
 void SavedTabGroupKeyedService::UnsaveGroup(
@@ -207,24 +209,7 @@ void SavedTabGroupKeyedService::UnsaveGroup(
 
 void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
     const tab_groups::TabGroupId& group_id) {
-  Browser* browser_owning_tab_group =
-      listener_.GetBrowserWithTabGroupId(group_id);
-  CHECK(browser_owning_tab_group);
-
-  TabStripModel* tab_strip_model = browser_owning_tab_group->tab_strip_model();
-  CHECK(tab_strip_model);
-  CHECK(tab_strip_model->group_model());
-
-  TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
-  CHECK(tab_group);
-
-  // Stop listening to all of the webcontents in the group.
-  const gfx::Range tab_range = tab_group->ListTabs();
-  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
-    content::WebContents* web_contents =
-        browser_owning_tab_group->tab_strip_model()->GetWebContentsAt(i);
-    listener_.StopTrackingWebContents(browser_owning_tab_group, web_contents);
-  }
+  listener_.DisconnectLocalTabGroup(group_id);
 
   // Stop listening to the current tab group and notify observers.
   model_.OnGroupClosedInTabStrip(group_id);

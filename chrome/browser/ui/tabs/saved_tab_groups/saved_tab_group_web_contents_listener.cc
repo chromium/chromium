@@ -32,9 +32,7 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   }
 
   SavedTabGroup* group = model_->GetGroupContainingTab(token_);
-  if (!group) {
-    return;
-  }
+  CHECK(group);
 
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetTitle(web_contents_->GetTitle());

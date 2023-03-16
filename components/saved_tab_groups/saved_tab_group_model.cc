@@ -62,8 +62,7 @@ const SavedTabGroup* SavedTabGroupModel::Get(
 
 void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
   base::GUID group_guid = saved_group.saved_guid();
-  if (Contains(group_guid))
-    return;
+  CHECK(!Contains(group_guid));
 
   // Give a default position to groups if it is not already set.
   if (saved_group.position() == SavedTabGroup::kUnsetPosition)

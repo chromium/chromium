@@ -71,31 +71,8 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
   std::vector<std::unique_ptr<Browser>> browsers_;
 };
 
-TEST_F(SavedTabGroupKeyedServiceUnitTest, CreatesRemovesBrowserListener) {
+TEST_F(SavedTabGroupKeyedServiceUnitTest, GetBrowserWithTabGroupId) {
   Browser* browser_1 = AddBrowser();
-  Browser* browser_2 = AddBrowser();
-
-  EXPECT_EQ(
-      service()->listener()->GetBrowserListenerMapForTesting().count(browser_1),
-      1u);
-  EXPECT_EQ(
-      service()->listener()->GetBrowserListenerMapForTesting().count(browser_2),
-      1u);
-
-  service()->listener()->OnBrowserRemoved(browser_1);
-  EXPECT_EQ(
-      service()->listener()->GetBrowserListenerMapForTesting().count(browser_1),
-      0u);
-  EXPECT_EQ(
-      service()->listener()->GetBrowserListenerMapForTesting().count(browser_2),
-      1u);
-}
-
-TEST_F(SavedTabGroupKeyedServiceUnitTest, GetTabStripModelWithTabGroupId) {
-  Browser* browser_1 = AddBrowser();
-
-  EXPECT_TRUE(service()->listener()->GetBrowserListenerMapForTesting().count(
-                  browser_1) > 0);
 
   // Create a new tab and add it to a group.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
@@ -104,16 +81,13 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, GetTabStripModelWithTabGroupId) {
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
 
-  EXPECT_EQ(browser_1->tab_strip_model(),
-            service()->listener()->GetTabStripModelWithTabGroupId(group_id));
+  EXPECT_EQ(browser_1,
+            service()->listener()->GetBrowserWithTabGroupId(group_id));
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
        UngroupingStopsListeningToWebContents) {
   Browser* browser_1 = AddBrowser();
-
-  EXPECT_TRUE(service()->listener()->GetBrowserListenerMapForTesting().count(
-                  browser_1) > 0);
 
   // Create a new tab and add it to a group.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
@@ -123,29 +97,59 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0, 1});
 
-  auto& listener_map = service()->listener()->GetBrowserListenerMapForTesting();
-  EXPECT_EQ(1u, listener_map.count(browser_1));
-  auto& tab_token_mapping =
-      listener_map.at(browser_1).GetWebContentsTokenMapForTesting();
+  auto& group_listener_map =
+      service()->listener()->GetLocalTabGroupListenerMapForTesting();
 
-  // Expect that the tabs aren't being listened to yet.
-  EXPECT_EQ(0u, tab_token_mapping.count(web_contents_ptr));
+  // Expect that the group isn't being listened to yet.
+  EXPECT_EQ(0u, group_listener_map.count(group_id));
 
   // Save the group.
   service()->SaveGroup(group_id);
 
-  // Expect that the listener map is listening to the 2nd tab before it's
-  // closed.
+  // Now the group should be listened to.
+  EXPECT_EQ(1u, group_listener_map.count(group_id));
+
+  // Expect that the listener map is listening to two tabs, including
+  // `web_contents_ptr`.
+  auto& tab_token_mapping =
+      group_listener_map.at(group_id).GetWebContentsTokenMapForTesting();
+  EXPECT_EQ(2u, tab_token_mapping.size());
   EXPECT_EQ(1u, tab_token_mapping.count(web_contents_ptr));
 
-  // Remove a tab and expect it is removed from the listener maps.
+  // Remove `web_contents_ptr`.
   web_contents_ptr->Close();
   ASSERT_EQ(1, browser_1->tab_strip_model()->count());
 
-  // Expect that the browser is not removed from the mapping since there's still
-  // 1 tab in the group and the browser is not destroyed.
-  EXPECT_EQ(1u, listener_map.count(browser_1));
+  // Expect that the group is still listened to since there's still
+  // 1 tab in the group.
+  EXPECT_EQ(1u, group_listener_map.count(group_id));
 
-  // Expect that the web_contents ptr was removed from the mapping.
+  // Expect that `web_contents_ptr` is not being listened to.
   EXPECT_EQ(0u, tab_token_mapping.count(web_contents_ptr));
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedTabIsListenedTo) {
+  Browser* browser_1 = AddBrowser();
+
+  // Create a saved tab group with one tab.
+  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
+  AddTabToBrowser(browser_1, 0);
+  ASSERT_EQ(1, browser_1->tab_strip_model()->count());
+  tab_groups::TabGroupId group_id =
+      browser_1->tab_strip_model()->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+
+  // One tab should be observed in this group.
+  auto& tab_token_mapping = service()
+                                ->listener()
+                                ->GetLocalTabGroupListenerMapForTesting()
+                                .at(group_id)
+                                .GetWebContentsTokenMapForTesting();
+  ASSERT_EQ(1u, tab_token_mapping.size());
+
+  // Add a second tab and expect that it is observed too.
+  content::WebContents* added_tab = AddTabToBrowser(browser_1, 1);
+  browser_1->tab_strip_model()->AddToExistingGroup({1}, group_id);
+  EXPECT_EQ(2u, tab_token_mapping.size());
+  EXPECT_TRUE(tab_token_mapping.contains(added_tab));
 }

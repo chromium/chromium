@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/test/gtest_util.h"
 #include "base/token.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
@@ -293,8 +294,7 @@ TEST_F(SavedTabGroupModelTest, RemovesCorrectElements) {
 // Tests that the SavedTabGroupModel only adds unique TabGroupIds.
 TEST_F(SavedTabGroupModelTest, OnlyAddUniqueElements) {
   EXPECT_EQ(saved_tab_group_model_->Count(), 3);
-  AddTestData();
-  EXPECT_EQ(saved_tab_group_model_->Count(), 3);
+  EXPECT_CHECK_DEATH(AddTestData());
 }
 
 // Tests that SavedTabGroupModel::Add adds an extra element into the model and
