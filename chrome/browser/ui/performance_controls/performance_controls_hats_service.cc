@@ -25,9 +25,9 @@ PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
         base::FeatureList::IsEnabled(
             performance_manager::features::
                 kPerformanceControlsHighEfficiencyOptOutSurvey)) {
-      auto* manager = performance_manager::user_tuning::
-          UserPerformanceTuningManager::GetInstance();
-      user_performance_tuning_manager_observation_.Observe(manager);
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          GetInstance()
+              ->AddObserver(this);
     }
 
     local_pref_registrar_.Init(local_state);
@@ -47,6 +47,15 @@ PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
 
 PerformanceControlsHatsService::~PerformanceControlsHatsService() {
   local_pref_registrar_.RemoveAll();
+
+  // Can't used ScopedObservation because sometimes the
+  // UserPerformanceTuningManager is destroyed before this service.
+  if (performance_manager::user_tuning::UserPerformanceTuningManager::
+          HasInstance()) {
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->RemoveObserver(this);
+  }
 }
 
 void PerformanceControlsHatsService::OnBatterySaverModeChange() {
