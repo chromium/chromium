@@ -699,9 +699,15 @@ void AppListItemView::SetUIState(UIState ui_state) {
 }
 
 void AppListItemView::ScaleAppIcon(bool scale_up) {
-  if (!layer()) {
+  // If there is no layer and the icon will scale down, avoid creating an
+  // animation and just scale down.
+  if (!layer() && !scale_up) {
+    icon_scale_ = 1.0f;
+    SetIcon(icon_image_);
     return;
   }
+
+  EnsureLayer();
   if (!is_folder_) {
     if (scale_up) {
       icon_scale_ = kDragDropAppIconScale;
@@ -779,7 +785,6 @@ void AppListItemView::SetMouseDragging(bool mouse_dragging) {
 }
 
 void AppListItemView::OnMouseDragTimer() {
-  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
   // Show scaled up app icon to indicate draggable state.
   SetMouseDragging(true);
 }
@@ -798,9 +803,8 @@ void AppListItemView::OnTouchDragTimer(
 
 bool AppListItemView::InitiateDrag(const gfx::Point& location,
                                    const gfx::Point& root_location) {
-  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
-
-  if (!grid_delegate_->InitiateDrag(
+  if (!app_list_features::IsDragAndDropRefactorEnabled() &&
+      !grid_delegate_->InitiateDrag(
           this, location, root_location,
           base::BindOnce(&AppListItemView::OnDragStarted,
                          weak_ptr_factory_.GetWeakPtr()),
@@ -1041,12 +1045,7 @@ bool AppListItemView::ShouldEnterPushedState(const ui::Event& event) {
 }
 
 bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
-  bool return_value = Button::OnMousePressed(event);
-
-  if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    return return_value;
-  }
-
+  Button::OnMousePressed(event);
   if (!ShouldEnterPushedState(event)) {
     return true;
   }
