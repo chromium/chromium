@@ -460,6 +460,20 @@ void SelectFileDialogBridge::SetAccessoryView(
       if (@available(macOS 11, *)) {
         UTType* type =
             [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(ext)];
+        // If the extension string is invalid (e.g. contains dots), it's not a
+        // valid extension and `type` will be nil. In that case, invent a type
+        // that doesn't match any real files. When passed to the file picker, no
+        // files will be allowed to be selected. This matches the pre-UTTypes
+        // behavior in which an invalid specified type did not allow any files
+        // to be selected, and this matches Firefox and Safari behavior (see
+        // https://crbug.com/1423362#c17 for a test case).
+        if (!type) {
+          NSString* identifier =
+              [NSString stringWithFormat:@"org.chromium.not-a-real-type.%@",
+                                         [NSUUID UUID].UUIDString];
+          type = [UTType importedTypeWithIdentifier:identifier];
+        }
+
         if (![file_uttype_array containsObject:type]) {
           [file_uttype_array addObject:type];
         }
