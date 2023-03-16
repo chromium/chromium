@@ -144,10 +144,7 @@ void AndroidAutofillManager::OnSelectControlDidChangeImpl(
     provider->OnSelectControlDidChange(this, form, field, bounding_box);
 }
 
-bool AndroidAutofillManager::ShouldParseForms(
-    const std::vector<FormData>& forms) {
-  // Need to parse the |forms| to FormStructure, so heuristic_type can be
-  // retrieved later.
+bool AndroidAutofillManager::ShouldParseForms() {
   return true;
 }
 

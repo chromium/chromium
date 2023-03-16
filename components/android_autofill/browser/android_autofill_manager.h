@@ -123,7 +123,7 @@ class AndroidAutofillManager : public AutofillManager {
       const FormFieldData& field,
       const std::u16string& old_value) override {}
 
-  bool ShouldParseForms(const std::vector<FormData>& forms) override;
+  bool ShouldParseForms() override;
 
   void OnBeforeProcessParsedForms() override {}
 

@@ -445,7 +445,7 @@ class AutofillManager
 
   // Return whether the |forms| from OnFormSeen() should be parsed to
   // form_structures.
-  virtual bool ShouldParseForms(const std::vector<FormData>& forms) = 0;
+  virtual bool ShouldParseForms() = 0;
 
   // Invoked before parsing the forms.
   // TODO(crbug.com/1309848): Rename to some consistent scheme, e.g.,

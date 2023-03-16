@@ -726,8 +726,7 @@ void BrowserAutofillManager::OnVirtualCardCandidateSelected(
 }
 #endif
 
-bool BrowserAutofillManager::ShouldParseForms(
-    const std::vector<FormData>& forms) {
+bool BrowserAutofillManager::ShouldParseForms() {
   bool autofill_enabled = IsAutofillEnabled();
   // If autofill is disabled but the password manager is enabled, we still
   // need to parse the forms and query the server as the password manager

@@ -325,10 +325,9 @@ void AutofillManager::OnFormsSeen(
   if (!IsValidFormDataVector(updated_forms) || !driver_->RendererIsAvailable())
     return;
 
-  // This should be called even forms is empty, AutofillProviderAndroid uses
-  // this event to detect form submission.
-  if (!ShouldParseForms(updated_forms))
+  if (!ShouldParseForms()) {
     return;
+  }
 
   NotifyObservers(&Observer::OnBeforeFormsSeen,
                   GetFormGlobalIds(updated_forms));

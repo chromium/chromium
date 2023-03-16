@@ -168,10 +168,7 @@ class MockAutofillManager : public AutofillManager {
                const FormFieldData& field,
                const gfx::RectF& bounding_box),
               (override));
-  MOCK_METHOD(bool,
-              ShouldParseForms,
-              (const std::vector<FormData>& forms),
-              (override));
+  MOCK_METHOD(bool, ShouldParseForms, (), (override));
   MOCK_METHOD(void, OnBeforeProcessParsedForms, (), (override));
   MOCK_METHOD(void,
               OnFormProcessed,

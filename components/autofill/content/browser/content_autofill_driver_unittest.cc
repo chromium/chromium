@@ -290,7 +290,12 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   ~MockBrowserAutofillManager() override = default;
 
   MOCK_METHOD(void, Reset, (), (override));
-  MOCK_METHOD(bool, ShouldParseForms, (const std::vector<FormData>&), ());
+  MOCK_METHOD(bool, ShouldParseForms, (), ());
+  MOCK_METHOD(void,
+              OnFormsSeen,
+              (const std::vector<FormData>& updated_forms,
+               const std::vector<FormGlobalId>& removed_forms),
+              ());
 };
 
 class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
@@ -349,8 +354,8 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
     FormData form;
     test::CreateTestAddressFormData(&form);
     std::vector<FormData> augmented_forms;
-    EXPECT_CALL(*manager(), ShouldParseForms(_))
-        .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
+    EXPECT_CALL(*manager(), OnFormsSeen(_, _))
+        .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
     driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
                                           /*removed_forms=*/{});
     return augmented_forms.front();
@@ -458,17 +463,16 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_Version) {
   test::CreateTestAddressFormData(&form);
 
   std::vector<FormData> augmented_forms;
-  EXPECT_CALL(*manager(), ShouldParseForms(_))
-      .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
+  EXPECT_CALL(*manager(), OnFormsSeen(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
   driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
                                         /*removed_forms=*/{});
   ASSERT_EQ(augmented_forms.size(), 1u);
   FormVersion previous_version = augmented_forms[0].version;
-  EXPECT_CALL(
-      *manager(),
-      ShouldParseForms(ElementsAre(Field(
-          "FormData::version", &FormData::version, Gt(previous_version)))))
-      .WillOnce(Return(false));
+  EXPECT_CALL(*manager(), OnFormsSeen(ElementsAre(Field("FormData::version",
+                                                        &FormData::version,
+                                                        Gt(previous_version))),
+                                      _));
   driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
                                         /*removed_forms=*/{});
 }
@@ -579,8 +583,8 @@ TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   test::CreateTestAddressFormData(&form);
 
   std::vector<FormData> augmented_forms;
-  EXPECT_CALL(*manager(), ShouldParseForms(_))
-      .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
+  EXPECT_CALL(*manager(), OnFormsSeen(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
   driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
                                         /*removed_forms=*/{});
 
