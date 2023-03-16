@@ -197,6 +197,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_PasswordsManagementBubbleAfterSave"
       summary="educating the users about the password management bubble after
                saving a password"/>
+  <variant name="IPH_PasswordsManagementBubbleDuringSignin"
+      summary="educating the users about the password management bubble
+               during signin flows"/>
   <variant name="IPH_PasswordSuggestions"
       summary="the Autofill password suggestions on iOS"/>
   <variant name="IPH_PerformanceNewBadge"

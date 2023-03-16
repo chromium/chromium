@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -263,6 +264,23 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
     ClearPopUpFlagForBubble();
     passwords_data_.OnPasswordAutofilled(password_forms, origin,
                                          federated_matches);
+    if (GetState() == password_manager::ui::MANAGE_STATE) {
+      if (Browser* browser =
+              chrome::FindBrowserWithWebContents(web_contents())) {
+        if (browser->tab_strip_model()->GetActiveWebContents() ==
+            web_contents()) {
+          const bool has_non_empty_note =
+              !base::ranges::all_of(GetCurrentForms(), &std::u16string::empty,
+                                    &password_manager::PasswordForm::
+                                        GetNoteWithEmptyUniqueDisplayName);
+          if (has_non_empty_note) {
+            browser->window()->MaybeShowFeaturePromo(
+                feature_engagement::
+                    kIPHPasswordsManagementBubbleDuringSigninFeature);
+          }
+        }
+      }
+    }
     // Don't close the existing bubble. Update the icon later.
     if (bubble_status_ == BubbleStatus::SHOWN)
       bubble_status_ = BubbleStatus::SHOWN_PENDING_ICON_UPDATE;

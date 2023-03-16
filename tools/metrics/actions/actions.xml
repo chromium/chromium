@@ -36893,6 +36893,8 @@ should be able to be added at any place in this file.
       label="For PasswordsAccountStorage feature."/>
   <suffix name="PasswordsManagementBubbleAfterSave"
       label="For password management bubble after save feature."/>
+  <suffix name="PasswordsManagementBubbleDuringSignin"
+      label="For password management bubble during signin feature."/>
   <suffix name="PasswordSuggestions" label="For PasswordSuggestions feature."/>
   <suffix name="PerformanceNewBadge"
       label="For new badge next to Performance feature."/>
