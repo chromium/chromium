@@ -1732,6 +1732,9 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
   auto shortcut_info = shortcut_future.Take();
   EXPECT_NE(shortcut_info, nullptr);
   EXPECT_EQ(shortcut_info->title, u"test_app_2");
+
+  test::UninstallAllWebApps(profile());
+  EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(app_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(

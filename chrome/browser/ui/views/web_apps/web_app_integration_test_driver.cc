@@ -563,25 +563,6 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
       observation_{this};
 };
 
-#if BUILDFLAG(IS_WIN)
-std::vector<std::wstring> GetFileExtensionsForProgId(
-    const std::wstring& file_handler_prog_id) {
-  const std::wstring prog_id_path =
-      base::StrCat({ShellUtil::kRegClasses, L"\\", file_handler_prog_id});
-
-  // Get list of handled file extensions from value FileExtensions at
-  // HKEY_CURRENT_USER\Software\Classes\<file_handler_prog_id>.
-  base::win::RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
-                                        KEY_QUERY_VALUE);
-  std::wstring handled_file_extensions;
-  EXPECT_EQ(file_extensions_key.ReadValue(L"FileExtensions",
-                                          &handled_file_extensions),
-            ERROR_SUCCESS);
-  return base::SplitString(handled_file_extensions, std::wstring(L";"),
-                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-}
-#endif
-
 absl::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,
                                                 Profile* profile) {
   DCHECK(state_snapshot);
@@ -2758,7 +2739,11 @@ void WebAppIntegrationTestDriver::CheckSiteHandlesFile(
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  ASSERT_TRUE(IsFileHandledBySite(site, file_extension));
+  AppId app_id = GetAppIdBySiteMode(site);
+  std::string app_name = GetSiteConfiguration(site).app_name;
+  std::string file_extension_str = "." + GetFileExtension(file_extension);
+  ASSERT_TRUE(override_registration_->test_override->IsFileExtensionHandled(
+      profile(), app_id, app_name, file_extension_str));
   AfterStateCheckAction();
 #endif
 }
@@ -2770,7 +2755,11 @@ void WebAppIntegrationTestDriver::CheckSiteNotHandlesFile(
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  ASSERT_FALSE(IsFileHandledBySite(site, file_extension));
+  AppId app_id = GetAppIdBySiteMode(site);
+  std::string app_name = GetSiteConfiguration(site).app_name;
+  std::string file_extension_str = "." + GetFileExtension(file_extension);
+  ASSERT_FALSE(override_registration_->test_override->IsFileExtensionHandled(
+      profile(), app_id, app_name, file_extension_str));
   AfterStateCheckAction();
 #endif
 }
@@ -3579,69 +3568,6 @@ bool WebAppIntegrationTestDriver::DoIconColorsMatch(Profile* profile,
   }
 #endif
   return do_icon_colors_match;
-}
-
-bool WebAppIntegrationTestDriver::IsFileHandledBySite(
-    Site site,
-    FileExtension file_extension) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  bool is_file_handled = false;
-  std::string file_extension_str = GetFileExtension(file_extension);
-#if BUILDFLAG(IS_WIN)
-  AppId app_id = GetAppIdBySiteMode(site);
-  const std::wstring prog_id =
-      GetProgIdForApp(browser()->profile()->GetPath(), app_id);
-  const std::vector<std::wstring> file_handler_prog_ids =
-      ShellUtil::GetFileHandlerProgIdsForAppId(prog_id);
-
-  base::win::RegKey key;
-  for (const auto& file_handler_prog_id : file_handler_prog_ids) {
-    const std::vector<std::wstring> supported_file_extensions =
-        GetFileExtensionsForProgId(file_handler_prog_id);
-    std::wstring extension = base::UTF8ToWide("." + file_extension_str);
-    if (base::Contains(supported_file_extensions, extension)) {
-      const std::wstring reg_key = std::wstring(ShellUtil::kRegClasses) +
-                                   base::FilePath::kSeparators[0] + extension +
-                                   base::FilePath::kSeparators[0] +
-                                   ShellUtil::kRegOpenWithProgids;
-      EXPECT_EQ(ERROR_SUCCESS,
-                key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
-      return key.HasValue(file_handler_prog_id.data());
-    }
-  }
-#elif BUILDFLAG(IS_MAC)
-  AppId app_id = GetAppIdBySiteMode(site);
-  std::string app_name = GetSiteConfiguration(site).app_name;
-  const base::FilePath test_file_path =
-      override_registration_->test_override->chrome_apps_folder().AppendASCII(
-          "test." + file_extension_str);
-  const base::File test_file(
-      test_file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  const GURL test_file_url = net::FilePathToFileURL(test_file_path);
-  base::FilePath app_path = GetShortcutPath(
-      override_registration_->test_override->chrome_apps_folder(), app_name,
-      app_id);
-  is_file_handled =
-      shell_integration::CanApplicationHandleURL(app_path, test_file_url);
-#elif BUILDFLAG(IS_LINUX)
-  AppId app_id = GetAppIdBySiteMode(site);
-  for (const LinuxFileRegistration& command :
-       override_registration_->test_override->linux_file_registration()) {
-    if (base::Contains(command.xdg_command, app_id) &&
-        base::Contains(command.xdg_command,
-                       profile()->GetPath().BaseName().value())) {
-      if (base::StartsWith(command.xdg_command, "xdg-mime install")) {
-        is_file_handled = base::Contains(command.file_contents,
-                                         "\"*." + file_extension_str + "\"");
-      } else {
-        DCHECK(base::StartsWith(command.xdg_command, "xdg-mime uninstall"))
-            << command.xdg_command;
-        is_file_handled = false;
-      }
-    }
-  }
-#endif
-  return is_file_handled;
 }
 
 void WebAppIntegrationTestDriver::SetFileHandlingEnabled(Site site,
