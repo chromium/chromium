@@ -510,10 +510,10 @@ void PasswordManager::UpdateFormManagers() {
   }
 
   // Remove the duplicates.
-  std::sort(fetchers.begin(), fetchers.end());
-  fetchers.erase(std::unique(fetchers.begin(), fetchers.end()), fetchers.end());
-  std::sort(drivers.begin(), drivers.end());
-  drivers.erase(std::unique(drivers.begin(), drivers.end()), drivers.end());
+  base::ranges::sort(fetchers);
+  fetchers.erase(base::ranges::unique(fetchers), fetchers.end());
+  base::ranges::sort(drivers);
+  drivers.erase(base::ranges::unique(drivers), drivers.end());
   // Refetch credentials for all the forms and update the drivers.
   for (FormFetcher* fetcher : fetchers)
     fetcher->Fetch();
