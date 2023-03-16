@@ -2855,7 +2855,8 @@ TEST_P(AutofillTableTestPerModelType, AutofillGetAllSyncMetadata) {
   EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key, metadata));
 
   ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
 
@@ -2865,7 +2866,8 @@ TEST_P(AutofillTableTestPerModelType, AutofillGetAllSyncMetadata) {
   MetadataBatch metadata_batch;
   EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
 
-  EXPECT_TRUE(metadata_batch.GetModelTypeState().initial_sync_done());
+  EXPECT_EQ(metadata_batch.GetModelTypeState().initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   EntityMetadataMap metadata_records = metadata_batch.TakeAllMetadata();
 
@@ -2874,11 +2876,14 @@ TEST_P(AutofillTableTestPerModelType, AutofillGetAllSyncMetadata) {
   EXPECT_EQ(metadata_records[storage_key2]->sequence_number(), 2);
 
   // Now check that a model type state update replaces the old value
-  model_type_state.set_initial_sync_done(false);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
   EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
 
   EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
-  EXPECT_FALSE(metadata_batch.GetModelTypeState().initial_sync_done());
+  EXPECT_EQ(
+      metadata_batch.GetModelTypeState().initial_sync_state(),
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 }
 
 TEST_P(AutofillTableTestPerModelType, AutofillWriteThenDeleteSyncMetadata) {
@@ -2888,7 +2893,8 @@ TEST_P(AutofillTableTestPerModelType, AutofillWriteThenDeleteSyncMetadata) {
   std::string storage_key = "storage_key";
   ModelTypeState model_type_state;
 
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   metadata.set_client_tag_hash("client_hash");
 

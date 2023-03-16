@@ -51,7 +51,8 @@ void CaptureCommitRequest(CommitRequestDataList* dst,
 sync_pb::ModelTypeState CreateDummyModelTypeState() {
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_cache_guid(kCacheGuid);
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   return model_type_state;
 }
 
@@ -120,8 +121,11 @@ class NigoriModelTypeProcessorTest : public testing::Test {
 
   void SimulateModelReadyToSync(bool initial_sync_done, int server_version) {
     NigoriMetadataBatch nigori_metadata_batch;
-    nigori_metadata_batch.model_type_state.set_initial_sync_done(
-        initial_sync_done);
+    nigori_metadata_batch.model_type_state.set_initial_sync_state(
+        initial_sync_done
+            ? sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE
+            : sync_pb::
+                  ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
     nigori_metadata_batch.model_type_state.set_cache_guid(kCacheGuid);
     nigori_metadata_batch.entity_metadata = sync_pb::EntityMetadata();
     nigori_metadata_batch.entity_metadata->set_creation_time(
@@ -179,7 +183,8 @@ TEST_F(NigoriModelTypeProcessorTest,
   // Build a model type state with a specific cache guid.
   const std::string kOtherCacheGuid = "cache_guid";
   sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   model_type_state.set_cache_guid(kOtherCacheGuid);
 
   // Build entity metadata with a specific sequence number.

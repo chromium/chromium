@@ -6,6 +6,31 @@
 
 namespace syncer {
 
+bool IsInitialSyncDone(sync_pb::ModelTypeState::InitialSyncState state) {
+  switch (state) {
+    case sync_pb::
+        ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED:
+    case sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE:
+      return false;
+    case sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE:
+    case sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY:
+      return true;
+  }
+}
+
+bool IsInitialSyncAtLeastPartiallyDone(
+    sync_pb::ModelTypeState::InitialSyncState state) {
+  switch (state) {
+    case sync_pb::
+        ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED:
+      return false;
+    case sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE:
+    case sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE:
+    case sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY:
+      return true;
+  }
+}
+
 bool MigrateLegacyInitialSyncDone(sync_pb::ModelTypeState& model_type_state,
                                   ModelType type) {
   if (model_type_state.has_initial_sync_state()) {
@@ -14,7 +39,7 @@ bool MigrateLegacyInitialSyncDone(sync_pb::ModelTypeState& model_type_state,
   }
   // Migrate from the deprecated `initial_sync_done` flag to the
   // `initial_sync_state` enum.
-  if (model_type_state.initial_sync_done()) {
+  if (model_type_state.initial_sync_done_deprecated()) {
     model_type_state.set_initial_sync_state(
         CommitOnlyTypes().Has(type)
             ? sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY

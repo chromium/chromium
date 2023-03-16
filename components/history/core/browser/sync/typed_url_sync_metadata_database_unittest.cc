@@ -83,7 +83,8 @@ TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLGetAllSyncMetadata) {
                                                      storage_key, metadata));
 
   ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   EXPECT_TRUE(sync_metadata_db_.UpdateModelTypeState(syncer::TYPED_URLS,
                                                      model_type_state));
@@ -95,7 +96,8 @@ TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLGetAllSyncMetadata) {
   MetadataBatch metadata_batch;
   EXPECT_TRUE(sync_metadata_db_.GetAllSyncMetadata(&metadata_batch));
 
-  EXPECT_TRUE(metadata_batch.GetModelTypeState().initial_sync_done());
+  EXPECT_EQ(metadata_batch.GetModelTypeState().initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   EntityMetadataMap metadata_records = metadata_batch.TakeAllMetadata();
 
@@ -104,12 +106,15 @@ TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLGetAllSyncMetadata) {
   EXPECT_EQ(metadata_records[storage_key2]->sequence_number(), 2);
 
   // Now check that a model type state update replaces the old value
-  model_type_state.set_initial_sync_done(false);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
   EXPECT_TRUE(sync_metadata_db_.UpdateModelTypeState(syncer::TYPED_URLS,
                                                      model_type_state));
 
   EXPECT_TRUE(sync_metadata_db_.GetAllSyncMetadata(&metadata_batch));
-  EXPECT_FALSE(metadata_batch.GetModelTypeState().initial_sync_done());
+  EXPECT_EQ(
+      metadata_batch.GetModelTypeState().initial_sync_state(),
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 }
 
 TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLWriteThenDeleteSyncMetadata) {
@@ -118,7 +123,8 @@ TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLWriteThenDeleteSyncMetadata) {
   std::string storage_key = IntToStorageKey(1);
   ModelTypeState model_type_state;
 
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   metadata.set_client_tag_hash("client_hash");
 

@@ -30,13 +30,13 @@ TEST(ModelTypeStateHelperTest, DoesNotMigrateDefaultInstance) {
 
 TEST(ModelTypeStateHelperTest, MigratesRegularModelType) {
   sync_pb::ModelTypeState state;
-  state.set_initial_sync_done(true);
+  state.set_initial_sync_done_deprecated(true);
 
   EXPECT_TRUE(MigrateLegacyInitialSyncDone(state, kRegularType));
   EXPECT_EQ(state.initial_sync_state(),
             sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   // The legacy field should also still be there.
-  EXPECT_TRUE(state.initial_sync_done());
+  EXPECT_TRUE(state.initial_sync_done_deprecated());
 
   // The migration should be idempotent.
   EXPECT_FALSE(MigrateLegacyInitialSyncDone(state, kRegularType));
@@ -44,13 +44,13 @@ TEST(ModelTypeStateHelperTest, MigratesRegularModelType) {
 
 TEST(ModelTypeStateHelperTest, MigratesCommitOnlyModelType) {
   sync_pb::ModelTypeState state;
-  state.set_initial_sync_done(true);
+  state.set_initial_sync_done_deprecated(true);
 
   EXPECT_TRUE(MigrateLegacyInitialSyncDone(state, kCommitOnlyType));
   EXPECT_EQ(state.initial_sync_state(),
             sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY);
   // The legacy field should also still be there.
-  EXPECT_TRUE(state.initial_sync_done());
+  EXPECT_TRUE(state.initial_sync_done_deprecated());
 
   // The migration should be idempotent.
   EXPECT_FALSE(MigrateLegacyInitialSyncDone(state, kCommitOnlyType));
@@ -58,17 +58,17 @@ TEST(ModelTypeStateHelperTest, MigratesCommitOnlyModelType) {
 
 TEST(ModelTypeStateHelperTest, MigratesApplyImmediatelyModelType) {
   sync_pb::ModelTypeState state;
-  state.set_initial_sync_done(true);
+  state.set_initial_sync_done_deprecated(true);
 
   EXPECT_TRUE(
       MigrateLegacyInitialSyncDone(state, kApplyUpdatesImmediatelyType));
-  // Note: For ApplyUpdatesImmediatelyTypes(), `initial_sync_done` could map to
-  // either `INITIAL_SYNC_DONE` or `INITIAL_SYNC_PARTIALLY_DONE`. To preserve
-  // the previous behavior, it gets migrated to `INITIAL_SYNC_DONE`.
+  // Note: For ApplyUpdatesImmediatelyTypes(), `initial_sync_done_deprecated`
+  // could map to either `INITIAL_SYNC_DONE` or `INITIAL_SYNC_PARTIALLY_DONE`.
+  // To preserve the previous behavior, it gets migrated to `INITIAL_SYNC_DONE`.
   EXPECT_EQ(state.initial_sync_state(),
             sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   // The legacy field should also still be there.
-  EXPECT_TRUE(state.initial_sync_done());
+  EXPECT_TRUE(state.initial_sync_done_deprecated());
 
   // The migration should be idempotent.
   EXPECT_FALSE(

@@ -134,7 +134,8 @@ sync_pb::BookmarkMetadata CreatePermanentNodeMetadata(
 sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
     const bookmarks::BookmarkModel* bookmark_model) {
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_done(true);
+  model_metadata.mutable_model_type_state()->set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   model_metadata.set_bookmarks_hierarchy_fields_reuploaded(true);
 
   *model_metadata.add_bookmarks_metadata() =
@@ -1111,7 +1112,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
 
   sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
@@ -1184,7 +1186,8 @@ TEST_F(
                                  GURL());
 
   sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();

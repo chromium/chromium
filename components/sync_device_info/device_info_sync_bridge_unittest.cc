@@ -316,7 +316,8 @@ DeviceInfoSpecifics CreateSpecifics(
 
 ModelTypeState StateWithEncryption(const std::string& encryption_key_name) {
   ModelTypeState state;
-  state.set_initial_sync_done(true);
+  state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   state.set_cache_guid(CacheGuidForSuffix(kLocalSuffix));
   state.set_encryption_key_name(encryption_key_name);
   return state;
@@ -477,8 +478,9 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     ON_CALL(mock_processor_, ModelReadyToSync)
         .WillByDefault([this](std::unique_ptr<MetadataBatch> batch) {
           ON_CALL(mock_processor_, IsTrackingMetadata())
-              .WillByDefault(
-                  Return(batch->GetModelTypeState().initial_sync_done()));
+              .WillByDefault(Return(
+                  batch->GetModelTypeState().initial_sync_state() ==
+                  sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE));
         });
   }
 

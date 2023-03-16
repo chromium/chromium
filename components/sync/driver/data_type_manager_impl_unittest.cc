@@ -1269,7 +1269,8 @@ TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
 
   // Mark both types as already downloaded.
   sync_pb::ModelTypeState already_downloaded;
-  already_downloaded.set_initial_sync_done(true);
+  already_downloaded.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   GetController(PRIORITY_PREFERENCES)
       ->model()
       ->SetModelTypeStateForActivationResponse(already_downloaded);
@@ -1626,7 +1627,8 @@ TEST_F(SyncDataTypeManagerImplTest, ProvideDebugInfo) {
 
   // Mark BOOKMARKS as already downloaded.
   sync_pb::ModelTypeState bookmarks_state;
-  bookmarks_state.set_initial_sync_done(true);
+  bookmarks_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   GetController(BOOKMARKS)->model()->SetModelTypeStateForActivationResponse(
       bookmarks_state);
 

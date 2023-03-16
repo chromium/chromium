@@ -210,7 +210,8 @@ class SyncerTest : public testing::Test,
   std::unique_ptr<DataTypeActivationResponse> MakeFakeActivationResponse(
       ModelType model_type) {
     auto response = std::make_unique<DataTypeActivationResponse>();
-    response->model_type_state.set_initial_sync_done(true);
+    response->model_type_state.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     response->model_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(model_type));
     response->type_processor = std::make_unique<ForwardingModelTypeProcessor>(

@@ -999,7 +999,8 @@ TEST_F(PasswordSyncBridgeTest,
         // redownloaded for notes already.
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
         sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_done(true);
+        model_type_state.set_initial_sync_state(
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
         metadata_batch->SetModelTypeState(model_type_state);
         return metadata_batch;
       });
@@ -1030,7 +1031,8 @@ TEST_F(
         // for notes already.
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
         sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_done(true);
+        model_type_state.set_initial_sync_state(
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
         model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
             true);
         metadata_batch->SetModelTypeState(model_type_state);
@@ -1059,7 +1061,8 @@ TEST_F(
       .WillByDefault([&]() {
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
         sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_done(true);
+        model_type_state.set_initial_sync_state(
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
         metadata_batch->SetModelTypeState(model_type_state);
         return metadata_batch;
       });
@@ -1085,23 +1088,26 @@ TEST_F(PasswordSyncBridgeTest,
       .WillByDefault([&]() {
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
         sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_done(true);
+        model_type_state.set_initial_sync_state(
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
         model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
             true);
         metadata_batch->SetModelTypeState(model_type_state);
         return metadata_batch;
       });
 
-  EXPECT_CALL(mock_processor(),
-              ModelReadyToSync(syncer::MetadataBatchContains(
-                  testing::AllOf(
-                      testing::Property(
-                          &sync_pb::ModelTypeState::initial_sync_done, true),
-                      testing::Property(
-                          &sync_pb::ModelTypeState::
-                              notes_enabled_before_initial_sync_for_passwords,
-                          false)),
-                  /*entities=*/testing::SizeIs(0))));
+  EXPECT_CALL(
+      mock_processor(),
+      ModelReadyToSync(syncer::MetadataBatchContains(
+          testing::AllOf(
+              testing::Property(
+                  &sync_pb::ModelTypeState::initial_sync_state,
+                  sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE),
+              testing::Property(
+                  &sync_pb::ModelTypeState::
+                      notes_enabled_before_initial_sync_for_passwords,
+                  false)),
+          /*entities=*/testing::SizeIs(0))));
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata())
       .Times(0);
 
@@ -1185,7 +1191,8 @@ TEST_F(
       .WillByDefault(testing::Return(false));
 
   sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
@@ -1248,7 +1255,8 @@ TEST_F(PasswordSyncBridgeTest,
   ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata())
       .WillByDefault([&]() {
         sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_done(true);
+        model_type_state.set_initial_sync_state(
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
         model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
             base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();

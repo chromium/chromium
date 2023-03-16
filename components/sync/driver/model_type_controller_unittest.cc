@@ -116,8 +116,11 @@ class ModelTypeControllerTest : public testing::Test {
 
     // Prepare an activation response, which is the outcome of OnSyncStarting().
     auto activation_response = std::make_unique<DataTypeActivationResponse>();
-    activation_response->model_type_state.set_initial_sync_done(
-        initial_sync_done);
+    activation_response->model_type_state.set_initial_sync_state(
+        initial_sync_done
+            ? sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE
+            : sync_pb::
+                  ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
     activation_response->type_processor =
         std::make_unique<FakeModelTypeProcessor>();
 
@@ -170,7 +173,9 @@ TEST_F(ModelTypeControllerTest, Connect) {
 
   ASSERT_THAT(activation_response, NotNull());
   EXPECT_THAT(activation_response->type_processor, NotNull());
-  EXPECT_FALSE(activation_response->model_type_state.initial_sync_done());
+  EXPECT_EQ(
+      activation_response->model_type_state.initial_sync_state(),
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
 }
@@ -186,7 +191,8 @@ TEST_F(ModelTypeControllerTest, ConnectWithInitialSyncDone) {
 
   ASSERT_THAT(activation_response, NotNull());
   EXPECT_THAT(activation_response->type_processor, NotNull());
-  EXPECT_TRUE(activation_response->model_type_state.initial_sync_done());
+  EXPECT_EQ(activation_response->model_type_state.initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
 }

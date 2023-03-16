@@ -22,7 +22,8 @@ MockModelTypeWorker::MockModelTypeWorker(
     const sync_pb::ModelTypeState& model_type_state,
     ModelTypeProcessor* processor)
     : model_type_state_(model_type_state), processor_(processor) {
-  model_type_state_.set_initial_sync_done(true);
+  model_type_state_.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 }
 
 MockModelTypeWorker::~MockModelTypeWorker() = default;

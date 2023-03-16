@@ -40,6 +40,7 @@
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 
@@ -325,7 +326,7 @@ void ModelTypeWorker::ConnectSync(
   model_type_processor_->ConnectSync(
       std::make_unique<CommitQueueProxy>(weak_ptr_factory_.GetWeakPtr()));
 
-  if (!model_type_state_.initial_sync_done()) {
+  if (!IsInitialSyncDone(model_type_state_.initial_sync_state())) {
     nudge_handler_->NudgeForInitialDownload(type_);
   }
 
@@ -337,7 +338,8 @@ void ModelTypeWorker::ConnectSync(
   // isn't done, the now-updated key will be pushed on the first ApplyUpdates()
   // call anyway.
   bool had_outdated_key_name = UpdateTypeEncryptionKeyName();
-  if (had_outdated_key_name && model_type_state_.initial_sync_done()) {
+  if (had_outdated_key_name &&
+      IsInitialSyncDone(model_type_state_.initial_sync_state())) {
     SendPendingUpdatesToProcessorIfReady();
   }
 }
@@ -386,7 +388,7 @@ void ModelTypeWorker::UpdatePassphraseType(PassphraseType type) {
 
 bool ModelTypeWorker::IsInitialSyncEnded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return model_type_state_.initial_sync_done();
+  return IsInitialSyncDone(model_type_state_.initial_sync_state());
 }
 
 const sync_pb::DataTypeProgressMarker& ModelTypeWorker::GetDownloadProgress()
@@ -407,7 +409,8 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
     StatusController* status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const bool is_initial_sync = !model_type_state_.initial_sync_done();
+  const bool is_initial_sync =
+      !IsInitialSyncDone(model_type_state_.initial_sync_state());
 
   // TODO(rlarocque): Handle data type context conflicts.
   *model_type_state_.mutable_type_context() = mutated_context;
@@ -594,7 +597,7 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
   // other types wait for the cycle to complete before applying any updates.
   // Note that the initial sync technically isn't started/done yet but by the
   // time this value is persisted to disk on the model thread it will be.
-  model_type_state_.set_initial_sync_done(true);
+  model_type_state_.set_initial_sync_done_deprecated(true);
   if (cycle_done) {
     model_type_state_.set_initial_sync_state(
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
@@ -646,7 +649,7 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
 void ModelTypeWorker::SendPendingUpdatesToProcessorIfReady() {
   DCHECK(model_type_processor_);
 
-  if (!model_type_state_.initial_sync_done()) {
+  if (!IsInitialSyncDone(model_type_state_.initial_sync_state())) {
     return;
   }
 
@@ -699,7 +702,7 @@ void ModelTypeWorker::NudgeIfReadyToCommit() {
 std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
     size_t max_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(model_type_state_.initial_sync_done());
+  DCHECK(IsInitialSyncDone(model_type_state_.initial_sync_state()));
   DCHECK(model_type_processor_);
 
   // Early return if type is not ready to commit (initial sync isn't done or
@@ -794,7 +797,7 @@ size_t ModelTypeWorker::EstimateMemoryUsage() const {
 }
 
 bool ModelTypeWorker::IsTypeInitialized() const {
-  return model_type_state_.initial_sync_done();
+  return IsInitialSyncDone(model_type_state_.initial_sync_state());
 }
 
 bool ModelTypeWorker::CanCommitItems() const {

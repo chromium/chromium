@@ -181,9 +181,10 @@ class AutocompleteSyncBridgeTest : public testing::Test {
             }));
     loop.Run();
 
-    // Initialize the processor with initial_sync_done.
+    // Initialize the processor with the initial sync already done.
     sync_pb::ModelTypeState state;
-    state.set_initial_sync_done(true);
+    state.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     syncer::UpdateResponseDataList initial_updates;
     for (const AutofillSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
@@ -665,7 +666,8 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryExpired) {
 
 TEST_F(AutocompleteSyncBridgeTest, LoadMetadataCalled) {
   ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   EXPECT_TRUE(
       table()->UpdateModelTypeState(syncer::AUTOFILL, model_type_state));
   EXPECT_TRUE(

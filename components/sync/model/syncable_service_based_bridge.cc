@@ -20,6 +20,7 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 
@@ -438,7 +439,8 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
   // Guard against inconsistent state, and recover from it by starting from
   // scratch, which will cause the eventual refetching of all entities from the
   // server.
-  if (!metadata_batch->GetModelTypeState().initial_sync_done() &&
+  if (!IsInitialSyncDone(
+          metadata_batch->GetModelTypeState().initial_sync_state()) &&
       !in_memory_store_.empty()) {
     in_memory_store_.clear();
     store_->DeleteAllDataAndMetadata(base::DoNothing());

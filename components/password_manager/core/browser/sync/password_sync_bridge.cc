@@ -33,6 +33,7 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/sync/protocol/model_type_state_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -294,7 +295,8 @@ PasswordSyncBridge::PasswordSyncBridge(
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::
           kNewlySupportedFieldDetectedInUnsupportedFieldsCache;
-    } else if (batch->GetModelTypeState().initial_sync_done() &&
+    } else if (syncer::IsInitialSyncDone(
+                   batch->GetModelTypeState().initial_sync_state()) &&
                !batch->GetModelTypeState()
                     .notes_enabled_before_initial_sync_for_passwords() &&
                base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
@@ -307,7 +309,8 @@ PasswordSyncBridge::PasswordSyncBridge(
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::
           kPasswordsRequireRedownloadForPotentialNotesOnTheServer;
-    } else if (batch->GetModelTypeState().initial_sync_done() &&
+    } else if (syncer::IsInitialSyncDone(
+                   batch->GetModelTypeState().initial_sync_state()) &&
                batch->GetModelTypeState()
                    .notes_enabled_before_initial_sync_for_passwords() &&
                !base::FeatureList::IsEnabled(

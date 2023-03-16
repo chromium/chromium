@@ -81,7 +81,8 @@ TEST_F(ModelTypeRegistryTest, ConnectDataTypes) {
 TEST_F(ModelTypeRegistryTest, GetInitialSyncEndedTypes) {
   // Themes has finished initial sync.
   sync_pb::ModelTypeState model_type_state = MakeInitialModelTypeState(THEMES);
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   registry()->ConnectDataType(THEMES,
                               MakeDataTypeActivationResponse(model_type_state));
 

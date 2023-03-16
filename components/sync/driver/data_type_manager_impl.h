@@ -142,6 +142,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   // be maintained as part of |downloaded_types_|, however, since in some edge
   // cases (notably PurgeForMigration()), this class might have to trigger a
   // re-download of NIGORI data.
+  // TODO(crbug.com/1422901): Consider removing this; see bug for details.
   ModelTypeSet downloaded_types_ = ControlTypes();
 
   // Types that requested in current configuration cycle.

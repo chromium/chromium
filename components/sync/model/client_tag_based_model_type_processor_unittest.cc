@@ -197,7 +197,11 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
 
   void SetInitialSyncDone(bool is_done) {
     ModelTypeState model_type_state(db().model_type_state());
-    model_type_state.set_initial_sync_done(is_done);
+    model_type_state.set_initial_sync_state(
+        is_done
+            ? sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE
+            : sync_pb::
+                  ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
     model_type_state.set_cache_guid(kCacheGuid);
     model_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(type()));
@@ -561,7 +565,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldExposePreviouslyTrackedAccountId) {
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   model_type_state.set_cache_guid(kCacheGuid);
   model_type_state.set_authenticated_account_id("PersistedAccountId");
   model_type_state.mutable_progress_marker()->set_data_type_id(
@@ -581,7 +586,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldExposeNewlyTrackedAccountIdIfChanged) {
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   model_type_state.set_cache_guid(kCacheGuid);
   model_type_state.set_authenticated_account_id("PersistedAccountId");
   model_type_state.mutable_progress_marker()->set_data_type_id(
@@ -630,7 +636,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldExposePreviouslyTrackedCacheGuid) {
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   model_type_state.set_cache_guid("PersistedCacheGuid");
   model_type_state.set_authenticated_account_id(kDefaultAuthenticatedAccountId);
   model_type_state.mutable_progress_marker()->set_data_type_id(
@@ -2805,7 +2812,9 @@ TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,
        ShouldExposePreviouslyTrackedAccountId) {
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
-  model_type_state.set_initial_sync_done(true);
+
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   model_type_state.set_cache_guid(kCacheGuid);
   model_type_state.set_authenticated_account_id("PersistedAccountId");
   model_type_state.mutable_progress_marker()->set_data_type_id(
@@ -2834,7 +2843,8 @@ TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,
        ShouldNotCallMergeAfterRestart) {
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   model_type_state.set_cache_guid(kCacheGuid);
   model_type_state.set_authenticated_account_id("PersistedAccountId");
   model_type_state.mutable_progress_marker()->set_data_type_id(
@@ -2854,7 +2864,8 @@ TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,
 TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,
        DISABLED_ShouldCommitAndDeleteWhenAcked) {
   InitializeToReadyState();
-  EXPECT_TRUE(db()->model_type_state().initial_sync_done());
+  EXPECT_EQ(db()->model_type_state().initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   const uint64_t key1 = 1234;
   const std::string key1s = base::NumberToString(key1);

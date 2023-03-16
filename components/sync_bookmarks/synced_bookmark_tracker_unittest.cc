@@ -105,7 +105,8 @@ sync_pb::BookmarkMetadata CreateTombstoneMetadata(
 sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
     const bookmarks::BookmarkModel* bookmark_model) {
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_done(true);
+  model_metadata.mutable_model_type_state()->set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   *model_metadata.add_bookmarks_metadata() =
       CreateNodeMetadata(bookmark_model->bookmark_bar_node(),
@@ -671,7 +672,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingMobileFolder) {
       bookmarks::TestBookmarkClient::CreateModel();
 
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_done(true);
+  model_metadata.mutable_model_type_state()->set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   // Add entries for all the permanent nodes except for the Mobile bookmarks
   // folder.
@@ -1061,7 +1063,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
   const GURL kUrl("http://www.foo.com");
 
   sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateEmpty(model_type_state);
   tracker->SetBookmarksReuploaded();
@@ -1133,7 +1136,8 @@ TEST(SyncedBookmarkTrackerTest,
       bookmarks::TestBookmarkClient::CreateModel();
 
   sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   sync_pb::BookmarkModelMetadata initial_model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model.get());
   initial_model_metadata.set_bookmarks_hierarchy_fields_reuploaded(true);

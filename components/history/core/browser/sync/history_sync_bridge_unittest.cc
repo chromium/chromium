@@ -333,7 +333,8 @@ class HistorySyncBridgeTest : public testing::Test {
     std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
         bridge()->CreateMetadataChangeList();
     sync_pb::ModelTypeState model_type_state;
-    model_type_state.set_initial_sync_done(true);
+    model_type_state.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     metadata_changes->UpdateModelTypeState(model_type_state);
     for (const sync_pb::HistorySpecifics& specifics : specifics_vector) {
       syncer::EntityData data = SpecificsToEntityData(specifics);

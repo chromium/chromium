@@ -98,7 +98,8 @@ class ReadingListModelTest : public FakeReadingListModelStorage::Observer,
 
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
     sync_pb::ModelTypeState state;
-    state.set_initial_sync_done(true);
+    state.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     state.set_authenticated_account_id(kTestAccountId);
     metadata_batch->SetModelTypeState(state);
 

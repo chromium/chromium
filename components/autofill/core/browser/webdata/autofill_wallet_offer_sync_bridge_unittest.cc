@@ -153,7 +153,11 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
 
   void ResetBridge(bool initial_sync_done) {
     ModelTypeState model_type_state;
-    model_type_state.set_initial_sync_done(initial_sync_done);
+    model_type_state.set_initial_sync_state(
+        initial_sync_done
+            ? sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE
+            : sync_pb::
+                  ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
     model_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(syncer::AUTOFILL_WALLET_OFFER));
     model_type_state.set_cache_guid(kDefaultCacheGuid);
@@ -177,9 +181,10 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
             }));
     loop.Run();
 
-    // Initialize the processor with initial_sync_done.
+    // Initialize the processor with the initial sync already done.
     sync_pb::ModelTypeState state;
-    state.set_initial_sync_done(true);
+    state.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     sync_pb::GarbageCollectionDirective gc_directive;
     gc_directive.set_version_watermark(1);

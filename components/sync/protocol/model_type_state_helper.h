@@ -10,6 +10,11 @@
 
 namespace syncer {
 
+bool IsInitialSyncDone(sync_pb::ModelTypeState::InitialSyncState state);
+
+bool IsInitialSyncAtLeastPartiallyDone(
+    sync_pb::ModelTypeState::InitialSyncState state);
+
 // Migrates `model_type_state` in-place from the deprecated `initial_sync_done`
 // flag to the new `initial_sync_state` enum. Returns whether a migration
 // actually happened and `model_type_state` was modified.

@@ -22,8 +22,8 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
-#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync_bookmarks/switches.h"
@@ -86,7 +86,8 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
     sync_pb::BookmarkModelMetadata model_metadata) {
   DCHECK(model);
 
-  if (!model_metadata.model_type_state().initial_sync_done()) {
+  if (!syncer::IsInitialSyncDone(
+          model_metadata.model_type_state().initial_sync_state())) {
     return nullptr;
   }
 
@@ -404,7 +405,7 @@ SyncedBookmarkTracker::CorruptionReason
 SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
     const bookmarks::BookmarkModel* model,
     sync_pb::BookmarkModelMetadata model_metadata) {
-  DCHECK(model_type_state_.initial_sync_done());
+  DCHECK(syncer::IsInitialSyncDone(model_type_state_.initial_sync_state()));
 
   // Build a temporary map to look up bookmark nodes efficiently by node ID.
   std::unordered_map<int64_t, const bookmarks::BookmarkNode*>

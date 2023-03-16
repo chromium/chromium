@@ -170,7 +170,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
     initial_state.mutable_progress_marker()->set_token(
         "some_saved_progress_token");
 
-    initial_state.set_initial_sync_done(true);
+    initial_state.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     InitializeWithState(model_type_, initial_state);
 
@@ -190,7 +191,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
     loaded_invalidation->set_hint("loaded_hint_1");
     loaded_invalidation->set_version(1);
 
-    initial_state.set_initial_sync_done(true);
+    initial_state.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     InitializeWithState(model_type_, initial_state);
 
@@ -202,7 +204,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
     // Don't set progress marker, commit only types don't use them.
     ModelTypeState initial_state;
-    initial_state.set_initial_sync_done(true);
+    initial_state.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     InitializeWithState(USER_EVENTS, initial_state);
   }
@@ -669,7 +672,8 @@ TEST_F(ModelTypeWorkerTest, SendInitialSyncDone) {
 
   const ModelTypeState& state = processor()->GetNthUpdateState(0);
   EXPECT_FALSE(state.progress_marker().token().empty());
-  EXPECT_TRUE(state.initial_sync_done());
+  EXPECT_EQ(state.initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   EXPECT_TRUE(worker()->IsInitialSyncEnded());
 }
 

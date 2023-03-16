@@ -29,7 +29,8 @@ constexpr int64_t kServerVersion = 5;
 
 sync_pb::ModelTypeState GenerateModelTypeState() {
   sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   return model_type_state;
 }
 
@@ -105,7 +106,9 @@ TEST_F(ProcessorEntityTrackerTest, ShouldLoadFromMetadata) {
   // Check some getters for the entity tracker.
   EXPECT_EQ(2u, entity_tracker.size());
   EXPECT_EQ(1u, entity_tracker.CountNonTombstoneEntries());
-  EXPECT_TRUE(entity_tracker.model_type_state().initial_sync_done());
+  EXPECT_EQ(entity_tracker.model_type_state().initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+
   EXPECT_TRUE(entity_tracker.AllStorageKeysPopulated());
   EXPECT_FALSE(entity_tracker.HasLocalChanges());
 

@@ -20,6 +20,7 @@
 #include "components/sync/driver/data_type_manager_observer.h"
 #include "components/sync/driver/data_type_status_table.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/protocol/model_type_state_helper.h"
 
 namespace syncer {
 
@@ -258,7 +259,10 @@ void DataTypeManagerImpl::ConnectDataTypes() {
       continue;
     }
 
-    if (activation_response->model_type_state.initial_sync_done()) {
+    // TODO(crbug.com/1365938): Think through whether types in the
+    // initial-sync-partially-done state should be considered "downloaded" here.
+    if (IsInitialSyncAtLeastPartiallyDone(
+            activation_response->model_type_state.initial_sync_state())) {
       downloaded_types_.Put(type);
     } else {
       downloaded_types_.Remove(type);

@@ -217,7 +217,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!model_type_state.cache_guid().empty());
   DCHECK_EQ(model_type_state.cache_guid(), cache_guid_);
-  DCHECK(model_type_state.initial_sync_done());
+  DCHECK(syncer::IsInitialSyncDone(model_type_state.initial_sync_state()));
   DCHECK(start_callback_.is_null());
   // Processor should never connect if
   // |last_initial_merge_remote_updates_exceeded_limit_| is set.

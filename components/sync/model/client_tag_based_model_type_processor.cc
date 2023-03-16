@@ -110,7 +110,7 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
   }
 
   if (CheckForInvalidPersistedMetadata(*batch)) {
-    if (batch->GetModelTypeState().initial_sync_done()) {
+    if (IsInitialSyncDone(model_type_state.initial_sync_state())) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
           model_type_state, batch->TakeAllMetadata());
     } else {
@@ -171,7 +171,7 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
 
     if (CommitOnlyTypes().Has(type_)) {
       // For commit-only types, no updates are expected.
-      model_type_state.set_initial_sync_done(true);
+      model_type_state.set_initial_sync_done_deprecated(true);
       model_type_state.set_initial_sync_state(
           sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY);
       OnFullUpdateReceived(model_type_state, UpdateResponseDataList(),
@@ -882,7 +882,7 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
 
   // Check that the worker correctly marked initial sync as done for this
   // update.
-  DCHECK(model_type_state.initial_sync_done());
+  DCHECK(IsInitialSyncDone(model_type_state.initial_sync_state()));
 
   // Ensure that this is the initial sync, and it was not already marked done.
   DCHECK(HasClearAllDirective(gc_directive) || !entity_tracker_);
@@ -997,7 +997,7 @@ ClientTagBasedModelTypeProcessor::OnIncrementalUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
     UpdateResponseDataList updates) {
   DCHECK(model_ready_to_sync_);
-  DCHECK(model_type_state.initial_sync_done());
+  DCHECK(IsInitialSyncDone(model_type_state.initial_sync_state()));
   DCHECK(entity_tracker_);
 
   ClientTagBasedRemoteUpdateHandler updates_handler(type_, bridge_,
@@ -1241,8 +1241,10 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
 
   const EntityMetadataMap& metadata_map = metadata.GetAllMetadata();
 
-  // Check that there's no entity metadata unless the initial sync is done.
-  if (!metadata.GetModelTypeState().initial_sync_done() &&
+  // Check that there's no entity metadata unless the initial sync is at least
+  // started.
+  if (!IsInitialSyncAtLeastPartiallyDone(
+          metadata.GetModelTypeState().initial_sync_state()) &&
       !metadata_map.empty()) {
     base::UmaHistogramEnumeration(
         "Sync.ModelTypeEntityMetadataWithoutInitialSync",

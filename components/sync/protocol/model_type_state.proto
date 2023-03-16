@@ -55,7 +55,10 @@ message ModelTypeState {
   // This flag is set to true when the first download cycle is complete.  The
   // ModelTypeProcessor should not attempt to commit any items until this
   // flag is set.
-  optional bool initial_sync_done = 4;
+  // Deprecated in M113 and replaced by `initial_sync_state`.
+  // TODO(crbug.com/1423338): Fully remove this field after a grace period, once
+  // we're confident `initial_sync_state` won't get reverted.
+  optional bool initial_sync_done_deprecated = 4 [deprecated = true];
 
   // Indicates the status of "initial sync", i.e. whether the first download
   // cycle and initial merge are complete.

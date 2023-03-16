@@ -110,7 +110,8 @@ TEST_F(HistorySyncMetadataDatabaseTest, StoresAndReturnsMetadata) {
                                                   metadata1));
 
   ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   ASSERT_TRUE(
       metadata_db()->UpdateModelTypeState(syncer::HISTORY, model_type_state));
 
@@ -124,7 +125,8 @@ TEST_F(HistorySyncMetadataDatabaseTest, StoresAndReturnsMetadata) {
   MetadataBatch metadata_batch;
   EXPECT_TRUE(metadata_db()->GetAllSyncMetadata(&metadata_batch));
 
-  EXPECT_TRUE(metadata_batch.GetModelTypeState().initial_sync_done());
+  EXPECT_EQ(metadata_batch.GetModelTypeState().initial_sync_state(),
+            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   EntityMetadataMap metadata_records = metadata_batch.TakeAllMetadata();
   EXPECT_EQ(metadata_records.size(), 2u);
@@ -138,13 +140,16 @@ TEST_F(HistorySyncMetadataDatabaseTest, StoresAndReturnsMetadata) {
   metadata1.set_sequence_number(2);
   ASSERT_TRUE(metadata_db()->UpdateEntityMetadata(syncer::HISTORY, storage_key1,
                                                   metadata1));
-  model_type_state.set_initial_sync_done(false);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
   ASSERT_TRUE(
       metadata_db()->UpdateModelTypeState(syncer::HISTORY, model_type_state));
 
   MetadataBatch metadata_batch2;
   ASSERT_TRUE(metadata_db()->GetAllSyncMetadata(&metadata_batch2));
-  EXPECT_FALSE(metadata_batch2.GetModelTypeState().initial_sync_done());
+  EXPECT_EQ(
+      metadata_batch2.GetModelTypeState().initial_sync_state(),
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 
   EntityMetadataMap metadata_records2 = metadata_batch2.TakeAllMetadata();
   EXPECT_EQ(metadata_records2.size(), 2u);
@@ -157,7 +162,8 @@ TEST_F(HistorySyncMetadataDatabaseTest, DeletesSyncMetadata) {
 
   // Write some data into the store.
   ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   ASSERT_TRUE(
       metadata_db()->UpdateModelTypeState(syncer::HISTORY, model_type_state));
 

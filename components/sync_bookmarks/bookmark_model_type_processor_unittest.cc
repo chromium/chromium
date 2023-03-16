@@ -123,7 +123,8 @@ syncer::UpdateResponseData CreateUpdateResponseData(
 sync_pb::ModelTypeState CreateDummyModelTypeState() {
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_cache_guid(kCacheGuid);
-  model_type_state.set_initial_sync_done(true);
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   return model_type_state;
 }
 
@@ -258,7 +259,8 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   void SimulateModelReadyToSyncWithInitialSyncDone() {
     sync_pb::BookmarkModelMetadata model_metadata =
         CreateMetadataForPermanentNodes(bookmark_model_.get());
-    DCHECK(model_metadata.model_type_state().initial_sync_done());
+    DCHECK_EQ(model_metadata.model_type_state().initial_sync_state(),
+              sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     // By default, set that bookmarks are reuploaded to avoid reupload logic.
     model_metadata.set_bookmarks_hierarchy_fields_reuploaded(true);
@@ -573,7 +575,8 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEmptyMetadata) {
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldIgnoreNonEmptyMetadataWhileSyncNotDone) {
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_done(false);
+  model_metadata.mutable_model_type_state()->set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
   // Add entries to the metadata.
   sync_pb::BookmarkMetadata* bookmark_metadata =
       model_metadata.add_bookmarks_metadata();
@@ -599,7 +602,8 @@ TEST_F(BookmarkModelTypeProcessorTest,
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldIgnoreMetadataNotMatchingTheModel) {
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_done(true);
+  model_metadata.mutable_model_type_state()->set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   // Add entries for only the bookmark bar. However, the TestBookmarkClient will
   // create all the 3 permanent nodes.
   *model_metadata.add_bookmarks_metadata() =
