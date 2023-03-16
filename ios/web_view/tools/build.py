@@ -9,6 +9,7 @@ Builds and packages ChromeWebView.framework.
 
 import argparse
 import os
+import platform
 import shutil
 import sys
 
@@ -52,9 +53,9 @@ def build(build_config, target_device, extra_gn_options, extra_ninja_options):
         'target_environment="device"',
     ])
   else:
+    target_cpu = {'x86_64': 'x64', 'arm64': 'arm64'}[platform.machine()]
     gn_args.extend([
-        'target_cpu="x64"',
-        'additional_target_cpus = [ "arm64" ]',
+        'target_cpu="%s"' % target_cpu,
         'target_environment="simulator"',
     ])
 
