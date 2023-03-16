@@ -89,28 +89,6 @@
       "use_remoteexec": true
     }
   },
-  "Mac Builder reclient scandeps test": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
-  "Mac Builder reclient scandeps test untrusted": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
   "Mac Builder reclient staging": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -275,30 +253,6 @@
       }
     }
   },
-  "ios-simulator reclient scandeps test": {
-    "gn_args": {
-      "enable_run_ios_unittests_with_xctest": true,
-      "is_component_build": false,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_remoteexec": true
-    }
-  },
-  "ios-simulator reclient scandeps test untrusted": {
-    "gn_args": {
-      "enable_run_ios_unittests_with_xctest": true,
-      "is_component_build": false,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_remoteexec": true
-    }
-  },
   "ios-simulator reclient staging": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
@@ -344,32 +298,6 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
-      "use_remoteexec": true
-    }
-  },
-  "mac-arm64-rel reclient scandeps test": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "use_remoteexec": true
-    }
-  },
-  "mac-arm64-rel reclient scandeps test untrusted": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
       "use_remoteexec": true
     }
   },
