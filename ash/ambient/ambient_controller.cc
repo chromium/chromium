@@ -10,7 +10,8 @@
 #include <vector>
 
 #include "ash/ambient/ambient_constants.h"
-#include "ash/ambient/ambient_managed_photo_controller.h"
+#include "ash/ambient/ambient_managed_slideshow_ui_launcher.h"
+#include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
@@ -257,12 +258,11 @@ void AmbientController::OnAmbientUiVisibilityChanged(
     case AmbientUiVisibility::kClosed: {
       bool ambient_ui_was_rendering =
           Shell::GetPrimaryRootWindowController()->HasAmbientWidget();
-      CloseAllWidgets(close_widgets_immediately_);
 
       // TODO(wutao): This will clear the image cache currently. It will not
       // work with `kHidden` if the token has expired and ambient mode is shown
       // again.
-      StopRefreshingImages();
+      StopScreensaver();
 
       // Should do nothing if the wake lock has already been released.
       ReleaseWakeLock();
@@ -698,9 +698,9 @@ void AmbientController::OnEnabledPrefChanged() {
 
     if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
       // TODO (b/269576509) : Integrate with managed screensaver policy
-      ambient_managed_photo_controller_ =
-          std::make_unique<AmbientManagedPhotoController>(
-              delegate_, CreateAmbientManagedSlideshowPhotoConfig());
+      ambient_ui_launcher_ =
+          std::make_unique<AmbientManagedSlideshowUiLauncher>(&delegate_);
+
     } else {
       DCHECK(AmbientClient::Get());
       ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
@@ -709,11 +709,16 @@ void AmbientController::OnEnabledPrefChanged() {
           // it always gets reset with the correct configuration anyways in
           // StartRefreshingImages() before ambient mode starts.
           CreateAmbientSlideshowPhotoConfig());
+      // The new UiLauncher API adds backend model observers in its
+      // implementation and thus the observer is not required when using the new
+      // codepath.
+      // TODO(esum) Get rid the ambient_backend_model_observer_ and
+      // corresponding methods once other photo controllers are migrated to the
+      // new API.
+      ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
     }
+
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
-
-    ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
-
     auto* power_manager_client = chromeos::PowerManagerClient::Get();
     DCHECK(power_manager_client);
     power_manager_client_observer_.Observe(power_manager_client);
@@ -744,11 +749,12 @@ void AmbientController::OnEnabledPrefChanged() {
     ambient_backend_model_observer_.Reset();
     power_manager_client_observer_.Reset();
 
+    ambient_ui_launcher_.reset();
+
     if (fingerprint_observer_receiver_.is_bound())
       fingerprint_observer_receiver_.reset();
 
     ambient_photo_controller_.reset();
-    ambient_managed_photo_controller_.reset();
   }
 }
 
@@ -846,10 +852,8 @@ void AmbientController::DismissUI() {
 }
 
 AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
-  // TODO (b/269576509) : Integrate with managed screensaver policy
-  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    DCHECK(ambient_managed_photo_controller_);
-    return ambient_managed_photo_controller_->ambient_backend_model();
+  if (ambient_ui_launcher_) {
+    return ambient_ui_launcher_->GetAmbientBackendModel();
   }
 
   DCHECK(ambient_photo_controller_);
@@ -872,6 +876,8 @@ void AmbientController::OnImagesFailed() {
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
   AmbientTheme current_theme = GetCurrentUiSettings().theme();
+  // TODO(esum) Call AmbientUiLauncher::CreateView() and pass it to the
+  // AmbientContainerView.
   auto container_view = std::make_unique<AmbientContainerView>(
       &delegate_, ambient_animation_progress_tracker_.get(),
       AmbientAnimationStaticResources::Create(current_theme,
@@ -962,15 +968,23 @@ void AmbientController::StartRefreshingImages() {
   ambient_photo_controller_->StartScreenUpdate(std::move(topic_queue_delegate));
 }
 
-void AmbientController::StopRefreshingImages() {
+void AmbientController::StopScreensaver() {
+  CloseAllWidgets(close_widgets_immediately_);
+  if (ambient_ui_launcher_) {
+    ambient_ui_launcher_->Finalize();
+    return;
+  }
   DCHECK(ambient_photo_controller_);
   ambient_photo_controller_->StopScreenUpdate();
 }
 
 void AmbientController::MaybeStartScreenSaver() {
   // The screensaver may have already been started.
-  if (ambient_photo_controller_->IsScreenUpdateActive())
+  if ((ambient_ui_launcher_ && ambient_ui_launcher_->IsActive()) ||
+      (ambient_photo_controller_ &&
+       ambient_photo_controller_->IsScreenUpdateActive())) {
     return;
+  }
 
   if (!user_activity_observer_.IsObserving())
     user_activity_observer_.Observe(ui::UserActivityDetector::Get());
@@ -986,7 +1000,13 @@ void AmbientController::MaybeStartScreenSaver() {
           Shell::Get()->frame_throttling_controller());
 
   Shell::Get()->AddPreTargetHandler(this);
-  StartRefreshingImages();
+  if (ambient_ui_launcher_) {
+    ambient_ui_launcher_->Initialize(
+        base::BindOnce(&AmbientController::CreateAndShowWidgets,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    StartRefreshingImages();
+  }
 }
 
 AmbientUiSettings AmbientController::GetCurrentUiSettings() const {

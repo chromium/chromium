@@ -12,8 +12,10 @@
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_managed_photo_controller.h"
+#include "ash/ambient/ambient_managed_slideshow_ui_launcher.h"
 #include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
+#include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/ui/ambient_animation_view.h"
@@ -37,6 +39,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -574,7 +577,19 @@ AmbientPhotoController* AmbientAshTestBase::photo_controller() {
 }
 
 AmbientManagedPhotoController* AmbientAshTestBase::managed_photo_controller() {
-  return ambient_controller()->ambient_managed_photo_controller();
+  if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    return nullptr;
+  }
+  AmbientManagedSlideshowUiLauncher* ui_launcher =
+      static_cast<AmbientManagedSlideshowUiLauncher*>(
+          ambient_controller()->ambient_ui_launcher());
+  // Used to make sure to make the ui launcher for
+  // ambient_managed_photo_controller unit tests don't fire an uninitialized
+  // callback and crash.
+  // TODO (fahadmansoor): Start using a test only method to remove the observer
+  // from the ui_launcher for testing the ambient controller
+  ui_launcher->initialization_callback_ = base::DoNothing();
+  return &ui_launcher->photo_controller_;
 }
 
 AmbientPhotoCache* AmbientAshTestBase::photo_cache() {

@@ -82,7 +82,6 @@ void AmbientManagedPhotoController::StopScreenUpdate() {
   weak_factory_.InvalidateWeakPtrs();
   current_image_index_ = 0;
   image_attempt_no_ = 0;
-  images_file_paths_.clear();
 }
 
 bool AmbientManagedPhotoController::IsScreenUpdateActive() const {

@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
-#include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_photo_controller.h"
+#include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
@@ -56,7 +56,6 @@ class AmbientAnimationFrameRateController;
 class AmbientAnimationProgressTracker;
 class AmbientBackendController;
 class AmbientContainerView;
-class AmbientManagedPhotoController;
 class AmbientMultiScreenMetricsRecorder;
 class AmbientPhotoController;
 class AmbientUiSettings;
@@ -158,8 +157,8 @@ class ASH_EXPORT AmbientController
     return ambient_photo_controller_.get();
   }
 
-  AmbientManagedPhotoController* ambient_managed_photo_controller() {
-    return ambient_managed_photo_controller_.get();
+  AmbientUiLauncher* ambient_ui_launcher() {
+    return ambient_ui_launcher_.get();
   }
 
   AmbientWeatherController* ambient_weather_controller() {
@@ -194,7 +193,7 @@ class ASH_EXPORT AmbientController
   void CreateAndShowWidgets();
 
   void StartRefreshingImages();
-  void StopRefreshingImages();
+  void StopScreensaver();
   void MaybeStartScreenSaver();
   void MaybeDismissUIOnMouseMove();
   AmbientUiSettings GetCurrentUiSettings() const;
@@ -230,8 +229,6 @@ class ASH_EXPORT AmbientController
   AmbientAccessTokenController access_token_controller_;
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
   std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
-  std::unique_ptr<AmbientManagedPhotoController>
-      ambient_managed_photo_controller_;
   std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
   std::unique_ptr<AmbientAnimationProgressTracker>
       ambient_animation_progress_tracker_;
@@ -294,6 +291,7 @@ class ASH_EXPORT AmbientController
 
   std::unique_ptr<AmbientMultiScreenMetricsRecorder>
       multi_screen_metrics_recorder_;
+  std::unique_ptr<AmbientUiLauncher> ambient_ui_launcher_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
 };

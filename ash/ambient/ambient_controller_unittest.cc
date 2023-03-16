@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
@@ -21,10 +22,12 @@
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
+#include "ash/public/cpp/test/in_process_image_decoder.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
@@ -1550,6 +1553,69 @@ TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
   EXPECT_TRUE(ambient_controller()->IsShown());
 
   GetEventGenerator()->ReleaseTouch();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+class AmbientControllerForManagedScreensaver : public AmbientAshTestBase {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAmbientModeManagedScreensaver);
+    AmbientAshTestBase::SetUp();
+    GetSessionControllerClient()->set_show_lock_screen_views(true);
+    CreateTestData();
+  }
+
+  void CreateTestData() {
+    bool success = temp_dir_.CreateUniqueTempDir();
+    ASSERT_TRUE(success);
+    base::FilePath image_1 =
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("IMAGE_1.jpg"));
+    CreateTestImageJpegFile(image_1, 4, 4, SK_ColorRED);
+    base::FilePath image_2 =
+        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("IMAGE_2.jpg"));
+    CreateTestImageJpegFile(image_2, 8, 8, SK_ColorGREEN);
+
+    image_file_paths_.push_back(image_1);
+    image_file_paths_.push_back(image_2);
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+  InProcessImageDecoder decoder_;
+  std::vector<base::FilePath> image_file_paths_;
+  base::ScopedTempDir temp_dir_;
+};
+
+TEST_F(AmbientControllerForManagedScreensaver,
+       ScreensaverIsShownWithEnoughImages) {
+  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+  FastForwardToLockScreenTimeout();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  UnlockScreen();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  ASSERT_FALSE(GetContainerView());
+}
+
+TEST_F(AmbientControllerForManagedScreensaver,
+       ScreensaverIsNotShownWithoutImages) {
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  ASSERT_FALSE(GetContainerView());
+  UnlockScreen();
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 

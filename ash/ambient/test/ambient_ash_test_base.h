@@ -35,6 +35,7 @@ namespace ash {
 
 class AmbientAccessTokenController;
 class AmbientContainerView;
+class AmbientManagedPhotoController;
 class AmbientPhotoController;
 class AmbientUiSettings;
 class FakeAmbientBackendControllerImpl;
