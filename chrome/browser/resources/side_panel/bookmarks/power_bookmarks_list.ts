@@ -718,6 +718,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.stopPropagation();
     // Context menu delete is expected to only be called on a single bookmark.
     this.showDeletionToastWithCount_(1);
+    this.editing_ = false;
   }
 
   private showDeletionToastWithCount_(deletionCount: number) {
