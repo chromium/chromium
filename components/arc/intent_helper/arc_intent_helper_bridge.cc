@@ -423,7 +423,7 @@ void ArcIntentHelperBridge::SendNewCaptureBroadcast(bool is_video,
         SendBroadcast);
   }
   if (!instance) {
-    LOG(ERROR) << "Failed to get instance for SendBroadcast().";
+    LOG(WARNING) << "Failed to get instance for SendBroadcast().";
     return;
   }
 
