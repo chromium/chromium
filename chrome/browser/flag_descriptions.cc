@@ -5148,6 +5148,10 @@ extern const char kCameraAppLowStorageWarningDescription[] =
     "Enable this flag to show warning and handle the video recording when "
     "device storage is running low";
 
+const char kCameraAppTimeLapseName[] = "Camera App Time-lapse Recording";
+const char kCameraAppTimeLapseDescription[] =
+    "Enable this flag to record time-lapse video in Camera app.";
+
 const char kDisableBufferBWCompressionName[] =
     "Disable buffer bandwidth compression";
 const char kDisableBufferBWCompressionDescription[] =
