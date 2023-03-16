@@ -6877,6 +6877,9 @@ crbug.com/1414607 http/tests/devtools/tracing/timeline-js/timeline-js-line-level
 crbug.com/1409713 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 
+# Temporarily disabled for a v8 change
+crbug.com/1418938 http/tests/devtools/sources/debugger-step/debugger-step-into-event-listener.js [ Skip Failure ]
+
 # Sheriff 2023-03-13
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure Pass Timeout ]
 
