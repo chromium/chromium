@@ -143,7 +143,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void HideImpl() override;
   gfx::Rect CalculateRootWindowBounds() const override;
   gfx::Rect GetBoundsInDIP() const override;
-  void OnVideoCaptureLockChanged() override;
 
   // PlatformWindowDelegate:
   void OnClosed() override;
@@ -224,11 +223,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   const raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 
   bool is_active_ = false;
-
-  // Tracks whether a close has been requested. The content is first hidden
-  // followed by a delayed delete. This variable should be used to ensure that
-  // we do not attempt to show the content during that delay window.
-  bool is_closing_ = false;
 
   std::u16string window_title_;
 

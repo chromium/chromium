@@ -347,7 +347,6 @@ void DesktopWindowTreeHostPlatform::Close() {
   if (close_widget_factory_.HasWeakPtrs() || !platform_window())
     return;
 
-  is_closing_ = true;
   GetContentWindow()->Hide();
 
   // Hide while waiting for the close.
@@ -840,16 +839,13 @@ void DesktopWindowTreeHostPlatform::OnWindowStateChanged(
   bool was_minimized = old_state == ui::PlatformWindowState::kMinimized;
   bool is_minimized = new_state == ui::PlatformWindowState::kMinimized;
 
+  // Propagate minimization/restore to compositor to avoid drawing 'blank'
+  // frames that could be treated as previews, which show content even if a
+  // window is minimized.
   if (is_minimized != was_minimized) {
     if (is_minimized) {
-      if (!HasVideoCaptureLocks()) {
-        // Hide the content window and pause the compositor to prevent drawing
-        // a blank frame which will show up in the window preview. Hiding the
-        // content window is intended to prevent rendering frames when the
-        // window is not visible.
-        SetVisible(false);
-        GetContentWindow()->Hide();
-      }
+      SetVisible(false);
+      GetContentWindow()->Hide();
     } else {
       GetContentWindow()->Show();
       SetVisible(true);
@@ -860,24 +856,6 @@ void DesktopWindowTreeHostPlatform::OnWindowStateChanged(
   // window. (The windows code doesn't need this because their window change is
   // synchronous.)
   ScheduleRelayout();
-}
-
-void DesktopWindowTreeHostPlatform::OnVideoCaptureLockChanged() {
-  // This does not account for the case when the lock is destroyed while the
-  // window is minimized. In that case, the content should be hidden and the
-  // compositor paused. However, that does require more state tracking. Because
-  // the difference is not observable to users, a more simple approach is
-  // taken.
-  // We need to ensure that we do not show the content when the window is
-  // closing.
-  if (HasVideoCaptureLocks() && !GetContentWindow()->IsVisible() &&
-      !is_closing_) {
-    // If a video capture lock has been created, this implies that there is a
-    // consumer for the content window's content. Therefore, we must show it and
-    // start rendering it if it is currently hidden.
-    GetContentWindow()->Show();
-    SetVisible(true);
-  }
 }
 
 void DesktopWindowTreeHostPlatform::OnCloseRequest() {

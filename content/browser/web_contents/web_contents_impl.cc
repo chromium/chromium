@@ -2201,11 +2201,6 @@ void WebContentsImpl::SetHasPictureInPictureCommon(
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
   observers_.NotifyObservers(&WebContentsObserver::MediaPictureInPictureChanged,
                              has_picture_in_picture);
-  if (has_picture_in_picture) {
-    pip_capture_handle_ = IncrementCapturerCount({}, true, false);
-  } else {
-    pip_capture_handle_.RunAndReset();
-  }
 
   // Picture-in-picture state can affect how we notify visibility for non-
   // visible pages.
@@ -3695,7 +3690,8 @@ PageVisibilityState WebContentsImpl::CalculatePageVisibilityState(
   if (visibility == Visibility::VISIBLE || visible_capturer_count_ > 0 ||
       web_contents_visible_in_vr) {
     return PageVisibilityState::kVisible;
-  } else if (hidden_capturer_count_ > 0) {
+  } else if (hidden_capturer_count_ > 0 || has_picture_in_picture_video_ ||
+             has_picture_in_picture_document_) {
     return PageVisibilityState::kHiddenButPainting;
   }
   return PageVisibilityState::kHidden;

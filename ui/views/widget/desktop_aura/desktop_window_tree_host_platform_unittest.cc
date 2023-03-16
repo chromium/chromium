@@ -190,67 +190,6 @@ TEST_F(DesktopWindowTreeHostPlatformTest,
   EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
 }
 
-// Tests that the minimization information is propagated to the content window.
-TEST_F(DesktopWindowTreeHostPlatformTest,
-       ToggleMinimizePropogateToContentWindowDoesNotHideWithVideoCaptureLock) {
-  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
-  widget->Show();
-
-  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
-      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  ASSERT_TRUE(host_platform);
-
-  EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
-
-  auto capture_lock =
-      widget->GetNativeWindow()->GetHost()->CreateVideoCaptureLock();
-
-  // Pretend a PlatformWindow enters the minimized state.
-  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kUnknown,
-                                      ui::PlatformWindowState::kMinimized);
-
-  // Should remain visible, because a video capture lock currently exists.
-  EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
-}
-
-// Tests that content will show the content and restart the compositor if the
-// capture count changes.
-TEST_F(DesktopWindowTreeHostPlatformTest,
-       OnVideoCaptureLocksShowsContentWhenNeeded) {
-  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
-  widget->Show();
-
-  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
-      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  ASSERT_TRUE(host_platform);
-
-  EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
-
-  // Pretend a PlatformWindow enters the minimized state.
-  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kUnknown,
-                                      ui::PlatformWindowState::kMinimized);
-
-  // Widget should now be not visible.
-  EXPECT_FALSE(widget->GetNativeWindow()->IsVisible());
-
-  // Creating a capture should now make the widget visible.
-  widget->GetNativeWindow()->GetHost()->CreateVideoCaptureLock();
-  EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
-}
-
-TEST_F(DesktopWindowTreeHostPlatformTest,
-       OnVideoCaptureLocksDoesNotShowContentWhenClosing) {
-  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
-  widget->Show();
-  EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
-
-  widget->Close();
-
-  // Creating a video lock should not show the content if the widget is closing.
-  widget->GetNativeWindow()->GetHost()->CreateVideoCaptureLock();
-  EXPECT_FALSE(widget->GetNativeWindow()->IsVisible());
-}
-
 // Tests that the window shape is updated from the
 // |NonClientView::GetWindowMask|.
 TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {

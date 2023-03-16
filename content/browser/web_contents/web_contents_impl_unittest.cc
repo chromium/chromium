@@ -1893,22 +1893,6 @@ TEST_F(WebContentsImplTest,
   EXPECT_FALSE(view->is_showing());
 }
 
-TEST_F(WebContentsImplTest, PictureInPictureSetsCapture) {
-  // Setting pip on a content should create a capture lock and ending it should
-  // clear the associated lock.
-  ASSERT_FALSE(contents()->IsBeingCaptured());
-
-  contents()->SetHasPictureInPictureVideo(true);
-  ASSERT_TRUE(contents()->IsBeingCaptured());
-  contents()->SetHasPictureInPictureVideo(false);
-  ASSERT_FALSE(contents()->IsBeingCaptured());
-
-  contents()->SetHasPictureInPictureDocument(true);
-  ASSERT_TRUE(contents()->IsBeingCaptured());
-  contents()->SetHasPictureInPictureDocument(false);
-  ASSERT_FALSE(contents()->IsBeingCaptured());
-}
-
 namespace {
 
 void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
