@@ -277,7 +277,7 @@ void FlossManagerClient::Init(dbus::Bus* bus,
                    }
                  }),
                  base::FeatureList::IsEnabled(
-                     chromeos::bluetooth::features::kBluetoothCoredump));
+                     chromeos::bluetooth::features::kBluetoothFlossCoredump));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   SetLLPrivacy(

@@ -4973,6 +4973,13 @@ const char kBluetoothCoredumpDescription[] =
     "coredumps are only collected when hardware exceptions occur and are "
     "used for debugging such exceptions.";
 
+const char kBluetoothFlossCoredumpName[] =
+    "Enable Bluetooth Device Coredump for Floss";
+const char kBluetoothFlossCoredumpDescription[] =
+    "Enable Bluetooth coredump collection if supported. Please note that "
+    "coredumps are only collected when hardware exceptions occur and are "
+    "used for debugging such exceptions.";
+
 const char kRobustAudioDeviceSelectLogicName[] =
     "Robust Audio Device Select Logic";
 const char kRobustAudioDeviceSelectLogicDescription[] =

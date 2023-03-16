@@ -59060,6 +59060,7 @@ from previous Chrome versions.
   <int value="-1623394051" label="NtpRealboxTailSuggest:disabled"/>
   <int value="-1623003151"
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:disabled"/>
+  <int value="-1622218661" label="BluetoothFlossCoredump:disabled"/>
   <int value="-1621969940" label="SearchPrefetchServicePrefetching:enabled"/>
   <int value="-1621963267" label="EnableAssistantLauncherUI:enabled"/>
   <int value="-1620942609" label="MuteCompromisedPasswords:enabled"/>
@@ -64335,6 +64336,7 @@ from previous Chrome versions.
   <int value="1304523073" label="RetryGetVideoCaptureDeviceInfos:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
+  <int value="1306473273" label="BluetoothFlossCoredump:enabled"/>
   <int value="1307003774" label="AutofillEnableCompanyName:disabled"/>
   <int value="1308537004" label="force-pnacl-subzero"/>
   <int value="1308583017" label="PrefetchFontLookupTables:disabled"/>
