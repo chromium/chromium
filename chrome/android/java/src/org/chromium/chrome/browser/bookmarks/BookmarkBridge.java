@@ -46,8 +46,7 @@ class BookmarkBridge {
     private boolean mIsDestroyed;
     private boolean mIsDoingExtensiveChanges;
     private boolean mIsNativeBookmarkModelLoaded;
-    private final ObserverList<BookmarkModelObserver> mObservers =
-            new ObserverList<BookmarkModelObserver>();
+    private final ObserverList<BookmarkModelObserver> mObservers = new ObserverList<>();
     private ShoppingService mShoppingService;
 
     /**
@@ -215,9 +214,9 @@ class BookmarkBridge {
      */
     public List<BookmarkId> getTopLevelFolderParentIDs() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeBookmarkBridge == 0) return new ArrayList<BookmarkId>();
+        if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
-        List<BookmarkId> result = new ArrayList<BookmarkId>();
+        List<BookmarkId> result = new ArrayList<>();
         BookmarkBridgeJni.get().getTopLevelFolderParentIDs(
                 mNativeBookmarkBridge, BookmarkBridge.this, result);
         return result;
@@ -231,9 +230,9 @@ class BookmarkBridge {
      */
     public List<BookmarkId> getTopLevelFolderIDs(boolean getSpecial, boolean getNormal) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeBookmarkBridge == 0) return new ArrayList<BookmarkId>();
+        if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
-        List<BookmarkId> result = new ArrayList<BookmarkId>();
+        List<BookmarkId> result = new ArrayList<>();
         BookmarkBridgeJni.get().getTopLevelFolderIDs(
                 mNativeBookmarkBridge, BookmarkBridge.this, getSpecial, getNormal, result);
         return result;
@@ -388,12 +387,12 @@ class BookmarkBridge {
      */
     public List<BookmarkId> getChildIDs(BookmarkId id) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeBookmarkBridge == 0) return new ArrayList<BookmarkId>();
+        if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
         if (BookmarkId.SHOPPING_FOLDER.equals(id)) {
             return searchBookmarks("", null, PowerBookmarkType.SHOPPING, -1);
         }
-        List<BookmarkId> result = new ArrayList<BookmarkId>();
+        List<BookmarkId> result = new ArrayList<>();
         BookmarkBridgeJni.get().getChildIDs(
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), result);
         return result;
@@ -448,7 +447,7 @@ class BookmarkBridge {
     public List<BookmarkId> searchBookmarks(String query, @Nullable String[] tags,
             @Nullable PowerBookmarkType powerBookmarkType, int maxNumberOfResult) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeBookmarkBridge == 0) return new ArrayList<BookmarkId>();
+        if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         List<BookmarkId> bookmarkMatches = new ArrayList<>();
         int typeInt = powerBookmarkType == null ? -1 : powerBookmarkType.getNumber();
         BookmarkBridgeJni.get().searchBookmarks(mNativeBookmarkBridge, BookmarkBridge.this,
@@ -463,7 +462,7 @@ class BookmarkBridge {
      */
     public List<BookmarkId> getBookmarksOfType(@NonNull PowerBookmarkType powerBookmarkType) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeBookmarkBridge == 0) return new ArrayList<BookmarkId>();
+        if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         List<BookmarkId> bookmarkMatches = new ArrayList<>();
         int typeInt = powerBookmarkType.getNumber();
         BookmarkBridgeJni.get().getBookmarksOfType(
@@ -558,9 +557,9 @@ class BookmarkBridge {
      */
     public List<BookmarkItem> getBookmarksForFolder(BookmarkId folderId) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeBookmarkBridge == 0) return new ArrayList<BookmarkItem>();
+        if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
-        List<BookmarkItem> result = new ArrayList<BookmarkItem>();
+        List<BookmarkItem> result = new ArrayList<>();
         BookmarkBridgeJni.get().getBookmarksForFolder(
                 mNativeBookmarkBridge, BookmarkBridge.this, folderId, result);
         return result;
@@ -912,9 +911,9 @@ class BookmarkBridge {
     }
 
     private static List<Pair<Integer, Integer>> createPairsList(int[] left, int[] right) {
-        List<Pair<Integer, Integer>> pairList = new ArrayList<Pair<Integer, Integer>>();
+        List<Pair<Integer, Integer>> pairList = new ArrayList<>();
         for (int i = 0; i < left.length; i++) {
-            pairList.add(new Pair<Integer, Integer>(left[i], right[i]));
+            pairList.add(new Pair<>(left[i], right[i]));
         }
         return pairList;
     }

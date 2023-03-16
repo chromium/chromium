@@ -89,7 +89,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
             ShoppingServiceFactory.getForProfile(profile).scheduleSavedProductUpdate();
         }
 
-        SelectionDelegate selectionDelegate = new SelectionDelegate<BookmarkId>() {
+        SelectionDelegate<BookmarkId> selectionDelegate = new SelectionDelegate<>() {
             @Override
             public boolean toggleSelectionForItem(BookmarkId bookmark) {
                 if (mBookmarkModel.getBookmarkById(bookmark) != null

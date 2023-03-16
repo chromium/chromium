@@ -124,7 +124,7 @@ public class BookmarkBridgeTest {
         mBookmarkBridge.addBookmark(folderA, 0, "ua", new GURL("http://www.medium.com"));
 
         // Map folders to depths as expected results
-        HashMap<BookmarkId, Integer> idToDepth = new HashMap<BookmarkId, Integer>();
+        HashMap<BookmarkId, Integer> idToDepth = new HashMap<>();
         idToDepth.put(mMobileNode, 0);
         idToDepth.put(folderA, 1);
         idToDepth.put(folderAA, 2);
@@ -136,8 +136,8 @@ public class BookmarkBridgeTest {
         idToDepth.put(mOtherNode, 0);
         idToDepth.put(folderC, 1);
 
-        List<BookmarkId> folderList = new ArrayList<BookmarkId>();
-        List<Integer> depthList = new ArrayList<Integer>();
+        List<BookmarkId> folderList = new ArrayList<>();
+        List<Integer> depthList = new ArrayList<>();
         mBookmarkBridge.getAllFoldersWithDepths(folderList, depthList);
         verifyFolderDepths(folderList, depthList, idToDepth);
     }
@@ -160,10 +160,10 @@ public class BookmarkBridgeTest {
         mBookmarkBridge.addBookmark(folderA, 0, "ua", new GURL("http://www.medium.com"));
 
         // Map folders to depths as expected results
-        HashMap<BookmarkId, Integer> idToDepth = new HashMap<BookmarkId, Integer>();
+        HashMap<BookmarkId, Integer> idToDepth = new HashMap<>();
 
-        List<BookmarkId> folderList = new ArrayList<BookmarkId>();
-        List<Integer> depthList = new ArrayList<Integer>();
+        List<BookmarkId> folderList = new ArrayList<>();
+        List<Integer> depthList = new ArrayList<>();
 
         mBookmarkBridge.getMoveDestinations(folderList, depthList, Arrays.asList(folderA));
         idToDepth.put(mMobileNode, 0);
