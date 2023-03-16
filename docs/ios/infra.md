@@ -88,10 +88,10 @@ bots can be found on the Mac-specific [try server]. A try job is said to succeed
 when the build passes (i.e. when the bot successfully compiles and tests the
 patch).
 
-`ios-device` compiles for the iOS device architecture (ARM) and runs no tests.
+`ios-device` compiles for the iOS device architecture (arm64) and runs no tests.
 A build is considered successful so long as compilation is successful.
 
-`ios-simulator` compiles for the iOS simulator architecture (x86), and runs
+`ios-simulator` compiles for the iOS simulator architecture (x86_64), and runs
 tests in the iOS [simulator]. A build is considered successful when both
 compilation and all configured tests succeed.
 
@@ -144,7 +144,8 @@ The `ios-device` bot on [chromium.mac] will read its configuration from
   ],
   "gn_args": [
     "is_debug=true",
-    "target_cpu=\"x64\""
+    "target_cpu=\"x64\"",
+    "target_environment=\"simulator\""
   ],
   "tests": [
     {
@@ -163,31 +164,11 @@ doing, particularly if there are extensive and atypical `gn_args`.
 The `gn_args` key is a required list of arguments to pass to [GN] to generate
 the build files. Two GN args are required, `is_debug` and `target_cpu`. Use
 `is_debug` to define whether to compile for Debug or Release, and `target_cpu`
-to define whether to compile for x86, x64, arm, or arm64. The iOS bots typically
-perform Debug builds for x86 and x64, and Release builds for arm and arm64. An
-x86/x64 build can only be tested on the [iOS simulator], while an arm/arm64
-build can only be tested on a physical device.
-
-Since Chromium for iOS is shipped as a [universal binary], it's also fairly
-common to set `additional_target_cpus`. For simulator builds, we typically set:
-```json
-"gn_args": [
-  "additional_target_cpus=[\"x86\"]",
-  "is_debug=true",
-  "target_cpu=\"x64\""
-]
-```
-This builds universal binaries which run in 32-bit mode on 32-bit simulators and
-64-bit mode on 64-bit simulators. For device builds we typically set:
-```json
-"gn_args": [
-  "additional_target_cpus=[\"arm\"]",
-  "is_debug=false",
-  "target_cpu=\"arm64\""
-]
-```
-In order to build universal binaries which run in 32-bit mode on 32-bit devices
-and 64-bit mode on 64-bit devices.
+to define whether to compile for x64 or arm64. `target_environment` is used to
+define whether to compile for simulator or device (as it cannot be deduced from
+the cpu architecture as there exists both x64 and arm64 macOS devices). The iOS
+bots typically perform Debug builds for the same architecture as the machine
+running the tests (usually x64), and Release builds for arm64.
 
 The `tests` key is an optional list of dictionaries defining tests to run. There
 are two types of test dictionary, `app` and `include`. An `app` dict defines a
@@ -286,7 +267,8 @@ example:
   ],
   "gn_args": [
     "is_debug=true",
-    "target_cpu=\"x64\""
+    "target_cpu=\"x64\"",
+    "target_environment=\"simulator\""
   ],
   "tests": [
     {
@@ -309,7 +291,8 @@ Some keywords such as `xcode build version` can also be set globally per build:
   ],
   "gn_args": [
     "is_debug=true",
-    "target_cpu=\"x64\""
+    "target_cpu=\"x64\"",
+    "target_environment=\"simulator\""
   ],
   "xcode build version": "9A235",
   "tests": [
@@ -333,7 +316,8 @@ A bot may be configured to upload compiled artifacts. This is defined by the
   ],
   "gn_args": [
     "is_debug=true",
-    "target_cpu=\"x64\""
+    "target_cpu=\"x64\"",
+    "target_environment=\"simulator\""
   ],
   "upload": [
     {
@@ -386,5 +370,4 @@ If `artifact` is a directory, you must specify `"compress": true`.
 [try job access]: https://www.chromium.org/getting-involved/become-a-committer#TOC-Try-job-access
 [try server]: https://build.chromium.org/p/tryserver.chromium.mac/waterfall
 [tryserver.chromium.mac]: https://build.chromium.org/p/tryserver.chromium.mac/waterfall
-[universal binary]: https://en.wikipedia.org/wiki/Universal_binary
 [xctest]: https://developer.apple.com/reference/xctest
