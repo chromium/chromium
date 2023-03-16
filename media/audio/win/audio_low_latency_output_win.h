@@ -114,6 +114,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/system_glitch_reporter.h"
 #include "media/audio/win/audio_manager_win.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 
@@ -197,6 +198,8 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   // Used to aggregate and report glitch metrics to UMA (periodically) and to
   // text logs (when a stream ends).
   SystemGlitchReporter glitch_reporter_;
+
+  AmplitudePeakDetector peak_detector_;
 
   // Rendering is driven by this thread (which has no message loop).
   // All OnMoreData() callbacks will be called from this thread.

@@ -60,7 +60,10 @@ PulseAudioOutputStream::PulseAudioOutputStream(
       pa_stream_(nullptr),
       volume_(1.0f),
       source_callback_(nullptr),
-      buffer_size_(params_.GetBytesPerBuffer(kSampleFormatF32)) {
+      buffer_size_(params_.GetBytesPerBuffer(kSampleFormatF32)),
+      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                                         base::Unretained(manager_),
+                                         /*trace_start=*/false)) {
   CHECK(params_.IsValid());
   SendLogMessage("%s({device_id=%s}, {params=[%s]})", __func__,
                  device_id.c_str(), params.AsHumanReadableString().c_str());
@@ -177,6 +180,11 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
       audio_bus_->ZeroFramesPartial(frames_filled,
                                     unwritten_frames_in_bus - frames_filled);
     }
+
+    // TODO(tguilbert): Consider moving this before each of the individual
+    // `pa_stream_write()` calls in the loop below, to improve the accuracy of
+    // the latency measurements.
+    peak_detector_.FindPeak(audio_bus_.get());
 
     audio_bus_->Scale(volume_);
 

@@ -16,6 +16,7 @@
 #include "media/audio/audio_device_name.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_parameters.h"
 
@@ -94,6 +95,8 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION pa_stream* handle_;
+
+  AmplitudePeakDetector peak_detector_;
 
   base::ThreadChecker thread_checker_;
 };

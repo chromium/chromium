@@ -17,6 +17,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/base/media_switches.h"
@@ -162,6 +163,39 @@ bool AudioManager::Shutdown() {
   audio_thread_->Stop();
   shutdown_ = true;
   return true;
+}
+
+void AudioManager::TraceAmplitudePeak(bool trace_start) {
+  base::AutoLock scoped_lock(tracing_lock_);
+
+  constexpr char kTraceName[] = "AmplitudePeak";
+
+  if (trace_start) {
+    // We might have never closed the previous trace. Abort it now.
+    if (is_trace_started_) {
+      TRACE_EVENT_NESTABLE_ASYNC_END1(
+          TRACE_DISABLED_BY_DEFAULT("audio.latency"), kTraceName,
+          current_trace_id_, "aborted", true);
+    }
+
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+        TRACE_DISABLED_BY_DEFAULT("audio.latency"), kTraceName,
+        ++current_trace_id_);
+
+    is_trace_started_ = true;
+    return;
+  }
+
+  if (!is_trace_started_) {
+    // Avoid ending traces that were never started.
+    return;
+  }
+
+  TRACE_EVENT_NESTABLE_ASYNC_END1(TRACE_DISABLED_BY_DEFAULT("audio.latency"),
+                                  kTraceName, current_trace_id_, "aborted",
+                                  false);
+
+  is_trace_started_ = false;
 }
 
 }  // namespace media

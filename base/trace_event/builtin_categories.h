@@ -190,6 +190,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("animation-worklet"))                      \
   X(TRACE_DISABLED_BY_DEFAULT("audio"))                                  \
+  X(TRACE_DISABLED_BY_DEFAULT("audio.latency"))                          \
   X(TRACE_DISABLED_BY_DEFAULT("audio-worklet"))                          \
   X(TRACE_DISABLED_BY_DEFAULT("base"))                                   \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug"))                            \

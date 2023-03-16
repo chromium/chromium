@@ -30,6 +30,7 @@
 #include "base/threading/thread_checker.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
 
 struct pa_context;
@@ -113,6 +114,8 @@ class PulseAudioOutputStream : public AudioOutputStream {
   std::unique_ptr<AudioBus> audio_bus_;
 
   const size_t buffer_size_;
+
+  AmplitudePeakDetector peak_detector_;
 
   base::ThreadChecker thread_checker_;
 };

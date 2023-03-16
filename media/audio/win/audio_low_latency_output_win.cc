@@ -89,6 +89,9 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
     : creating_thread_id_(base::PlatformThread::CurrentId()),
       manager_(manager),
       glitch_reporter_(SystemGlitchReporter::StreamType::kRender),
+      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                                         base::Unretained(manager_),
+                                         /*trace_start=*/false)),
       format_(),
       params_(params),
       opened_(false),
@@ -751,8 +754,11 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
           audio_bus.get());
 
       // During pause/seek, keep the pipeline filled with zero'ed frames.
-      if (!frames_filled)
+      if (!frames_filled) {
         memset(audio_data, 0, packet_size_frames_);
+      }
+
+      peak_detector_.FindPeak(audio_bus_.get());
 
       // Release the buffer space acquired in the GetBuffer() call.
       // Render silence if we were not able to fill up the buffer totally.
@@ -771,6 +777,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     // We skip clipping since that occurs at the shared memory boundary.
     audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
         frames_filled, reinterpret_cast<float*>(audio_data));
+
+    peak_detector_.FindPeak(audio_bus_.get());
 
     // Release the buffer space acquired in the GetBuffer() call.
     // Render silence if we were not able to fill up the buffer totally.

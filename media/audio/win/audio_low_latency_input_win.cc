@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_propvariant.h"
@@ -287,6 +288,9 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
     AudioManager::LogCallback log_callback)
     : manager_(manager),
       glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
+      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                                         base::Unretained(manager_),
+                                         /*trace_start=*/true)),
       data_discontinuity_reporter_(
           std::make_unique<DataDiscontinuityReporter>()),
       device_id_(device_id),
@@ -956,8 +960,10 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     if (flags & AUDCLNT_BUFFERFLAGS_SILENT) {
       fifo_->PushSilence(num_frames_to_read);
     } else {
-      fifo_->Push(data_ptr, num_frames_to_read,
-                  input_format_.Format.wBitsPerSample / 8);
+      const int bytes_per_sample = input_format_.Format.wBitsPerSample / 8;
+
+      peak_detector_.FindPeak(data_ptr, num_frames_to_read, bytes_per_sample);
+      fifo_->Push(data_ptr, num_frames_to_read, bytes_per_sample);
     }
 
     hr = audio_capture_client_->ReleaseBuffer(num_frames_to_read);

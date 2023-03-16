@@ -42,7 +42,10 @@ PulseAudioInputStream::PulseAudioInputStream(
       pa_mainloop_(mainloop),
       pa_context_(context),
       log_callback_(std::move(log_callback)),
-      handle_(nullptr) {
+      handle_(nullptr),
+      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                                         base::Unretained(audio_manager_),
+                                         /*trace_start=*/true)) {
   DCHECK(mainloop);
   DCHECK(context);
   CHECK(params_.IsValid());
@@ -350,8 +353,12 @@ void PulseAudioInputStream::ReadData() {
       fifo_.IncreaseCapacity(increase_blocks_of_buffer);
     }
 
-    fifo_.Push(data, number_of_frames,
-               SampleFormatToBytesPerChannel(pulse::kInputSampleFormat));
+    const int bytes_per_sample =
+        SampleFormatToBytesPerChannel(pulse::kInputSampleFormat);
+
+    peak_detector_.FindPeak(data, number_of_frames, bytes_per_sample);
+
+    fifo_.Push(data, number_of_frames, bytes_per_sample);
 
     // Checks if we still have data.
     pa_stream_drop(handle_);

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio latency tracing page</title>
+</head>
+
+<body>
+<div id="container">
+  <p> This page is meant to serve as an example of how to use "audio.latency"
+    tracing to measure internal audio latency. The "audio.latency" category
+    enables code which listens for jumps in amplitude (volume) and starts or
+    stops tracing. We start tracing right after receiving loud audio from a
+    microphone, and stop right before sending that loud audio to speakers.
+    The duration of the trace event (which should show up as an
+    "AmplitudePeak" in the tracing tools) encompases the total internal latency.
+  </p>
+  <p>Instructions:
+    <ul>
+    <li>[Prerequisite] Close all other tabs but this one.</li>
+    <li>[Prerequisite] Make sure there is a microphone plugged into the test
+        machine, and that the surrounding environment is not too loud.</li>
+    <li>Open chrome://tracing and start recording a trace which includes the
+        "audio.latency" category.</li>
+    <li>Click the "Initialize" button.</li>
+    <li>Select either the WebAudio or the HTMLAudioElement button.</li>
+    <li>Repeatedly clap next to the microphone a few times. Make sure to clap
+       clearly, and to leave time between claps (0.5s-1s should be enough).</li>
+    <li>Stop the trace. "AmplitudePeak" events should show up under the audio
+        service process</li>
+    </ul>
+  </p>
+  <p>
+    Note: The "audio.latency" category only expects one input and one output.
+    Multiple IOs will result in incoherent traces. Additionally,
+    tracing <b>*must*</b> be started before starting the test, or no traces will
+    be captured. Refreshing the page after starting a trace is also not enough:
+    one must verify that there are no InputStreams or OutputStreams alive, by
+    navigating to the "audio" tab of chrome://media-internals. Closing all tabs
+    and waiting 2-10s should be enough for all outstanding streams to close.
+  </p>
+    <button id="initBtn" onClick="init()">Initialize</button>
+    <br/>
+    <br/>
+    <div id="routeMsg"></div>
+    <div id="outputTypesDiv" style="visibility:hidden">
+        <button id="mssnBtn" onClick="trackToMSSN()">Use WebAudio</button>
+        <button id="audioElementBtn" onClick="trackToAudioElement()">Use HTMLAudioElement</button>
+    </div>
+    <div id="errorMsg"></div>
+</div>
+
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script>
+const constraints = {
+  audio: true,
+  video: false
+};
+
+let track;
+let stream;
+
+let audioContext;
+let streamNode;
+
+let audioElement;
+
+function displayRoute(msg) {
+  document.querySelector("#routeMsg").innerHTML = msg;
+}
+
+function disable(id) {
+  document.querySelector(id).disabled = true;
+}
+
+function show(id) {
+  document.querySelector(id).style.visibility = 'visible';
+}
+
+function hide(id) {
+  document.querySelector(id).style.visibility = 'hidden';
+}
+
+async function initAudioContext() {
+  if(!audioContext) {
+    audioContext = new AudioContext();
+  }
+}
+
+function handleSuccess() {
+  const audioTracks = stream.getAudioTracks();
+  console.log(`Using Audio device: ${audioTracks[0].label}`);
+  console.log(audioTracks);
+  track = audioTracks[0];
+  window.track = track; // make variable available to browser console
+}
+
+function handleError(error) {
+  if (error.name === 'PermissionDeniedError') {
+    errorMsg('Permissions have not been granted to use your camera and ' +
+      'microphone, you need to allow the page access to your devices in ' +
+      'order for the demo to work.');
+  }
+  errorMsg(`getUserMedia error: ${error.name}`, error);
+}
+
+function errorMsg(msg, error) {
+  const errorElement = document.querySelector('#errorMsg');
+  errorElement.innerHTML += `<p>${msg}</p>`;
+  if (typeof error !== 'undefined') {
+    console.error(error);
+  }
+}
+
+async function init() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleSuccess();
+  } catch (e) {
+    handleError(e);
+  }
+
+  await initAudioContext();
+
+  disable("#initBtn");
+  show("#outputTypesDiv");
+}
+
+function trackToMSSN() {
+  streamNode = audioContext.createMediaStreamSource(stream);
+  streamNode.connect(audioContext.destination);
+  hide("#outputTypesDiv");
+  displayRoute("gUM --> MediaStreamSourceNode --> audioContext.destination");
+}
+
+function trackToAudioElement() {
+  audioElement = document.createElement('audio');
+  audioElement.srcObject = stream;
+  audioElement.play()
+  hide("#outputTypesDiv");
+  displayRoute("gUM --> MediaStream --> <audio>.srcObject");
+}
+
+</script>
+
+</body>
+</html>

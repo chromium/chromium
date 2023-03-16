@@ -43,6 +43,8 @@ source_set("base") {
   }
 
   sources = [
+    "amplitude_peak_detector.cc",
+    "amplitude_peak_detector.h",
     "android_overlay_config.cc",
     "android_overlay_config.h",
     "android_overlay_mojo_factory.h",
