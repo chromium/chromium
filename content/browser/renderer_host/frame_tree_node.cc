@@ -29,7 +29,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
-#include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/authenticator_environment.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -1157,7 +1157,7 @@ bool FrameTreeNode::Credentialless() const {
 void FrameTreeNode::GetVirtualAuthenticatorManager(
     mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
         receiver) {
-  auto* environment_singleton = AuthenticatorEnvironmentImpl::GetInstance();
+  auto* environment_singleton = AuthenticatorEnvironment::GetInstance();
   environment_singleton->EnableVirtualAuthenticatorFor(this,
                                                        /*enable_ui=*/false);
   environment_singleton->AddVirtualAuthenticatorReceiver(this,

@@ -16,7 +16,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "content/public/browser/authenticator_environment.h"
+#include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "device/fido/virtual_fido_device_factory.h"
@@ -91,9 +91,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
   auto owned_virtual_device_factory =
       std::make_unique<device::test::VirtualFidoDeviceFactory>();
   auto* virtual_device_factory = owned_virtual_device_factory.get();
-  content::AuthenticatorEnvironment::GetInstance()
-      ->ReplaceDefaultDiscoveryFactoryForTesting(
-          std::move(owned_virtual_device_factory));
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::move(owned_virtual_device_factory));
 
   constexpr char kRegisterTemplate[] =
       "navigator.credentials.create({publicKey: {"

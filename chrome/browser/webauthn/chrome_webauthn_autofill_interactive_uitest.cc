@@ -21,8 +21,8 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
-#include "content/public/browser/authenticator_environment.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -273,10 +273,22 @@ class WebAuthnDevtoolsAutofillIntegrationTest
     config.resident_key_support = true;
     config.internal_uv_support = true;
     virtual_device_factory->SetCtap2Config(std::move(config));
-    content::AuthenticatorEnvironment::GetInstance()
-        ->ReplaceDefaultDiscoveryFactoryForTesting(
+    scoped_auth_env_ =
+        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
             std::move(virtual_device_factory));
   }
+
+  void PostRunTestOnMainThread() override {
+    // To avoid dangling raw_ptr's, these objects need to be destroyed before
+    // the test class.
+    virtual_device_factory_ = nullptr;
+    scoped_auth_env_.reset();
+    WebAuthnAutofillIntegrationTest::PostRunTestOnMainThread();
+  }
+
+ protected:
+  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting>
+      scoped_auth_env_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, SelectAccount) {
@@ -323,12 +335,23 @@ class WebAuthnWindowsAutofillIntegrationTest
     auto device_factory =
         std::make_unique<device::test::VirtualFidoDeviceFactory>();
     device_factory->set_win_webauthn_api(fake_webauthn_api_.get());
-    content::AuthenticatorEnvironment::GetInstance()
-        ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(device_factory));
+    scoped_auth_env_ =
+        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
+            std::move(device_factory));
+  }
+
+  void PostRunTestOnMainThread() override {
+    // To avoid dangling raw_ptr's, these objects need to be destroyed before
+    // the test class.
+    virtual_device_factory_ = nullptr;
+    scoped_auth_env_.reset();
+    WebAuthnAutofillIntegrationTest::PostRunTestOnMainThread();
   }
 
  protected:
   std::unique_ptr<device::FakeWinWebAuthnApi> fake_webauthn_api_;
+  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting>
+      scoped_auth_env_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnWindowsAutofillIntegrationTest, SelectAccount) {

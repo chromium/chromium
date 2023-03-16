@@ -12,7 +12,7 @@
 #include "components/payments/content/secure_payment_confirmation_app.h"
 #include "components/payments/core/journey_logger.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
-#include "content/public/browser/authenticator_environment.h"
+#include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/virtual_fido_device_factory.h"
@@ -51,14 +51,10 @@ class SecurePaymentConfirmationAuthenticatorTestBase
   };
 
   // Installs a virtual FIDO authenticator device for the tests.
-  void ReplaceFidoDiscoveryFactory(bool should_succeed,
-                                   bool should_hang = false) {
-    auto owned_virtual_device_factory =
+  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting>
+  ReplaceFidoDiscoveryFactory(bool should_succeed, bool should_hang = false) {
+    auto virtual_device_factory =
         std::make_unique<device::test::VirtualFidoDeviceFactory>();
-    auto* virtual_device_factory = owned_virtual_device_factory.get();
-    content::AuthenticatorEnvironment::GetInstance()
-        ->ReplaceDefaultDiscoveryFactoryForTesting(
-            std::move(owned_virtual_device_factory));
     virtual_device_factory->SetTransport(
         device::FidoTransportProtocol::kInternal);
     virtual_device_factory->SetSupportedProtocol(
@@ -80,6 +76,9 @@ class SecurePaymentConfirmationAuthenticatorTestBase
     config.internal_uv_support = true;
     config.user_verification_succeeds = should_succeed;
     virtual_device_factory->SetCtap2Config(config);
+
+    return std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
+        std::move(virtual_device_factory));
   }
 
   // Creates an SPC-enabled WebAuthn credential, and places information about it
@@ -165,7 +164,7 @@ using SecurePaymentConfirmationAuthenticatorCreateTest =
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
                        CreatePaymentCredential) {
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
   PaymentCredentialInfo info;
@@ -194,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
 // b.com cannot create a credential with RP = "a.com".
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
                        RelyingPartyIsEnforced) {
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("b.com", "/secure_payment_confirmation.html");
   EXPECT_EQ(
       "SecurityError: The relying party ID is not a registrable domain suffix "
@@ -204,7 +203,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
                        WebContentsClosedDuringEnrollmentOSPrompt) {
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true, /*should_hang=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true,
+                                                     /*should_hang=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
   std::list<Event> expected_events_ =
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(
     SecurePaymentConfirmationAuthenticatorCreateDisableDebugTest,
     RequireUserVerifyingPlatformAuthenticator) {
   test_controller()->SetHasAuthenticator(false);
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   EXPECT_EQ(
       "NotSupportedError: A user verifying platform authenticator with "
@@ -252,7 +252,7 @@ using SecurePaymentConfirmationAuthenticatorGetTest =
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
                        ConfirmPaymentInCrossOriginIframeWithPayeeName) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
   PaymentCredentialInfo credential_info;
   CreatePaymentCredential(&credential_info);
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(
     SecurePaymentConfirmationAuthenticatorGetTest,
     ConfirmPaymentInCrossOriginIframeWithPayeeNameAndOrigin) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
   PaymentCredentialInfo credential_info;
   CreatePaymentCredential(&credential_info);
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(
 // Test allowing a failed icon download with iconMustBeShown option
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
                        IconMustBeShownFalse) {
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   test_controller()->SetHasAuthenticator(true);
   confirm_payment_ = true;
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
                        MultipleRegisteredCredentials) {
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
   PaymentCredentialInfo first_info;
@@ -426,16 +426,19 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
                        UserVerificationFails) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
-
   PaymentCredentialInfo credential_info;
-  CreatePaymentCredential(&credential_info);
+
+  {
+    auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+    CreatePaymentCredential(&credential_info);
+  }
 
   NavigateTo("b.com", "/get_challenge.html");
   test_controller()->SetHasAuthenticator(true);
+
   // Make the authenticator fail to simulate the user cancelling out of the
   // WebAuthn dialog.
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/false);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/false);
   confirm_payment_ = true;
 
   // EvalJs waits for JavaScript promise to resolve.
@@ -464,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
                        HandlesShowPromisesAndModifiers) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
   PaymentCredentialInfo credential_info;
   CreatePaymentCredential(&credential_info);
@@ -543,7 +546,7 @@ IN_PROC_BROWSER_TEST_P(
     SecurePaymentConfirmationParameterizedAuthenticatorGetTest,
     ConfirmPaymentInCrossOriginIframe) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
   PaymentCredentialInfo credential_info;
   CreatePaymentCredential(&credential_info);

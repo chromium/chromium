@@ -11,7 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/authenticator_environment.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -69,8 +69,8 @@ bool WebAuthenticationDelegate::SupportsResidentKeys(
   // doesn't by default.
   FrameTreeNode* frame_tree_node =
       static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
-  if (AuthenticatorEnvironmentImpl::GetInstance()
-          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
+  if (AuthenticatorEnvironment::GetInstance()->IsVirtualAuthenticatorEnabledFor(
+          frame_tree_node)) {
     return true;
   }
   return false;
@@ -85,9 +85,9 @@ absl::optional<bool> WebAuthenticationDelegate::
         RenderFrameHost* render_frame_host) {
   FrameTreeNode* frame_tree_node =
       static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
-  if (AuthenticatorEnvironmentImpl::GetInstance()
-          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
-    return AuthenticatorEnvironmentImpl::GetInstance()
+  if (AuthenticatorEnvironment::GetInstance()->IsVirtualAuthenticatorEnabledFor(
+          frame_tree_node)) {
+    return AuthenticatorEnvironment::GetInstance()
         ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
   }
   return absl::nullopt;

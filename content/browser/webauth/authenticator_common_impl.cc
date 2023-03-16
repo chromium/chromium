@@ -18,7 +18,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
-#include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
@@ -208,10 +208,9 @@ base::TimeDelta AdjustTimeout(absl::optional<base::TimeDelta> timeout,
     return kAdjustedTimeoutUpper;
   }
   const bool testing_api_enabled =
-      AuthenticatorEnvironmentImpl::GetInstance()
-          ->IsVirtualAuthenticatorEnabledFor(
-              static_cast<RenderFrameHostImpl*>(render_frame_host)
-                  ->frame_tree_node());
+      AuthenticatorEnvironment::GetInstance()->IsVirtualAuthenticatorEnabledFor(
+          static_cast<RenderFrameHostImpl*>(render_frame_host)
+              ->frame_tree_node());
   if (testing_api_enabled) {
     return *timeout;
   }
@@ -281,7 +280,7 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
 std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
     RenderFrameHost* render_frame_host) {
   VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
-      AuthenticatorEnvironmentImpl::GetInstance()
+      AuthenticatorEnvironment::GetInstance()
           ->MaybeGetVirtualAuthenticatorManager(
               static_cast<RenderFrameHostImpl*>(render_frame_host)
                   ->frame_tree_node());
@@ -300,7 +299,7 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
     discovery_factory->set_win_webauthn_api(
-        AuthenticatorEnvironmentImpl::GetInstance()->win_webauthn_api());
+        AuthenticatorEnvironment::GetInstance()->win_webauthn_api());
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -420,7 +419,7 @@ AuthenticatorCommonImpl::MaybeCreateRequestDelegate() {
     return nullptr;
   }
   VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
-      AuthenticatorEnvironmentImpl::GetInstance()
+      AuthenticatorEnvironment::GetInstance()
           ->MaybeGetVirtualAuthenticatorManager(
               render_frame_host_impl->frame_tree_node());
   if (virtual_authenticator_manager) {
@@ -1217,7 +1216,7 @@ void AuthenticatorCommonImpl::IsConditionalMediationAvailable(
   std::move(callback).Run(true);
 #elif BUILDFLAG(IS_WIN)
   device::WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
-      AuthenticatorEnvironmentImpl::GetInstance()->win_webauthn_api(),
+      AuthenticatorEnvironment::GetInstance()->win_webauthn_api(),
       std::move(callback));
 #else
   std::move(callback).Run(false);
@@ -2049,7 +2048,7 @@ void AuthenticatorCommonImpl::InitDiscoveryFactory() {
   // stick a short-lived instance into |discovery_factory_| and eliminate
   // |discovery_factory_testing_override_|.
   discovery_factory_testing_override_ =
-      AuthenticatorEnvironmentImpl::GetInstance()
+      AuthenticatorEnvironment::GetInstance()
           ->MaybeGetDiscoveryFactoryTestOverride();
 }
 

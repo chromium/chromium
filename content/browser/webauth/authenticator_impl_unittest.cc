@@ -45,7 +45,7 @@
 #include "components/cbor/values.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #include "content/browser/webauth/authenticator_common_impl.h"
-#include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -583,7 +583,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     // Disable the Windows WebAuthn API integration by default. Individual tests
     // can modify this.
     fake_win_webauthn_api_.set_available(false);
-    AuthenticatorEnvironmentImpl::GetInstance()->SetWinWebAuthnApiForTesting(
+    AuthenticatorEnvironment::GetInstance()->SetWinWebAuthnApiForTesting(
         &fake_win_webauthn_api_);
 #endif
 
@@ -595,13 +595,10 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
 
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 
+    AuthenticatorEnvironment::GetInstance()->Reset();
 #if BUILDFLAG(IS_CHROMEOS)
     chromeos::U2FClient::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
-#endif
-#if BUILDFLAG(IS_WIN)
-    AuthenticatorEnvironmentImpl::GetInstance()
-        ->ClearWinWebAuthnApiForTesting();
 #endif
   }
 
@@ -609,7 +606,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     auto virtual_device_factory =
         std::make_unique<device::test::VirtualFidoDeviceFactory>();
     virtual_device_factory_ = virtual_device_factory.get();
-    AuthenticatorEnvironmentImpl::GetInstance()
+    AuthenticatorEnvironment::GetInstance()
         ->ReplaceDefaultDiscoveryFactoryForTesting(
             std::move(virtual_device_factory));
 #if BUILDFLAG(IS_WIN)
@@ -1215,7 +1212,7 @@ TEST_F(AuthenticatorImplTest, AppIdExcludeExtension) {
 TEST_F(AuthenticatorImplTest, TestGetAssertionTimeout) {
   // The VirtualFidoAuthenticator simulates a tap immediately after it gets the
   // request. Replace by the real discovery that will wait until timeout.
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<device::FidoDiscoveryFactory>());
   NavigateAndCommit(GURL(kTestOrigin1));
@@ -2251,7 +2248,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionTLSError) {
 TEST_F(AuthenticatorContentBrowserClientTest,
        MakeCredentialSkipTLSCheckWithVirtualEnvironment) {
   NavigateAndCommit(GURL(kTestOrigin1));
-  content::AuthenticatorEnvironmentImpl::GetInstance()
+  content::AuthenticatorEnvironment::GetInstance()
       ->EnableVirtualAuthenticatorFor(
           static_cast<content::RenderFrameHostImpl*>(main_rfh())
               ->frame_tree_node(),
@@ -2267,7 +2264,7 @@ TEST_F(AuthenticatorContentBrowserClientTest,
 TEST_F(AuthenticatorContentBrowserClientTest,
        GetAssertionSkipTLSCheckWithVirtualEnvironment) {
   NavigateAndCommit(GURL(kTestOrigin1));
-  content::AuthenticatorEnvironmentImpl::GetInstance()
+  content::AuthenticatorEnvironment::GetInstance()
       ->EnableVirtualAuthenticatorFor(
           static_cast<content::RenderFrameHostImpl*>(main_rfh())
               ->frame_tree_node(),
@@ -3581,7 +3578,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
   auto discovery_factory =
       std::make_unique<device::test::FakeFidoDiscoveryFactory>();
   auto* fake_hid_discovery = discovery_factory->ForgeNextHidDiscovery();
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery_factory));
 
   NavigateAndCommit(GURL(kTestOrigin1));
@@ -3627,7 +3624,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
 TEST_F(AuthenticatorImplRequestDelegateTest, FailureReasonForTimeout) {
   // The VirtualFidoAuthenticator simulates a tap immediately after it gets the
   // request. Replace by the real discovery that will wait until timeout.
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<device::FidoDiscoveryFactory>());
   NavigateAndCommit(GURL(kTestOrigin1));
@@ -4686,7 +4683,7 @@ TEST_F(AuthenticatorImplTest, CancellingAuthenticatorDoesNotTerminateRequest) {
     device_2.state->simulate_press_callback =
         base::BindRepeating([](VirtualFidoDevice* ignore) { return false; });
     discovery->AddDevice(std::move(device_2));
-    AuthenticatorEnvironmentImpl::GetInstance()
+    AuthenticatorEnvironment::GetInstance()
         ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
 
     if (request_type == device::FidoRequestType::kMakeCredential) {
@@ -5711,7 +5708,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialDontSkipPINTouch) {
       });
   discovery->AddDevice(std::move(device_2));
 
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
 
   test_client_.expected = {
@@ -6113,7 +6110,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionDontSkipPINTouch) {
       options->allow_credentials[0].id, kTestRelyingPartyId));
   discovery->AddDevice(std::move(device_2));
 
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
 
   test_client_.expected = {
@@ -6338,7 +6335,7 @@ TEST_F(PINAuthenticatorImplTest, RemoveSecondAuthenticator) {
       std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
   discovery->AddDevice(std::move(device_1));
   discovery->AddDevice(std::move(device_2));
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
 
   test_client_.expected = {
@@ -6977,7 +6974,7 @@ TEST_F(BlockingDelegateAuthenticatorImplTest, PostCancelMessage) {
       std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
   discovery->AddDevice(std::move(device_1));
   discovery->AddDevice(std::move(device_2));
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
 
   EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
@@ -9131,7 +9128,7 @@ TEST_P(AuthenticatorCableV2Test, QRBasedWithNoPairing) {
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback(), GetInvalidatedPairingCallback());
 
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<DiscoveryFactory>(std::move(discovery)));
 
@@ -9159,7 +9156,7 @@ TEST_P(AuthenticatorCableV2Test, PairingBased) {
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback(), GetInvalidatedPairingCallback());
 
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<DiscoveryFactory>(std::move(discovery)));
 
@@ -9229,7 +9226,7 @@ TEST_P(AuthenticatorCableV2Test, PairingBased) {
             pairing_id, client_nonce, contact_id);
       });
 
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<DiscoveryFactory>(std::move(discovery)));
 
@@ -9265,7 +9262,7 @@ TEST_P(AuthenticatorCableV2Test, ContactIDDisabled) {
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback(), GetInvalidatedPairingCallback());
 
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<DiscoveryFactory>(std::move(discovery)));
 
@@ -9339,7 +9336,7 @@ TEST_P(AuthenticatorCableV2Test, ServerLink) {
       /*contact_device_stream=*/nullptr, extension_values, GetPairingCallback(),
       GetInvalidatedPairingCallback());
 
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<DiscoveryFactory>(std::move(discovery)));
 
@@ -9377,7 +9374,7 @@ TEST_P(AuthenticatorCableV2Test, LateLinking) {
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback(), GetInvalidatedPairingCallback());
 
-  AuthenticatorEnvironmentImpl::GetInstance()
+  AuthenticatorEnvironment::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<DiscoveryFactory>(std::move(discovery)));
 
@@ -9424,7 +9421,7 @@ class AuthenticatorCableV2AuthenticatorTest
         /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
         GetPairingCallback(), GetInvalidatedPairingCallback());
 
-    AuthenticatorEnvironmentImpl::GetInstance()
+    AuthenticatorEnvironment::GetInstance()
         ->ReplaceDefaultDiscoveryFactoryForTesting(
             std::make_unique<DiscoveryFactory>(std::move(discovery)));
 

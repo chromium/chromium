@@ -24,11 +24,11 @@
 #include "components/cbor/reader.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/authenticator_impl.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
@@ -475,9 +475,9 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
     auto owned_virtual_device_factory =
         std::make_unique<device::test::VirtualFidoDeviceFactory>();
     auto* virtual_device_factory = owned_virtual_device_factory.get();
-    AuthenticatorEnvironmentImpl::GetInstance()
-        ->ReplaceDefaultDiscoveryFactoryForTesting(
-            std::move(owned_virtual_device_factory));
+    auth_env_.reset();
+    auth_env_ = std::make_unique<ScopedAuthenticatorEnvironmentForTesting>(
+        std::move(owned_virtual_device_factory));
     return virtual_device_factory;
   }
 
@@ -508,6 +508,7 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<WebAuthBrowserTestContentBrowserClient> test_client_;
+  std::unique_ptr<ScopedAuthenticatorEnvironmentForTesting> auth_env_;
   WebAuthBrowserTestState test_state_;
 };
 

@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/authenticator_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 
@@ -32,15 +31,15 @@ class VirtualAuthenticatorManagerImpl;
 // Authentication API. Disabling the environment resets its state.
 //
 // This class is a singleton.
-class CONTENT_EXPORT AuthenticatorEnvironmentImpl
-    : public AuthenticatorEnvironment,
-      FrameTreeNode::Observer {
+class CONTENT_EXPORT AuthenticatorEnvironment : public FrameTreeNode::Observer {
  public:
-  static AuthenticatorEnvironmentImpl* GetInstance();
+  static AuthenticatorEnvironment* GetInstance();
 
-  AuthenticatorEnvironmentImpl(const AuthenticatorEnvironmentImpl&) = delete;
-  AuthenticatorEnvironmentImpl& operator=(const AuthenticatorEnvironmentImpl&) =
-      delete;
+  AuthenticatorEnvironment(const AuthenticatorEnvironment&) = delete;
+  AuthenticatorEnvironment& operator=(const AuthenticatorEnvironment&) = delete;
+
+  // Disables all test environments.
+  void Reset();
 
   // Enables the scoped virtual authenticator environment for the |node| and its
   // descendants.
@@ -91,19 +90,18 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
   void ClearWinWebAuthnApiForTesting();
 #endif
 
-  // AuthenticatorEnvironment:
   void ReplaceDefaultDiscoveryFactoryForTesting(
-      std::unique_ptr<device::FidoDiscoveryFactory> factory) override;
+      std::unique_ptr<device::FidoDiscoveryFactory> factory);
 
   // FrameTreeNode::Observer:
   void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override;
 
  protected:
-  AuthenticatorEnvironmentImpl();
-  ~AuthenticatorEnvironmentImpl() override;
+  AuthenticatorEnvironment();
+  ~AuthenticatorEnvironment() override;
 
  private:
-  friend class base::NoDestructor<AuthenticatorEnvironmentImpl>;
+  friend class base::NoDestructor<AuthenticatorEnvironment>;
 
   std::unique_ptr<device::FidoDiscoveryFactory> replaced_discovery_factory_;
 

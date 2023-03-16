@@ -5,7 +5,7 @@
 #include "content/browser/devtools/protocol/webauthn_handler.h"
 
 #include "content/browser/devtools/protocol/web_authn.h"
-#include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/test/test_render_view_host.h"
@@ -56,7 +56,7 @@ TEST_F(WebAuthnHandlerTest, DtorCleansUpObservers) {
   ASSERT_EQ(crdtp::DispatchCode::SUCCESS, response.Code());
 
   VirtualAuthenticatorManagerImpl* authenticator_manager =
-      AuthenticatorEnvironmentImpl::GetInstance()
+      AuthenticatorEnvironment::GetInstance()
           ->MaybeGetVirtualAuthenticatorManager(
               contents()->GetPrimaryMainFrame()->frame_tree_node());
 

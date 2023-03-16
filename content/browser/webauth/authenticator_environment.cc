@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/authenticator_environment.h"
 
 #include <utility>
 
@@ -13,6 +13,7 @@
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_discovery.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
+#include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "device/fido/fido_discovery_factory.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -21,28 +22,51 @@
 
 namespace content {
 
-// static
-AuthenticatorEnvironment* AuthenticatorEnvironment::GetInstance() {
-  return AuthenticatorEnvironmentImpl::GetInstance();
+ScopedAuthenticatorEnvironmentForTesting::
+    ScopedAuthenticatorEnvironmentForTesting(
+        std::unique_ptr<device::FidoDiscoveryFactory> factory) {
+  AuthenticatorEnvironment* impl = AuthenticatorEnvironment::GetInstance();
+  CHECK(impl->MaybeGetDiscoveryFactoryTestOverride() == nullptr);
+  impl->ReplaceDefaultDiscoveryFactoryForTesting(std::move(factory));
+}
+
+ScopedAuthenticatorEnvironmentForTesting::
+    ~ScopedAuthenticatorEnvironmentForTesting() {
+  AuthenticatorEnvironment* impl = AuthenticatorEnvironment::GetInstance();
+  CHECK(impl->MaybeGetDiscoveryFactoryTestOverride() != nullptr);
+  impl->ReplaceDefaultDiscoveryFactoryForTesting(nullptr);
 }
 
 // static
-AuthenticatorEnvironmentImpl* AuthenticatorEnvironmentImpl::GetInstance() {
-  static base::NoDestructor<AuthenticatorEnvironmentImpl> environment;
+AuthenticatorEnvironment* AuthenticatorEnvironment::GetInstance() {
+  static base::NoDestructor<AuthenticatorEnvironment> environment;
   return environment.get();
 }
 
-AuthenticatorEnvironmentImpl::AuthenticatorEnvironmentImpl() = default;
+AuthenticatorEnvironment::AuthenticatorEnvironment() = default;
 
-AuthenticatorEnvironmentImpl::~AuthenticatorEnvironmentImpl() = default;
+AuthenticatorEnvironment::~AuthenticatorEnvironment() = default;
 
-void AuthenticatorEnvironmentImpl::EnableVirtualAuthenticatorFor(
+void AuthenticatorEnvironment::Reset() {
+  for (const auto& pair : virtual_authenticator_managers_) {
+    pair.first->RemoveObserver(this);
+  }
+  virtual_authenticator_managers_.clear();
+
+  replaced_discovery_factory_.reset();
+#if BUILDFLAG(IS_WIN)
+  win_webauthn_api_for_testing_ = nullptr;
+#endif
+}
+
+void AuthenticatorEnvironment::EnableVirtualAuthenticatorFor(
     FrameTreeNode* node,
     bool enable_ui) {
   // Do not create a new virtual authenticator if there is one already defined
   // for the |node|.
-  if (base::Contains(virtual_authenticator_managers_, node))
+  if (base::Contains(virtual_authenticator_managers_, node)) {
     return;
+  }
 
   node->AddObserver(this);
   auto virtual_authenticator_manager =
@@ -52,22 +76,23 @@ void AuthenticatorEnvironmentImpl::EnableVirtualAuthenticatorFor(
       std::move(virtual_authenticator_manager);
 }
 
-void AuthenticatorEnvironmentImpl::DisableVirtualAuthenticatorFor(
+void AuthenticatorEnvironment::DisableVirtualAuthenticatorFor(
     FrameTreeNode* node) {
-  if (!base::Contains(virtual_authenticator_managers_, node))
+  if (!base::Contains(virtual_authenticator_managers_, node)) {
     return;
+  }
 
   node->RemoveObserver(this);
   virtual_authenticator_managers_.erase(node);
 }
 
-bool AuthenticatorEnvironmentImpl::IsVirtualAuthenticatorEnabledFor(
+bool AuthenticatorEnvironment::IsVirtualAuthenticatorEnabledFor(
     FrameTreeNode* node) {
   return MaybeGetVirtualAuthenticatorManager(node) != nullptr;
 }
 
 VirtualAuthenticatorManagerImpl*
-AuthenticatorEnvironmentImpl::MaybeGetVirtualAuthenticatorManager(
+AuthenticatorEnvironment::MaybeGetVirtualAuthenticatorManager(
     FrameTreeNode* node) {
   for (; node; node = FrameTreeNode::From(node->parent())) {
     if (base::Contains(virtual_authenticator_managers_, node)) {
@@ -77,7 +102,7 @@ AuthenticatorEnvironmentImpl::MaybeGetVirtualAuthenticatorManager(
   return nullptr;
 }
 
-void AuthenticatorEnvironmentImpl::AddVirtualAuthenticatorReceiver(
+void AuthenticatorEnvironment::AddVirtualAuthenticatorReceiver(
     FrameTreeNode* node,
     mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
         receiver) {
@@ -86,7 +111,7 @@ void AuthenticatorEnvironmentImpl::AddVirtualAuthenticatorReceiver(
   it->second->AddReceiver(std::move(receiver));
 }
 
-bool AuthenticatorEnvironmentImpl::HasVirtualUserVerifyingPlatformAuthenticator(
+bool AuthenticatorEnvironment::HasVirtualUserVerifyingPlatformAuthenticator(
     FrameTreeNode* node) {
   VirtualAuthenticatorManagerImpl* authenticator_manager =
       MaybeGetVirtualAuthenticatorManager(node);
@@ -101,35 +126,34 @@ bool AuthenticatorEnvironmentImpl::HasVirtualUserVerifyingPlatformAuthenticator(
 }
 
 device::FidoDiscoveryFactory*
-AuthenticatorEnvironmentImpl::MaybeGetDiscoveryFactoryTestOverride() {
+AuthenticatorEnvironment::MaybeGetDiscoveryFactoryTestOverride() {
   return replaced_discovery_factory_.get();
 }
 
 #if BUILDFLAG(IS_WIN)
-device::WinWebAuthnApi* AuthenticatorEnvironmentImpl::win_webauthn_api() const {
+device::WinWebAuthnApi* AuthenticatorEnvironment::win_webauthn_api() const {
   return win_webauthn_api_for_testing_ ? win_webauthn_api_for_testing_.get()
                                        : device::WinWebAuthnApi::GetDefault();
 }
 
-void AuthenticatorEnvironmentImpl::SetWinWebAuthnApiForTesting(
+void AuthenticatorEnvironment::SetWinWebAuthnApiForTesting(
     device::WinWebAuthnApi* api) {
   DCHECK(!win_webauthn_api_for_testing_);
   win_webauthn_api_for_testing_ = api;
 }
 
-void AuthenticatorEnvironmentImpl::ClearWinWebAuthnApiForTesting() {
+void AuthenticatorEnvironment::ClearWinWebAuthnApiForTesting() {
   DCHECK(win_webauthn_api_for_testing_);
   win_webauthn_api_for_testing_ = nullptr;
 }
 #endif
 
-void AuthenticatorEnvironmentImpl::ReplaceDefaultDiscoveryFactoryForTesting(
+void AuthenticatorEnvironment::ReplaceDefaultDiscoveryFactoryForTesting(
     std::unique_ptr<device::FidoDiscoveryFactory> factory) {
   replaced_discovery_factory_ = std::move(factory);
 }
 
-void AuthenticatorEnvironmentImpl::OnFrameTreeNodeDestroyed(
-    FrameTreeNode* node) {
+void AuthenticatorEnvironment::OnFrameTreeNodeDestroyed(FrameTreeNode* node) {
   DisableVirtualAuthenticatorFor(node);
 }
 

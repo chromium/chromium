@@ -3158,8 +3158,8 @@ source_set("browser") {
       # Most webauth code is non-Android
       "webauth/authenticator_common_impl.cc",
       "webauth/authenticator_common_impl.h",
-      "webauth/authenticator_environment_impl.cc",
-      "webauth/authenticator_environment_impl.h",
+      "webauth/authenticator_environment.cc",
+      "webauth/authenticator_environment.h",
       "webauth/authenticator_impl.cc",
       "webauth/authenticator_impl.h",
       "webauth/is_uvpaa.cc",

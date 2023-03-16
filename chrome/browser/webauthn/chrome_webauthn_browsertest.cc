@@ -28,8 +28,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "content/public/browser/authenticator_environment.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -177,9 +177,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
   virtual_device_factory->mutable_state()->InjectRegistration(
       kCredentialID, "chrome-extension://" + extension_id);
 
-  content::AuthenticatorEnvironment::GetInstance()
-      ->ReplaceDefaultDiscoveryFactoryForTesting(
-          std::move(virtual_device_factory));
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::move(virtual_device_factory));
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   std::string result;
@@ -201,9 +200,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
   auto virtual_device_factory =
       std::make_unique<device::test::VirtualFidoDeviceFactory>();
   virtual_device_factory->set_win_webauthn_api(&fake_api);
-  content::AuthenticatorEnvironment::GetInstance()
-      ->ReplaceDefaultDiscoveryFactoryForTesting(
-          std::move(virtual_device_factory));
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::move(virtual_device_factory));
 
   constexpr char kMakeCredentialLargeBlob[] = R"(
     let cred_id;
@@ -349,17 +347,26 @@ class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
     config.resident_key_support = true;
     config.internal_uv_support = true;
     virtual_device_factory->SetCtap2Config(std::move(config));
-    content::AuthenticatorEnvironment::GetInstance()
-        ->ReplaceDefaultDiscoveryFactoryForTesting(
+    auth_env_ =
+        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
             std::move(virtual_device_factory));
 
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
         observer_.get());
   }
 
+  void PostRunTestOnMainThread() override {
+    // To avoid dangling raw_ptr's these values need to be destroyed before
+    // this test class.
+    virtual_device_factory_ = nullptr;
+    auth_env_.reset();
+    WebAuthnBrowserTest::PostRunTestOnMainThread();
+  }
+
  protected:
   std::unique_ptr<Observer> observer_;
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
+  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
 };
 
 static constexpr char kConditionalUIRequest[] = R"((() => {
@@ -447,12 +454,7 @@ class WebAuthnCableExtension : public WebAuthnBrowserTest {
             e => window.domAutomationController.send('error ' + e));
   })())";
 
-  void MaybeInstall() {
-    if (installed_) {
-      return;
-    }
-    installed_ = true;
-
+  void DoRequest(std::string server_link_data) {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 
@@ -460,15 +462,12 @@ class WebAuthnCableExtension : public WebAuthnBrowserTest {
         std::make_unique<device::test::VirtualFidoDeviceFactory>();
     virtual_device_factory->mutable_state()->InjectRegistration(
         kCredentialID, "www.example.com");
-    content::AuthenticatorEnvironment::GetInstance()
-        ->ReplaceDefaultDiscoveryFactoryForTesting(
-            std::move(virtual_device_factory));
+    std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting>
+        auth_env =
+            std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
+                std::move(virtual_device_factory));
 
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer_);
-  }
-
-  void DoRequest(std::string server_link_data) {
-    MaybeInstall();
 
     const std::string request =
         base::ReplaceStringPlaceholders(kRequest, {server_link_data}, nullptr);
@@ -506,7 +505,6 @@ class WebAuthnCableExtension : public WebAuthnBrowserTest {
     std::vector<std::string> extensions_;
   };
 
-  bool installed_ = false;
   ExtensionObserver observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -796,9 +794,8 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, MAYBE_Test) {
   DelegateObserver observer(this);
   ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer);
-  content::AuthenticatorEnvironment::GetInstance()
-      ->ReplaceDefaultDiscoveryFactoryForTesting(
-          std::make_unique<DiscoveryFactory>(this));
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::make_unique<DiscoveryFactory>(this));
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -836,9 +833,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, RequestTypesMakeCredential) {
   // Check that the correct request types are plumbed through.
   DelegateObserver observer(this);
   ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer);
-  content::AuthenticatorEnvironment::GetInstance()
-      ->ReplaceDefaultDiscoveryFactoryForTesting(
-          std::make_unique<DiscoveryFactory>(this));
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::make_unique<DiscoveryFactory>(this));
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -857,9 +853,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor,
   // Check that the correct request types are plumbed through.
   DelegateObserver observer(this);
   ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer);
-  content::AuthenticatorEnvironment::GetInstance()
-      ->ReplaceDefaultDiscoveryFactoryForTesting(
-          std::make_unique<DiscoveryFactory>(this));
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::make_unique<DiscoveryFactory>(this));
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));

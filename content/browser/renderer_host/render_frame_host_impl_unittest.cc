@@ -43,7 +43,7 @@
 #endif  // BUIDLFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/authenticator_environment.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
 #endif
@@ -1374,7 +1374,7 @@ TEST_F(RenderFrameHostImplTest, GetVirtualAuthenticatorManagerWhenInactiveRFH) {
     mojo::Remote<blink::test::mojom::VirtualAuthenticatorManager> remote;
     child_rfh->GetVirtualAuthenticatorManager(
         remote.BindNewPipeAndPassReceiver());
-    EXPECT_TRUE(AuthenticatorEnvironmentImpl::GetInstance()
+    EXPECT_TRUE(AuthenticatorEnvironment::GetInstance()
                     ->IsVirtualAuthenticatorEnabledFor(
                         contents()->GetPrimaryFrameTree().root()->child_at(0)));
   }
@@ -1394,7 +1394,7 @@ TEST_F(RenderFrameHostImplTest, GetVirtualAuthenticatorManagerWhenInactiveRFH) {
     mojo::Remote<blink::test::mojom::VirtualAuthenticatorManager> remote;
     child_rfh->GetVirtualAuthenticatorManager(
         remote.BindNewPipeAndPassReceiver());
-    EXPECT_FALSE(AuthenticatorEnvironmentImpl::GetInstance()
+    EXPECT_FALSE(AuthenticatorEnvironment::GetInstance()
                      ->IsVirtualAuthenticatorEnabledFor(
                          contents()->GetPrimaryFrameTree().root()));
   }
