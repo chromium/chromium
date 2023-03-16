@@ -283,6 +283,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Crostini.InputMethodOnBlur" enum="InputMethodID2"
+    expires_after="2024-01-06">
+  <owner>timloh@chromium.org</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Breakdown of active input method by input method IDs. Recorded when a
+    Crostini window loses focus, including switching between Crostini windows
+    and some actions like opening the launcher. See InputMethod.ID2 for details
+    on the enum format.
+  </summary>
+</histogram>
+
 <histogram name="Crostini.InstallSource" enum="CrostiniInstallSource"
     expires_after="2023-04-10">
   <obsolete>

@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ash/crostini/crostini_metrics_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/exo/wm_helper.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace crostini {
 
@@ -63,9 +67,17 @@ CrostiniMetricsService::CrostiniMetricsService(Profile* profile) {
       std::make_unique<guest_os::GuestOsEngagementMetrics>(
           profile->GetPrefs(), base::BindRepeating(IsCrostiniWindow),
           prefs::kEngagementPrefsPrefix, kUmaPrefix);
+
+  if (exo::WMHelper::HasInstance()) {
+    exo::WMHelper::GetInstance()->AddActivationObserver(this);
+  }
 }
 
-CrostiniMetricsService::~CrostiniMetricsService() = default;
+CrostiniMetricsService::~CrostiniMetricsService() {
+  if (exo::WMHelper::HasInstance()) {
+    exo::WMHelper::GetInstance()->RemoveActivationObserver(this);
+  }
+}
 
 void CrostiniMetricsService::SetBackgroundActive(bool background_active) {
   // If policy changes to enable Crostini, we won't have created the helper
@@ -75,6 +87,26 @@ void CrostiniMetricsService::SetBackgroundActive(bool background_active) {
     return;
   }
   guest_os_engagement_metrics_->SetBackgroundActive(background_active);
+}
+
+void CrostiniMetricsService::OnWindowActivated(
+    wm::ActivationChangeObserver::ActivationReason reason,
+    aura::Window* gained_active,
+    aura::Window* lost_active) {
+  if (lost_active && IsCrostiniWindow(lost_active)) {
+    // Log the current input method when a Crostini window loses focus. This is
+    // a simple way for us to record which input method are being used with
+    // Crostini, and doesn't require us to hook into keyboard events. Enum
+    // format matches InputMethod.ID2.
+
+    auto* imm = ash::input_method::InputMethodManager::Get();
+    if (imm && imm->GetActiveIMEState()) {
+      base::UmaHistogramSparse(
+          "Crostini.InputMethodOnBlur",
+          static_cast<int32_t>(base::PersistentHash(
+              imm->GetActiveIMEState()->GetCurrentInputMethod().id())));
+    }
+  }
 }
 
 }  // namespace crostini

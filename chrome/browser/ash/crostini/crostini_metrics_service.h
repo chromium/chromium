@@ -9,13 +9,15 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/guest_os/guest_os_engagement_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 class Profile;
 
 namespace crostini {
 
 // A KeyedService for various Crostini metrics.
-class CrostiniMetricsService : public KeyedService {
+class CrostiniMetricsService : public KeyedService,
+                               public wm::ActivationChangeObserver {
  public:
   class Factory : public ProfileKeyedServiceFactory {
    public:
@@ -45,6 +47,11 @@ class CrostiniMetricsService : public KeyedService {
   // This needs to be called when Crostini starts and stops being active so we
   // can correctly track background active time.
   void SetBackgroundActive(bool background_active);
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
  private:
   std::unique_ptr<guest_os::GuestOsEngagementMetrics>
