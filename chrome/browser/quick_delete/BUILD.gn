@@ -12,6 +12,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteSnackbarDelegate.java",
   ]
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/messages/android:java",
@@ -19,20 +20,64 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_jvm_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+  resources_package = "org.chromium.chrome.browser.quick_delete"
 }
 
 android_resources("java_resources") {
-  sources = [ "android/java/res/drawable/quick_delete_trash_bin_icon_24dp.xml" ]
+  sources = [
+    "android/java/res/drawable/quick_delete_trash_bin_icon_24dp.xml",
+    "android/java/res/layout/quick_delete_dialog.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+  ]
 }
 
 robolectric_library("junit") {
-  sources = [ "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMetricsDelegateTest.java" ]
+  sources = [
+    "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegateUnitTest.java",
+    "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMetricsDelegateTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "android/javatests/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegateTest.java" ]
+
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/appmenu/test:test_support_java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

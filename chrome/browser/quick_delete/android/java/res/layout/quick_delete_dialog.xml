@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="start"
+    style="@style/AlertDialogContent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/quick_delete_dialog_description" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:textDirection="locale"
+        android:drawableStart="@drawable/ic_watch_later_24dp"
+        android:paddingBottom="24dp"
+        android:drawablePadding="12dp"
+        app:chromeDrawableTint="@macro/default_icon_color"
+        android:text="@string/clear_history_title"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:textDirection="locale"
+        android:drawableStart="@drawable/permission_cookie"
+        android:paddingBottom="24dp"
+        android:drawablePadding="12dp"
+        app:chromeDrawableTint="@macro/default_icon_color"
+        android:text="@string/clear_cookies_and_site_data_title"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:textDirection="locale"
+        android:drawableStart="@drawable/ic_collections_grey"
+        android:paddingBottom="24dp"
+        android:drawablePadding="12dp"
+        app:chromeDrawableTint="@macro/default_icon_color"
+        android:text="@string/clear_cache_title"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+</LinearLayout>

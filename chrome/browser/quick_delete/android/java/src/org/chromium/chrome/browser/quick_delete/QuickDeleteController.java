@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
@@ -24,30 +27,19 @@ public class QuickDeleteController {
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
      *
+     * @param context The associated {@link Context}.
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
      * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
      */
-    private QuickDeleteController(@NonNull ModalDialogManager modalDialogManager,
-            @NonNull SnackbarManager snackbarManager) {
-        mQuickDeleteSnackbarDelegate = new QuickDeleteSnackbarDelegate(snackbarManager);
-        mQuickDeleteDialogDelegate =
-                new QuickDeleteDialogDelegate(modalDialogManager, mQuickDeleteSnackbarDelegate);
-    }
-
-    /**
-     * A method to create the {@link QuickDeleteController} based on whether to show the dialog or
-     * not.
-     *
-     * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
-     * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
-     *
-     * @return {@link QuickDeleteController} The quick delete controller responsible for the
-     *         triggering the quick delete flow.
-     */
-    public static @NonNull QuickDeleteController create(
+    public QuickDeleteController(@NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull SnackbarManager snackbarManager) {
-        return new QuickDeleteController(modalDialogManager, snackbarManager);
+        // TODO(crbug.com/1412087): Clean up QuickDeleteSnackbarDelegate as the "cancel" flow wont
+        // be needed anymore and move the implementation of showSnackbar() to QuickDeleteController.
+        mQuickDeleteSnackbarDelegate = new QuickDeleteSnackbarDelegate(snackbarManager);
+
+        mQuickDeleteDialogDelegate =
+                new QuickDeleteDialogDelegate(context, modalDialogManager, this::onDialogDismissed);
     }
 
     /**
@@ -63,4 +55,11 @@ public class QuickDeleteController {
     public void triggerQuickDeleteFlow() {
         mQuickDeleteDialogDelegate.showDialog();
     }
+
+    /**
+     * A method called when the user confirms or cancels the dialog.
+     *
+     * TODO(crbug.com/1412087): Add implementation logic for the deletion.
+     */
+    private void onDialogDismissed(@DialogDismissalCause int dismissalCause) {}
 }
