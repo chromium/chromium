@@ -26,6 +26,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   private acceleratorsUpdatedRemote: AcceleratorsUpdatedObserverRemote|null =
       null;
   private acceleratorsUpdatedPromise: Promise<void>|null = null;
+  private restoreDefaultCallCount: number = 0;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -39,7 +40,6 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('removeAccelerator');
     this.methods.register('restoreDefault');
     this.methods.register('restoreAllDefaults');
-    this.methods.register('restoreActionDefaults');
     this.methods.register('addObserver');
     this.registerObservables();
   }
@@ -112,6 +112,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   restoreDefault(_source: AcceleratorSource, _actionId: number):
       Promise<{result: AcceleratorResultData}> {
+    ++this.restoreDefaultCallCount;
     // Always return kSuccess in this fake.
     const result = new AcceleratorResultData();
     result.result = AcceleratorConfigResult.kSuccess;
@@ -125,13 +126,6 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     result.result = AcceleratorConfigResult.kSuccess;
     this.methods.setResult('restoreAllDefaults', {result});
     return this.methods.resolveMethod('restoreAllDefaults');
-  }
-
-  restoreActionDefaults(): Promise<AcceleratorConfigResult> {
-    // Always return kSuccess in this fake.
-    this.methods.setResult(
-        'restoreActionDefaults', AcceleratorConfigResult.kSuccess);
-    return this.methods.resolveMethod('restoreActionDefaults');
   }
 
   /**
@@ -148,6 +142,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
    */
   setFakeAcceleratorLayoutInfos(layoutInfos: MojoLayoutInfo[]): void {
     this.methods.setResult('getAcceleratorLayoutInfos', {layoutInfos});
+  }
+
+  getRestoreDefaultCallCount(): number {
+    return this.restoreDefaultCallCount;
   }
 
   // Sets up an observer for methodName.

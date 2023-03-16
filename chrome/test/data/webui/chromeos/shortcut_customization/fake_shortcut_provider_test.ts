@@ -119,9 +119,11 @@ suite('fakeShortcutProviderTest', function() {
     });
   });
 
-  test('RestoreActionDefaultsFake', () => {
-    return getProvider().restoreActionDefaults().then((result) => {
-      assertEquals(AcceleratorConfigResult.kSuccess, result);
-    });
+  test('RestoreDefaultFake', () => {
+    return getProvider()
+        .restoreDefault(AcceleratorSource.kAsh, 0)
+        .then(({result}) => {
+          assertEquals(AcceleratorConfigResult.kSuccess, result.result);
+        });
   });
 });

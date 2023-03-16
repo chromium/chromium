@@ -16,7 +16,8 @@ import {DomRepeat, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/
 
 import {getTemplate} from './accelerator_edit_dialog.html.js';
 import {ViewState} from './accelerator_view.js';
-import {AcceleratorInfo, AcceleratorSource} from './shortcut_types.js';
+import {getShortcutProvider} from './mojo_interface_provider.js';
+import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource} from './shortcut_types.js';
 
 export interface AcceleratorEditDialogElement {
   $: {
@@ -168,7 +169,18 @@ export class AcceleratorEditDialogElement extends
   }
 
   protected onRestoreDefaultButtonClicked(): void {
-    // TODO(jimmyxgong): Implement this function.
+    getShortcutProvider()
+        .restoreDefault(this.source, this.action)
+        .then(({result}) => {
+          // TODO(jimmyxgong): Potentially show partial resets as an error.
+          if (result.result === AcceleratorConfigResult.kSuccess) {
+            this.dispatchEvent(new CustomEvent('request-update-accelerator', {
+              bubbles: true,
+              composed: true,
+              detail: {source: this.source, action: this.action},
+            }));
+          }
+        });
   }
 }
 

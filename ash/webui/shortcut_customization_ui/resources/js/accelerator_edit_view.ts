@@ -18,7 +18,8 @@ import {AcceleratorResultData} from '../mojom-webui/ash/webui/shortcut_customiza
 import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ViewState} from './accelerator_view.js';
-import {getShortcutProvider, useFakeProvider} from './mojo_interface_provider.js';
+import {FakeShortcutProvider} from './fake_shortcut_provider.js';
+import {getShortcutProvider} from './mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {getAccelerator} from './shortcut_utils.js';
 
@@ -142,7 +143,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
             this.source, this.action, getAccelerator(this.acceleratorInfo))
         .then((value: {result: AcceleratorResultData}) => {
           if (value.result.result === AcceleratorConfigResult.kSuccess) {
-            if (useFakeProvider) {
+            if (this.shortcutProvider instanceof FakeShortcutProvider) {
               this.lookupManager.removeAccelerator(
                   this.source, this.action,
                   getAccelerator(this.acceleratorInfo));
