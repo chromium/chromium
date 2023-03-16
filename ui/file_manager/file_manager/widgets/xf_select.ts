@@ -332,7 +332,7 @@ function getCSS(): CSSResultGroup {
       margin-inline: 4px;
       min-width: auto;
       outline: none;
-      padding: 0px 8px;
+      padding: 0px 8px 0 12px;
       white-space: nowrap;
     }
     .xf-select-icon {
