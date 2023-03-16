@@ -44,6 +44,9 @@ VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
 
   session_observation_.Observe(Shell::Get()->session_controller());
 
+  // Initialize with current session state.
+  OnSessionStateChanged(Shell::Get()->session_controller()->GetSessionState());
+
   g_client_instance = this;
 }
 

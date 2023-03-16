@@ -144,9 +144,6 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     client_ = VideoConferenceAppServiceClient::GetForTesting();
-    // This is not triggered automatically.
-    client_->OnSessionStateChanged(
-        Shell::Get()->session_controller()->GetSessionState());
 
     Profile* profile = ProfileManager::GetActiveUserProfile();
     instance_registry_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
