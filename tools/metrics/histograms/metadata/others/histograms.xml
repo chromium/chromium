@@ -5742,18 +5742,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExploreSites.SiteTilesClickIndex2" units="units"
-    expires_after="2021-08-09">
-  <owner>dewittj@chromium.org</owner>
-  <owner>petewil@chromium.org</owner>
-  <summary>
-    The total index of the selected tile on the ExploreSites page. This measures
-    how far down from the top it is, counting all the other tiles in cards above
-    it. This assumes 10 tiles per category, which is set to the maximum of the
-    tile counts of all existing variations of the ExploreSites page.
-  </summary>
-</histogram>
-
 <histogram name="FactoryPingEmbargo.EndDateValidity"
     enum="FactoryPingEmbargoEndDateValidity" expires_after="M77">
   <owner>pmarko@chromium.org</owner>
