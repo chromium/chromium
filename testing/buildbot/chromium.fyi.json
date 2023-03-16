@@ -19733,7 +19733,9 @@
       {
         "args": [
           "--log-wptreport",
-          "--no-wpt-internal"
+          "--no-wpt-internal",
+          "--xcode-build-version",
+          "14c18"
         ],
         "experiment_percentage": 100,
         "isolate_name": "wpt_tests_ios",
@@ -19764,8 +19766,16 @@
               "os": "Mac-12"
             }
           ],
+          "expiration": 18000,
+          "hard_timeout": 14400,
+          "named_caches": [
+            {
+              "name": "xcode_ios_14c18",
+              "path": "Xcode.app"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 36
         },
         "test_id_prefix": "ninja://ios/chrome/test/wpt:wpt_tests_ios/"
       }

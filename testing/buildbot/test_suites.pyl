@@ -5630,7 +5630,9 @@
         },
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 15,
+          'shards': 36,
+          'expiration': 18000,
+          'hard_timeout': 14400,
         },
         'experiment_percentage': 100,
       },
