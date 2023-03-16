@@ -371,6 +371,10 @@ public final class ProductionSupportedFlagList {
                     "Enables downloading TrustTokenKeyCommitmentsComponent by the component"
                             + " updater downloading service in nonembedded WebView."
                             + " See https://crbug.com/1170468."),
+            Flag.baseFeature(BlinkFeatures.STYLUS_POINTER_ADJUSTMENT,
+                    "When enabled, a hover icon is shown over editable HTML elements when"
+                            + " using a stylus and the rectangle to trigger stylus writing on"
+                            + " editable elements is expanded."),
             Flag.baseFeature(BlinkFeatures.STYLUS_RICH_GESTURES,
                     "When enabled, stylus input can be used to draw rich gestures which "
                             + "affect text in editable web content."),
