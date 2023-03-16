@@ -1339,6 +1339,11 @@ const FeatureEntry::FeatureVariation kJourneysHideVisitsVariations[] = {
      std::size(kJourneysHideVisitsVariationsIcon), nullptr},
 };
 
+const FeatureEntry::FeatureVariation
+    kImageServiceOptimizationGuideSalientImagesVariations[] = {
+        {"High Performance Canonicalization", nullptr, 0, "3362133"},
+};
+
 const FeatureEntry::FeatureParam kSidePanelJourneysOpensFromOmniboxParams[] = {
     {"SidePanelJourneysOpensFromOmnibox", "true"},
 };
@@ -5758,8 +5763,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kPageImageServiceOptimizationGuideSalientImagesDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         image_service::kImageServiceOptimizationGuideSalientImages)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         image_service::kImageServiceOptimizationGuideSalientImages,
+         kImageServiceOptimizationGuideSalientImagesVariations,
+         "PageImageService")},
+
+    {"page-image-service-suggest-powered-images",
+     flag_descriptions::kPageImageServiceSuggestPoweredImagesName,
+     flag_descriptions::kPageImageServiceSuggestPoweredImagesDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(image_service::kImageServiceSuggestPoweredImages)},
 
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription,

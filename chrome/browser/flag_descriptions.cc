@@ -2456,6 +2456,11 @@ const char kPageImageServiceOptimizationGuideSalientImagesDescription[] =
     "Enables the PageImageService fetching images from the Optimization Guide "
     "Salient Images source.";
 
+const char kPageImageServiceSuggestPoweredImagesName[] =
+    "Page Image Service - Suggest Powered Images";
+const char kPageImageServiceSuggestPoweredImagesDescription[] =
+    "Enables the PageImageService fetching images from the Suggest source.";
+
 const char kPageInfoAboutThisSiteNewIconName[] = "'About this site' new icon";
 const char kPageInfoAboutThisSiteNewIconDescription[] =
     "Shows the 'About this site' section in the page info UI with a new google "

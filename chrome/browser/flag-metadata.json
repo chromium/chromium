@@ -5668,6 +5668,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "page-image-service-suggest-powered-images",
+    "owners": [ "tommycli", "//components/image_service/OWNERS" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "page-info-about-this-page-persistent-side-panel-entry",
     "owners": [ "dullweber", "olesiamarukhno@google.com" ],
     "expiry_milestone": 115

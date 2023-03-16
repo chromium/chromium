@@ -61899,6 +61899,7 @@ from previous Chrome versions.
   <int value="-86788587" label="allow-autofill-sync-credential"/>
   <int value="-86243376" label="LayoutNG:enabled"/>
   <int value="-85706353" label="VirtualDesksGestures:enabled"/>
+  <int value="-85704140" label="ImageServiceSuggestPoweredImages:disabled"/>
   <int value="-82880083" label="CaptureModeDemoTools:enabled"/>
   <int value="-82530769" label="WebXRPlaneDetection:enabled"/>
   <int value="-82328138"
@@ -65253,6 +65254,7 @@ from previous Chrome versions.
   <int value="1796436890" label="MinorModeSupport:enabled"/>
   <int value="1796592669" label="InstalledAppsInCbd:disabled"/>
   <int value="1797002314" label="HatsUseNewHistograms:enabled"/>
+  <int value="1797226735" label="ImageServiceSuggestPoweredImages:enabled"/>
   <int value="1798347197"
       label="ContextualSuggestionsIPHReverseScroll:disabled"/>
   <int value="1799521026" label="LegacyTLSEnforced:disabled"/>
