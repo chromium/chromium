@@ -40,7 +40,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.DragAndDropLauncherActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
@@ -128,8 +128,10 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         assertEquals("The intent flags should match.",
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK,
                 intent.getFlags());
-        assertEquals("The intent class should be ChromeTabbedActivity.",
-                ChromeTabbedActivity.class.getName(), intent.getComponent().getClassName());
+        assertEquals("The intent class should be DragAndDropLauncherActivity.",
+                DragAndDropLauncherActivity.class.getName(), intent.getComponent().getClassName());
+        assertTrue("The intent should contain the CATEGORY_BROWSABLE category.",
+                intent.getCategories().contains(Intent.CATEGORY_BROWSABLE));
         assertTrue("preferNew extra should be true.",
                 intent.getBooleanExtra(IntentHandler.EXTRA_PREFER_NEW, false));
         assertEquals("The intent should contain Uri data.", Uri.parse(JUnitTestGURLs.EXAMPLE_URL),

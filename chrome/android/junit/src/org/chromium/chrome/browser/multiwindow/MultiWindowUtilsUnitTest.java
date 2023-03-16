@@ -5,26 +5,66 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.SparseIntArray;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
- * Unit tests for {@link MultiWindowUtilsUnit}.
+ * Unit tests for {@link MultiWindowUtils}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowMultiInstanceManagerApi31.class})
 public class MultiWindowUtilsUnitTest {
+    /** Shadows {@link MultiInstanceManagerApi31} class for testing. */
+    @Implements(MultiInstanceManagerApi31.class)
+    public static class ShadowMultiInstanceManagerApi31 {
+        private static SparseIntArray sWindowIdsOfRunningTabbedActivities;
+
+        public static void updateWindowIdsOfRunningTabbedActivities(int windowId, boolean remove) {
+            if (sWindowIdsOfRunningTabbedActivities == null) {
+                sWindowIdsOfRunningTabbedActivities = new SparseIntArray();
+            }
+            if (!remove) {
+                sWindowIdsOfRunningTabbedActivities.put(windowId, windowId);
+            } else {
+                sWindowIdsOfRunningTabbedActivities.delete(windowId);
+            }
+        }
+
+        public static void reset() {
+            sWindowIdsOfRunningTabbedActivities = null;
+        }
+
+        @Implementation
+        public static SparseIntArray getWindowIdsOfRunningTabbedActivities() {
+            return sWindowIdsOfRunningTabbedActivities;
+        }
+    }
+
     private static final int INSTANCE_ID_0 = 0;
     private static final int INSTANCE_ID_1 = 1;
     private static final int INSTANCE_ID_2 = 2;
@@ -41,6 +81,7 @@ public class MultiWindowUtilsUnitTest {
     private boolean mIsMultipleInstanceRunning;
     private boolean mIsAutosplitSupported;
     private boolean mCustomMultiWindowSupported;
+    private Context mContext;
 
     @Mock
     TabModelSelector mTabModelSelector;
@@ -48,6 +89,10 @@ public class MultiWindowUtilsUnitTest {
     TabModel mNormalTabModel;
     @Mock
     TabModel mIncognitoTabModel;
+    @Mock
+    private ActivityInfo mActivityInfo;
+    @Mock
+    private PackageManager mPackageManager;
 
     @Before
     public void setUp() {
@@ -83,6 +128,11 @@ public class MultiWindowUtilsUnitTest {
                 return Activity.class;
             }
         };
+    }
+
+    @After
+    public void tearDown() {
+        ShadowMultiInstanceManagerApi31.reset();
     }
 
     @Test
@@ -140,38 +190,73 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testGetInstanceIdForViewIntent_LesserThanMaxWindowsOpen() {
+    @Config(sdk = 31)
+    public void testGetInstanceIdForViewIntent_LessThanMaxInstancesOpen()
+            throws NameNotFoundException {
+        initializeForMultiInstanceApi31();
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
 
         int maxInstances = MultiWindowUtils.getMaxInstances();
         // Simulate opening of 1 less than the max number of instances.
         for (int i = 0; i < maxInstances - 1; i++) {
-            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i + 5);
+            ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(i, false);
+            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i);
         }
 
-        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent();
+        int instanceId = MultiWindowUtils.getRunningInstanceIdForViewIntent();
         assertEquals("The default instance ID should be returned.",
                 MultiWindowUtils.INVALID_INSTANCE_ID, instanceId);
     }
 
     @Test
-    public void testGetInstanceIdForViewIntent_MaxWindowsOpen() {
+    @Config(sdk = 31)
+    public void testGetInstanceIdForViewIntent_MaxInstancesOpen_MaxRunningActivities()
+            throws NameNotFoundException {
+        initializeForMultiInstanceApi31();
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
 
         int maxInstances = MultiWindowUtils.getMaxInstances();
-        // Simulate opening of max number of instances.
+        // Simulate opening of max number of instances. #writeInstanceInfo will update the access
+        // time for IDs 0 -> |maxInstances - 1| in increasing order of recency.
         for (int i = 0; i < maxInstances; i++) {
-            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i + 5);
+            ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(i, false);
+            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i);
         }
 
         // Simulate last access of instance ID 0.
-        writeInstanceInfo(INSTANCE_ID_0, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, TASK_ID_5);
+        writeInstanceInfo(0, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, 0);
 
-        int instanceId = MultiWindowUtils.getInstanceIdForViewIntent();
+        int instanceId = MultiWindowUtils.getRunningInstanceIdForViewIntent();
+        assertEquals("The last accessed instance ID should be returned.", 0, instanceId);
+    }
+
+    @Test
+    @Config(sdk = 31)
+    public void testGetInstanceIdForViewIntent_MaxInstancesOpen_LessThanMaxRunningActivities()
+            throws NameNotFoundException {
+        initializeForMultiInstanceApi31();
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+
+        int maxInstances = MultiWindowUtils.getMaxInstances();
+        // Simulate opening of max number of instances. #writeInstanceInfo will update the access
+        // time for IDs 0 -> |maxInstances - 1| in increasing order of recency.
+        for (int i = 0; i < maxInstances; i++) {
+            ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(i, false);
+            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i);
+        }
+
+        // Simulate last access of instance ID 0.
+        writeInstanceInfo(0, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, 0);
+        // Simulate destruction of the activity represented by instance ID 0.
+        ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(0, true);
+
+        int instanceId = MultiWindowUtils.getRunningInstanceIdForViewIntent();
         assertEquals(
-                "The last accessed instance ID should be returned.", INSTANCE_ID_0, instanceId);
+                "The instance ID of a running activity that was last accessed should be returned.",
+                maxInstances - 1, instanceId);
     }
 
     private void writeInstanceInfo(
@@ -182,5 +267,13 @@ public class MultiWindowUtilsUnitTest {
         MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
         MultiInstanceManagerApi31.writeTabCount(instanceId, mTabModelSelector);
         MultiInstanceManagerApi31.updateTaskMap(instanceId, taskId);
+    }
+
+    private void initializeForMultiInstanceApi31() throws NameNotFoundException {
+        mContext = Mockito.spy(ContextUtils.getApplicationContext());
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mPackageManager.getActivityInfo(any(), anyInt())).thenReturn(mActivityInfo);
+        ContextUtils.initApplicationContextForTests(mContext);
+        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
     }
 }

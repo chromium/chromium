@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
+import android.util.SparseIntArray;
 import android.view.Display;
 
 import androidx.annotation.IntDef;
@@ -250,10 +251,14 @@ public class MultiWindowUtils implements ActivityStateListener {
      *        new one not loading any tabs from a persistent disk file.
      * @param openAdjacently {@code true} if the new instance shall be created in
      *        the adjacent window of split-screen mode.
+     * @param addTrustedIntentExtras (@code true} if the TRUSTED_APPLICATION_CODE_EXTRA will be
+     *         added to the intent to identify it as coming from a trusted source. This should be
+     *         set to 'false' if the Intent could be received by an app besides Chrome (e.g. when
+     *         attaching to ClipData for a drag event).
      * @return The created intent.
      */
-    public static Intent createNewWindowIntent(
-            Context context, int instanceId, boolean preferNew, boolean openAdjacently) {
+    public static Intent createNewWindowIntent(Context context, int instanceId, boolean preferNew,
+            boolean openAdjacently, boolean addTrustedIntentExtras) {
         assert isMultiInstanceApi31Enabled();
         Intent intent = new Intent(context, ChromeTabbedActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -265,7 +270,9 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (openAdjacently) intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
-        IntentUtils.addTrustedIntentExtras(intent);
+        if (addTrustedIntentExtras) {
+            IntentUtils.addTrustedIntentExtras(intent);
+        }
         return intent;
     }
 
@@ -686,21 +693,35 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * @return The instance ID of the Chrome window that was accessed last if the maximum number of
-     *         instances is open. If fewer than the maximum number is open, the default ID will be
-     *         returned, indicative of an unused window ID that can be potentially allocated to
-     *         launch a VIEW intent.
+     * @return The instance ID of the Chrome window with a running activity that was accessed last,
+     *         if the maximum number of instances is open. If fewer than the maximum number is open,
+     *         the default ID will be returned, indicative of an unused window ID that can be
+     *         potentially allocated to launch a VIEW intent.
      */
-    public static int getInstanceIdForViewIntent() {
+    public static int getRunningInstanceIdForViewIntent() {
         int windowId = MultiWindowUtils.INVALID_INSTANCE_ID;
         int maxInstances = MultiWindowUtils.getMaxInstances();
         if (MultiWindowUtils.getInstanceCount() < maxInstances) return windowId;
+
+        SparseIntArray windowIdsOfRunningTabbedActivities =
+                MultiInstanceManagerApi31.getWindowIdsOfRunningTabbedActivities();
         for (int i = 0; i < maxInstances; i++) {
+            // Exclude instance IDs of non-running activities.
+            if (windowIdsOfRunningTabbedActivities.indexOfValue(i) < 0) continue;
             if (MultiWindowUtils.readLastAccessedTime(i)
                     > MultiWindowUtils.readLastAccessedTime(windowId)) {
                 windowId = i;
             }
         }
         return windowId;
+    }
+
+    /**
+     * Launch the given intent in an existing ChromeTabbedActivity instance.
+     * @param intent The intent to launch.
+     * @param instanceId ID of the instance to launch the intent in.
+     */
+    public static void launchIntentInInstance(Intent intent, int instanceId) {
+        MultiInstanceManagerApi31.launchIntentInInstance(intent, instanceId);
     }
 }

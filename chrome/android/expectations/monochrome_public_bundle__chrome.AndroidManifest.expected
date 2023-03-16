@@ -55,6 +55,20 @@
         <category android:name="com.google.intent.category.DAYDREAM"/>
       </intent-filter>  # DIFF-ANCHOR: dea53031
     </activity>  # DIFF-ANCHOR: 610e8ccf
+    <activity  # DIFF-ANCHOR: b5c66095
+        android:name="org.chromium.chrome.browser.DragAndDropLauncherActivity"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleInstancePerTask"
+        android:taskAffinity=""
+        android:theme="@style/LauncherTheme">
+      <intent-filter>  # DIFF-ANCHOR: f18dfa5a
+        <action android:name="org.chromium.chrome.browser.dragdrop.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="http"/>
+        <data android:scheme="https"/>
+      </intent-filter>  # DIFF-ANCHOR: f18dfa5a
+    </activity>  # DIFF-ANCHOR: b5c66095
     <activity  # DIFF-ANCHOR: 76686af9
         android:name="org.chromium.chrome.browser.LauncherShortcutActivity"
         android:excludeFromRecents="true"

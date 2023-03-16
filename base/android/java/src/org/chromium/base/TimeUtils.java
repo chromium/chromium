@@ -76,11 +76,12 @@ public class TimeUtils {
 
     // Use these in favor of TimeUnit.convert() in order to avoid the overhead of a
     // static-get / static-invoke.
-    public static final long NANOSECONDS_PER_MICROSECOND = 1000;
-    public static final long NANOSECONDS_PER_MILLISECOND = 1000000;
     public static final long SECONDS_PER_MINUTE = 60;
     public static final long SECONDS_PER_HOUR = SECONDS_PER_MINUTE * 60;
     public static final long SECONDS_PER_DAY = SECONDS_PER_HOUR * 24;
+    public static final long MILLISECONDS_PER_MINUTE = SECONDS_PER_MINUTE * 1000;
+    public static final long NANOSECONDS_PER_MICROSECOND = 1000;
+    public static final long NANOSECONDS_PER_MILLISECOND = 1000000;
 
     // Used by FakeTimeTestRule. Visibility is restricted to ensure tests use the rule, which
     // restores the value to null in its clean-up logic.

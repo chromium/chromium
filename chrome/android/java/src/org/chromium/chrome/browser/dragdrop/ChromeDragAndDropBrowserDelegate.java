@@ -7,14 +7,13 @@ package org.chromium.chrome.browser.dragdrop;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.DragAndDropLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -76,12 +75,8 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     public Intent createLinkIntent(String urlString) {
         Intent intent = null;
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            intent = MultiWindowUtils.createNewWindowIntent(mContext.getApplicationContext(),
-                    MultiWindowUtils.getInstanceIdForViewIntent(), true, false);
-            intent.setData(Uri.parse(urlString));
-            // Remove the trusted application intent extra as the intent could pose a security risk
-            // once it leaves Chrome's boundaries.
-            intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
+            intent = DragAndDropLauncherActivity.getLinkLauncherIntent(
+                    mContext, urlString, /*windowId=*/null);
         }
         return intent;
     }

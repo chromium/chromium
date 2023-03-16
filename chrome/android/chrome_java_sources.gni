@@ -33,6 +33,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/DefaultBrowserInfo2.java",
   "java/src/org/chromium/chrome/browser/DelayedScreenLockIntentHandler.java",
   "java/src/org/chromium/chrome/browser/DevToolsServer.java",
+  "java/src/org/chromium/chrome/browser/DragAndDropLauncherActivity.java",
   "java/src/org/chromium/chrome/browser/FileProviderHelper.java",
   "java/src/org/chromium/chrome/browser/IntentHandler.java",
   "java/src/org/chromium/chrome/browser/KeyboardShortcuts.java",

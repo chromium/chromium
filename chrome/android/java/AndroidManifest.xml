@@ -410,6 +410,23 @@ by a child template that "extends" this file.
             android:excludeFromRecents="true"
             android:exported="false" />
 
+        <!-- The singleInstancePerTask launch mode is required by Samsung OS to determine
+             support for multi-instance in the drag & drop use case. See b/232168063 for
+             future reference. -->
+        <activity android:name="org.chromium.chrome.browser.DragAndDropLauncherActivity"
+            android:theme="@style/LauncherTheme"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstancePerTask"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="org.chromium.chrome.browser.dragdrop.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
+        </activity>
+
         <activity android:name="org.chromium.chrome.browser.incognito.IncognitoTabLauncher"
             android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:taskAffinity=""

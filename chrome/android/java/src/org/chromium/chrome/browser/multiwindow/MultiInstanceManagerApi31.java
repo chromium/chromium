@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.SparseBooleanArray;
+import android.util.SparseIntArray;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -127,8 +128,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab);
         } else {
             onMultiInstanceModeStarted();
-            Intent intent = MultiWindowUtils.createNewWindowIntent(
-                    mActivity, info.instanceId, /*preferNew=*/false, /*openAdjacently=*/true);
+            Intent intent = MultiWindowUtils.createNewWindowIntent(mActivity, info.instanceId,
+                    /*preferNew=*/false, /*openAdjacently=*/true, /*addTrustedIntentExtras=*/true);
             ReparentingTask.from(tab).begin(mActivity, intent,
                     mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
         }
@@ -354,7 +355,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected List<Activity> getAllRunningActivities() {
+    protected static List<Activity> getAllRunningActivities() {
         return ApplicationStatus.getRunningActivities();
     }
 
@@ -372,7 +373,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         return results;
     }
 
-    private Activity getActivityById(int id) {
+    private static Activity getActivityById(int id) {
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
         for (Activity activity : getAllRunningActivities()) {
             if (id == windowManager.getIndexForWindow(activity)) return activity;
@@ -512,6 +513,24 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     /**
+     * @return The window IDs of the currently running ChromeTabbedActivity's. It is possible to
+     *     have more number of saved instances than the number of currently running activities (for
+     *     example, when an activity is killed from the Android app menu, its instance state still
+     *     persists for use by Chrome).
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    static SparseIntArray getWindowIdsOfRunningTabbedActivities() {
+        List<Activity> activities = ApplicationStatus.getRunningActivities();
+        var windowIdsOfRunningTabbedActivities = new SparseIntArray();
+        for (Activity activity : activities) {
+            if (!(activity instanceof ChromeTabbedActivity)) continue;
+            int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(activity);
+            windowIdsOfRunningTabbedActivities.put(windowId, windowId);
+        }
+        return windowIdsOfRunningTabbedActivities;
+    }
+
+    /**
      * Open or launch a given instance.
      * @param instanceId ID of the instance to open.
      * @param taskId ID of the task the instance resides in.
@@ -529,13 +548,32 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         onMultiInstanceModeStarted();
         // TODO: Pass this flag from UI to control the window to open.
         boolean openAdjacently = true;
-        Intent intent = MultiWindowUtils.createNewWindowIntent(
-                mActivity, instanceId, /*preferNew=*/false, openAdjacently);
+        Intent intent = MultiWindowUtils.createNewWindowIntent(mActivity, instanceId,
+                /*preferNew=*/false, openAdjacently, /*addTrustedIntentExtras=*/true);
         if (openAdjacently) {
             mActivity.startActivity(
                     intent, mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions());
         } else {
             mActivity.startActivity(intent);
+        }
+    }
+
+    /**
+     * Launch the given intent in an existing ChromeTabbedActivity instance.
+     * @param intent The intent to launch.
+     * @param instanceId ID of the instance to launch the intent in.
+     */
+    static void launchIntentInInstance(Intent intent, int instanceId) {
+        Activity activity = getActivityById(instanceId);
+        if (!(activity instanceof ChromeTabbedActivity)) return;
+        int taskId = activity.getTaskId();
+        if (taskId != INVALID_TASK_ID) {
+            // Launch the intent in the existing activity and bring the task to foreground if it is
+            // alive.
+            ((ChromeTabbedActivity) activity).onNewIntent(intent);
+            var activityManager =
+                    (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+            activityManager.moveTaskToFront(taskId, 0);
         }
     }
 

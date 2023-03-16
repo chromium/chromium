@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
+import android.util.SparseIntArray;
 
 import androidx.test.filters.SmallTest;
 
@@ -25,6 +26,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -32,9 +36,11 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31UnitTest.ShadowApplicationStatus;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -61,7 +67,38 @@ import java.util.Set;
  * Unit tests for {@link MultiInstanceManagerApi31}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowApplicationStatus.class})
 public class MultiInstanceManagerApi31UnitTest {
+    /**
+     * Shadows {@link ApplicationStatus} class for testing.
+     */
+    @Implements(ApplicationStatus.class)
+    public static class ShadowApplicationStatus {
+        private static final SparseArray<Activity> sRunningActivities = new SparseArray<>();
+
+        public static void addRunningActivity(int instanceId, Activity activity) {
+            sRunningActivities.put(instanceId, activity);
+        }
+
+        public static void deleteRunningActivity(int instanceId) {
+            sRunningActivities.delete(instanceId);
+        }
+
+        public static void removeRunningActivity(Activity activity) {
+            int index = sRunningActivities.indexOfValue(activity);
+            if (index >= 0) sRunningActivities.removeAt(index);
+        }
+
+        @Implementation
+        public static List<Activity> getRunningActivities() {
+            List<Activity> result = new ArrayList<>();
+            for (int i = 0; i < sRunningActivities.size(); ++i) {
+                result.add(sRunningActivities.valueAt(i));
+            }
+            return result;
+        }
+    }
+
     private static final int INVALID_INSTANCE_ID = MultiInstanceManagerApi31.INVALID_INSTANCE_ID;
     private static final int INSTANCE_ID_1 = 1;
     private static final int PASSED_ID_1 = 1;
@@ -76,6 +113,8 @@ public class MultiInstanceManagerApi31UnitTest {
     private static final int TASK_ID_59 = 59;
     private static final int TASK_ID_60 = 60;
     private static final int TASK_ID_61 = 61;
+    private static final int TASK_ID_62 = 62;
+    private static final int TASK_ID_63 = 63;
 
     private static final String TITLE1 = "title1";
     private static final String TITLE2 = "title2";
@@ -124,7 +163,9 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock
     Activity mActivityTask61;
     @Mock
-    Activity mActivityTask62;
+    ChromeTabbedActivity mTabbedActivityTask62;
+    @Mock
+    ChromeTabbedActivity mTabbedActivityTask63;
 
     Activity mCurrentActivity;
 
@@ -144,10 +185,6 @@ public class MultiInstanceManagerApi31UnitTest {
             };
 
     private static class TestMultiInstanceManagerApi31 extends MultiInstanceManagerApi31 {
-        // Chrome activities ~ ApplicationStatus.getRunningActivities()
-        // (k, v) = (instance, Activity)
-        private final SparseArray<Activity> mRunningActivities = new SparseArray<Activity>();
-
         // Running tasks containing Chrome activity ~ ActivityManager.getAppTasks()
         private final Set<Integer> mAppTasks = new HashSet<>();
 
@@ -166,7 +203,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         private void createInstance(int instanceId, Activity activity) {
             MultiInstanceManagerApi31.writeUrl(instanceId, "https://id-" + instanceId + ".com");
-            mRunningActivities.put(instanceId, activity);
+            ShadowApplicationStatus.addRunningActivity(instanceId, activity);
             updateTasks(instanceId, activity);
         }
 
@@ -176,14 +213,13 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Called when activity instance is destroyed but its task remains alive.
         private void closeInstanceOnly(int instanceId) {
-            mRunningActivities.delete(instanceId);
+            ShadowApplicationStatus.deleteRunningActivity(instanceId);
         }
 
         private void updateTasks(int instanceId, Activity activity) {
             if (instanceId == INVALID_INSTANCE_ID) {
                 mAppTasks.remove(activity.getTaskId());
-                int index = mRunningActivities.indexOfValue(activity);
-                if (index >= 0) mRunningActivities.removeAt(index);
+                ShadowApplicationStatus.removeRunningActivity(activity);
             } else {
                 mAppTasks.add(activity.getTaskId());
             }
@@ -193,15 +229,6 @@ public class MultiInstanceManagerApi31UnitTest {
         protected boolean isRunningInAdjacentWindow(
                 SparseBooleanArray visibleTasks, Activity activity) {
             return activity == mAdjacentInstance;
-        }
-
-        @Override
-        protected List<Activity> getAllRunningActivities() {
-            List<Activity> result = new ArrayList<>();
-            for (int i = 0; i < mRunningActivities.size(); ++i) {
-                result.add(mRunningActivities.valueAt(i));
-            }
-            return result;
         }
 
         @Override
@@ -222,6 +249,8 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mActivityTask59.getTaskId()).thenReturn(TASK_ID_59);
         when(mActivityTask60.getTaskId()).thenReturn(TASK_ID_60);
         when(mActivityTask61.getTaskId()).thenReturn(TASK_ID_61);
+        when(mTabbedActivityTask62.getTaskId()).thenReturn(TASK_ID_62);
+        when(mTabbedActivityTask63.getTaskId()).thenReturn(TASK_ID_63);
         when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
 
         mActivityPool = new Activity[] {
@@ -231,6 +260,8 @@ public class MultiInstanceManagerApi31UnitTest {
                 mActivityTask59,
                 mActivityTask60,
                 mActivityTask61,
+                mTabbedActivityTask62,
+                mTabbedActivityTask63,
         };
         mCurrentActivity = mActivityTask56;
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
@@ -592,6 +623,28 @@ public class MultiInstanceManagerApi31UnitTest {
                 TextUtils.isEmpty(MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1)));
         assertTrue("URL was not cleared",
                 TextUtils.isEmpty(MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1)));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Config(sdk = 31)
+    public void testGetWindowIdsOfRunningTabbedActivities() {
+        // Create 1 activity that is not a ChromeTabbedActivity and 2 ChromeTabbedActivity's.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
+
+        // Remove ChromeTabbedActivity |mTabbedActivityTask62|, this will be considered a
+        // non-running activity subsequently.
+        removeTaskOnRecentsScreen(mTabbedActivityTask62);
+
+        SparseIntArray runningTabbedActivityIds =
+                MultiInstanceManagerApi31.getWindowIdsOfRunningTabbedActivities();
+        assertEquals("There should be only 1 running ChromeTabbedActivity.", 1,
+                runningTabbedActivityIds.size());
+        assertEquals("The window ID of the running ChromeTabbedActivity should match.", 2,
+                runningTabbedActivityIds.valueAt(0));
     }
 
     private void triggerSelectTab(TabModelObserver tabModelObserver, Tab tab) {

@@ -37,7 +37,8 @@ public class ChromeTabbedActivity2 extends ChromeTabbedActivity {
             if (savedInstanceState != null) {
                 windowId = savedInstanceState.getInt(WINDOW_INDEX, windowId);
             }
-            Intent newIntent = MultiWindowUtils.createNewWindowIntent(this, windowId, false, false);
+            Intent newIntent =
+                    MultiWindowUtils.createNewWindowIntent(this, windowId, false, false, true);
             startActivity(newIntent, savedInstanceState);
             return LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK;
         }
