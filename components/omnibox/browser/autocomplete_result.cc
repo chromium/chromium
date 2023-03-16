@@ -253,10 +253,12 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
 
 void AutocompleteResult::AppendMatches(const ACMatches& matches) {
   for (const auto& match : matches) {
-    DCHECK_EQ(AutocompleteMatch::SanitizeString(match.contents),
-              match.contents);
+    DCHECK_EQ(AutocompleteMatch::SanitizeString(match.contents), match.contents)
+        << "description: " << match.description
+        << ", match type: " << match.type;
     DCHECK_EQ(AutocompleteMatch::SanitizeString(match.description),
-              match.description);
+              match.description)
+        << "contents: " << match.contents << ", match type: " << match.type;
     matches_.push_back(match);
     if (!match.description.empty() &&
         !AutocompleteMatch::IsSearchType(match.type) &&

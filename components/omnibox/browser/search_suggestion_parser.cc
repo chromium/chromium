@@ -257,6 +257,13 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
   match_contents_ = !entity_info_.name().empty()
                         ? base::UTF8ToUTF16(entity_info_.name())
                         : match_contents;
+  match_contents_ = base::CollapseWhitespace(match_contents_, false);
+  // TODO(manukh|crbug.com/1421485) Remove this DCHECK 9/14/23. It's already
+  //   checked in `AutocompleteResult::AppendMatches()`, but duplicated here to
+  //   make it easier to debug if it triggers.
+  DCHECK_EQ(AutocompleteMatch::SanitizeString(match_contents_), match_contents_)
+      << "match type: " << type_ << ", from entity info: << "
+      << !entity_info_.name().empty();
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
 }
@@ -798,8 +805,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       bool should_prefetch = int_index == prefetch_index;
       bool should_prerender = int_index == prerender_index;
       results->suggest_results.push_back(SuggestResult(
-          suggestion, match_type, subtypes[index],
-          base::CollapseWhitespace(match_contents, false),
+          suggestion, match_type, subtypes[index], match_contents,
           match_contents_prefix, annotation, std::move(entity_info),
           deletion_url, is_keyword_result, relevance, relevances != nullptr,
           should_prefetch, should_prerender, trimmed_input));
