@@ -169,7 +169,8 @@ export async function testBlockAllUrls(done: () => void) {
   }];
   dialog.showDlpRestrictionDetailsDialog(details);
   assertFalse(blockDetails.hasAttribute('hidden'));
-  assertEquals(getBlockUrls().textContent, 'File access by all urls');
+  assertEquals(
+      getBlockUrls().textContent, 'File access by all websites and URLs');
   assertEquals(
       getBlockComponents().textContent, 'File transfer to Google Drive');
 
@@ -205,7 +206,7 @@ export async function testBlockAllUrlsExcept(done: () => void) {
   assertFalse(blockDetails.hasAttribute('hidden'));
   assertEquals(
       getBlockUrls().textContent,
-      'File access by all urls except https://internal.com');
+      'File access by all websites and URLs except https://internal.com');
   // Components should still be hidden.
   assertTrue(blockDetails.querySelector('#block-li-components')!.hasAttribute(
       'hidden'));

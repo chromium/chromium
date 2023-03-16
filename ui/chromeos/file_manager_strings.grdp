@@ -1714,10 +1714,10 @@
     File access by <ph name="RESTRICTED_DESTINATIONS">$1<ex>https://google.com</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL" desc="The message shown when a wildcard is given in as a restricted destination.">
-    File access by all urls
+    File access by all websites and URLs
   </message>
   <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL_EXCEPT" desc="The message shown when a wildcard is given in as a restricted destination but some destinations should be excluded.">
-    File access by all urls except <ph name="NON_RESTRICTED_DESTINATIONS">$1<ex>https://google.com</ex></ph>
+    File access by all websites and URLs except <ph name="NON_RESTRICTED_DESTINATIONS">$1<ex>https://google.com</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_FILE_TRANSFER" desc="The message shown for the list of DLP restricted components.">
     File transfer to <ph name="RESTRICTED_COMPONENTS">$1<ex>removable storage</ex></ph>
