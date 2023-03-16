@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/installer.h"
@@ -32,6 +33,13 @@ AppInstallerResult RunApplicationInstaller(
                                     base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
 
   base::CommandLine command(installer_path);
+  std::vector<std::string> arg_vec =
+      base::SplitString(arguments, base::kWhitespaceASCII,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const std::string& arg : arg_vec) {
+    command.AppendArg(arg);
+  }
+
   int exit_code = 0;
   if (!base::LaunchProcess(command, options)
            .WaitForExitWithTimeout(timeout, &exit_code)) {
