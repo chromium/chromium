@@ -68,17 +68,6 @@ std::unique_ptr<webrtc::VideoDecoder> Wrap(
                           : std::move(software_decoder);
 }
 
-std::unique_ptr<webrtc::VideoEncoder> Wrap(
-    std::unique_ptr<webrtc::VideoEncoder> software_encoder,
-    std::unique_ptr<webrtc::VideoEncoder> hardware_encoder) {
-  if (software_encoder && hardware_encoder) {
-    return webrtc::CreateVideoEncoderSoftwareFallbackWrapper(
-        std::move(software_encoder), std::move(hardware_encoder));
-  }
-  return hardware_encoder ? std::move(hardware_encoder)
-                          : std::move(software_encoder);
-}
-
 // This class combines a hardware factory with the internal factory and adds
 // internal SW codecs, simulcast, and SW fallback wrappers.
 class EncoderAdapter : public webrtc::VideoEncoderFactory {
@@ -115,33 +104,16 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
     if (!supported_in_software && !supported_in_hardware)
       return nullptr;
 
-    std::unique_ptr<webrtc::VideoEncoder> encoder;
-    if (base::EqualsCaseInsensitiveASCII(format.name.c_str(),
-                                         cricket::kVp9CodecName) ||
-        base::EqualsCaseInsensitiveASCII(format.name.c_str(),
-                                         cricket::kAv1CodecName)) {
-      // For VP9 and AV1 we don't use simulcast.
-      std::unique_ptr<webrtc::VideoEncoder> software_encoder =
-          supported_in_software
-              ? software_encoder_factory_.CreateVideoEncoder(format)
-              : nullptr;
-      std::unique_ptr<webrtc::VideoEncoder> hardware_encoder =
-          supported_in_hardware
-              ? hardware_encoder_factory_->CreateVideoEncoder(format)
-              : nullptr;
-
-      encoder = Wrap(std::move(software_encoder), std::move(hardware_encoder));
-    } else {
-      VideoEncoderFactory* primary_factory =
-          supported_in_hardware ? hardware_encoder_factory_.get()
-                                : &software_encoder_factory_;
-      VideoEncoderFactory* fallback_factory =
-          supported_in_hardware && supported_in_software
-              ? &software_encoder_factory_
-              : nullptr;
-      encoder = std::make_unique<webrtc::SimulcastEncoderAdapter>(
-          primary_factory, fallback_factory, format);
-    }
+    VideoEncoderFactory* primary_factory = supported_in_hardware
+                                               ? hardware_encoder_factory_.get()
+                                               : &software_encoder_factory_;
+    VideoEncoderFactory* fallback_factory =
+        supported_in_hardware && supported_in_software
+            ? &software_encoder_factory_
+            : nullptr;
+    std::unique_ptr<webrtc::VideoEncoder> encoder =
+        std::make_unique<webrtc::SimulcastEncoderAdapter>(
+            primary_factory, fallback_factory, format);
 
     return std::make_unique<StatsCollectingEncoder>(format, std::move(encoder),
                                                     stats_callback_);
