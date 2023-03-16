@@ -8,6 +8,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/histograms.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -35,8 +36,8 @@ constexpr char kMetricNameLCDTextLayersLowDPI[] =
     "Compositing.Renderer.LCDTextDisallowedReasonLayers.LowDPI";
 
 void Report(const LayerTreeImpl* layer_tree,
-            base::FunctionRef<void(int text_pixels, LCDTextDisallowedReason)>
-                report_layer) {
+            base::FunctionRef<void(int64_t text_pixels,
+                                   LCDTextDisallowedReason)> report_layer) {
   for (const PictureLayerImpl* layer : layer_tree->picture_layers()) {
     if (!layer->draws_content() || !layer->GetRasterSource()) {
       continue;
@@ -47,12 +48,13 @@ void Report(const LayerTreeImpl* layer_tree,
       continue;
     }
 
-    int text_pixels = static_cast<int>(
+    int64_t text_pixels = base::checked_cast<int64_t>(
         display_item_list->AreaOfDrawText(layer->visible_layer_rect()));
     if (!text_pixels) {
       continue;
     }
 
+    DCHECK_GT(text_pixels, 0);
     report_layer(text_pixels, layer->lcd_text_disallowed_reason());
   }
 }
@@ -89,7 +91,7 @@ void LCDTextMetricsReporter::NotifySubmitFrame(
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(kTraceCategory, &trace_enabled);
   if (trace_enabled) {
     Report(layer_tree_host_impl_->active_tree(),
-           [](int text_pixels, LCDTextDisallowedReason reason) {
+           [](int64_t text_pixels, LCDTextDisallowedReason reason) {
              TRACE_COUNTER2(kTraceCategory,
                             LCDTextDisallowedReasonToString(reason),
                             "text_pixels", text_pixels, "layers", 1);
@@ -114,7 +116,7 @@ void LCDTextMetricsReporter::NotifyPauseFrameProduction() {
   bool is_high_dpi = device_scale_factor >= kHighDPIDeviceScaleFactorThreshold;
 
   Report(layer_tree_host_impl_->active_tree(),
-         [is_high_dpi](int text_pixels, LCDTextDisallowedReason reason) {
+         [is_high_dpi](int64_t text_pixels, LCDTextDisallowedReason reason) {
            if (is_high_dpi) {
              UMA_HISTOGRAM_SCALED_ENUMERATION(kMetricNameLCDTextKPixelsHighDPI,
                                               reason, text_pixels, 1000);
