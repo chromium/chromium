@@ -188,19 +188,13 @@ void ArcPlayStoreSearchProvider::OnResults(
 
   UMA_HISTOGRAM_TIMES("Arc.PlayStoreSearch.QueryTime",
                       base::TimeTicks::Now() - query_start_time);
-  if (results.size() > 0) {
-    UMA_HISTOGRAM_EXACT_LINEAR("Arc.PlayStoreSearch.ReturnedAppsTotal",
-                               results.size(), kHistogramBuckets);
-  }
-  if (results.size() - instant_app_count > 0) {
-    UMA_HISTOGRAM_EXACT_LINEAR("Arc.PlayStoreSearch.ReturnedUninstalledApps",
-                               results.size() - instant_app_count,
-                               kHistogramBuckets);
-  }
-  if (instant_app_count > 0) {
-    UMA_HISTOGRAM_EXACT_LINEAR("Arc.PlayStoreSearch.ReturnedInstantApps",
-                               instant_app_count, kHistogramBuckets);
-  }
+  UMA_HISTOGRAM_EXACT_LINEAR("Arc.PlayStoreSearch.ReturnedAppsTotalV2",
+                             results.size(), kHistogramBuckets);
+  UMA_HISTOGRAM_EXACT_LINEAR("Arc.PlayStoreSearch.ReturnedUninstalledAppsV2",
+                             results.size() - instant_app_count,
+                             kHistogramBuckets);
+  UMA_HISTOGRAM_EXACT_LINEAR("Arc.PlayStoreSearch.ReturnedInstantAppsV2",
+                             instant_app_count, kHistogramBuckets);
 }
 
 }  // namespace app_list

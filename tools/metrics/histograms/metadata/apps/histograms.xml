@@ -1713,8 +1713,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListPlayStoreQueryState"
-    enum="AppListPlayStoreQueryState" expires_after="2023-07-30">
-  <owner>hejq@chromium.org</owner>
+    enum="AppListPlayStoreQueryState" expires_after="2023-09-01">
+  <owner>tby@chromium.org</owner>
+  <owner>ypitsishin@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>The state of a Play Store app search request.</summary>
 </histogram>
 

@@ -1789,7 +1789,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.PlayStoreSearch.QueryTime" units="ms"
     expires_after="2023-03-19">
-  <owner>hejq@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>ypitsishin@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     Time between sending an Play Store app discovery request and the storing
     returned results.
@@ -1805,25 +1807,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.PlayStoreSearch.ReturnedAppsTotal" units="apps"
-    expires_after="2022-05-01">
-  <owner>hejq@chromium.org</owner>
+<histogram name="Arc.PlayStoreSearch.ReturnedAppsTotalV2" units="apps"
+    expires_after="2023-09-01">
+  <owner>tby@chromium.org</owner>
+  <owner>ypitsishin@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The total number of returned apps of a Play Store app discovery query.
   </summary>
 </histogram>
 
-<histogram name="Arc.PlayStoreSearch.ReturnedInstantApps" units="apps"
-    expires_after="2020-06-28">
-  <owner>hejq@chromium.org</owner>
+<histogram name="Arc.PlayStoreSearch.ReturnedInstantAppsV2" units="apps"
+    expires_after="2023-09-01">
+  <owner>tby@chromium.org</owner>
+  <owner>ypitsishin@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The number of returned instant apps of a Play Store app discovery query.
   </summary>
 </histogram>
 
-<histogram name="Arc.PlayStoreSearch.ReturnedUninstalledApps" units="apps"
-    expires_after="2020-06-28">
-  <owner>hejq@chromium.org</owner>
+<histogram name="Arc.PlayStoreSearch.ReturnedUninstalledAppsV2" units="apps"
+    expires_after="2023-09-01">
+  <owner>tby@chromium.org</owner>
+  <owner>ypitsishin@chromium.org</owner>
+  <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
     The number of returned uninstalled apps of a Play Store app discovery query.
   </summary>
