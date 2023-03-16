@@ -986,6 +986,15 @@ gfx::Rect RenderWidgetHostViewAura::GetBoundsInRootWindow() {
     aura::WindowTreeHost* host = top_level->GetHost();
     if (!host)
       return top_level->GetBoundsInScreen();
+
+    // If this is a headless window return the headless window bounds stored in
+    // Aura window properties instead of the actual platform window bounds which
+    // may be different.
+    if (gfx::Rect* headless_bounds =
+            host->window()->GetProperty(aura::client::kHeadlessBoundsKey)) {
+      return *headless_bounds;
+    }
+
     RECT window_rect = {0};
     HWND hwnd = host->GetAcceleratedWidget();
     ::GetWindowRect(hwnd, &window_rect);

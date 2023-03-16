@@ -473,21 +473,21 @@ void HWNDMessageHandler::Init(HWND parent,
   // according to the scale factor.
   if (headless_mode) {
     if (initial_bounds_valid_) {
-      headless_mode_window_->bounds = bounds;
+      SetHeadlessWindowBounds(bounds);
     } else {
       // If initial window bounds were not provided, use the newly created
       // platform window size or fall back to the default headless window size
       // as the last resort.
       RECT window_rect;
       if (GetWindowRect(hwnd(), &window_rect)) {
-        headless_mode_window_->bounds = gfx::Rect(window_rect);
+        SetHeadlessWindowBounds(gfx::Rect(window_rect));
       } else {
         // Even if the window rectangle cannot be retrieved, there is still a
         // chance that ScreenWin::GetScaleFactorForHWND() will be able to figure
         // out the scale factor.
         constexpr gfx::Rect kDefaultHeadlessBounds(800, 600);
-        headless_mode_window_->bounds =
-            ScaleWindowBoundsMaybe(hwnd(), kDefaultHeadlessBounds);
+        SetHeadlessWindowBounds(
+            ScaleWindowBoundsMaybe(hwnd(), kDefaultHeadlessBounds));
       }
     }
   }
@@ -711,7 +711,9 @@ void HWNDMessageHandler::SetSize(const gfx::Size& size) {
   // window size was updated.
   if (IsHeadless()) {
     bool size_changed = headless_mode_window_->bounds.size() != size;
-    headless_mode_window_->bounds.set_size(size);
+    gfx::Rect bounds = headless_mode_window_->bounds;
+    bounds.set_size(size);
+    SetHeadlessWindowBounds(bounds);
     if (size_changed) {
       delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
     }
@@ -3719,7 +3721,7 @@ void HWNDMessageHandler::SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
   // In headless update the expected window bounds and notify the delegate
   // pretending the platform window size has been changed.
   if (IsHeadless()) {
-    headless_mode_window_->bounds = bounds_in_pixels;
+    SetHeadlessWindowBounds(bounds_in_pixels);
     if (old_size != bounds_in_pixels.size() || force_size_changed) {
       delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
     }
@@ -3799,6 +3801,15 @@ POINT HWNDMessageHandler::GetCursorPos() const {
   ::GetCursorPos(&cursor_pos);
 
   return cursor_pos;
+}
+
+void HWNDMessageHandler::SetHeadlessWindowBounds(const gfx::Rect& bounds) {
+  DCHECK(IsHeadless());
+
+  if (headless_mode_window_->bounds != bounds) {
+    headless_mode_window_->bounds = bounds;
+    delegate_->HandleHeadlessWindowBoundsChanged(bounds);
+  }
 }
 
 }  // namespace views

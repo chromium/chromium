@@ -258,6 +258,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HandleWindowSizeChanging() override;
   void HandleWindowSizeUnchanged() override;
   void HandleWindowScaleFactorChanged(float window_scale_factor) override;
+  void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) override;
 
   Widget* GetWidget();
   const Widget* GetWidget() const;

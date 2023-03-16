@@ -615,6 +615,11 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Get the cursor position, which may be mocked if running a test
   POINT GetCursorPos() const;
 
+  // Sets headless window bounds which may be different from the platform window
+  // bounds and updates Aura window property that stores headless window bounds
+  // for upper layers to retrieve.
+  void SetHeadlessWindowBounds(const gfx::Rect& bounds);
+
   raw_ptr<HWNDMessageHandlerDelegate> delegate_;
 
   std::unique_ptr<FullscreenHandler> fullscreen_handler_;

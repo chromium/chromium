@@ -1204,6 +1204,11 @@ void DesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(
   }
 }
 
+void DesktopWindowTreeHostWin::HandleHeadlessWindowBoundsChanged(
+    const gfx::Rect& bounds) {
+  window()->SetProperty(aura::client::kHeadlessBoundsKey, bounds);
+}
+
 DesktopNativeCursorManager*
 DesktopWindowTreeHostWin::GetSingletonDesktopNativeCursorManager() {
   return new DesktopNativeCursorManagerWin();

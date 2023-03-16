@@ -216,4 +216,13 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_InputClipboardOps,
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreencastBasics,
                             "sanity/screencast-basics.js")
 
+// https://crbug.com/1424570
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LargeBrowserWindowSize DISABLED_LargeBrowserWindowSize
+#else
+#define MAYBE_LargeBrowserWindowSize LargeBrowserWindowSize
+#endif
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_LargeBrowserWindowSize,
+                            "sanity/large-browser-window-size.js")
+
 }  // namespace headless
