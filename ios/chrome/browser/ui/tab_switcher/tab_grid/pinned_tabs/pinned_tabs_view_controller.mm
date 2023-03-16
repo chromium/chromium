@@ -265,7 +265,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _items = [items mutableCopy];
   _selectedItemID = selectedItemID;
 
-  [self updateDropOverlayViewVisibility];
+  [self updatePinnedTabsVisibility];
 
   [self.delegate pinnedTabsViewController:self didChangeItemCount:items.count];
 
@@ -614,6 +614,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - Private
 
+// Updates the visibility of the pinned view.
+- (void)updatePinnedTabsVisibility {
+  [self pinnedTabsAvailable:_available];
+}
+
 // Performs (in batch) all the actions needed to insert an `item` at the
 // specified `index` into the collection view and updates its appearance.
 // `selectedItemID` is saved to an instance variable.
@@ -803,7 +808,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // disappear from the user's sight.
   [self scrollCollectionViewToLastItemAnimated:YES];
 
-  [self pinnedTabsAvailable:_available];
+  [self updatePinnedTabsVisibility];
 }
 
 // Updates the collection view after an item deletion.
