@@ -15,7 +15,7 @@ SIDE_SEARCH_BENCHMARK_UMA = [
 ]
 
 GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=test'
-CHROME_VERSION_URL = 'chrome://version/'
+BLANK_URL = 'about:blank'
 
 
 class SideSearchStory(MultiTabStory):
@@ -29,9 +29,9 @@ class SideSearchStory(MultiTabStory):
     chrome_trace_config.EnableUMAHistograms(*SIDE_SEARCH_BENCHMARK_UMA)
 
   def RunPageInteractions(self, action_runner):
-    action_runner.tab.Navigate(CHROME_VERSION_URL)
+    action_runner.tab.Navigate(BLANK_URL)
     action_runner.Wait(1)
-    assert action_runner.tab.url == CHROME_VERSION_URL
+    assert action_runner.tab.url == BLANK_URL
 
     # Open side search.
     ClickOn(self._devtools, element_id=kSideSearchButtonElementId)
@@ -56,7 +56,7 @@ class SideSearchStoryNavigation(SideSearchStory):
     # Wait some time for the page to load.
     action_runner.Wait(3)
     # Make sure the current tab is navigated away.
-    assert action_runner.tab.url != CHROME_VERSION_URL
+    assert action_runner.tab.url != BLANK_URL
 
 
 class SideSearchStoryMeasureMemory(SideSearchStory):
