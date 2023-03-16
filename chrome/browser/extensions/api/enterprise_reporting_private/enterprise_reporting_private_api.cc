@@ -86,7 +86,6 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   info.on_security_event_providers =
       std::move(signals.on_security_event_providers);
   info.site_isolation_enabled = signals.site_isolation_enabled;
-  info.chrome_cleanup_enabled = signals.chrome_cleanup_enabled;
   info.chrome_remote_desktop_app_blocked =
       signals.chrome_remote_desktop_app_blocked;
   info.third_party_blocking_enabled = signals.third_party_blocking_enabled;

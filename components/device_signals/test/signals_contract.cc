@@ -145,8 +145,6 @@ GetSignalsContract() {
       base::BindRepeating(VerifyIsSettingInteger, names::kScreenLockSecured);
 
 #if BUILDFLAG(IS_WIN)
-  contract[names::kChromeCleanupEnabled] =
-      base::BindRepeating(VerifyIsBoolean, names::kChromeCleanupEnabled);
   contract[names::kWindowsMachineDomain] =
       base::BindRepeating(VerifyOptionalString, names::kWindowsMachineDomain);
   contract[names::kWindowsUserDomain] =
@@ -178,8 +176,6 @@ GetSignalsContract() {
 
 #else
   // Windows-only signals that shouldn't be set on other platforms.
-  contract[names::kChromeCleanupEnabled] =
-      base::BindRepeating(VerifyUnset, names::kChromeCleanupEnabled);
   contract[names::kWindowsMachineDomain] =
       base::BindRepeating(VerifyUnset, names::kWindowsMachineDomain);
   contract[names::kWindowsUserDomain] =

@@ -19,8 +19,6 @@ absl::optional<bool> GetThirdPartyBlockingEnabled(PrefService* local_state);
 
 bool GetBuiltInDnsClientEnabled(PrefService* local_state);
 
-absl::optional<bool> GetChromeCleanupEnabled(PrefService* local_state);
-
 absl::optional<safe_browsing::PasswordProtectionTrigger>
 GetPasswordProtectionWarningTrigger(PrefService* profile_prefs);
 

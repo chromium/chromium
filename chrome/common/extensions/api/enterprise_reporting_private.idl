@@ -79,7 +79,6 @@ namespace enterprise.reportingPrivate {
     boolean siteIsolationEnabled;
     boolean builtInDnsClientEnabled;
     PasswordProtectionTrigger passwordProtectionWarningTrigger;
-    boolean? chromeCleanupEnabled;
     boolean chromeRemoteDesktopAppBlocked;
     boolean? thirdPartyBlockingEnabled;
     SettingValue osFirewall;

@@ -74,15 +74,6 @@ GetPasswordProtectionWarningTrigger(PrefService* profile_prefs) {
       profile_prefs->GetInteger(prefs::kPasswordProtectionWarningTrigger));
 }
 
-absl::optional<bool> GetChromeCleanupEnabled(PrefService* local_state) {
-  DCHECK(local_state);
-#if BUILDFLAG(IS_WIN)
-  return local_state->GetBoolean(prefs::kSwReporterEnabled);
-#else
-  return absl::nullopt;
-#endif
-}
-
 bool GetChromeRemoteDesktopAppBlocked(PolicyBlocklistService* service) {
   DCHECK(service);
   return IsURLBlocked(GURL("https://remotedesktop.google.com"), service) ||

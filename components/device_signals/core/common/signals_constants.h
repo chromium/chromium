@@ -18,7 +18,6 @@ extern const char kAgentId[];
 extern const char kAllowScreenLock[];
 extern const char kBrowserVersion[];
 extern const char kBuiltInDnsClientEnabled[];
-extern const char kChromeCleanupEnabled[];
 extern const char kChromeRemoteDesktopAppBlocked[];
 extern const char kCrowdStrike[];
 extern const char kCustomerId[];

@@ -462,14 +462,6 @@ class EnterpriseReportingPrivateGetContextInfoTest
 #endif
   }
 
-  void ExpectDefaultChromeCleanupEnabled(
-      const enterprise_reporting_private::ContextInfo& info) {
-#if BUILDFLAG(IS_WIN)
-    EXPECT_TRUE(*info.chrome_cleanup_enabled);
-#else
-    EXPECT_FALSE(info.chrome_cleanup_enabled.has_value());
-#endif
-  }
   void ExpectDefaultThirdPartyBlockingEnabled(
       const enterprise_reporting_private::ContextInfo& info) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -501,7 +493,6 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
   EXPECT_EQ(
       enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
       info.password_protection_warning_trigger);
-  ExpectDefaultChromeCleanupEnabled(info);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
   ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_TRUE(info.enterprise_profile_id);
@@ -533,7 +524,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest, Test) {
             info.safe_browsing_protection_level);
   EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
             info.built_in_dns_client_enabled);
-  ExpectDefaultChromeCleanupEnabled(info);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
   EXPECT_EQ(policyValue, *info.third_party_blocking_enabled);
 }
@@ -725,7 +715,6 @@ class EnterpriseReportingPrivateGetContextOSFirewallLinuxTest
     EXPECT_EQ(
         enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
         info.password_protection_warning_trigger);
-    ExpectDefaultChromeCleanupEnabled(info);
     EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
     ExpectDefaultThirdPartyBlockingEnabled(info);
     EXPECT_TRUE(info.enterprise_profile_id);
@@ -798,46 +787,6 @@ INSTANTIATE_TEST_SUITE_P(
                     enterprise_reporting_private::SETTING_VALUE_UNKNOWN));
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN)
-class EnterpriseReportingPrivateGetContextInfoChromeCleanupTest
-    : public EnterpriseReportingPrivateGetContextInfoTest,
-      public testing::WithParamInterface<bool> {};
-
-TEST_P(EnterpriseReportingPrivateGetContextInfoChromeCleanupTest, Test) {
-  bool policy_value = GetParam();
-
-  g_browser_process->local_state()->SetBoolean(prefs::kSwReporterEnabled,
-                                               policy_value);
-
-  enterprise_reporting_private::ContextInfo info = GetContextInfo();
-
-  EXPECT_TRUE(info.browser_affiliation_ids.empty());
-  EXPECT_TRUE(info.profile_affiliation_ids.empty());
-  EXPECT_TRUE(info.on_file_attached_providers.empty());
-  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
-  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
-  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
-            info.realtime_url_check_mode);
-  EXPECT_TRUE(info.on_security_event_providers.empty());
-  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
-  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
-            info.safe_browsing_protection_level);
-  EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
-            info.built_in_dns_client_enabled);
-  EXPECT_EQ(
-      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
-      info.password_protection_warning_trigger);
-  ExpectDefaultThirdPartyBlockingEnabled(info);
-  EXPECT_EQ(policy_value, *info.chrome_cleanup_enabled);
-  EXPECT_TRUE(info.enterprise_profile_id);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    EnterpriseReportingPrivateGetContextInfoChromeCleanupTest,
-    testing::Bool());
-#endif  // BUILDFLAG(IS_WIN)
-
 class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
       public testing::WithParamInterface<const char*> {
@@ -874,7 +823,6 @@ class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
     EXPECT_EQ(
         enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
         info.password_protection_warning_trigger);
-    ExpectDefaultChromeCleanupEnabled(info);
     ExpectDefaultThirdPartyBlockingEnabled(info);
     EXPECT_TRUE(info.enterprise_profile_id);
   }
@@ -1009,7 +957,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoOSFirewallTest, Test) {
   EXPECT_EQ(
       enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
       info.password_protection_warning_trigger);
-  ExpectDefaultChromeCleanupEnabled(info);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
   ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_EQ(ToInfoSettingValue(firewall_value_), info.os_firewall);

@@ -463,20 +463,13 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
   init_params->device_properties->serial_number = kFakeDeviceID;
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_WIN)
-  constexpr char kChromeCleanupEnabledType[] = "boolean";
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   constexpr char kThirdPartyBlockingEnabledType[] = "boolean";
-  constexpr char kCount[] = "19";
-#else
-  constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
   constexpr char kCount[] = "18";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #else
-  constexpr char kChromeCleanupEnabledType[] = "undefined";
   constexpr char kThirdPartyBlockingEnabledType[] = "undefined";
   constexpr char kCount[] = "17";
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   constexpr char kTest[] = R"(
     chrome.test.assertEq(
@@ -500,7 +493,6 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
       chrome.test.assertEq(typeof info.builtInDnsClientEnabled, 'boolean');
       chrome.test.assertEq
         (typeof info.passwordProtectionWarningTrigger, 'string');
-      chrome.test.assertEq(typeof info.chromeCleanupEnabled, '%s');
       chrome.test.assertEq
         (typeof info.chromeRemoteDesktopAppBlocked, 'boolean');
       chrome.test.assertEq(typeof info.thirdPartyBlockingEnabled,'%s');
@@ -510,8 +502,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetContextInfo) {
 
       chrome.test.notifyPass();
     });)";
-  RunTest(base::StringPrintf(kTest, kCount, kChromeCleanupEnabledType,
-                             kThirdPartyBlockingEnabledType));
+  RunTest(base::StringPrintf(kTest, kCount, kThirdPartyBlockingEnabledType));
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetCertificate) {

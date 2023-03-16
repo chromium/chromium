@@ -23,10 +23,6 @@ const char kBrowserVersion[] = "browserVersion";
 // dns is enabled on the device.
 const char kBuiltInDnsClientEnabled[] = "builtInDnsClientEnabled";
 
-// Name of the signal for getting information about whether chrome cleanup
-// is enabled on the device.
-const char kChromeCleanupEnabled[] = "chromeCleanupEnabled";
-
 // Name of the signal for getting information about whether users can
 // access other computers from Chrome using Chrome Remote Desktop.
 const char kChromeRemoteDesktopAppBlocked[] = "chromeRemoteDesktopAppBlocked";

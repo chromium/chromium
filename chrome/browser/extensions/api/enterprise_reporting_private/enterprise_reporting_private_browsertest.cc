@@ -291,15 +291,6 @@ class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
 #endif
   }
 
-  void ExpectDefaultChromeCleanupEnabled(
-      const enterprise_reporting_private::ContextInfo& info) {
-#if BUILDFLAG(IS_WIN)
-    EXPECT_TRUE(*info.chrome_cleanup_enabled);
-#else
-    EXPECT_FALSE(info.chrome_cleanup_enabled.has_value());
-#endif
-  }
-
   void ExpectDefaultThirdPartyBlockingEnabled(
       const enterprise_reporting_private::ContextInfo& info) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -341,7 +332,6 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(
       enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
       info.password_protection_warning_trigger);
-  ExpectDefaultChromeCleanupEnabled(info);
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
   ExpectDefaultThirdPartyBlockingEnabled(info);
   EXPECT_EQ(dev_mode_enabled() ? api::enterprise_reporting_private::
@@ -407,11 +397,6 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
   EXPECT_EQ(
       enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
       info.password_protection_warning_trigger);
-#if BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(*info.chrome_cleanup_enabled);
-#else
-  EXPECT_FALSE(info.chrome_cleanup_enabled.has_value());
-#endif
   EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(*info.third_party_blocking_enabled);

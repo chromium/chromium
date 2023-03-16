@@ -46,7 +46,6 @@ struct ContextInfo {
   bool built_in_dns_client_enabled;
   absl::optional<safe_browsing::PasswordProtectionTrigger>
       password_protection_warning_trigger;
-  absl::optional<bool> chrome_cleanup_enabled;
   bool chrome_remote_desktop_app_blocked;
   absl::optional<bool> third_party_blocking_enabled;
   SettingValue os_firewall;

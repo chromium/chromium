@@ -223,8 +223,6 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
   info.built_in_dns_client_enabled =
       utils::GetBuiltInDnsClientEnabled(g_browser_process->local_state());
-  info.chrome_cleanup_enabled =
-      utils::GetChromeCleanupEnabled(g_browser_process->local_state());
   info.chrome_remote_desktop_app_blocked =
       utils::GetChromeRemoteDesktopAppBlocked(
           PolicyBlocklistFactory::GetForBrowserContext(browser_context_));
