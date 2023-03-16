@@ -368,6 +368,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'OsA11yPageAudioAndCaptionsPage',
    'os_a11y_page/audio_and_captions_page_tests.js',
  ],
+ [
+   'OsA11yPageTextToSpeechPage',
+   'os_a11y_page/text_to_speech_page_tests.js',
+ ],
  ['OsA11yPageTtsSubpage', 'os_a11y_page/tts_subpage_test.js'],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
  [
@@ -478,10 +482,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
  ['SwitchAccessSubpage', 'switch_access_subpage_tests.js'],
- [
-   'TextToSpeechPage',
-   'text_to_speech_page_tests.js',
- ],
  ['TextToSpeechSubpage', 'text_to_speech_subpage_tests.js'],
 ].forEach(test => registerTest(...test));
 

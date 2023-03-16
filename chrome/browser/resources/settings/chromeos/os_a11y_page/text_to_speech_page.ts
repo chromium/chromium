@@ -31,7 +31,7 @@ import {TextToSpeechPageBrowserProxy, TextToSpeechPageBrowserProxyImpl} from './
 const SettingsTextToSpeechPageElementBase = DeepLinkingMixin(RouteOriginMixin(
     PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsTextToSpeechPageElement extends
+export class SettingsTextToSpeechPageElement extends
     SettingsTextToSpeechPageElementBase {
   static get is() {
     return 'settings-text-to-speech-page';
