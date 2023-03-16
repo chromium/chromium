@@ -655,7 +655,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Genstart enheden nu}=1{Genstart enheden inden for 1 sekund}one{Genstart enheden inden for # sekund}other{Genstart enheden inden for # sekunder}}</translation>
 <translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4477350412780666475">Næste nummer</translation>
-<translation id="4477892968187500306">Denne enhed indeholder muligvis apps, der ikke er blevet bekræftet af Google.</translation>
+<translation id="4477892968187500306">Denne enhed indeholder muligvis apps, der ikke er blevet verificeret af Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ikke-parrede enheder</translation>
 <translation id="4505050298327493054">Aktivt skrivebord.</translation>

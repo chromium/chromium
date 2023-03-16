@@ -67,7 +67,7 @@
 <translation id="2139300032719313227">ChromeOS ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2151406531797534936">ಇದೀಗ Chrome ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2174917724755363426">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ. ನೀವು ಖಂಡಿತವಾಗಿಯೂ ರದ್ದುಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
-<translation id="223889379102603431">Chrome ತನ್ನ ರೂಟ್ ಮಾಣೀಕರಣಗಳನ್ನು ಹೇಗೆ ನಿರ್ವಹಿಸುತ್ತದೆ ಎಂಬುದರ ಕುರಿತ ಮಾಹಿತಿ</translation>
+<translation id="223889379102603431">Chrome ತನ್ನ ರೂಟ್ ಪ್ರಮಾಣೀಕರಣಗಳನ್ನು ಹೇಗೆ ನಿರ್ವಹಿಸುತ್ತದೆ ಎಂಬುದರ ಕುರಿತ ಮಾಹಿತಿ</translation>
 <translation id="2258103955319320201">ನಿಮ್ಮ Chrome ಬ್ರೌಸರ್‌ನ ವಿಷಯಗಳನ್ನು ಎಲ್ಲಾ ಸಾಧನಗಳಾದ್ಯಂತ ಪ್ರವೇಶಿಸಲು, ಸೈನ್ ಇನ್ ಮಾಡಿ, ನಂತರ ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2290014774651636340">Google API ಕೀಗಳು ಕಾಣೆಯಾಗಿವೆ. Google Chrome ನ ಕೆಲವು ಕಾರ್ಯವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2290095356545025170">ನೀವು ಖಚಿತವಾಗಿ Google Chrome ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಬಯಸುತ್ತೀರಾ?</translation>
@@ -97,7 +97,7 @@
 <translation id="2770231113462710648">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಅನ್ನು ಇದ್ಕಕೆ ಬದಲಿಸಿ:</translation>
 <translation id="2775140325783767197">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ನೋಡಿ.</translation>
 <translation id="2799223571221894425">ಮರುಪ್ರಾರಂಭಿಸು</translation>
-<translation id="2847461019998147611">ಈ ಭಾಷೆಯಲ್ಲಿ Google Chrome ಪ್ರದರ್ಶಿಸು</translation>
+<translation id="2847461019998147611">Google Chrome ಅನ್ನು ಈ ಭಾಷೆಯಲ್ಲಿ ಪ್ರದರ್ಶಿಸಿ</translation>
 <translation id="2857540653560290388">Chrome ಅನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2857972467023607093">ಈ ಖಾತೆಯೊಂದಿಗೆ Chrome ಪ್ರೊಫೈಲ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="2861074815332034794">Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -116,7 +116,7 @@
 <translation id="3038232873781883849">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3059710691562604940">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಆಫ್ ಆಗಿದೆ. ಅದನ್ನು ಆನ್ ಮಾಡಲು Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="3065168410429928842">Chrome ಟ್ಯಾಬ್</translation>
-<translation id="3080151273017101988">Google Chrome ಮುಚ್ಚಿದಾಗ ರನ್‌ ಆಗುತ್ತಿರುವ ಹಿನ್ನೆಲೆ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಮುಂದುವರಿಸು</translation>
+<translation id="3080151273017101988">Google Chrome ಮುಚ್ಚಿದಾಗ ರನ್‌ ಆಗುತ್ತಿರುವ ಹಿನ್ನೆಲೆ ಆ್ಯಪ್‌ಗಳನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="3089968997497233615">ಹೊಸದಾದ, ಸುರಕ್ಷಿತವಾದ Google Chrome ನ ಆವೃತ್ತಿ ಲಭ್ಯವಿದೆ.</translation>
 <translation id="3100998948628680988">ನಿಮ್ಮ Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ಹೆಸರಿಸಿ</translation>
 <translation id="3114643501466072395">ನಿಮ್ಮ ಇತರ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಡೇಟಾ ಉಲ್ಲಂಘನೆ ಮತ್ತು ಇತರ ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿವೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು, <ph name="BEGIN_LINK" />Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>

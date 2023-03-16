@@ -1117,7 +1117,8 @@
 <translation id="1962233722219655970">이 페이지에서 사용자 컴퓨터에서 작동하지 않는 Native Client 앱을 사용합니다.</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
 <translation id="1965624977906726414">특별한 권한이 필요하지 않습니다.</translation>
-<translation id="1966649499058910679">각 단어를 읽을 때 강조표시</translation>
+<translation id="1966649499058910679">각 단어를 읽을 때 강조 표시
+</translation>
 <translation id="1967970931040389207">핫스팟 사용 설정</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
 <translation id="1969654639948595766">WebRTC 텍스트 로그(<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>

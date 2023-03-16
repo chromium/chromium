@@ -488,7 +488,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3622349720008044802">Administrer vinduer</translation>
 <translation id="3631987586758005671">Deler med <ph name="DEVICE_NAME" /></translation>
-<translation id="363596933471559332">Log automatisk ind på websites med gemte loginoplysninger. Når funktionen er slået fra, bliver du bedt om at bekræfte, hver gang du vil logge ind på et website.</translation>
+<translation id="363596933471559332">Log automatisk ind på websites med gemte loginoplysninger. Når funktionen er slået fra, bliver du bedt om at verificere, hver gang du vil logge ind på et website.</translation>
 <translation id="3636940436873918441">Foretrukne sprog</translation>
 <translation id="3677911431265050325">Anmod om mobilversion</translation>
 <translation id="3687645719033307815">Du ser en forhåndsvisning af denne side</translation>
@@ -1449,7 +1449,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8664215986015753476">Brug Chrome på din måde</translation>
 <translation id="8664979001105139458">Filnavnet findes allerede</translation>
 <translation id="8666759526542103597">Om browserbaseret annoncetilpasning</translation>
-<translation id="8676789164135894283">Loginbekræftelser</translation>
+<translation id="8676789164135894283">Loginverificeringer</translation>
 <translation id="8683039184091909753">billede</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>

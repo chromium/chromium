@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1006017844123154345">ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
-<translation id="1036348656032585052">ಆಫ್ ಮಾಡು</translation>
+<translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1044891598689252897">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತವೆ</translation>
 <translation id="1124090076051167250">ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಲ್ಲಿರುವ ಆ್ಯಪ್‌ಗಳು ಅಥವಾ ಸೈಟ್‌ಗಳ ಮೂಲಕ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ <ph name="DATASIZE" /> ಯಷ್ಟು ಡೇಟಾ ಹಾಗೂ ಕುಕೀಗಳನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
@@ -17,7 +17,7 @@
 <translation id="1343356790768851700">ಈ ಸೈಟ್ ನೀವು ಇಷ್ಟಪಡುವ ವಿಷಯಗಳನ್ನು ನಿರ್ಧರಿಸುತ್ತದೆ ಮತ್ತು ನಂತರ ಇತರ ಸೈಟ್‌ಗಳಿಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ಸೂಚಿಸುತ್ತದೆ</translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> ಸೈಟ್ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="1371239764779356792">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೇಟಾವನ್ನು ಉಳಿಸಲು ಸೈಟ್ ಒಂದಕ್ಕೆ ಅನುಮತಿಸಿ</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">ಹುಡುಕಿ</translation>
 <translation id="1384959399684842514">ಡೌನ್‌ಲೋಡ್ ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1409426117486808224">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಿಗಾಗಿ ಸರಳೀಕೃತ ವೀಕ್ಷಣೆ</translation>
 <translation id="1415402041810619267">URL ಕಿರಿದುಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -141,7 +141,7 @@
 <translation id="3586500876634962664">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೋಫೋನ್ ಬಳಕೆ</translation>
 <translation id="358794129225322306">ಬಹು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಸೈಟ್‌ ಒಂದಕ್ಕೆ ಅನುಮತಿಸುವುದು.</translation>
 <translation id="3594780231884063836">ವೀಡಿಯೊ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
-<translation id="3596414637720633074">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="3596414637720633074">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="3600792891314830896">ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಧ್ವನಿ ಪ್ಲೇ ಆಗುವುದನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="3602290021589620013">ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="3628308229821498208">ಸೂಚಿಸಲಾದ ಹುಡುಕಾಟಗಳು</translation>
@@ -312,7 +312,7 @@
 <translation id="6689172468748959065">ಪ್ರೊಫೈಲ್ ಫೋಟೋಗಳು</translation>
 <translation id="6697925417670533197">ಸಕ್ರಿಯ ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="6722828510648505498">ಗುರುತಿನ ಸೇವೆಗಳ ಸೈನ್ ಇನ್ ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
-<translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸು</translation>
+<translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸಿ</translation>
 <translation id="6749077623962119521">ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6766622839693428701">ಮುಚ್ಚಲು ಕೆಳಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> ಗಾಗಿ ಒಂದು ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ</translation>
