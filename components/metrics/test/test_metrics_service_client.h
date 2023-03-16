@@ -88,7 +88,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   }
 
  private:
-  std::string client_id_;
+  std::string client_id_{"0a94430b-18e5-43c8-a657-580f7e855ce1"};
   std::string version_string_{"5.0.322.0-64-devel"};
   int32_t product_ = ChromeUserMetricsExtension::CHROME;
   bool reporting_is_managed_ = false;

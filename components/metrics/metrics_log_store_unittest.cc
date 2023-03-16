@@ -52,7 +52,8 @@ class MetricsLogStoreTest : public testing::Test {
   ~MetricsLogStoreTest() override {}
 
   MetricsLog* CreateLog(MetricsLog::LogType log_type) {
-    return new MetricsLog("id", 0, log_type, &client_);
+    return new MetricsLog("0a94430b-18e5-43c8-a657-580f7e855ce1", 0, log_type,
+                          &client_);
   }
 
   // Returns the stored number of logs of the given type.

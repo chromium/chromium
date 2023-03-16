@@ -56,7 +56,7 @@
 namespace metrics {
 namespace {
 
-const char kClientId[] = "bogus client ID";
+const char kClientId[] = "0a94430b-18e5-43c8-a657-580f7e855ce1";
 const int kSessionId = 127;
 
 class TestMetricsLog : public MetricsLog {
@@ -183,7 +183,7 @@ TEST_F(MetricsLogTest, LogType) {
 
 TEST_F(MetricsLogTest, BasicRecord) {
   client_.set_version_string("bogus version");
-  const std::string kOtherClientId = "totally bogus client ID";
+  const std::string kOtherClientId = "0a94430b-18e5-43c8-a657-580f7e855ce2";
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // Clears existing command line flags and sets mock flags:
   // "--mock-flag-1 --mock-flag-2=unused_value"
@@ -216,7 +216,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
   ASSERT_TRUE(parsed.ParseFromString(encoded));
 
   ChromeUserMetricsExtension expected;
-  expected.set_client_id(5217101509553811875);  // Hashed bogus client ID
+  expected.set_client_id(13917849739535108017ull);  // Hashed kOtherClientId
   expected.set_session_id(137);
 
   SystemProfileProto* system_profile = expected.mutable_system_profile();

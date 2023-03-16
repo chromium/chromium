@@ -490,6 +490,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                                           testing::Bool()));
 
 TEST_P(MetricsServiceTestWithFeatures, RecordId) {
+  EnableMetricsReporting();
+  GetMetricsStateManager(user_data_dir_path())->ForceClientIdCreation();
+
   // Set an initial value for the record-ids, to make them predictable.
   GetLocalState()->SetInteger(prefs::kMetricsLogRecordId, 1000);
 
@@ -552,7 +555,7 @@ TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAtProviderRequest) {
   // Save an existing system profile to prefs, to correspond to what would be
   // saved from a previous session.
   TestMetricsServiceClient client;
-  TestMetricsLog log("client", 1, &client);
+  TestMetricsLog log("0a94430b-18e5-43c8-a657-580f7e855ce1", 1, &client);
   DelegatingProvider delegating_provider;
   TestMetricsService::RecordCurrentEnvironmentHelper(&log, GetLocalState(),
                                                      &delegating_provider);
@@ -836,7 +839,7 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   TestMetricsServiceClient client;
   const std::string kCrashedVersion = "4.0.321.0-64-devel";
   client.set_version_string(kCrashedVersion);
-  TestMetricsLog log("client", 1, &client);
+  TestMetricsLog log("0a94430b-18e5-43c8-a657-580f7e855ce1", 1, &client);
   DelegatingProvider delegating_provider;
   TestMetricsService::RecordCurrentEnvironmentHelper(&log, local_state,
                                                      &delegating_provider);

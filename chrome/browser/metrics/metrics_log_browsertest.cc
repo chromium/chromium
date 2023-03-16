@@ -38,7 +38,8 @@ class MetricsLogBrowserTest : public PlatformBrowserTest {
 // Verify that system profile contains filtered command line keys.
 IN_PROC_BROWSER_TEST_F(MetricsLogBrowserTest, CommandLineKeyHash) {
   TestMetricsServiceClient client;
-  MetricsLog log("id", 0, MetricsLog::INITIAL_STABILITY_LOG, &client);
+  MetricsLog log("0a94430b-18e5-43c8-a657-580f7e855ce1", 0,
+                 MetricsLog::INITIAL_STABILITY_LOG, &client);
   std::string encoded;
   log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
                   &encoded);
