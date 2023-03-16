@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/cxx20_to_address.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -273,12 +274,21 @@ void SavedTabGroupButton::TabMenuItemPressed(const GURL& url, int event_flags) {
 }
 
 void SavedTabGroupButton::MoveGroupToNewWindowPressed(int event_flags) {
-  if (!local_group_id_.has_value()) {
-    service_->OpenSavedTabGroupInBrowser(base::to_address(browser_), guid_);
+  Browser* browser = nullptr;
+
+  if (local_group_id_.has_value()) {
+    // Find the browser which contains `local_group_id_` if it is open already.
+    browser =
+        service_->listener()->GetBrowserWithTabGroupId(local_group_id_.value());
+  } else {
+    // Open the group in the current browser if it is closed.
+    browser = base::to_address(browser_);
+    service_->OpenSavedTabGroupInBrowser(browser, guid_);
   }
 
+  // Move the open group to a new browser window.
   const SavedTabGroup* group = service_->model()->Get(guid_);
-  browser_->tab_strip_model()->delegate()->MoveGroupToNewWindow(
+  browser->tab_strip_model()->delegate()->MoveGroupToNewWindow(
       group->local_group_id().value());
 }
 
