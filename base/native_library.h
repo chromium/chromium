@@ -64,9 +64,6 @@ struct BASE_EXPORT NativeLibraryLoadError {
 };
 
 struct BASE_EXPORT NativeLibraryOptions {
-  NativeLibraryOptions() = default;
-  NativeLibraryOptions(const NativeLibraryOptions& options) = default;
-
   // If |true|, a loaded library is required to prefer local symbol resolution
   // before considering global symbols. Note that this is already the default
   // behavior on most systems. Setting this to |false| does not guarantee the
