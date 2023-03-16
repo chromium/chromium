@@ -11,9 +11,11 @@
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/paint_recorder.h"
@@ -21,7 +23,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -195,11 +196,10 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton {
         event_targeter_delegate_(kLargeBubbleRadiusDp, kSmallBubbleRadiusDp) {
     SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_CREATE_NOTE_ACTION));
-    SetImage(views::Button::STATE_NORMAL,
-             CreateVectorIcon(
-                 kTrayActionNewLockScreenNoteIcon,
-                 AshColorProvider::Get()->GetContentLayerColor(
-                     AshColorProvider::ContentLayerType::kButtonIconColor)));
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kTrayActionNewLockScreenNoteIcon,
+                                       kColorAshButtonIconColor));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetFocusPainter(nullptr);
     SetFlipCanvasOnPaintForRTLUI(true);

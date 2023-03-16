@@ -7,7 +7,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "components/vector_icons/vector_icons.h"
@@ -16,7 +16,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -54,6 +53,8 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
 
   // Set up the icon.
   icon_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kErrorOutlineIcon, kColorAshButtonIconColor, kIconSize));
   icon_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0,
@@ -65,6 +66,7 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
   title_->SetText(l10n_util::GetStringUTF16(IDS_SHELF_KIOSK_APP_SETUP));
   title_->SetLineHeight(kTitleLineHeight);
   title_->SetMultiLine(true);
+  title_->SetEnabledColorId(kColorAshTextColorPrimary);
   TrayPopupUtils::SetLabelFontList(title_,
                                    TrayPopupUtils::FontStyle::kSmallTitle);
 }
@@ -88,20 +90,6 @@ gfx::Size KioskAppDefaultMessage::CalculatePreferredSize() const {
                           views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
 
   return gfx::Size(width, height);
-}
-
-void KioskAppDefaultMessage::OnThemeChanged() {
-  LoginBaseBubbleView::OnThemeChanged();
-  auto* color_provider = AshColorProvider::Get();
-
-  SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-  icon_->SetImage(gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon,
-                                        kIconSize, icon_color));
-
-  SkColor label_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  title_->SetEnabledColor(label_color);
 }
 
 gfx::Point KioskAppDefaultMessage::CalculatePosition() {

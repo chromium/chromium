@@ -5,7 +5,7 @@
 #include "ash/login/ui/animated_auth_factors_label_wrapper.h"
 
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -44,8 +44,7 @@ class AuthFactorsLabel : public views::Label {
       : visible_to_screen_reader_(visible_to_screen_reader) {
     SetSubpixelRenderingEnabled(false);
     SetAutoColorReadabilityEnabled(false);
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
+    SetEnabledColorId(kColorAshTextColorSecondary);
     SetMultiLine(true);
     SetMaxLines(kLabelMaxLines);
     SetLineHeight(kLabelLineHeightDp);
@@ -64,13 +63,6 @@ class AuthFactorsLabel : public views::Label {
     }
 
     views::Label::GetAccessibleNodeData(node_data);
-  }
-
-  // views::Label:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
   }
 
   // views::View:

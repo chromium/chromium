@@ -30,9 +30,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -85,14 +85,14 @@ constexpr int kMonitoringWarningIconSizeDp = 20;
 constexpr char kRightPaneViewClassName[] = "RightPaneView";
 constexpr char kRightPaneAdvancedViewClassName[] = "RightPaneAdvancedView";
 
-views::Label* CreateLabel(const std::u16string& text, SkColor color) {
+views::Label* CreateLabel(const std::u16string& text, ui::ColorId color_id) {
   auto* label = new views::Label(text);
   label->SetSubpixelRenderingEnabled(false);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetFontList(views::Label::GetDefaultFontList().Derive(
       0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColor(color);
+  label->SetEnabledColorId(color_id);
   return label;
 }
 
@@ -162,9 +162,7 @@ class SelectionButtonView : public LoginButton {
         views::BoxLayout::MainAxisAlignment::kStart);
     AddChildView(label_container);
 
-    label_ = CreateLabel(
-        text, AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kTextColorPrimary));
+    label_ = CreateLabel(text, kColorAshTextColorPrimary);
     left_margin_view_ = add_horizontal_margin(left_margin_, label_container);
     label_container->AddChildView(label_);
 
@@ -216,15 +214,17 @@ class SelectionButtonView : public LoginButton {
     Layout();
   }
 
-  void SetTextColor(SkColor color) { label_->SetEnabledColor(color); }
+  void SetTextColorId(ui::ColorId color_id) {
+    label_->SetEnabledColorId(color_id);
+  }
   void SetText(const std::u16string& text) {
     SetAccessibleName(text);
     label_->SetText(text);
     Layout();
   }
 
-  void SetIcon(const gfx::VectorIcon& icon, SkColor color) {
-    icon_->SetImage(gfx::CreateVectorIcon(icon, color));
+  void SetIcon(const gfx::VectorIcon& icon, ui::ColorId color_id) {
+    icon_->SetImage(ui::ImageModel::FromVectorIcon(icon, color_id));
   }
 
  private:
@@ -244,20 +244,15 @@ class MonitoringWarningView : public NonAccessibleView {
       : NonAccessibleView(kMonitoringWarningClassName),
         warning_type_(WarningType::kNone) {
     image_ = new views::ImageView();
-    image_->SetImage(gfx::CreateVectorIcon(
-        vector_icons::kWarningIcon, kMonitoringWarningIconSizeDp,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorWarning)));
-    image_->SetPreferredSize(
-        gfx::Size(kMonitoringWarningIconSizeDp, kMonitoringWarningIconSizeDp));
+    image_->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kWarningIcon, kColorAshIconColorWarning,
+        kMonitoringWarningIconSizeDp));
     image_->SetVisible(false);
     AddChildView(image_);
 
     const std::u16string label_text = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_PUBLIC_ACCOUNT_MONITORING_WARNING);
-    label_ = CreateLabel(
-        label_text, AshColorProvider::Get()->GetContentLayerColor(
-                        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    label_ = CreateLabel(label_text, kColorAshTextColorPrimary);
     label_->SetMultiLine(true);
     label_->SetLineHeight(kTextLineHeightDp);
     AddChildView(label_);
@@ -385,8 +380,9 @@ class RightPaneView : public NonAccessibleView {
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_LOGIN_PUBLIC_SESSION_LANGUAGE_AND_INPUT));
-    advanced_view_button_->SetTextColor(blue);
-    advanced_view_button_->SetIcon(kLoginScreenButtonDropdownIcon, blue);
+    advanced_view_button_->SetTextColorId(kColorAshButtonLabelColorBlue);
+    advanced_view_button_->SetIcon(kLoginScreenButtonDropdownIcon,
+                                   kColorAshButtonLabelColorBlue);
     advanced_view_button_->SetPreferredSize(
         gfx::Size(kAdvancedViewButtonWidthDp, kAdvancedViewButtonHeightDp));
     AddChildView(advanced_view_button_);
@@ -403,13 +399,9 @@ class RightPaneView : public NonAccessibleView {
     advanced_view_->SetVisible(false);
     AddChildView(advanced_view_);
 
-    const SkColor selection_menu_title_color =
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorSecondary);
-
     language_title_ = CreateLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_LANGUAGE_SELECTION_SELECT),
-        selection_menu_title_color);
+        kColorAshTextColorSecondary);
     advanced_view_->AddChildView(language_title_);
     language_title_->SetProperty(
         views::kMarginsKey,
@@ -417,7 +409,7 @@ class RightPaneView : public NonAccessibleView {
 
     keyboard_title_ = CreateLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_KEYBOARD_SELECTION_SELECT),
-        selection_menu_title_color);
+        kColorAshTextColorSecondary);
     advanced_view_->AddChildView(keyboard_title_);
     keyboard_title_->SetProperty(
         views::kMarginsKey,
@@ -742,9 +734,8 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   }
 
   separator_ = AddChildView(std::make_unique<views::View>());
-  separator_->SetBackground(views::CreateSolidBackground(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kSeparatorColor)));
+  separator_->SetBackground(
+      views::CreateThemedSolidBackground(kColorAshSeparatorColor));
 
   right_pane_ = new RightPaneView(
       base::BindRepeating(&LoginExpandedPublicAccountView::ShowWarningDialog,

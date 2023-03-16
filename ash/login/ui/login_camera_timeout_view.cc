@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/views_utils.h"
+#include "ash/style/ash_color_id.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -38,8 +39,7 @@ views::Label* CreateLabel(const std::u16string& text, const int font_delta) {
       {views::Label::GetDefaultFontList().DeriveWithSizeDelta(font_delta)});
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  label->SetEnabledColorId(kColorAshTextColorPrimary);
   label->SetSubpixelRenderingEnabled(false);
   return label;
 }

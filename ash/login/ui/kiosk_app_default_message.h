@@ -33,7 +33,6 @@ class ASH_EXPORT KioskAppDefaultMessage
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void OnThemeChanged() override;
 
   // LoginBaseBubbleView
   gfx::Point CalculatePosition() override;
