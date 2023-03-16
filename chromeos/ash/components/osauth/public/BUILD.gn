@@ -10,5 +10,9 @@ assert(is_chromeos_ash,
 
 source_set("public") {
   deps = [ "//base" ]
-  sources = [ "auth_parts.h" ]
+  sources = [
+    "auth_parts.h",
+    "auth_session_storage.h",
+    "common_types.h",
+  ]
 }

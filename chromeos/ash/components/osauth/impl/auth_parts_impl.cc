@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/osauth/impl/auth_parts_impl.h"
+
 #include <memory>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "chromeos/ash/components/osauth/impl/auth_parts_impl.h"
+#include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 
 namespace ash {
@@ -26,7 +28,7 @@ std::unique_ptr<AuthPartsImpl> AuthPartsImpl::CreateTestInstance() {
 // static
 std::unique_ptr<AuthParts> AuthParts::Create() {
   std::unique_ptr<AuthPartsImpl> result = std::make_unique<AuthPartsImpl>();
-  // Create all parts here.
+  result->CreateDefaultComponents();
   return result;
 }
 
@@ -44,6 +46,15 @@ AuthPartsImpl::AuthPartsImpl() {
 AuthPartsImpl::~AuthPartsImpl() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+}
+
+void AuthPartsImpl::CreateDefaultComponents() {
+  session_storage_ = std::make_unique<AuthSessionStorageImpl>();
+}
+
+AuthSessionStorage* AuthPartsImpl::GetAuthSessionStorage() {
+  CHECK(session_storage_);
+  return session_storage_.get();
 }
 
 }  // namespace ash

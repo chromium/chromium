@@ -20,6 +20,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPartsImpl
 
   AuthPartsImpl();
   ~AuthPartsImpl() override;
+
+  // AuthParts implementation:
+  AuthSessionStorage* GetAuthSessionStorage() override;
+
+ private:
+  friend class AuthParts;
+  void CreateDefaultComponents();
+
+  std::unique_ptr<AuthSessionStorage> session_storage_;
 };
 
 }  // namespace ash

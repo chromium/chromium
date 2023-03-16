@@ -11,6 +11,7 @@ component("authpublic") {
   public_deps = [
     ":challenge_response_key",
     "//components/password_manager/core/browser:password_hash_data",
+    "//google_apis",  # due to AuthFailure.
   ]
   deps = [
     "//ash/constants",
@@ -21,7 +22,6 @@ component("authpublic") {
     "//components/prefs",
     "//components/user_manager",
     "//crypto",
-    "//google_apis",
     "//net",
     "//third_party/abseil-cpp:absl",
   ]

@@ -1,0 +1,5 @@
+include_rules = [
+  "+chromeos/ash/components/cryptohome",
+  "+chromeos/ash/components/dbus",
+  "+chromeos/ash/components/login",
+]

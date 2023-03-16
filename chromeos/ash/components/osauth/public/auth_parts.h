@@ -11,6 +11,8 @@
 
 namespace ash {
 
+class AuthSessionStorage;
+
 // Central repository for accessing various OS authentication-related
 // objects.
 // When run normally or as a part of browser_tests it is created and
@@ -27,6 +29,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthParts {
   static AuthParts* Get();
 
   virtual ~AuthParts() = default;
+
+  virtual AuthSessionStorage* GetAuthSessionStorage() = 0;
 };
 
 }  // namespace ash

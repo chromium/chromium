@@ -12,9 +12,16 @@ component("impl") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL" ]
   public_deps = [ "//chromeos/ash/components/osauth/public" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+  ]
   sources = [
     "auth_parts_impl.cc",
     "auth_parts_impl.h",
+    "auth_session_storage_impl.cc",
+    "auth_session_storage_impl.h",
   ]
 }

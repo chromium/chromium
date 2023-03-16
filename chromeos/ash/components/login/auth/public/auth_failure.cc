@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+
 #include "base/check_op.h"
 
 namespace ash {
