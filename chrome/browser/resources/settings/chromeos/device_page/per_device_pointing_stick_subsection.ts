@@ -19,6 +19,7 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,8 +28,11 @@ import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_prov
 import {InputDeviceSettingsProviderInterface, PointingStick} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_pointing_stick_subsection.html.js';
 
+const SettingsPerDevicePointingStickSubsectionElementBase =
+    I18nMixin(PolymerElement);
+
 export class SettingsPerDevicePointingStickSubsectionElement extends
-    PolymerElement {
+    SettingsPerDevicePointingStickSubsectionElementBase {
   static get is(): string {
     return 'settings-per-device-pointing-stick-subsection';
   }
@@ -158,6 +162,12 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
     };
     this.inputDeviceSettingsProvider.setPointingStickSettings(
         this.pointingStick.id, this.pointingStick.settings);
+  }
+
+  private getPointingStickName(): string {
+    return this.pointingStick.isExternal ?
+        this.pointingStick.name :
+        this.i18n('builtInPointingStickName');
   }
 }
 

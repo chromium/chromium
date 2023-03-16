@@ -41,10 +41,6 @@ suite('PerDevicePointingStick', function() {
     let subsections = perDevicePointingStickPage.shadowRoot.querySelectorAll(
         'settings-per-device-pointing-stick-subsection');
     assertEquals(fakePointingSticks.length, subsections.length);
-    for (let i = 0; i < subsections.length; i++) {
-      const name = subsections[i].shadowRoot.querySelector('h2').textContent;
-      assertEquals(fakePointingSticks[i].name, name);
-    }
 
     const newFakePointingSticks = fakePointingSticks.slice(1);
     provider.setFakePointingSticks(newFakePointingSticks);
@@ -52,9 +48,24 @@ suite('PerDevicePointingStick', function() {
     subsections = perDevicePointingStickPage.shadowRoot.querySelectorAll(
         'settings-per-device-pointing-stick-subsection');
     assertEquals(newFakePointingSticks.length, subsections.length);
-    for (let i = 0; i < subsections.length; i++) {
-      const name = subsections[i].shadowRoot.querySelector('h2').textContent;
-      assertEquals(newFakePointingSticks[i].name, name);
-    }
   });
+
+  test(
+      'Display correct name used for internal/external pointing sticks',
+      async () => {
+        await initializePerDevicePointingStickPage();
+        const subsections =
+            perDevicePointingStickPage.shadowRoot.querySelectorAll(
+                'settings-per-device-pointing-stick-subsection');
+        for (let i = 0; i < subsections.length; i++) {
+          const name =
+              subsections[i].shadowRoot.querySelector('h2').textContent;
+          if (fakePointingSticks[i].isExternal) {
+            assertEquals(fakePointingSticks[i].name, name);
+          } else {
+            assertTrue(subsections[i].i18nExists('builtInPointingStickName'));
+            assertEquals('Built-in TrackPoint', name);
+          }
+        }
+      });
 });

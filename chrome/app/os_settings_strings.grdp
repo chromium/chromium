@@ -2693,6 +2693,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MOUSE_TITLE" desc="In Device Settings, the title of the mouse settings subpage.">
     Mouse
   </message>
+  <message name="IDS_SETTINGS_BUILT_IN_POINTING_STICK_NAME" translateable="false" desc="In Device Settings, the name of the built-in/internal pointing stick device within the settings app.">
+    Built-in TrackPoint
+  </message>
   <message name="IDS_SETTINGS_POINTING_STICK_TITLE" desc="In Device Settings, the title of the pointing stick settings subpage. In most cases this will just be 'TrackPoint', the brand name of the pointing sticks used on Chromebooks.">
     TrackPoint
   </message>
