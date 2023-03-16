@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -68,6 +69,17 @@ AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
   }
   options.supports_hmac_secret = true;
   return options;
+}
+
+bool MayHaveWindowsHelloCredentials(
+    std::vector<PublicKeyCredentialDescriptor> allow_list) {
+  return allow_list.empty() ||
+         base::ranges::any_of(allow_list, [](const auto& credential) {
+           return credential.transports.empty() ||
+                  credential.transports ==
+                      base::flat_set<FidoTransportProtocol>{
+                          FidoTransportProtocol::kInternal};
+         });
 }
 
 }  // namespace
@@ -285,6 +297,15 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& request_options,
     GetPlatformCredentialInfoForRequestCallback callback) {
+  // Handle the special case where a request has an allow list, all the
+  // credential descriptors have a transport, and none of those are "internal"
+  // only. These credentials cannot possibly be Windows Hello.
+  if (!MayHaveWindowsHelloCredentials(request.allow_list)) {
+    std::move(callback).Run(
+        /*credentials=*/{},
+        FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
+    return;
+  }
   if (!win_api_->SupportsSilentDiscovery()) {
     // The Windows platform authenticator is the only authenticator available to
     // us and we can't know if there are credentials in advance.

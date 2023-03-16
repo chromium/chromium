@@ -218,6 +218,35 @@ TEST_F(WinAuthenticatorTest,
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
 }
 
+// Tests that for non empty allow-list requests without an only internal
+// transport credential, the authenticator returns an empty credential list and
+// reports no credential availability, even if silent discovery is not
+// supported.
+TEST_F(WinAuthenticatorTest,
+       GetCredentialInformationForRequest_NonEmptyAllowList_NoInternal) {
+  fake_webauthn_api_->set_supports_silent_discovery(false);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+
+  PublicKeyCredentialDescriptor credential(CredentialType::kPublicKey,
+                                           kCredentialId2);
+  credential.transports = {FidoTransportProtocol::kInternal,
+                           FidoTransportProtocol::kHybrid};
+  request.allow_list.emplace_back(std::move(credential));
+
+  GetCredentialCallbackReceiver callback;
+  authenticator_->GetPlatformCredentialInfoForRequest(
+      std::move(request), CtapGetAssertionOptions(), callback.callback());
+  callback.WaitForCallback();
+
+  EXPECT_EQ(std::get<0>(*callback.result()),
+            std::vector<DiscoverableCredentialMetadata>{});
+  EXPECT_EQ(
+      std::get<1>(*callback.result()),
+      FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
+}
+
 TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_NotSupported) {
   PublicKeyCredentialRpEntity rp(kRpId);
   PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
