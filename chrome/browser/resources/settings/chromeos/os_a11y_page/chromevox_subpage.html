@@ -32,6 +32,16 @@ found in the LICENSE file.
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
   }
+
+  #developerOptionsExpandButton {
+    min-height: 48px;
+    padding-inline-end: var(--cr-section-padding);
+  }
+
+  #developerOptionsHeading {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
 </style>
 
 <h2>$i18n{chromeVoxGeneralLabel}</h2>
@@ -145,30 +155,35 @@ found in the LICENSE file.
   </cr-link-row>
 </div>
 <h2>$i18n{chromeVoxBrailleLabel}</h2>
-<h2>$i18n{chromeVoxDeveloperOptionsLabel}</h2>
-<div class="sub-item">
-  <settings-toggle-button
-      id="enableSpeechLoggingToggle"
-      class="settings-box continuation"
-      pref="{{prefs.settings.a11y.chromevox.enable_speech_logging}}"
-      label="$i18n{chromeVoxEnableSpeechLogging}">
-  </settings-toggle-button>
-  <settings-toggle-button
-      id="enableEarconLoggingToggle"
-      class="settings-box continuation"
-      pref="{{prefs.settings.a11y.chromevox.enable_earcon_logging}}"
-      label="$i18n{chromeVoxEnableEarconLogging}">
-  </settings-toggle-button>
-  <settings-toggle-button
-      id="enableBrailleLoggingToggle"
-      class="settings-box continuation"
-      pref="{{prefs.settings.a11y.chromevox.enable_braille_logging}}"
-      label="$i18n{chromeVoxEnableBrailleLogging}">
-  </settings-toggle-button>
-  <settings-toggle-button
-      id="enableEventStreamLoggingToggle"
-      class="settings-box continuation"
-      pref="{{prefs.settings.a11y.chromevox.enable_event_stream_logging}}"
-      label="$i18n{chromeVoxEnableEventStreamLogging}">
-  </settings-toggle-button>
-</div>
+<cr-expand-button id="developerOptionsExpandButton" class="hr"
+    expanded="{{developerOptionsExpanded_}}">
+  <h2 id="developerOptionsHeading">$i18n{chromeVoxDeveloperOptionsLabel}</h2>
+</cr-expand-button>
+<iron-collapse opened="[[developerOptionsExpanded_]]">
+  <div class="sub-item">
+    <settings-toggle-button
+        id="enableSpeechLoggingToggle"
+        class="settings-box continuation"
+        pref="{{prefs.settings.a11y.chromevox.enable_speech_logging}}"
+        label="$i18n{chromeVoxEnableSpeechLogging}">
+    </settings-toggle-button>
+    <settings-toggle-button
+        id="enableEarconLoggingToggle"
+        class="settings-box continuation"
+        pref="{{prefs.settings.a11y.chromevox.enable_earcon_logging}}"
+        label="$i18n{chromeVoxEnableEarconLogging}">
+    </settings-toggle-button>
+    <settings-toggle-button
+        id="enableBrailleLoggingToggle"
+        class="settings-box continuation"
+        pref="{{prefs.settings.a11y.chromevox.enable_braille_logging}}"
+        label="$i18n{chromeVoxEnableBrailleLogging}">
+    </settings-toggle-button>
+    <settings-toggle-button
+        id="enableEventStreamLoggingToggle"
+        class="settings-box continuation"
+        pref="{{prefs.settings.a11y.chromevox.enable_event_stream_logging}}"
+        label="$i18n{chromeVoxEnableEventStreamLogging}">
+    </settings-toggle-button>
+  </div>
+</iron-collapse>

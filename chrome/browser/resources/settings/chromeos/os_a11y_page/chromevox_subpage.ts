@@ -160,6 +160,14 @@ class SettingsChromeVoxSubpageElement extends
         type: Array,
         value: [],
       },
+
+      /**
+       * Whether developer options is expanded.
+       */
+      developerOptionsExpanded_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
