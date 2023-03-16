@@ -503,8 +503,6 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
   CHECK(!rlz_brand_code->empty());
 
   const auto plaintext_id = psm::ConstructRlweId();
-  // TODO(b/259661300): Remove copy of `serial_number` and `rlz_brand_code`
-  // once `CreateForInitialEnrollment` uses StringPiece arguments.
   client_ = GetAutoEnrollmentClientFactory()->CreateForInitialEnrollment(
       base::BindRepeating(&AutoEnrollmentController::UpdateState,
                           weak_ptr_factory_.GetWeakPtr()),
