@@ -75,7 +75,7 @@ BASE_FEATURE(kScrollViewProxyScrollEnabledWorkaround,
 
 BASE_FEATURE(kPreventNavigationWithoutUserInteraction,
              "PreventNavigationWithoutUserInteraction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsMediaPermissionsControlEnabled() {
   if (@available(iOS 15, *)) {
