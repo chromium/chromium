@@ -1874,10 +1874,9 @@ bool PaintOp::QuickRejectDraw(const PaintOp& op, const SkCanvas* canvas) {
     return false;
 
   SkRect rect;
-  if (!PaintOp::GetBounds(op, &rect)) {
+  if (!PaintOp::GetBounds(op, &rect) || !rect.isFinite()) {
     return false;
   }
-  DCHECK(rect.isFinite());
 
   if (op.IsPaintOpWithFlags()) {
     SkPaint paint = static_cast<const PaintOpWithFlags&>(op).flags.ToSkPaint();
