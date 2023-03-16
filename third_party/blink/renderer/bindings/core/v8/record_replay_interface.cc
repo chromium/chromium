@@ -279,7 +279,7 @@ function commandCallback(method, params) {
     return result;
   } catch (e) {
     log(`[RuntimeError][Command ${method}] ${e?.stack || e}`);
-    return {};
+    return e;
   }
 }
 
