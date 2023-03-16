@@ -24,6 +24,7 @@ void BluetoothGattServerTest::StartGattSetup() {
 }
 
 void BluetoothGattServerTest::CompleteGattSetup() {
+  delegate_->set_expected_service(nullptr);
   service_->Register(GetCallback(Call::EXPECTED),
                      GetGattErrorCallback(Call::NOT_EXPECTED));
 }
