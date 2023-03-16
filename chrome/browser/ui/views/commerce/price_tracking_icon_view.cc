@@ -236,32 +236,14 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
     }
   }
 
-  const bookmarks::BookmarkNode* node =
-      existing_node ? existing_node
-                    : model->GetMostRecentlyAddedUserNodeForURL(
-                          GetWebContents()->GetLastCommittedURL());
+  auto* tab_helper =
+      commerce::ShoppingListUiTabHelper::FromWebContents(GetWebContents());
+  CHECK(tab_helper);
 
-  commerce::ShoppingService* service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile_);
-  base::OnceCallback<void(bool)> callback =
+  tab_helper->SetPriceTrackingState(
+      enable, is_new_bookmark,
       base::BindOnce(&PriceTrackingIconView::OnPriceTrackingServerStateUpdated,
-                     weak_ptr_factory_.GetWeakPtr());
-
-  if (node) {
-    commerce::SetPriceTrackingStateForBookmark(
-        commerce::ShoppingServiceFactory::GetForBrowserContext(profile_), model,
-        node, enable, std::move(callback), enable && is_new_bookmark);
-  } else {
-    DCHECK(!enable);
-    absl::optional<commerce::ProductInfo> info =
-        service->GetAvailableProductInfoForUrl(
-            GetWebContents()->GetLastCommittedURL());
-    if (info.has_value()) {
-      commerce::SetPriceTrackingStateForClusterId(
-          commerce::ShoppingServiceFactory::GetForBrowserContext(profile_),
-          model, info->product_cluster_id, enable, std::move(callback));
-    }
-  }
+                     weak_ptr_factory_.GetWeakPtr()));
 
   SetVisualState(enable);
 }

@@ -25,6 +25,12 @@ class MockShoppingListUiTabHelper : public commerce::ShoppingListUiTabHelper {
   MOCK_METHOD0(GetProductImage, const gfx::Image&());
   MOCK_METHOD0(ShouldShowPriceTrackingIconView, bool());
   MOCK_METHOD0(IsPriceTracking, bool());
+  MOCK_METHOD(void,
+              SetPriceTrackingState,
+              (bool enable,
+               bool is_new_bookmark,
+               base::OnceCallback<void(bool)> callback),
+              (override));
 
  private:
   gfx::Image valid_product_image_;

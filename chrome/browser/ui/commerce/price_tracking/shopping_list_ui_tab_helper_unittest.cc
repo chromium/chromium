@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -101,12 +102,18 @@ class ShoppingListUiTabHelperTest : public testing::Test {
     content::LoadCommittedDetails details;
     details.is_in_active_page = true;
     tab_helper_->NavigationEntryCommitted(details);
+    base::RunLoop().RunUntilIdle();
   }
 
   // Passthrough to private methods in ShoppindListUiTabHelper:
   void HandleProductInfoResponse(const GURL& url,
                                  const absl::optional<ProductInfo>& info) {
     tab_helper_->HandleProductInfoResponse(url, info);
+  }
+
+  // Passthrough methods for access to protected members.
+  const absl::optional<bool>& GetPendingTrackingStateForTesting() {
+    return tab_helper_->GetPendingTrackingStateForTesting();
   }
 
  protected:
@@ -196,6 +203,74 @@ TEST_F(ShoppingListUiTabHelperTest, TestIconAvailabilityWithImage) {
 
   ASSERT_TRUE(tab_helper_->ShouldShowPriceTrackingIconView());
   ASSERT_EQ(GURL(kProductImageUrl), tab_helper_->GetProductImageURL());
+}
+
+// A request to change the state of a subscription should be immediately
+// reflected in the accessor "IsPriceTracking".
+TEST_F(ShoppingListUiTabHelperTest,
+       TestSubscriptionChangeImmediatelySetsState) {
+  AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
+                     kClusterId, true);
+
+  absl::optional<ProductInfo> info =
+      CreateProductInfo(kClusterId, GURL(kProductImageUrl));
+
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+  shopping_service_->SetIsSubscribedCallbackValue(false);
+  shopping_service_->SetSubscribeCallbackValue(true);
+
+  SimulateNavigationCommitted(GURL(kProductUrl));
+
+  ASSERT_FALSE(GetPendingTrackingStateForTesting().has_value());
+  ASSERT_FALSE(tab_helper_->IsPriceTracking());
+
+  EXPECT_CALL(
+      *shopping_service_,
+      Subscribe(VectorHasSubscriptionWithId(base::NumberToString(kClusterId)),
+                testing::_))
+      .Times(1);
+
+  tab_helper_->SetPriceTrackingState(true, true, base::DoNothing());
+  ASSERT_TRUE(GetPendingTrackingStateForTesting().has_value());
+  ASSERT_TRUE(GetPendingTrackingStateForTesting().value());
+  ASSERT_TRUE(tab_helper_->IsPriceTracking());
+  base::RunLoop().RunUntilIdle();
+
+  // We should still be price tracking, but there should no longer be a pending
+  // value.
+  ASSERT_FALSE(GetPendingTrackingStateForTesting().has_value());
+  ASSERT_TRUE(tab_helper_->IsPriceTracking());
+}
+
+// Make sure unsubscribe without a bookmark for the current page is functional.
+TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
+  // Intentionally create a bookmark with a URL different from the known
+  // product URL but use the same cluster ID.
+  AddProductBookmark(bookmark_model_.get(), u"title",
+                     GURL("https://example.com/different_url.html"), kClusterId,
+                     true);
+
+  absl::optional<ProductInfo> info =
+      CreateProductInfo(kClusterId, GURL(kProductImageUrl));
+
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+  shopping_service_->SetSubscribeCallbackValue(true);
+
+  SimulateNavigationCommitted(GURL(kProductUrl));
+
+  EXPECT_CALL(
+      *shopping_service_,
+      Unsubscribe(VectorHasSubscriptionWithId(base::NumberToString(kClusterId)),
+                  testing::_))
+      .Times(1);
+
+  tab_helper_->SetPriceTrackingState(false, true, base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  // We should still be price tracking, but there should no longer be a pending
+  // value.
+  ASSERT_FALSE(tab_helper_->IsPriceTracking());
 }
 
 }  // namespace commerce

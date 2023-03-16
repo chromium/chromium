@@ -99,6 +99,7 @@ void ShoppingListUiTabHelper::NavigationEntryCommitted(
   last_fetched_image_url_ = GURL();
   is_cluster_id_tracked_by_user_ = false;
   cluster_id_for_page_.reset();
+  pending_tracking_state_.reset();
 
   if (!shopping_service_ || !shopping_service_->IsShoppingListEligible())
     return;
@@ -117,6 +118,8 @@ void ShoppingListUiTabHelper::NavigationEntryCommitted(
 void ShoppingListUiTabHelper::OnSubscribe(
     const std::vector<CommerceSubscription>& subscriptions,
     bool succeeded) {
+  // TODO(b:265216263): Block events here if the subscription does not match
+  //                    what is on the current page.
   UpdatePriceTrackingStateFromSubscriptions();
   UpdatePriceTrackingIconView();
 }
@@ -165,6 +168,48 @@ void ShoppingListUiTabHelper::HandleProductInfoResponse(
                                         kImageFetcherUmaClient));
 }
 
+void ShoppingListUiTabHelper::SetPriceTrackingState(
+    bool enable,
+    bool is_new_bookmark,
+    base::OnceCallback<void(bool)> callback) {
+  const bookmarks::BookmarkNode* node =
+      bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
+          web_contents()->GetLastCommittedURL());
+
+  base::OnceCallback<void(bool)> wrapped_callback = base::BindOnce(
+      [](base::WeakPtr<ShoppingListUiTabHelper> helper,
+         base::OnceCallback<void(bool)> callback, bool success) {
+        if (helper) {
+          if (success) {
+            helper->is_cluster_id_tracked_by_user_ =
+                helper->pending_tracking_state_.value();
+          }
+          helper->pending_tracking_state_.reset();
+        }
+
+        std::move(callback).Run(success);
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  pending_tracking_state_.emplace(enable);
+
+  if (node) {
+    commerce::SetPriceTrackingStateForBookmark(
+        shopping_service_.get(), bookmark_model_.get(), node, enable,
+        std::move(wrapped_callback), enable && is_new_bookmark);
+  } else {
+    DCHECK(!enable);
+    absl::optional<commerce::ProductInfo> info =
+        shopping_service_->GetAvailableProductInfoForUrl(
+            web_contents()->GetLastCommittedURL());
+    if (info.has_value()) {
+      commerce::SetPriceTrackingStateForClusterId(
+          shopping_service_.get(), bookmark_model_, info->product_cluster_id,
+          enable, std::move(wrapped_callback));
+    }
+  }
+}
+
 void ShoppingListUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
   if (!cluster_id_for_page_.has_value())
     return;
@@ -208,7 +253,7 @@ const GURL& ShoppingListUiTabHelper::GetProductImageURL() {
 }
 
 bool ShoppingListUiTabHelper::IsPriceTracking() {
-  return is_cluster_id_tracked_by_user_;
+  return pending_tracking_state_.value_or(is_cluster_id_tracked_by_user_);
 }
 
 void ShoppingListUiTabHelper::UpdatePriceTrackingIconView() {
@@ -221,6 +266,11 @@ void ShoppingListUiTabHelper::UpdatePriceTrackingIconView() {
   }
 
   browser->window()->UpdatePageActionIcon(PageActionIconType::kPriceTracking);
+}
+
+const absl::optional<bool>&
+ShoppingListUiTabHelper::GetPendingTrackingStateForTesting() {
+  return pending_tracking_state_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ShoppingListUiTabHelper);

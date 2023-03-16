@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
@@ -24,6 +25,14 @@ MockShoppingListUiTabHelper::MockShoppingListUiTabHelper(
   SkBitmap bitmap;
   bitmap.allocN32Pixels(1, 1);
   valid_product_image_ = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+
+  // Set up a response so the default is success.
+  ON_CALL(*this, SetPriceTrackingState)
+      .WillByDefault([](bool enable, bool is_new_bookmark,
+                        base::OnceCallback<void(bool)> callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), true));
+      });
 }
 
 MockShoppingListUiTabHelper::~MockShoppingListUiTabHelper() = default;

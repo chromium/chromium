@@ -398,6 +398,13 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
   // Simulate the failure.
   mock_shopping_service_->SetSubscribeCallbackValue(false);
 
+  ON_CALL(*mock_tab_helper_, SetPriceTrackingState)
+      .WillByDefault([](bool enable, bool is_new_bookmark,
+                        base::OnceCallback<void(bool)> callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), false));
+      });
+
   ClickPriceTrackingIconView();
 
   EXPECT_TRUE(icon_view->GetVisible());

@@ -76,11 +76,18 @@ class ShoppingListUiTabHelper
   // shopping service for the sake of testing.
   void SetShoppingServiceForTesting(ShoppingService* shopping_service);
 
+  // Set the price tracking state for the product on the current page.
+  virtual void SetPriceTrackingState(bool enable,
+                                     bool is_new_bookmark,
+                                     base::OnceCallback<void(bool)> callback);
+
  protected:
   ShoppingListUiTabHelper(content::WebContents* contents,
                           ShoppingService* shopping_service,
                           bookmarks::BookmarkModel* model,
                           image_fetcher::ImageFetcher* image_fetcher);
+
+  const absl::optional<bool>& GetPendingTrackingStateForTesting();
 
  private:
   friend class content::WebContentsUserData<ShoppingListUiTabHelper>;
@@ -123,6 +130,11 @@ class ShoppingListUiTabHelper
   // contents. This is used to ensure product info is fetched when a tab is
   // being restored.
   bool is_initial_navigation_committed_{false};
+
+  // This represents the desired state of the tracking icon prior to getting the
+  // callback from the (un)subscribe event. If no value, there is no pending
+  // state, otherwise true means "tracking" and false means "not tracking".
+  absl::optional<bool> pending_tracking_state_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>
