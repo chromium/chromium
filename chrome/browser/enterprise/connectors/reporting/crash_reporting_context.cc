@@ -37,15 +37,16 @@ policy::ChromeBrowserCloudManagementController* GetCBCMController() {
 base::TimeDelta GetCrashpadPollingInterval() {
   base::TimeDelta result =
       base::Seconds(kDefaultCrashpadPollingIntervalSeconds);
-  if (g_browser_process && g_browser_process->browser_policy_connector()
-                               ->IsCommandLineSwitchSupported()) {
+  if (chrome::GetChannel() != version_info::Channel::STABLE) {
     base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
     if (cmd->HasSwitch(kCrashpadPollingIntervalFlag)) {
       int crashpad_polling_interval_seconds = 0;
       if (base::StringToInt(
               cmd->GetSwitchValueASCII(kCrashpadPollingIntervalFlag),
               &crashpad_polling_interval_seconds) &&
-          crashpad_polling_interval_seconds > 0) {
+          crashpad_polling_interval_seconds > 0 &&
+          crashpad_polling_interval_seconds <
+              kDefaultCrashpadPollingIntervalSeconds) {
         result = base::Seconds(crashpad_polling_interval_seconds);
       }
     }
