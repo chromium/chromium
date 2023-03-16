@@ -52,8 +52,7 @@ const NGInlineBreakToken* NGInlineBreakToken::SubBreakTokenInParallelFlow()
 NGInlineBreakToken* NGInlineBreakToken::Create(
     NGInlineNode node,
     const ComputedStyle* style,
-    unsigned item_index,
-    unsigned text_offset,
+    const NGInlineItemTextIndex& index,
     unsigned flags /* NGInlineBreakTokenFlags */,
     const NGBreakToken* sub_break_token) {
   // We store the children list inline in the break token as a flexible
@@ -68,23 +67,21 @@ NGInlineBreakToken* NGInlineBreakToken::Create(
     flags |= kHasSubBreakToken;
   }
 
-  return MakeGarbageCollected<NGInlineBreakToken>(
-      AdditionalBytes(size), PassKey(), node, style, item_index, text_offset,
-      flags, sub_break_token);
+  return MakeGarbageCollected<NGInlineBreakToken>(AdditionalBytes(size),
+                                                  PassKey(), node, style, index,
+                                                  flags, sub_break_token);
 }
 
 NGInlineBreakToken::NGInlineBreakToken(
     PassKey key,
     NGInlineNode node,
     const ComputedStyle* style,
-    unsigned item_index,
-    unsigned text_offset,
+    const NGInlineItemTextIndex& index,
     unsigned flags /* NGInlineBreakTokenFlags */,
     const NGBreakToken* sub_break_token)
     : NGBreakToken(kInlineBreakToken, node, flags),
       style_(style),
-      item_index_(item_index),
-      text_offset_(text_offset) {
+      index_(index) {
   if (UNLIKELY(sub_break_token)) {
 #if DCHECK_IS_ON()
     // Only one level of inline break token nesting is expected.

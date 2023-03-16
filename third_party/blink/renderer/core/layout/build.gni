@@ -414,6 +414,7 @@ blink_core_sources_layout = [
   "ng/inline/ng_inline_item_segment.cc",
   "ng/inline/ng_inline_item_segment.h",
   "ng/inline/ng_inline_item_span.h",
+  "ng/inline/ng_inline_item_text_index.h",
   "ng/inline/ng_inline_items_builder.cc",
   "ng/inline/ng_inline_items_builder.h",
   "ng/inline/ng_inline_items_data.cc",
