@@ -20,7 +20,7 @@ Storage
     database-for-test
   Cookies
     http://127.0.0.1:8000
-  Trust Tokens
+  Private State Tokens
   Interest Groups
   Shared Storage
     http://127.0.0.1:8000
@@ -58,7 +58,7 @@ Storage
   Web SQL
   Cookies
     http://127.0.0.1:8000
-  Trust Tokens
+  Private State Tokens
   Interest Groups
   Shared Storage
     http://127.0.0.1:8000

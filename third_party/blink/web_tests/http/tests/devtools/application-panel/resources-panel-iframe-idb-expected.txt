@@ -25,7 +25,7 @@ Storage
  Cookies
   http://127.0.0.1:8000
   http://devtools.oopif.test:8000
- Trust Tokens
+ Private State Tokens
  Interest Groups
  Shared Storage
   http://127.0.0.1:8000
@@ -67,7 +67,7 @@ Storage
  Cookies
   http://127.0.0.1:8000
   http://devtools.oopif.test:8000
- Trust Tokens
+ Private State Tokens
  Interest Groups
  Shared Storage
   http://127.0.0.1:8000
@@ -110,7 +110,7 @@ Storage
  Cookies
   http://127.0.0.1:8000
   http://devtools.oopif.test:8000
- Trust Tokens
+ Private State Tokens
  Interest Groups
  Shared Storage
   http://127.0.0.1:8000
