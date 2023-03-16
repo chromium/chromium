@@ -19,10 +19,10 @@ namespace quarantine {
 bool GetQuarantineProperties(
     const base::FilePath& file,
     base::scoped_nsobject<NSMutableDictionary>* properties) {
-  base::scoped_nsobject<NSURL> file_url([[NSURL alloc]
-      initFileURLWithPath:base::SysUTF8ToNSString(file.value())]);
-  if (!file_url)
+  NSURL* file_url = base::mac::FilePathToNSURL(file);
+  if (!file_url) {
     return false;
+  }
 
   NSError* error = nil;
   id quarantine_properties = nil;
@@ -36,8 +36,9 @@ bool GetQuarantineProperties(
     return false;
   }
 
-  if (!quarantine_properties)
+  if (!quarantine_properties) {
     return true;
+  }
 
   NSDictionary* quarantine_properties_dict =
       base::mac::ObjCCast<NSDictionary>(quarantine_properties);

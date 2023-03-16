@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/scoped_policy.h"
 #include "components/services/quarantine/quarantine.h"
-
-#include <sys/xattr.h>
 
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
@@ -46,17 +45,16 @@ class QuarantineMacTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(
         base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &test_file_));
-    file_url_.reset([[NSURL alloc]
-        initFileURLWithPath:base::SysUTF8ToNSString(test_file_.value())]);
+    file_url_.reset(base::mac::FilePathToNSURL(test_file_),
+                    base::scoped_policy::RETAIN);
 
-    base::scoped_nsobject<NSMutableDictionary> properties(
-        [[NSMutableDictionary alloc] init]);
-    [properties
-        setValue:@"com.google.Chrome"
-          forKey:static_cast<NSString*>(kLSQuarantineAgentBundleIdentifierKey)];
-    [properties setValue:@"Google Chrome.app"
-                  forKey:static_cast<NSString*>(kLSQuarantineAgentNameKey)];
-    [properties setValue:@(1) forKey:@"kLSQuarantineIsOwnedByCurrentUserKey"];
+    NSDictionary* properties = @{
+      static_cast<NSString*>(kLSQuarantineAgentBundleIdentifierKey) :
+          @"com.google.Chrome",
+      static_cast<NSString*>(kLSQuarantineAgentNameKey) : @"Google Chrome.app",
+      @"kLSQuarantineIsOwnedByCurrentUserKey" : @(1)
+    };
+
     NSError* error = nullptr;
     bool success = [file_url_ setResourceValue:properties
                                         forKey:NSURLQuarantinePropertiesKey
@@ -110,10 +108,6 @@ TEST_F(QuarantineMacTest, IsFileQuarantined_SourceUrlOnly) {
   EXPECT_TRUE(IsFileQuarantined(test_file_, source_url_, GURL()));
   EXPECT_TRUE(IsFileQuarantined(test_file_, GURL(), GURL()));
   EXPECT_TRUE(IsFileQuarantined(test_file_, GURL(), referrer_url_));
-  if (@available(macOS 12, *)) {
-  } else {
-    EXPECT_FALSE(IsFileQuarantined(test_file_, referrer_url_, GURL()));
-  }
 }
 
 TEST_F(QuarantineMacTest, IsFileQuarantined_FullMetadata) {
@@ -125,11 +119,6 @@ TEST_F(QuarantineMacTest, IsFileQuarantined_FullMetadata) {
   EXPECT_TRUE(IsFileQuarantined(test_file_, source_url_, GURL()));
   EXPECT_TRUE(IsFileQuarantined(test_file_, source_url_, referrer_url_));
   EXPECT_TRUE(IsFileQuarantined(test_file_, GURL(), referrer_url_));
-  if (@available(macOS 12, *)) {
-  } else {
-    EXPECT_FALSE(IsFileQuarantined(test_file_, source_url_, source_url_));
-    EXPECT_FALSE(IsFileQuarantined(test_file_, referrer_url_, referrer_url_));
-  }
 }
 
 TEST_F(QuarantineMacTest, IsFileQuarantined_Sanitize) {
