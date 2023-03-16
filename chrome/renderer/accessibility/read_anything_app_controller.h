@@ -179,9 +179,8 @@ class ReadAnythingAppController
   void SetPageHandlerForTesting(
       mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler);
 
-  ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
+  // TODO(b/1266555): Move these two to ReadAnythingAppModel.
   bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;
-
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
 
   content::RenderFrame* render_frame_;

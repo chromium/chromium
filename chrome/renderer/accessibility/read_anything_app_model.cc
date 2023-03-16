@@ -172,6 +172,11 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   UnserializeUpdates(std::move(updates), tree_id);
 }
 
+ui::AXNode* ReadAnythingAppModel::GetAXNode(ui::AXNodeID ax_node_id) const {
+  ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_).get();
+  return tree->GetFromId(ax_node_id);
+}
+
 double ReadAnythingAppModel::GetLetterSpacingValue(
     read_anything::mojom::LetterSpacing letter_spacing) const {
   switch (letter_spacing) {
