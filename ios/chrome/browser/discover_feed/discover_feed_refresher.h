@@ -13,7 +13,8 @@ class DiscoverFeedRefresher {
   // Refreshes the Discover Feed if needed. The implementer decides if a refresh
   // is needed or not. This should only be called when the feed is visible to
   // the user.
-  virtual void RefreshFeedIfNeeded() = 0;
+  // Deprecated.
+  virtual void RefreshFeedIfNeeded() {}
 
   // Refreshes the Discover Feed. `trigger` describes the context of the
   // refresh.

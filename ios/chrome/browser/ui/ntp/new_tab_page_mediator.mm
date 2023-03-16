@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
@@ -338,7 +339,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
         refreshFeedIfNeeded) {
       DiscoverFeedServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState())
-          ->RefreshFeedIfNeeded();
+          ->RefreshFeed(FeedRefreshTrigger::kForegroundFeedVisibleOther);
     }
   }
 }
