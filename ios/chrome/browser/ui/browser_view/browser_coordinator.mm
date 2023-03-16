@@ -16,6 +16,7 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/signin/ios/browser/active_state_manager.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
@@ -73,6 +74,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
@@ -882,6 +884,9 @@ enum class ToolbarKind {
   _viewControllerDependencies.readingModel =
       ReadingListModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  _viewControllerDependencies.identityManager =
+      IdentityManagerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 }
 
 - (void)updateViewControllerDependencies {
@@ -940,6 +945,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.loadQueryCommandsHandler = nil;
   _viewControllerDependencies.omniboxCommandsHandler = nil;
   _viewControllerDependencies.readingModel = nil;
+  _viewControllerDependencies.identityManager = nil;
 
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;

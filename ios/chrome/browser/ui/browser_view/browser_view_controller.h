@@ -11,6 +11,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -71,6 +72,10 @@ class UrlLoadingBrowserAgent;
 class UrlLoadingNotifierBrowserAgent;
 class WebNavigationBrowserAgent;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 typedef struct {
   PrerenderService* prerenderService;
@@ -98,6 +103,7 @@ typedef struct {
   id<OmniboxCommands> omniboxCommandsHandler;
   BOOL isOffTheRecord;
   ReadingListModel* readingModel;
+  signin::IdentityManager* identityManager;
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;

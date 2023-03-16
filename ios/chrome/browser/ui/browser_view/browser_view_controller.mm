@@ -8,13 +8,14 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/i18n/message_formatter.h"
 #import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
-
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -305,6 +306,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   LayoutGuideCenter* _layoutGuideCenter;
 
   ReadingListModel* _readingModel;
+
+  // Used to retrieve the account email for the reading list snackbar.
+  signin::IdentityManager* _identityManager;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -502,6 +506,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _layoutGuideCenter = dependencies.layoutGuideCenter;
     _webStateList = dependencies.webStateList;
     _readingModel = dependencies.readingModel;
+    _identityManager = dependencies.identityManager;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -987,6 +992,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   _bookmarksCoordinator = nil;
+  _identityManager = nullptr;
 }
 
 #pragma mark - NSObject
@@ -2117,10 +2123,29 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
 
-  NSString* text =
-      l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
-  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
-  message.accessibilityLabel = text;
+  CoreAccountId accountId =
+      _readingModel->GetAccountWhereEntryIsSavedTo(URLs.lastObject.URL);
+  AccountInfo accountInfo =
+      _identityManager->FindExtendedAccountInfoByAccountId(accountId);
+
+  NSString* snackbarText = nil;
+  if (!accountInfo.IsEmpty() &&
+      base::FeatureList::IsEnabled(
+          kEnableEmailInBookmarksReadingListSnackbar)) {
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        IDS_IOS_READING_LIST_SNACKBAR_MESSAGE_FOR_ACCOUNT);
+    std::u16string utf16Text =
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            pattern, "count", (int)URLs.count, "email", accountInfo.email);
+    snackbarText = base::SysUTF16ToNSString(utf16Text);
+  } else {
+    snackbarText =
+        l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
+  }
+
+  MDCSnackbarMessage* message =
+      [MDCSnackbarMessage messageWithText:snackbarText];
+  message.accessibilityLabel = snackbarText;
   message.duration = 2.0;
   message.category = kBrowserViewControllerSnackbarCategory;
 
