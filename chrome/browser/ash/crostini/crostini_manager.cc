@@ -33,9 +33,9 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
-#include "chrome/browser/ash/crostini/crostini_engagement_metrics_service.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
+#include "chrome/browser/ash/crostini/crostini_metrics_service.h"
 #include "chrome/browser/ash/crostini/crostini_mount_provider.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -2687,11 +2687,11 @@ void CrostiniManager::OnContainerStarted(
   guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
                                  signal.container_name());
 
-  auto* engagement_metrics_service =
-      CrostiniEngagementMetricsService::Factory::GetForProfile(profile_);
+  auto* metrics_service =
+      CrostiniMetricsService::Factory::GetForProfile(profile_);
   // This is null in unit tests.
-  if (engagement_metrics_service) {
-    engagement_metrics_service->SetBackgroundActive(true);
+  if (metrics_service) {
+    metrics_service->SetBackgroundActive(true);
   }
 
   VLOG(1) << "Container " << signal.container_name() << " started";
@@ -4014,11 +4014,11 @@ void CrostiniManager::HandleContainerShutdown(
     observer.OnContainerShutdown(container_id);
   }
   if (!IsVmRunning(kCrostiniDefaultVmName)) {
-    auto* engagement_metrics_service =
-        CrostiniEngagementMetricsService::Factory::GetForProfile(profile_);
+    auto* metrics_service =
+        CrostiniMetricsService::Factory::GetForProfile(profile_);
     // This is null in unit tests.
-    if (engagement_metrics_service) {
-      engagement_metrics_service->SetBackgroundActive(false);
+    if (metrics_service) {
+      metrics_service->SetBackgroundActive(false);
     }
   }
 }
