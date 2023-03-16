@@ -792,10 +792,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   FlossDBusClient(const FlossDBusClient&) = delete;
   FlossDBusClient& operator=(const FlossDBusClient&) = delete;
 
-  // Common init signature for all clients.
+  // Common init signature for all clients. |on_ready| should be called once the
+  // client is ready to be used.
   virtual void Init(dbus::Bus* bus,
                     const std::string& bluetooth_service_name,
-                    const int adapter_index) = 0;
+                    const int adapter_index,
+                    base::OnceClosure on_ready) = 0;
 
  protected:
   // Convert a dbus::ErrorResponse into a floss::Error struct.

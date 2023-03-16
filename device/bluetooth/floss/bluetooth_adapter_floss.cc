@@ -173,22 +173,27 @@ void BluetoothAdapterFloss::AddAdapterObservers() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void BluetoothAdapterFloss::RemoveAdapter() {
-  if (!FlossDBusManager::Get()->HasActiveAdapter())
-    return;
-
-  ClearAllDevices();
-
+void BluetoothAdapterFloss::RemoveAdapterObservers() {
   // Clean up observers
   FlossDBusManager::Get()->GetAdapterClient()->RemoveObserver(this);
   FlossDBusManager::Get()->GetLEScanClient()->RemoveObserver(this);
 #if BUILDFLAG(IS_CHROMEOS)
   FlossDBusManager::Get()->GetAdminClient()->RemoveObserver(this);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+void BluetoothAdapterFloss::RemoveAdapter() {
+  if (!FlossDBusManager::Get()->HasActiveAdapter()) {
+    return;
+  }
+
+  RemoveAdapterObservers();
+  ClearAllDevices();
 
   // Remove adapter by switching to an invalid adapter (cleans up DBus clients)
   // and then emitting |AdapterPresentChanged| to observers.
-  FlossDBusManager::Get()->SwitchAdapter(FlossDBusManager::kInvalidAdapter);
+  FlossDBusManager::Get()->SwitchAdapter(FlossDBusManager::kInvalidAdapter,
+                                         base::DoNothing());
   PresentChanged(false);
 }
 
@@ -226,6 +231,11 @@ void BluetoothAdapterFloss::Init() {
   // Register for manager callbacks
   FlossDBusManager::Get()->GetManagerClient()->AddObserver(this);
 
+  // Start with invalid DBus clients. This will return right away so don't need
+  // to wait for callback.
+  FlossDBusManager::Get()->SwitchAdapter(FlossDBusManager::kInvalidAdapter,
+                                         base::DoNothing());
+
   // Switch to adapter if the default adapter is present and enabled. If it is
   // not enabled, wait for upper layers to power it on.
   if (IsPresent()) {
@@ -233,8 +243,7 @@ void BluetoothAdapterFloss::Init() {
     int default_adapter = manager->GetDefaultAdapter();
 
     if (manager->GetAdapterEnabled(default_adapter)) {
-      FlossDBusManager::Get()->SwitchAdapter(default_adapter);
-      AddAdapterObservers();
+      AdapterEnabledChanged(default_adapter, /*enabled=*/true);
     }
   }
 
@@ -645,9 +654,6 @@ void BluetoothAdapterFloss::AdapterPresent(int adapter, bool present) {
 }
 
 void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
-  VLOG(1) << "BluetoothAdapterFloss: Adapter " << adapter
-          << ", enabled: " << enabled;
-
   // TODO(b/191906229) - Support non-default adapters
   if (adapter !=
       FlossDBusManager::Get()->GetManagerClient()->GetDefaultAdapter()) {
@@ -657,13 +663,20 @@ void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
   }
 
   if (enabled && !FlossDBusManager::Get()->HasActiveAdapter()) {
-    FlossDBusManager::Get()->SwitchAdapter(adapter);
-    AddAdapterObservers();
+    FlossDBusManager::Get()->SwitchAdapter(
+        adapter, base::BindOnce(&BluetoothAdapterFloss::OnAdapterClientsReady,
+                                weak_ptr_factory_.GetWeakPtr(), enabled));
   } else if (!enabled && FlossDBusManager::Get()->HasActiveAdapter()) {
-    FlossDBusManager::Get()->SwitchAdapter(FlossDBusManager::kInvalidAdapter);
+    FlossDBusManager::Get()->SwitchAdapter(
+        FlossDBusManager::kInvalidAdapter,
+        base::BindOnce(&BluetoothAdapterFloss::OnAdapterClientsReady,
+                       weak_ptr_factory_.GetWeakPtr(), enabled));
   }
+}
 
+void BluetoothAdapterFloss::OnAdapterClientsReady(bool enabled) {
   if (enabled) {
+    AddAdapterObservers();
     PopulateInitialDevices();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // No need to do this in Lacros because Ash would be around, and would have
@@ -672,6 +685,7 @@ void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     ClearAllDevices();
+    RemoveAdapterObservers();
   }
 
   NotifyAdapterPoweredChanged(enabled);
@@ -1453,10 +1467,12 @@ void BluetoothAdapterFloss::OnLowEnergyScanSessionDestroyed(
   uint8_t scanner_id = scanners_[uuid]->GetScannerId();
   scanners_.erase(uuid);
 
-  FlossDBusManager::Get()->GetLEScanClient()->UnregisterScanner(
-      base::BindOnce(&BluetoothAdapterFloss::OnUnregisterScanner,
-                     weak_ptr_factory_.GetWeakPtr(), scanner_id),
-      scanner_id);
+  if (IsPowered()) {
+    FlossDBusManager::Get()->GetLEScanClient()->UnregisterScanner(
+        base::BindOnce(&BluetoothAdapterFloss::OnUnregisterScanner,
+                       weak_ptr_factory_.GetWeakPtr(), scanner_id),
+        scanner_id);
+  }
 }
 
 void BluetoothAdapterFloss::OnUnregisterScanner(uint8_t scanner_id,

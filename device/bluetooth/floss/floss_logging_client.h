@@ -32,7 +32,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossLoggingClient : public FlossDBusClient {
   // Initializes the logging client with given adapter.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
  protected:
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.

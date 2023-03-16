@@ -65,7 +65,8 @@ FlossLEScanClient::~FlossLEScanClient() {
 
 void FlossLEScanClient::Init(dbus::Bus* bus,
                              const std::string& service_name,
-                             const int adapter_index) {
+                             const int adapter_index,
+                             base::OnceClosure on_ready) {
   bus_ = bus;
   object_path_ = FlossDBusClient::GenerateGattPath(adapter_index);
   service_name_ = service_name;
@@ -91,6 +92,8 @@ void FlossLEScanClient::Init(dbus::Bus* bus,
     LOG(ERROR) << "Failed exporting callback " + callback_path.value();
     return;
   }
+
+  on_ready_ = std::move(on_ready);
 }
 
 void FlossLEScanClient::AddObserver(ScannerClientObserver* observer) {
@@ -118,6 +121,11 @@ void FlossLEScanClient::OnRegisterScannerCallback(DBusResult<uint32_t> ret) {
   }
 
   le_scan_callback_id_ = ret.value();
+
+  // Mark client as ready to use.
+  if (on_ready_) {
+    std::move(on_ready_).Run();
+  }
 
   while (!pending_register_scanners_.empty()) {
     CallLEScanMethod<>(std::move(pending_register_scanners_.front()),

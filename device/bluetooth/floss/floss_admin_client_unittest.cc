@@ -144,7 +144,8 @@ class FlossAdminClientTest : public testing::Test,
           std::move(*cb).Run(response.get(), /*err=*/nullptr);
         });
     ASSERT_FALSE(IsClientRegistered());
-    client_->Init(bus_.get(), kAdapterInterface, adapter_index_);
+    client_->Init(bus_.get(), kAdapterInterface, adapter_index_,
+                  base::DoNothing());
 
     // Test exported callbacks are correctly parsed
     ASSERT_TRUE(!!method_handler_on_device_policy_effect_changed);

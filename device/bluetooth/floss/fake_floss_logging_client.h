@@ -26,7 +26,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossLoggingClient
   void SetDebugLogging(ResponseCallback<Void> callback, bool enabled) override;
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
  private:
   bool debug_enabled_ = false;

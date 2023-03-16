@@ -522,7 +522,8 @@ void FlossGattManagerClient::ServerSendNotification(
 
 void FlossGattManagerClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
-                                  const int adapter_index) {
+                                  const int adapter_index,
+                                  base::OnceClosure on_ready) {
   // Set field variables.
   bus_ = bus;
   service_name_ = service_name;
@@ -634,6 +635,9 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
     LOG(ERROR) << "Unable to successfully export FlossGattServerObserver.";
     return;
   }
+
+  // Everything is queued for registration so save |on_ready| for later.
+  on_ready_ = std::move(on_ready);
 }
 
 void FlossGattManagerClient::RegisterClient() {
@@ -654,6 +658,12 @@ void FlossGattManagerClient::RegisterServer() {
       dbus::ObjectPath(kExportedCallbacksPath), kDefaultEattSupport);
 }
 
+void FlossGattManagerClient::CompleteInit() {
+  if (client_id_ && server_id_ && on_ready_) {
+    std::move(on_ready_).Run();
+  }
+}
+
 void FlossGattManagerClient::GattClientRegistered(GattStatus status,
                                                   int32_t client_id) {
   if (client_id_ != 0) {
@@ -669,6 +679,7 @@ void FlossGattManagerClient::GattClientRegistered(GattStatus status,
   }
 
   client_id_ = client_id;
+  CompleteInit();
 }
 
 void FlossGattManagerClient::GattClientConnectionState(GattStatus status,
@@ -824,6 +835,7 @@ void FlossGattManagerClient::GattServerRegistered(GattStatus status,
   }
 
   server_id_ = server_id;
+  CompleteInit();
 }
 
 void FlossGattManagerClient::GattServerConnectionState(GattStatus status,

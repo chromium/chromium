@@ -308,7 +308,8 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
         std::move(*cb).Run(response.get(), /*err=*/nullptr);
       });
 
-  client_->Init(bus_.get(), kAdapterInterface, adapter_index_);
+  client_->Init(bus_.get(), kAdapterInterface, adapter_index_,
+                base::DoNothing());
 
   // Test exported callbacks are correctly parsed
   ASSERT_TRUE(!!method_handler_on_scanner_registered);
@@ -386,7 +387,8 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
 }
 
 TEST_F(FlossLEScanClientTest, TestStartStopScan) {
-  client_->Init(bus_.get(), kAdapterInterface, adapter_index_);
+  client_->Init(bus_.get(), kAdapterInterface, adapter_index_,
+                base::DoNothing());
 
   // Method of 3 parameters with no return.
   EXPECT_CALL(*object_proxy_.get(), DoCallMethodWithErrorResponse(

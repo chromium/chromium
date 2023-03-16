@@ -123,13 +123,15 @@ class FlossBatteryManagerClientTest : public testing::Test,
                     HasMemberOf(battery_manager::kRegisterBatteryCallback),
                     testing::_, testing::_))
         .Times(1);
-    client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_);
+    client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_,
+                  base::DoNothing());
     EXPECT_EQ(client_->battery_manager_callback_id_, static_cast<uint32_t>(42));
   }
 
   void TestForwardsCallbacks() {
     EXPECT_EQ(callback_count_, 0);
-    client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_);
+    client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_,
+                  base::DoNothing());
     client_->BatteryInfoUpdated("11:11:11:11:11:11", BatterySet());
     EXPECT_EQ(callback_count_, 1);
   }
@@ -145,7 +147,8 @@ class FlossBatteryManagerClientTest : public testing::Test,
         .WillOnce(
             DoAll(testing::SaveArg<2>(&method_handler_on_battery_info_updated),
                   &FakeExportMethod));
-    client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_);
+    client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_,
+                  base::DoNothing());
     ASSERT_TRUE(!!method_handler_on_battery_info_updated);
 
     // Set up DBus message
@@ -183,7 +186,8 @@ class FlossBatteryManagerClientTest : public testing::Test,
                     testing::_, testing::_))
         .Times(1);
     EXPECT_EQ(callback_count_, 0);
-    client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_);
+    client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_,
+                  base::DoNothing());
     FlossDeviceId test_device{};
     test_device.address = "11:11:11:11:11:11";
     client_->GetBatteryInformation(

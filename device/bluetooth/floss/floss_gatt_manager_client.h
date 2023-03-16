@@ -523,7 +523,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   // Initialize the gatt client for the given adapter.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
  protected:
   friend class BluetoothGattFlossTest;
@@ -659,6 +660,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   void RegisterClient();
   void RegisterServer();
 
+  // Complete initialization and signal we're ready.
+  void CompleteInit();
+
   template <typename R, typename... Args>
   void CallGattMethod(ResponseCallback<R> callback,
                       const char* member,
@@ -671,6 +675,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   // Used in many apis.
   int32_t client_id_ = 0;
   int32_t server_id_ = 0;
+
+  // Signal when the client is ready to be used.
+  base::OnceClosure on_ready_;
 
   // Exported callbacks for interacting with daemon.
   ExportedCallbackManager<FlossGattClientObserver>

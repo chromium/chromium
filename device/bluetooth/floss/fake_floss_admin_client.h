@@ -19,7 +19,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdminClient : public FlossAdminClient {
   // Fake overrides.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
  private:
   base::WeakPtrFactory<FakeFlossAdminClient> weak_ptr_factory_{this};

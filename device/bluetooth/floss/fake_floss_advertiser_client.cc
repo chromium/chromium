@@ -17,7 +17,10 @@ FakeFlossAdvertiserClient::~FakeFlossAdvertiserClient() = default;
 
 void FakeFlossAdvertiserClient::Init(dbus::Bus* bus,
                                      const std::string& service_name,
-                                     const int adapter_index) {}
+                                     const int adapter_index,
+                                     base::OnceClosure on_ready) {
+  std::move(on_ready).Run();
+}
 
 void FakeFlossAdvertiserClient::StartAdvertisingSet(
     const AdvertisingSetParameters& params,

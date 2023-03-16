@@ -58,22 +58,6 @@ class DebugLogsManagerTest : public testing::Test {
         std::unique_ptr<bluez::BluetoothDebugManagerClient>(
             std::move(fake_bluetooth_debug_manager_client)));
 
-    auto fake_floss_manager_client =
-        std::make_unique<floss::FakeFlossManagerClient>();
-    auto fake_floss_adapter_client =
-        std::make_unique<floss::FakeFlossAdapterClient>();
-    auto fake_floss_logging_client =
-        std::make_unique<floss::FakeFlossLoggingClient>();
-    fake_floss_manager_client_ = fake_floss_manager_client.get();
-    fake_floss_adapter_client_ = fake_floss_adapter_client.get();
-    fake_floss_logging_client_ = fake_floss_logging_client.get();
-
-    std::unique_ptr<floss::FlossDBusManagerSetter> floss_setter =
-        floss::FlossDBusManager::GetSetterForTesting();
-    floss_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
-    floss_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
-    floss_setter->SetFlossLoggingClient(std::move(fake_floss_logging_client));
-
     is_floss_flag_enabled_ = false;
   }
 
@@ -81,6 +65,20 @@ class DebugLogsManagerTest : public testing::Test {
     debug_logs_manager_.reset();
     adapter_.reset();
     bluez::BluezDBusManager::Shutdown();
+  }
+
+  void InitFlossFakes() {
+    std::unique_ptr<floss::FlossDBusManagerSetter> floss_setter =
+        floss::FlossDBusManager::GetSetterForTesting();
+    floss_setter->SetFlossManagerClient(
+        std::make_unique<floss::FakeFlossManagerClient>());
+    floss_setter->SetFlossAdapterClient(
+        std::make_unique<floss::FakeFlossAdapterClient>());
+    floss_setter->SetFlossLoggingClient(
+        std::make_unique<floss::FakeFlossLoggingClient>());
+
+    GetFakeManagerClient()->SetAdapterPowered(/*adapter=*/0,
+                                              /*powered=*/true);
   }
 
   void EnableDebugFlag() { is_debug_toggle_flag_enabled_ = true; }
@@ -117,14 +115,18 @@ class DebugLogsManagerTest : public testing::Test {
     return fake_bluetooth_debug_manager_client_;
   }
 
-  floss::FakeFlossLoggingClient* fake_floss_logging_client() const {
-    return fake_floss_logging_client_;
+  raw_ptr<floss::FakeFlossManagerClient> GetFakeManagerClient() const {
+    return static_cast<floss::FakeFlossManagerClient*>(
+        floss::FlossDBusManager::Get()->GetManagerClient());
+  }
+
+  raw_ptr<floss::FakeFlossLoggingClient> GetFakeFlossLoggingClient() const {
+    return static_cast<floss::FakeFlossLoggingClient*>(
+        floss::FlossDBusManager::Get()->GetLoggingClient());
   }
 
   void InitializeAdapter(bool powered) {
     adapter_ = floss::BluetoothAdapterFloss::CreateAdapter();
-
-    fake_floss_manager_client_->SetAdapterPowered(/*adapter=*/0, powered);
 
     base::RunLoop run_loop;
     adapter_->Initialize(run_loop.QuitClosure());
@@ -137,11 +139,7 @@ class DebugLogsManagerTest : public testing::Test {
   }
 
   void SimulatePowered(bool powered) {
-    fake_floss_manager_client_->NotifyObservers(base::BindLambdaForTesting(
-        [powered](floss::FlossManagerClient::Observer* observer) {
-          observer->AdapterEnabledChanged(/*adapter=*/0, /*enabled=*/powered);
-        }));
-    base::RunLoop().RunUntilIdle();
+    adapter_->NotifyAdapterPoweredChanged(powered);
   }
 
   bool IsDebugEnabled() {
@@ -155,9 +153,6 @@ class DebugLogsManagerTest : public testing::Test {
   bool is_floss_flag_enabled_ = false;
   raw_ptr<bluez::FakeBluetoothDebugManagerClient>
       fake_bluetooth_debug_manager_client_;
-  raw_ptr<floss::FakeFlossManagerClient> fake_floss_manager_client_;
-  raw_ptr<floss::FakeFlossLoggingClient> fake_floss_logging_client_;
-  raw_ptr<floss::FakeFlossAdapterClient> fake_floss_adapter_client_;
   std::unique_ptr<DebugLogsManager> debug_logs_manager_;
   TestingPrefServiceSimple prefs_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
@@ -266,6 +261,7 @@ TEST_F(DebugLogsManagerTest, RetryUponSetVerboseLogsFailure) {
 TEST_F(DebugLogsManagerTest, CheckFlossUpdatesOnPowerOn) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
+  InitFlossFakes();
   InitializeAdapter(/*powered=*/false);
 
   EnableDebugFlag();
@@ -274,14 +270,14 @@ TEST_F(DebugLogsManagerTest, CheckFlossUpdatesOnPowerOn) {
 
   // Until we're powered, setting debug logging should fail but the default
   // state should be persisted.
-  EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), false);
+  EXPECT_EQ(GetFakeFlossLoggingClient()->GetDebugEnabledForTesting(), false);
   InstantiateDebugManager(kTestGooglerEmail);
-  EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), false);
+  EXPECT_EQ(GetFakeFlossLoggingClient()->GetDebugEnabledForTesting(), false);
   EXPECT_EQ(IsDebugEnabled(), true);
 
   // Powering on should enable the flag.
   SimulatePowered(/*powered=*/true);
-  EXPECT_EQ(fake_floss_logging_client()->GetDebugEnabledForTesting(), true);
+  EXPECT_EQ(GetFakeFlossLoggingClient()->GetDebugEnabledForTesting(), true);
   SimulatePowered(/*powered=*/false);
 }
 

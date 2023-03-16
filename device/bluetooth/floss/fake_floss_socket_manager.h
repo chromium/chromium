@@ -28,7 +28,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossSocketManager
   // Fake overrides.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
   void ListenUsingL2cap(const Security security_level,
                         ResponseCallback<BtifStatus> callback,
                         ConnectionStateChanged ready_cb,

@@ -152,7 +152,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
   // Initialize the LE Scan client.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
   virtual void RegisterScanner(
       ResponseCallback<device::BluetoothUUID> callback);
@@ -210,6 +211,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
     CallMethod(std::move(callback), bus_, service_name_, kGattInterface,
                object_path_, member, args...);
   }
+
+  // Signal that the client is ready to be used.
+  base::OnceClosure on_ready_;
 
   base::WeakPtrFactory<FlossLEScanClient> weak_ptr_factory_{this};
 };

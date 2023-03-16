@@ -195,8 +195,10 @@ void FlossManagerClient::RegisterWithManager() {
       manager::kGetAvailableAdapters);
 
   // Register for callbacks.
-  CallManagerMethod<Void>(base::DoNothing(), manager::kRegisterCallback,
-                          dbus::ObjectPath(kExportedCallbacksPath));
+  CallManagerMethod<Void>(
+      base::BindOnce(&FlossManagerClient::HandleRegisterCallback,
+                     weak_ptr_factory_.GetWeakPtr()),
+      manager::kRegisterCallback, dbus::ObjectPath(kExportedCallbacksPath));
 
   manager_available_ = true;
   for (auto& observer : observers_) {
@@ -227,7 +229,8 @@ void FlossManagerClient::RemoveManager() {
 // here. It is unused.
 void FlossManagerClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
-                              const int adapter_index) {
+                              const int adapter_index,
+                              base::OnceClosure on_ready) {
   bus_ = bus;
   service_name_ = service_name;
 
@@ -286,6 +289,8 @@ void FlossManagerClient::Init(dbus::Bus* bus,
           LOG(ERROR) << "Fail to set LL privacy.\n";
       }),
       base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
+
+  on_ready_ = std::move(on_ready);
 }
 
 void FlossManagerClient::HandleGetDefaultAdapter(DBusResult<int32_t> response) {
@@ -331,6 +336,18 @@ void FlossManagerClient::HandleGetAvailableAdapters(
       if (!base::Contains(adapter_to_powered_, adapter))
         observer.AdapterPresent(adapter, false);
     }
+  }
+}
+
+void FlossManagerClient::HandleRegisterCallback(DBusResult<Void> result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Floss manager RegisterCallback returned error: "
+               << result.error();
+    return;
+  }
+
+  if (on_ready_) {
+    std::move(on_ready_).Run();
   }
 }
 

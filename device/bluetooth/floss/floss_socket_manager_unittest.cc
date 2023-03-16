@@ -76,7 +76,8 @@ class FlossSocketManagerTest : public testing::Test {
   }
 
   void Init() {
-    sockmgr_->Init(bus_.get(), kSocketManagerInterface, adapter_index_);
+    sockmgr_->Init(bus_.get(), kSocketManagerInterface, adapter_index_,
+                   base::DoNothing());
   }
 
   void SetupListeningSocket() {

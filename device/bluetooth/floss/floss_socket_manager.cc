@@ -431,7 +431,8 @@ void FlossSocketManager::Close(const SocketId id,
 
 void FlossSocketManager::Init(dbus::Bus* bus,
                               const std::string& service_name,
-                              const int adapter_index) {
+                              const int adapter_index,
+                              base::OnceClosure on_ready) {
   bus_ = bus;
   service_name_ = service_name;
   adapter_path_ = GenerateAdapterPath(adapter_index);
@@ -488,6 +489,8 @@ void FlossSocketManager::Init(dbus::Bus* bus,
       &register_callback, kDBusTimeoutMs,
       base::BindOnce(&FlossSocketManager::CompleteRegisterCallback,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  on_ready_ = std::move(on_ready);
 }
 
 void FlossSocketManager::CompleteRegisterCallback(
@@ -506,6 +509,10 @@ void FlossSocketManager::CompleteRegisterCallback(
     }
 
     callback_id_ = result;
+
+    if (on_ready_) {
+      std::move(on_ready_).Run();
+    }
   }
 }
 

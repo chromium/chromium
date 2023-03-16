@@ -26,6 +26,9 @@ void FakeFlossLoggingClient::SetDebugLogging(ResponseCallback<Void> callback,
 
 void FakeFlossLoggingClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
-                                  const int adapter_index) {}
+                                  const int adapter_index,
+                                  base::OnceClosure on_ready) {
+  std::move(on_ready).Run();
+}
 
 }  // namespace floss

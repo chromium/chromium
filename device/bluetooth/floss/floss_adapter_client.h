@@ -251,7 +251,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Initialize the adapter client.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
  protected:
   friend class FlossAdapterClientTest;
@@ -312,6 +313,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle GetDiscoverableTimeout and cache the returned value.
   void OnDiscoverableTimeout(DBusResult<uint32_t> ret);
 
+  // Handle both |RegisterCallback| and |RegisterConnectionCallback| results.
+  // We discard the DBus return value in |RegisterConnectionCallback| because
+  // we only care that the call succeeded.
+  void OnRegisterCallbacks(DBusResult<Void> ret);
+
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;
 
@@ -353,6 +359,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Object path for exported callbacks registered against adapter interface.
   static const char kExportedCallbacksPath[];
+
+  // Signal when client is ready to be used.
+  base::OnceClosure on_ready_;
+
+  // Number of callbacks pending registration before client is ready to use.
+  int pending_register_calls_ = 0;
 
   base::WeakPtrFactory<FlossAdapterClient> weak_ptr_factory_{this};
 };

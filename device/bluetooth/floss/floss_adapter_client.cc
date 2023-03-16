@@ -164,7 +164,8 @@ void FlossAdapterClient::GetConnectedDevices() {
 
 void FlossAdapterClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
-                              const int adapter_index) {
+                              const int adapter_index,
+                              base::OnceClosure on_ready) {
   bus_ = bus;
   adapter_path_ = GenerateAdapterPath(adapter_index);
   service_name_ = service_name;
@@ -251,29 +252,20 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
 
   UpdateDiscoverableTimeout();
 
-  dbus::MethodCall register_callback(kAdapterInterface,
-                                     adapter::kRegisterCallback);
+  pending_register_calls_ = 2;
 
-  dbus::MessageWriter writer(&register_callback);
-  writer.AppendObjectPath(dbus::ObjectPath(kExportedCallbacksPath));
+  CallAdapterMethod<Void>(
+      base::BindOnce(&FlossAdapterClient::OnRegisterCallbacks,
+                     weak_ptr_factory_.GetWeakPtr()),
+      adapter::kRegisterCallback, dbus::ObjectPath(kExportedCallbacksPath));
 
-  object_proxy->CallMethodWithErrorResponse(
-      &register_callback, kDBusTimeoutMs,
-      base::BindOnce(&FlossAdapterClient::DefaultResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     adapter::kRegisterCallback));
+  CallAdapterMethod<Void>(
+      base::BindOnce(&FlossAdapterClient::OnRegisterCallbacks,
+                     weak_ptr_factory_.GetWeakPtr()),
+      adapter::kRegisterConnectionCallback,
+      dbus::ObjectPath(kExportedCallbacksPath));
 
-  dbus::MethodCall register_connection_callback(
-      kAdapterInterface, adapter::kRegisterConnectionCallback);
-
-  dbus::MessageWriter writer2(&register_connection_callback);
-  writer2.AppendObjectPath(dbus::ObjectPath(kExportedCallbacksPath));
-
-  object_proxy->CallMethodWithErrorResponse(
-      &register_connection_callback, kDBusTimeoutMs,
-      base::BindOnce(&FlossAdapterClient::DefaultResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     adapter::kRegisterCallback));
+  on_ready_ = std::move(on_ready);
 }
 
 void FlossAdapterClient::OnAdapterPropertyChanged(
@@ -512,6 +504,20 @@ void FlossAdapterClient::UpdateDiscoverableTimeout() {
 void FlossAdapterClient::OnDiscoverableTimeout(DBusResult<uint32_t> ret) {
   if (ret.has_value()) {
     discoverable_timeout_ = *ret;
+  }
+}
+
+void FlossAdapterClient::OnRegisterCallbacks(DBusResult<Void> ret) {
+  if (!ret.has_value()) {
+    return;
+  }
+
+  if (pending_register_calls_ > 0) {
+    pending_register_calls_--;
+
+    if (pending_register_calls_ == 0 && on_ready_) {
+      std::move(on_ready_).Run();
+    }
   }
 }
 

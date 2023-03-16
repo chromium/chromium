@@ -206,7 +206,8 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
         std::move(*cb).Run(response.get(), nullptr);
       });
 
-  advclient_->Init(bus_.get(), kGattInterface, adapter_index_);
+  advclient_->Init(bus_.get(), kGattInterface, adapter_index_,
+                   base::DoNothing());
   ASSERT_TRUE(!!method_handler_on_advertising_set_started);
   ASSERT_TRUE(!!method_handler_on_advertising_parameters_updated);
   ASSERT_TRUE(!!method_handler_on_advertising_set_stopped);

@@ -18,19 +18,10 @@
 #include "device/bluetooth/floss/bluetooth_remote_gatt_descriptor_floss.h"
 #include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
-#include "device/bluetooth/floss/fake_floss_advertiser_client.h"
-#include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_lescan_client.h"
-#include "device/bluetooth/floss/fake_floss_logging_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_socket_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "device/bluetooth/floss/fake_floss_admin_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 // Use this gatt client id for all interaction.

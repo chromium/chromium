@@ -14,7 +14,10 @@ FakeFlossGattManagerClient::~FakeFlossGattManagerClient() = default;
 
 void FakeFlossGattManagerClient::Init(dbus::Bus* bus,
                                       const std::string& service_name,
-                                      const int adapter_index) {}
+                                      const int adapter_index,
+                                      base::OnceClosure on_ready) {
+  std::move(on_ready).Run();
+}
 
 void FakeFlossGattManagerClient::Connect(ResponseCallback<Void> callback,
                                          const std::string& remote_device,

@@ -19,11 +19,6 @@
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
-#include "device/bluetooth/floss/fake_floss_advertiser_client.h"
-#include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_lescan_client.h"
-#include "device/bluetooth/floss/fake_floss_logging_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_socket_manager.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
@@ -31,10 +26,6 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "device/bluetooth/floss/fake_floss_admin_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -51,35 +42,8 @@ class BluetoothSocketFlossTest : public testing::Test {
         floss::FlossDBusManager::GetSetterForTesting();
 
     auto fake_floss_manager_client = std::make_unique<FakeFlossManagerClient>();
-    auto fake_floss_socket_manager = std::make_unique<FakeFlossSocketManager>();
-    auto fake_floss_lescan_client = std::make_unique<FakeFlossLEScanClient>();
-    auto fake_floss_advertiser_client =
-        std::make_unique<FakeFlossAdvertiserClient>();
-    auto fake_floss_battery_manager_client =
-        std::make_unique<FakeFlossBatteryManagerClient>();
-
-#if BUILDFLAG(IS_CHROMEOS)
-    auto fake_floss_admin_client = std::make_unique<FakeFlossAdminClient>();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     fake_floss_manager_client_ = fake_floss_manager_client.get();
-
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
-    dbus_setter->SetFlossAdapterClient(
-        std::make_unique<FakeFlossAdapterClient>());
-    dbus_setter->SetFlossGattManagerClient(
-        std::make_unique<FakeFlossGattManagerClient>());
-    dbus_setter->SetFlossSocketManager(std::move(fake_floss_socket_manager));
-    dbus_setter->SetFlossLEScanClient(std::move(fake_floss_lescan_client));
-    dbus_setter->SetFlossAdvertiserClient(
-        std::move(fake_floss_advertiser_client));
-    dbus_setter->SetFlossBatteryManagerClient(
-        std::move(fake_floss_battery_manager_client));
-    dbus_setter->SetFlossLoggingClient(
-        std::make_unique<FakeFlossLoggingClient>());
-#if BUILDFLAG(IS_CHROMEOS)
-    dbus_setter->SetFlossAdminClient(std::make_unique<FakeFlossAdminClient>());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
     InitializeAndEnableAdapter();
   }

@@ -13,6 +13,13 @@ FakeFlossManagerClient::FakeFlossManagerClient() = default;
 
 FakeFlossManagerClient::~FakeFlossManagerClient() = default;
 
+void FakeFlossManagerClient::Init(dbus::Bus* bus,
+                                  const std::string& service_name,
+                                  const int adapter_index,
+                                  base::OnceClosure on_ready) {
+  std::move(on_ready).Run();
+}
+
 void FakeFlossManagerClient::NotifyObservers(
     const base::RepeatingCallback<void(Observer*)>& notify) const {
   for (auto& observer : observers_) {

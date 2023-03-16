@@ -16,7 +16,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossBatteryManagerClient
 
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
   void GetBatteryInformation(
       ResponseCallback<absl::optional<BatterySet>> callback,

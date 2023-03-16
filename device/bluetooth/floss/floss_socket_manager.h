@@ -174,7 +174,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   // Initializes the socket manager with given adapter.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
  protected:
   friend class FlossSocketManagerTest;
@@ -246,6 +247,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   // All socket api calls require callback id since callbacks must take
   // ownership of the file descriptors. A value of zero is invalid.
   CallbackId callback_id_ = 0;
+
+  // Signal when client is ready to be used.
+  base::OnceClosure on_ready_;
 
   base::WeakPtrFactory<FlossSocketManager> weak_ptr_factory_{this};
 };

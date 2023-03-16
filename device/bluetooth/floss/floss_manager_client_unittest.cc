@@ -340,7 +340,8 @@ class FlossManagerClientTest : public testing::Test {
 // Make sure adapter presence is updated on init
 TEST_F(FlossManagerClientTest, QueriesAdapterPresenceOnInit) {
   TestManagerObserver observer(client_.get());
-  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1,
+                base::DoNothing());
   EXPECT_EQ(observer.manager_present_count_, 1);
   EXPECT_TRUE(observer.manager_present_);
 
@@ -357,7 +358,8 @@ TEST_F(FlossManagerClientTest, QueriesAdapterPresenceOnInit) {
 // Make sure adapter presence is plumbed through callbacks
 TEST_F(FlossManagerClientTest, VerifyAdapterPresent) {
   TestManagerObserver observer(client_.get());
-  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1,
+                base::DoNothing());
   EXPECT_EQ(observer.adapter_present_count_, 2);
   EXPECT_EQ(observer.adapter_enabled_changed_count_, 2);
   EXPECT_TRUE(observer.adapter_present_[0]);
@@ -388,7 +390,8 @@ TEST_F(FlossManagerClientTest, VerifyAdapterPresent) {
 // Make sure adapter powered is plumbed through callbacks
 TEST_F(FlossManagerClientTest, VerifyAdapterEnabled) {
   TestManagerObserver observer(client_.get());
-  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1,
+                base::DoNothing());
   // Pre-conditions
   EXPECT_FALSE(client_->GetAdapterEnabled(0));
   EXPECT_TRUE(client_->GetAdapterEnabled(5));
@@ -433,7 +436,8 @@ TEST_F(FlossManagerClientTest, VerifyAdapterEnabled) {
 // Make sure manager presence is correctly detected
 TEST_F(FlossManagerClientTest, HandleManagerPresence) {
   TestManagerObserver observer(client_.get());
-  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1,
+                base::DoNothing());
   dbus::ObjectPath opath = dbus::ObjectPath(kManagerObject);
   EXPECT_EQ(observer.manager_present_count_, 1);
 
@@ -485,7 +489,8 @@ TEST_F(FlossManagerClientTest, SetFlossEnabledRetries) {
 
   TestManagerObserver observer(client_.get());
   floss_enabled_target_ = false;
-  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1);
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1,
+                base::DoNothing());
 
   // First confirm we had it set to False
   EXPECT_EQ(method_called_[manager::kSetFlossEnabled], 1);

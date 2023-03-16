@@ -144,7 +144,8 @@ FlossAdvertiserClient::~FlossAdvertiserClient() {
 
 void FlossAdvertiserClient::Init(dbus::Bus* bus,
                                  const std::string& service_name,
-                                 const int adapter_index) {
+                                 const int adapter_index,
+                                 base::OnceClosure on_ready) {
   bus_ = bus;
   service_name_ = service_name;
   gatt_adapter_path_ = GenerateGattPath(adapter_index);
@@ -197,6 +198,8 @@ void FlossAdvertiserClient::Init(dbus::Bus* bus,
         << "Unable to successfully export FlossAdvertiserClientObserver.";
     return;
   }
+
+  on_ready_ = std::move(on_ready);
 }
 
 void FlossAdvertiserClient::AddObserver(
@@ -292,6 +295,10 @@ void FlossAdvertiserClient::CompleteRegisterCallback(
 
     callback_id_ = result;
     BLUETOOTH_LOG(EVENT) << __func__ << ": callback_id_ = " << callback_id_;
+
+    if (on_ready_) {
+      std::move(on_ready_).Run();
+    }
   }
 }
 

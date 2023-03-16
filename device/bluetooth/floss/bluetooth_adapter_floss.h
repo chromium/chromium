@@ -243,8 +243,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void AdapterPresent(int adapter, bool present) override;
   void AdapterEnabledChanged(int adapter, bool enabled) override;
 
-  // Initialize observers for adapter dependent clients
+  // Complete adapter power changes after adapter clients are ready.
+  void OnAdapterClientsReady(bool enabled);
+
+  // Initialize observers for adapter dependent clients. We need to add + remove
+  // these observers whenever we get a powered notification.
   void AddAdapterObservers();
+  void RemoveAdapterObservers();
 
   // Remove any active adapters.
   void RemoveAdapter();

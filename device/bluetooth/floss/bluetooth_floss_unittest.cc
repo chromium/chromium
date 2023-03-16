@@ -15,20 +15,12 @@
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
-#include "device/bluetooth/floss/fake_floss_battery_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_gatt_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_lescan_client.h"
-#include "device/bluetooth/floss/fake_floss_logging_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
-#include "device/bluetooth/floss/fake_floss_socket_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/test/mock_pairing_delegate.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "device/bluetooth/floss/fake_floss_admin_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -124,7 +116,7 @@ class BluetoothFlossTest : public testing::Test {
     adapter_ = BluetoothAdapterFloss::CreateAdapter();
 
     GetFakeManagerClient()->SetAdapterPowered(/*adapter=*/0,
-                                              /*powered=*/true);
+                                              /*powered=*/false);
 
     base::RunLoop run_loop;
     adapter_->Initialize(run_loop.QuitClosure());
@@ -152,11 +144,18 @@ class BluetoothFlossTest : public testing::Test {
   void EnableAdapter() {
     ASSERT_TRUE(adapter_.get() != nullptr);
 
+    GetFakeManagerClient()->SetAdapterPowered(/*adapter=*/0,
+                                              /*powered=*/true);
     GetFakeManagerClient()->NotifyObservers(
         base::BindLambdaForTesting([](FlossManagerClient::Observer* observer) {
           observer->AdapterEnabledChanged(/*adapter=*/0, /*enabled=*/true);
         }));
     base::RunLoop().RunUntilIdle();
+  }
+
+  void InitializeAndEnableAdapter() {
+    InitializeAdapter();
+    EnableAdapter();
   }
 
   // Simulates getting a ScannerRegistered callback.
@@ -224,7 +223,7 @@ class BluetoothFlossTest : public testing::Test {
 };
 
 TEST_F(BluetoothFlossTest, PairJustWorks) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   BluetoothDevice* device =
@@ -250,7 +249,7 @@ TEST_F(BluetoothFlossTest, PairJustWorks) {
 }
 
 TEST_F(BluetoothFlossTest, PairConfirmPasskey) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   BluetoothDevice* device =
@@ -278,7 +277,7 @@ TEST_F(BluetoothFlossTest, PairConfirmPasskey) {
 }
 
 TEST_F(BluetoothFlossTest, PairDisplayPasskeySucceeded) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   BluetoothDevice* device =
@@ -312,7 +311,7 @@ TEST_F(BluetoothFlossTest, PairDisplayPasskeySucceeded) {
 }
 
 TEST_F(BluetoothFlossTest, PairDisplayPasskeyFailed) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   BluetoothDevice* device =
@@ -348,7 +347,7 @@ TEST_F(BluetoothFlossTest, PairDisplayPasskeyFailed) {
 }
 
 TEST_F(BluetoothFlossTest, PairPasskeyEntry) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   BluetoothDevice* device =
@@ -373,7 +372,7 @@ TEST_F(BluetoothFlossTest, PairPasskeyEntry) {
 }
 
 TEST_F(BluetoothFlossTest, RemoveBonding) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   // Simulate adapter enabled event.
@@ -431,7 +430,7 @@ TEST_F(BluetoothFlossTest, RemoveBonding) {
 }
 
 TEST_F(BluetoothFlossTest, Disconnect) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   BluetoothDevice* device =
@@ -462,7 +461,7 @@ TEST_F(BluetoothFlossTest, Disconnect) {
 }
 
 TEST_F(BluetoothFlossTest, UpdatesDeviceConnectionState) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   BluetoothDevice* device =
@@ -536,7 +535,7 @@ TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
 }
 
 TEST_F(BluetoothFlossTest, DisabledAdapterClearsDevices) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   EXPECT_TRUE(adapter_->GetDevices().size() > 0);
@@ -551,7 +550,7 @@ TEST_F(BluetoothFlossTest, DisabledAdapterClearsDevices) {
 }
 
 TEST_F(BluetoothFlossTest, RepeatsDiscoverySession) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   EXPECT_TRUE(adapter_->IsDiscovering());
@@ -577,8 +576,7 @@ TEST_F(BluetoothFlossTest, RepeatsDiscoverySession) {
 }
 
 TEST_F(BluetoothFlossTest, HandlesClearedDevices) {
-  InitializeAdapter();
-  EnableAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   BluetoothDevice* device =
@@ -617,7 +615,7 @@ TEST_F(BluetoothFlossTest, HandlesClearedDevices) {
 }
 
 TEST_F(BluetoothFlossTest, UpdatesDeviceName) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
   DiscoverDevices();
 
   BluetoothDevice* device =
@@ -627,7 +625,7 @@ TEST_F(BluetoothFlossTest, UpdatesDeviceName) {
 }
 
 TEST_F(BluetoothFlossTest, SetAdvertisingInterval) {
-  InitializeAdapter();
+  InitializeAndEnableAdapter();
 
   base::RunLoop run_loop0;
   EXPECT_EQ(static_cast<uint32_t>(0),
@@ -688,8 +686,7 @@ TEST_F(BluetoothFlossTest, SetAdvertisingInterval) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(BluetoothFlossTest, StartLowEnergyScanSessions) {
-  InitializeAdapter();
-  EnableAdapter();
+  InitializeAndEnableAdapter();
 
   // Initial conditions
   EXPECT_EQ(0, GetFakeLEScanClient()->scanners_registered_);
@@ -716,8 +713,7 @@ TEST_F(BluetoothFlossTest, StartLowEnergyScanSessions) {
 }
 
 TEST_F(BluetoothFlossTest, StartLowEnergyScanSessionWithScanResult) {
-  InitializeAdapter();
-  EnableAdapter();
+  InitializeAndEnableAdapter();
 
   FakeBluetoothLowEnergyScanSessionDelegate delegate;
   // TODO (b/217274013): Filter is currently being ignored

@@ -17,7 +17,10 @@ FakeFlossLEScanClient::~FakeFlossLEScanClient() = default;
 
 void FakeFlossLEScanClient::Init(dbus::Bus* bus,
                                  const std::string& service_name,
-                                 const int adapter_index) {}
+                                 const int adapter_index,
+                                 base::OnceClosure on_ready) {
+  std::move(on_ready).Run();
+}
 
 void FakeFlossLEScanClient::RegisterScanner(
     ResponseCallback<device::BluetoothUUID> callback) {

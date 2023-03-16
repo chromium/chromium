@@ -29,7 +29,8 @@ void FlossLoggingClient::SetDebugLogging(ResponseCallback<Void> callback,
 // Initializes the logging client with given adapter.
 void FlossLoggingClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
-                              const int adapter_index) {
+                              const int adapter_index,
+                              base::OnceClosure on_ready) {
   bus_ = bus;
   service_name_ = service_name;
   logging_path_ = GenerateLoggingPath(adapter_index);
@@ -38,6 +39,8 @@ void FlossLoggingClient::Init(dbus::Bus* bus,
     LOG(ERROR) << "FlossLoggingClient couldn't init. Object proxy was null.";
     return;
   }
+
+  std::move(on_ready).Run();
 }
 
 }  // namespace floss

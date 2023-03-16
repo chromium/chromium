@@ -132,7 +132,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Initializes the manager client.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
  protected:
   friend class FlossManagerClientTest;
@@ -159,6 +160,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Handle response to |GetAvailableAdapters| DBus method call.
   void HandleGetAvailableAdapters(
       DBusResult<std::vector<internal::AdapterWithEnabled>> adapters);
+
+  // Handle response to |RegisterCallback| DBus method call.
+  void HandleRegisterCallback(DBusResult<Void> result);
 
   // internal::FlossManagerClientCallbacks overrides.
   void OnHciDeviceChanged(int32_t adapter, bool present) override;
@@ -269,6 +273,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Exported callbacks for interacting with daemon.
   ExportedCallbackManager<FlossManagerClientCallbacks>
       exported_callback_manager_{manager::kCallbackInterface};
+
+  // Signal when the client is ready to be used.
+  base::OnceClosure on_ready_;
 
   base::WeakPtrFactory<FlossManagerClient> weak_ptr_factory_{this};
 };

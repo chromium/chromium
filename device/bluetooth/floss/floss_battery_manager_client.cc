@@ -110,7 +110,8 @@ void FlossBatteryManagerClient::GetBatteryInformation(
 
 void FlossBatteryManagerClient::Init(dbus::Bus* bus,
                                      const std::string& service_name,
-                                     const int adapter_index) {
+                                     const int adapter_index,
+                                     base::OnceClosure on_ready) {
   bus_ = bus;
   service_name_ = service_name;
   battery_manager_adapter_path_ = GenerateBatteryManagerPath(adapter_index);
@@ -137,6 +138,8 @@ void FlossBatteryManagerClient::Init(dbus::Bus* bus,
         << "Unable to successfully export FlossBatteryManagerClientObserver.";
     return;
   }
+
+  on_ready_ = std::move(on_ready);
 }
 
 void FlossBatteryManagerClient::OnMethodsExported() {
@@ -162,6 +165,13 @@ void FlossBatteryManagerClient::BatteryCallbackRegistered(
   }
 
   battery_manager_callback_id_ = result.value();
+  CompleteInit();
+}
+
+void FlossBatteryManagerClient::CompleteInit() {
+  if (on_ready_) {
+    std::move(on_ready_).Run();
+  }
 }
 
 }  // namespace floss

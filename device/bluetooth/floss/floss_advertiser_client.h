@@ -160,7 +160,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdvertiserClient
   // Initializes the advertising manager with given adapter.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const int adapter_index) override;
+            const int adapter_index,
+            base::OnceClosure on_ready) override;
 
   // Manages observers.
   void AddObserver(FlossAdvertiserClientObserver* observer);
@@ -296,6 +297,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdvertiserClient
   std::unordered_map<AdvertiserId,
                      std::pair<SetAdvParamsSuccessCallback, ErrorCallback>>
       set_advertising_params_callbacks_;
+
+  // Signal when client is ready to be used.
+  base::OnceClosure on_ready_;
 
   base::WeakPtrFactory<FlossAdvertiserClient> weak_ptr_factory_{this};
 };
