@@ -1202,13 +1202,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CalendarView.OpenEventList.{CalendarChildView}.AnimationSmoothness"
-    units="%" expires_after="2023-02-18">
+    units="%" expires_after="2024-02-18">
   <owner>newcomer@google.com</owner>
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Recorded when the open event list animation is finished on the
-    {CalendarChildView}.
+    {CalendarChildView}. The metric is expired from 2023-02-18 to 2023-03-15, so
+    it's possible some data is dropped during that time.
   </summary>
   <token key="CalendarChildView">
     <variant name="CalendarSlidingSurface"
@@ -5413,14 +5414,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.StatusArea.TrayBackgroundView.{State}"
-    enum="TrayBackgroundViewCatalogName" expires_after="2023-01-19">
+    enum="TrayBackgroundViewCatalogName" expires_after="2024-01-19">
   <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Logged when: Hidden: a TrayBackgroundView's preferred visibility is set to
     false. Shown: a TrayBackgroundView's preferred visibility is set to true.
     Pressed: Logged when a TrayBackgroundView is activated, either showing a
-    bubble or handling a custom action.
+    bubble or handling a custom action. The metric is expired from 2023-01-19 to
+    2023-03-15, so it's possible some data is dropped during that time.
   </summary>
   <token key="State">
     <variant name="Hidden"/>
