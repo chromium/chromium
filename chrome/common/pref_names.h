@@ -985,7 +985,6 @@ extern const char kCryptAuthDeviceId[];
 extern const char kCryptAuthInstanceId[];
 extern const char kCryptAuthInstanceIdToken[];
 extern const char kEasyUnlockHardlockState[];
-extern const char kEasyUnlockLocalStateUserPrefs[];
 
 extern const char kRecoveryComponentNeedsElevation[];
 

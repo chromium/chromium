@@ -818,6 +818,11 @@ const char kGlanceablesSignoutScreenshotDuration[] =
     "ash.signout_screenshot.duration";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 03/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kEasyUnlockLocalStateUserPrefs[] = "easy_unlock.user_prefs";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -909,6 +914,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterTimeDeltaPref(kGlanceablesSignoutScreenshotDuration,
                                   base::TimeDelta());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 03/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterDictionaryPref(kEasyUnlockLocalStateUserPrefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1880,6 +1890,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 // Added 03/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_state->ClearPref(kGlanceablesSignoutScreenshotDuration);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 03/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kEasyUnlockLocalStateUserPrefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

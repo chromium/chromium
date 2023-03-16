@@ -9,7 +9,6 @@
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -40,11 +39,6 @@ class ProximityAuthProfilePrefManager
 
   ~ProximityAuthProfilePrefManager() override;
 
-  // Initializes the manager to listen to pref changes and sync prefs to the
-  // user's local state.
-  void StartSyncingToLocalState(PrefService* local_state,
-                                const AccountId& account_id);
-
   // Registers the prefs used by this class to the given |pref_service|.
   static void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -70,17 +64,9 @@ class ProximityAuthProfilePrefManager
           feature_states_map) override;
 
  private:
-  void SyncPrefsToLocalState();
-
   // Contains perferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.
   PrefService* pref_service_ = nullptr;
-
-  // Listens to pref changes so they can be synced to the local state.
-  PrefChangeRegistrar registrar_;
-
-  // The local state to which to sync the profile prefs.
-  PrefService* local_state_ = nullptr;
 
   // The account id of the current profile.
   AccountId account_id_;

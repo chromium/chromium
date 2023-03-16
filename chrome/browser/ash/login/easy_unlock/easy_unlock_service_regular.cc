@@ -186,8 +186,6 @@ void EasyUnlockServiceRegular::InitializeInternal() {
   pref_manager_ =
       std::make_unique<proximity_auth::ProximityAuthProfilePrefManager>(
           profile()->GetPrefs(), multidevice_setup_client_);
-  pref_manager_->StartSyncingToLocalState(g_browser_process->local_state(),
-                                          GetAccountId());
 
   // If `device_sync_client_` is not ready yet, wait for it to call back on
   // OnReady().

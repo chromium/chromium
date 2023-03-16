@@ -12,6 +12,9 @@ namespace proximity_auth {
 // Interface for setting and getting persistent user preferences. There is an
 // implementation for a logged in profile and the device local state when the
 // user is logged out.
+// TODO(b/227674947): Now that Sign in with Smart Lock is removed, this class is
+// no longer needed before a user logs in. ProximityAuthPrefManager and
+// ProximityAuthProfilePrefManager can be combined into one class.
 class ProximityAuthPrefManager {
  public:
   ProximityAuthPrefManager() {}
@@ -51,15 +54,18 @@ class ProximityAuthPrefManager {
 
   // Getter for whether EasyUnlock is allowed for ChromeOS login (in addition to
   // screen lock).
+  // TODO(b/227674947): Delete now that Sign in with Smart Lock is deprecated.
   virtual bool IsChromeOSLoginAllowed() const = 0;
 
   // Setter and getter for whether EasyUnlock is enabled for ChromeOS login (in
   // addition to screen lock).
+  // TODO(b/227674947): Delete now that Sign in with Smart Lock is deprecated.
   virtual void SetIsChromeOSLoginEnabled(bool is_enabled) = 0;
   virtual bool IsChromeOSLoginEnabled() const = 0;
 
   // Setter and getter for whether the "Signin with Smart Lock is disabled"
   // message on the login screen has been shown.
+  // TODO(b/227674947): Delete now that Sign in with Smart Lock is deprecated.
   virtual void SetHasShownLoginDisabledMessage(bool has_shown) = 0;
   virtual bool HasShownLoginDisabledMessage() const = 0;
 };

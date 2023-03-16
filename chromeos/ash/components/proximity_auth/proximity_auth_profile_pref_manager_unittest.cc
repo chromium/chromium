@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "chromeos/ash/components/proximity_auth/proximity_auth_local_state_pref_manager.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
@@ -20,8 +19,6 @@
 
 namespace proximity_auth {
 namespace {
-
-const char kUserEmail[] = "testuser@example.com";
 
 const int64_t kPromotionCheckTimestampMs1 = 1111111111L;
 const int64_t kPromotionCheckTimestampMs2 = 2222222222L;
@@ -90,39 +87,6 @@ TEST_F(ProximityAuthProfilePrefManagerTest, IsChromeOSLoginEnabled) {
 
   pref_manager_->SetIsChromeOSLoginEnabled(false);
   EXPECT_FALSE(pref_manager_->IsChromeOSLoginEnabled());
-}
-
-TEST_F(ProximityAuthProfilePrefManagerTest, SyncsToLocalPrefOnChange) {
-  // Use a local variable to ensure that the PrefRegistrar adds and removes
-  // observers on the same thread.
-  ProximityAuthProfilePrefManager profile_pref_manager(
-      &pref_service_, fake_multidevice_setup_client_.get());
-
-  TestingPrefServiceSimple local_state;
-  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-  ProximityAuthLocalStatePrefManager::RegisterPrefs(local_state.registry());
-  profile_pref_manager.StartSyncingToLocalState(&local_state, account_id);
-
-  // Use the local state pref manager to verify that prefs are synced correctly.
-  ProximityAuthLocalStatePrefManager local_pref_manager(&local_state);
-  local_pref_manager.SetActiveUser(account_id);
-
-  profile_pref_manager.SetIsChromeOSLoginEnabled(true);
-  profile_pref_manager.SetIsEasyUnlockEnabled(true);
-  EXPECT_TRUE(local_pref_manager.IsChromeOSLoginEnabled());
-
-  profile_pref_manager.SetIsChromeOSLoginEnabled(false);
-  profile_pref_manager.SetIsEasyUnlockEnabled(false);
-  EXPECT_FALSE(local_pref_manager.IsChromeOSLoginEnabled());
-  EXPECT_FALSE(local_pref_manager.IsEasyUnlockEnabled());
-
-  // Test changing the kEasyUnlockAllowed pref value directly (e.g. through
-  // enterprise policy).
-  EXPECT_TRUE(local_pref_manager.IsEasyUnlockAllowed());
-  pref_service_.SetBoolean(ash::multidevice_setup::kSmartLockAllowedPrefName,
-                           false);
-  EXPECT_FALSE(profile_pref_manager.IsEasyUnlockAllowed());
-  EXPECT_FALSE(local_pref_manager.IsEasyUnlockAllowed());
 }
 
 }  // namespace proximity_auth

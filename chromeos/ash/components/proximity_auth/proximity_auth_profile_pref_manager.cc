@@ -29,8 +29,6 @@ ProximityAuthProfilePrefManager::ProximityAuthProfilePrefManager(
 }
 
 ProximityAuthProfilePrefManager::~ProximityAuthProfilePrefManager() {
-  registrar_.RemoveAll();
-
   multidevice_setup_client_->RemoveObserver(this);
 }
 
@@ -45,60 +43,6 @@ void ProximityAuthProfilePrefManager::RegisterPrefs(
   registry->RegisterBooleanPref(
       prefs::kProximityAuthIsChromeOSLoginEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-}
-
-void ProximityAuthProfilePrefManager::StartSyncingToLocalState(
-    PrefService* local_state,
-    const AccountId& account_id) {
-  local_state_ = local_state;
-  account_id_ = account_id;
-
-  if (!account_id_.is_valid()) {
-    PA_LOG(ERROR) << "Invalid account_id.";
-    return;
-  }
-
-  auto on_pref_changed_callback = base::BindRepeating(
-      &ProximityAuthProfilePrefManager::SyncPrefsToLocalState,
-      weak_ptr_factory_.GetWeakPtr());
-
-  registrar_.Init(pref_service_);
-  registrar_.Add(ash::multidevice_setup::kSmartLockAllowedPrefName,
-                 on_pref_changed_callback);
-  registrar_.Add(ash::multidevice_setup::kSmartLockEnabledDeprecatedPrefName,
-                 on_pref_changed_callback);
-  registrar_.Add(proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
-                 on_pref_changed_callback);
-  registrar_.Add(ash::multidevice_setup::kSmartLockSigninAllowedPrefName,
-                 on_pref_changed_callback);
-
-  SyncPrefsToLocalState();
-}
-
-void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
-  base::Value::Dict user_prefs_dict;
-
-  user_prefs_dict.Set(ash::multidevice_setup::kSmartLockAllowedPrefName,
-                      IsEasyUnlockAllowed());
-  user_prefs_dict.Set(ash::multidevice_setup::kSmartLockEnabledPrefName,
-                      IsEasyUnlockEnabled());
-  user_prefs_dict.Set(ash::multidevice_setup::kSmartLockSigninAllowedPrefName,
-                      IsChromeOSLoginAllowed());
-  user_prefs_dict.Set(prefs::kProximityAuthIsChromeOSLoginEnabled,
-                      IsChromeOSLoginEnabled());
-
-  // If Signin with Smart Lock is enabled, then the "has shown Signin with
-  // Smart Lock is disabled message" flag should be false, to ensure the message
-  // is displayed if Signin with Smart Lock is disabled. Otherwise, copy the
-  // old value.
-  bool has_shown_login_disabled_message =
-      IsChromeOSLoginEnabled() ? false : HasShownLoginDisabledMessage();
-  user_prefs_dict.Set(prefs::kProximityAuthHasShownLoginDisabledMessage,
-                      has_shown_login_disabled_message);
-
-  ScopedDictPrefUpdate update(local_state_,
-                              prefs::kEasyUnlockLocalStateUserPrefs);
-  update->Set(account_id_.GetUserEmail(), std::move(user_prefs_dict));
 }
 
 bool ProximityAuthProfilePrefManager::IsEasyUnlockAllowed() const {
@@ -176,25 +120,17 @@ void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
 }
 
 bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {
-  const base::Value::Dict& all_user_prefs_dict =
-      local_state_->GetDict(prefs::kEasyUnlockLocalStateUserPrefs);
-  const base::Value::Dict* current_user_prefs =
-      all_user_prefs_dict.FindDict(account_id_.GetUserEmail());
-  if (!current_user_prefs) {
-    PA_LOG(ERROR) << "Failed to find local state prefs for current user.";
-    return false;
-  }
-
-  return current_user_prefs
-      ->FindBool(prefs::kProximityAuthHasShownLoginDisabledMessage)
-      .value_or(false);
+  // This method previously depended on easy unlock local state prefs, which are
+  // now deprecated with the removal of sign in with Smart Lock.
+  // TODO(b/227674947): Delete this method.
+  return false;
 }
 
 void ProximityAuthProfilePrefManager::OnFeatureStatesChanged(
     const ash::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
-  if (local_state_ && account_id_.is_valid())
-    SyncPrefsToLocalState();
+  // TODO(b/227674947): Delete this method. With no more need for local state
+  // prefs, there's nothing to do here.
 }
 
 }  // namespace proximity_auth

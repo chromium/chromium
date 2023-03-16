@@ -16,8 +16,6 @@ static_library("proximity_auth") {
     "metrics.cc",
     "metrics.h",
     "proximity_auth_client.h",
-    "proximity_auth_local_state_pref_manager.cc",
-    "proximity_auth_local_state_pref_manager.h",
     "proximity_auth_pref_manager.h",
     "proximity_auth_pref_names.cc",
     "proximity_auth_pref_names.h",
@@ -96,7 +94,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "messenger_impl_unittest.cc",
-    "proximity_auth_local_state_pref_manager_unittest.cc",
     "proximity_auth_profile_pref_manager_unittest.cc",
     "proximity_auth_system_unittest.cc",
     "proximity_monitor_impl_unittest.cc",

@@ -2923,12 +2923,6 @@ const char kCryptAuthInstanceIdToken[] = "cryptauth.instance_id_token";
 // A dictionary that maps user id to hardlock state.
 const char kEasyUnlockHardlockState[] = "easy_unlock.hardlock_state";
 
-// A dictionary in local state containing each user's Easy Unlock profile
-// preferences, so they can be accessed outside of the user's profile. The value
-// is a dictionary containing an entry for each user. Each user's entry mirrors
-// their profile's Easy Unlock preferences.
-const char kEasyUnlockLocalStateUserPrefs[] = "easy_unlock.user_prefs";
-
 // Boolean that indicates whether elevation is needed to recover Chrome upgrade.
 const char kRecoveryComponentNeedsElevation[] =
     "recovery_component.needs_elevation";

@@ -34,7 +34,6 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
-#include "chromeos/ash/components/proximity_auth/proximity_auth_local_state_pref_manager.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_profile_pref_manager.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_system.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
@@ -146,7 +145,6 @@ void EasyUnlockService::RegisterProfilePrefs(
 // static
 void EasyUnlockService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kEasyUnlockHardlockState);
-  proximity_auth::ProximityAuthLocalStatePrefManager::RegisterPrefs(registry);
 }
 
 // static
@@ -158,8 +156,7 @@ void EasyUnlockService::ResetLocalStateForUser(const AccountId& account_id) {
     return;
 
   for (const std::string& pref :
-       std::vector<std::string>{prefs::kEasyUnlockHardlockState,
-                                prefs::kEasyUnlockLocalStateUserPrefs}) {
+       std::vector<std::string>{prefs::kEasyUnlockHardlockState}) {
     ScopedDictPrefUpdate update(local_state, pref);
     update->Remove(account_id.GetUserEmail());
   }
