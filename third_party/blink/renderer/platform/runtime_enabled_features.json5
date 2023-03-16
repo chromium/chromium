@@ -3638,15 +3638,6 @@
       status: "test",
       base_feature: "none",
     },
-    // A more subtle UI for WebAuthn that is web exposed.
-    // It's controlled by the corresponding Chromium feature which needs to
-    // be enabled to make the whole feature work, except for WPTs where the
-    // virtual authenticator environment is used.
-    {
-      name: "WebAuthenticationConditionalUI",
-      status: "stable",
-      base_feature: "none",
-    },
     // https://github.com/w3c/webauthn/pull/1663
     {
       name: "WebAuthenticationDevicePublicKey",

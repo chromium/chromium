@@ -1306,9 +1306,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
     }
 
-    bool is_conditional_ui_request =
-        RuntimeEnabledFeatures::WebAuthenticationConditionalUIEnabled() &&
-        options->mediation() == "conditional";
+    bool is_conditional_ui_request = options->mediation() == "conditional";
 
     if (is_conditional_ui_request) {
       UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);

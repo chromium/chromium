@@ -213,12 +213,6 @@ String HTMLFormControlElementWithState::IDLExposedAutofillValue() const {
   // 15. Let IDL value have the same value as field.
   String idl_value = field;
 
-  // Only allow Credential if the feature is enabled.
-  if (category == AutoCompleteCategory::kCredential &&
-      !RuntimeEnabledFeatures::WebAuthenticationConditionalUIEnabled()) {
-    return g_empty_string;
-  }
-
   // 16. If category is Credential and the indexth token in tokens is an ASCII
   // case-insensitive match for "webauthn", then run the substeps that follow:
   if (category == AutoCompleteCategory::kCredential) {

@@ -228,11 +228,9 @@ public final class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        // The WebAuthenticationConditionalUI feature will only be enabled on Android when gmscore
-        // supports silent discovery. If the gmscore and chromium versions are out of sync for some
-        // reason, this method will return true but chrome will ignore conditional requests.
-        // Android surfaces only platform credentials on conditional requests, use IsUVPAA as a
-        // proxy for availability.
+        // If the gmscore and chromium versions are out of sync for some reason, this method will
+        // return true but chrome will ignore conditional requests. Android surfaces only platform
+        // credentials on conditional requests, use IsUVPAA as a proxy for availability.
         mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(callback);
         getFido2CredentialRequest().handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
                 mRenderFrameHost,
