@@ -198,7 +198,13 @@ bool IsAcceleratedConfigurationSupported(
 
     if (options.bitrate.has_value()) {
       auto mode = BitrateToSupportedMode(options.bitrate.value());
+      // TODO(crbug.com/1424874): Reject this profile instead of just
+      // printing an error message. There is no reason to use VEA if
+      // it doesn't support the requested bitrate mode.
       if (!(mode & supported_profile.rate_control_modes)) {
+        LOG(ERROR) << "Choosing an unsupported VEA bitrate mode";
+      }
+      if (mode == media::VideoEncodeAccelerator::kNoMode) {
         continue;
       }
     }

@@ -335,8 +335,7 @@ async function prepareDecoderSource(
     codec: codec,
     width: width,
     height: height,
-    bitrate: 2000000,
-    bitrateMode: 'constant',
+    bitrate: 1000000,
     framerate: 24
   };
 
