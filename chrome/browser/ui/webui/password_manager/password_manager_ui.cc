@@ -115,6 +115,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"editPasswordFootnote", IDS_PASSWORD_MANAGER_UI_PASSWORD_EDIT_FOOTNOTE},
     {"editPasswordTitle", IDS_PASSWORD_MANAGER_UI_EDIT_PASSWORD},
     {"emptyNote", IDS_PASSWORD_MANAGER_UI_NO_NOTE_SAVED},
+    {"emptyState", IDS_PASSWORD_MANAGER_UI_EMPTY_STATE},
     {"exportPasswords", IDS_PASSWORD_MANAGER_UI_EXPORT_TITLE},
     {"exportPasswordsDescription",
      IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_DESCRIPTION},

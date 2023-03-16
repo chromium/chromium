@@ -383,4 +383,26 @@ suite('PasswordsSectionTest', function() {
     // Now move passwords option is visible.
     assertFalse(section.$.movePasswords.hidden);
   });
+
+  test('import passwords label shown', async function() {
+    const section = await createPasswordsSection();
+
+    assertFalse(section.$.importPasswords.hidden);
+
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'test.com',
+        credentials: [createPasswordEntry(
+            {username: 'user', id: 0, inAccountStore: true})],
+      }),
+    ];
+    // Assert that password section listens to passwords update and invoke
+    // an update.
+    assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
+    passwordManager.listeners.savedPasswordListChangedListener([]);
+    await flushTasks();
+
+    // Now import passwords option is hidden.
+    assertTrue(section.$.importPasswords.hidden);
+  });
 });

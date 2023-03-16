@@ -31,6 +31,7 @@ export interface PasswordsSectionElement {
     addPasswordButton: CrButtonElement,
     passwordsList: IronListElement,
     movePasswords: HTMLElement,
+    importPasswords: HTMLElement,
   };
 }
 
@@ -117,6 +118,8 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     window.addEventListener('auth-timed-out', this.authTimedOutListener_);
     this.$.movePasswords.addEventListener(
         'click', this.onMovePasswordsClicked_);
+    this.$.importPasswords.addEventListener(
+        'click', this.onImportPasswordsClicked_);
   }
 
   override disconnectedCallback() {
@@ -212,6 +215,22 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private onMovePasswordsClicked_(e: Event) {
     e.preventDefault();
     // TODO(crbug.com/1420548): Show move passwords dialog.
+  }
+
+  private showImportPasswordsOption_(): boolean {
+    if (!this.groups_) {
+      return false;
+    }
+    return this.groups_.length === 0;
+  }
+
+  private getImportPasswordsText_(): TrustedHTML {
+    return this.i18nAdvanced('emptyState');
+  }
+
+  private onImportPasswordsClicked_(e: Event) {
+    e.preventDefault();
+    // TODO(crbug.com/1420548): Show import passwords dialog.
   }
 }
 
