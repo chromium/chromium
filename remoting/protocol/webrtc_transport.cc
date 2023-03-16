@@ -11,15 +11,12 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/webrtc/net_address_utils.h"
@@ -28,7 +25,6 @@
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/port_allocator_factory.h"
 #include "remoting/protocol/sdp_message.h"
-#include "remoting/protocol/stream_message_pipe_adapter.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_module.h"
@@ -45,6 +41,10 @@
 #include "third_party/webrtc/media/engine/webrtc_media_engine.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
+
+#if !defined(NDEBUG)
+#include "base/command_line.h"
+#endif
 
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
@@ -141,6 +141,13 @@ TransportRoute::RouteType CandidateTypeToTransportRouteType(
   }
 }
 
+void SetSenderParameters(webrtc::RtpSenderInterface& sender,
+                         const webrtc::RtpParameters& parameters) {
+  ScopedAllowSyncPrimitivesForWebRtcTransport allow_wait;
+  webrtc::RTCError result = sender.SetParameters(parameters);
+  DCHECK(result.ok()) << "SetParameters() failed: " << result.message();
+}
+
 // Initializes default parameters for a sender that may be different from
 // WebRTC's defaults.
 void SetDefaultSenderParameters(
@@ -156,8 +163,7 @@ void SetDefaultSenderParameters(
       encoding.max_framerate = kTargetFrameRate;
     }
 
-    webrtc::RTCError result = sender->SetParameters(parameters);
-    DCHECK(result.ok()) << "SetParameters() failed: " << result.message();
+    SetSenderParameters(*sender, parameters);
   }
 }
 
@@ -1131,8 +1137,8 @@ void WebrtcTransport::SetSenderBitrates(
     parameters.encodings[0].min_bitrate_bps.reset();
   }
   parameters.encodings[0].max_bitrate_bps = max_bitrate_bps;
-  webrtc::RTCError result = sender->SetParameters(parameters);
-  DCHECK(result.ok()) << "SetParameters() failed: " << result.message();
+
+  SetSenderParameters(*sender, parameters);
 }
 
 void WebrtcTransport::RequestNegotiation() {
