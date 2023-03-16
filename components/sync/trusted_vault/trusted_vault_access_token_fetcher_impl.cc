@@ -4,11 +4,9 @@
 
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "components/sync/base/bind_to_task_runner.h"
@@ -42,11 +40,6 @@ TrustedVaultAccessTokenFetcherImpl::TrustedVaultAccessTokenFetcherImpl(
   ui_thread_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 }
 
-TrustedVaultAccessTokenFetcherImpl::TrustedVaultAccessTokenFetcherImpl(
-    base::WeakPtr<TrustedVaultAccessTokenFetcherFrontend> frontend,
-    scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner)
-    : frontend_(frontend), ui_thread_task_runner_(ui_thread_task_runner) {}
-
 TrustedVaultAccessTokenFetcherImpl::~TrustedVaultAccessTokenFetcherImpl() =
     default;
 
@@ -57,12 +50,6 @@ void TrustedVaultAccessTokenFetcherImpl::FetchAccessToken(
       FROM_HERE,
       base::BindOnce(FetchAccessTokenOnUIThread, frontend_, account_id,
                      BindToCurrentSequence(std::move(callback))));
-}
-
-std::unique_ptr<TrustedVaultAccessTokenFetcher>
-TrustedVaultAccessTokenFetcherImpl::Clone() {
-  return base::WrapUnique(new TrustedVaultAccessTokenFetcherImpl(
-      frontend_, ui_thread_task_runner_));
 }
 
 }  // namespace syncer

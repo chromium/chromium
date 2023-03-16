@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/time/time.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "url/gurl.h"
@@ -28,11 +27,6 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
   using JoinSecurityDomainsCallback =
       base::OnceCallback<void(TrustedVaultRegistrationStatus,
                               int /*last_key_version=*/)>;
-
-  // Specifies how long JoinSecurityDomainRequest could be delayed due to
-  // retries in case of transient errors. Exposed for testing.
-  static constexpr base::TimeDelta kMaxJoinSecurityDomainRetryDuration =
-      base::Hours(1);
 
   TrustedVaultConnectionImpl(
       const GURL& trusted_vault_service_url,

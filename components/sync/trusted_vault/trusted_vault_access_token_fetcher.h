@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_H_
 #define COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_H_
 
-#include <memory>
-
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 
@@ -48,9 +46,6 @@ class TrustedVaultAccessTokenFetcher {
   // on the caller sequence.
   virtual void FetchAccessToken(const CoreAccountId& account_id,
                                 TokenCallback callback) = 0;
-
-  // May be called on any sequence.
-  virtual std::unique_ptr<TrustedVaultAccessTokenFetcher> Clone() = 0;
 };
 
 }  // namespace syncer

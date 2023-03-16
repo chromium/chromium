@@ -83,15 +83,14 @@ void TrustedVaultRegistrationVerifier::VerifyMembership(
       ExtractTrustedVaultServiceURLFromCommandLine();
 
   auto request = std::make_unique<TrustedVaultRequest>(
-      primary_account.account_id, TrustedVaultRequest::HttpMethod::kGet,
+      TrustedVaultRequest::HttpMethod::kGet,
       GURL(trusted_vault_service_url.spec() +
            GetGetSecurityDomainMemberURLPathAndQuery(public_key)),
-      /*serialized_request_proto=*/absl::nullopt,
-      /*max_retry_duration=*/base::Seconds(0), url_loader_factory_,
-      access_token_fetcher_.Clone(),
+      /*serialized_request_proto=*/absl::nullopt, url_loader_factory_,
       TrustedVaultURLFetchReasonForUMA::kDownloadKeys);
 
   request->FetchAccessTokenAndSendRequest(
+      primary_account.account_id, &access_token_fetcher_,
       base::BindOnce([](TrustedVaultRequest::HttpStatus http_status,
                         const std::string& response_body) {
         absl::optional<TrustedVaultDownloadKeysStatus> status =

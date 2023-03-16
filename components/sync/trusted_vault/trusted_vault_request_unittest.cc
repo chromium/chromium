@@ -16,7 +16,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -74,11 +73,6 @@ class FakeTrustedVaultAccessTokenFetcher
     std::move(callback).Run(access_token_info_or_error_);
   }
 
-  std::unique_ptr<TrustedVaultAccessTokenFetcher> Clone() override {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
-
  private:
   const AccessTokenInfoOrError access_token_info_or_error_;
 };
@@ -90,51 +84,37 @@ class TrustedVaultRequestTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
 
-  std::unique_ptr<TrustedVaultRequest>
-  StartNewRequestWithAccessTokenAndRetriesDuration(
+  std::unique_ptr<TrustedVaultRequest> StartNewRequestWithAccessToken(
       const std::string& access_token,
       TrustedVaultRequest::HttpMethod http_method,
       const absl::optional<std::string>& request_body,
-      base::TimeDelta max_retry_duration,
       TrustedVaultRequest::CompletionCallback completion_callback) {
     const CoreAccountId account_id = CoreAccountId::FromGaiaId("user_id");
     FakeTrustedVaultAccessTokenFetcher access_token_fetcher(
         MakeAccessTokenInfo(access_token));
 
     auto request = std::make_unique<TrustedVaultRequest>(
-        account_id, http_method, GURL(kRequestUrl), request_body,
-        max_retry_duration, shared_url_loader_factory_,
-        std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
-            MakeAccessTokenInfo(access_token)),
+        http_method, GURL(kRequestUrl), request_body,
+        shared_url_loader_factory_,
         TrustedVaultURLFetchReasonForUMA::kUnspecified);
-    request->FetchAccessTokenAndSendRequest(std::move(completion_callback));
+    request->FetchAccessTokenAndSendRequest(account_id, &access_token_fetcher,
+                                            std::move(completion_callback));
     return request;
-  }
-
-  std::unique_ptr<TrustedVaultRequest> StartNewRequestWithAccessToken(
-      const std::string& access_token,
-      TrustedVaultRequest::HttpMethod http_method,
-      const absl::optional<std::string>& request_body,
-      TrustedVaultRequest::CompletionCallback completion_callback) {
-    return StartNewRequestWithAccessTokenAndRetriesDuration(
-        access_token, http_method, request_body,
-        /*max_retry_duration=*/base::Seconds(0),
-        std::move(completion_callback));
   }
 
   std::unique_ptr<TrustedVaultRequest> StartNewRequestWithAccessTokenError(
       TrustedVaultAccessTokenFetcher::FetchingError error,
       TrustedVaultRequest::CompletionCallback completion_callback) {
     const CoreAccountId account_id = CoreAccountId::FromGaiaId("user_id");
+    FakeTrustedVaultAccessTokenFetcher access_token_fetcher(
+        base::unexpected{error});
 
     auto request = std::make_unique<TrustedVaultRequest>(
-        account_id, TrustedVaultRequest::HttpMethod::kGet, GURL(kRequestUrl),
-        /*serialized_request_proto=*/absl::nullopt,
-        /*max_retry_duration=*/base::Seconds(0), shared_url_loader_factory_,
-        std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
-            base::unexpected{error}),
+        TrustedVaultRequest::HttpMethod::kGet, GURL(kRequestUrl),
+        /*serialized_request_proto=*/absl::nullopt, shared_url_loader_factory_,
         TrustedVaultURLFetchReasonForUMA::kUnspecified);
-    request->FetchAccessTokenAndSendRequest(std::move(completion_callback));
+    request->FetchAccessTokenAndSendRequest(account_id, &access_token_fetcher,
+                                            std::move(completion_callback));
     return request;
   }
 
@@ -158,13 +138,8 @@ class TrustedVaultRequestTest : public testing::Test {
     return test_url_loader_factory_.GetPendingRequest(/*index=*/0);
   }
 
-  base::test::SingleThreadTaskEnvironment& task_environment() {
-    return task_environment_;
-  }
-
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
@@ -344,51 +319,6 @@ TEST_F(TrustedVaultRequestTest, ShouldRetryUponNetworkChange) {
   EXPECT_CALL(completion_callback,
               Run(TrustedVaultRequest::HttpStatus::kSuccess, kResponseBody));
   EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_OK, kResponseBody));
-}
-
-TEST_F(TrustedVaultRequestTest, ShouldRetryUponTransientErrorAndHandleSuccess) {
-  base::MockCallback<TrustedVaultRequest::CompletionCallback>
-      completion_callback;
-  std::unique_ptr<TrustedVaultRequest> request =
-      StartNewRequestWithAccessTokenAndRetriesDuration(
-          kAccessToken, TrustedVaultRequest::HttpMethod::kGet,
-          /*request_body=*/absl::nullopt,
-          /*max_retry_duration=*/base::Minutes(1), completion_callback.Get());
-
-  // Mimic network error for the first request.
-  EXPECT_CALL(completion_callback, Run).Times(0);
-  EXPECT_TRUE(RespondToHttpRequest(net::ERR_DNS_REQUEST_CANCELLED, net::HTTP_OK,
-                                   /*response_body=*/""));
-  testing::Mock::VerifyAndClearExpectations(&completion_callback);
-
-  // Forward time and expect the second attempt.
-  task_environment().FastForwardBy(base::Seconds(5));
-  network::TestURLLoaderFactory::PendingRequest* pending_request =
-      GetPendingRequest();
-  EXPECT_THAT(pending_request, NotNull());
-
-  EXPECT_CALL(completion_callback,
-              Run(TrustedVaultRequest::HttpStatus::kSuccess, kResponseBody));
-  EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_OK, kResponseBody));
-}
-
-TEST_F(TrustedVaultRequestTest, ShouldStopRetryingAndReportTransientError) {
-  base::MockCallback<TrustedVaultRequest::CompletionCallback>
-      completion_callback;
-  std::unique_ptr<TrustedVaultRequest> request =
-      StartNewRequestWithAccessTokenAndRetriesDuration(
-          kAccessToken, TrustedVaultRequest::HttpMethod::kGet,
-          /*request_body=*/absl::nullopt,
-          /*max_retry_duration=*/base::Minutes(1), completion_callback.Get());
-
-  // Mimic network error for the first request with significant delay,
-  // sufficient to stop retries.
-  task_environment().FastForwardBy(base::Minutes(2));
-  EXPECT_CALL(completion_callback,
-              Run(TrustedVaultRequest::HttpStatus::kNetworkError, _));
-  EXPECT_TRUE(RespondToHttpRequest(net::ERR_DNS_REQUEST_CANCELLED, net::HTTP_OK,
-                                   /*response_body=*/""));
-  testing::Mock::VerifyAndClearExpectations(&completion_callback);
 }
 
 TEST_F(TrustedVaultRequestTest, ShouldHandleAccessTokenFetchingFailures) {

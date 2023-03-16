@@ -10,7 +10,6 @@
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/files/important_file_writer.h"
-#include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/vault.pb.h"
 #include "components/sync/trusted_vault/download_keys_response_handler.h"
@@ -329,24 +328,22 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
     const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
     DownloadNewKeysCallback callback) {
-  // TODO(crbug.com/1413179): consider retries for keys downloading after
-  // initial failure returned to the upper layers.
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
+      TrustedVaultRequest::HttpMethod::kGet,
       GURL(trusted_vault_service_url_.spec() +
            GetGetSecurityDomainMemberURLPathAndQuery(
                device_key_pair->public_key().ExportToBytes())),
-      /*serialized_request_proto=*/absl::nullopt,
-      /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
-      access_token_fetcher_->Clone(),
+      /*serialized_request_proto=*/absl::nullopt, GetOrCreateURLLoaderFactory(),
       TrustedVaultURLFetchReasonForUMA::kDownloadKeys);
 
-  request->FetchAccessTokenAndSendRequest(base::BindOnce(
-      &ProcessDownloadKeysResponse,
-      /*response_processor=*/
-      std::make_unique<DownloadKeysResponseHandler>(
-          last_trusted_vault_key_and_version, std::move(device_key_pair)),
-      std::move(callback)));
+  request->FetchAccessTokenAndSendRequest(
+      account_info.account_id, access_token_fetcher_.get(),
+      base::BindOnce(
+          &ProcessDownloadKeysResponse,
+          /*response_processor=*/
+          std::make_unique<DownloadKeysResponseHandler>(
+              last_trusted_vault_key_and_version, std::move(device_key_pair)),
+          std::move(callback)));
 
   return request;
 }
@@ -356,16 +353,16 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     IsRecoverabilityDegradedCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
+      TrustedVaultRequest::HttpMethod::kGet,
       GURL(trusted_vault_service_url_.spec() +
            kGetSecurityDomainURLPathAndQuery),
-      /*serialized_request_proto=*/absl::nullopt,
-      /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
-      access_token_fetcher_->Clone(),
+      /*serialized_request_proto=*/absl::nullopt, GetOrCreateURLLoaderFactory(),
       TrustedVaultURLFetchReasonForUMA::kDownloadIsRecoverabilityDegraded);
 
-  request->FetchAccessTokenAndSendRequest(base::BindOnce(
-      &ProcessDownloadIsRecoverabilityDegradedResponse, std::move(callback)));
+  request->FetchAccessTokenAndSendRequest(
+      account_info.account_id, access_token_fetcher_.get(),
+      base::BindOnce(&ProcessDownloadIsRecoverabilityDegradedResponse,
+                     std::move(callback)));
 
   return request;
 }
@@ -380,7 +377,7 @@ TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
     absl::optional<int> authentication_factor_type_hint,
     JoinSecurityDomainsCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kPost,
+      TrustedVaultRequest::HttpMethod::kPost,
       GURL(trusted_vault_service_url_.spec() + kJoinSecurityDomainsURLPath),
       /*serialized_request_proto=*/
       CreateJoinSecurityDomainsRequest(
@@ -388,12 +385,12 @@ TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
           authentication_factor_public_key, authentication_factor_type,
           authentication_factor_type_hint)
           .SerializeAsString(),
-      kMaxJoinSecurityDomainRetryDuration, GetOrCreateURLLoaderFactory(),
-      access_token_fetcher_->Clone(),
+      GetOrCreateURLLoaderFactory(),
       GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
           authentication_factor_type));
 
   request->FetchAccessTokenAndSendRequest(
+      account_info.account_id, access_token_fetcher_.get(),
       base::BindOnce(&ProcessJoinSecurityDomainsResponse, std::move(callback)));
   return request;
 }
