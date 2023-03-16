@@ -4,18 +4,12 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "base/test/metrics/user_action_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
-#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,6 +17,10 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -80,25 +78,8 @@ class TabGridViewControllerTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
 };
 
-// Checks that TabGridViewController returns key commands when the Keyboard
-// Shortcuts Menu feature is enabled.
-TEST_F(TabGridViewControllerTest, ReturnsKeyCommands_MenuEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kKeyboardShortcutsMenu},
-      /*disabled_features=*/{});
-
-  EXPECT_GT(view_controller_.keyCommands.count, 0u);
-}
-
-// Checks that TabGridViewController returns key commands when the Keyboard
-// Shortcuts Menu feature is disabled.
-TEST_F(TabGridViewControllerTest, ReturnsKeyCommands_MenuDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kKeyboardShortcutsMenu});
-
+// Checks that TabGridViewController returns key commands.
+TEST_F(TabGridViewControllerTest, ReturnsKeyCommands) {
   EXPECT_GT(view_controller_.keyCommands.count, 0u);
 }
 

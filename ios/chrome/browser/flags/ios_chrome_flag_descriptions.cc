@@ -549,10 +549,6 @@ const char kIOSShowPasswordStorageInSaveInfobarDescription[] =
     "Modifies the save password infobar to show whether the save happens to an "
     "account or only to the current device";
 
-const char kKeyboardShortcutsMenuName[] = "Keyboard Shortcuts Menu";
-const char kKeyboardShortcutsMenuDescription[] =
-    "Enables the new keyboard shortcuts menu.";
-
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "

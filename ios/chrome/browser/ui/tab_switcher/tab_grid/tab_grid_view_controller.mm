@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_ui_delegate.h"
@@ -2981,25 +2980,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
-  if (IsKeyboardShortcutsMenuEnabled()) {
-    // Other key commands are already declared in the menu.
-    return @[
-      UIKeyCommand.cr_openNewRegularTab,
-      UIKeyCommand.cr_undo,
-      UIKeyCommand.cr_close,
-      // TODO(crbug.com/1385469): Move it to the menu builder once we have the
-      // strings.
-      UIKeyCommand.cr_select2,
-      UIKeyCommand.cr_select3,
-    ];
-  } else {
-    return @[
-      UIKeyCommand.cr_openNewTab,
-      UIKeyCommand.cr_openNewIncognitoTab,
-      UIKeyCommand.cr_openNewRegularTab,
-      UIKeyCommand.cr_close,
-    ];
-  }
+  // Other key commands are already declared in the menu.
+  return @[
+    UIKeyCommand.cr_openNewRegularTab,
+    UIKeyCommand.cr_undo,
+    UIKeyCommand.cr_close,
+    // TODO(crbug.com/1385469): Move it to the menu builder once we have the
+    // strings.
+    UIKeyCommand.cr_select2,
+    UIKeyCommand.cr_select3,
+  ];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
