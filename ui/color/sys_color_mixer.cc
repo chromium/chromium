@@ -14,6 +14,50 @@
 
 namespace ui {
 
+namespace {
+
+// Sys token overrides for the non-baseline themed case.
+void AddThemedSysColors(ColorMixer& mixer,
+                        const ColorProviderManager::Key& key) {
+  const bool dark_mode =
+      key.color_mode == ColorProviderManager::ColorMode::kDark;
+
+  // General.
+  mixer[kColorSysOnSurfaceSecondary] = {dark_mode ? kColorRefSecondary80
+                                                  : kColorRefSecondary30};
+  mixer[kColorSysNeutralContainer] = {dark_mode ? kColorRefNeutralVariant15
+                                                : kColorSysSurface1};
+  mixer[kColorSysDivider] = {dark_mode ? kColorRefSecondary25
+                                       : kColorRefPrimary90};
+
+  // Chrome surfaces.
+  mixer[kColorSysBase] = {dark_mode ? kColorRefSecondary25
+                                    : kColorRefNeutral99};
+  mixer[kColorSysBaseContainer] = {dark_mode ? kColorRefSecondary15
+                                             : kColorSysSurface4};
+  mixer[kColorSysBaseContainerElevated] = {dark_mode ? kColorRefSecondary25
+                                                     : kColorRefNeutral99};
+  mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefSecondary35
+                                             : kColorRefPrimary90};
+
+  mixer[kColorSysHeader] = {dark_mode ? kColorRefSecondary15
+                                      : kColorRefSecondary90};
+  mixer[kColorSysHeaderContainer] = {dark_mode ? kColorRefSecondary25
+                                               : kColorRefPrimary95};
+  mixer[kColorSysHeaderContainerInactive] = {dark_mode ? kColorRefNeutral25
+                                                       : kColorRefNeutral99};
+  mixer[kColorSysOnHeaderDivider] = {dark_mode ? kColorRefSecondary25
+                                               : kColorRefPrimary80};
+
+  // States.
+  mixer[kColorSysStateOnHeaderHover] = {dark_mode ? kColorRefPrimary90
+                                                  : kColorRefPrimary20};
+  mixer[kColorSysStateHeaderHover] = {dark_mode ? kColorRefPrimary30
+                                                : kColorRefPrimary80};
+}
+
+}  // namespace
+
 void AddSysColorMixer(ColorProvider* provider,
                       const ColorProviderManager::Key& key) {
   const bool dark_mode =
@@ -131,8 +175,6 @@ void AddSysColorMixer(ColorProvider* provider,
                                              : kColorSysSurface4};
   mixer[kColorSysBaseContainerElevated] = {dark_mode ? kColorRefNeutral25
                                                      : kColorRefNeutral100};
-  mixer[kColorSysOnBaseSecondary] = {dark_mode ? kColorRefNeutral80
-                                               : kColorRefNeutral30};
   mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
                                              : kColorRefPrimary90};
 
@@ -198,6 +240,8 @@ void AddSysColorMixer(ColorProvider* provider,
   // Deprecated.
   mixer[kColorSysOnBase] = {dark_mode ? kColorRefNeutral90
                                       : kColorRefNeutral10};
+  mixer[kColorSysOnBaseSecondary] = {dark_mode ? kColorRefNeutral80
+                                               : kColorRefNeutral30};
   mixer[kColorSysOnBaseBorder] = {dark_mode ? kColorRefNeutral30
                                             : kColorRefPrimary90};
   mixer[kColorSysStateHover] = dark_mode ? SetAlpha({kColorRefNeutral90}, 0x14)
@@ -209,6 +253,8 @@ void AddSysColorMixer(ColorProvider* provider,
                                      : SetAlpha({kColorRefNeutral10}, 0x1E);
   mixer[kColorSysStateDrag] = dark_mode ? SetAlpha({kColorRefNeutral90}, 0x29)
                                         : SetAlpha({kColorRefNeutral10}, 0x29);
+
+  AddThemedSysColors(mixer, key);
 }
 
 }  // namespace ui

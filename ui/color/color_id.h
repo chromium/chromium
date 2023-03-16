@@ -16,6 +16,7 @@
   E_CPONLY(kColorRefPrimary0, kUiColorsStart, kUiColorsStart) \
   E_CPONLY(kColorRefPrimary10) \
   E_CPONLY(kColorRefPrimary20) \
+  E_CPONLY(kColorRefPrimary25) \
   E_CPONLY(kColorRefPrimary30) \
   E_CPONLY(kColorRefPrimary40) \
   E_CPONLY(kColorRefPrimary50) \
@@ -30,7 +31,9 @@
   E_CPONLY(kColorRefSecondary10) \
   E_CPONLY(kColorRefSecondary15) \
   E_CPONLY(kColorRefSecondary20) \
+  E_CPONLY(kColorRefSecondary25) \
   E_CPONLY(kColorRefSecondary30) \
+  E_CPONLY(kColorRefSecondary35) \
   E_CPONLY(kColorRefSecondary40) \
   E_CPONLY(kColorRefSecondary50) \
   E_CPONLY(kColorRefSecondary60) \
@@ -94,6 +97,7 @@
   E_CPONLY(kColorRefNeutral100) \
   E_CPONLY(kColorRefNeutralVariant0) \
   E_CPONLY(kColorRefNeutralVariant10) \
+  E_CPONLY(kColorRefNeutralVariant15) \
   E_CPONLY(kColorRefNeutralVariant20) \
   E_CPONLY(kColorRefNeutralVariant30) \
   E_CPONLY(kColorRefNeutralVariant40) \

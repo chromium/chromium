@@ -31,6 +31,7 @@ void AddRefColorMixer(ColorProvider* provider,
   mixer[kColorRefPrimary0] = {palette.primary().get(0)};
   mixer[kColorRefPrimary10] = {palette.primary().get(10)};
   mixer[kColorRefPrimary20] = {palette.primary().get(20)};
+  mixer[kColorRefPrimary25] = {palette.primary().get(25)};
   mixer[kColorRefPrimary30] = {palette.primary().get(30)};
   mixer[kColorRefPrimary40] = {palette.primary().get(40)};
   mixer[kColorRefPrimary50] = {palette.primary().get(50)};
@@ -46,7 +47,9 @@ void AddRefColorMixer(ColorProvider* provider,
   mixer[kColorRefSecondary10] = {palette.secondary().get(10)};
   mixer[kColorRefSecondary15] = {palette.secondary().get(15)};
   mixer[kColorRefSecondary20] = {palette.secondary().get(20)};
+  mixer[kColorRefSecondary25] = {palette.secondary().get(25)};
   mixer[kColorRefSecondary30] = {palette.secondary().get(30)};
+  mixer[kColorRefSecondary35] = {palette.secondary().get(35)};
   mixer[kColorRefSecondary40] = {palette.secondary().get(40)};
   mixer[kColorRefSecondary50] = {palette.secondary().get(50)};
   mixer[kColorRefSecondary60] = {palette.secondary().get(60)};
@@ -114,6 +117,7 @@ void AddRefColorMixer(ColorProvider* provider,
 
   mixer[kColorRefNeutralVariant0] = {palette.neutral_variant().get(0)};
   mixer[kColorRefNeutralVariant10] = {palette.neutral_variant().get(10)};
+  mixer[kColorRefNeutralVariant15] = {palette.neutral_variant().get(15)};
   mixer[kColorRefNeutralVariant20] = {palette.neutral_variant().get(20)};
   mixer[kColorRefNeutralVariant30] = {palette.neutral_variant().get(30)};
   mixer[kColorRefNeutralVariant40] = {palette.neutral_variant().get(40)};
