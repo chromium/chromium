@@ -44,7 +44,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
@@ -77,6 +76,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -94,6 +94,9 @@ public class ReadingListTest {
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
 
     private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";
@@ -291,8 +294,7 @@ public class ReadingListTest {
     }
 
     @Test
-    @SmallTest
-    @DisabledTest(message = "https://crbug.com/1231219")
+    @MediumTest
     public void testSearchReadingList_Deletion() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
