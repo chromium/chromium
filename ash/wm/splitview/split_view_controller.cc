@@ -637,18 +637,20 @@ class SplitViewController::ToBeSnappedWindowsObserver
   void OnPreWindowStateTypeChange(WindowState* window_state,
                                   WindowStateType old_type) override {
     // When arriving here, we know the to-be-snapped window's state has just
-    // changed and its bounds will be changed soon. Remove the window from
-    // |to_be_snapped_windows_| and doing some prep work for snapping it in
-    // split screen if applicable.
+    // changed and its bounds will be changed soon.
     auto iter = FindWindow(window_state->window());
     DCHECK(iter != to_be_snapped_windows_.end());
     SnapPosition snap_position = iter->first;
-    to_be_snapped_windows_.erase(iter);
-    window_state->RemoveObserver(this);
-    window_state->window()->RemoveObserver(this);
 
+    // If the new window type is the target snapped state, remove the window
+    // from `to_be_snapped_windows_` and doing some prep work for snapping it in
+    // split screen. Otherwise (i.e. if the new window type is not the target
+    // one) just ignore the event and keep waiting for the next event.
     if (window_state->GetStateType() ==
         GetStateTypeFromSnapPosition(snap_position)) {
+      to_be_snapped_windows_.erase(iter);
+      window_state->RemoveObserver(this);
+      window_state->window()->RemoveObserver(this);
       split_view_controller_->AttachSnappingWindow(window_state->window(),
                                                    snap_position);
     }

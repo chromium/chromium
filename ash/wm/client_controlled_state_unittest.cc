@@ -4,6 +4,8 @@
 
 #include "ash/wm/client_controlled_state.h"
 
+#include <queue>
+
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -1117,6 +1119,53 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
     EXPECT_EQ(split_view_controller->state(),
               SplitViewController::State::kNoSnap);
     EXPECT_FALSE(overview_controller->InOverviewSession());
+  }
+}
+
+TEST_P(ClientControlledStateTestClamshellAndTablet,
+       SnapBeforePreviousEventIsApplied) {
+  auto* const overview_controller = Shell::Get()->overview_controller();
+  auto* const split_view_controller = SplitViewController::Get(window());
+
+  widget_delegate()->EnableSnap();
+
+  std::queue<WindowStateType> new_state_queue;
+  std::queue<gfx::Rect> requested_bounds_queue;
+
+  // Send a maximize request.
+  const WMEvent maximize(WM_EVENT_MAXIMIZE);
+  window_state()->OnWMEvent(&maximize);
+  new_state_queue.push(delegate()->new_state());
+  requested_bounds_queue.push(delegate()->requested_bounds());
+
+  // Send a snap request.
+  const WMEvent snap(WM_EVENT_SNAP_PRIMARY);
+  window_state()->OnWMEvent(&snap);
+  new_state_queue.push(delegate()->new_state());
+  requested_bounds_queue.push(delegate()->requested_bounds());
+
+  // Process requests sequentially.
+  ASSERT_EQ(new_state_queue.size(), requested_bounds_queue.size());
+  while (!new_state_queue.empty() && !requested_bounds_queue.empty()) {
+    state()->EnterNextState(window_state(), new_state_queue.front());
+    state()->set_bounds_locally(true);
+    widget()->SetBounds(requested_bounds_queue.front());
+    state()->set_bounds_locally(false);
+
+    new_state_queue.pop();
+    requested_bounds_queue.pop();
+  }
+
+  // The window should be snapped as it's the last requested state.
+  EXPECT_TRUE(window_state()->IsSnapped());
+
+  // In tablet mode, split view mode should be activated.
+  if (InTabletMode()) {
+    EXPECT_TRUE(split_view_controller->InSplitViewMode());
+    EXPECT_EQ(split_view_controller->state(),
+              SplitViewController::State::kPrimarySnapped);
+    EXPECT_EQ(split_view_controller->primary_window(), window());
+    EXPECT_TRUE(overview_controller->InOverviewSession());
   }
 }
 
