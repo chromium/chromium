@@ -246,15 +246,12 @@ source_set("connections_implementation_flags") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/connections/implementation/flags/connections_flags.cc" ]
   public = [
-    "src/connections/implementation/flags/connections_flags.h",
     "src/connections/implementation/flags/nearby_connections_feature_flags.h",
   ]
   public_deps = [
     ":flags",
     ":platform_base",
-    ":platform_public_types",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -418,12 +415,17 @@ source_set("flags") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
+  sources = [ "src/internal/flags/nearby_flags.cc" ]
   public = [
     "src/internal/flags/default_flag_reader.h",
     "src/internal/flags/flag.h",
     "src/internal/flags/flag_reader.h",
+    "src/internal/flags/nearby_flags.h",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  public_deps = [
+    ":platform_public_types",
+    "//third_party/abseil-cpp:absl",
+  ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
