@@ -51,7 +51,6 @@ import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.animation.FocusAnimator;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -526,20 +525,10 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         mShippingOptionSection.setCanAddItems(false);
         mPaymentMethodSection.setCanAddItems(false);
 
-        // Put payment method section on top of address section for
-        // WEB_PAYMENTS_METHOD_SECTION_ORDER_V2.
-        boolean methodSectionOrderV2 = PaymentFeatureList.isEnabled(
-                PaymentFeatureList.WEB_PAYMENTS_METHOD_SECTION_ORDER_V2);
-
         // Add the necessary sections to the layout.
-        mPaymentContainerLayout.addView(mOrderSummarySection, new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        if (methodSectionOrderV2) {
-            mSectionSeparators.add(new SectionSeparator(mPaymentContainerLayout));
-            mPaymentContainerLayout.addView(mPaymentMethodSection,
-                    new LinearLayout.LayoutParams(
-                            LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        }
+        mPaymentContainerLayout.addView(mOrderSummarySection,
+                new LinearLayout.LayoutParams(
+                        LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         SectionSeparator shippingSectionSeparator = new SectionSeparator(mPaymentContainerLayout);
         mSectionSeparators.add(shippingSectionSeparator);
@@ -553,12 +542,10 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
             shippingSectionSeparator.setVisibility(View.GONE);
         }
 
-        if (!methodSectionOrderV2) {
-            mSectionSeparators.add(new SectionSeparator(mPaymentContainerLayout));
-            mPaymentContainerLayout.addView(mPaymentMethodSection,
-                    new LinearLayout.LayoutParams(
-                            LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        }
+        mSectionSeparators.add(new SectionSeparator(mPaymentContainerLayout));
+        mPaymentContainerLayout.addView(mPaymentMethodSection,
+                new LinearLayout.LayoutParams(
+                        LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         SectionSeparator contactSectionSeparator = new SectionSeparator(mPaymentContainerLayout);
         mSectionSeparators.add(contactSectionSeparator);

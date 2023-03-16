@@ -14,11 +14,6 @@ namespace features {
 // release.
 BASE_DECLARE_FEATURE(kWebPaymentsExperimentalFeatures);
 
-// Used to control payment method section order on payment request UI. Payment
-// method section should be put on top of the address section when this feature
-// is enabled instead of under it.
-BASE_DECLARE_FEATURE(kWebPaymentsMethodSectionOrderV2);
-
 // Used to control the support for Payment Details modifiers.
 BASE_DECLARE_FEATURE(kWebPaymentsModifiers);
 
