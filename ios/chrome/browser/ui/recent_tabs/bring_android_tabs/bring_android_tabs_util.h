@@ -9,16 +9,20 @@
 
 #include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 
+class ChromeBrowserState;
+class PrefService;
+
 // Returns a list of the user's recent tabs if they meet all the prerequisites
 // to be shown the Bring Android Tabs prompt. Returns an empty list in all other
 // cases.
 std::vector<std::unique_ptr<synced_sessions::DistantTab>>
-PromptTabsForAndroidSwitcher();
+PromptTabsForAndroidSwitcher(ChromeBrowserState* browser_state);
 
 // Called when the Bring Android Tabs Prompt has been displayed.
-void OnPromptDisplayed();
+// Takes browser state prefs as input.
+void OnBringAndroidTabsPromptDisplayed(PrefService* user_prefs);
 
 // Called when the user interacts with the Bring Android Tabs prompt.
-void OnUserInteractWithPrompt();
+void OnUserInteractWithBringAndroidTabsPrompt();
 
 #endif  // IOS_CHROME_BROWSER_UI_RECENT_TABS_BRING_ANDROID_TABS_BRING_ANDROID_TABS_UTIL_H_

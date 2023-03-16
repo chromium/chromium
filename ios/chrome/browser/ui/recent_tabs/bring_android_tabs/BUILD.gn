@@ -18,6 +18,8 @@ source_set("util") {
   ]
   deps = [
     "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui/recent_tabs:synced_sessions",
   ]
 }

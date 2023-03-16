@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/ui/recent_tabs/bring_android_tabs/bring_android_tabs_util.h"
+#include "components/prefs/pref_service.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 
 std::vector<std::unique_ptr<synced_sessions::DistantTab>>
-PromptTabsForAndroidSwitcher() {
+PromptTabsForAndroidSwitcher(ChromeBrowserState* browser_state) {
   // TODO(crbug.com/1418114): Add implementation.
   return std::vector<std::unique_ptr<synced_sessions::DistantTab>>();
 }
 
-void OnPromptDisplayed() {
+void OnBringAndroidTabsPromptDisplayed(PrefService* user_prefs) {
   // TODO(crbug.com/1418114): Add implementation.
 }
 
-void OnUserInteractWithPrompt() {
+void OnUserInteractWithBringAndroidTabsPrompt() {
   // TODO(crbug.com/1418114): Add implementation.
 }
