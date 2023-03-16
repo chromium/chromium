@@ -9,88 +9,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
-namespace {
-
-// The response code messages are mostly from
-// https://learn.microsoft.com/en-us/windows/win32/secauthn/authentication-return-values,
-// which are also used by PCSC lite.
-String MojomResponseCodeToMessage(
-    mojom::SmartCardResponseCode mojom_response_code) {
-  switch (mojom_response_code) {
-    case mojom::SmartCardResponseCode::kNoService:
-      return "No smart card service available in the system.";
-    case mojom::SmartCardResponseCode::kNoSmartCard:
-      return "The operation requires a smart card, but no smart card is "
-             "currently in the device.";
-    case mojom::SmartCardResponseCode::kNotReady:
-      return "The reader or smart card is not ready to accept commands.";
-    case mojom::SmartCardResponseCode::kNotTransacted:
-      return "An attempt was made to end a non-existent transaction.";
-    case mojom::SmartCardResponseCode::kProtoMismatch:
-      return "The requested protocols are incompatible with the protocol "
-             "currently in use with the smart card.";
-    case mojom::SmartCardResponseCode::kReaderUnavailable:
-      return "The specified reader is not currently available for use.";
-    case mojom::SmartCardResponseCode::kRemovedCard:
-      return "The smart card has been removed, so further communication is not "
-             "possible.";
-    case mojom::SmartCardResponseCode::kResetCard:
-      return "The smart card has been reset, so any shared state information "
-             "is invalid.";
-    case mojom::SmartCardResponseCode::kSharingViolation:
-      return "The smart card cannot be accessed because of other connections "
-             "outstanding.";
-    case mojom::SmartCardResponseCode::kSystemCancelled:
-      return "The action was cancelled by the system, presumably to log off or "
-             "shut down.";
-    case mojom::SmartCardResponseCode::kUnpoweredCard:
-      return "Power has been removed from the smart card, so that further "
-             "communication is not possible.";
-    case mojom::SmartCardResponseCode::kUnresponsiveCard:
-      return "The smart card is not responding to a reset.";
-    case mojom::SmartCardResponseCode::kUnsupportedCard:
-      return "The reader cannot communicate with the card, due to ATR string "
-             "configuration conflicts.";
-    case mojom::SmartCardResponseCode::kUnsupportedFeature:
-      return "This smart card does not support the requested feature.";
-  }
-}
-
-V8SmartCardResponseCode::Enum MojomToV8ResponseCode(
-    mojom::SmartCardResponseCode mojom_response_code) {
-  switch (mojom_response_code) {
-    case mojom::SmartCardResponseCode::kNoService:
-      return V8SmartCardResponseCode::Enum::kNoService;
-    case mojom::SmartCardResponseCode::kNoSmartCard:
-      return V8SmartCardResponseCode::Enum::kNoSmartcard;
-    case mojom::SmartCardResponseCode::kNotReady:
-      return V8SmartCardResponseCode::Enum::kNotReady;
-    case mojom::SmartCardResponseCode::kNotTransacted:
-      return V8SmartCardResponseCode::Enum::kNotTransacted;
-    case mojom::SmartCardResponseCode::kProtoMismatch:
-      return V8SmartCardResponseCode::Enum::kProtoMismatch;
-    case mojom::SmartCardResponseCode::kReaderUnavailable:
-      return V8SmartCardResponseCode::Enum::kReaderUnavailable;
-    case mojom::SmartCardResponseCode::kRemovedCard:
-      return V8SmartCardResponseCode::Enum::kRemovedCard;
-    case mojom::SmartCardResponseCode::kResetCard:
-      return V8SmartCardResponseCode::Enum::kResetCard;
-    case mojom::SmartCardResponseCode::kSharingViolation:
-      return V8SmartCardResponseCode::Enum::kSharingViolation;
-    case mojom::SmartCardResponseCode::kSystemCancelled:
-      return V8SmartCardResponseCode::Enum::kSystemCancelled;
-    case mojom::SmartCardResponseCode::kUnpoweredCard:
-      return V8SmartCardResponseCode::Enum::kUnpoweredCard;
-    case mojom::SmartCardResponseCode::kUnresponsiveCard:
-      return V8SmartCardResponseCode::Enum::kUnresponsiveCard;
-    case mojom::SmartCardResponseCode::kUnsupportedCard:
-      return V8SmartCardResponseCode::Enum::kUnsupportedCard;
-    case mojom::SmartCardResponseCode::kUnsupportedFeature:
-      return V8SmartCardResponseCode::Enum::kUnsupportedFeature;
-  }
-}
-
-}  // namespace
 
 // static
 SmartCardError* SmartCardError::Create(String message,
@@ -99,11 +17,127 @@ SmartCardError* SmartCardError::Create(String message,
                                               options->responseCode());
 }
 
-SmartCardError::SmartCardError(mojom::SmartCardResponseCode mojom_response_code)
-    : SmartCardError(
-          MojomResponseCodeToMessage(mojom_response_code),
-          V8SmartCardResponseCode(MojomToV8ResponseCode(mojom_response_code))) {
+// static
+DOMException* SmartCardError::Create(
+    mojom::blink::SmartCardResponseCode mojom_response_code) {
+  switch (mojom_response_code) {
+    // SmartCardError:
+    // The response code messages are mostly from
+    // https://learn.microsoft.com/en-us/windows/win32/secauthn/authentication-return-values,
+    // which are also used by PCSC lite.
+    case mojom::blink::SmartCardResponseCode::kNoService:
+      return MakeGarbageCollected<SmartCardError>(
+          "No smart card service available in the system.",
+          V8SmartCardResponseCode::Enum::kNoService);
+    case mojom::blink::SmartCardResponseCode::kNoSmartCard:
+      return MakeGarbageCollected<SmartCardError>(
+          "The operation requires a smart card, but no smart card is "
+          "currently in the device.",
+          V8SmartCardResponseCode::Enum::kNoSmartcard);
+    case mojom::blink::SmartCardResponseCode::kNotReady:
+      return MakeGarbageCollected<SmartCardError>(
+          "The reader or smart card is not ready to accept commands.",
+          V8SmartCardResponseCode::Enum::kNotReady);
+    case mojom::blink::SmartCardResponseCode::kNotTransacted:
+      return MakeGarbageCollected<SmartCardError>(
+          "An attempt was made to end a non-existent transaction.",
+          V8SmartCardResponseCode::Enum::kNotTransacted);
+    case mojom::blink::SmartCardResponseCode::kProtoMismatch:
+      return MakeGarbageCollected<SmartCardError>(
+          "The requested protocols are incompatible with the protocol "
+          "currently in use with the smart card.",
+          V8SmartCardResponseCode::Enum::kProtoMismatch);
+    case mojom::blink::SmartCardResponseCode::kReaderUnavailable:
+      return MakeGarbageCollected<SmartCardError>(
+          "The specified reader is not currently available for use.",
+          V8SmartCardResponseCode::Enum::kReaderUnavailable);
+    case mojom::blink::SmartCardResponseCode::kRemovedCard:
+      return MakeGarbageCollected<SmartCardError>(
+          "The smart card has been removed, so further communication is not "
+          "possible.",
+          V8SmartCardResponseCode::Enum::kRemovedCard);
+    case mojom::blink::SmartCardResponseCode::kResetCard:
+      return MakeGarbageCollected<SmartCardError>(
+          "The smart card has been reset, so any shared state information "
+          "is invalid.",
+          V8SmartCardResponseCode::Enum::kResetCard);
+    case mojom::blink::SmartCardResponseCode::kServerTooBusy:
+      return MakeGarbageCollected<SmartCardError>(
+          "The smart card resource manager is too busy to complete this "
+          "operation.",
+          V8SmartCardResponseCode::Enum::kServerTooBusy);
+    case mojom::blink::SmartCardResponseCode::kSharingViolation:
+      return MakeGarbageCollected<SmartCardError>(
+          "The smart card cannot be accessed because of other connections "
+          "outstanding.",
+          V8SmartCardResponseCode::Enum::kSharingViolation);
+    case mojom::blink::SmartCardResponseCode::kSystemCancelled:
+      return MakeGarbageCollected<SmartCardError>(
+          "The action was cancelled by the system, presumably to log off or "
+          "shut down.",
+          V8SmartCardResponseCode::Enum::kSystemCancelled);
+    case mojom::blink::SmartCardResponseCode::kUnpoweredCard:
+      return MakeGarbageCollected<SmartCardError>(
+          "Power has been removed from the smart card, so that further "
+          "communication is not possible.",
+          V8SmartCardResponseCode::Enum::kUnpoweredCard);
+    case mojom::blink::SmartCardResponseCode::kUnresponsiveCard:
+      return MakeGarbageCollected<SmartCardError>(
+          "The smart card is not responding to a reset.",
+          V8SmartCardResponseCode::Enum::kUnresponsiveCard);
+    case mojom::blink::SmartCardResponseCode::kUnsupportedCard:
+      return MakeGarbageCollected<SmartCardError>(
+          "The reader cannot communicate with the card, due to ATR string "
+          "configuration conflicts.",
+          V8SmartCardResponseCode::Enum::kUnsupportedCard);
+    case mojom::blink::SmartCardResponseCode::kUnsupportedFeature:
+      return MakeGarbageCollected<SmartCardError>(
+          "This smart card does not support the requested feature.",
+          V8SmartCardResponseCode::Enum::kUnsupportedFeature);
+
+    // DOMException:
+    // "InvalidStateError"
+    case mojom::blink::SmartCardResponseCode::kInvalidConnection:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError, "Connection is invalid.");
+    case mojom::blink::SmartCardResponseCode::kServiceStopped:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "The smart card resource manager has shut down.");
+    // "AbortError"
+    case mojom::blink::SmartCardResponseCode::kShutdown:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError,
+          "The operation has been aborted to allow the server application to "
+          "exit.");
+    // "UnknownError"
+    case mojom::blink::SmartCardResponseCode::kCommError:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError,
+          "An internal communications error has been detected.");
+    case mojom::blink::SmartCardResponseCode::kInternalError:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError,
+          "An internal consistency check failed.");
+    case mojom::blink::SmartCardResponseCode::kNoMemory:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError,
+          "Not enough memory available to complete this command.");
+    case mojom::blink::SmartCardResponseCode::kUnexpected:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError,
+          "An unexpected card error has occurred.");
+    case mojom::blink::SmartCardResponseCode::kUnknownError:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError,
+          "An internal error has been detected, but the source is unknown.");
+  }
 }
+
+SmartCardError::SmartCardError(String message,
+                               V8SmartCardResponseCode::Enum response_code_enum)
+    : SmartCardError(std::move(message),
+                     V8SmartCardResponseCode(response_code_enum)) {}
 
 SmartCardError::SmartCardError(String message,
                                V8SmartCardResponseCode response_code)

@@ -13,6 +13,7 @@ enum SmartCardResponseCode {
   "reader-unavailable",
   "removed-card",
   "reset-card",
+  "server-too-busy",
   "sharing-violation",
   "system-cancelled",
   "unpowered-card",

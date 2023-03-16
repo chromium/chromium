@@ -4,9 +4,10 @@
 
 module blink.mojom;
 
-// Maps to the namesake enum in
-// https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
+// Errors that can arise from PC/SC requests.
 enum SmartCardResponseCode {
+  // SmartCardError:
+  // https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
   kNoService,
   kNoSmartCard,
   kNotReady,
@@ -15,12 +16,26 @@ enum SmartCardResponseCode {
   kReaderUnavailable,
   kRemovedCard,
   kResetCard,
+  kServerTooBusy,
   kSharingViolation,
   kSystemCancelled,
   kUnpoweredCard,
   kUnresponsiveCard,
   kUnsupportedCard,
-  kUnsupportedFeature
+  kUnsupportedFeature,
+
+  // DOMException:
+  // "InvalidStateError"
+  kInvalidConnection, // Derived from SCARD_E_INVALID_HANDLE in winscard.h
+  kServiceStopped, // SCARD_E_SERVICE_STOPPED in winscard.h
+  // "AbortError"
+  kShutdown, // SCARD_P_SHUTDOWN in winscard.h
+  // "UnknownError"
+  kCommError, // SCARD_F_COMM_ERROR in winscard.h
+  kInternalError, // SCARD_F_INTERNAL_ERROR in winscard.h
+  kNoMemory, // SCARD_E_NO_MEMORY in winscard.h
+  kUnexpected, // SCARD_E_UNEXPECTED in winscard.h
+  kUnknownError, // SCARD_F_UNKNOWN_ERROR in winscard.h
 };
 
 // Information about a smart card reader.

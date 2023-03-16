@@ -162,8 +162,7 @@ void SmartCardResourceManager::FinishGetReaders(
   get_readers_promises_.erase(resolver);
 
   if (result->is_response_code()) {
-    auto* error =
-        MakeGarbageCollected<SmartCardError>(result->get_response_code());
+    auto* error = SmartCardError::Create(result->get_response_code());
     resolver->Reject(error);
     return;
   }
