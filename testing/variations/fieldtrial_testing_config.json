@@ -9363,6 +9363,79 @@
             ]
         }
     ],
+    "PerformanceControlsHatsStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPerformance_20230223",
+                    "params": {
+                        "en_site_id": "rcKd8mV1n0ugnJ3q1cK0Vogsfb7o",
+                        "probability": "0.00035"
+                    },
+                    "enable_features": [
+                        "PerformanceControlsPerformanceSurvey"
+                    ],
+                    "disable_features": [
+                        "PerformanceControlsBatteryPerformanceSurvey",
+                        "PerformanceControlsBatterySaverOptOutSurvey",
+                        "PerformanceControlsHighEfficiencyOptOutSurvey"
+                    ]
+                },
+                {
+                    "name": "EnabledBatteryPerformance_20230223",
+                    "params": {
+                        "en_site_id": "8ZuJfRgyv0ugnJ3q1cK0X86CWQvg",
+                        "probability": "0.0007"
+                    },
+                    "enable_features": [
+                        "PerformanceControlsBatteryPerformanceSurvey"
+                    ],
+                    "disable_features": [
+                        "PerformanceControlsBatterySaverOptOutSurvey",
+                        "PerformanceControlsHighEfficiencyOptOutSurvey",
+                        "PerformanceControlsPerformanceSurvey"
+                    ]
+                },
+                {
+                    "name": "EnabledHighEfficiencyOptOut_20230223",
+                    "params": {
+                        "en_site_id": "hEedoxCS30ugnJ3q1cK0YKKzXjSm",
+                        "probability": "0.5"
+                    },
+                    "enable_features": [
+                        "PerformanceControlsHighEfficiencyOptOutSurvey"
+                    ],
+                    "disable_features": [
+                        "PerformanceControlsBatteryPerformanceSurvey",
+                        "PerformanceControlsBatterySaverOptOutSurvey",
+                        "PerformanceControlsPerformanceSurvey"
+                    ]
+                },
+                {
+                    "name": "EnabledBatterySaverOptOut_20230223",
+                    "params": {
+                        "en_site_id": "gyuzHnE940ugnJ3q1cK0RyY65eG8",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "PerformanceControlsBatterySaverOptOutSurvey"
+                    ],
+                    "disable_features": [
+                        "PerformanceControlsBatteryPerformanceSurvey",
+                        "PerformanceControlsHighEfficiencyOptOutSurvey",
+                        "PerformanceControlsPerformanceSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "PerformanceControlsLaunch": [
         {
             "platforms": [
