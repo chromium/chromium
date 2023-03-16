@@ -415,8 +415,9 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
       ->CommitSameDocument();
 
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.AMP.LayoutInstability.CumulativeShiftScore.Subframe",
-      10, 1);
+      "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore.Subframe"
+      ".SessionWindow.Gap1000ms.Max5000ms2",
+      0, 1);
 
   ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
   ASSERT_NE(nullptr, entry.get());

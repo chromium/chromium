@@ -49,10 +49,6 @@ const char kHistogramAMPSubframeFirstInputDelay[] =
     "InteractiveTiming.FirstInputDelay4.Subframe";
 const char kHistogramAMPSubframeFirstInputDelayFullNavigation[] =
     "InteractiveTiming.FirstInputDelay4.Subframe.FullNavigation";
-const char kHistogramAMPSubframeLayoutInstabilityShiftScore[] =
-    "LayoutInstability.CumulativeShiftScore.Subframe";
-const char kHistogramAMPSubframeLayoutInstabilityShiftScoreFullNavigation[] =
-    "LayoutInstability.CumulativeShiftScore.Subframe.FullNavigation";
 
 const char kHistogramAMPSubframeNumInteractions[] =
     "InteractiveTiming.NumInteractions.Subframe";
@@ -583,14 +579,8 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
                     .session_windows_gap1000ms_max5000ms_max_cls));
   }
 
-  // For UMA, report (shift_score * 10) an an int in the range [0,100].
-  int32_t uma_value = static_cast<int>(roundf(clamped_shift_score * 10.0f));
-  if (current_main_frame_nav_info_->is_same_document_navigation) {
-    UMA_HISTOGRAM_COUNTS_100(
-        std::string(kHistogramPrefix)
-            .append(kHistogramAMPSubframeLayoutInstabilityShiftScore),
-        uma_value);
-    if (!normalized_cls_data.data_tainted) {
+  if (!normalized_cls_data.data_tainted) {
+    if (current_main_frame_nav_info_->is_same_document_navigation) {
       base::UmaHistogramCounts100(
           "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
           "Subframe.SessionWindow.Gap1000ms.Max5000ms",
@@ -602,14 +592,7 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
           page_load_metrics::LayoutShiftUmaValue10000(
               normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
           1, 24000, 50);
-    }
-  } else {
-    UMA_HISTOGRAM_COUNTS_100(
-        std::string(kHistogramPrefix)
-            .append(
-                kHistogramAMPSubframeLayoutInstabilityShiftScoreFullNavigation),
-        uma_value);
-    if (!normalized_cls_data.data_tainted) {
+    } else {
       base::UmaHistogramCounts100(
           "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
           "Subframe.FullNavigation.SessionWindow.Gap1000ms.Max5000ms",
