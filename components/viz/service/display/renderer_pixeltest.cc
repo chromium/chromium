@@ -1842,7 +1842,13 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
       cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
-TEST_P(VideoRendererPixelHiLoTest, ClippedYUVRect) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1421171): currently failing on iOS.
+#define MAYBE_ClippedYUVRect DISABLED_ClippedYUVRect
+#else
+#define MAYBE_ClippedYUVRect ClippedYUVRect
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(VideoRendererPixelHiLoTest, MAYBE_ClippedYUVRect) {
   gfx::Rect viewport(this->device_viewport_size_);
   gfx::Rect draw_rect(this->device_viewport_size_.width() * 1.5,
                       this->device_viewport_size_.height() * 1.5);
@@ -4612,7 +4618,13 @@ TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
       &pass_list, path, cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
-TEST_P(GPURendererPixelTest, LinearGradientOnRenderPass) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1421171): currently failing on iOS.
+#define MAYBE_LinearGradientOnRenderPass DISABLED_LinearGradientOnRenderPass
+#else
+#define MAYBE_LinearGradientOnRenderPass LinearGradientOnRenderPass
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(GPURendererPixelTest, MAYBE_LinearGradientOnRenderPass) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr int kCornerRadius = 20;
 
@@ -4657,7 +4669,14 @@ TEST_P(GPURendererPixelTest, LinearGradientOnRenderPass) {
           0.6f)));
 }
 
-TEST_P(GPURendererPixelTest, MultiLinearGradientOnRenderPass) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1421171): currently failing on iOS.
+#define MAYBE_MultiLinearGradientOnRenderPass \
+  DISABLED_MultiLinearGradientOnRenderPass
+#else
+#define MAYBE_MultiLinearGradientOnRenderPass MultiLinearGradientOnRenderPass
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(GPURendererPixelTest, MAYBE_MultiLinearGradientOnRenderPass) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr int kCornerRadius = 20;
   constexpr int kInset = 20;

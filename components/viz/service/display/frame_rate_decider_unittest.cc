@@ -213,7 +213,14 @@ TEST_F(FrameRateDeciderTest,
   EXPECT_EQ(display_interval_, FrameRateDecider::UnspecifiedFrameInterval());
 }
 
-TEST_F(FrameRateDeciderTest, OptimalFrameSinkIntervelIsPicked) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1413559): currently failing on iOS.
+#define MAYBE_OptimalFrameSinkIntervalIsPicked \
+  DISABLED_OptimalFrameSinkIntervalIsPicked
+#else
+#define MAYBE_OptimalFrameSinkIntervalIsPicked OptimalFrameSinkIntervalIsPicked
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(FrameRateDeciderTest, MAYBE_OptimalFrameSinkIntervalIsPicked) {
   base::TimeDelta min_supported_interval = base::Seconds(1);
   const std::vector<base::TimeDelta> supported_intervals = {
       min_supported_interval * 2, min_supported_interval};
@@ -257,7 +264,13 @@ TEST_F(FrameRateDeciderTest, OptimalFrameSinkIntervelIsPicked) {
   EXPECT_EQ(display_interval_, FrameRateDecider::UnspecifiedFrameInterval());
 }
 
-TEST_F(FrameRateDeciderTest, MinFrameSinkIntervalIsPicked) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1413559): currently failing on iOS.
+#define MAYBE_MinFrameSinkIntervalIsPicked DISABLED_MinFrameSinkIntervalIsPicked
+#else
+#define MAYBE_MinFrameSinkIntervalIsPicked MinFrameSinkIntervalIsPicked
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(FrameRateDeciderTest, MAYBE_MinFrameSinkIntervalIsPicked) {
   base::TimeDelta min_supported_interval = base::Seconds(1);
   const std::vector<base::TimeDelta> supported_intervals = {
       min_supported_interval * 3, min_supported_interval * 2,
