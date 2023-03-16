@@ -4,37 +4,35 @@
 
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 
-#include "base/check_op.h"
-#include "base/lazy_instance.h"
-#include "base/threading/thread_local.h"
+#include "base/compiler_specific.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace internal {
 
 namespace {
 
-LazyInstance<ThreadLocalPointer<const TaskPriority>>::Leaky
-    tls_task_priority_for_current_thread = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local TaskPriority task_priority_for_current_thread =
+    TaskPriority::USER_BLOCKING;
 
 }  // namespace
 
 ScopedSetTaskPriorityForCurrentThread::ScopedSetTaskPriorityForCurrentThread(
     TaskPriority priority)
-    : priority_(priority) {
-  DCHECK(!tls_task_priority_for_current_thread.Get().Get());
-  tls_task_priority_for_current_thread.Get().Set(&priority_);
-}
+    : resetter_(&task_priority_for_current_thread,
+                priority,
+                TaskPriority::USER_BLOCKING) {}
 
 ScopedSetTaskPriorityForCurrentThread::
-    ~ScopedSetTaskPriorityForCurrentThread() {
-  DCHECK_EQ(&priority_, tls_task_priority_for_current_thread.Get().Get());
-  tls_task_priority_for_current_thread.Get().Set(nullptr);
-}
+    ~ScopedSetTaskPriorityForCurrentThread() = default;
 
 TaskPriority GetTaskPriorityForCurrentThread() {
-  const TaskPriority* priority =
-      tls_task_priority_for_current_thread.Get().Get();
-  return priority ? *priority : TaskPriority::USER_BLOCKING;
+  // Workaround false-positive MSAN use-of-uninitialized-value on
+  // thread_local storage for loaded libraries:
+  // https://github.com/google/sanitizers/issues/1265
+  MSAN_UNPOISON(&task_priority_for_current_thread, sizeof(TaskPriority));
+
+  return task_priority_for_current_thread;
 }
 
 }  // namespace internal

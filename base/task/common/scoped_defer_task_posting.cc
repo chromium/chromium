@@ -4,8 +4,8 @@
 
 #include "base/task/common/scoped_defer_task_posting.h"
 
-#include "base/no_destructor.h"
-#include "base/threading/thread_local.h"
+#include "base/compiler_specific.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -13,10 +13,8 @@ namespace {
 
 // Holds a thread-local pointer to the current scope or null when no
 // scope is active.
-ThreadLocalPointer<ScopedDeferTaskPosting>& GetScopedDeferTaskPostingTLS() {
-  static NoDestructor<ThreadLocalPointer<ScopedDeferTaskPosting>> tls;
-  return *tls;
-}
+ABSL_CONST_INIT thread_local ScopedDeferTaskPosting* scoped_defer_task_posting =
+    nullptr;
 
 }  // namespace
 
@@ -38,7 +36,12 @@ void ScopedDeferTaskPosting::PostOrDefer(
 
 // static
 ScopedDeferTaskPosting* ScopedDeferTaskPosting::Get() {
-  return GetScopedDeferTaskPostingTLS().Get();
+  // Workaround false-positive MSAN use-of-uninitialized-value on
+  // thread_local storage for loaded libraries:
+  // https://github.com/google/sanitizers/issues/1265
+  MSAN_UNPOISON(&scoped_defer_task_posting, sizeof(ScopedDeferTaskPosting*));
+
+  return scoped_defer_task_posting;
 }
 
 // static
@@ -47,7 +50,7 @@ bool ScopedDeferTaskPosting::Set(ScopedDeferTaskPosting* scope) {
   // get nested scopes. In this case ignore all except the top one.
   if (Get() && scope)
     return false;
-  GetScopedDeferTaskPostingTLS().Set(scope);
+  scoped_defer_task_posting = scope;
   return true;
 }
 

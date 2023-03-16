@@ -7,10 +7,10 @@
 #include <type_traits>
 
 #include "base/check.h"
-#include "base/no_destructor.h"
+#include "base/compiler_specific.h"
 #include "base/task/task_traits.h"
 #include "base/task/task_traits_extension.h"
-#include "base/threading/thread_local.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -31,21 +31,23 @@ static_assert(
     TaskTraitsExtensionStorage::kInvalidExtensionId == 0,
     "TaskExecutorMap depends on 0 being an invalid TaskTraits extension ID");
 
+ABSL_CONST_INIT thread_local TaskExecutor* current_task_executor = nullptr;
+
 }  // namespace
 
-ThreadLocalPointer<TaskExecutor>* GetTLSForCurrentTaskExecutor() {
-  static NoDestructor<ThreadLocalPointer<TaskExecutor>> instance;
-  return instance.get();
-}
-
 void SetTaskExecutorForCurrentThread(TaskExecutor* task_executor) {
-  DCHECK(!task_executor || !GetTLSForCurrentTaskExecutor()->Get() ||
-         GetTLSForCurrentTaskExecutor()->Get() == task_executor);
-  GetTLSForCurrentTaskExecutor()->Set(task_executor);
+  DCHECK(!task_executor || !GetTaskExecutorForCurrentThread() ||
+         GetTaskExecutorForCurrentThread() == task_executor);
+  current_task_executor = task_executor;
 }
 
 TaskExecutor* GetTaskExecutorForCurrentThread() {
-  return GetTLSForCurrentTaskExecutor()->Get();
+  // Workaround false-positive MSAN use-of-uninitialized-value on
+  // thread_local storage for loaded libraries:
+  // https://github.com/google/sanitizers/issues/1265
+  MSAN_UNPOISON(&current_task_executor, sizeof(TaskExecutor*));
+
+  return current_task_executor;
 }
 
 void RegisterTaskExecutor(uint8_t extension_id, TaskExecutor* task_executor) {

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -116,7 +117,7 @@ class BASE_EXPORT TaskAnnotator {
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 };
 
-class BASE_EXPORT TaskAnnotator::ScopedSetIpcHash {
+class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::ScopedSetIpcHash {
  public:
   explicit ScopedSetIpcHash(uint32_t ipc_hash);
 
@@ -136,12 +137,13 @@ class BASE_EXPORT TaskAnnotator::ScopedSetIpcHash {
 
  private:
   ScopedSetIpcHash(uint32_t ipc_hash, const char* ipc_interface_name);
-  raw_ptr<ScopedSetIpcHash> old_scoped_ipc_hash_ = nullptr;
-  uint32_t ipc_hash_ = 0;
-  const char* ipc_interface_name_ = nullptr;
+
+  const AutoReset<ScopedSetIpcHash*> resetter_;
+  uint32_t ipc_hash_;
+  const char* ipc_interface_name_;
 };
 
-class BASE_EXPORT TaskAnnotator::LongTaskTracker {
+class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
  public:
   explicit LongTaskTracker(const TickClock* tick_clock,
                            PendingTask& pending_task,
@@ -166,6 +168,8 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
  private:
   void EmitReceivedIPCDetails(perfetto::EventContext& ctx);
 
+  const AutoReset<LongTaskTracker*> resetter_;
+
   // For tracking task duration
   raw_ptr<const TickClock> tick_clock_;  // Not owned.
   TimeTicks task_start_time_;
@@ -176,7 +180,6 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
   // Use this to ensure that tracing and NowTicks() are not called
   // unnecessarily.
   bool is_tracing_;
-  raw_ptr<LongTaskTracker> old_long_task_tracker_ = nullptr;
   const char* ipc_interface_name_ = nullptr;
   uint32_t ipc_hash_ = 0;
 
@@ -184,8 +187,8 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
   // known. Note that this will not compile in the Native client.
   uint32_t (*ipc_method_info_)();
   bool is_response_ = false;
-  const raw_ref<PendingTask> pending_task_;
-  raw_ptr<TaskAnnotator> task_annotator_;
+  [[maybe_unused]] const raw_ref<PendingTask> pending_task_;
+  [[maybe_unused]] raw_ptr<TaskAnnotator> task_annotator_;
 };
 
 }  // namespace base

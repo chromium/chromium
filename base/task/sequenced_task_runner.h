@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/task/delay_policy.h"
@@ -313,6 +314,8 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
    private:
     friend class SequencedTaskRunner;
     friend class CurrentHandleOverride;
+
+    const AutoReset<CurrentDefaultHandle*> resetter_;
 
     scoped_refptr<SequencedTaskRunner> task_runner_;
   };

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -32,6 +33,26 @@ ABSL_CONST_INIT thread_local BlockingObserver* blocking_observer = nullptr;
 ABSL_CONST_INIT thread_local UncheckedScopedBlockingCall*
     last_scoped_blocking_call = nullptr;
 
+// These functions can be removed, and the calls below replaced with direct
+// variable accesses, once the MSAN workaround is not necessary.
+BlockingObserver* GetBlockingObserver() {
+  // Workaround false-positive MSAN use-of-uninitialized-value on
+  // thread_local storage for loaded libraries:
+  // https://github.com/google/sanitizers/issues/1265
+  MSAN_UNPOISON(&blocking_observer, sizeof(BlockingObserver*));
+
+  return blocking_observer;
+}
+UncheckedScopedBlockingCall* GetLastScopedBlockingCall() {
+  // Workaround false-positive MSAN use-of-uninitialized-value on
+  // thread_local storage for loaded libraries:
+  // https://github.com/google/sanitizers/issues/1265
+  MSAN_UNPOISON(&last_scoped_blocking_call,
+                sizeof(UncheckedScopedBlockingCall*));
+
+  return last_scoped_blocking_call;
+}
+
 // Set to true by scoped_blocking_call_unittest to ensure unrelated threads
 // entering ScopedBlockingCalls don't affect test outcomes.
 bool g_only_monitor_observed_threads = false;
@@ -45,7 +66,7 @@ bool IsBackgroundPriorityWorker() {
 
 void SetBlockingObserverForCurrentThread(
     BlockingObserver* new_blocking_observer) {
-  DCHECK(!blocking_observer);
+  DCHECK(!GetBlockingObserver());
   blocking_observer = new_blocking_observer;
 }
 
@@ -297,8 +318,8 @@ IOJankReportingCallback& IOJankMonitoringWindow::reporting_callback_storage() {
 UncheckedScopedBlockingCall::UncheckedScopedBlockingCall(
     BlockingType blocking_type,
     BlockingCallType blocking_call_type)
-    : blocking_observer_(blocking_observer),
-      previous_scoped_blocking_call_(last_scoped_blocking_call),
+    : blocking_observer_(GetBlockingObserver()),
+      previous_scoped_blocking_call_(GetLastScopedBlockingCall()),
       resetter_(&last_scoped_blocking_call, this),
       is_will_block_(blocking_type == BlockingType::WILL_BLOCK ||
                      (previous_scoped_blocking_call_ &&
@@ -333,7 +354,7 @@ UncheckedScopedBlockingCall::~UncheckedScopedBlockingCall() {
   // TLS affects result of GetLastError() on Windows. ScopedClearLastError
   // prevents side effect.
   ScopedClearLastError save_last_error;
-  DCHECK_EQ(this, last_scoped_blocking_call);
+  DCHECK_EQ(this, GetLastScopedBlockingCall());
   if (blocking_observer_ && !previous_scoped_blocking_call_)
     blocking_observer_->BlockingEnded();
 }

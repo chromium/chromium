@@ -47,7 +47,6 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker_impl.h"
-#include "base/threading/thread_local_storage.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -591,46 +590,6 @@ TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
   blocking_threads_continue.Signal();
   task_tracker_.FlushForTesting();
 }
-
-namespace {
-
-constexpr size_t kMagicTlsValue = 42;
-
-class ThreadGroupImplCheckTlsReuse : public ThreadGroupImplImplTest {
- public:
-  ThreadGroupImplCheckTlsReuse(const ThreadGroupImplCheckTlsReuse&) = delete;
-  ThreadGroupImplCheckTlsReuse& operator=(const ThreadGroupImplCheckTlsReuse&) =
-      delete;
-
-  void SetTlsValueAndWait() {
-    slot_.Set(reinterpret_cast<void*>(kMagicTlsValue));
-    waiter_.Wait();
-  }
-
-  void CountZeroTlsValuesAndWait(TestWaitableEvent* count_waiter) {
-    if (!slot_.Get())
-      subtle::NoBarrier_AtomicIncrement(&zero_tls_values_, 1);
-
-    count_waiter->Signal();
-    waiter_.Wait();
-  }
-
- protected:
-  ThreadGroupImplCheckTlsReuse() = default;
-
-  void SetUp() override {
-    CreateAndStartThreadGroup(kReclaimTimeForCleanupTests, kMaxTasks);
-  }
-
-  subtle::Atomic32 zero_tls_values_ = 0;
-
-  TestWaitableEvent waiter_;
-
- private:
-  ThreadLocalStorage::Slot slot_;
-};
-
-}  // namespace
 
 namespace {
 

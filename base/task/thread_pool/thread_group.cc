@@ -9,11 +9,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/task_tracker.h"
-#include "base/threading/thread_local.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/com_init_check_hook.h"
@@ -26,12 +25,7 @@ namespace internal {
 namespace {
 
 // ThreadGroup that owns the current thread, if any.
-LazyInstance<ThreadLocalPointer<const ThreadGroup>>::Leaky
-    tls_current_thread_group = LAZY_INSTANCE_INITIALIZER;
-
-const ThreadGroup* GetCurrentThreadGroup() {
-  return tls_current_thread_group.Get().Get();
-}
+ABSL_CONST_INIT thread_local const ThreadGroup* current_thread_group = nullptr;
 
 }  // namespace
 
@@ -82,17 +76,17 @@ ThreadGroup::ThreadGroup(TrackedRef<TaskTracker> task_tracker,
 ThreadGroup::~ThreadGroup() = default;
 
 void ThreadGroup::BindToCurrentThread() {
-  DCHECK(!GetCurrentThreadGroup());
-  tls_current_thread_group.Get().Set(this);
+  DCHECK(!CurrentThreadHasGroup());
+  current_thread_group = this;
 }
 
 void ThreadGroup::UnbindFromCurrentThread() {
-  DCHECK(GetCurrentThreadGroup());
-  tls_current_thread_group.Get().Set(nullptr);
+  DCHECK(IsBoundToCurrentThread());
+  current_thread_group = nullptr;
 }
 
 bool ThreadGroup::IsBoundToCurrentThread() const {
-  return GetCurrentThreadGroup() == this;
+  return current_thread_group == this;
 }
 
 void ThreadGroup::Start() {
@@ -346,7 +340,7 @@ ThreadGroup::GetScopedWindowsThreadEnvironment(WorkerEnvironment environment) {
 
 // static
 bool ThreadGroup::CurrentThreadHasGroup() {
-  return GetCurrentThreadGroup() != nullptr;
+  return current_thread_group != nullptr;
 }
 
 }  // namespace internal
