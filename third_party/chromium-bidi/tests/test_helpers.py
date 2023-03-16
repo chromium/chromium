@@ -97,14 +97,14 @@ async def get_tree(websocket, context_id=None):
 
 
 # Open given URL in the given context.
-async def goto_url(websocket, context_id, url):
-    await execute_command(
+async def goto_url(websocket, context_id, url, wait="interactive"):
+    return await execute_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
                 "url": url,
                 "context": context_id,
-                "wait": "interactive"
+                "wait": wait
             }
         })
 
