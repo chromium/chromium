@@ -41,7 +41,6 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       bool avoid_closing_connections,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
       const absl::optional<blink::StorageKey>& storage_key,
-      bool partitioned_state_allowed_only,
       base::OnceClosure callback)
       : origin_(origin),
         clear_cookies_(clear_cookies),
@@ -51,7 +50,6 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
         avoid_closing_connections_(avoid_closing_connections),
         cookie_partition_key_(cookie_partition_key),
         storage_key_(storage_key),
-        partitioned_state_allowed_only_(partitioned_state_allowed_only),
         callback_(std::move(callback)),
         pending_task_count_(0),
         remover_(nullptr) {
@@ -93,8 +91,6 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       cookie_filter_builder->SetCookiePartitionKeyCollection(
           net::CookiePartitionKeyCollection::FromOptional(
               cookie_partition_key_));
-      cookie_filter_builder->SetPartitionedStateAllowedOnly(
-          partitioned_state_allowed_only_);
 
       pending_task_count_++;
       uint64_t remove_mask = BrowsingDataRemover::DATA_TYPE_COOKIES;
@@ -165,15 +161,14 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     delete this;
   }
 
-  const url::Origin origin_;
-  const bool clear_cookies_;
-  const bool clear_storage_;
-  const bool clear_cache_;
-  const std::set<std::string> storage_buckets_to_remove_;
-  const bool avoid_closing_connections_;
-  const absl::optional<net::CookiePartitionKey> cookie_partition_key_;
-  const absl::optional<blink::StorageKey> storage_key_;
-  const bool partitioned_state_allowed_only_;
+  url::Origin origin_;
+  bool clear_cookies_;
+  bool clear_storage_;
+  bool clear_cache_;
+  std::set<std::string> storage_buckets_to_remove_;
+  bool avoid_closing_connections_;
+  absl::optional<net::CookiePartitionKey> cookie_partition_key_;
+  absl::optional<blink::StorageKey> storage_key_;
   base::OnceClosure callback_;
   int pending_task_count_ = 0;
   raw_ptr<BrowsingDataRemoverImpl> remover_ = nullptr;
@@ -194,7 +189,6 @@ void ClearSiteData(
     bool avoid_closing_connections,
     const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     const absl::optional<blink::StorageKey>& storage_key,
-    bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -209,8 +203,7 @@ void ClearSiteData(
   (new SiteDataClearer(browser_context, origin, clear_cookies, clear_storage,
                        clear_cache, storage_buckets_to_remove,
                        avoid_closing_connections, cookie_partition_key,
-                       storage_key, partitioned_state_allowed_only,
-                       std::move(callback)))
+                       storage_key, std::move(callback)))
       ->RunAndDestroySelfWhenDone();
 }
 

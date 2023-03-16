@@ -134,8 +134,7 @@ interface URLLoaderNetworkServiceObserver {
   OnClearSiteData(url.mojom.Url url,
                   string header_value,
                   int32 load_flags,
-                  CookiePartitionKey? cookie_partition_key,
-                  bool partitioned_state_allowed_only) => ();
+                  CookiePartitionKey? cookie_partition_key) => ();
 
   // Called periodically to update the client about progress of the current
   // loads. To avoid flooding the client, it has to ack the update before it can

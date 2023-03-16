@@ -83,7 +83,6 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       int load_flags,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
       const absl::optional<blink::StorageKey>& storage_key,
-      bool partitioned_state_allowed_only,
       base::OnceClosure callback);
 
   // Exposes ParseHeader() publicly for testing.
@@ -105,7 +104,6 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       int load_flags,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
       const absl::optional<blink::StorageKey>& storage_key,
-      bool partitioned_state_allowed_only,
       base::OnceClosure callback,
       std::unique_ptr<ConsoleMessagesDelegate> delegate);
   virtual ~ClearSiteDataHandler();
@@ -165,35 +163,27 @@ class CONTENT_EXPORT ClearSiteDataHandler {
     return storage_key_;
   }
 
-  bool PartitionedStateOnlyForTesting() const {
-    return partitioned_state_allowed_only_;
-  }
-
  private:
   // Required to clear the data.
   base::RepeatingCallback<BrowserContext*()> browser_context_getter_;
   base::RepeatingCallback<WebContents*()> web_contents_getter_;
 
   // Target URL whose data will be cleared.
-  const GURL url_;
+  GURL url_;
 
   // Raw string value of the 'Clear-Site-Data' header.
-  const std::string header_value_;
+  std::string header_value_;
 
   // Load flags of the current request, used to check cookie policies.
-  const int load_flags_;
+  int load_flags_;
 
   // The cookie partition key for which we need to clear partitioned cookies
   // when we receive the Clear-Site-Data header.
-  const absl::optional<net::CookiePartitionKey> cookie_partition_key_;
+  absl::optional<net::CookiePartitionKey> cookie_partition_key_;
 
   // The storage key for which we need to clear partitioned storage when we
   // receive the Clear-Site-Data header.
-  const absl::optional<blink::StorageKey> storage_key_;
-
-  // If third-party cookie blocking is enabled and applies to the response that
-  // sent Clear-Site-Data.
-  const bool partitioned_state_allowed_only_;
+  absl::optional<blink::StorageKey> storage_key_;
 
   // Used to notify that the clearing has completed. Callers could resuming
   // loading after this point.
