@@ -70,6 +70,11 @@ chrome.runtime.onMessageExternal.addListener(function(
           requestInfo, origin, true);
       doSendResponse();
       return false;
+    } else if (method === 'logging.noUploadOnRenderClose') {
+      chrome.webrtcLoggingPrivate.setUploadOnRenderClose(
+          requestInfo, origin, false);
+      doSendResponse();
+      return false;
     } else if (method === 'logging.stop') {
       chrome.webrtcLoggingPrivate.stop(requestInfo, origin, doSendResponse);
       return true;
@@ -124,6 +129,23 @@ chrome.runtime.onMessageExternal.addListener(function(
     } else if (method === 'logging.discard') {
       chrome.webrtcLoggingPrivate.discard(requestInfo, origin, doSendResponse);
       return true;
+    } else if (method === 'getSinks') {
+      chrome.webrtcAudioPrivate.getSinks(doSendResponse);
+      return true;
+    } else if (method === 'getAssociatedSink') {
+      const sourceId = message['sourceId'];
+      chrome.webrtcAudioPrivate.getAssociatedSink(
+          origin, sourceId, doSendResponse);
+      return true;
+    } else if (method === 'isExtensionEnabled') {
+      // This method is necessary because there may be more than one
+      // version of this extension, under different extension IDs. By
+      // first calling this method on the extension ID, the client can
+      // check if it's loaded; if it's not, the extension system will
+      // call the callback with no arguments and set
+      // chrome.runtime.lastError.
+      doSendResponse();
+      return false;
     } else if (method === 'getNaclArchitecture') {
       chrome.runtime.getPlatformInfo(function(obj) {
         doSendResponse(obj.nacl_arch);
@@ -170,6 +192,20 @@ chrome.runtime.onMessageExternal.addListener(function(
     doSendResponse(null, e.name + ': ' + e.message);
   }
 });
+
+// If Hangouts connects with a port named 'onSinksChangedListener', we
+// will register a listener and send it a message {'eventName':
+// 'onSinksChanged'} whenever the event fires.
+function onSinksChangedPort(port) {
+  function clientListener() {
+    port.postMessage({'eventName': 'onSinksChanged'});
+  }
+  chrome.webrtcAudioPrivate.onSinksChanged.addListener(clientListener);
+
+  port.onDisconnect.addListener(function() {
+    chrome.webrtcAudioPrivate.onSinksChanged.removeListener(clientListener);
+  });
+}
 
 // This is a one-time-use port for calling chooseDesktopMedia.  The page
 // sends one message, identifying the requested source types, and the
@@ -288,7 +324,9 @@ function appendLastErrorMessage(errors) {
 }
 
 chrome.runtime.onConnectExternal.addListener(function(port) {
-  if (port.name === 'chooseDesktopMedia') {
+  if (port.name === 'onSinksChangedListener') {
+    onSinksChangedPort(port);
+  } else if (port.name === 'chooseDesktopMedia') {
     onChooseDesktopMediaPort(port);
   } else if (port.name === 'processCpu') {
     onProcessCpu(port);
