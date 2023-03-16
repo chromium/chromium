@@ -5,6 +5,8 @@
 #ifndef NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_
 #define NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_
 
+#include <iterator>
+
 namespace net {
 
 // Enumeration to specify the allowed results source for HostResolver
