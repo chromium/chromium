@@ -7,6 +7,7 @@ package org.chromium.content.browser;
 import static org.chromium.content_public.browser.HostZoomMap.SYSTEM_FONT_SCALE;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.CalledByNativeForTesting;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -79,6 +80,11 @@ public class HostZoomMapImpl {
         }
         return HostZoomMap.adjustZoomLevel(
                 zoomLevel, systemFontScale, (float) desktopSiteZoomScale);
+    }
+
+    @CalledByNativeForTesting
+    public static void setSystemFontScaleForTesting(float scale) {
+        SYSTEM_FONT_SCALE = scale;
     }
 
     @NativeMethods
