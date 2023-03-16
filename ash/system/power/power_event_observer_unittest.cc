@@ -758,7 +758,14 @@ TEST_F(LockOnSuspendUsageTest, LockOnSuspendUsage) {
               1)));
 }
 
-TEST_F(LockOnSuspendUsageTest, No_ShouldLockScreenAutomatically) {
+// TODO(crbug.com/1425006): Test is failing on "Linux ChromiumOS MSan Tests".
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_No_ShouldLockScreenAutomatically \
+  DISABLED_No_ShouldLockScreenAutomatically
+#else
+#define MAYBE_No_ShouldLockScreenAutomatically No_ShouldLockScreenAutomatically
+#endif
+TEST_F(LockOnSuspendUsageTest, MAYBE_No_ShouldLockScreenAutomatically) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(false);
 
