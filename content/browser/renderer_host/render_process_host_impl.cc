@@ -3327,7 +3327,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     sandbox::policy::switches::kEnableSandboxLogging,
 #endif
     switches::kAllowLoopbackInPeerConnection,
-    switches::kAndroidFontsPath,
     switches::kAudioBufferSize,
     switches::kAutoplayPolicy,
     switches::kMojoCoreLibraryPath,

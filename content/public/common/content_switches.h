@@ -20,7 +20,6 @@ CONTENT_EXPORT extern const char kAllowFileAccessFromFiles[];
 CONTENT_EXPORT extern const char kAllowInsecureLocalhost[];
 CONTENT_EXPORT extern const char kAllowLoopbackInPeerConnection[];
 CONTENT_EXPORT extern const char kAllowSyncXHRInPageDismissal[];
-CONTENT_EXPORT extern const char kAndroidFontsPath[];
 CONTENT_EXPORT extern const char kAttributionReportingDebugMode[];
 CONTENT_EXPORT extern const char kAutoAcceptCameraAndMicrophoneCapture[];
 CONTENT_EXPORT extern const char kBrowserCrashTest[];

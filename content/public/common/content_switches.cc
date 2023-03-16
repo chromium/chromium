@@ -22,11 +22,6 @@ const char kAllowInsecureLocalhost[] = "allow-insecure-localhost";
 const char kAllowLoopbackInPeerConnection[] =
     "allow-loopback-in-peer-connection";
 
-// Uses the android SkFontManager on linux. The specified directory should
-// include the configuration xml file with the name "fonts.xml".
-// This is used in blimp to emulate android fonts on linux.
-const char kAndroidFontsPath[]          = "android-fonts-path";
-
 // Causes the Attribution Report API to run without delays or noise.
 const char kAttributionReportingDebugMode[] =
     "attribution-reporting-debug-mode";
