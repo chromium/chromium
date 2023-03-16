@@ -343,3 +343,9 @@ TEST_F(ItemsBubbleControllerTest,
                                                     mock_callback.Get());
   EXPECT_FALSE(controller()->get_currently_selected_password().has_value());
 }
+
+TEST_F(ItemsBubbleControllerTest, ShouldReturnWhetherUsernameExists) {
+  Init();
+  EXPECT_TRUE(controller()->UsernameExists(u"User1"));
+  EXPECT_FALSE(controller()->UsernameExists(u"AnotherUsername"));
+}

@@ -157,6 +157,8 @@ ManagePasswordsView::CreatePasswordDetailsView() {
   DCHECK(controller_.get_currently_selected_password().has_value());
   return std::make_unique<ManagePasswordsDetailsView>(
       controller_.get_currently_selected_password().value(),
+      base::BindRepeating(&ItemsBubbleController::UsernameExists,
+                          base::Unretained(&controller_)),
       base::BindRepeating(
           [](ManagePasswordsView* view) {
             view->SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);

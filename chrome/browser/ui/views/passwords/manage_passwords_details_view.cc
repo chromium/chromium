@@ -11,6 +11,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
@@ -31,6 +32,7 @@
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -60,6 +62,30 @@ std::unique_ptr<views::View> CreateIconView(
   icon->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icon, ui::kColorIconSecondary, kIconSize));
   return icon;
+}
+
+std::unique_ptr<views::Label> CreateErrorLabel(std::u16string error_msg) {
+  // Max width must be set for multi-line labels. Compute the max to be the
+  // bubble width subtracting the icon and the empty spaces between the
+  // controls.
+  const int kErrorLabelMaxWidth =
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+      3 * ChromeLayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_RELATED_CONTROL_HORIZONTAL) -
+      kIconSize;
+  // Use CONTEXT_OMNIBOX_DEEMPHASIZED to make the error message slightly
+  // smaller.
+  return views::Builder<views::Label>()
+      .SetText(std::move(error_msg))
+      .SetTextStyle(views::style::STYLE_HINT)
+      .SetTextContext(CONTEXT_OMNIBOX_DEEMPHASIZED)
+      .SetEnabledColorId(ui::kColorAlertHighSeverity)
+      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+      .SetVisible(false)
+      .SetMultiLine(true)
+      .SetMaximumWidth(kErrorLabelMaxWidth)
+      .Build();
 }
 
 // Creates a view of the same height as the height of the each row in the table,
@@ -215,7 +241,8 @@ std::unique_ptr<views::View> CreateNoteLabel(
 
 std::unique_ptr<views::View> CreateEditUsernameRow(
     const password_manager::PasswordForm& form,
-    raw_ptr<views::Textfield>* textfield) {
+    raw_ptr<views::Textfield>* textfield,
+    raw_ptr<views::Label>* error_label) {
   DCHECK(form.username_value.empty());
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
@@ -225,17 +252,23 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   row->AddChildView(CreateWrappedView(CreateIconView(kAccountCircleIcon)));
-
-  *textfield = row->AddChildView(std::make_unique<views::Textfield>());
+  auto* username_with_error_label_view =
+      row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  username_with_error_label_view->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  username_with_error_label_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  *textfield = username_with_error_label_view->AddChildView(
+      std::make_unique<views::Textfield>());
   // TODO(crbug.com/1382017): use internationalized string.
   (*textfield)->SetAccessibleName(u"Username");
   (*textfield)
       ->SetID(static_cast<int>(ManagePasswordsViewIDs::kUsernameTextField));
-  (*textfield)
-      ->SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kUnbounded));
+  // TODO(crbug.com/1382017): use internationalized string.
+  *error_label = username_with_error_label_view->AddChildView(CreateErrorLabel(
+      u"You already saved a password with this username for this site"));
   return row;
 }
 
@@ -298,10 +331,13 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
 
 ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     password_manager::PasswordForm password_form,
+    base::RepeatingCallback<bool(const std::u16string&)>
+        username_exists_callback,
     base::RepeatingClosure switched_to_edit_mode_callback,
     base::RepeatingClosure on_activity_callback,
     base::RepeatingCallback<void(bool)> on_input_validation_callback)
-    : switched_to_edit_mode_callback_(
+    : username_exists_callback_(std::move(username_exists_callback)),
+      switched_to_edit_mode_callback_(
           std::move(switched_to_edit_mode_callback)),
       on_activity_callback_(std::move(on_activity_callback)),
       on_input_validation_callback_(std::move(on_input_validation_callback)) {
@@ -333,8 +369,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
             &ManagePasswordsDetailsView::SwitchToEditUsernameMode,
             base::Unretained(this)),
         ManagePasswordsViewIDs::kEditUsernameButton));
-    edit_username_row_ = AddChildView(
-        CreateEditUsernameRow(password_form, &username_textfield_));
+    edit_username_row_ = AddChildView(CreateEditUsernameRow(
+        password_form, &username_textfield_, &username_error_label_));
     text_changed_subscriptions_.push_back(
         username_textfield_->AddTextChangedCallback(
             base::BindRepeating(&ManagePasswordsDetailsView::OnUserInputChanged,
@@ -442,7 +478,13 @@ void ManagePasswordsDetailsView::OnUserInputChanged() {
   on_activity_callback_.Run();
   bool is_username_invalid = false;
   if (username_textfield_ && username_textfield_->IsDrawn()) {
-    is_username_invalid = username_textfield_->GetText().empty();
+    bool username_empty = username_textfield_->GetText().empty();
+    bool username_exists =
+        username_empty
+            ? false
+            : username_exists_callback_.Run(username_textfield_->GetText());
+    username_error_label_->SetVisible(username_exists);
+    is_username_invalid = username_empty || username_exists;
   }
   bool is_note_invalid =
       note_textarea_->IsDrawn() &&
@@ -455,6 +497,14 @@ void ManagePasswordsDetailsView::OnUserInputChanged() {
   if (note_textarea_->IsDrawn()) {
     note_textarea_->SetInvalid(is_note_invalid);
   }
+
+  // During validation error label may have changed it's visibility status, and
+  // hence invoke `switched_to_edit_mode_callback_` to force redraw the bubble
+  // to readjust the size. Ideally should have be a dedicated callback for
+  // informing the embedders that size may have change, but since validation can
+  // only occue in edit mode, it seems approipriate to reuse the same callback
+  // instead of introducing another one.
+  switched_to_edit_mode_callback_.Run();
 
   on_input_validation_callback_.Run(is_username_invalid || is_note_invalid);
 }

@@ -7,6 +7,8 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -74,6 +76,10 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   void AuthenticateUserAndDisplayDetailsOf(
       password_manager::PasswordForm password_form,
       base::OnceCallback<void(bool)> completion);
+
+  // Returns whether any of the available credentials matching the current site
+  // has the same username value as `username`.
+  bool UsernameExists(const std::u16string& username);
 
   void set_currently_selected_password(
       const absl::optional<password_manager::PasswordForm>& password) {

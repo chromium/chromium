@@ -207,6 +207,14 @@ void ItemsBubbleController::AuthenticateUserAndDisplayDetailsOf(
                      std::move(completion)));
 }
 
+bool ItemsBubbleController::UsernameExists(const std::u16string& username) {
+  return base::ranges::any_of(
+      GetCredentials(),
+      [&username](const std::unique_ptr<password_manager::PasswordForm>& form) {
+        return form->username_value == username;
+      });
+}
+
 void ItemsBubbleController::OnFaviconReady(
     base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback,
     const favicon_base::FaviconImageResult& result) {
