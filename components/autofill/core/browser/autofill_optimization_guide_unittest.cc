@@ -57,15 +57,15 @@ class MockOptimizationGuideDecider
 
 class AutofillOptimizationGuideTest : public testing::Test {
  public:
-  void SetUp() override {
-    decider_ = std::make_unique<MockOptimizationGuideDecider>();
-    personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
-    autofill_optimization_guide_ =
-        std::make_unique<AutofillOptimizationGuide>(decider_.get());
+  AutofillOptimizationGuideTest()
+      : pref_service_(test::PrefServiceForTesting()),
+        decider_(std::make_unique<MockOptimizationGuideDecider>()),
+        personal_data_manager_(std::make_unique<TestPersonalDataManager>()),
+        autofill_optimization_guide_(
+            std::make_unique<AutofillOptimizationGuide>(decider_.get())) {
     CreditCard card = test::GetVirtualCard();
     CreditCardTestApi(&card).set_network_for_virtual_card(kVisaCard);
     card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
-    pref_service_ = test::PrefServiceForTesting();
     personal_data_manager_->Init(
         /*profile_database=*/nullptr,
         /*account_database=*/nullptr,
@@ -82,10 +82,10 @@ class AutofillOptimizationGuideTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  std::unique_ptr<AutofillOptimizationGuide> autofill_optimization_guide_;
   std::unique_ptr<PrefService> pref_service_;
-  std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   std::unique_ptr<MockOptimizationGuideDecider> decider_;
+  std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
+  std::unique_ptr<AutofillOptimizationGuide> autofill_optimization_guide_;
 };
 
 TEST_F(AutofillOptimizationGuideTest, EnsureIntegratorInitializedCorrectly) {
