@@ -2924,6 +2924,8 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-pr
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/range-input-appearance-native-vertical-rtl.optional.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/forms/range-input-appearance-none-vertical-rtl.optional.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/lna-allow-potentially-trustworthy-same-origin/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
@@ -2977,7 +2979,6 @@ crbug.com/626703 [ Mac13 ] virtual/third-party-storage-partitioning/external/wpt
 crbug.com/626703 [ Linux ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=open&eligible [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=open&eligible [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-backdrop-opacity.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line-002.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
 crbug.com/626703 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]

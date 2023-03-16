@@ -2,13 +2,21 @@ This is a testharness.js-based test.
 FAIL testing calc(1vh + 2px + 3%) assert_equals: expected "calc(3% + 2px + 1vh)" but got "calc(1vh + 2px + 3%)"
 PASS testing calc(4px + 1vh)
 FAIL testing calc(5px + 6em + 1vh) assert_equals: expected "calc(6em + 5px + 1vh)" but got "calc(5px + 6em + 1vh)"
-FAIL testing calc(1vh - 7px) assert_equals: expected "calc(-7px + 1vh)" but got "calc(1vh - 7px)"
 FAIL testing calc(-8px + 9em + 1vh) assert_equals: expected "calc(9em - 8px + 1vh)" but got "calc(-8px + 9em + 1vh)"
 FAIL testing calc(1pc + 1in + 1vh + 10%) assert_equals: expected "calc(10% + 112px + 1vh)" but got "calc(112px + 1vh + 10%)"
 FAIL testing calc(25.4q + 1vh + 12%) assert_equals: expected "calc(12% + 24px + 1vh)" but got "calc(25.4q + 1vh + 12%)"
 FAIL testing calc(1em + 1.27cm + 13% + 3em) assert_equals: expected "calc(13% + 4em + 48px)" but got "calc(1em + 1.27cm + 13% + 3em)"
-FAIL testing calc(1vmin - 14%) assert_equals: expected "calc(-14% + 1vmin)" but got "calc(1vmin - 14%)"
 FAIL testing calc(15vw + 16vmin - 17vh) assert_equals: expected "calc(-17vh + 16vmin + 15vw)" but got "calc((15vw + 16vmin) - 17vh)"
+FAIL testing calc(9pt + calc(9rem + 10px)) assert_equals: expected "calc(22px + 9rem)" but got "calc(9pt + 9rem + 10px)"
+FAIL testing calc(5pt + 5em + 4pt + 3em) assert_equals: expected "calc(8em + 12px)" but got "calc(5pt + 5em + 4pt + 3em)"
+FAIL testing calc(4vmin + 0pt + 3pc) assert_equals: expected "calc(48px + 4vmin)" but got "calc(4vmin + 0pt + 3pc)"
+FAIL testing calc(4vmin + 0pt) assert_equals: expected "calc(0px + 4vmin)" but got "calc(4vmin + 0pt)"
+PASS testing calc(100% - 100% + 1em)
+FAIL testing calc(100% + 1em - 100%) assert_equals: expected "calc(0% + 1em)" but got "calc((100% + 1em) - 100%)"
+FAIL testing calc(1vh - 7px) assert_equals: expected "calc(-7px + 1vh)" but got "calc(1vh - 7px)"
+PASS testing calc(5ex - 9ex)
 PASS testing calc(-80px + 25.4mm)
+FAIL testing calc(1vmin - 14%) assert_equals: expected "calc(-14% + 1vmin)" but got "calc(1vmin - 14%)"
+PASS testing calc(4 * 3px + 4pc / 8)
 Harness: the test ran to completion.
 
