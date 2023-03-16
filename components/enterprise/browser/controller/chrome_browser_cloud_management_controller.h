@@ -181,6 +181,9 @@ class ChromeBrowserCloudManagementController
 
     // Called when enrollment result is recorded.
     virtual void OnEnrollmentResultRecorded() {}
+
+    // Called when shutting down.
+    virtual void OnShutdown() {}
   };
 
   // Directory name under the user-data-dir where the policy data is stored.
@@ -264,6 +267,7 @@ class ChromeBrowserCloudManagementController
   void NotifyPolicyRegisterFinished(bool succeeded);
   void NotifyBrowserUnenrolled(bool succeeded);
   void NotifyCloudReportingLaunched();
+  void NotifyShutdown();
 
  private:
   bool GetEnrollmentTokenAndClientId(std::string* enrollment_token,
