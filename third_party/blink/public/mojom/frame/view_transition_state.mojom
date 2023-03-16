@@ -24,5 +24,6 @@ struct ViewTransitionElement {
 struct ViewTransitionState {
   array<ViewTransitionElement> elements;
   mojo_base.mojom.UnguessableToken navigation_id;
+  gfx.mojom.Size snapshot_root_size_at_capture;
   // TODO(khushalsagar): Add opaque blob from old Document.
 };

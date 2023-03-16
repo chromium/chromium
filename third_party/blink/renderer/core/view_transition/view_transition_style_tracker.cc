@@ -196,6 +196,8 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     ViewTransitionState transition_state)
     : document_(document), state_(State::kCaptured), deserialized_(true) {
   captured_name_count_ = static_cast<int>(transition_state.elements.size());
+  snapshot_root_size_at_capture_ =
+      transition_state.snapshot_root_size_at_capture;
 
   VectorOf<AtomicString> transition_names;
   transition_names.ReserveInitialCapacity(captured_name_count_);
@@ -1210,6 +1212,11 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
   DCHECK_EQ(state_, State::kCaptured);
 
   ViewTransitionState transition_state;
+
+  DCHECK(snapshot_root_size_at_capture_);
+  transition_state.snapshot_root_size_at_capture =
+      *snapshot_root_size_at_capture_;
+
   for (const auto& entry : element_data_map_) {
     const auto& element_data = entry.value;
     DCHECK_EQ(element_data->container_properties.size(), 1u)

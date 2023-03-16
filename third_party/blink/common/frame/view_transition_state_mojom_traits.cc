@@ -33,7 +33,9 @@ bool StructTraits<blink::mojom::ViewTransitionStateDataView,
     Read(blink::mojom::ViewTransitionStateDataView data,
          blink::ViewTransitionState* out) {
   return data.ReadElements(&out->elements) &&
-         data.ReadNavigationId(&out->navigation_id);
+         data.ReadNavigationId(&out->navigation_id) &&
+         data.ReadSnapshotRootSizeAtCapture(
+             &out->snapshot_root_size_at_capture);
 }
 
 }  // namespace mojo

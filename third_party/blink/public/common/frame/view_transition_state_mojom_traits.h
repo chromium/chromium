@@ -68,6 +68,11 @@ struct BLINK_COMMON_EXPORT
     return r.navigation_id;
   }
 
+  static const gfx::Size& snapshot_root_size_at_capture(
+      const blink::ViewTransitionState& r) {
+    return r.snapshot_root_size_at_capture;
+  }
+
   static bool Read(blink::mojom::ViewTransitionStateDataView r,
                    blink::ViewTransitionState* out);
 };
