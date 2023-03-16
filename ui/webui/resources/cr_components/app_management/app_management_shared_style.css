@@ -7,7 +7,13 @@
  * #import=./shared_vars.css.js
  * #import=//resources/cr_elements/cr_shared_style.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+<if expr='not chromeos_ash'>
  * #include=cr-shared-style
+</if>
+<if expr='chromeos_ash'>
+ * #import=chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js
+ * #include=cr-shared-style cros-color-overrides
+</if>
  * #css_wrapper_metadata_end */
 
 .card-container {
