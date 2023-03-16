@@ -137,6 +137,7 @@ if (!is_a_target_toolchain || toolchain_disables_sanitizers) {
   msan_track_origins = 0
   sanitizer_coverage_flags = ""
   use_afl = false
+  use_centipede = false
   use_cfi_diag = false
   use_cfi_recover = false
   use_libfuzzer = false
