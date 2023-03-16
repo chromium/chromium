@@ -2,4 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-history_clusters_test_files = [ "modules/history_clusters/module_test.ts" ]
+history_clusters_test_files = [
+  "modules/history_clusters/module_test.ts",
+  "modules/history_clusters/suggest_tile_test.ts",
+  "modules/history_clusters/test_support.ts",
+  "modules/history_clusters/tile_test.ts",
+]
