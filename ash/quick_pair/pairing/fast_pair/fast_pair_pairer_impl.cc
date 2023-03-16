@@ -182,13 +182,14 @@ void FastPairPairerImpl::StartPairing() {
         QP_LOG(VERBOSE) << __func__
                         << ": Trying to pair to device that is already paired; "
                            "returning success.";
+
         RecordProtocolPairingStep(FastPairProtocolPairingSteps::kAlreadyPaired,
                                   *device_);
+        RecordProtocolPairingStep(
+            FastPairProtocolPairingSteps::kPairingComplete, *device_);
         AttemptRecordingFastPairEngagementFlow(
             *device_,
             FastPairEngagementFlowEvent::kPairingSucceededAlreadyPaired);
-
-        std::move(paired_callback_).Run(device_);
 
         if (!bt_device->IsConnected()) {
           QP_LOG(VERBOSE) << __func__ << ": connecting a paired device";
@@ -202,6 +203,8 @@ void FastPairPairerImpl::StartPairing() {
                                             weak_ptr_factory_.GetWeakPtr()));
           return;
         }
+
+        std::move(paired_callback_).Run(device_);
 
         RecordProtocolPairingStep(
             FastPairProtocolPairingSteps::kDeviceConnected, *device_);
@@ -697,9 +700,6 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
       device->GetAddress() == device_->ble_address()) {
     QP_LOG(VERBOSE) << __func__ << ": Completing pairing procedure " << device_;
 
-    RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPairingComplete,
-                              *device_);
-
     // V1 devices do not set the classic_address() field anywhere else, which is
     // needed to map device addresses to persisted device images. Set the
     // classic address here, which has to happen before paired_callback_ is
@@ -711,35 +711,44 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
       device_->set_classic_address(device->GetAddress());
     }
 
+    bool is_v1_device =
+        device_->version().has_value() &&
+        device_->version().value() == DeviceFastPairVersion::kV1;
+    bool is_pair_branch = pairing_flow_ == FastPairPairingFlow::kPair;
+
+    // DevicePairedChanged is called in the middle of the "kPair" pairing flow,
+    // so we don't `AttemptSendAccountKey` until after `OnConnected` fires.
+    if (is_pair_branch && !is_v1_device) {
+      return;
+    }
+
+    // Log and notify that we have successfully paired to the device.
+    QP_LOG(VERBOSE) << __func__ << ": Successfully paired to device "
+                    << device_;
+    RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPairingComplete,
+                              *device_);
     std::move(paired_callback_).Run(device_);
 
-    // For V2 devices we still need to remove the Pairing Delegate and write the
-    // account key. `AttemptSendAccountKey()` will call
-    // |pairing_procedure_complete_| whereas V1 devices need to run the callback
-    // in this function since they don't write account keys, and their pairing
-    // procedure is not complete at this point.
-    //
-    // For `ConnectDevice`, this is the end of the flow. Stop the timer since
-    // we have reached a terminal state of success, and start sending the
-    // account key. For `Pair`, we don't `AttemptSendAccountKey` until after
-    // `OnConnected` fires.
-    if (device_->version().has_value() &&
-        device_->version().value() == DeviceFastPairVersion::kHigherThanV1 &&
-        pairing_flow_ == FastPairPairingFlow::kConnectDevice) {
-      StopCreateBondTimer(__func__);
-      QP_LOG(VERBOSE) << __func__
-                      << ": Stopping create bond timer and attempting to send "
-                         "account key for ConnectDevice flow";
-      adapter_->RemovePairingDelegate(this);
-      AttemptSendAccountKey();
-    } else if (pairing_procedure_complete_ && device_->version().has_value() &&
-               device_->version().value() == DeviceFastPairVersion::kV1) {
-      // This covers the case where we are pairing a v1 device and are using the
-      // Bluetooth pairing dialog to do it.
+    // For V1 devices, this is the end of the pairing fow, since we are using
+    // the Bluetooth pairing dialog. V1 devices need to run the
+    // |pairing_procedure_complete_| callback in this function since they don't
+    // write account keys.
+    if (is_v1_device) {
       QP_LOG(VERBOSE) << __func__
                       << ": pairing procedure completed for V1 device.";
       std::move(pairing_procedure_complete_).Run(device_);
+      return;
     }
+
+    // For V2+ devices in the `ConnectDevice` flow, this is the end of the flow.
+    // Stop the timer since we have reached a terminal state of success, remove
+    // the Pairing Delegate, and write the account key.
+    StopCreateBondTimer(__func__);
+    QP_LOG(VERBOSE) << __func__
+                    << ": Stopping create bond timer and attempting to send "
+                       "account key for ConnectDevice flow";
+    adapter_->RemovePairingDelegate(this);
+    AttemptSendAccountKey();
   }
 }
 
@@ -787,6 +796,9 @@ void FastPairPairerImpl::OnPairConnected(
     // |this| may be destroyed after this line.
     return;
   }
+
+  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPairingComplete,
+                            *device_);
 
   if (floss::features::IsFlossEnabled()) {
     // On Floss, Pair is exactly the same as Connect. Therefore we skip calling
@@ -836,6 +848,8 @@ void FastPairPairerImpl::OnConnected(
 
   QP_LOG(INFO) << __func__ << ": starting account key write for `Pair` flow";
   adapter_->RemovePairingDelegate(this);
+
+  std::move(paired_callback_).Run(device_);
   AttemptSendAccountKey();
 }
 
