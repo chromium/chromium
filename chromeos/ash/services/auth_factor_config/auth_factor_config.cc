@@ -41,8 +41,23 @@ void AuthFactorConfig::NotifyFactorObservers(mojom::AuthFactor changed_factor) {
 void AuthFactorConfig::IsSupported(const std::string& auth_token,
                                    mojom::AuthFactor factor,
                                    base::OnceCallback<void(bool)> callback) {
-  VLOG(1) << "AuthFactorConfig::IsSupported is a fake";
-  std::move(callback).Run(features::IsCryptohomeRecoveryEnabled());
+  if (!features::IsCryptohomeRecoveryEnabled()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+  auto* user_context = quick_unlock_storage_->GetUserContext(user, auth_token);
+  if (!user_context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const bool is_supported_by_cryptohome =
+      user_context->GetAuthFactorsConfiguration().get_supported_factors().Has(
+          cryptohome::AuthFactorType::kRecovery);
+  std::move(callback).Run(is_supported_by_cryptohome);
 }
 
 void AuthFactorConfig::IsConfigured(const std::string& auth_token,

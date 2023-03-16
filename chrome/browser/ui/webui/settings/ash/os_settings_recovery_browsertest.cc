@@ -12,16 +12,7 @@ namespace ash::settings {
 
 class OSSettingsRecoveryTest : public OSSettingsLockScreenBrowserTestBase {};
 
-class OSSettingsRecoveryTestWithFeature : public OSSettingsRecoveryTest {
- public:
-  OSSettingsRecoveryTestWithFeature() {
-    feature_list_.InitAndEnableFeature(ash::features::kCryptohomeRecovery);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
+// A test fixture that runs tests with recovery feature disabled.
 class OSSettingsRecoveryTestWithoutFeature : public OSSettingsRecoveryTest {
  public:
   OSSettingsRecoveryTestWithoutFeature() {
@@ -32,8 +23,36 @@ class OSSettingsRecoveryTestWithoutFeature : public OSSettingsRecoveryTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithoutFeature,
-                       ControlNotVisible) {
+// A test fixture that runs tests with recovery feature enabled and with
+// (faked) hardware support.
+class OSSettingsRecoveryTestWithFeature : public OSSettingsRecoveryTest {
+ public:
+  OSSettingsRecoveryTestWithFeature() {
+    feature_list_.InitAndEnableFeature(ash::features::kCryptohomeRecovery);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// A test fixture that runs tests with recovery feature enabled but without
+// hardware support.
+class OSSettingsRecoveryTestWithFeatureWithoutHardwareSupport
+    : public OSSettingsRecoveryTestWithFeature {
+ public:
+  OSSettingsRecoveryTestWithFeatureWithoutHardwareSupport() {
+    cryptohome_.set_supports_low_entropy_credentials(false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithoutFeature, ControlInvisible) {
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettingsAndAuthenticate();
+  lock_screen_settings.AssertRecoveryControlVisibility(false);
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeatureWithoutHardwareSupport,
+                       ControlInvisible) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertRecoveryControlVisibility(false);

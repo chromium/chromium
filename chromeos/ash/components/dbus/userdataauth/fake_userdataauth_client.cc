@@ -906,9 +906,9 @@ void FakeUserDataAuthClient::ListAuthFactors(
     reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
     if (supports_low_entropy_credentials_) {
       reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+      reply.add_supported_auth_factors(
+          user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
     }
-    reply.add_supported_auth_factors(
-        user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
   }
 }
 
