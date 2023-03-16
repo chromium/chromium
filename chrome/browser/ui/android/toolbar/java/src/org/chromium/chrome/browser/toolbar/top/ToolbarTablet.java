@@ -351,8 +351,12 @@ public class ToolbarTablet
         if (mHomeButton == v) {
             openHomepage();
         } else if (mBackButton == v) {
-            if (!back()) return;
-            RecordUserAction.record("MobileToolbarBack");
+            boolean isEnabled = mBackButton.isEnabled();
+            boolean success = back();
+            assert success
+                    && isEnabled
+                : "Back button should not be enabled if page can no longer be navigated back.";
+            if (success) RecordUserAction.record("MobileToolbarBack");
         } else if (mForwardButton == v) {
             forward();
             RecordUserAction.record("MobileToolbarForward");
