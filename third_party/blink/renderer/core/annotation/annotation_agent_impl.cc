@@ -117,7 +117,11 @@ void AnnotationAgentImpl::ScrollIntoView() const {
 
   EphemeralRangeInFlatTree range = attached_range_->ToEphemeralRange();
 
-  CHECK(range.Nodes().begin() != range.Nodes().end());
+  // TODO(bokan): This should be checked in IsAttached.
+  bool range_has_nodes = range.Nodes().begin() != range.Nodes().end();
+  if (!range_has_nodes) {
+    return;
+  }
 
   Node& first_node = *range.Nodes().begin();
 
