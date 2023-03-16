@@ -674,6 +674,7 @@ chrome.fileManagerPrivate.PreferencesChange;
  * @typedef {{
  *   query: string,
  *   category: (!chrome.fileManagerPrivate.FileCategory|undefined),
+ *   modifiedTimestamp: (number|undefined),
  *   nextFeed: string
  * }}
  */

@@ -2173,6 +2173,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchLocalWithTypeOptions").EnableSearchV2(),
         TestCase("searchDriveWithTypeOptions").EnableSearchV2(),
         TestCase("searchWithRecencyOptions").EnableSearchV2(),
+        TestCase("searchDriveWithRecencyOptions").EnableSearchV2(),
         TestCase("searchRemovableDevice").EnableSearchV2(),
         TestCase("resetSearchOptionsOnFolderChange").EnableSearchV2(),
         TestCase("showSearchResultMessageWhenSearching").EnableSearchV2(),

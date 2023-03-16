@@ -550,7 +550,7 @@ struct FileChange {
 };
 
 // Definition of the search request sent to DriveFS.
-// Next MinVersion: 4
+// Next MinVersion: 5
 struct QueryParameters {
   // Where this request should go to.
   enum QuerySource {
@@ -609,6 +609,28 @@ struct QueryParameters {
   // Only show results that are in the users "My drive" directory excluding
   // others such as Team drives and trashed files.
   [MinVersion=3] bool my_drive_results_only = false;
+
+  // Possible way of comparing between document dates and dates specified
+  // in this struct.
+  enum DateComparisonOperator {
+    kLessOrEqual,
+    kLessThan,
+    kEqual,
+    kGreaterThan,
+    kGreaterOrEqual,
+  };
+
+  // The operator applied to the modified_time field. Used only if the
+  // modified_time field is not empty. If the document's modified time
+  // is T, we check if
+  //    T modified_time_operator modified_time
+  [MinVersion=4] DateComparisonOperator modified_time_operator;
+
+  // Only show results that, if their modified time is T, it holds true
+  // that T modified_time_operator modified_time. For example, if the
+  // modified_time_operator is kGreaterThan we only show files with
+  // modified time T greater than the one specified in this field.
+  [MinVersion=4] mojo_base.mojom.Time? modified_time;
 };
 
 // TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is

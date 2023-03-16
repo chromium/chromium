@@ -190,6 +190,38 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
             return true;
           }
         }
+        if (params_->modified_time.has_value()) {
+          switch (params_->modified_time_operator) {
+            case mojom::QueryParameters::DateComparisonOperator::kLessThan:
+              if (metadata->modification_time >= *params_->modified_time) {
+                return true;
+              }
+              break;
+            case mojom::QueryParameters::DateComparisonOperator::kLessOrEqual:
+              if (metadata->modification_time > *params_->modified_time) {
+                return true;
+              }
+              break;
+            case mojom::QueryParameters::DateComparisonOperator::kEqual:
+              if (metadata->modification_time != *params_->modified_time) {
+                return true;
+              }
+              break;
+            case mojom::QueryParameters::DateComparisonOperator::
+                kGreaterOrEqual:
+              if (metadata->modification_time < *params_->modified_time) {
+                return true;
+              }
+              break;
+            case mojom::QueryParameters::DateComparisonOperator::kGreaterThan:
+              if (metadata->modification_time <= *params_->modified_time) {
+                return true;
+              }
+              break;
+            default:
+              break;
+          }
+        }
         if (!mime_types.empty()) {
           std::string content_mime_type = metadata->content_mime_type;
           // If we do not know the MIME type the file may or may not match. Thus

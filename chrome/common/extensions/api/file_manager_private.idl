@@ -795,6 +795,9 @@ dictionary SearchParams {
   // The category of files to which the search is limited.
   FileCategory? category;
 
+  // The minimum modified time of the files to be returned
+  double? modifiedTimestamp;
+
   // ID of the search feed that should be fetched next. Value passed here should
   // be gotten from previous searchDrive call. It can be empty for the initial
   // search request.

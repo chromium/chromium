@@ -319,13 +319,13 @@ export class SearchV2ContentScanner extends ContentScanner {
     const searchPromises = [];
     const category = this.getDesiredCategory_();
     const now = new Date();
+    const timestamp = getEarliestTimestamp(this.options_.recency, now);
     if (this.isSearchingLocal_()) {
       searchPromises.push(new Promise((resolve, reject) => {
         metrics.startInterval('Search.Local.Latency');
         const rootDir = this.isSearchingRoot_() ?
             this.entry_.filesystem.root :
             /** @type {DirectoryEntry} */ (util.unwrapEntry(this.entry_));
-        const timestamp = getEarliestTimestamp(this.options_.recency, now);
         chrome.fileManagerPrivate.searchFiles(
             {
               rootDir: rootDir,
@@ -359,6 +359,7 @@ export class SearchV2ContentScanner extends ContentScanner {
             {
               query: this.query_,
               category: category,
+              modifiedTimestamp: timestamp,
               nextFeed: '',
             },
             (entries, nextFeed) => {
