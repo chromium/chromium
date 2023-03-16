@@ -1048,6 +1048,16 @@ constexpr base::FeatureParam<bool> kStartServiceWorkerForEmptyFetchHandler{
     false,
 };
 
+// This feature param controls if the service worker is started for an
+// empty service worker fetch handler while `kSkipEmptyFetchHandler` is on.
+// Unlike the feature param `kStartServiceWorkerForEmptyFetchHandler`,
+// this starts service worker in `TaskRunner::PostTask`.
+constexpr base::FeatureParam<bool> kAsyncStartServiceWorkerForEmptyFetchHandler{
+    &kServiceWorkerSkipIgnorableFetchHandler,
+    "AsyncStartServiceWorkerForEmptyFetchHandler",
+    false,
+};
+
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process
 BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,

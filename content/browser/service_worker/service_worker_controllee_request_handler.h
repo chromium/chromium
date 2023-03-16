@@ -130,6 +130,10 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // initial subresources load, if this handler was for a navigation.
   void MaybeScheduleUpdate();
 
+  // Runs service worker if not running.
+  void MaybeStartServiceWorker(
+      scoped_refptr<ServiceWorkerVersion> active_version);
+
   // Runs after ServiceWorker has started.
   // Normally ServiceWorker starts before dispatching the main resource request,
   // but if the ServiceWorkerBypassFetchHandler feature is enabled, we bypass
