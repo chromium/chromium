@@ -15,70 +15,70 @@ namespace policy {
 namespace dm_protocol {
 
 // Name extern constants for URL query parameters.
-POLICY_EXPORT extern const char kParamAgent[];
-POLICY_EXPORT extern const char kParamAppType[];
-POLICY_EXPORT extern const char kParamCritical[];
-POLICY_EXPORT extern const char kParamDeviceID[];
-POLICY_EXPORT extern const char kParamDeviceType[];
-POLICY_EXPORT extern const char kParamLastError[];
-POLICY_EXPORT extern const char kParamOAuthToken[];
-POLICY_EXPORT extern const char kParamPlatform[];
-POLICY_EXPORT extern const char kParamRequest[];
-POLICY_EXPORT extern const char kParamRetry[];
+extern const char kParamAgent[];
+extern const char kParamAppType[];
+extern const char kParamCritical[];
+extern const char kParamDeviceID[];
+extern const char kParamDeviceType[];
+extern const char kParamLastError[];
+extern const char kParamOAuthToken[];
+extern const char kParamPlatform[];
+extern const char kParamRequest[];
+extern const char kParamRetry[];
 
 // Policy constants used in authorization header.
-POLICY_EXPORT extern const char kAuthHeader[];
-POLICY_EXPORT extern const char kServiceTokenAuthHeaderPrefix[];
-POLICY_EXPORT extern const char kDMTokenAuthHeaderPrefix[];
-POLICY_EXPORT extern const char kEnrollmentTokenAuthHeaderPrefix[];
-POLICY_EXPORT extern const char kOAuthTokenHeaderPrefix[];
+extern const char kAuthHeader[];
+extern const char kServiceTokenAuthHeaderPrefix[];
+extern const char kDMTokenAuthHeaderPrefix[];
+extern const char kEnrollmentTokenAuthHeaderPrefix[];
+extern const char kOAuthTokenHeaderPrefix[];
 
 // String extern constants for the device and app type we report to the server.
-POLICY_EXPORT extern const char kValueAppType[];
-POLICY_EXPORT extern const char kValueBrowserUploadPublicKey[];
-POLICY_EXPORT extern const char kValueDeviceType[];
-POLICY_EXPORT extern const char kValueRequestAutoEnrollment[];
-POLICY_EXPORT extern const char kValueRequestPsmHasDeviceState[];
-POLICY_EXPORT extern const char kValueCheckUserAccount[];
-POLICY_EXPORT extern const char kValueRequestPolicy[];
-POLICY_EXPORT extern const char kValueRequestRegister[];
-POLICY_EXPORT extern const char kValueRequestApiAuthorization[];
-POLICY_EXPORT extern const char kValueRequestUnregister[];
-POLICY_EXPORT extern const char kValueRequestUploadCertificate[];
-POLICY_EXPORT extern const char kValueRequestUploadEuiccInfo[];
-POLICY_EXPORT extern const char kValueRequestDeviceStateRetrieval[];
-POLICY_EXPORT extern const char kValueRequestUploadStatus[];
-POLICY_EXPORT extern const char kValueRequestRemoteCommands[];
-POLICY_EXPORT extern const char kValueRequestDeviceAttributeUpdatePermission[];
-POLICY_EXPORT extern const char kValueRequestDeviceAttributeUpdate[];
-POLICY_EXPORT extern const char kValueRequestGcmIdUpdate[];
-POLICY_EXPORT extern const char kValueRequestCheckAndroidManagement[];
-POLICY_EXPORT extern const char kValueRequestCertBasedRegister[];
-POLICY_EXPORT extern const char kValueRequestActiveDirectoryEnrollPlayUser[];
-POLICY_EXPORT extern const char kValueRequestActiveDirectoryPlayActivity[];
-POLICY_EXPORT extern const char kValueRequestAppInstallReport[];
-POLICY_EXPORT extern const char kValueRequestTokenEnrollment[];
-POLICY_EXPORT extern const char kValueRequestChromeDesktopReport[];
-POLICY_EXPORT extern const char kValueRequestInitialEnrollmentStateRetrieval[];
-POLICY_EXPORT extern const char kValueRequestUploadPolicyValidationReport[];
-POLICY_EXPORT extern const char kValueRequestPublicSamlUser[];
-POLICY_EXPORT extern const char kValueRequestChromeOsUserReport[];
-POLICY_EXPORT extern const char kValueRequestCertProvisioningRequest[];
-POLICY_EXPORT extern const char kValueRequestChromeProfileReport[];
+extern const char kValueAppType[];
+extern const char kValueBrowserUploadPublicKey[];
+extern const char kValueDeviceType[];
+extern const char kValueRequestAutoEnrollment[];
+extern const char kValueRequestPsmHasDeviceState[];
+extern const char kValueCheckUserAccount[];
+extern const char kValueRequestPolicy[];
+extern const char kValueRequestRegister[];
+extern const char kValueRequestApiAuthorization[];
+extern const char kValueRequestUnregister[];
+extern const char kValueRequestUploadCertificate[];
+extern const char kValueRequestUploadEuiccInfo[];
+extern const char kValueRequestDeviceStateRetrieval[];
+extern const char kValueRequestUploadStatus[];
+extern const char kValueRequestRemoteCommands[];
+extern const char kValueRequestDeviceAttributeUpdatePermission[];
+extern const char kValueRequestDeviceAttributeUpdate[];
+extern const char kValueRequestGcmIdUpdate[];
+extern const char kValueRequestCheckAndroidManagement[];
+extern const char kValueRequestCertBasedRegister[];
+extern const char kValueRequestActiveDirectoryEnrollPlayUser[];
+extern const char kValueRequestActiveDirectoryPlayActivity[];
+extern const char kValueRequestAppInstallReport[];
+extern const char kValueRequestTokenEnrollment[];
+extern const char kValueRequestChromeDesktopReport[];
+extern const char kValueRequestInitialEnrollmentStateRetrieval[];
+extern const char kValueRequestUploadPolicyValidationReport[];
+extern const char kValueRequestPublicSamlUser[];
+extern const char kValueRequestChromeOsUserReport[];
+extern const char kValueRequestCertProvisioningRequest[];
+extern const char kValueRequestChromeProfileReport[];
 
 // Policy type strings for the policy_type field in PolicyFetchRequest.
-POLICY_EXPORT extern const char kChromeDevicePolicyType[];
-POLICY_EXPORT extern const char kChromeUserPolicyType[];
-POLICY_EXPORT extern const char kChromePublicAccountPolicyType[];
-POLICY_EXPORT extern const char kChromeExtensionPolicyType[];
-POLICY_EXPORT extern const char kChromeSigninExtensionPolicyType[];
-POLICY_EXPORT extern const char kChromeMachineLevelUserCloudPolicyType[];
-POLICY_EXPORT extern const char kChromeMachineLevelUserCloudPolicyAndroidType[];
-POLICY_EXPORT extern const char kChromeMachineLevelUserCloudPolicyIOSType[];
-POLICY_EXPORT extern const char kChromeMachineLevelExtensionCloudPolicyType[];
-POLICY_EXPORT extern const char kChromeRemoteCommandPolicyType[];
+extern const char kChromeDevicePolicyType[];
+extern const char kChromeUserPolicyType[];
+extern const char kChromePublicAccountPolicyType[];
+extern const char kChromeExtensionPolicyType[];
+extern const char kChromeSigninExtensionPolicyType[];
+extern const char kChromeMachineLevelUserCloudPolicyType[];
+extern const char kChromeMachineLevelUserCloudPolicyAndroidType[];
+extern const char kChromeMachineLevelUserCloudPolicyIOSType[];
+extern const char kChromeMachineLevelExtensionCloudPolicyType[];
+extern const char kChromeRemoteCommandPolicyType[];
 
-POLICY_EXPORT extern const char kChromeMachineLevelUserCloudPolicyTypeBase64[];
+extern const char kChromeMachineLevelUserCloudPolicyTypeBase64[];
 
 // These codes are sent in the |error_code| field of PolicyFetchResponse.
 enum PolicyFetchStatus {
@@ -90,10 +90,10 @@ enum PolicyFetchStatus {
 
 // Public half of the verification key that is used to verify that policy
 // signing keys are originating from DM server.
-POLICY_EXPORT std::string GetPolicyVerificationKey();
+std::string GetPolicyVerificationKey();
 
 // Corresponding hash.
-POLICY_EXPORT extern const char kPolicyVerificationKeyHash[];
+extern const char kPolicyVerificationKeyHash[];
 
 // Status codes for communication errors with the device management service.
 // This enum is used to define the buckets for an enumerated UMA histogram.
@@ -177,7 +177,7 @@ enum DeviceMode {
 };
 
 // Domain that demo mode devices are enrolled into: cros-demo-mode.com
-POLICY_EXPORT extern const char kDemoModeDomain[];
+extern const char kDemoModeDomain[];
 
 // Indicate this device's market segment. go/cros-rlz-segments.
 // This enum should be kept in sync with MarketSegment enum in

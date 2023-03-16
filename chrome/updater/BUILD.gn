@@ -143,6 +143,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/updater/protos:omaha_proto",
       "//components/crash/core/common:crash_key",
       "//components/crx_file",
+      "//components/policy/core/common:common_constants",
       "//components/policy/proto",
       "//components/prefs",
       "//components/update_client",

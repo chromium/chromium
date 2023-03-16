@@ -12,43 +12,43 @@ namespace policy {
 namespace policy_prefs {
 
 #if BUILDFLAG(IS_WIN)
-POLICY_EXPORT extern const char kAzureActiveDirectoryManagement[];
-POLICY_EXPORT extern const char kEnterpriseMDMManagementWindows[];
+extern const char kAzureActiveDirectoryManagement[];
+extern const char kEnterpriseMDMManagementWindows[];
 #endif
-POLICY_EXPORT extern const char kCloudManagementEnrollmentMandatory[];
-POLICY_EXPORT extern const char kDlpClipboardCheckSizeLimit[];
-POLICY_EXPORT extern const char kDlpReportingEnabled[];
-POLICY_EXPORT extern const char kDlpRulesList[];
+extern const char kCloudManagementEnrollmentMandatory[];
+extern const char kDlpClipboardCheckSizeLimit[];
+extern const char kDlpReportingEnabled[];
+extern const char kDlpRulesList[];
 #if BUILDFLAG(IS_MAC)
-POLICY_EXPORT extern const char kEnterpriseMDMManagementMac[];
-POLICY_EXPORT extern const char kScreenTimeEnabled[];
+extern const char kEnterpriseMDMManagementMac[];
+extern const char kScreenTimeEnabled[];
 #endif
-POLICY_EXPORT extern const char kLastPolicyStatisticsUpdate[];
-POLICY_EXPORT extern const char kNativeWindowOcclusionEnabled[];
-POLICY_EXPORT extern const char kSafeSitesFilterBehavior[];
-POLICY_EXPORT extern const char kSystemFeaturesDisableList[];
-POLICY_EXPORT extern const char kSystemFeaturesDisableMode[];
-POLICY_EXPORT extern const char kUrlBlocklist[];
-POLICY_EXPORT extern const char kUrlAllowlist[];
-POLICY_EXPORT extern const char kUserPolicyRefreshRate[];
-POLICY_EXPORT extern const char kIntensiveWakeUpThrottlingEnabled[];
-POLICY_EXPORT extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
+extern const char kLastPolicyStatisticsUpdate[];
+extern const char kNativeWindowOcclusionEnabled[];
+extern const char kSafeSitesFilterBehavior[];
+extern const char kSystemFeaturesDisableList[];
+extern const char kSystemFeaturesDisableMode[];
+extern const char kUrlBlocklist[];
+extern const char kUrlAllowlist[];
+extern const char kUserPolicyRefreshRate[];
+extern const char kIntensiveWakeUpThrottlingEnabled[];
+extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
 #if BUILDFLAG(IS_ANDROID)
-POLICY_EXPORT extern const char kBackForwardCacheEnabled[];
+extern const char kBackForwardCacheEnabled[];
 #endif  // BUILDFLAG(IS_ANDROID)
-POLICY_EXPORT extern const char kIsolatedAppsDeveloperModeAllowed[];
+extern const char kIsolatedAppsDeveloperModeAllowed[];
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-POLICY_EXPORT extern const char kLastPolicyCheckTime[];
+extern const char kLastPolicyCheckTime[];
 #endif
 #if BUILDFLAG(IS_IOS)
-POLICY_EXPORT extern const char kUserPolicyNotificationWasShown[];
+extern const char kUserPolicyNotificationWasShown[];
 #endif
-POLICY_EXPORT extern const char kEventPathEnabled[];
-POLICY_EXPORT extern const char kOffsetParentNewSpecBehaviorEnabled[];
-POLICY_EXPORT extern const char kSendMouseEventsDisabledFormControlsEnabled[];
-POLICY_EXPORT extern const char kUseMojoVideoDecoderForPepperAllowed[];
-POLICY_EXPORT extern const char kPPAPISharedImagesSwapChainAllowed[];
-POLICY_EXPORT extern const char kForceEnablePepperVideoDecoderDevAPI[];
+extern const char kEventPathEnabled[];
+extern const char kOffsetParentNewSpecBehaviorEnabled[];
+extern const char kSendMouseEventsDisabledFormControlsEnabled[];
+extern const char kUseMojoVideoDecoderForPepperAllowed[];
+extern const char kPPAPISharedImagesSwapChainAllowed[];
+extern const char kForceEnablePepperVideoDecoderDevAPI[];
 
 }  // namespace policy_prefs
 }  // namespace policy
