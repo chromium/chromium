@@ -253,7 +253,7 @@ public class FeedStream implements Stream {
                                 results.metadata.title,
                                 results.metadata.availabilityStatus
                                         == WebFeedAvailabilityStatus.ACTIVE,
-                                mStreamKind);
+                                mStreamKind, null /* tab */, null /* url */);
                     }
                 };
                 WebFeedBridge.followFromId(webFeedId, update.isDurable(),

@@ -219,7 +219,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                             WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU,
                             (result)
                                     -> mWebFeedSnackbarController.showSnackbarForUnfollow(
-                                            result.requestStatus, webFeedId, mUrl, mTitle,
+                                            result.requestStatus, webFeedId, mTab, mUrl, mTitle,
                                             WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU));
                     mAppMenuHandler.hideAppMenu();
                 });
