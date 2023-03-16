@@ -63,10 +63,8 @@ void HeadlessPrintManager::GetDefaultPrintSettings(
 void HeadlessPrintManager::ScriptedPrint(
     printing::mojom::ScriptedPrintParamsPtr params,
     ScriptedPrintCallback callback) {
-  auto default_param = printing::mojom::PrintPagesParams::New();
-  default_param->params = printing::mojom::PrintParams::New();
   DLOG(ERROR) << "Scripted print is not supported";
-  std::move(callback).Run(std::move(default_param));
+  std::move(callback).Run(nullptr);
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

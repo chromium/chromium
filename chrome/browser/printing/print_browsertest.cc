@@ -549,9 +549,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
   void CompleteScriptedPrint(content::RenderFrameHost* rfh,
                              mojom::ScriptedPrintParamsPtr params,
                              ScriptedPrintCallback callback) override {
-    auto print_params = mojom::PrintPagesParams::New();
-    print_params->params = mojom::PrintParams::New();
-    std::move(callback).Run(std::move(print_params));
+    std::move(callback).Run(nullptr);
 
     for (auto& observer : GetObservers())
       observer.OnScriptedPrint();

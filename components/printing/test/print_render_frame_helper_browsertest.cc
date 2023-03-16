@@ -332,12 +332,15 @@ class TestPrintManagerHost
   void DidShowPrintDialog() override {}
   void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override {
+    if (!print_dialog_user_response_) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
     auto settings = printing::mojom::PrintPagesParams::New();
     settings->params = printing::mojom::PrintParams::New();
-    if (print_dialog_user_response_) {
-      printer_->ScriptedPrint(params->cookie, params->expected_pages_count,
-                              params->has_selection, settings.get());
-    }
+    printer_->ScriptedPrint(params->cookie, params->expected_pages_count,
+                            params->has_selection, settings.get());
     std::move(callback).Run(std::move(settings));
   }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

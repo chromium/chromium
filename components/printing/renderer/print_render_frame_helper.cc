@@ -2171,9 +2171,14 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
       return;
 
     // GetPrintSettingsFromUser() could return nullptr when
-    // |print_manager_host_| is closed.
-    if (!print_settings)
+    // |print_manager_host_| is closed, or when the user cancels.
+    if (!print_settings) {
+      if (print_manager_host_) {
+        // Release resources and fail silently if the user cancels.
+        DidFinishPrinting(OK);
+      }
       return;
+    }
 
     print_settings->params->print_scaling_option =
         print_settings->params->prefer_css_page_size
@@ -2182,6 +2187,7 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
     SetPrintPagesParams(*print_settings);
     if (print_settings->params->dpi.IsEmpty() ||
         !print_settings->params->document_cookie) {
+      // TODO(thestig): Make sure this is not reachable and delete this block.
       DidFinishPrinting(OK);  // Release resources and fail silently on failure.
       return;
     }

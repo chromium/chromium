@@ -96,17 +96,17 @@ void AwPrintManager::ScriptedPrint(
     printing::mojom::ScriptedPrintParamsPtr scripted_params,
     ScriptedPrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto params = printing::mojom::PrintPagesParams::New();
-  params->params = printing::mojom::PrintParams::New();
 
   if (scripted_params->is_scripted &&
       GetCurrentTargetFrame()->IsNestedWithinFencedFrame()) {
     DLOG(ERROR) << "Unexpected message received. Script Print is not allowed"
                    " in a fenced frame.";
-    std::move(callback).Run(std::move(params));
+    std::move(callback).Run(nullptr);
     return;
   }
 
+  auto params = printing::mojom::PrintPagesParams::New();
+  params->params = printing::mojom::PrintParams::New();
   printing::RenderParamsFromPrintSettings(*settings_, params->params.get());
   params->params->document_cookie = scripted_params->cookie;
   params->pages = settings_->ranges();

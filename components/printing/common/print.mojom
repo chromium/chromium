@@ -380,9 +380,10 @@ interface PrintManagerHost {
   IsPrintingEnabled() => (bool printing_enabled);
 
   // Requests the print settings from the user. This step is about showing
-  // UI to the user to select the final print settings.
+  // UI to the user to select the final print settings. If the user cancels or
+  // an error occurs, return null.
   [Sync]
-  ScriptedPrint(ScriptedPrintParams params) => (PrintPagesParams settings);
+  ScriptedPrint(ScriptedPrintParams params) => (PrintPagesParams? settings);
 
   // Tells the browser printing failed.
   PrintingFailed(int32 cookie, PrintFailureReason reason);
