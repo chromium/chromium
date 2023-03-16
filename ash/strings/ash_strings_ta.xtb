@@ -141,6 +141,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> மணி நேரம்</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> இணைக்கப்படவில்லை.</translation>
 <translation id="1677582821739292812">வேறொருவர் உங்கள் திரையைப் பார்த்துக்கொண்டிருக்கிறார்</translation>
+<translation id="1679841710523778799">ஒளிர்வை அதிகரிக்கும்</translation>
 <translation id="1683399938733266832">தற்போதைய CPU பயன்பாடு: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> டைமர் · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">சிக்கலான</translation>
 <translation id="2860184359326882502">சிறப்பாகப் பொருந்துபவை</translation>
 <translation id="2865888419503095837">நெட்வொர்க் தகவல்</translation>
+<translation id="2872353916818027657">முதன்மை மானிட்டர்களை இடம் மாற்று</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2878884018241093801">சமீபத்திய உருப்படிகள் எதுவுமில்லை</translation>
 <translation id="2885950158625301909">மேலும் அறிக</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> நி.</translation>
 <translation id="3445925074670675829">USB-C சாதனம்</translation>
 <translation id="3455468639467374593">டெம்பிளேட், <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">அளவுமாற்றுதல் நிலையை மீட்டமைக்கும்</translation>
 <translation id="3465223694362104965">நீங்கள் கடந்த முறை உள்நுழைந்த பின்னர் இந்தச் சாதனத்துடன் மற்றொரு கீபோர்டு இணைக்கப்பட்டுள்ளது. இதைப் பயன்படுத்தும் முன்பு, நீங்கள் இந்தக் கீபோர்டை நம்புகிறீர்களா என்பதை உறுதிப்படுத்தவும்.</translation>
 <translation id="3465356146291925647">உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="3477079411857374384">கன்ட்ரோல்-ஷிஃப்ட்-ஸ்பேஸ்</translation>
@@ -719,6 +722,7 @@
 <translation id="468293128311738995">உங்கள் மொபைலில் உள்ள ஆப்ஸ்</translation>
 <translation id="4690510401873698237">ஷெல்ஃப் கீழே உள்ளது</translation>
 <translation id="4696813013609194136">பெற்றோர் குறியீட்டின் மூலம் சாதனத்தை அன்லாக் செய்தல்</translation>
+<translation id="4698850295812410683">ஸ்டைலஸ் கருவிகளைக் காட்டும்</translation>
 <translation id="4702647871202761252">தனிப்பட்ட திரை முடக்கப்பட்டுள்ளது</translation>
 <translation id="4706121060329443414">பின்னர் பதிவிறக்க முயலும். இப்போதைக்கு, பேசுபவை அனைத்தும் செயலாக்கத்திற்காக Googleளுக்கு அனுப்பப்படும்.</translation>
 <translation id="470644585772471629">கலர் இன்வெர்ஷன்</translation>
@@ -838,6 +842,7 @@
 <translation id="5308380583665731573">இணை</translation>
 <translation id="5313326810920013265">புளூடூத் அமைப்புகள்</translation>
 <translation id="5314219114274263156">ஸ்கிரீன் ரெக்கார்டு செய்யப்பட்டது</translation>
+<translation id="5316716239522500219">மானிட்டர்களைப் பிரதிபலி</translation>
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5319712128756744240">புதிய சாதனத்துடன் இணை</translation>
 <translation id="5322611492012084517">உங்கள் மொபைலைக் கண்டறிய முடியவில்லை</translation>
@@ -990,6 +995,7 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ஆப்ஸ் பயன்படுத்துகிறது</translation>
 <translation id="6045998054441862242">அதிக ஒளி மாறுபாட்டுப் பயன்முறையை இயக்கும்</translation>
 <translation id="6047696787498798094">நீங்கள் வேறொரு பயனருக்கு மாறும்போது, திரைப் பகிர்வு நிறுத்தப்படும். தொடர விருப்பமா?</translation>
+<translation id="6052614013050385269">இணைப்பை வலது கிளிக் செய்யும்</translation>
 <translation id="6054305421211936131">ஸ்மார்ட் கார்டு மூலம் உள்நுழைக</translation>
 <translation id="6059276912018042191">சமீபத்திய Chrome தாவல்கள்</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> இல் தானாகவே வெளியேற்றப்படுவீர்கள்.</translation>
@@ -1022,6 +1028,7 @@
 <translation id="6213808132343683860">ஸ்கிரீன்ஷாட் அல்லது ஸ்கிரீன் ரெக்கார்டிங்கைப் பகுதியளவு எடு</translation>
 <translation id="6220928844947387476">இப்போது ஒரே சமயத்தில் உங்கள் வீடியோவையும் திரையையும் ரெக்கார்டு செய்யலாம்</translation>
 <translation id="622484624075952240">கீழ்</translation>
+<translation id="6228457605945141550">ஒளிர்வைக் குறைக்கும்</translation>
 <translation id="623116199192908855">உங்கள் Chromebookகில் இருந்து ஸ்கிரீனை அலைபரப்பவும்</translation>
 <translation id="6231419273573514727">சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> தற்போது கேமராவையும் மைக்ரோஃபோனையும் பயன்படுத்துகிறது</translation>
@@ -1191,6 +1198,7 @@
 <translation id="7067196344162293536">தானியங்கு சுழற்றல்</translation>
 <translation id="7068360136237591149">ஃபைல்களைத் திற</translation>
 <translation id="7076293881109082629">உள்நுழைகிறீர்கள்</translation>
+<translation id="7076878155205969899">ஒலியை முடக்கும்</translation>
 <translation id="7086931198345821656">புதுப்பிக்க <ph name="DEVICE_TYPE" /> ஐப் பவர்வாஷ் செய்ய வேண்டும். அனைத்துத் தரவும் நீக்கப்படும். <ph name="SYSTEM_APP_NAME" /> இன் சமீபத்திய புதுப்பிப்பைப் பற்றி மேலும் அறிக.</translation>
 <translation id="7088960765736518739">ஸ்விட்ச் அணுகல்</translation>
 <translation id="7098053464892629930">கிடைக்கக்கூடிய அனைத்து அம்சங்களையும் பார்க்க <ph name="NAME" /> ஆப்ஸை Google playயில் பதிவிறக்கவும்</translation>

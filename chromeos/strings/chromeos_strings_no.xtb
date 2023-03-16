@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
+<translation id="1082009148392559545">Laster ned skjermspareren</translation>
 <translation id="1094693127011229778">IP-adressen er ikke tilgjengelig</translation>
 <translation id="1113892970288677790">Velg utvalgte kunstverk og bilder</translation>
 <translation id="1119447706177454957">Intern feil</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">Dokumentmater (ensidig)</translation>
 <translation id="1643449475550628585">Endre bakgrunnsbilde daglig</translation>
 <translation id="1644574205037202324">Logg</translation>
+<translation id="1651925268237749928">Du har valgt et delt album. Andre kan legge til eller endre bilder. Bakgrunnen din kan bruke bilder som ikke er i dette albumet nå.</translation>
 <translation id="1662989795263954667">Stoppet – tom for blekk</translation>
 <translation id="1664796644829245314">Forhåndsvis <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">Administreres av <ph name="FIRST_MANAGER" /> og <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Navnetjenere</translation>
 <translation id="1731082422893354635">Bluetooth-styreflate</translation>
+<translation id="1738949837603788263">Sone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Kunne ikke laste inn bilder. Kontroller nettverkstilkoblingen din, eller prøv å laste inn bildene på nytt.</translation>
 <translation id="1751249301761991853">Personlig</translation>
 <translation id="1753496554272155572">Avslutt forhåndsvisning av bakgrunn</translation>
@@ -236,6 +239,7 @@
 <translation id="319101249942218879">Brukerbildet er endret</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
+<translation id="3201315366910775591">Delte album kan oppdateres av andre personer</translation>
 <translation id="3211671540163313381">Tastaturoppsett av styrepiler</translation>
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3226657629376379887">Handlingsmeny for layout</translation>
@@ -598,6 +602,7 @@
 <translation id="636850387210749493">Bedriftsregistrering</translation>
 <translation id="6379086450106841622">Berøringsskjerm</translation>
 <translation id="6381741036071372448">Test tastaturet</translation>
+<translation id="6382182670717268353">Forhåndsvisning av skjermsparer</translation>
 <translation id="6388847657025262518">Skannerens dokumentmater er tilstoppet. Sjekk materen, og prøv på nytt.</translation>
 <translation id="6394634179843537518">Legg til fil</translation>
 <translation id="6410257289063177456">Bildefiler</translation>
@@ -653,6 +658,7 @@
 <translation id="6838167112108853532">Kan ikke slå av eller fjerne dette APN-et. Sørg for å deaktivere eller fjerne aktiverte APN som er tilknyttet.</translation>
 <translation id="6853312040151791195">Utladingsfrekvens</translation>
 <translation id="6889786074662672253">Ikke koble fra denne eksterne enheten eller slå av datamaskinen mens enheten startes på nytt. Du kan minimere dette vinduet. Dette kan ta noen minutter, og det kan hende den eksterne enheten ikke fungerer i dette tidsrommet.</translation>
+<translation id="6900701049656042631">Dette albumet inneholder ingen bilder. For å legge til bilder, gå til <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Tilbake til <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skannerens deksel er åpent. Lukk dekselet, og prøv på nytt.</translation>
 <translation id="6911383237894364323">Kan ikke koble til medietjenere</translation>
@@ -687,6 +693,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7180865173735832675">Tilpass</translation>
+<translation id="7184043045742675738">Klikk på hvilken som helst tast for å tilpasse knappen. Flytt tasten med musen eller piltastene.</translation>
 <translation id="7212734716605298123">Fastvareoppdateringer for eksterne enheter</translation>
 <translation id="7216409898977639127">Mobiloperatør</translation>
 <translation id="725133483556299729">Velg en e-postadresse</translation>
@@ -728,6 +735,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-berøringsskjerm</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> igjen</translation>
+<translation id="7613724632293948900">Juster med muse- eller piltastene.</translation>
 <translation id="7620771111601174153">Finn ut mer i Brukerstøtte</translation>
 <translation id="763165478673169849">Forrige tidspunkt for tilbakestilling</translation>
 <translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
@@ -850,6 +858,7 @@
 <translation id="8798441408945964110">Leverandørnavn</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Bakgrunn</translation>
+<translation id="8820457400746201697">Flytt det blå berøringspunktet til en handling. Velg den tilknyttede nøkkelen for å tilpasse.</translation>
 <translation id="8834539327799336565">Tilkoblet nå</translation>
 <translation id="8845001906332463065">Få hjelp</translation>
 <translation id="8855781559874488009">Kan ikke koble til HTTP-nettsteder gjennom brannmuren</translation>

@@ -141,6 +141,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">A función <ph name="FEATURE_NAME" /> non está conectada.</translation>
 <translation id="1677582821739292812">Alguén está mirando a túa pantalla</translation>
+<translation id="1679841710523778799">Aumenta o brillo</translation>
 <translation id="1683399938733266832">Uso actual da CPU: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="169515659049020177">Maiús</translation>
 <translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2849936225196189499">Esencial</translation>
 <translation id="2860184359326882502">Do mellor resultado ao peor</translation>
 <translation id="2865888419503095837">Información da rede</translation>
+<translation id="2872353916818027657">Cambiar monitor principal</translation>
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="2878884018241093801">Non hai elementos recentes</translation>
 <translation id="2885950158625301909">Máis información</translation>
@@ -470,6 +472,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB‑C</translation>
 <translation id="3455468639467374593">Modelo, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Restablece o nivel de zoom</translation>
 <translation id="3465223694362104965">Conectouse outro teclado a este dispositivo desde a última vez que iniciaches sesión. Asegúrate de que confías neste teclado antes de utilizalo.</translation>
 <translation id="3465356146291925647">Xestionada polo teu administrador</translation>
 <translation id="3477079411857374384">Control-Maúsculas-Espazo</translation>
@@ -720,6 +723,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="468293128311738995">Aplicacións do teu teléfono</translation>
 <translation id="4690510401873698237">O estante está na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquea o dispositivo co código parental</translation>
+<translation id="4698850295812410683">Mostra as ferramentas de lapis óptico</translation>
 <translation id="4702647871202761252">A pantalla de privacidade está desactivada</translation>
 <translation id="4706121060329443414">Tentarase descargar os ficheiros máis tarde. De momento, o que se fale enviarase a Google para que o procese.</translation>
 <translation id="470644585772471629">Inversión da cor</translation>
@@ -839,6 +843,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Realizouse unha gravación da pantalla</translation>
+<translation id="5316716239522500219">Replicar monitores</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5319712128756744240">Vincular dispositivo novo</translation>
 <translation id="5322611492012084517">Non puidemos atopar o teu teléfono</translation>
@@ -991,6 +996,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6045629311476491587">Permisos usados por <ph name="APP_COUNT" /> aplicacións</translation>
 <translation id="6045998054441862242">Activa o modo de alto contraste</translation>
 <translation id="6047696787498798094">O uso compartido da pantalla deterase cando cambies a outro usuario. Queres continuar?</translation>
+<translation id="6052614013050385269">Fai clic co botón dereito nunha ligazón</translation>
 <translation id="6054305421211936131">Inicia sesión coa tarxeta intelixente</translation>
 <translation id="6059276912018042191">Pestanas recentes de Chrome</translation>
 <translation id="6062360702481658777">A túa sesión pecharase automaticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1023,6 +1029,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6213808132343683860">Fai unha captura de pantalla parcial ou grava a pantalla</translation>
 <translation id="6220928844947387476">Xa podes gravarte ao mesmo tempo que gravas a túa pantalla</translation>
 <translation id="622484624075952240">Frecha abaixo</translation>
+<translation id="6228457605945141550">Reduce o brillo</translation>
 <translation id="623116199192908855">Emite a pantalla do Chromebook</translation>
 <translation id="6231419273573514727">É posible que os periféricos teñan un rendemento limitado</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando a cámara e o micrófono nestes intres</translation>
@@ -1192,6 +1199,7 @@ Nova instalación</translation>
 <translation id="7067196344162293536">Xirar automat.</translation>
 <translation id="7068360136237591149">Abrir ficheiros</translation>
 <translation id="7076293881109082629">Iniciando sesión</translation>
+<translation id="7076878155205969899">Silencia o son</translation>
 <translation id="7086931198345821656">Esta actualización require executar a función Powerwash do teu dispositivo (<ph name="DEVICE_TYPE" />). Eliminaranse todos os datos. Obtén máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Acceso con interruptores</translation>
 <translation id="7098053464892629930">Descarga a aplicación para <ph name="NAME" /> en Google Play e descubre todas as funcións dispoñibles</translation>

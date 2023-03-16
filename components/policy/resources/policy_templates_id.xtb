@@ -7680,21 +7680,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 
           Jika kebijakan ini tidak ditetapkan, sorotan kursor mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="8160572976152509481">Hanya izinkan pengguna mematikan perangkat menggunakan tombol daya fisik</translation>
-<translation id="8161309952608059239">Daftar tindakan yang akan dijalankan saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai.
-
-      Jika kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tidak disetel, kebijakan ini tidak akan berpengaruh.
-
-      Saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai, <ph name="PRODUCT_NAME" /> akan menjalankan tindakan yang dikonfigurasi di kebijakan ini.
-
-      Jika kebijakan ini disetel ke kosong atau tidak disetel, kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tidak akan berpengaruh.
-
-      Tindakan yang didukung adalah:
-
-      '<ph name="CLOSE_BROWSERS_ACTION" />': menutup semua jendela browser dan PWA untuk profil ini. Tidak didukung di Android.
-
-      '<ph name="SHOW_PROFILE_PICKER_ACTION" />': menampilkan jendela Pemilih Profil. Tidak didukung di Android.
-
-      '<ph name="CLEAR_BROWSING_HISTORY_ACTION" />', '<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />', '<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />', '<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />', '<ph name="CLEAR_AUTOFILL_ACTION" />', '<ph name="CLEAR_SITE_SETTINGS_ACTION" />', '<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />': menghapus data penjelajahan yang sesuai. Lihat kebijakan <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> untuk detail selengkapnya.</translation>
 <translation id="8164144100557223371">Nonaktifkan entrypoint toolbar fitur eksperimental browser</translation>
 <translation id="8164687848393015214">Jika kebijakan disetel ke Aktif, paket jaringan pemantauan (<ph name="HEARTBEATS_TERM" />) akan dikirim ke server pengelolaan untuk memantau status online, guna memungkinkan server mendeteksi apakah perangkat sedang offline.
 

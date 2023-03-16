@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2597457036804169544">Don’t apply Dark theme to sites</translation>
+<translation id="2606760465469169465">Auto-verify</translation>
 <translation id="2621115761605608342">Allow JavaScript for a specific site.</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2677748264148917807">Leave</translation>
@@ -188,6 +189,7 @@
 <translation id="4440642537584213025">Expand <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Mute sound for a specific site.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
+<translation id="4478158430052450698">Make it easier to customise zoom for different sites</translation>
 <translation id="4479647676395637221">Ask first before allowing sites to use your camera (recommended)</translation>
 <translation id="4505788138578415521">URL expanded</translation>
 <translation id="4534723447064627427">To let <ph name="APP_NAME" /> access your microphone, also turn on microphone in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
@@ -223,6 +225,7 @@
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Last visited today</translation>
 <translation id="5225463052809312700">Turn on camera</translation>
+<translation id="5229337741799419985">This setting works without identifying you or allowing sites to see your browsing history.</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5264323282659631142">Remove '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
@@ -309,6 +312,7 @@
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
+<translation id="6701547804986694515">A site that you visit can save info with Chrome that validates that you're not a bot. As you keep browsing, sites can check with Chrome and verify with a previous site that you've visited that you're likely a real person</translation>
 <translation id="6722828510648505498">Block sign-in prompts from identity services.</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="6749077623962119521">Reset permissions?</translation>
@@ -426,6 +430,7 @@
 <translation id="8751914237388039244">Select an image</translation>
 <translation id="8801436777607969138">Block JavaScript for a specific site.</translation>
 <translation id="8803526663383843427">When on</translation>
+<translation id="8805385115381080995">Browsing is faster because a site is less likely to ask you to verify that you're a real person</translation>
 <translation id="8816026460808729765">Block sites from accessing sensors</translation>
 <translation id="8823559166155093873">Block cookies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +454,6 @@
 <translation id="9162462602695099906">This page is dangerous</translation>
 <translation id="9201023452444595544">Any offline data will be cleared</translation>
 <translation id="930525582205581608">Forget this site?</translation>
+<translation id="947156494302904893">Sites that you visit can verify that you're a real person and not a bot</translation>
 <translation id="967624055006145463">Data stored</translation>
 </translationbundle>

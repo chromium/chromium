@@ -142,6 +142,7 @@
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">未连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1677582821739292812">有人正在看着您的屏幕</translation>
+<translation id="1679841710523778799">调高亮度</translation>
 <translation id="1683399938733266832">CPU 当前用量：<ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />定时器   <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@
 <translation id="2849936225196189499">关键</translation>
 <translation id="2860184359326882502">最匹配</translation>
 <translation id="2865888419503095837">网络信息</translation>
+<translation id="2872353916818027657">切换主显示器</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2878884018241093801">近期没有任何内容</translation>
 <translation id="2885950158625301909">了解详情</translation>
@@ -472,6 +474,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="3445925074670675829">USB-C 设备</translation>
 <translation id="3455468639467374593">模板“<ph name="TEMPLATE_NAME" />”</translation>
+<translation id="346243998268439747">重置缩放级别</translation>
 <translation id="3465223694362104965">这部设备当前连接的键盘已不同于您上次登录时所用的键盘。请确保您信任此键盘，然后再使用它。</translation>
 <translation id="3465356146291925647">由您的管理员管理</translation>
 <translation id="3477079411857374384">Ctrl+Shift+空格键</translation>
@@ -724,6 +727,7 @@
 <translation id="468293128311738995">您手机中的应用</translation>
 <translation id="4690510401873698237">任务栏位于屏幕底部</translation>
 <translation id="4696813013609194136">使用家长访问代码解锁设备</translation>
+<translation id="4698850295812410683">显示触控笔工具</translation>
 <translation id="4702647871202761252">已关闭隐私保护屏</translation>
 <translation id="4706121060329443414">系统会在晚些时候尝试下载。目前，系统会将语音识别结果文件发送给 Google 进行处理。</translation>
 <translation id="470644585772471629">颜色反转</translation>
@@ -843,6 +847,7 @@
 <translation id="5308380583665731573">连接</translation>
 <translation id="5313326810920013265">蓝牙设置</translation>
 <translation id="5314219114274263156">已录制屏幕</translation>
+<translation id="5316716239522500219">镜像显示器</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319712128756744240">为新设备配对</translation>
 <translation id="5322611492012084517">找不到您的手机</translation>
@@ -995,6 +1000,7 @@
 <translation id="6045629311476491587">被 <ph name="APP_COUNT" /> 款应用使用过</translation>
 <translation id="6045998054441862242">开启高反差模式</translation>
 <translation id="6047696787498798094">切换到其他用户后将停止屏幕共享。要继续吗？</translation>
+<translation id="6052614013050385269">右键点击链接</translation>
 <translation id="6054305421211936131">使用智能卡登录</translation>
 <translation id="6059276912018042191">最近打开的 Chrome 标签页</translation>
 <translation id="6062360702481658777">您将在<ph name="LOGOUT_TIME_LEFT" />后自动退出。</translation>
@@ -1027,6 +1033,7 @@
 <translation id="6213808132343683860">截取局部屏幕或录屏</translation>
 <translation id="6220928844947387476">现在，您可以同时录制您本人和屏幕内容</translation>
 <translation id="622484624075952240">向下箭头键</translation>
+<translation id="6228457605945141550">调低亮度</translation>
 <translation id="623116199192908855">从 Chromebook 中投放屏幕</translation>
 <translation id="6231419273573514727">外围设备的性能可能会受到限制</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />正在使用您的摄像头和麦克风</translation>
@@ -1197,6 +1204,7 @@
 <translation id="7067196344162293536">自动旋转</translation>
 <translation id="7068360136237591149">打开文件</translation>
 <translation id="7076293881109082629">正在登录</translation>
+<translation id="7076878155205969899">静音</translation>
 <translation id="7086931198345821656">这项更新需要对您的 <ph name="DEVICE_TYPE" /> 执行 Powerwash 操作。此设备中的所有数据都将被删除。详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新。</translation>
 <translation id="7088960765736518739">开关控制</translation>
 <translation id="7098053464892629930">请前往 Google Play 下载“<ph name="NAME" />”应用以查看所有可用功能</translation>

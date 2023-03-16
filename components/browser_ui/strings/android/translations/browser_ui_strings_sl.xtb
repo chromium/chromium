@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Razširitev: <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Izklop zvoka za določeno spletno mesto.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# piškotek}one{# piškotek}two{# piškotka}few{# piškotki}other{# piškotkov}}</translation>
+<translation id="4478158430052450698">Poenostavljeno nastavljanje povečave po meri za različna spletna mesta</translation>
 <translation id="4479647676395637221">Prikaži poziv, preden se spletnim mestom dovoli uporaba kamere (priporočeno)</translation>
 <translation id="4505788138578415521">URL je razširjen</translation>
 <translation id="4534723447064627427">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do mikrofona, mikrofon vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>

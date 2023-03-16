@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Ehangu <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Distewi sain ar gyfer gwefan benodol.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cwci}zero{# cwci}two{# gwci}few{# chwci}many{# chwci}other{# cwci}}</translation>
+<translation id="4478158430052450698">Ei gwneud hi'n haws i addasu chwyddo ar gyfer gwahanol wefannau</translation>
 <translation id="4479647676395637221">Gofyn yn gyntaf cyn caniatáu i wefannau ddefnyddio'ch camera (argymhellir)</translation>
 <translation id="4505788138578415521">URL wedi'i ehangu</translation>
 <translation id="4534723447064627427">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich meicroffon, trowch y meicroffon ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>

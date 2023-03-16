@@ -141,6 +141,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> har inte anslutits.</translation>
 <translation id="1677582821739292812">Någon tittar på din skärm</translation>
+<translation id="1679841710523778799">Öka ljusstyrkan</translation>
 <translation id="1683399938733266832">Aktuell CPU-användning: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="169515659049020177">Skift</translation>
 <translation id="1698080062160024910">Timer på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2849936225196189499">Kritiskt</translation>
 <translation id="2860184359326882502">Bästa träffen</translation>
 <translation id="2865888419503095837">Nätverksinformation</translation>
+<translation id="2872353916818027657">Byt primär bildskärm</translation>
 <translation id="2872961005593481000">Stäng av</translation>
 <translation id="2878884018241093801">Listan med de senaste åtgärderna är tom</translation>
 <translation id="2885950158625301909">Läs mer</translation>
@@ -470,6 +472,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3455468639467374593">Mall: <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Återställ zoomnivån</translation>
 <translation id="3465223694362104965">Ett annat tangentbord har anslutits till den här enheten sedan du loggade in senast. Försäkra dig om att det är ett tangentbord du litar på innan du använder det.</translation>
 <translation id="3465356146291925647">Hanteras av administratören</translation>
 <translation id="3477079411857374384">Ctrl-Skift-Mellanslag</translation>
@@ -719,6 +722,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="468293128311738995">Appar från telefonen</translation>
 <translation id="4690510401873698237">Hyllan längst ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
+<translation id="4698850295812410683">Visa verktyg för e-penna</translation>
 <translation id="4702647871202761252">Integritetsskärmen är inaktiverad</translation>
 <translation id="4706121060329443414">Ett nytt nedladdningsförsök görs senare. Tills vidare skickas tal till Google för bearbetning.</translation>
 <translation id="470644585772471629">Inverterade färger</translation>
@@ -838,6 +842,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5308380583665731573">Anslut</translation>
 <translation id="5313326810920013265">Bluetooth-inställningar</translation>
 <translation id="5314219114274263156">En skärminspelning har tagits</translation>
+<translation id="5316716239522500219">Spegla monitorer</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5319712128756744240">Koppla en ny enhet</translation>
 <translation id="5322611492012084517">Det gick inte att hitta telefonen</translation>
@@ -990,6 +995,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6045629311476491587">Används av <ph name="APP_COUNT" /> appar</translation>
 <translation id="6045998054441862242">Aktivera högkontrastläge</translation>
 <translation id="6047696787498798094">Skärmdelningen avbryts när du byter till en annan användare. Vill du fortsätta?</translation>
+<translation id="6052614013050385269">Högerklicka på en länk</translation>
 <translation id="6054305421211936131">Logga in med smartkort</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
 <translation id="6062360702481658777">Du loggas ut automatiskt om <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1022,6 +1028,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6213808132343683860">Ta en skärmbild eller skärminspelning av en del av skärmen</translation>
 <translation id="6220928844947387476">Nu kan du spela in dig själv och skärmen på samma gång</translation>
 <translation id="622484624075952240">Ner</translation>
+<translation id="6228457605945141550">Minska ljusstyrkan</translation>
 <translation id="623116199192908855">Casta skärmen på en Chromebook</translation>
 <translation id="6231419273573514727">Kringutrustningens prestanda kan vara begränsad</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> använder just nu kameran och mikrofonen</translation>
@@ -1191,6 +1198,7 @@ Nyligen installerad</translation>
 <translation id="7067196344162293536">Rotera automatiskt</translation>
 <translation id="7068360136237591149">Öppna filer</translation>
 <translation id="7076293881109082629">Logga in</translation>
+<translation id="7076878155205969899">Stäng av ljudet</translation>
 <translation id="7086931198345821656">Denna uppdatering kräver att en powerwash görs av <ph name="DEVICE_TYPE" />. All data raderas. Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Brytarstyrning</translation>
 <translation id="7098053464892629930">Du hittar alla tillgängliga funktioner om du laddar ned appen för <ph name="NAME" /> på Google Play</translation>

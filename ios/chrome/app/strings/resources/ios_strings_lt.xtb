@@ -541,6 +541,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="48274138579728272">Pažymėti kaip skaitytą</translation>
 <translation id="4833686396768033263">Naujausi skirtukai nepasiekiami</translation>
 <translation id="4833786495304741580">Automatiškai siunčia naudojimo statistiką ir strigčių ataskaitas „Google“.</translation>
+<translation id="4834499902900503484">Kai esate prisijungę prie „Chrome“, išsaugoti slaptažodžiai pateikiami „Google“ paskyroje. Jei norite išjungti, <ph name="BEGIN_LINK" />eikite į nustatymus<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Žymės, istorija, slaptažodžiai ir kiti duomenys nebebus sinchronizuojami su „Google“ paskyra.</translation>
 <translation id="4844899002472726590">Peržiūrėkite ir redaguokite jus dominančias temas</translation>
 <translation id="4848999860252535517">Ištrinti <ph name="WEBSITE" /> slaptažodį?</translation>
@@ -684,6 +685,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5899314093904173337">Norėdami bendrinti su netoliese esančiais žmonėmis, leiskite jiems nuskaityti šį QR kodą savo fotoaparatu ar QR kodų skaitytuvo programa</translation>
 <translation id="5911030830365207728">„Google“ vertėjas</translation>
 <translation id="5913600720976431809">Puslapio vertimo parinktys</translation>
+<translation id="5922999516621365983">Nuvilkite skirtuką čia, kad prisegtumėte.</translation>
 <translation id="5938160824633642847">Jūsų įrenginys beveik pilnas. Atlaisvinkite vietos ir bandykite dar kartą.</translation>
 <translation id="5948291296578561264">Taip galėsite išsaugoti nuotraukas nuotraukų bibliotekoje.</translation>
 <translation id="5951816930277761335">Bendrinkite nuorodą</translation>
@@ -883,7 +885,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7029809446516969842">Slaptažodžiai</translation>
 <translation id="7053983685419859001">Blokuoti</translation>
 <translation id="7062545763355031412">Sutikti ir perjungti paskyras</translation>
-<translation id="707592680990535433">Nuostatas galite tvarkyti prisijungę prie „Chrome“ naudodami „Google“ paskyrą.</translation>
 <translation id="7080806333218412752">Siunčia URL Saugaus naršymo funkcijai, kad juos patikrintų. Taip pat siunčia nedaug puslapių, atsisiuntimų, plėtinių veiklos ir sistemos informacijos, kad padėtų aptikti naujas grėsmes. Laikinai susieja šiuos duomenis su „Google“ paskyra, kai esate prisijungę, kad apsaugotų jus „Google“ programose.</translation>
 <translation id="7095110968493193530">„Google“ slaptažodžių tvarkytuvė, naudotojas <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Naujausi skirtukai</translation>

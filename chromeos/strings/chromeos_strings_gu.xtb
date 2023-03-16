@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ફાયરવૉલ હોવાની જાણકારી મળી</translation>
 <translation id="1075811647922107217">પેજનું કદ</translation>
+<translation id="1082009148392559545">સ્ક્રીન સેવર ડાઉનલોડ કરી રહ્યું છે</translation>
 <translation id="1094693127011229778">IP ઍડ્રેસ ઉપલબ્ધ નથી</translation>
 <translation id="1113892970288677790">ક્યુરેટ કરેલા આર્ટવર્ક અને છબીઓ પસંદ કરો</translation>
 <translation id="1119447706177454957">આંતરિક ભૂલ</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> અને <ph name="SECOND_MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1726100011689679555">નામ સર્વર</translation>
 <translation id="1731082422893354635">બ્લૂટૂથ ટચપૅડ</translation>
+<translation id="1738949837603788263">ઝોન <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">છબીઓ લોડ કરી શકાઈ નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અથવા છબીઓ ફરી લોડ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1751249301761991853">વ્યક્તિગત</translation>
 <translation id="1753496554272155572">વૉલપેપર પ્રીવ્યૂમાંથી બહાર નીકળો</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">સંગઠન નોંધણી</translation>
 <translation id="6379086450106841622">ટચસ્ક્રીન</translation>
 <translation id="6381741036071372448">તમારા કીબોર્ડનું પરીક્ષણ કરો</translation>
+<translation id="6382182670717268353">સ્ક્રીન સેવરનો પ્રીવ્યૂ</translation>
 <translation id="6388847657025262518">સ્કૅનરનું દસ્તાવેજ ફીડર જામ થઈ ગયું છે. ફીડર ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6394634179843537518">ફાઇલ ઉમેરો</translation>
 <translation id="6410257289063177456">છબી ફાઇલો</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
+<translation id="7184043045742675738">તમારા બટનને કસ્ટમાઇઝ કરવા માટે કોઈપણ કી પર ક્લિક કરો. માઉસ અથવા ઍરો કી વડે કીના સ્થાનમાં ફેરફાર કરો.</translation>
 <translation id="7212734716605298123">બાહ્ય ડિવાઇસ માટે ફર્મવેયરની અપડેટ</translation>
 <translation id="7216409898977639127">સેલ્યુલર પ્રદાતા</translation>
 <translation id="725133483556299729">ઇમેઇલ પસંદ કરો</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ટચસ્ક્રીન</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> બાકી</translation>
+<translation id="7613724632293948900">માઉસ અથવા ઍરો કી વડે સ્થાનમાં ફેરફાર કરો.</translation>
 <translation id="7620771111601174153">સહાયતા કેન્દ્રમાં વધુ જાણો</translation>
 <translation id="763165478673169849">છેલ્લે રીસેટ કર્યાનો સમય</translation>
 <translation id="7648838807254605802">HTTPSની ઉચ્ચ વિલંબતા</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">પ્રદાતાનું નામ</translation>
 <translation id="8814190375133053267">વાઇ-ફાઇ</translation>
 <translation id="8818152010000655963">વૉલપેપર</translation>
+<translation id="8820457400746201697">વાદળી રંગના ટચ પૉઇન્ટને ઍક્શન પર ખસેડો. કસ્ટમાઇઝ કરવા માટે સંકળાયેલી કી પસંદ કરો.</translation>
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8855781559874488009">ફાયરવૉલ મારફતે HTTP વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>

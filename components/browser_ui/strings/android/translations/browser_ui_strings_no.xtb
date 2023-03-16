@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Utvidet – klikk for å minimere.</translation>
 <translation id="2586657967955657006">Utklippstavle</translation>
 <translation id="2597457036804169544">Ikke bruk mørkt tema på nettsteder</translation>
+<translation id="2606760465469169465">Automatisk bekreftelse</translation>
 <translation id="2621115761605608342">Tillat JavaScript for et bestemt nettsted.</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2677748264148917807">Gå ut</translation>
@@ -188,6 +189,7 @@
 <translation id="4440642537584213025">Vis <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Kutt lyden for et bestemt nettsted.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# informasjonskapsel}other{# informasjonskapsler}}</translation>
+<translation id="4478158430052450698">Gjør det enklere å tilpasse zoomen for ulike nettsteder</translation>
 <translation id="4479647676395637221">Spør før nettsteder får bruke kameraet (anbefales)</translation>
 <translation id="4505788138578415521">Nettadressen er utvidet</translation>
 <translation id="4534723447064627427">For å gi <ph name="APP_NAME" /> tilgang til mikrofonen må du også slå på mikrofonen i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
@@ -223,6 +225,7 @@
 <translation id="5197729504361054390">Kontaktene du velger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Sist besøkt i dag</translation>
 <translation id="5225463052809312700">Slå på kameraet</translation>
+<translation id="5229337741799419985">Denne innstillingen fungerer uten at du blir identifisert, og uten at nettsteder kan se nettleserloggen din</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5264323282659631142">Fjern «<ph name="CHIP_LABEL" />»</translation>
 <translation id="528192093759286357">Dra ned fra toppen og trykk på tilbakeknappen for å avslutte fullskjerm.</translation>
@@ -309,6 +312,7 @@
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6689172468748959065">Profilbilder</translation>
 <translation id="6697925417670533197">Aktive nedlastinger</translation>
+<translation id="6701547804986694515">Nettsteder du besøker, kan lagre informasjon i Chrome som bekrefter at du ikke er en robot. Når du fortsetter å surfe, kan nettsteder kontrollere denne informasjonen i Chrome og få bekreftet av nettsteder du har besøkt tidligere, at du sannsynligvis er en ekte person</translation>
 <translation id="6722828510648505498">Blokker påloggingsforespørsler fra identitetstjenester.</translation>
 <translation id="6746124502594467657">Flytt ned</translation>
 <translation id="6749077623962119521">Vil du tilbakestille tillatelser?</translation>
@@ -426,6 +430,7 @@
 <translation id="8751914237388039244">Velg et bilde</translation>
 <translation id="8801436777607969138">Blokkér JavaScript for et bestemt nettsted.</translation>
 <translation id="8803526663383843427">Når funksjonen er på</translation>
+<translation id="8805385115381080995">Surfing går raskere fordi det er mindre sannsynlig at nettsteder ber deg om å bekrefte at du er en ekte person</translation>
 <translation id="8816026460808729765">Blokkér nettsteder fra å få tilgang til sensorer</translation>
 <translation id="8823559166155093873">Blokkering av informasjonskapsler</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +454,6 @@
 <translation id="9162462602695099906">Denne siden er farlig</translation>
 <translation id="9201023452444595544">Eventuelle frakoblede data blir slettet.</translation>
 <translation id="930525582205581608">Vil du glemme dette nettstedet?</translation>
+<translation id="947156494302904893">Nettsteder du besøker, kan bekrefte at du er en ekte person og ikke en robot</translation>
 <translation id="967624055006145463">Lagrede data</translation>
 </translationbundle>

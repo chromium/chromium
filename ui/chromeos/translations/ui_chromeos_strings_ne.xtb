@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">छविको रिजोल्युसन</translation>
 <translation id="1972984168337863910">फाइलका प्रतिक्रियाका प्यानलहरू विस्तृत गर्नुहोस्</translation>
 <translation id="1995337122023280937">फाइल रहेको स्थानमा जानुहोस्</translation>
-<translation id="1999709132469742660">सबै URL मार्फत फाइल हेर्न तथा प्रयोग गर्न सकिन्छ</translation>
 <translation id="2001796770603320721">ड्राइभमा व्यवस्थित गर्नुहोस्</translation>
 <translation id="2009067268969781306">ड्राइभ फर्म्याट गर्नुले यसमा भण्डारण गरिएका सम्पूर्ण डेटा मेट्ने छ। यो कार्य उल्टाउन सकिँदैन।</translation>
 <translation id="2025955442973426285">टिग्रिन्या</translation>
@@ -542,7 +541,6 @@
 <translation id="5323213332664049067">ल्याटिन अमेरिकी</translation>
 <translation id="5330145655348521461">यी फाइलहरू एउटा फरक डेस्कटपमा खुलेका थिए। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) मा लैजानुहोस्।</translation>
 <translation id="5330512191124428349">जानकारी प्राप्त गर्नुहोस्</translation>
-<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> बाहेक सबै URL मार्फत फाइल हेर्न तथा प्रयोग गर्न सकिन्छ</translation>
 <translation id="5344246330454251646">Bruschetta सँग कुन कुन फाइल तथा फोल्डरहरू सेयर गर्ने भन्ने कुरा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="535792325654997756">बिरालो बोकिरहेका व्यक्ति</translation>
 <translation id="5358764674931277">फ्रेम रेट</translation>
@@ -941,6 +939,7 @@
 <translation id="8492972329130824181">घरको नेटवर्क उपलब्ध छैन। कनेक्ट गर्न मोबाइल डेटा रोमिङ अन गर्नु पर्ने हुन्छ।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सङ्कलन गरिँदै छ...</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्, तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको</translation>
+<translation id="8512483403832814140">जुनसुकै बेला</translation>
 <translation id="8521441079177373948">बेलायत</translation>
 <translation id="853494022971700746">फ्रान्सेली (फ्रान्स)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> को <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>

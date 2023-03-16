@@ -3599,7 +3599,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4134818201340504801">Der er ikke nok ledig lagerplads til at fuldføre konfigurationen. Frigør lagerplads, og prøv igen</translation>
 <translation id="4135746311382563554">Yderligere servicevilkår for Google Chrome og ChromeOS</translation>
 <translation id="4136203100490971508">Nattelys slukkes automatisk ved solopgang</translation>
-<translation id="41365691917097717">Hvis du fortsætter, aktiveres ADB-fejlretning til oprettelse og test af Android-apps. Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet bekræftet af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
+<translation id="41365691917097717">Hvis du fortsætter, aktiveres ADB-fejlretning til oprettelse og test af Android-apps. Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet verificeret af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
 <translation id="4138267921960073861">Vis brugernavne og billeder på loginskærmen</translation>
 <translation id="4138598238327913711">Grammatikkontrol er i øjeblikket kun tilgængelig på engelsk</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-enhed er tilsluttet</translation>
@@ -3732,6 +3732,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4274667386947315930">Logindata</translation>
 <translation id="4274673989874969668">Når du forlader et website, kan websitet fortsætte med at synkronisere for at afslutte opgaver såsom upload af billeder eller afsendelse af en chatbesked</translation>
 <translation id="4275291496240508082">Lyd ved opstart</translation>
+<translation id="4275397969489577657">Aktivér logning af begivenhedsstreaming</translation>
 <translation id="4275830172053184480">Genstart din enhed</translation>
 <translation id="4277434192562187284">XML-konfigurationskilde</translation>
 <translation id="4278390842282768270">Tilladt</translation>
@@ -4543,6 +4544,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5018207570537526145">Åbn udvidelsens website</translation>
 <translation id="5018526990965779848">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre din Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto.</translation>
 <translation id="5020008942039547742">Vælg et andet vindue</translation>
+<translation id="5020651427400641814">Aktivér talelogning</translation>
 <translation id="5021750053540820849">Endnu ikke opdateret</translation>
 <translation id="5024511550058813796">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
 <translation id="5026492829171796515">Log ind for at tilføje en Google-konto</translation>
@@ -4975,6 +4977,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5432145523462851548">Vis <ph name="FILE_NAME" /> i mappe</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-kryptering</translation>
+<translation id="5435274640623994081">Aktivér logning af lydikoner</translation>
 <translation id="5435779377906857208">Tillad altid, at <ph name="HOST" /> kan få adgang til din lokation</translation>
 <translation id="5436492226391861498">Venter på proxytunnel...</translation>
 <translation id="5436510242972373446">Søg på <ph name="SITE_NAME" />:</translation>
@@ -5322,7 +5325,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5751345516399502412">Tjek parathed til netdeling</translation>
 <translation id="5755022574660047665">minder fra Google Fotos</translation>
 <translation id="5756163054456765343">H&amp;jælp</translation>
-<translation id="5757375109985023827">Vælg en fane for at se en forhåndsvisning</translation>
 <translation id="5758631781033351321">Her finder du din læseliste</translation>
 <translation id="5759728514498647443">De dokumenter, du sender til udskrift via <ph name="APP_NAME" />, kan læses af <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Angiv Google-kontooplysninger</translation>
@@ -7457,7 +7459,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7683834360226457448">Værktøjer til visning for folk med stærkt nedsat syn</translation>
 <translation id="7684212569183643648">Installeret af din administrator</translation>
 <translation id="7684559058815332124">Gå til loginsiden for captive portal</translation>
-<translation id="7684718995427157417">Hvis du vil oprette og teste dine apps, skal du aktivere Android Debug Bridge (ADB). Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet bekræftet af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
+<translation id="7684718995427157417">Hvis du vil oprette og teste dine apps, skal du aktivere Android Debug Bridge (ADB). Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet verificeret af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
 <translation id="7685049629764448582">JavaScript-hukommelse</translation>
 <translation id="7685087414635069102">Der skal angives en pinkode</translation>
 <translation id="7686086654630106285">Mere om foreslåede annoncer fra websites</translation>
@@ -8537,6 +8539,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8654151524613148204">Filen er desværre for stor til, at computeren kan håndtere den.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Login mislykkedes, da din adgangskode ikke kunne verificeres. Kontakt din administrator, eller prøv igen.</translation>
+<translation id="8656888282555543604">Aktivér logning af braille</translation>
 <translation id="8657393004602556571">Vil du slette denne feedback?</translation>
 <translation id="8661290697478713397">Åbn link i inko&amp;gnitovindue</translation>
 <translation id="8662671328352114214">Opret forbindelse til <ph name="TYPE" />-netværk</translation>

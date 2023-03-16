@@ -616,6 +616,7 @@
 <translation id="15373452373711364">بڑا ماؤس کرسر</translation>
 <translation id="1540605929960647700">ڈیمو موڈ فعال کریں</translation>
 <translation id="1541346352678737112">کوئی نیٹ ورک نہیں ملا</translation>
+<translation id="154198613844929213">{0,plural, =0{ابھی حذف ہو رہا ہے۔}=1{حذف ہو رہا ہے: 1 سیکنڈ}other{حذف ہو رہا ہے: # سیکنڈ}}</translation>
 <translation id="1542137295869176367">آپ کا سائن ان ڈیٹا اپ ڈیٹ نہیں ہو سکا</translation>
 <translation id="1542514202066550870">‏یہ ٹیب ایک ہیڈ سیٹ پر VR مواد پیش کر رہا ہے۔</translation>
 <translation id="1543284117603151572">‏Edge سے درآمد کردہ‎</translation>
@@ -3731,6 +3732,7 @@
 <translation id="4274667386947315930">سائن ان ڈیٹا</translation>
 <translation id="4274673989874969668">آپ کے کسی سائٹ سے باہر جانے بعد تصاویر اپ لوڈ کرنے یا چیٹ پیغام بھیجنے جیسے ٹاسکس مکمل کرنے کے لیے یہ مطابقت پذیری کا عمل جاری رکھتی ہے</translation>
 <translation id="4275291496240508082">اسٹارٹ اپ کی آواز</translation>
+<translation id="4275397969489577657">ایونٹ اسٹریم لاگنگ کو فعال کریں</translation>
 <translation id="4275830172053184480">اپنا آلہ دوبارہ شروع کریں</translation>
 <translation id="4277434192562187284">‏XML کنفیگریشن کا ماخذ</translation>
 <translation id="4278390842282768270">اجازت یافتہ</translation>
@@ -4325,6 +4327,7 @@
 <translation id="481574578487123132">لنک کردہ آلات</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />، تفصیلات</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 بُک مارک حذف کیا گیا}other{{COUNT} بُک مارکس حذف کئے گئے}}</translation>
+<translation id="4819323978093861656">{0,plural, =0{ابھی بند ہو رہا ہے۔}=1{بند ہو رہا ہے: 1 سیکنڈ}other{بند ہو رہا ہے: # سیکنڈ}}</translation>
 <translation id="4819607494758673676">‏Google اسسٹنٹ کی اطلاعات</translation>
 <translation id="4820236583224459650">بطور فعال ٹکٹ سیٹ کریں</translation>
 <translation id="4821935166599369261">&amp;پروفائلنگ فعال ہے</translation>
@@ -4541,6 +4544,7 @@
 <translation id="5018207570537526145">ایکسٹینشن ویب سائٹ کھولیں</translation>
 <translation id="5018526990965779848">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ Google کو خودکار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا بھیج کر اپنا Android تجربہ بہتر بنانے میں مدد کریں۔ اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اگر آپ کی ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔</translation>
 <translation id="5020008942039547742">مختلف ونڈو منتخب کریں</translation>
+<translation id="5020651427400641814">اسپیچ لاگنگ کو فعال کریں</translation>
 <translation id="5021750053540820849">ابھی تک اپ ڈیٹ نہیں ہوا ہے</translation>
 <translation id="5024511550058813796">آپ کو اپنے سِنک کردہ سبھی آلات پر اپنی سرگزشت دکھائی دیں گی تاکہ آپ کیا کر رہے تھے اسے جاری رکھ سکیں</translation>
 <translation id="5026492829171796515">‏Google اکاؤنٹ شامل کرنے کے لئے سائن ان کریں</translation>
@@ -4753,6 +4757,7 @@
 <translation id="5225463052809312700">کیمرا آن کریں</translation>
 <translation id="5227679487546032910">ڈیفالٹ نیلگوں سبز اوتار</translation>
 <translation id="5228579091201413441">مطابقت پذیری فعال کریں</translation>
+<translation id="5229337741799419985">یہ ترتیب آپ کی شناخت کیے بغیر یا سائٹس کو آپ کی براؤزنگ کی سرگزشت دیکھنے کی اجازت دیے بغیر کام کرتی ہے</translation>
 <translation id="5230516054153933099">ونڈو</translation>
 <translation id="5233019165164992427">‏NaCl ڈیبگ پورٹ</translation>
 <translation id="5233231016133573565">‏پروسیس ID</translation>
@@ -4914,6 +4919,7 @@
 <translation id="5372579129492968947">ایکسٹینشن سے پن ہٹائیں</translation>
 <translation id="5372632722660566343">اکاؤنٹ کے بغیر جاری رکھیں</translation>
 <translation id="5375318608039113175">‏ان رابطوں کے ساتھ قریبی آلات کے ساتھ اشتراک کا استعمال کرنے کیلئے ان کے Google اکاؤنٹ سے لنک کردہ ای میل پتے کو اپنے رابطوں میں شامل کریں۔</translation>
+<translation id="5375577102295339548">سائٹس اس بات کی تصدیق کرنے میں مدد کر سکتی ہیں کہ آپ بوٹ نہیں ہیں</translation>
 <translation id="5376094717770783089">رسائی کی درخواستیں</translation>
 <translation id="5376169624176189338">پیچھے جانے کیلئے کلک کریں، سرگزشت دیکھنے کیلئے پکڑے رہیں</translation>
 <translation id="5376931455988532197">فائل بہت بڑی ہے</translation>
@@ -4947,6 +4953,9 @@
 <translation id="5408750356094797285">زوم: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">‏آپ کے Google اکاؤنٹ سے</translation>
 <translation id="5411022484772257615">اسکول میں اندراج مکمل نہیں ہو سکا</translation>
+<translation id="5411856344659127989">‏اگر آپ کسی اور کے لیے کوئی اکاؤنٹ شامل کرنا چاہتے ہیں تو اپنے <ph name="DEVICE_TYPE" /> میں <ph name="LINK_BEGIN" />ایک نیا شخص شامل کریں<ph name="LINK_END" />۔
+
+ویب سائٹس اور ایپس کو پہلے سے آپ کی دی گئی اجازتیں اس اکاؤنٹ پر لاگو ہو سکتی ہیں۔ آپ <ph name="SETTINGS_LINK_BEGIN" />ترتیبات<ph name="SETTINGS_LINK_END" /> میں اپنے Google اکاؤنٹس کا نظم کر سکتے ہیں۔</translation>
 <translation id="5413640305322530561">ڈائیگناسٹک اور استعمال کے ڈیٹا کے بارے میں مزید جانیں</translation>
 <translation id="5414198321558177633">پروفائل کی فہرست ریفریش ہو رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5414566801737831689">اپنی ملاحظہ کردہ سائٹس کے آئیکنز کو پڑھیں</translation>
@@ -4972,6 +4981,7 @@
 <translation id="5432145523462851548">فولڈر میں <ph name="FILE_NAME" /> دکھائیں</translation>
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5434065355175441495">‏PKCS #1 RSA مرموزکاری</translation>
+<translation id="5435274640623994081">ایئرکون لاگنگ کو فعال کریں</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> کو ہمیشہ اپنے مقام تک رسائی کی اجازت دیں</translation>
 <translation id="5436492226391861498">پراکسی ٹنل کا انتظار ہے…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> کو تلاش کریں:</translation>
@@ -5292,6 +5302,7 @@
 <translation id="5723967018671998714">فریق ثالث کی کوکیز پوشیدگی وضع میں مسدود کی جاتی ہیں</translation>
 <translation id="5724642200346111167">آپ کے تمام ونڈوز کو بند کرنے پر آپ کے آلے سے سائٹ کا ڈیٹا صاف ہو جاتا ہے</translation>
 <translation id="5727728807527375859">ایکسٹینشز، ایپس اور تھیمز آپ کے کمپیوٹر کو نقصان پہنچا سکتی ہیں۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>
+<translation id="5728235544432023605">کاسٹ جواب نہیں دے رہا ہے۔ <ph name="DEVICE_NAME" /> سے اسٹاپ کریں۔</translation>
 <translation id="5728450728039149624">اسمارٹ لاک اسکرین لاک کے اختیارات</translation>
 <translation id="5729712731028706266">&amp;منظر</translation>
 <translation id="5731247495086897348">پی&amp;سٹ کریں اور جائیں</translation>
@@ -5319,7 +5330,6 @@
 <translation id="5751345516399502412">ٹیدرنگ کی تیاری چیک کریں</translation>
 <translation id="5755022574660047665">‏Google تصاویر سے میموریز</translation>
 <translation id="5756163054456765343">امدادی &amp;مرکز</translation>
-<translation id="5757375109985023827">پیش منظر دیکھنے کیلئے ٹیب منتخب کریں</translation>
 <translation id="5758631781033351321">آپ اپنی پڑھنے کی فہرست یہاں پائیں گے</translation>
 <translation id="5759728514498647443">وہ دستاویزات جنہیں آپ <ph name="APP_NAME" /> کے ذریعے پرنٹ کرنے کیلئے بھیجتے ہیں ان کو <ph name="APP_NAME" /> پڑھ سکتی ہے۔</translation>
 <translation id="5762787084360227629">‏Google اکاؤنٹ کی معلومات درج کریں</translation>
@@ -6362,6 +6372,7 @@
 <translation id="6700093763382332031">‏سیلولر SIM قفل</translation>
 <translation id="6700480081846086223"><ph name="HOST_NAME" /> کاسٹ کریں</translation>
 <translation id="6701535245008341853">پروفائل نہیں مل سکا۔</translation>
+<translation id="6701547804986694515">‏آپ کی ملاحظہ کردہ سائٹ Chrome کے ساتھ ایسی معلومات محفوظ کر سکتی ہے جو اس بات کی تصدیق کرتی ہے کہ آپ بوٹ نہیں ہیں۔ چونکہ آپ براؤز کرتے رہتے ہیں، اس لیے سائٹس Chrome سے رابطہ کر کے آپ کی ملاحظہ کردہ گزشتہ سائٹ سے یہ تصدیق کر سکتی ہیں کہ آپ ممکنہ طور پر ایک حقیقی شخص ہیں</translation>
 <translation id="6701824422332982935">ان ایکسٹینشنز کو استعمال کرنے کے لیے صفحہ کو دوبارہ لوڈ کریں</translation>
 <translation id="6702639462873609204">&amp;ترمیم کریں…</translation>
 <translation id="6703212423117969852">‏آپ بعد میں Chrome میں دوبارہ کوشش کر سکتے ہیں۔</translation>
@@ -7140,6 +7151,7 @@
 <translation id="7409735910987429903">سائٹس اشتہارات دکھانے کے لیے پاپ اپس بھیج سکتی ہیں یا ری ڈائریکٹس استعمال کر کے آپ کو ایسی ویب سائٹس پر لے جا سکتی ہیں جن پر شاید آپ نہ جانا چاہیں</translation>
 <translation id="7409854300652085600">‏Bookmarks درآمد ہو گئے۔</translation>
 <translation id="7410344089573941623">پوچھیں کہ آیا <ph name="HOST" /> آپ کے کیمرے اور مائیکروفون تک رسائی حاصل کرنا چاہتا ہے</translation>
+<translation id="7410421966064092098">سائٹس اس بات کی تصدیق کرنے میں مدد نہیں کر سکتی ہیں کہ آپ بوٹ نہیں ہیں</translation>
 <translation id="7410852728357935715">آلہ میں کاسٹ کریں</translation>
 <translation id="7411614333737930931">براہ کرم اپنا آلہ ری اسٹارٹ کریں اور دوبارہ کوشش کریں</translation>
 <translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
@@ -8540,6 +8552,7 @@
 <translation id="8654151524613148204">آپ کے کمپیوٹر کیلئے ہینڈل کرنے کیلئے فائل کافی بڑی ہے۔ معذرت۔</translation>
 <translation id="8655295600908251630">چینل</translation>
 <translation id="8655972064210167941">سائن ان ناکام ہو گیا کیونکہ آپ کے پاس ورڈز کی توثیق نہيں ہو سکی۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>
+<translation id="8656888282555543604">بریل لاگنگ کو فعال کریں</translation>
 <translation id="8657393004602556571">کیا آپ تاثرات کو مسترد کرنا چاہتے ہیں؟</translation>
 <translation id="8661290697478713397">لنک پوشید&amp;گی ونڈو میں کھولیں</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> نیٹ ورک میں شامل ہوں</translation>
@@ -8708,6 +8721,7 @@
 <translation id="8804419452060773146">اس میں کھلتا ہے</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{ٹیب کو دوسری ونڈو میں منتقل کریں}other{ٹیبز کو دوسری ونڈو میں منتقل کریں}}</translation>
 <translation id="8805140816472474147">مطابقت پذیری کا آغاز کرنے کیلئے مطابقت پذیری کی ترتیبات کی تصدیق کریں۔</translation>
+<translation id="8805385115381080995">براؤزنگ تیز تر ہے کیونکہ کسی سائٹ کے آپ سے اس بات کی تصدیق کرنے کے لیے کہنے کا امکان کم ہوتا ہے کہ آپ ایک حقیقی شخص ہیں</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> حادثاتی طور پر بند ٹیبز کو دوبارہ کھول سکتا ہے</translation>
 <translation id="8807588541160250261">جب کوئی آلہ منسلک نہ ہو</translation>
 <translation id="8807632654848257479">مستحکم</translation>
@@ -8864,6 +8878,9 @@
 <translation id="894360074127026135">‏Netscape انٹرنیشنل سٹیپ اپ</translation>
 <translation id="8943937581166190941">‏ایک ایکسٹینشن ایک HID آلہ استعمال کر رہی ہے</translation>
 <translation id="8944099748578356325">مزید تیزی سے بیٹری کا استعمال کریں (فی الحال %<ph name="BATTERY_PERCENTAGE" />)</translation>
+<translation id="8944725102565796255">‏اگر آپ اس اکاؤنٹ کو صرف ایک بار استعمال کرنا چاہتے ہیں تو آپ <ph name="GUEST_LINK_BEGIN" />آلے کو بطور مہمان استعمال<ph name="GUEST_LINK_END" /> کر سکتے ہیں۔ اگر آپ کسی اور کے لیے کوئی اکاؤنٹ شامل کرنا چاہتے ہیں تو اپنے <ph name="DEVICE_TYPE" /> میں <ph name="LINK_BEGIN" />ایک نیا شخص شامل کریں<ph name="LINK_END" />۔
+
+ویب سائٹس اور ایپس کو پہلے سے آپ کی دی گئی اجازتیں اس اکاؤنٹ پر لاگو ہو سکتی ہیں۔ آپ <ph name="SETTINGS_LINK_BEGIN" />ترتیبات<ph name="SETTINGS_LINK_END" /> میں اپنے Google اکاؤنٹس کا نظم کر سکتے ہیں۔</translation>
 <translation id="8945274638472141382">آئیکن کا سائز</translation>
 <translation id="8946359700442089734">ڈیبگ کرنے کی خصوصیات اس <ph name="IDS_SHORT_PRODUCT_NAME" /> آلے پر مکمل طورپر فعال نہیں کی گئی تھیں۔</translation>
 <translation id="894763922177556086">اچھا</translation>
@@ -9205,6 +9222,7 @@
 <translation id="942532530371314860">‏<ph name="APP_NAME" /> ایک Chrome ٹیب اور آڈیو کا اشتراک کر رہی ہے۔</translation>
 <translation id="944799160843436808">‏Chromebook پر Steam کو سیٹ اپ کرنے میں ایک مسئلہ تھا</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
+<translation id="947156494302904893">آپ کی ملاحظہ کردہ سائٹس اس بات کی تصدیق کر سکتی ہیں کہ آپ ایک حقیقی شخص ہیں نہ کہ ایک بوٹ</translation>
 <translation id="947329552760389097">&amp;عناصر کا معائنہ کریں</translation>
 <translation id="947526284350604411">آپ کا جواب</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> اس فولڈر میں فائلیں نہیں کھول سکتا کیونکہ اس میں سسٹم کی فائلیں ہیں</translation>

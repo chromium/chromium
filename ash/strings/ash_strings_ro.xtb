@@ -142,6 +142,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Opțiunea <ph name="FEATURE_NAME" /> nu s-a conectat.</translation>
 <translation id="1677582821739292812">Cineva se uită la ecranul tău</translation>
+<translation id="1679841710523778799">Mărește luminozitatea</translation>
 <translation id="1683399938733266832">Utilizarea actuală a procesorului: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Temporizator de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2849936225196189499">Critic</translation>
 <translation id="2860184359326882502">Cea mai bună potrivire</translation>
 <translation id="2865888419503095837">Informații despre rețea</translation>
+<translation id="2872353916818027657">Schimbați monitorul principal</translation>
 <translation id="2872961005593481000">Închide</translation>
 <translation id="2878884018241093801">Niciun element recent</translation>
 <translation id="2885950158625301909">Află mai multe</translation>
@@ -472,6 +474,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">Dispozitiv USB-C</translation>
 <translation id="3455468639467374593">Șablon, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Resetează nivelul de zoom</translation>
 <translation id="3465223694362104965">La acest dispozitiv s-a conectat o altă tastatură de când l-ai folosit ultima dată. Asigură-te că ai încredere în această tastatură înainte să o folosești.</translation>
 <translation id="3465356146291925647">Gestionată de administratorul tău</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -724,6 +727,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="468293128311738995">Aplicații de pe telefon</translation>
 <translation id="4690510401873698237">Raft în partea de jos</translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
+<translation id="4698850295812410683">Afișează instrumentele pentru creion</translation>
 <translation id="4702647871202761252">Ecranul de confidențialitate este dezactivat</translation>
 <translation id="4706121060329443414">Se va încerca descărcarea mai târziu. Momentan, fișierele de redare în scris a vorbirii vor fi trimise la Google pentru procesare.</translation>
 <translation id="470644585772471629">Inversarea culorilor</translation>
@@ -843,6 +847,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5308380583665731573">Conectează-te</translation>
 <translation id="5313326810920013265">Setări Bluetooth</translation>
 <translation id="5314219114274263156">S-a înregistrat ecranul</translation>
+<translation id="5316716239522500219">Oglindiți monitoarele</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5319712128756744240">Asociază un nou dispozitiv</translation>
 <translation id="5322611492012084517">Telefonul nu a fost găsit</translation>
@@ -995,6 +1000,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6045629311476491587">Folosite de <ph name="APP_COUNT" /> aplicații</translation>
 <translation id="6045998054441862242">Activează modul de contrast ridicat</translation>
 <translation id="6047696787498798094">Permiterea accesului la ecran încetează când comuți la alt utilizator. Dorești să continui?</translation>
+<translation id="6052614013050385269">Dă clic dreapta pe un link</translation>
 <translation id="6054305421211936131">Conectează-te cu cardul inteligent</translation>
 <translation id="6059276912018042191">File Chrome recente</translation>
 <translation id="6062360702481658777">Veți fi deconectat(ă) automat peste <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1027,6 +1033,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6213808132343683860">Fă o captură de ecran sau o înregistrare de ecran parțială</translation>
 <translation id="6220928844947387476">Acum poți să te înregistrezi pe tine și ecranul tău în același timp</translation>
 <translation id="622484624075952240">Jos</translation>
+<translation id="6228457605945141550">Redu luminozitatea</translation>
 <translation id="623116199192908855">Proiectează ecranul de pe Chromebook</translation>
 <translation id="6231419273573514727">Performanța dispozitivelor periferice poate fi limitată</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> folosește momentan camera și microfonul</translation>
@@ -1197,6 +1204,7 @@ Instalare nouă</translation>
 <translation id="7067196344162293536">Rotire automată</translation>
 <translation id="7068360136237591149">Deschide fișierele</translation>
 <translation id="7076293881109082629">Conectare</translation>
+<translation id="7076878155205969899">Ignoră sunetul</translation>
 <translation id="7086931198345821656">Actualizarea necesită rularea funcției Powerwash a dispozitivului <ph name="DEVICE_TYPE" />. Toate datele de pe acesta se vor șterge. Află mai multe despre cea mai recentă actualizare pentru <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Acces prin comutare</translation>
 <translation id="7098053464892629930">Descarcă aplicația pentru <ph name="NAME" /> în Google Play ca să vezi toate funcțiile disponibile</translation>

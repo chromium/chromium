@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Podávač dokumentov (jednostranný)</translation>
 <translation id="1643449475550628585">Denne meniť obrázok tapety</translation>
 <translation id="1644574205037202324">História</translation>
+<translation id="1651925268237749928">Vybrali ste zdieľaný album. Ostatní ľudia môžu pridávať alebo meniť fotky. Fotky, ktoré momentálne nie sú v tomto albume, sa môžu používať ako tapeta.</translation>
 <translation id="1662989795263954667">Zastavené – minul sa atrament</translation>
 <translation id="1664796644829245314">Zobraziť ukážku položky <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vstavaná sieť VPN</translation>
@@ -238,6 +239,7 @@
 <translation id="319101249942218879">Obrázok avatara bol zmenený</translation>
 <translation id="3192947282887913208">Zvukové súbory</translation>
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
+<translation id="3201315366910775591">Zdieľané albumy môžu aktualizovať iní ľudia</translation>
 <translation id="3211671540163313381">Priradený krížový ovládač</translation>
 <translation id="3226405216343213872">Hľadajú sa skenery</translation>
 <translation id="3226657629376379887">Ponuka akcií rozloženia</translation>
@@ -656,6 +658,7 @@
 <translation id="6838167112108853532">Tento názov prístupového bodu (APN) sa nedá deaktivovať ani odstrániť. Uistite sa, že povolené pripojené názvy prístupových bodov (APN) sú deaktivované alebo odstránené.</translation>
 <translation id="6853312040151791195">Rýchlosť vybíjania</translation>
 <translation id="6889786074662672253">Počas reštartu neodpájajte toto externé zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Reštart môže trvať niekoľko minút a vaše externé zariadenie nemusí počas neho fungovať.</translation>
+<translation id="6900701049656042631">V tomto albume nie sú žiadne fotky. Ak doň chcete nejaké pridať, prejdite na <ph name="LINK" />.</translation>
 <translation id="6905724422583748843">Späť na <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Je otvorený kryt skenera. Zavrite ho a skúste to znova.</translation>
 <translation id="6911383237894364323">Nepodarilo sa pripojiť k mediálnym serverom</translation>

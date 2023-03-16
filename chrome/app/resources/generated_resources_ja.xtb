@@ -3709,6 +3709,7 @@
 <translation id="4274667386947315930">ログインデータ</translation>
 <translation id="4274673989874969668">ユーザーがサイトから離れた後も、サイトは同期を継続して、写真のアップロードやチャット メッセージの送信などのタスクを完了することがあります</translation>
 <translation id="4275291496240508082">起動音</translation>
+<translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4277434192562187284">XML 構成の参照元</translation>
 <translation id="4278390842282768270">許可</translation>
@@ -4518,6 +4519,7 @@
 <translation id="5018207570537526145">拡張機能のウェブサイトを開く</translation>
 <translation id="5018526990965779848">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="5020008942039547742">別のウィンドウを選択</translation>
+<translation id="5020651427400641814">読み上げのログを有効にする</translation>
 <translation id="5021750053540820849">まだ更新されていません</translation>
 <translation id="5024511550058813796">同期しているすべてのデバイスから履歴にアクセスして、作業の続きを行うことができます</translation>
 <translation id="5026492829171796515">ログインして Google アカウントを追加</translation>
@@ -4948,6 +4950,7 @@
 <translation id="5432145523462851548">フォルダで <ph name="FILE_NAME" /> を表示</translation>
 <translation id="543338862236136125">パスワードを編集</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 暗号化</translation>
+<translation id="5435274640623994081">イアコンのログを有効にする</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> による位置情報へのアクセスを常に許可する</translation>
 <translation id="5436492226391861498">プロキシ トンネルの待機中...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> を検索:</translation>
@@ -5295,7 +5298,6 @@
 <translation id="5751345516399502412">テザリングの準備ができているかどうかを確認する</translation>
 <translation id="5755022574660047665">Google フォトの「思い出」</translation>
 <translation id="5756163054456765343">ヘルプセンター(&amp;E)</translation>
-<translation id="5757375109985023827">プレビューするタブを選択します</translation>
 <translation id="5758631781033351321">リーディング リストはここに表示されます</translation>
 <translation id="5759728514498647443">「<ph name="APP_NAME" />」を使用して印刷に送信したドキュメントは「<ph name="APP_NAME" />」で読めます。</translation>
 <translation id="5762787084360227629">Google アカウントの情報を入力</translation>
@@ -8503,6 +8505,7 @@
 <translation id="8654151524613148204">ファイル サイズが大きすぎるため、お使いのパソコンでは処理できません。</translation>
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8655972064210167941">パスワードを確認できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
+<translation id="8656888282555543604">点字のログを有効にする</translation>
 <translation id="8657393004602556571">フィードバックを破棄してもよろしいですか？</translation>
 <translation id="8661290697478713397">シークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ネットワークへの接続</translation>

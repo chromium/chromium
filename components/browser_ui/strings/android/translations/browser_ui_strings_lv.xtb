@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Izvērst: <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Izslēgt skaņu noteiktai vietnei</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# sīkfails}zero{# sīkfailu}one{# sīkfails}other{# sīkfaili}}</translation>
+<translation id="4478158430052450698">Varat vienkāršot tālummaiņas pielāgošanu dažādās vietnēs</translation>
 <translation id="4479647676395637221">Jautāt, pirms atļaut vietnēm izmantot jūsu kameru (ieteicams)</translation>
 <translation id="4505788138578415521">URL ir izvērsts</translation>
 <translation id="4534723447064627427">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu mikrofonam, ieslēdziet mikrofonu arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>

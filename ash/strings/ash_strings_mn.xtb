@@ -141,6 +141,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> холбогдоогүй.</translation>
 <translation id="1677582821739292812">Хэн нэгэн дэлгэц рүү тань харж байна</translation>
+<translation id="1679841710523778799">Гэрэлтүүлэг нэмэх</translation>
 <translation id="1683399938733266832">Төв процессорын нэгжийн одоогийн ашиглалт: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Солих</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> цаг хэмжигч · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">Аюултай</translation>
 <translation id="2860184359326882502">Хамгийн сайн тохирол</translation>
 <translation id="2865888419503095837">Сүлжээний мэдээлэл</translation>
+<translation id="2872353916818027657">Анхдагч дэлгэц рүү шилжих</translation>
 <translation id="2872961005593481000">Унтраах</translation>
 <translation id="2878884018241093801">Сүүлийн үеийн зүйл байхгүй</translation>
 <translation id="2885950158625301909">Нэмэлт мэдээлэл авах</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">USB-C төхөөрөмж</translation>
 <translation id="3455468639467374593">Загвар, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Томруулах түвшинг шинэчлэх</translation>
 <translation id="3465223694362104965">Таныг сүүлд нэвтэрснээс хойш энэ төхөөрөмжид өөр гар холбогдсон байна. Энэ гарыг ашиглахаасаа өмнө та итгэж болох эсэхээ шалгана уу.</translation>
 <translation id="3465356146291925647">Таны администратор удирддаг</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -720,6 +723,7 @@
 <translation id="468293128311738995">Таны утасны аппууд</translation>
 <translation id="4690510401873698237">Доор байгаа shelf</translation>
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
+<translation id="4698850295812410683">Мэдрэгч үзэгний хэрэгслийг харуулах</translation>
 <translation id="4702647871202761252">Нууцлалын дэлгэц унтраалттай байна</translation>
 <translation id="4706121060329443414">Таталтыг дараа оролдоно. Яриаг одоогоор Google-д боловсруулахаар илгээнэ.</translation>
 <translation id="470644585772471629">Өнгө хувиргалт</translation>
@@ -839,6 +843,7 @@
 <translation id="5308380583665731573">Холбо</translation>
 <translation id="5313326810920013265">Bluetooth тохиргоо</translation>
 <translation id="5314219114274263156">Дэлгэцийн үйлдлийг бичсэн</translation>
+<translation id="5316716239522500219">Тусгалын мониторууд</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5319712128756744240">Шинэ төхөөрөмж хослуулах</translation>
 <translation id="5322611492012084517">Таны утсыг олох боломжгүй</translation>
@@ -991,6 +996,7 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> апп ашигласан</translation>
 <translation id="6045998054441862242">Өндөр нарийвчлалтай горимыг асаах</translation>
 <translation id="6047696787498798094">Хэрэглэгчийг сольсноор дэлгэц хуваалцах сонголт зогсох болно. Та үргэлжлүүлэх үү?</translation>
+<translation id="6052614013050385269">Холбоосны баруун товчлуурыг дарах</translation>
 <translation id="6054305421211936131">Ухаалаг картаар нэвтрэх</translation>
 <translation id="6059276912018042191">Саяхны Chrome табууд</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" />-н дотор та сүлжээнээс автоматаар гарах болно.</translation>
@@ -1023,6 +1029,7 @@
 <translation id="6213808132343683860">Дэлгэцийн хэсэгчилсэн агшин авах эсвэл дэлгэцийн үйлдэл бичих</translation>
 <translation id="6220928844947387476">Та одоо өөрийгөө болон дэлгэцээ зэрэг бичих боломжтой</translation>
 <translation id="622484624075952240">Бууруулсан жагсаалт</translation>
+<translation id="6228457605945141550">Гэрэлтүүлгийг бууруулах</translation>
 <translation id="623116199192908855">Өөрийн Chromebook-с дэлгэцээ дамжуулах</translation>
 <translation id="6231419273573514727">Дагалдах төхөөрөмжийн гүйцэтгэлийг хязгаарласан байж болзошгүй</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> одоогоор таны камер болон микрофоныг ашиглаж байна</translation>
@@ -1192,6 +1199,7 @@
 <translation id="7067196344162293536">Автоматаар эргүүлэх</translation>
 <translation id="7068360136237591149">Файл нээх</translation>
 <translation id="7076293881109082629">Нэвтэрч байна</translation>
+<translation id="7076878155205969899">Дууны дууг хаах</translation>
 <translation id="7086931198345821656">Энэ шинэчлэлт таны <ph name="DEVICE_TYPE" />-г powerwash хийхийг шаардаж байна. Бүх өгөгдлийг устгана. <ph name="SYSTEM_APP_NAME" />-н хамгийн сүүлийн шинэчлэлтийн талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="7088960765736518739">Хандалтыг сэлгэх</translation>
 <translation id="7098053464892629930">Боломжтой бүх онцлогийг харахын тулд <ph name="NAME" />-н аппыг Google Play-с татна уу</translation>

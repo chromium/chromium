@@ -141,6 +141,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1677472565718498478"><ph name="TIME" /> resterend</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is niet verbonden.</translation>
 <translation id="1677582821739292812">Iemand bekijkt je scherm</translation>
+<translation id="1679841710523778799">Helderheid verhogen</translation>
 <translation id="1683399938733266832">Huidig CPU-gebruik: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Timer van <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2849936225196189499">Kritiek</translation>
 <translation id="2860184359326882502">Beste resultaat</translation>
 <translation id="2865888419503095837">Netwerkinfo</translation>
+<translation id="2872353916818027657">Primaire monitor omwisselen</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2878884018241093801">Geen recente items</translation>
 <translation id="2885950158625301909">Meer informatie</translation>
@@ -470,6 +472,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-apparaat</translation>
 <translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Zoomniveau opnieuw instellen</translation>
 <translation id="3465223694362104965">Een ander toetsenbord heeft verbinding met dit apparaat gemaakt sinds de laatste keer dat je bent ingelogd. Controleer of je dit toetsenbord vertrouwt voordat je het gebruikt.</translation>
 <translation id="3465356146291925647">Beheerd door je beheerder</translation>
 <translation id="3477079411857374384">Ctrl-Shift-spatiebalk</translation>
@@ -719,6 +722,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="468293128311738995">Apps op je telefoon</translation>
 <translation id="4690510401873698237">Plank aan onderkant</translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
+<translation id="4698850295812410683">Stylustools bekijken</translation>
 <translation id="4702647871202761252">Privacyscherm staat uit</translation>
 <translation id="4706121060329443414">Download wordt later geprobeerd. Voorlopig wordt spraak naar Google gestuurd voor verwerking.</translation>
 <translation id="470644585772471629">Kleurinversie</translation>
@@ -838,6 +842,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
 <translation id="5313326810920013265">Bluetooth-instellingen</translation>
 <translation id="5314219114274263156">Schermopname gemaakt</translation>
+<translation id="5316716239522500219">Monitoren spiegelen</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5319712128756744240">Nieuw apparaat koppelen</translation>
 <translation id="5322611492012084517">Kan je telefoon niet vinden</translation>
@@ -990,6 +995,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6045629311476491587">Gebruikt door <ph name="APP_COUNT" /> apps</translation>
 <translation id="6045998054441862242">Modus voor hoog contrast aanzetten</translation>
 <translation id="6047696787498798094">Scherm delen wordt gestopt wanneer je overschakelt naar een andere gebruiker. Wil je doorgaan?</translation>
+<translation id="6052614013050385269">Rechtsklikken op een link</translation>
 <translation id="6054305421211936131">Inloggen met smartkaart</translation>
 <translation id="6059276912018042191">Recente Chrome-tabbladen</translation>
 <translation id="6062360702481658777">Je wordt automatisch uitgelogd over <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1022,6 +1028,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6213808132343683860">Gedeeltelijk screenshot of schermopname maken</translation>
 <translation id="6220928844947387476">Je kunt jezelf en je scherm nu tegelijkertijd opnemen</translation>
 <translation id="622484624075952240">Omlaag</translation>
+<translation id="6228457605945141550">Helderheid verlagen</translation>
 <translation id="623116199192908855">Je scherm casten vanaf je Chromebook</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> gebruikt momenteel je camera en microfoon</translation>
@@ -1191,6 +1198,7 @@ Nieuwe installatie</translation>
 <translation id="7067196344162293536">Automatisch draaien</translation>
 <translation id="7068360136237591149">Open bestanden</translation>
 <translation id="7076293881109082629">Inloggen</translation>
+<translation id="7076878155205969899">Geluid uitzetten</translation>
 <translation id="7086931198345821656">Deze update vereist dat je Powerwash uitvoert op je <ph name="DEVICE_TYPE" />. Alle gegevens worden dan verwijderd. Bekijk meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Toegang via schakelaar</translation>
 <translation id="7098053464892629930">Download de app voor <ph name="NAME" /> via Google Play om alle beschikbare functies te bekijken</translation>

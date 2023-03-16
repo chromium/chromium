@@ -152,6 +152,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="132301787627749051">Pesquisar uma imagem na área de transferência</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
 <translation id="132390688737681464">Salvar e preencher endereços</translation>
+<translation id="1329916999021038454">Enviar um relatório</translation>
 <translation id="1330449323196174374">Dobra janela à esquerda</translation>
 <translation id="1333745675627230582">Iniciar o jogo do Dinossauro do Chrome</translation>
 <translation id="1333989956347591814">É possível que sua atividade <ph name="BEGIN_EMPHASIS" />ainda esteja visível<ph name="END_EMPHASIS" /> para:
@@ -527,6 +528,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="219906046732893612">Reforma de casas</translation>
 <translation id="2202020181578195191">Informe um ano de validade válido</translation>
 <translation id="2202627062836089804">parte de trás do cartão</translation>
+<translation id="2204482073374652408">Atualização concluída</translation>
 <translation id="22081806969704220">Bandeja 3</translation>
 <translation id="2210794033760923560">Fazer upload do relatório</translation>
 <translation id="2212579473415663542">Esse endereço foi salvo na sua Conta do Google (<ph name="ACCOUNT" />) e pode ser usado nos produtos do Google em qualquer dispositivo.</translation>
@@ -615,6 +617,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2441854154602066476">Formas de pagamento disponíveis para preenchimento com um toque. Teclado oculto.</translation>
 <translation id="2448295565072560657">Periféricos vinculados a este dispositivo enquanto sua conta está conectada</translation>
 <translation id="2450021089947420533">Jornadas</translation>
+<translation id="2456755709261364512">O nível da bateria precisa estar acima de <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">Preencher</translation>
 <translation id="2465655957518002998">Escolher método de entrega</translation>
 <translation id="2465688316154986572">Grampear</translation>
@@ -661,6 +664,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Usar o bloqueio de tela para confirmar os cartões de agora em diante</translation>
 <translation id="2553853292994445426">Verifique suas configurações de DNS seguro. Você pode ter configurado um servidor DNS seguro em que as conexões estão falhando.</translation>
+<translation id="255497580849974774">Mantenha seu dispositivo conectado a um carregador durante a atualização.</translation>
 <translation id="2556876185419854533">&amp;Desfazer editar</translation>
 <translation id="2557417190997681027">Viagem a negócios</translation>
 <translation id="2562087035394240049">Aprenda a fazer e conteúdo profissional</translation>
@@ -892,6 +896,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="320323717674993345">Cancelar pagamento</translation>
 <translation id="3203366800380907218">Da Web</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
+<translation id="3208701679386778924">Envie um relatório para que possamos melhorar as atualizações do Chrome OS.</translation>
 <translation id="3209034400446768650">Esta página pode emitir cobranças em dinheiro</translation>
 <translation id="3212581601480735796">Sua atividade em <ph name="HOSTNAME" /> está sendo monitorada</translation>
 <translation id="3215092763954878852">Não foi possível usar WebAuthn</translation>
@@ -1117,6 +1122,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3715545959749027023">Quando ocorrências de segurança são sinalizadas pelo Chrome, dados relevantes sobre elas são enviados ao administrador. Isso pode incluir URLs de páginas visitadas no Chrome, metadados ou nomes de arquivos, falhas do navegador ou da guia e o nome de usuário usado para fazer login no dispositivo, no Chrome e em apps baseados na Web.</translation>
 <translation id="3715597595485130451">Conectar ao Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Verificar a configuração de DNS, proxy e firewall<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Não será possível usar o dispositivo por até 10 minutos durante a atualização.</translation>
 <translation id="372429172604983730">Entre os apps que podem causar esse erro estão antivírus, firewall e softwares de filtros ou proxy da Web.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Apresentações Google</translation>
 <translation id="3733139489341305600">Veículos autônomos</translation>
@@ -1154,6 +1160,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3807366285948165054">Mudança X da imagem</translation>
 <translation id="3807873520724684969">Conteúdo nocivo bloqueado.</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
+<translation id="3812398568375898177">Esta é uma atualização essencial que melhora o desempenho de apps Android no ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 pol.</translation>
 <translation id="3816482573645936981">Valor (substituído)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1258,6 +1265,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4110652170750985508">Analisar seu pagamento</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Voltar</translation>
+<translation id="4113354056388982663">Atualização crítica de desempenho do Android</translation>
 <translation id="4114146879518089587">Ir para o site</translation>
 <translation id="4116663294526079822">Sempre permitir neste site</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1438,6 +1446,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para traduzir esta página com o Google Tradutor</translation>
 <translation id="4514308731478712184">Desativar as jornadas</translation>
 <translation id="4515275063822566619">Os cartões e os endereços vieram do Chrome e da sua Conta do Google (<ph name="ACCOUNT_EMAIL" />). É possível gerenciar essas opções em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">O dispositivo foi interrompido durante o processo de atualização.</translation>
 <translation id="4520048001084013693">O download desse arquivo está bloqueado pela política do administrador</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Envelope Monarch</translation>
@@ -1527,6 +1536,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4738601419177586157">Sugestão de pesquisa: <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Gerenciar senhas…</translation>
+<translation id="4743275772928623722">O sistema foi atualizado, mas não foi possível recuperar alguns apps e arquivos. O download dos apps será feito automaticamente.</translation>
 <translation id="4744514002166662487">Criar apresentação</translation>
 <translation id="4744603770635761495">Caminho do executável</translation>
 <translation id="4749011317274908093">Você entrou no modo de navegação anônima</translation>
@@ -2228,6 +2238,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="646793340882508547">Jogos de aventura</translation>
 <translation id="6468485451923838994">Fontes</translation>
 <translation id="647261751007945333">Políticas de dispositivos</translation>
+<translation id="647330291963761005">Instalando atualizações</translation>
 <translation id="6475672344094591109">Os sites que você acessa podem pedir informações ao Chrome que ajudam a medir a performance dos anúncios. O Chrome protege sua privacidade limitando as informações que os sites podem compartilhar entre si.</translation>
 <translation id="6476284679642588870">Gerenciar formas de pagamento</translation>
 <translation id="6486200200930923183">Documentários</translation>
@@ -2301,6 +2312,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6688775486821967877">O cartão virtual não está disponível no momento. Tente novamente mais tarde</translation>
 <translation id="6689249931105087298">Relativa com compressão de pontos pretos</translation>
 <translation id="6689271823431384964">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações. O nome do titular do cartão vem da sua conta.</translation>
+<translation id="6691397311652656001">Libere mais de <ph name="REQUIRED_FREE_DISK_SPACE" /> de espaço</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter" para encontrar seu dispositivo com a Conta do Google</translation>
 <translation id="6696588630955820014">Botão "Compartilhar esta guia". Pressione Enter para compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
 <translation id="6698381487523150993">Criado em:</translation>
@@ -2364,6 +2376,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Recursos para o consumidor</translation>
 <translation id="6865412394715372076">Não é possível verificar este cartão no momento</translation>
+<translation id="6868573634057275953">Retomar atualização</translation>
 <translation id="6869334554832814367">Empréstimos pessoais</translation>
 <translation id="6873456682041376666">Bandeja superior</translation>
 <translation id="6874604403660855544">&amp;Refazer adicionar</translation>
@@ -2520,9 +2533,11 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="722454870747268814">Nova guia anônima</translation>
 <translation id="7233592378249864828">Imprimir página de confirmação</translation>
 <translation id="7234638337680728591">Preços de gasolina e combustíveis para veículos</translation>
+<translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% concluído | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Não mostrar esta mensagem novamente neste site</translation>
 <translation id="7238585580608191973">Assinatura digital SHA-256</translation>
 <translation id="7240120331469437312">Nome alternativo do requerente do certificado</translation>
+<translation id="7241863998525879494">O que esperar</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />, <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# correspondência}one{# correspondência}other{# correspondências}}</translation>
@@ -2743,6 +2758,7 @@ Mais detalhes:
 <translation id="7698864304447945242">Atualizar o Google Play Services para RA?</translation>
 <translation id="7699293099605015246">Os artigos não estão disponíveis no momento</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
+<translation id="7701544340847569275">Atualização concluída com erros</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Ir para <ph name="SITE" /> (não seguro)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Esqui e snowboard</translation>
 <translation id="7706689436519265630">Os arquivos copiados ou movidos são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa.</translation>

@@ -10,6 +10,7 @@
 <translation id="110877069173485804">See on teie Chrome</translation>
 <translation id="1125124144982679672">Kes kasutab Chrome'i?</translation>
 <translation id="1142745911746664600">Chrome'i ei saa värskendada</translation>
+<translation id="1149651794389918149">Logi Chrome’i sisse. Kui soovite kontole sisse logida ainult ühe korra, saate <ph name="GUEST_LINK_BEGIN" />seadet kasutada külalisena<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Teave Chrome OS-i kohta</translation>
 <translation id="1154147086299354128">&amp;Ava Chrome'is</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
@@ -169,6 +170,7 @@
 <translation id="4147555960264124640">Logite sisse hallatud kontoga ja annate selle administraatorile üle Google Chrome'i profiili juhtimise. Teie Chrome'i andmed, nagu rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed Google'i kontode juhtpaneeli kaudu kustutada, kuid te ei saa neid seostada teise kontoga. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installimine ...</translation>
 <translation id="4149882025268051530">Installijal ei õnnestunud arhiivi lahti pakkida. Palun laadige Google Chrome uuesti alla.</translation>
+<translation id="4153934450158521343">Chrome sulgub peagi ja kustutab andmed</translation>
 <translation id="4191857738314598978">{0,plural, =1{Käivitage Chrome uuesti päeva jooksul}other{Käivitage Chrome uuesti # päeva jooksul}}</translation>
 <translation id="4205939740494406371">Chrome ei saa teie paroole kontrollida. Proovige uuesti 24 tunni pärast või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Tühistamine …</translation>
@@ -214,6 +216,7 @@
 <translation id="4970880042055371251">Chrome OS-i versioon</translation>
 <translation id="4970947549776831107">Chrome blokeeris selle faili, kuna see failitüüp on ohtlik</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="5098668839038261629">Kui see on sisse lülitatud, logitakse teid ka Chrome'ist välja</translation>
 <translation id="5132929315877954718">Avastage Google Chrome'i jaoks suurepäraseid rakendusi, mänge, laiendusi ja teemasid.</translation>
 <translation id="5139423532931106058">Kohandage oma Chrome'i profiili</translation>
@@ -264,12 +267,14 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome'i beetaversioon</translation>
 <translation id="6235018212288296708">Sissetuleku reegel Google Chrome'ile mDNS-liikluse lubamiseks.</translation>
+<translation id="624230925347970731">Chrome suletakse peagi</translation>
 <translation id="6247557882553405851">Google'i paroolihaldur</translation>
 <translation id="6273793429163604305">Tähelepanu …</translation>
 <translation id="6291089322031436445">Chrome Devi rakendused</translation>
 <translation id="6291549208091401781">Google Chrome on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
 <translation id="6326175484149238433">Eemalda Chrome'ist</translation>
 <translation id="6327105987658262776">Ühtegi uuendust ei ole saadaval.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Teie administraator kustutab sirvimisandmed automaatselt, kui neid ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Olemasolevaid vahelehti ei suleta.}other{Teie administraator kustutab sirvimisandmed automaatselt, kui neid ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Olemasolevaid vahelehti ei suleta.}}</translation>
 <translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="6418662306461808273">Kas lülituda olemasolevale Chrome'i profiilile?</translation>
 <translation id="6493527311031785448">Google Chrome proovib teha järgmist: <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -299,6 +304,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 
 Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle konto puhul kehtida. Saate oma Google'i kontosid hallata jaotises <ph name="SETTINGS_LINK_BEGIN" />Seaded<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chrome'i puhul välja. Laienduse <ph name="EXTENSION_TYPE_PARAMETER" /> lubamine on keelatud.</translation>
+<translation id="7071827361006050863">Chrome kustutab peagi sirvimisandmed</translation>
 <translation id="7085332316435785646">Valige, kas Google'i teenustes rohkem isikupärastatud kasutuskogemuse saamiseks kaasata Chrome'i ajalugu</translation>
 <translation id="7088681679121566888">Chrome on ajakohane</translation>
 <translation id="7098166902387133879">Google Chrome kasutab teie mikrofoni.</translation>
@@ -360,6 +366,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8290100596633877290">Tohoh! Google Chrome jooksis kokku. Kas soovite kohe taaskäivitada?</translation>
 <translation id="8342675569599923794">Chrome blokeeris faili, kuna see on ohtlik.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Saidid võivad talletada Chrome'i teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul.}other{Teie administraator sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul.}}</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Chrome saab teie huvisid prognoosida. Hiljem saab teie külastatav sait küsida Chrome'ilt teie huvisid, et isikupärastada teile kuvatavaid reklaame.</translation>
 <translation id="8387459386171870978">Jätkan Chrome'i kasutamist.</translation>

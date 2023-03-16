@@ -3728,6 +3728,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4274667386947315930">Данни за вход</translation>
 <translation id="4274673989874969668">След като напуснете сайт, синхронизирането може да продължи до завършване на задачите, като например качване на снимки или изпращане на съобщение в чата</translation>
 <translation id="4275291496240508082">Звук при стартиране</translation>
+<translation id="4275397969489577657">Активиране на записването в регистрационен файл за потоците на събития</translation>
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4277434192562187284">Източник на конфигурацията чрез XML</translation>
 <translation id="4278390842282768270">Разрешено</translation>
@@ -4220,6 +4221,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4708849949179781599">Изход от <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Възстановяване на настройките</translation>
 <translation id="4713409221649555176">Изтриване при затваряне на всички прозорци</translation>
+<translation id="4715631922189108923">Редактиране на потребителското име</translation>
 <translation id="47158868804223727">Кликнете върху името на групата, за да я разгънете или свиете</translation>
 <translation id="4716483597559580346">Powerwash за повишаване на сигурността</translation>
 <translation id="471759229191973607">Промяна на темата</translation>
@@ -4539,6 +4541,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5018207570537526145">Отваряне на уебсайта на разширението</translation>
 <translation id="5018526990965779848">Изпращане на данни за употребата и диагностиката. Помогнете за подобряването на работата си с Android, като автоматично изпращате до Google диагностична информация и данни за употребата на устройството и приложенията. Това ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за вас, тези данни може да се запазват в профила ви в Google.</translation>
 <translation id="5020008942039547742">Избиране на друг прозорец</translation>
+<translation id="5020651427400641814">Активиране на регистрирането за говора</translation>
 <translation id="5021750053540820849">Още не е актуализиран</translation>
 <translation id="5024511550058813796">Историята ви ще бъде достъпна на всичките ви синхронизирани устройства и ще можете да продължавате това, което сте правили</translation>
 <translation id="5026492829171796515">Влезте, за да добавите профил в Google</translation>
@@ -4971,6 +4974,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5432145523462851548">Показване на <ph name="FILE_NAME" /> в папката</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
 <translation id="5434065355175441495">PKCS 1 с RSA шифроване</translation>
+<translation id="5435274640623994081">Активиране на записването в регистрационен файл за аудиоиконите</translation>
 <translation id="5435779377906857208">Достъпът на <ph name="HOST" /> до местоположението ви да е разрешен винаги</translation>
 <translation id="5436492226391861498">Изчаква се прокси тунел...</translation>
 <translation id="5436510242972373446">Търсене с <ph name="SITE_NAME" />:</translation>
@@ -5319,7 +5323,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5751345516399502412">Проверка на готовността за тетъринг</translation>
 <translation id="5755022574660047665">спомени от Google Снимки</translation>
 <translation id="5756163054456765343">П&amp;омощен център</translation>
-<translation id="5757375109985023827">Изберете раздел за визуализиране</translation>
 <translation id="5758631781033351321">Тук ще се показва списъкът ви за четене</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> може да чете документите, които изпращате за отпечатване чрез <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Въвеждане на данни за профил в Google</translation>
@@ -8050,6 +8053,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8203732864715032075">Функция, която ви изпраща известия и по подразбиране запомня този компютър за Messages. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Вашите екрани и периферни устройства може за кратко да бъдат нулирани. За да влезе в сила тази промяна, изключете периферните устройства и ги включете отново.</translation>
 <translation id="820568752112382238">Най-посещавани сайтове</translation>
+<translation id="8206267832882844324">Редактиране на бележката</translation>
 <translation id="8206745257863499010">Музикант</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8207404892907560325">Изберете код за достъп</translation>
@@ -8533,6 +8537,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8654151524613148204">За съжаление файлът е твърде голям, за да се обработи от компютъра ви.</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Влизането не бе успешно, тъй като паролата ви не можа да се потвърди. Моля, свържете се с администратора си или опитайте отново.</translation>
+<translation id="8656888282555543604">Активиране на записването в регистрационен файл за брайловото писмо</translation>
 <translation id="8657393004602556571">Искате ли да отхвърлите отзивите?</translation>
 <translation id="8661290697478713397">Отваряне на връзката в прозорец при използване на функ&amp;цията „инкогнито“</translation>
 <translation id="8662671328352114214">Присъединяване към <ph name="TYPE" /> мрежа</translation>

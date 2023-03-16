@@ -141,6 +141,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
 <translation id="1677507110654891115">"<ph name="FEATURE_NAME" />" ist nicht verbunden.</translation>
 <translation id="1677582821739292812">Jemand sieht auf deinen Bildschirm</translation>
+<translation id="1679841710523778799">Helligkeit erhöhen</translation>
 <translation id="1683399938733266832">Aktuelle CPU-Auslastung: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="169515659049020177">Umschalttaste</translation>
 <translation id="1698080062160024910">Timer: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2849936225196189499">Kritisch</translation>
 <translation id="2860184359326882502">Beste Ergebnisse</translation>
 <translation id="2865888419503095837">Netzwerkinformationen</translation>
+<translation id="2872353916818027657">Hauptmonitor tauschen</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2878884018241093801">Keine kürzlich verwendeten Elemente</translation>
 <translation id="2885950158625301909">Weitere Informationen</translation>
@@ -470,6 +472,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-Gerät</translation>
 <translation id="3455468639467374593">Vorlage, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Zoomstufe zurücksetzen</translation>
 <translation id="3465223694362104965">Seit deiner letzten Anmeldung wurde eine andere Tastatur an dieses Gerät angeschlossen. Bevor du diese Tastatur verwendest, solltest du überprüfen, ob sie vertrauenswürdig ist.</translation>
 <translation id="3465356146291925647">Von deinem Administrator verwaltet</translation>
 <translation id="3477079411857374384">Strg + Umschalttaste + Leertaste</translation>
@@ -718,6 +721,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="468293128311738995">Apps von deinem Smartphone</translation>
 <translation id="4690510401873698237">Ablage unten</translation>
 <translation id="4696813013609194136">Gerät mit Elterncode entsperren</translation>
+<translation id="4698850295812410683">Eingabestift-Tools einblenden</translation>
 <translation id="4702647871202761252">Der Datenschutzbildschirm ist momentan deaktiviert</translation>
 <translation id="4706121060329443414">Der Download wird später versucht. Die Sprachdateien werden vorerst zur Verarbeitung an Google gesendet.</translation>
 <translation id="470644585772471629">Farbumkehr</translation>
@@ -837,6 +841,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5308380583665731573">Verbinden</translation>
 <translation id="5313326810920013265">Bluetooth-Einstellungen</translation>
 <translation id="5314219114274263156">Bildschirmaufzeichnung aufgenommen</translation>
+<translation id="5316716239522500219">Monitore spiegeln</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5319712128756744240">Neues Gerät koppeln</translation>
 <translation id="5322611492012084517">Dein Smartphone wurde nicht gefunden</translation>
@@ -989,6 +994,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6045629311476491587">Von <ph name="APP_COUNT" /> Apps verwendet</translation>
 <translation id="6045998054441862242">Modus mit hohem Kontrast aktivieren</translation>
 <translation id="6047696787498798094">Wenn du zu einem anderen Nutzer wechselst, wird die Bildschirmfreigabe beendet. Möchtest du fortfahren?</translation>
+<translation id="6052614013050385269">Mit der rechten Maustaste auf einen Link klicken</translation>
 <translation id="6054305421211936131">Mit Smartcard anmelden</translation>
 <translation id="6059276912018042191">Zuletzt geöffnete Chrome-Tabs</translation>
 <translation id="6062360702481658777">Du wirst in <ph name="LOGOUT_TIME_LEFT" /> automatisch abgemeldet.</translation>
@@ -1021,6 +1027,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6213808132343683860">Screenshot oder Bildschirmaufzeichnung eines Bildschirmausschnitts erstellen</translation>
 <translation id="6220928844947387476">Jetzt kannst du dich selbst und deinen Bildschirm gleichzeitig aufnehmen</translation>
 <translation id="622484624075952240">Abwärts</translation>
+<translation id="6228457605945141550">Helligkeit verringern</translation>
 <translation id="623116199192908855">Bildschirm deines Chromebooks streamen</translation>
 <translation id="6231419273573514727">Die Leistung der Peripheriegeräte ist möglicherweise eingeschränkt</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> verwendet gerade deine Kamera und dein Mikrofon</translation>
@@ -1190,6 +1197,7 @@ Neuinstallation</translation>
 <translation id="7067196344162293536">Automatisch drehen</translation>
 <translation id="7068360136237591149">Dateien öffnen</translation>
 <translation id="7076293881109082629">Anmeldung</translation>
+<translation id="7076878155205969899">Ton stummschalten</translation>
 <translation id="7086931198345821656">Für dieses Update muss auf deinem Gerät (<ph name="DEVICE_TYPE" />) ein Powerwash durchgeführt werden. Sämtliche Daten auf dem Gerät werden gelöscht. Weitere Informationen zum aktuellen <ph name="SYSTEM_APP_NAME" />-Update.</translation>
 <translation id="7088960765736518739">Schalterzugriff</translation>
 <translation id="7098053464892629930"><ph name="NAME" /> bei Google Play herunterladen, um alle verfügbaren Funktionen zu sehen</translation>

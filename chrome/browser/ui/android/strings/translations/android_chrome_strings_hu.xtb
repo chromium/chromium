@@ -283,6 +283,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="2581165646603367611">Ezzel törli a cookie-kat, a gyorsítótárat, valamint a webhelyek összes olyan adatát, amelyről a Chrome úgy véli, hogy nem fontos.</translation>
 <translation id="2587052924345400782">Rendelkezésre áll új verzió</translation>
 <translation id="2593272815202181319">Monospace</translation>
+<translation id="2603212228005142861">Jelentkezzen be a beállításai kezeléséhez</translation>
 <translation id="2604446170045642109">A webhelyeknél használt sötét témát bármikor kikapcsolhatja a beállításokban.</translation>
 <translation id="2612676031748830579">Kártyaszám</translation>
 <translation id="2625189173221582860">Jelszó vágólapra másolva</translation>
@@ -1242,6 +1243,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7707922173985738739">Mobiladat-kapcsolat használata</translation>
 <translation id="7709094866268987903">Az eltávolított érdeklődési körök itt jelennek meg</translation>
 <translation id="7709918231054955894">Az összes lapjához hozzáférhet</translation>
+<translation id="772434085369393266">Minden navigációt HTTPS-re módosít, és figyelmezteti Önt a protokollt nem támogató webhelyek betöltése előtt. Ezt a beállítást nem módosíthatja, mert be van kapcsolva a Speciális védelem.</translation>
 <translation id="7725024127233776428">Itt jelennek meg a könyvjelzőként mentett oldalak</translation>
 <translation id="7757787379047923882">Szöveg megosztva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD-kártya (<ph name="SD_CARD_NUMBER" />)</translation>

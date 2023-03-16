@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Risoluzione dell'immagine</translation>
 <translation id="1972984168337863910">Espandi i riquadri di feedback dei file</translation>
 <translation id="1995337122023280937">Vai a posizione file</translation>
-<translation id="1999709132469742660">Accesso ai file da parte di tutti gli URL</translation>
 <translation id="2001796770603320721">Gestisci in Drive</translation>
 <translation id="2009067268969781306">Se formatti un'unità vengono eliminati tutti i dati in essa memorizzati. L'azione non può essere annullata.</translation>
 <translation id="2025955442973426285">Tigrino</translation>
@@ -542,7 +541,6 @@
 <translation id="5323213332664049067">Spagnolo latino americano</translation>
 <translation id="5330145655348521461">Questi file sono aperti su un desktop differente. Passa a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per visualizzarli.</translation>
 <translation id="5330512191124428349">Ottieni informazioni</translation>
-<translation id="5337538975554986899">Accesso ai file da parte di tutti gli URL tranne <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Gestisci la condivisione con Bruschetta</translation>
 <translation id="535792325654997756">Persona con gatti</translation>
 <translation id="5358764674931277">Frequenza fotogrammi</translation>
@@ -941,6 +939,7 @@
 <translation id="8492972329130824181">La rete di casa non è disponibile. Il roaming dei dati mobili deve essere attivato per connettersi.</translation>
 <translation id="8499098729323186194">Estrazione di <ph name="NUMBER_OF_ITEMS" /> elementi in corso…</translation>
 <translation id="8502913769543567768">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Attiva dopo la configurazione del dispositivo, Gestita dall'amministratore</translation>
+<translation id="8512483403832814140">Qualsiasi data</translation>
 <translation id="8521441079177373948">Regno Unito</translation>
 <translation id="853494022971700746">Francese (Francia)</translation>
 <translation id="8540608333167683902">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>

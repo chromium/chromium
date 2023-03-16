@@ -519,6 +519,7 @@
 <translation id="4737560986434232178">हालसालै खोलिएका ट्याबहरू खोज्नुहोस्</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4747097190499141774">पासफ्रेजमार्फत इन्क्रिप्सन गर्ने कार्यअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्। तपाईंको पासफ्रेज थाहा हुने व्यक्तिले मात्र तपाईंको इन्क्रिप्ट गरिएको डेटा पढ्न सक्छ। उक्त पासफ्रेज Google मा पठाइँदैन वा त्यहाँ भण्डारण गरिँदैन। तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने तपाईंले सिंक रिसेट गर्नु पर्ने हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, यो डिभाइसमा मात्र, <ph name="URL" /></translation>
 <translation id="4751645464639803239">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="4766112107778026136">डिस्कभर तथा फलोइङ</translation>
 <translation id="4775879719735953715">डिफल्ट ब्राउजर</translation>
@@ -943,6 +944,7 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="7603852183842204213">पप-अपहरु ब्लक गरियो (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">पासवर्ड मेट्नुहोस्</translation>
+<translation id="7611459119367035420">तपाईं आफ्ना पिन गरिएका ट्याबहरू यहाँ भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
 <translation id="7646263789464975852">मेनु → सेटिङ → सुरक्षितपनाको जाँच</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
@@ -955,6 +957,7 @@
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7720410380936703141">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7726702057919861819">मेनु → इतिहास → ब्राउजिङ डेटा मेटाउनुहोस्</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। यो डिभाइसमा मात्र।</translation>
 <translation id="7738120385185846461">समस्याका बारेमा रिपोर्ट गर्नुहोस्…</translation>
 <translation id="7741325291586284254">इन्कोग्निटो ट्याबसम्बन्धी नयाँ पेज</translation>
 <translation id="7744394900930577716">अन्य एपहरूका पासवर्ड</translation>
@@ -1130,6 +1133,7 @@
 <translation id="8952559610785099500">पासवर्ड थप्नुहोस्</translation>
 <translation id="8953046091948372197">तपाईंका पासवर्डहरू यहाँ देखिने छन्</translation>
 <translation id="895541991026785598">समस्या रिपोर्ट गर्नुहोस्</translation>
+<translation id="8971545611707025079">फेरि जाँच्नुहोस्</translation>
 <translation id="8974714402877957201">१. iPad का सेटिङ खोल्नुहोस्</translation>
 <translation id="8976382372951310360">मद्दत</translation>
 <translation id="8976414606286374109">कार्डहरू तपाईंको Google खातामा सेभ गरिन्छन्।</translation>

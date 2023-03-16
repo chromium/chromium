@@ -683,6 +683,7 @@
 <translation id="259821504105826686">Фотография и цифровые искусства</translation>
 <translation id="2601150049980261779">Романтические фильмы</translation>
 <translation id="2604589665489080024">Поп-музыка</translation>
+<translation id="2606760465469169465">Автоматическая проверка</translation>
 <translation id="2610561535971892504">Нажмите, чтобы скопировать</translation>
 <translation id="2617988307566202237">В Chrome <ph name="BEGIN_EMPHASIS" />не будет сохраняться<ph name="END_EMPHASIS" /> следующая информация:
         <ph name="BEGIN_LIST" />
@@ -1899,6 +1900,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Как вы можете управлять своими данными.<ph name="END_BOLD" /> Chrome автоматически удаляет сайты, добавленные более четырех недель назад. Если вы повторно посетите сайт, он может вновь появиться в списке. Также в настройках Chrome вы можете запретить отдельным или всем сайтам предлагать вам рекламу.</translation>
 <translation id="5610142619324316209">Проверьте подключение к Интернету.</translation>
 <translation id="5610807607761827392">Сведения о картах и адресах можно изменить в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Сохранить в аккаунте</translation>
 <translation id="561165882404867731">Перевести эту страницу с помощью Google Переводчика</translation>
 <translation id="5612720917913232150">Сайт <ph name="URL" /> запрашивает данные о местоположении вашего компьютера.</translation>
 <translation id="561669346091975195">Научно-фантастические и фэнтезийные телешоу</translation>
@@ -3185,6 +3187,7 @@
 <translation id="8806285662264631610">Товары для ухода за телом</translation>
 <translation id="8807160976559152894">Подрезать после каждой страницы</translation>
 <translation id="8809203544698246977">Здесь появятся заблокированные темы.</translation>
+<translation id="8811470563853401328">Сохранить адрес в аккаунте?</translation>
 <translation id="8813277370772331957">Напомнить позже</translation>
 <translation id="8814707942599948500">Конверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
@@ -3278,6 +3281,7 @@
 <translation id="9042617223719777575">Большая емкость</translation>
 <translation id="9044359186343685026">Использовать Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Чтобы выполнить действия (<ph name="ACTION_LIST" />), установите для правила <ph name="POLICY_NAME" /> значение <ph name="POLICY_VALUE" />.</translation>
 <translation id="9048662076076074925">24 x 36 дюймов</translation>
 <translation id="9049981332609050619">Вы попытались открыть <ph name="DOMAIN" />, однако представленный сервером сертификат недействителен.</translation>
 <translation id="9050666287014529139">Кодовая фраза</translation>

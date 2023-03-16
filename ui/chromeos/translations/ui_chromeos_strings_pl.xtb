@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Rozdzielczość grafiki</translation>
 <translation id="1972984168337863910">Rozwiń panele informacji zwrotnej o plikach</translation>
 <translation id="1995337122023280937">Otwórz lokalizację pliku</translation>
-<translation id="1999709132469742660">Dostęp do plików dla wszystkich adresów URL</translation>
 <translation id="2001796770603320721">Zarządzaj na Dysku</translation>
 <translation id="2009067268969781306">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych. Nie można tego cofnąć.</translation>
 <translation id="2025955442973426285">Tigrinia</translation>
@@ -543,7 +542,6 @@
 <translation id="5323213332664049067">Ameryka Łacińska</translation>
 <translation id="5330145655348521461">Te pliki zostały otwarte na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby je zobaczyć.</translation>
 <translation id="5330512191124428349">Więcej informacji</translation>
-<translation id="5337538975554986899">Dostęp do plików dla wszystkich adresów URL oprócz <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Zarządzaj udostępnianiem danych maszynie wirtualnej Bruschetta</translation>
 <translation id="535792325654997756">Osoba z kotami</translation>
 <translation id="5358764674931277">Liczba klatek</translation>
@@ -942,6 +940,7 @@
 <translation id="8492972329130824181">Sieć domowa jest niedostępna. Aby nawiązać połączenie, musisz włączyć komórkową transmisję danych w roamingu.</translation>
 <translation id="8499098729323186194">Wyodrębniam elementy (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="8502913769543567768">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktywuj po skonfigurowaniu urządzenia, zarządzana przez administratora</translation>
+<translation id="8512483403832814140">Kiedykolwiek</translation>
 <translation id="8521441079177373948">brytyjska klawiatura</translation>
 <translation id="853494022971700746">Francuski (Francja)</translation>
 <translation id="8540608333167683902">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>

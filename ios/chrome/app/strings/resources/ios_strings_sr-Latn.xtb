@@ -519,6 +519,7 @@ Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da bis
 <translation id="4737560986434232178">Pretražite nedavne kartice</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a. Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti je on čuva. Ako zaboravite pristupnu frazu ili poželite da promenite ovo podešavanje, treba da resetujete sinhronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, samo na ovom uređaju, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nova kartica bez arhiviranja</translation>
 <translation id="4766112107778026136">Otkrivanje i praćenje</translation>
 <translation id="4775879719735953715">Podrazumevani pregledač</translation>
@@ -540,6 +541,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="48274138579728272">Označi kao pročitano</translation>
 <translation id="4833686396768033263">Nedavne kartice nisu dostupne</translation>
 <translation id="4833786495304741580">Automatski šalje Google-u statistiku korišćenja i izveštaje o otkazivanju.</translation>
+<translation id="4834499902900503484">Kada ste prijavljeni u Chrome, lozinke koje sačuvate idu na Google nalog. Da biste to isključili, <ph name="BEGIN_LINK" />idite u podešavanja<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Obeleživači, istorija, lozinke i drugi podaci više se neće sinhronizovati sa Google nalogom.</translation>
 <translation id="4844899002472726590">Pregledajte i menjajte teme koje vas interesuju</translation>
 <translation id="4848999860252535517">Želite da izbrišete lozinku za <ph name="WEBSITE" />?</translation>
@@ -683,6 +685,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5899314093904173337">Da biste delili sa ljudima u blizini, dajte im da skeniraju ovaj QR kôd pomoću kamere ili aplikacije za skeniranje QR koda</translation>
 <translation id="5911030830365207728">Google prevodilac</translation>
 <translation id="5913600720976431809">Opcije za prevod stranice</translation>
+<translation id="5922999516621365983">Prevucite karticu ovde da biste je zakačili.</translation>
 <translation id="5938160824633642847">Uređaj je skoro pun. Oslobodite prostor i probajte ponovo.</translation>
 <translation id="5948291296578561264">Ovo vam omogućava da čuvate slike u fototeci.</translation>
 <translation id="5951816930277761335">Delite link</translation>
@@ -943,6 +946,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Blokirani iskačući prozori (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Izbriši lozinku</translation>
+<translation id="7611459119367035420">Zakačene kartice možete da pronađete ovde.</translation>
 <translation id="7638584964844754484">Neispravna pristupna fraza</translation>
 <translation id="7646263789464975852">Meni → Podešavanja → Provera bezbednosti</translation>
 <translation id="7646772052135772216">Sinhronizacija lozinki ne radi</translation>
@@ -955,6 +959,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7701040980221191251">Ništa</translation>
 <translation id="7720410380936703141">PROBAJ PONOVO</translation>
 <translation id="7726702057919861819">Meni → Istorija → Obriši podatke pregledanja</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo na ovom uređaju.</translation>
 <translation id="7738120385185846461">Prijavi problem…</translation>
 <translation id="7741325291586284254">Nova stranica na kartici bez arhiviranja</translation>
 <translation id="7744394900930577716">Lozinke u drugim aplikacijama</translation>

@@ -12,6 +12,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="110877069173485804">This is your Chrome</translation>
 <translation id="1125124144982679672">Who's using Chrome?</translation>
 <translation id="1142745911746664600">Can't update Chrome</translation>
+<translation id="1149651794389918149">Sign in to Chrome. If you'd just like to sign in an account once, you can <ph name="GUEST_LINK_BEGIN" />use the device as guest<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">About Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
@@ -171,6 +172,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4147555960264124640">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installing...</translation>
 <translation id="4149882025268051530">The installer failed to uncompress archive. Please download Google Chrome again.</translation>
+<translation id="4153934450158521343">Chrome will soon close and delete data</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relaunch Chrome within a day}other{Relaunch Chrome within # days}}</translation>
 <translation id="4205939740494406371">Chrome can't check your passwords. Try again after 24 hours or <ph name="BEGIN_LINK" />check passwords in your Google Account<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Cancelling...</translation>
@@ -216,6 +218,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4970880042055371251">Chrome OS version</translation>
 <translation id="4970947549776831107">Chrome blocked this file because this type of file is dangerous</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Your administrator automatically closes Chrome when it isn't used for 1 minute. Browsing data is deleted. This could include history, auto-fill and downloads.}other{Your administrator automatically closes Chrome when it isn't used for # minutes. Browsing data is deleted. This could include history, auto-fill and downloads.}}</translation>
 <translation id="5098668839038261629">When on, you'll also be signed out of Chrome</translation>
 <translation id="5132929315877954718">Discover great apps, games, extensions and themes for Google Chrome.</translation>
 <translation id="5139423532931106058">Customise your Chrome profile</translation>
@@ -268,12 +271,14 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Inbound rule for Google Chrome to allow mDNS traffic.</translation>
+<translation id="624230925347970731">Chrome will soon close</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6273793429163604305">On your marks…</translation>
 <translation id="6291089322031436445">Chrome Dev Apps</translation>
 <translation id="6291549208091401781">Google Chrome is already installed for all users on your computer.</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6327105987658262776">No update is available.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Your administrator automatically deletes browsing data when it isn't used for one minute. This could include history, auto-fill and downloads. Your existing tabs will remain open.}other{Your administrator automatically deletes browsing data when it isn't used for # minutes. This could include history, auto-fill and downloads. Your existing tabs will remain open.}}</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
 <translation id="6493527311031785448">Google Chrome is trying to <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -303,6 +308,7 @@ Google Chrome is unable to recover your settings.</translation>
 
 Permissions that you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN" />Settings<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Your parent has turned off 'Permissions for sites, apps and extensions' for Chrome. Adding this <ph name="EXTENSION_TYPE_PARAMETER" /> is not allowed.</translation>
+<translation id="7071827361006050863">Chrome will soon delete browsing data</translation>
 <translation id="7085332316435785646">Choose whether to include Chrome history for more personalised experiences in Google services</translation>
 <translation id="7088681679121566888">Chrome is up to date</translation>
 <translation id="7098166902387133879">Google Chrome is using your microphone.</translation>
@@ -364,6 +370,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8290100596633877290">Whoa! Google Chrome has crashed. Relaunch now?</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Your administrator automatically closes Chrome when it isn't used for 1 minute.}other{Your administrator automatically closes Chrome when it isn't used for # minutes.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome can estimate your interests. Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see.</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>

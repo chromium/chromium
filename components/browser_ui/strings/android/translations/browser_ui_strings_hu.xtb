@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Kibontva – kattintson az összecsukáshoz.</translation>
 <translation id="2586657967955657006">Vágólap</translation>
 <translation id="2597457036804169544">Ne használjon sötét témát a webhelyeknél</translation>
+<translation id="2606760465469169465">Automatikus igazolás</translation>
 <translation id="2621115761605608342">A JavaScript engedélyezése egy adott webhelyen.</translation>
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
@@ -188,6 +189,7 @@
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> kibontása</translation>
 <translation id="4468959413250150279">Egy adott webhely hangjának némítása.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
+<translation id="4478158430052450698">Megkönnyítheti a különböző webhelyek nagyításának személyre szabását</translation>
 <translation id="4479647676395637221">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a kamera használatát (ajánlott)</translation>
 <translation id="4505788138578415521">URL kibontva</translation>
 <translation id="4534723447064627427">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a mikrofonhoz, a mikrofont az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
@@ -223,6 +225,7 @@
 <translation id="5197729504361054390">A kiválasztott névjegyeket megosztjuk a következő webhellyel: <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Utolsó látogatás: ma</translation>
 <translation id="5225463052809312700">Kamera bekapcsolása</translation>
+<translation id="5229337741799419985">Ez a beállítás a személyazonosságának azonosítása nélkül, és anélkül is működik, hogy a webhelyek számára engedélyezné a böngészési előzményei megtekintését.</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5264323282659631142">„<ph name="CHIP_LABEL" />“ eltávolítása</translation>
 <translation id="528192093759286357">A teljes képernyős megjelenítésből való kilépéshez húzza le felülről, majd koppintson a vissza gombra.</translation>
@@ -309,6 +312,7 @@
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6689172468748959065">Profilfotók</translation>
 <translation id="6697925417670533197">Aktív letöltések</translation>
+<translation id="6701547804986694515">A felkeresett webhelyek menthetnek olyan adatokat a Chrome-ban, amelyek igazolják, hogy Ön nem robot. Böngészési tevékenységei során a webhelyek egyeztethetnek a Chrome-mal, és az előzőleg felkeresett webhely segítségével meggyőződhetnek arról, hogy Ön valószínűleg valódi felhasználó.</translation>
 <translation id="6722828510648505498">Letilthatja az identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
 <translation id="6746124502594467657">Mozgatás lefelé</translation>
 <translation id="6749077623962119521">Visszaállítja az engedélyeket?</translation>
@@ -426,6 +430,7 @@
 <translation id="8751914237388039244">Válasszon képet</translation>
 <translation id="8801436777607969138">JavaScript letiltása adott webhelynél.</translation>
 <translation id="8803526663383843427">Amikor be van kapcsolva</translation>
+<translation id="8805385115381080995">Így gyorsabb a böngészés, mert a webhelyek kisebb valószínűséggel kérik meg arra, hogy igazolja, Ön valódi személy.</translation>
 <translation id="8816026460808729765">Az érzékelőkhöz való hozzáférés tiltása a webhelyek számára</translation>
 <translation id="8823559166155093873">Cookie-k tiltása</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +454,6 @@
 <translation id="9162462602695099906">Ez az oldal veszélyes</translation>
 <translation id="9201023452444595544">Az offline adatok törlődnek</translation>
 <translation id="930525582205581608">Szeretné a webhely elfelejtését kérni?</translation>
+<translation id="947156494302904893">A felkeresett webhelyek ellenőrizni tudják, hogy Ön valódi személy, nem pedig robot</translation>
 <translation id="967624055006145463">Tárolt adatok</translation>
 </translationbundle>

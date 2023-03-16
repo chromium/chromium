@@ -3713,6 +3713,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4274667386947315930">Të dhënat e identifikimit</translation>
 <translation id="4274673989874969668">Pasi të largohesh nga një sajt, ai mund të vazhdojë të sinkronizojë detyrat, si p.sh. ngarkimin e fotografive ose dërgimin e një mesazhi bisede</translation>
 <translation id="4275291496240508082">Tingulli i nisjes</translation>
+<translation id="4275397969489577657">Aktivizo regjistrimin e rrjedhës së ngjarjeve</translation>
 <translation id="4275830172053184480">Rinise pajisjen</translation>
 <translation id="4277434192562187284">Burimi i konfigurimeve të XML-së</translation>
 <translation id="4278390842282768270">Të lejuara</translation>
@@ -4523,6 +4524,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5018207570537526145">Hap sajtin e uebit të shtesës</translation>
 <translation id="5018526990965779848">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo me përmirësimin e përvojës sate të Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="5020008942039547742">Zgjidh një dritare tjetër</translation>
+<translation id="5020651427400641814">Aktivizo regjistrimin e ligjërimit</translation>
 <translation id="5021750053540820849">Nuk është përditësuar ende</translation>
 <translation id="5024511550058813796">Do të kesh historikun në të gjitha pajisjet e sinkronizuara, në mënyrë që të vazhdosh atë që po bëje</translation>
 <translation id="5026492829171796515">Identifikohu për të shtuar një "Llogari të Google"</translation>
@@ -4955,6 +4957,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5432145523462851548">Shfaq <ph name="FILE_NAME" /> në dosje</translation>
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
 <translation id="5434065355175441495">Enkriptimi PKCS #1 RSA</translation>
+<translation id="5435274640623994081">Aktivizo regjistrimin e tingujve të shkurtër</translation>
 <translation id="5435779377906857208">Lejo gjithmonë që <ph name="HOST" /> të ketë qasje te vendndodhja jote</translation>
 <translation id="5436492226391861498">Po pret për tunelin ndërmjetës...</translation>
 <translation id="5436510242972373446">Kërko në <ph name="SITE_NAME" />:</translation>
@@ -5302,7 +5305,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5751345516399502412">Kontrollo gatishmërinë e ndarjes së internetit</translation>
 <translation id="5755022574660047665">kujtime nga "Fotografitë e Google"</translation>
 <translation id="5756163054456765343">Qendra e n&amp;dihmës</translation>
-<translation id="5757375109985023827">Zgjidh një skedë për ta shikuar paraprakisht</translation>
 <translation id="5758631781033351321">Këtu do të gjesh listën tënde të leximit</translation>
 <translation id="5759728514498647443">Dokumentet që dërgon për printim nëpërmjet <ph name="APP_NAME" /> mund të lexohen nga <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Fut të dhënat e "Llogarisë së Google"</translation>
@@ -8514,6 +8516,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8654151524613148204">Skedari është tepër i madh për t'u përdorur nga kompjuteri yt. Na vjen keq.</translation>
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8655972064210167941">Identifikimi dështoi pasi fjalëkalimi nuk mund të verifikohej. Kontakto me administratorin ose provo përsëri.</translation>
+<translation id="8656888282555543604">Aktivizo regjistrimin për breil</translation>
 <translation id="8657393004602556571">Dëshiron të heqësh komentin?</translation>
 <translation id="8661290697478713397">Hape lidhjen në një dritare të fshe&amp;htë</translation>
 <translation id="8662671328352114214">Bashkohu në rrjetin <ph name="TYPE" /></translation>

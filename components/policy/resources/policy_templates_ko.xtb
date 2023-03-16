@@ -7575,21 +7575,6 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
 
           정책이 설정되지 않은 경우 처음에는 커서 강조표시가 사용 중지되어 있으나 사용자가 언제든지 사용하도록 설정할 수 있습니다.</translation>
 <translation id="8160572976152509481">사용자가 기기의 전원 버튼만 사용하여 기기를 끌 수 있도록 허용</translation>
-<translation id="8161309952608059239"><ph name="IDLE_TIMEOUT_POLICY_NAME" /> 정책에 설정된 제한 시간 도달 시 실행할 작업 목록입니다.
-
-      <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 정책이 설정되어 있지 않으면 이 정책이 적용되지 않습니다.
-
-      <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 정책에 설정된 제한 시간 도달 시 <ph name="PRODUCT_NAME" />에서 이 정책에 구성된 작업을 실행합니다.
-
-      정책이 비어 있거나 설정되어 있지 않으면 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 정책이 적용되지 않습니다.
-
-      지원되는 작업:
-
-      '<ph name="CLOSE_BROWSERS_ACTION" />': 프로필의 모든 브라우저 창과 PWA를 닫습니다. Android에서는 지원되지 않습니다.
-
-      '<ph name="SHOW_PROFILE_PICKER_ACTION" />': 프로필 선택 도구 창을 표시합니다. Android에서는 지원되지 않습니다.
-
-      '<ph name="CLEAR_BROWSING_HISTORY_ACTION" />', '<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />', '<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />', '<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />', '<ph name="CLEAR_AUTOFILL_ACTION" />', '<ph name="CLEAR_SITE_SETTINGS_ACTION" />', '<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />': 해당 인터넷 사용 기록을 삭제합니다. 자세한 내용은 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 정책을 참고하세요.</translation>
 <translation id="8164144100557223371">브라우저 실험 기능 툴바 진입점 사용 중지</translation>
 <translation id="8164687848393015214">정책을 사용 설정하면 관리 서버에 모니터링 네트워크 패킷(<ph name="HEARTBEATS_TERM" />)을 전송하여 온라인 상태를 모니터링하고, 기기가 오프라인일 때 서버에서 감지할 수 있도록 합니다.
 

@@ -141,6 +141,7 @@
 <translation id="1677472565718498478">Մնացել է <ph name="TIME" /></translation>
 <translation id="1677507110654891115">«<ph name="FEATURE_NAME" />» գործառույթը միացված չէ։</translation>
 <translation id="1677582821739292812">Ինչ-որ մեկը նայում է ձեր էկրանին</translation>
+<translation id="1679841710523778799">Ավելացնել պայծառությունը</translation>
 <translation id="1683399938733266832">CPU-ի ընթացիկ օգտագործումը՝ <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Ժամաչափ՝ <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">Վճռական</translation>
 <translation id="2860184359326882502">Լավագույն համընկնումը</translation>
 <translation id="2865888419503095837">Տեղեկություններ ցանցի մասին</translation>
+<translation id="2872353916818027657">Փոխատեղել հիմնական մոնիտորը</translation>
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="2878884018241093801">Վերջին տարրեր չկան</translation>
 <translation id="2885950158625301909">Իմանալ ավելին</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> րոպե</translation>
 <translation id="3445925074670675829">USB-C սարք</translation>
 <translation id="3455468639467374593">Ձևանմուշ, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Վերականգնել սկզբնական մասշտաբը</translation>
 <translation id="3465223694362104965">Ձեր վերջին մուտքից հետո այս սարքին մեկ այլ ստեղնաշար է միացվել: Նախքան այդ ստեղնաշարն օգտագործելը համոզվեք, որ այն անվտանգ է:</translation>
 <translation id="3465356146291925647">Կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="3477079411857374384">Ctrl+Shift+Բացատ</translation>
@@ -718,6 +721,7 @@
 <translation id="468293128311738995">Հավելվածներ ձեր հեռախոսից</translation>
 <translation id="4690510401873698237">Դարակը ներքևում է</translation>
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
+<translation id="4698850295812410683">Ցուցադրել ստիլուսի գործիքները</translation>
 <translation id="4702647871202761252">Գաղտնիության էկրանն անջատված է</translation>
 <translation id="4706121060329443414">Ավելի ուշ մենք կփորձենք նորից ներբեռնել ֆայլերը։ Իսկ հիմա խոսքի ձայնագրությունը կփոխանցվի Google-ին՝ մշակման համար։</translation>
 <translation id="470644585772471629">Գունաշրջում</translation>
@@ -837,6 +841,7 @@
 <translation id="5308380583665731573">Կապակցվել</translation>
 <translation id="5313326810920013265">Bluetooth-ի կարգավորումներ</translation>
 <translation id="5314219114274263156">Էկրանը տեսագրվել է</translation>
+<translation id="5316716239522500219">Հայելապատճենել մոնիտորների պատկերները</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319712128756744240">Նոր սարքի զուգակցում</translation>
 <translation id="5322611492012084517">Չհաջողվեց գտնել ձեր հեռախոսը</translation>
@@ -989,6 +994,7 @@
 <translation id="6045629311476491587">Օգտագործվում է <ph name="APP_COUNT" /> հավելվածի կողմից</translation>
 <translation id="6045998054441862242">Միացնել բարձր կոնտրաստի ռեժիմը</translation>
 <translation id="6047696787498798094">Էկրանի համօգտագործումը կդադարեցվի օգտատիրոջը փոխելու դեպքում: Ցանկանո՞ւմ եք շարունակել:</translation>
+<translation id="6052614013050385269">Բացել հղումը մկնիկի աջ կոճակով</translation>
 <translation id="6054305421211936131">Մտնել հաշիվ խելացի քարտի օգնությամբ</translation>
 <translation id="6059276912018042191">Վերջերս բացված Chrome-ի ներդիրներ</translation>
 <translation id="6062360702481658777">Դուք ավտոմատ դուրս կգրվեք <ph name="LOGOUT_TIME_LEFT" />-ից:</translation>
@@ -1021,6 +1027,7 @@
 <translation id="6213808132343683860">Էկրանի մի մասի սքրինշոթ կամ տեսագրություն անել</translation>
 <translation id="6220928844947387476">Այժմ դուք կարող եք միաժամանակ տեսագրել ձեզ և ձեր էկրանը</translation>
 <translation id="622484624075952240">Վար</translation>
+<translation id="6228457605945141550">Նվազեցնել պայծառությունը</translation>
 <translation id="623116199192908855">Հեռարձակեք ձեր էկրանը Chromebook սարքից</translation>
 <translation id="6231419273573514727">Արտաքին սարքերի աշխատանքի արդյունավետությունը կարող է սահմանափակվել</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> հավելվածը ներկայումս օգտագործում է ձեր տեսախցիկն ու խոսափողը</translation>
@@ -1190,6 +1197,7 @@
 <translation id="7067196344162293536">Ինքնապտտում</translation>
 <translation id="7068360136237591149">Բացել ֆայլեր</translation>
 <translation id="7076293881109082629">Մուտք</translation>
+<translation id="7076878155205969899">Անջատել ձայնը</translation>
 <translation id="7086931198345821656">Այս թարմացումը տեղադրելու համար ձեր <ph name="DEVICE_TYPE" /> սարքում անհրաժեշտ է օգտագործել Powerwash գործառույթը։ Բոլոր տվյալները կջնջվեն։ Իմացեք ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին։</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098053464892629930">Google Play-ում ներբեռնեք <ph name="NAME" />-ի համար հավելվածը՝ բոլոր հասանելի գործառույթները տեսնելու համար</translation>

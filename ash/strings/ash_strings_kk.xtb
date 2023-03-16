@@ -141,6 +141,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> қалды</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> қосылмады.</translation>
 <translation id="1677582821739292812">Әлдекім экраныңызға қарап тұр.</translation>
+<translation id="1679841710523778799">Жарықтықты арттыру</translation>
 <translation id="1683399938733266832">Орталық процессордың қазіргі қолданысы: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> таймер · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">Маңызды</translation>
 <translation id="2860184359326882502">Үздік сәйкестік</translation>
 <translation id="2865888419503095837">Желі ақпараты</translation>
+<translation id="2872353916818027657">Негізгі мониторды ауыстыру</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="2878884018241093801">Соңғы элементтер жоқ</translation>
 <translation id="2885950158625301909">Толық ақпарат</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
 <translation id="3445925074670675829">USB-C құрылғысы</translation>
 <translation id="3455468639467374593">Үлгі: <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Масштабтау деңгейін бастапқы күйге қайтару</translation>
 <translation id="3465223694362104965">Аккаунтқа соңғы рет кіргеннен бері осы құрылғыға басқа пернетақта жалғанды. Оны пайдаланбас бұрын, бұл пернетақтаның сенімді екеніне көз жеткізіңіз.</translation>
 <translation id="3465356146291925647">Әкімшіңіз басқарады</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -719,6 +722,7 @@
 <translation id="468293128311738995">Телефондағы қолданбалар</translation>
 <translation id="4690510401873698237">Төмен жақтағы сөре</translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
+<translation id="4698850295812410683">Стилус құралдарын көрсету</translation>
 <translation id="4702647871202761252">Құпиялық экраны өшірулі.</translation>
 <translation id="4706121060329443414">Кейінірек жүктеп алынады. Айтылған сөз әзірше Google-дың өңдеуіне жіберіледі.</translation>
 <translation id="470644585772471629">Түс инверсиясы</translation>
@@ -838,6 +842,7 @@
 <translation id="5308380583665731573">Қосылу</translation>
 <translation id="5313326810920013265">Bluetooth параметрлері</translation>
 <translation id="5314219114274263156">Экран жазбасы алынды</translation>
+<translation id="5316716239522500219">Айна мониторлары</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5319712128756744240">Жаңа құрылғымен жұптау</translation>
 <translation id="5322611492012084517">Телефоныңызды табу мүмкін емес</translation>
@@ -990,6 +995,7 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> қолданба пайдаланды</translation>
 <translation id="6045998054441862242">Жоғары контраст режимін қосу</translation>
 <translation id="6047696787498798094">Басқа пайдаланушыға ауысқан кезде, экран бөлісілмейді. Жалғастыруды қалайсыз ба?</translation>
+<translation id="6052614013050385269">Сілтемені тінтуірдің оң жақ түймесімен басу</translation>
 <translation id="6054305421211936131">Смарт картамен кіру</translation>
 <translation id="6059276912018042191">Соңғы Chrome қойындылары</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> уақытта жүйеден автоматты түрде шығасыз.</translation>
@@ -1022,6 +1028,7 @@
 <translation id="6213808132343683860">Жарты скриншот немесе экран жазбасын түсіру</translation>
 <translation id="6220928844947387476">Енді бір уақытта экранды жазып, өзіңізді де бейнеге түсіре аласыз.</translation>
 <translation id="622484624075952240">Төмен</translation>
+<translation id="6228457605945141550">Жарықтықты азайту</translation>
 <translation id="623116199192908855">Chromebook құрылғыңыздан экранды трансляциялау</translation>
 <translation id="6231419273573514727">Перифериялық құрылғының өнімділігі шектеулі болуы мүмкін</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> қолданбасы камера мен микрофонды пайдаланып жатыр.</translation>
@@ -1191,6 +1198,7 @@
 <translation id="7067196344162293536">Автоматты бұру</translation>
 <translation id="7068360136237591149">Файлдарды ашу</translation>
 <translation id="7076293881109082629">Кіру</translation>
+<translation id="7076878155205969899">Дыбысын өшіру</translation>
 <translation id="7086931198345821656">Бұл жаңарту үшін <ph name="DEVICE_TYPE" /> құрылғысын зауыттық параметрлерге қайтару қажет. Барлық дерек жойылады. <ph name="SYSTEM_APP_NAME" /> жүйесінің ең соңғы нұсқасы туралы толығырақ ақпарат алыңыз.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098053464892629930">Барлық қолжетімді функцияны көру үшін Google Play қызметіндегі <ph name="NAME" /> қолданбасына арналған қосымша қолданбаны жүктеп алыңыз</translation>

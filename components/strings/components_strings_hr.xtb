@@ -152,6 +152,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="132301787627749051">Traženje slike u međuspremniku</translation>
 <translation id="1323433172918577554">Više</translation>
 <translation id="132390688737681464">Spremi i popuni adrese</translation>
+<translation id="1329916999021038454">Pošalji izvješće</translation>
 <translation id="1330449323196174374">Presavijanje s lijeve strane u obliku prozora</translation>
 <translation id="1333745675627230582">Igraj igru Dinosaur na Chromeu</translation>
 <translation id="1333989956347591814">Vaše aktivnosti <ph name="BEGIN_EMPHASIS" />i dalje mogu biti vidljive<ph name="END_EMPHASIS" />:
@@ -527,6 +528,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="219906046732893612">Uređenje doma</translation>
 <translation id="2202020181578195191">Unesite važeću godinu isteka</translation>
 <translation id="2202627062836089804">poleđina kartice</translation>
+<translation id="2204482073374652408">Ažuriranje je dovršeno!</translation>
 <translation id="22081806969704220">Ladica 3</translation>
 <translation id="2210794033760923560">Prijenos izvješća</translation>
 <translation id="2212579473415663542">Ta je adresa spremljena na vašem Google računu (<ph name="ACCOUNT" />). Adresu možete upotrebljavati na svim Googleovim proizvodima na svim uređajima.</translation>
@@ -615,6 +617,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2441854154602066476">Načini plaćanja dostupni za unos dodirom. Tipkovnica je skrivena.</translation>
 <translation id="2448295565072560657">Periferni uređaji priključeni na ovaj uređaj dok ste prijavljeni</translation>
 <translation id="2450021089947420533">Putovanja</translation>
+<translation id="2456755709261364512">Baterija mora biti napunjena iznad <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">Ispuni</translation>
 <translation id="2465655957518002998">Odaberite način isporuke</translation>
 <translation id="2465688316154986572">Spajanje</translation>
@@ -661,6 +664,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Odsad koristi zaključavanje zaslona za potvrđivanje kartica</translation>
 <translation id="2553853292994445426">Provjerite postavke sigurnog DNS-a. Možda ste konfigurirali sigurni DNS poslužitelj s kojim se ne uspijevate povezati.</translation>
+<translation id="255497580849974774">Neka uređaj ostane povezan s punjačem tijekom ažuriranja.</translation>
 <translation id="2556876185419854533">&amp;Poništi uređivanje</translation>
 <translation id="2557417190997681027">Poslovno putovanje</translation>
 <translation id="2562087035394240049">Opisi postupaka, uradi sam i stručni sadržaj</translation>
@@ -892,6 +896,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="320323717674993345">Otkaži plaćanje</translation>
 <translation id="3203366800380907218">S weba</translation>
 <translation id="3207960819495026254">Označeno</translation>
+<translation id="3208701679386778924">Pošaljite izvješće da bismo poboljšali daljnja ažuriranja ChromeOS-a.</translation>
 <translation id="3209034400446768650">Stranica se možda naplaćuje</translation>
 <translation id="3212581601480735796">Prati se vaša aktivnost na web-lokaciji <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">Nije moguće koristiti WebAuthn</translation>
@@ -1116,6 +1121,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3715545959749027023">Kad Chrome označi sigurnosne događaje, vašem administratoru šalju se relevantni podaci o tim događajima. To može uključivati URL-ove stranica koje posjetite u Chromeu, nazive ili metapodatke datoteka, rušenja preglednika ili kartica te korisničko ime koje upotrebljavate za prijavu u aplikacije temeljene na webu, uređaj i Chrome.</translation>
 <translation id="3715597595485130451">Povezivanje s Wi-Fi mrežom</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />provjerite proxy, vatrozid i konfiguraciju DNS-a<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Tijekom ažuriranja nećete moći koristiti uređaj do 10 minuta.</translation>
 <translation id="372429172604983730">Aplikacije koje mogu prouzročiti tu pogrešku uključuju antivirusni softver, softver vatrozida ili proxyja ili softver za filtriranje weba.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste brzo izradili novu Google prezentaciju u Prezentacijama</translation>
 <translation id="3733139489341305600">Autonomna vozila</translation>
@@ -1153,6 +1159,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3807366285948165054">X-pomak slike</translation>
 <translation id="3807873520724684969">Blokiran je štetni sadržaj.</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
+<translation id="3812398568375898177">To je ključno ažuriranje koje poboljšava izvedbu Android aplikacija na ChromeOS-u.</translation>
 <translation id="3815434930383843058">8 x 12 in</translation>
 <translation id="3816482573645936981">Vrijednost (naslijeđena)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1257,6 +1264,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4110652170750985508">Pregledajte uplatu</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Traži unatrag</translation>
+<translation id="4113354056388982663">Kritično ažuriranje za poboljšanje izvedbe Androida</translation>
 <translation id="4114146879518089587">Nastavite do web-lokacije</translation>
 <translation id="4116663294526079822">Uvijek dopusti na ovoj web-lokaciji</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1437,6 +1445,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste preveli ovu stranicu uz pomoć Google prevoditelja</translation>
 <translation id="4514308731478712184">Isključite putovanja</translation>
 <translation id="4515275063822566619">Kartice i adrese dolaze iz Cromea i vašeg Google računa (<ph name="ACCOUNT_EMAIL" />). Njima možete upravljati u <ph name="BEGIN_LINK" />Postavkama<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">Uređaj je prekinut tijekom postupka ažuriranja.</translation>
 <translation id="4520048001084013693">Administratorska pravila blokiraju preuzimanje te datoteke</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Omotnica Monarch</translation>
@@ -1526,6 +1535,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4738601419177586157">Prijedlog za pretraživanje <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Upravljaj zaporkama…</translation>
+<translation id="4743275772928623722">Vaš je sustav ažuriran, ali se neke vaše aplikacije i datoteke nisu mogle oporaviti. Aplikacije će se automatski ponovo preuzeti.</translation>
 <translation id="4744514002166662487">Izradite prezentaciju</translation>
 <translation id="4744603770635761495">Izvršna putanja</translation>
 <translation id="4749011317274908093">Sad ste u anonimnom načinu</translation>
@@ -2227,6 +2237,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="646793340882508547">Avanturističke igre</translation>
 <translation id="6468485451923838994">Fontovi</translation>
 <translation id="647261751007945333">Pravila uređaja</translation>
+<translation id="647330291963761005">Instaliranje ažuriranja</translation>
 <translation id="6475672344094591109">Web-lokacije koje posjećujete mogu od Chromea tražiti informacije koje im pomažu izmjeriti uspješnost njihovih oglasa. Chrome štiti vašu privatnost ograničavanjem informacija koje web-lokacije mogu međusobno dijeliti.</translation>
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
 <translation id="6486200200930923183">Dokumentarni filmovi</translation>
@@ -2300,6 +2311,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6688775486821967877">Virtualna kartica trenutačno nije dostupna, pokušajte ponovo kasnije</translation>
 <translation id="6689249931105087298">Relativno s kompresijom crne točke</translation>
 <translation id="6689271823431384964">Chrome vam nudi spremanje vaših kartica na vaš Google račun jer ste prijavljeni. To ponašanje možete promijeniti u postavkama. Ime nositelja kartice preuzeto je s vašeg računa.</translation>
+<translation id="6691397311652656001">Oslobodite više od <ph name="REQUIRED_FREE_DISK_SPACE" /> prostora</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste pronašli svoj uređaj na Google računu</translation>
 <translation id="6696588630955820014">Gumb Dijeli ovu karticu, pritisnite Enter da biste podijelili ovu karticu dijeljenjem veze, izradom QR koda, emitiranjem i na druge načine</translation>
 <translation id="6698381487523150993">Autor/ica:</translation>
@@ -2363,6 +2375,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Izvori informacija za potrošače</translation>
 <translation id="6865412394715372076">Trenutačno nije moguće potvrditi karticu</translation>
+<translation id="6868573634057275953">Nastavite ažuriranje</translation>
 <translation id="6869334554832814367">Osobni krediti</translation>
 <translation id="6873456682041376666">Gornja ladica</translation>
 <translation id="6874604403660855544">&amp;Ponovi dodavanje</translation>
@@ -2519,9 +2532,11 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="722454870747268814">Nova anonimna kartica</translation>
 <translation id="7233592378249864828">List potvrde ispisa</translation>
 <translation id="7234638337680728591">Cijene goriva i punjenje vozila</translation>
+<translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% dovršeno | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Više ne prikazuj tu poruku za ovu web-lokaciju</translation>
 <translation id="7238585580608191973">SHA-256 otisak prsta</translation>
 <translation id="7240120331469437312">Zamjenski naziv predmeta certifikata</translation>
+<translation id="7241863998525879494">Što možete očekivati</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# podudaranje}one{# podudaranje}few{# podudaranja}other{# podudaranja}}</translation>
@@ -2742,6 +2757,7 @@ Dodatne pojedinosti:
 <translation id="7698864304447945242">Želite li ažurirati Google Play usluge za AR?</translation>
 <translation id="7699293099605015246">Članci trenutačno nisu dostupni</translation>
 <translation id="7701040980221191251">Nema ih</translation>
+<translation id="7701544340847569275">Ažuriranje je završeno s pogreškama</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Idi na web-lokaciju <ph name="SITE" /> (nije sigurno)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Skijanje i snowboarding</translation>
 <translation id="7706689436519265630">Datoteke koje kopirate ili premjestite šalju se Google Cloudu ili trećim stranama na analizu. Na primjer, mogu se pregledavati radi otkrivanja osjetljivih podataka ili zlonamjernog softvera i mogu se pohranjivati na temelju pravila tvrtke.</translation>

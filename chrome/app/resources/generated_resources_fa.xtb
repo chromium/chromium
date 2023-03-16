@@ -3741,6 +3741,7 @@
 <translation id="4274667386947315930">داده‌های ورود به سیستم</translation>
 <translation id="4274673989874969668">بعداز اینکه از سایتی خارج شدید، آن سایت می‌تواند به همگام‌سازی ادامه دهد تا کارها را تکمیل کند، ازجمله تکمیل بارگذاری عکس‌ها یا ارسال پیام گپ</translation>
 <translation id="4275291496240508082">صدای راه‌اندازی دستگاه</translation>
+<translation id="4275397969489577657">فعال کردن گزارش‌گیری از جریان رویداد</translation>
 <translation id="4275830172053184480">راه‌اندازی دستگاه خود</translation>
 <translation id="4277434192562187284">‏منبع پیکربندی XML</translation>
 <translation id="4278390842282768270">مجاز است</translation>
@@ -4552,6 +4553,7 @@
 <translation id="5018207570537526145">باز کردن وب‌سایت افزونه</translation>
 <translation id="5018526990965779848">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. با ارسال خودکار داده‌های تشخیص عیب و داده‌های استفاده از دستگاه و برنامه به Google، به بهبود تجربه استفاده از Android کمک کنید. این داده‌ها به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند «برنامه‌نویس‌های Android») کمک می‌کند. اگر تنظیم «فعالیت وب و برنامه» تکمیلی روشن باشد، ممکن است این داده‌ها در «حساب Google» شما ذخیره شود.</translation>
 <translation id="5020008942039547742">پنجره دیگری را انتخاب کنید</translation>
+<translation id="5020651427400641814">فعال کردن گزارش‌گیری از گفتار</translation>
 <translation id="5021750053540820849">هنوز به‌روزرسانی نشده است</translation>
 <translation id="5024511550058813796">سابقه‌تان در همه دستگاه‌های همگام‌سازی‌شده دردسترس خواهد بود تا بتوانید آنچه را انجام می‌دادید ادامه دهید</translation>
 <translation id="5026492829171796515">‏برای افزودن حساب Google، به سیستم وارد شوید</translation>
@@ -4984,6 +4986,7 @@
 <translation id="5432145523462851548">نمایش <ph name="FILE_NAME" /> در پوشه</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
 <translation id="5434065355175441495">‏PKCS #1 RSA رمزگذاری</translation>
+<translation id="5435274640623994081">فعال کردن گزارش‌گیری از نماد شنیداری</translation>
 <translation id="5435779377906857208">دسترسی <ph name="HOST" /> به مکان شما همیشه مجاز باشد</translation>
 <translation id="5436492226391861498">منتظر تونل پراکسی...</translation>
 <translation id="5436510242972373446">جستجوی <ph name="SITE_NAME" />:</translation>
@@ -5331,7 +5334,6 @@
 <translation id="5751345516399502412">بررسی آمادگی برای اشتراک‌گذاری اینترنت</translation>
 <translation id="5755022574660047665">‏خاطرات ذخیره‌شده در Google Photos</translation>
 <translation id="5756163054456765343">مرکز را&amp;هنمایی</translation>
-<translation id="5757375109985023827">برگه‌ای برای پیش‌نمایش انتخاب کنید</translation>
 <translation id="5758631781033351321">فهرست مطالعه را اینجا خواهید دید</translation>
 <translation id="5759728514498647443">اسنادی که از طریق <ph name="APP_NAME" /> برای چاپ ارسال می‌کنید، می‌توانند توسط <ph name="APP_NAME" /> خوانده شوند.</translation>
 <translation id="5762787084360227629">‏وارد کردن اطلاعات «حساب Google»</translation>
@@ -7008,7 +7010,7 @@
 <translation id="7268127947535186412">این تنظیم توسط مالک دستگاه مدیریت می‌شود.</translation>
 <translation id="7269229526547981029">این نمایه را <ph name="PROFILE_MANAGER" /> مدیریت می‌کند. <ph name="ACCOUNT_MANAGER" /> برای حساب <ph name="USER_EMAIL_ADDRESS" /> به نمایه جدیدی نیاز دارد</translation>
 <translation id="7269736181983384521">مصرف داده «هم‌رسانی با اطراف»</translation>
-<translation id="7271278495464744706">توضیحات طولانی را فعال کنید</translation>
+<translation id="7271278495464744706">توضیحات مفصل را فعال کنید</translation>
 <translation id="7272674038937250585">توضیحی ارائه نشده است</translation>
 <translation id="7273110280511444812">آخرین اتصال در تاریخ <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />٪ - <ph name="TIME" /> تا شارژ کامل</translation>
@@ -8554,6 +8556,7 @@
 <translation id="8654151524613148204">فایل برای استفاده در رایانهٔ شما خیلی بزرگ است. متأسفیم.</translation>
 <translation id="8655295600908251630">کانال</translation>
 <translation id="8655972064210167941">ورود به سیستم ناموفق بود زیرا گذرواژه شما تأیید نشد. لطفاً با سرپرستتان تماس بگیرید یا دوباره امتحان کنید.</translation>
+<translation id="8656888282555543604">فعال کردن گزارش‌گیری بریل</translation>
 <translation id="8657393004602556571">می‌خواهید از بازخورد صرف‌نظر کنید؟</translation>
 <translation id="8661290697478713397">باز کردن پیوند در پنجره حالت &amp;ناشناس</translation>
 <translation id="8662671328352114214">پیوستن به شبکه <ph name="TYPE" /></translation>

@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detectado</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
+<translation id="1082009148392559545">Fazendo o download do protetor de tela</translation>
 <translation id="1094693127011229778">O endereço IP está indisponível</translation>
 <translation id="1113892970288677790">Escolher obras de arte e imagens selecionadas</translation>
 <translation id="1119447706177454957">Erro interno</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">Alimentador de documentos (unilateral)</translation>
 <translation id="1643449475550628585">Mudar a imagem do plano de fundo diariamente</translation>
 <translation id="1644574205037202324">Histórico</translation>
+<translation id="1651925268237749928">Você selecionou um álbum compartilhado. Outras pessoas podem adicionar ou mudar as fotos. Seu plano de fundo pode usar imagens que não estão nesse álbum.</translation>
 <translation id="1662989795263954667">Parado (sem tinta)</translation>
 <translation id="1664796644829245314">Visualizar <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integrado</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">Gerenciado por <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
+<translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Não foi possível carregar as imagens. Verifique sua conexão de rede ou tente carregar novamente.</translation>
 <translation id="1751249301761991853">Pessoal</translation>
 <translation id="1753496554272155572">Sair da visualização do plano de fundo</translation>
@@ -236,6 +239,7 @@
 <translation id="319101249942218879">A imagem do avatar foi alterada</translation>
 <translation id="3192947282887913208">Arquivos de áudio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (frente e verso)</translation>
+<translation id="3201315366910775591">Álbuns compartilhados podem ser atualizados por outras pessoas</translation>
 <translation id="3211671540163313381">Botão direcional: mapeamento de atalhos</translation>
 <translation id="3226405216343213872">Procurando scanners</translation>
 <translation id="3226657629376379887">Menu de ações de layout</translation>
@@ -598,6 +602,7 @@
 <translation id="636850387210749493">Registro da empresa</translation>
 <translation id="6379086450106841622">Tela touchscreen</translation>
 <translation id="6381741036071372448">Testar o teclado</translation>
+<translation id="6382182670717268353">Prévia do protetor de tela</translation>
 <translation id="6388847657025262518">O alimentador de documentos do scanner está obstruído. Verifique-o e tente novamente.</translation>
 <translation id="6394634179843537518">Adicionar arquivo</translation>
 <translation id="6410257289063177456">Arquivos de imagem</translation>
@@ -653,6 +658,7 @@
 <translation id="6838167112108853532">Não é possível desativar ou remover este APN. Desative ou remova os APNs em anexo.</translation>
 <translation id="6853312040151791195">Taxa de descarregamento</translation>
 <translation id="6889786074662672253">Durante a reinicialização deste dispositivo externo, não o desconecte nem desligue o computador. Você pode minimizar esta janela. Isso pode levar alguns minutos, e o dispositivo externo pode não funcionar nesse período.</translation>
+<translation id="6900701049656042631">Esse álbum não tem fotos. Para adicionar, acesse <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Voltar para <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A tampa do scanner está aberta. Feche-a e tente novamente.</translation>
 <translation id="6911383237894364323">Não foi possível se conectar aos servidores de mídia</translation>
@@ -687,6 +693,7 @@
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />. Os administradores podem configurar o dispositivo remotamente.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
+<translation id="7184043045742675738">Clique em qualquer tecla para personalizar o botão. Reposicione a tecla com o mouse ou as teclas de seta.</translation>
 <translation id="7212734716605298123">Atualizações de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Operadora de celular</translation>
 <translation id="725133483556299729">Selecione um e-mail</translation>
@@ -728,6 +735,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Tela touchscreen USB</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Reposicionar com o mouse ou as teclas de seta.</translation>
 <translation id="7620771111601174153">Saiba mais na Central de Ajuda</translation>
 <translation id="763165478673169849">Horário da última redefinição</translation>
 <translation id="7648838807254605802">Latência de HTTPS alta</translation>
@@ -850,6 +858,7 @@
 <translation id="8798441408945964110">Nome do provedor</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Plano de fundo</translation>
+<translation id="8820457400746201697">Mover o ponto de contato azul para uma ação. Selecione a tecla associada para personalizar.</translation>
 <translation id="8834539327799336565">Conectados no momento</translation>
 <translation id="8845001906332463065">Ajuda</translation>
 <translation id="8855781559874488009">O firewall impediu a conexão a sites HTTP</translation>

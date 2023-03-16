@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Cydraniad llun</translation>
 <translation id="1972984168337863910">Ehangu paneli adborth ffeiliau</translation>
 <translation id="1995337122023280937">Mynd i leoliad y ffeil</translation>
-<translation id="1999709132469742660">Mynediad ffeil gan bob url</translation>
 <translation id="2001796770603320721">Rheoli yn Drive</translation>
 <translation id="2009067268969781306">Bydd fformatio gyriant yn dileu'r holl ddata sydd wedi'u cadw arno. Ni ellir dadwneud y weithred hon.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -542,7 +541,6 @@
 <translation id="5323213332664049067">Lladin Americanaidd</translation>
 <translation id="5330145655348521461">Gwnaeth y ffeiliau hyn agor ar fwrdd gwaith gwahanol. Symudwch i <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) i'w gweld.</translation>
 <translation id="5330512191124428349">Cael gwybodaeth</translation>
-<translation id="5337538975554986899">Mynediad ffeil gan bob url ac eithrio <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Rheoli rhannu Bruschetta</translation>
 <translation id="535792325654997756">Person â chathod</translation>
 <translation id="5358764674931277">Cyfradd ffrâm</translation>
@@ -941,6 +939,7 @@
 <translation id="8492972329130824181">Nid yw'r rhwydwaith cartref ar gael. Rhaid galluogi trawsrwydweithio data symudol i gysylltu.</translation>
 <translation id="8499098729323186194">Wrthi'n echdynnu <ph name="NUMBER_OF_ITEMS" /> eitem...</translation>
 <translation id="8502913769543567768">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Gweithredu ar ôl gosod dyfais, Wedi'i reoli gan eich Gweinyddwr</translation>
+<translation id="8512483403832814140">Unrhyw amser</translation>
 <translation id="8521441079177373948">DU</translation>
 <translation id="853494022971700746">Ffrangeg (Ffrainc)</translation>
 <translation id="8540608333167683902">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal<ph name="SIGNAL_STRENGTH" />%, Manylion</translation>

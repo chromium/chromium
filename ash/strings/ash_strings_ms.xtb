@@ -142,6 +142,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1677472565718498478">Berbaki <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> tidak disambungkan.</translation>
 <translation id="1677582821739292812">Seseorang sedang memandang skrin anda</translation>
+<translation id="1679841710523778799">Tambahkan kecerahan</translation>
 <translation id="1683399938733266832">Penggunaan semasa CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Pemasa <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -360,6 +361,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2849936225196189499">Kritikal</translation>
 <translation id="2860184359326882502">Padanan Terbaik</translation>
 <translation id="2865888419503095837">Maklumat rangkaian</translation>
+<translation id="2872353916818027657">Tukar monitor utama</translation>
 <translation id="2872961005593481000">Mematikan</translation>
 <translation id="2878884018241093801">Tiada item terbaharu</translation>
 <translation id="2885950158625301909">Ketahui lebih lanjut</translation>
@@ -473,6 +475,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Peranti USB-C</translation>
 <translation id="3455468639467374593">Templat, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Tetapkan semula paras zum</translation>
 <translation id="3465223694362104965">Papan kekunci lain telah disambungkan ke peranti ini sejak kali terakhir anda log masuk. Pastikan anda mempercayai papan kekunci ini sebelum anda menggunakannya.</translation>
 <translation id="3465356146291925647">Diurus oleh Pentadbir anda</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -727,6 +730,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="468293128311738995">Apl daripada telefon anda</translation>
 <translation id="4690510401873698237">Rak di bahagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
+<translation id="4698850295812410683">Tunjukkan alatan stilus</translation>
 <translation id="4702647871202761252">Skrin privasi dimatikan</translation>
 <translation id="4706121060329443414">Muat turun akan cuba dilakukan kemudian. Buat masa sekarang, pertuturan akan dihantar kepada Google untuk diproses.</translation>
 <translation id="470644585772471629">Penyongsangan warna</translation>
@@ -846,6 +850,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5308380583665731573">Sambung</translation>
 <translation id="5313326810920013265">Tetapan Bluetooth</translation>
 <translation id="5314219114274263156">Perakam skrin diambil</translation>
+<translation id="5316716239522500219">Cerminkan monitor</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319712128756744240">Gandingkan peranti baharu</translation>
 <translation id="5322611492012084517">Tidak dapat menemukan telefon anda</translation>
@@ -999,6 +1004,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6045629311476491587">Digunakan oleh <ph name="APP_COUNT" /> apl</translation>
 <translation id="6045998054441862242">Hidupkan mod kontras tinggi</translation>
 <translation id="6047696787498798094">Perkongsian skrin akan berhenti apabila anda beralih kepada pengguna lain. Adakah anda ingin meneruskan?</translation>
+<translation id="6052614013050385269">Klik kanan pautan</translation>
 <translation id="6054305421211936131">Daftar masuk dengan kad pintar</translation>
 <translation id="6059276912018042191">Tab Chrome baru-baru ini</translation>
 <translation id="6062360702481658777">Anda akan dilog keluar secara automatik dalam masa <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1031,6 +1037,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6213808132343683860">Ambil tangkapan skrin separa atau rakaman skrin</translation>
 <translation id="6220928844947387476">Kini anda boleh merakam diri anda dan skrin anda secara serentak</translation>
 <translation id="622484624075952240">Bawah</translation>
+<translation id="6228457605945141550">Kurangkan kecerahan</translation>
 <translation id="623116199192908855">Hantar skrin anda daripada Chromebook anda</translation>
 <translation id="6231419273573514727">Prestasi peranti persisian mungkin terhad</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon anda pada masa ini</translation>
@@ -1201,6 +1208,7 @@ Pemasangan baharu</translation>
 <translation id="7067196344162293536">Auto putar</translation>
 <translation id="7068360136237591149">Buka fail</translation>
 <translation id="7076293881109082629">Melog masuk</translation>
+<translation id="7076878155205969899">Redamkan bunyi</translation>
 <translation id="7086931198345821656">Kemaskinian ini memerlukan fungsi powerwash <ph name="DEVICE_TYPE" /> anda. Semua data akan dipadamkan. Ketahui lebih lanjut tentang kemas kini <ph name="SYSTEM_APP_NAME" /> yang terbaharu.</translation>
 <translation id="7088960765736518739">Akses Suis</translation>
 <translation id="7098053464892629930">Muat turun apl untuk <ph name="NAME" /> di Google play untuk melihat semua ciri yang tersedia</translation>

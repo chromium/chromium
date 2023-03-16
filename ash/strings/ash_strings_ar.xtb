@@ -140,6 +140,7 @@
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
 <translation id="1677507110654891115">ميزة <ph name="FEATURE_NAME" /> غير متصلة.</translation>
 <translation id="1677582821739292812">تم رصد مستخدم ينظر إلى شاشتك.</translation>
+<translation id="1679841710523778799">زيادة السطوع</translation>
 <translation id="1683399938733266832">‏الاستخدام الحالي لوحدة المعالجة المركزية (CPU): %<ph name="CPU_USEAGE" /></translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">مؤقت <ph name="TOTAL_TIME" />   <ph name="LABEL" /></translation>
@@ -352,6 +353,7 @@
 <translation id="2849936225196189499">مهمة</translation>
 <translation id="2860184359326882502">أفضل نتيجة مطابقة</translation>
 <translation id="2865888419503095837">معلومات الشبكة</translation>
+<translation id="2872353916818027657">تبديل الشاشة الرئيسية</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878884018241093801">ليست هناك عناصر تم استخدامها مؤخرًا</translation>
 <translation id="2885950158625301909">مزيد من المعلومات</translation>
@@ -461,6 +463,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
 <translation id="3445925074670675829">‏جهاز USB-C</translation>
 <translation id="3455468639467374593">النموذج <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">إعادة ضبط مستوى التكبير أو التصغير</translation>
 <translation id="3465223694362104965">تم ربط لوحة مفاتيح أخرى بهذا الجهاز منذ آخر مرة سجَّلت الدخول فيها. يُرجى التأكُّد من أن لوحة المفاتيح هذه موثوقة قبل استخدامها.</translation>
 <translation id="3465356146291925647">يديرها المشرف</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -709,6 +712,7 @@
 <translation id="468293128311738995">تطبيقات من هاتفك</translation>
 <translation id="4690510401873698237">الرف في الجزء السفلي</translation>
 <translation id="4696813013609194136">فتح قفل الجهاز باستخدام رمز الوالدين</translation>
+<translation id="4698850295812410683">عرض أدوات قلم الشاشة</translation>
 <translation id="4702647871202761252">تم إيقاف شاشة الخصوصية.</translation>
 <translation id="4706121060329443414">‏ستتم إعادة محاولة التنزيل لاحقًا. سيتم إرسال ملفات الكلام إلى Google لمعالجتها الآن.</translation>
 <translation id="470644585772471629">قلب الألوان</translation>
@@ -826,6 +830,7 @@
 <translation id="5308380583665731573">اتصال</translation>
 <translation id="5313326810920013265">إعدادات البلوتوث</translation>
 <translation id="5314219114274263156">تم الحصول على تسجيل الشاشة</translation>
+<translation id="5316716239522500219">نسخ الشاشات</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5319712128756744240">إقران جهاز جديد</translation>
 <translation id="5322611492012084517">يتعذَّر العثور على هاتفك</translation>
@@ -973,6 +978,7 @@
 <translation id="6045629311476491587">عدد التطبيقات التي تستخدم عناصر التحكم هذه: <ph name="APP_COUNT" /></translation>
 <translation id="6045998054441862242">تفعيل وضع التباين العالي</translation>
 <translation id="6047696787498798094">سيتم إيقاف مشاركة الشاشة عند التبديل إلى مستخدم آخر. هل تريد المتابعة؟</translation>
+<translation id="6052614013050385269">النقر بالزر الأيمن على رابط</translation>
 <translation id="6054305421211936131">تسجيل الدخول باستخدام البطاقة الذكية</translation>
 <translation id="6059276912018042191">‏علامات تبويب Chrome الأخيرة</translation>
 <translation id="6062360702481658777">سيتم تسجيل خروجك تلقائيًا في غضون <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1003,6 +1009,7 @@
 <translation id="6210042900243040400">ربط <ph name="NAME" /> الذي تم حفظه في السابق على الحساب <ph name="EMAIL" /></translation>
 <translation id="6220928844947387476">يمكنك الآن تسجيل فيديو لنفسك ولشاشتك في الوقت نفسه.</translation>
 <translation id="622484624075952240">Down</translation>
+<translation id="6228457605945141550">تقليل السطوع</translation>
 <translation id="623116199192908855">‏بث محتوى الشاشة من جهاز Chromebook</translation>
 <translation id="6231419273573514727">قد يصبح أداء الأجهزة الملحقة محدودًا</translation>
 <translation id="6232891689835436217">يستخدم "<ph name="APP_NAME" />" الكاميرا والميكروفون حاليًا.</translation>
@@ -1168,6 +1175,7 @@
 <translation id="7067196344162293536">التدوير التلقائي</translation>
 <translation id="7068360136237591149">فتح الملفات</translation>
 <translation id="7076293881109082629">تسجيل الدخول</translation>
+<translation id="7076878155205969899">كتم الصوت</translation>
 <translation id="7086931198345821656">‏يتطلَّب إتمام التحديث إجراء عملية Powerwash لجهاز <ph name="DEVICE_TYPE" />. سيتم حذف جميع البيانات. تعرّف على المزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
 <translation id="7098053464892629930">‏يمكنك تنزيل التطبيق لـ <ph name="NAME" /> من Google Play للاطّلاع على جميع الميزات المتاحة.</translation>

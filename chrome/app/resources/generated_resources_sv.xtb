@@ -3731,6 +3731,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4274667386947315930">Inloggningsuppgifter</translation>
 <translation id="4274673989874969668">När du har lämnat en webbplats kan den fortsätta med synkroniseringen i syfte att slutföra uppgifter som att ladda upp foton eller skicka ett chattmeddelande</translation>
 <translation id="4275291496240508082">Startljud</translation>
+<translation id="4275397969489577657">Aktivera loggning av händelseflöden</translation>
 <translation id="4275830172053184480">Starta om enheten</translation>
 <translation id="4277434192562187284">XML-konfigurationens källa</translation>
 <translation id="4278390842282768270">Tillåts</translation>
@@ -4542,6 +4543,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5018207570537526145">Öppna webbplatsen för tillägget</translation>
 <translation id="5018526990965779848">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot.</translation>
 <translation id="5020008942039547742">Välj ett annat fönster</translation>
+<translation id="5020651427400641814">Aktivera loggning av tal</translation>
 <translation id="5021750053540820849">Har inte uppdaterats ännu</translation>
 <translation id="5024511550058813796">Historiken visas på alla synkroniserade enheter, så att du kan fortsätta där du slutade</translation>
 <translation id="5026492829171796515">Logga in för att lägga till ett Google-konto</translation>
@@ -4974,6 +4976,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5432145523462851548">Visa <ph name="FILE_NAME" /> i mappen</translation>
 <translation id="543338862236136125">Redigera lösenord</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-kryptering</translation>
+<translation id="5435274640623994081">Aktivera loggning av ljudikoner</translation>
 <translation id="5435779377906857208">Tillåt alltid att <ph name="HOST" /> har åtkomst till din plats</translation>
 <translation id="5436492226391861498">Väntar på proxytunnel...</translation>
 <translation id="5436510242972373446">Sök <ph name="SITE_NAME" />:</translation>
@@ -5321,7 +5324,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5751345516399502412">Kontrollera beredskap för internetdelning</translation>
 <translation id="5755022574660047665">minnen från Google Foto</translation>
 <translation id="5756163054456765343">Hjälpc&amp;enter</translation>
-<translation id="5757375109985023827">Välj en flik för att förhandsgranska</translation>
 <translation id="5758631781033351321">Du hittar läslistan här</translation>
 <translation id="5759728514498647443">Dokument som du skickar till utskrift via <ph name="APP_NAME" /> kan läsas av <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Ange uppgifter för Google-kontot</translation>
@@ -8535,6 +8537,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8654151524613148204">Filen är för stor för att din dator ska kunna hantera den.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Inloggningen misslyckades eftersom ditt lösenord inte kunde verifieras. Kontakta administratören eller försök igen.</translation>
+<translation id="8656888282555543604">Aktivera loggning av punktskrift</translation>
 <translation id="8657393004602556571">Vill du inte skicka feedback?</translation>
 <translation id="8661290697478713397">Öppna länk i inko&amp;gnitofönster</translation>
 <translation id="8662671328352114214">Anslut till <ph name="TYPE" />-nätverket</translation>

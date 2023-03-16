@@ -9,6 +9,7 @@
 <translation id="113122355610423240">A Chromium az alapértelmezett böngésző</translation>
 <translation id="1131805035311359397">Ha ellenőrizni szeretné, hogy jelszavai biztonságban vannak-e az adatvédelmi incidensektől és más biztonsági problémáktól, <ph name="BEGIN_LINK" />jelentkezzen be a Chromiumba<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{A rendszergazda automatikusan bezárja a Chromiumot, ha 1 percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is.}other{A rendszergazda automatikusan bezárja a Chromiumot, ha # percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is.}}</translation>
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
 <translation id="1261119230216066228">A Memóriatakarékos mód felgyorsította a Chromiumot</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
@@ -23,6 +24,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="1640672724030957280">Letöltés...</translation>
 <translation id="1708666629004767631">Elérhető a Chromium új, biztonságosabb verziója.</translation>
 <translation id="17264556997921157">Megtekintheti és eltávolíthatja azokat a témaköröket, amelyeket a webhelyek hirdetések megjelenítésére használnak. A Chromium az Önt esetlegesen érdeklő témaköröket a legutóbbi böngészési előzményei alapján határozza meg.</translation>
+<translation id="1733725117201708356">A Chromium hamarosan törli a böngészési adatokat</translation>
 <translation id="1745121272106313518">A Chromium <ph name="REMAINING_TIME" /> múlva újraindul</translation>
 <translation id="1774152462503052664">A Chromium fusson a háttérben</translation>
 <translation id="1779356040007214683">A Chromium biztonságosabbá tétele érdekében kikapcsoltunk néhány bővítményt, amelyek nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származnak, és előfordulhat, hogy az Ön tudta nélkül lettek telepítve.</translation>
@@ -53,6 +55,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="2384373936468275798">A ChromiumOS nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
 <translation id="2396765026452590966">A(z) <ph name="EXTENSION_NAME" /> bővítmény módosította, hogy melyik oldal jelenjen meg a Chromium indításakor.</translation>
 <translation id="2401032172288869980">A Chromiumnak kamera- és mikrofonhasználati engedélyre van szüksége ehhez a webhelyhez</translation>
+<translation id="2478295928299953161">A Chromium hamarosan bezáródik</translation>
 <translation id="2483889755041906834">A Chromiumban</translation>
 <translation id="2485422356828889247">Eltávolítás</translation>
 <translation id="2560420686485554789">A Chromiumnak tárhelyhozzáférésre van szüksége a fájlok letöltéséhez</translation>
@@ -171,6 +174,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="4987820182225656817">A vendégek úgy használhatják a Chromiumot, hogy nem hagynak hátra semmit.</translation>
 <translation id="4994636714258228724">Adja hozzá magát a Chromiumban</translation>
 <translation id="5114678101347489141">A Chromium olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják a személyes adatok kisebb mértékű felhasználása mellett.</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{A rendszergazda automatikusan bezárja a Chromiumot, ha 1 percig nincs használatban.}other{A rendszergazda automatikusan bezárja a Chromiumot, ha # percig nincs használatban.}}</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> már be van jelentkezve ebbe a Chromium-profilba. Ezzel új Chromium-profilt hoz létre a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz.</translation>
 <translation id="5277894862589591112">A módosítások alkalmazásához indítsa újra a Chromiumot</translation>
@@ -214,6 +218,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6119438414301547735">A bővítmény megjeleníthet hozzáférési kérelmeket a Chromium eszköztárán</translation>
 <translation id="6120345080069858279">A Chromium ezt a jelszót Google-fiókjába menti. Nem kell megjegyeznie.</translation>
 <translation id="6129621093834146363">A(z) <ph name="FILE_NAME" /> veszélyes, ezért a Chromium letiltotta.</translation>
+<translation id="6132897690380286411">A Chromium hamarosan bezáródik, és törli az adatokat</translation>
 <translation id="6134968993075716475">A Biztonságos Böngészés ki van kapcsolva. A Chromium a szolgáltatás bekapcsolását javasolja.</translation>
 <translation id="6145820983052037069">Itt válthat a Chromium-profilok között</translation>
 <translation id="6183079672144801177">Ellenőrizze, hogy bejelentkezett-e a Chromiumba <ph name="TARGET_DEVICE_NAME" /> eszközén, majd próbálja meg újraküldeni.</translation>
@@ -233,6 +238,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6327105987658262776">Nincs rendelkezésre álló frissítés.</translation>
 <translation id="6333502561965082103">Egy másik Chromium-művelet is folyamatban van. Próbálkozzon újra később.</translation>
 <translation id="6334986366598267305">Google-fiókjával most még egyszerűbben használhatja a Chromiumot közösen használt számítógépeken.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{A rendszergazda automatikusan törli a böngészési adatokat, ha 1 percig nincs használatban a böngésző. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is. A megnyitott lapok nyitva maradnak.}other{A rendszergazda automatikusan törli a böngészési adatokat, ha # percig nincs használatban a böngésző. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések is. A megnyitott lapok nyitva maradnak.}}</translation>
 <translation id="6373523479360886564">Biztos, hogy el szeretné távolítani a Chromiumot?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja:<ph name="END_BOLD" /> A Chromium meg tudja becsülni az Ön érdeklődési köreit. Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabása érdekében kérhetik a Chromiumtól az Ön érdeklődési köreinek megismerését.</translation>
 <translation id="6403826409255603130">A Chromium olyan böngésző, amely villámgyorsan futtatja a weboldalakat és az alkalmazásokat. Gyors, stabil és könnyen használható. A beépített, adathalászat és kártékony programok elleni védelemmel biztonságosabban böngészhet az interneten.</translation>
@@ -361,6 +367,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8986207147630327271">Munkaprofilt ad hozzá ehhez a böngészőhöz, és csak a munkaprofil felett adja át az irányítást a rendszergazdának.</translation>
 <translation id="9019929317751753759">A Chromium biztonságosabbá tétele érdekében kikapcsoltuk a következő bővítményt, amely nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származik, és előfordulhat, hogy az Ön tudta nélkül lett telepítve.</translation>
 <translation id="9022552996538154597">Bejelentkezés a Chromiumba</translation>
+<translation id="907832235989677238">Jelentkezzen be a Chromiumba. Ha csak egyszer szeretne bejelentkezni az adott fiókba, akkor <ph name="GUEST_LINK_BEGIN" />vendég módban is használhatja az eszközt<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>
 <translation id="9093206154853821181">{0,plural, =1{A Chromium 1 órán belül újraindul}other{A Chromium # órán belül újraindul}}</translation>
 <translation id="9106612006984859720">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8.1 operációs rendszer fut.</translation>

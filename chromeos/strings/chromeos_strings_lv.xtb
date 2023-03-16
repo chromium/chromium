@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
+<translation id="1082009148392559545">Notiek ekrānsaudzētāja lejupielāde</translation>
 <translation id="1094693127011229778">IP adrese nav pieejama</translation>
 <translation id="1113892970288677790">Izvēlieties atlasītos mākslas darbus un attēlus.</translation>
 <translation id="1119447706177454957">Iekšēja kļūda</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Pārvalda <ph name="FIRST_MANAGER" /> un <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nosaukumu serveri</translation>
 <translation id="1731082422893354635">Bluetooth skārienpaliktnis</translation>
+<translation id="1738949837603788263"><ph name="ZONE_NUMBER" />. zona</translation>
 <translation id="1745577949879301685">Nevarēja ielādēt attēlus. Pārbaudiet tīkla savienojumu vai vēlreiz mēģiniet ielādēt attēlus.</translation>
 <translation id="1751249301761991853">Personīgi</translation>
 <translation id="1753496554272155572">Aizvērt fona tapetes priekšskatījumu</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Uzņēmuma palaide</translation>
 <translation id="6379086450106841622">Skārienekrāns</translation>
 <translation id="6381741036071372448">Tastatūras pārbaude</translation>
+<translation id="6382182670717268353">Ekrānsaudzētāja priekšskatījums</translation>
 <translation id="6388847657025262518">Skenera dokumentu padevējā ir iestrēdzis papīrs. Pārbaudiet padevēju un mēģiniet vēlreiz.</translation>
 <translation id="6394634179843537518">Pievienot failu</translation>
 <translation id="6410257289063177456">Attēlu faili</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />. Administratori var attālināti konfigurēt ierīci.</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7180865173735832675">Pielāgot</translation>
+<translation id="7184043045742675738">Lai pielāgotu pogu, nospiediet jebkuru taustiņu. Mainiet izvietojumu, izmantojot peli vai bulttaustiņus.</translation>
 <translation id="7212734716605298123">Aparātprogrammatūras atjauninājumi ārējām ierīcēm</translation>
 <translation id="7216409898977639127">Mobilo sakaru operators</translation>
 <translation id="725133483556299729">Atlasiet e-pasta adresi</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB skārienekrāns</translation>
 <translation id="7595982850646262331">Atlikušais laiks: <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Mainiet izvietojumu, izmantojot peli vai bulttaustiņus.</translation>
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>
 <translation id="763165478673169849">Pēdējās atiestatīšanas laiks</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Pakalpojumu sniedzēja nosaukums</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fona tapete</translation>
+<translation id="8820457400746201697">Pārvietojiet zilo skārienpunktu uz kādu darbību. Atlasiet saistīto taustiņu, ko vēlaties pielāgot.</translation>
 <translation id="8834539327799336565">Ierīces, ar kurām pašlaik izveidots savienojums</translation>
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8855781559874488009">Nevar izveidot savienojumu ar HTTP vietnēm, ja ir iespējots ugunsmūris</translation>

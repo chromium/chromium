@@ -142,6 +142,7 @@
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">「<ph name="FEATURE_NAME" />」並未連線。</translation>
 <translation id="1677582821739292812">有人正在望向您的螢幕</translation>
+<translation id="1679841710523778799">調高亮度</translation>
 <translation id="1683399938733266832">CPU 目前使用情況：<ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 計時器 · <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@
 <translation id="2849936225196189499">重要</translation>
 <translation id="2860184359326882502">最符合的項目</translation>
 <translation id="2865888419503095837">網絡資訊</translation>
+<translation id="2872353916818027657">切換主要顯示器</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878884018241093801">最近沒有任何項目</translation>
 <translation id="2885950158625301909">瞭解詳情</translation>
@@ -472,6 +474,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3455468639467374593">範本，<ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">重設縮放等級</translation>
 <translation id="3465223694362104965">自您上次登入以來，有另一個鍵盤連接到此裝置。請在使用前確定您信任此鍵盤。</translation>
 <translation id="3465356146291925647">由管理員管理</translation>
 <translation id="3477079411857374384">Control + Shift + 空格鍵</translation>
@@ -724,6 +727,7 @@
 <translation id="468293128311738995">手機應用程式</translation>
 <translation id="4690510401873698237">捷徑列喺螢幕個底度</translation>
 <translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
+<translation id="4698850295812410683">顯示觸控筆工具</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
 <translation id="470644585772471629">色彩反轉</translation>
@@ -842,6 +846,7 @@
 <translation id="5308380583665731573">連線</translation>
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄影螢幕畫面</translation>
+<translation id="5316716239522500219">建立顯示器鏡像</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319712128756744240">配對新裝置</translation>
 <translation id="5322611492012084517">找不到手機</translation>
@@ -994,6 +999,7 @@
 <translation id="6045629311476491587">正由 <ph name="APP_COUNT" /> 個應用程式使用</translation>
 <translation id="6045998054441862242">開啟高對比模式</translation>
 <translation id="6047696787498798094">切換到另一個使用者會停止共用畫面，您要繼續嗎？</translation>
+<translation id="6052614013050385269">以滑鼠右鍵按一下連結</translation>
 <translation id="6054305421211936131">使用智能卡登入</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6062360702481658777">您將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
@@ -1026,6 +1032,7 @@
 <translation id="6213808132343683860">擷取部分螢幕截圖或進行部分螢幕錄影</translation>
 <translation id="6220928844947387476">您現在可以錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
+<translation id="6228457605945141550">調低亮度</translation>
 <translation id="623116199192908855">透過 Chromebook 投放畫面</translation>
 <translation id="6231419273573514727">周邊裝置的效能可能受到限制</translation>
 <translation id="6232891689835436217">「<ph name="APP_NAME" />」目前正在使用您的相機和麥克風</translation>
@@ -1195,6 +1202,7 @@
 <translation id="7067196344162293536">自動旋轉</translation>
 <translation id="7068360136237591149">打開檔案</translation>
 <translation id="7076293881109082629">登入中</translation>
+<translation id="7076878155205969899">靜音</translation>
 <translation id="7086931198345821656">此更新要求您為 <ph name="DEVICE_TYPE" /> 執行 Powerwash。所有資料將會被刪除。進一步瞭解最新的 <ph name="SYSTEM_APP_NAME" /> 更新。</translation>
 <translation id="7088960765736518739">按鈕控制</translation>
 <translation id="7098053464892629930">在 Google Play 下載「<ph name="NAME" />」的應用程式，以查看所有可用功能</translation>

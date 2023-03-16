@@ -7552,21 +7552,6 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 
           Si cette règle n'est pas définie, la mise en surbrillance du curseur est désactivée au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="8160572976152509481">Autoriser uniquement les utilisateurs à éteindre l'appareil via le bouton Marche/Arrêt physique</translation>
-<translation id="8161309952608059239">Liste des actions à exécuter lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint.
-
-      Cette règle n'a aucune incidence si la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'est pas configurée.
-
-      Lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint, <ph name="PRODUCT_NAME" /> exécute les actions configurées dans celle-ci.
-
-      La règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'a aucune incidence si elle est vide ou si elle n'est pas configurée.
-
-      Actions acceptées :
-
-      <ph name="CLOSE_BROWSERS_ACTION" /> : ferme toutes les fenêtres de navigateur et les PWA pour ce profil. Non disponible sur Android.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" /> : affiche la fenêtre de sélection des profils. Non disponible sur Android.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> : efface les données de navigation correspondantes. Pour en savoir plus, consultez la règle <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.</translation>
 <translation id="8164144100557223371">Désactiver le point d'entrée de la barre d'outils pour accéder aux fonctionnalités expérimentales du navigateur</translation>
 <translation id="8164687848393015214">Si cette règle est activée, les paquets de réseau de contrôle (<ph name="HEARTBEATS_TERM" />) sont transmis au serveur de gestion pour vérifier l'état de connexion et permettre au serveur de détecter si l'appareil est hors connexion.
 

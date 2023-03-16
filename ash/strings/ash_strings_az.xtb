@@ -142,6 +142,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qaldı</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> qoşulmayıb.</translation>
 <translation id="1677582821739292812">Kimsə ekranınıza baxır</translation>
+<translation id="1679841710523778799">Parlaqlığı artırın</translation>
 <translation id="1683399938733266832">Cari CPU istifadəsi: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taymeri · <ph name="LABEL" /></translation>
@@ -152,6 +153,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1715293566947629045">Profil deaktiv edilir. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="1719094688023114093">Canlı Altyazı aktivdir.</translation>
 <translation id="1720011244392820496">Wi-Fi Sinxronlaşdırmasını aktiv edin</translation>
+<translation id="1720230731642245863">Hotspot deaktivdir</translation>
 <translation id="1731815243805539470">Əvvəlki istifadəçiyə dəyişin</translation>
 <translation id="1733996486177697563">Tünd və açıq tema arasında keçid edin. Masaüstünə toxunub saxlayın, sonra Divar kağızı və üslub seçin.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth cihazlarına görünür.</translation>
@@ -359,6 +361,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2849936225196189499">Kritik</translation>
 <translation id="2860184359326882502">Ən Uyğun Nəticə</translation>
 <translation id="2865888419503095837">Şəbəkə haqqında məlumat</translation>
+<translation id="2872353916818027657">İlkin monitoru dəyişin</translation>
 <translation id="2872961005593481000">Qapadın</translation>
 <translation id="2878884018241093801">Son elementlər yoxdur</translation>
 <translation id="2885950158625301909">Ətraflı məlumat</translation>
@@ -472,6 +475,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dəq</translation>
 <translation id="3445925074670675829">USB-C cihazı</translation>
 <translation id="3455468639467374593">Şablon, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Miqyas səviyyəsini sıfırlayın</translation>
 <translation id="3465223694362104965">Ən son girişdən etibarən bu cihaza başqa klaviatura qoşulub. Klaviatura işlətməzdən öncə təhlükəsizliyinə əmin olun.</translation>
 <translation id="3465356146291925647">Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -576,6 +580,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="394485226368336402">Audio ayarlar</translation>
 <translation id="3945319193631853098">Ayarlamanı bitirmək üçün toxunun</translation>
 <translation id="3945867833895287237">Hotspota qoşulur...</translation>
+<translation id="3950272133184491871">İndi çıxılsın?</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="3962859241508114581">Əvvəlki trek</translation>
 <translation id="3969043077941541451">Deaktiv</translation>
@@ -724,6 +729,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="468293128311738995">Telefonunuzdan tətbiqlər</translation>
 <translation id="4690510401873698237">Rəf aşağıdadır</translation>
 <translation id="4696813013609194136">Cihazı valideyn kodu ilə kiliddən çıxarın</translation>
+<translation id="4698850295812410683">Fırça alətlərinə baxın</translation>
 <translation id="4702647871202761252">Məxfilik ekranı deaktivdir</translation>
 <translation id="4706121060329443414">Endirməyə daha sonra cəhd ediləcək. Danışıq hələlik emal üçün Google'a göndəriləcək.</translation>
 <translation id="470644585772471629">Rəng inversiyası</translation>
@@ -843,6 +849,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5308380583665731573">Qoşun</translation>
 <translation id="5313326810920013265">Bluetooth ayarları</translation>
 <translation id="5314219114274263156">Ekran çəkilişi tamamlanıb</translation>
+<translation id="5316716239522500219">Güzgü monitorlar</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5319712128756744240">Yeni cihaz birləşdirin</translation>
 <translation id="5322611492012084517">Telefonunuzu tapmaq olmur</translation>
@@ -966,6 +973,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofon səssiz edilib.</translation>
+<translation id="5924855612669061715">Hotspot aktivdir</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktivdir.</translation>
 <translation id="5947494881799873997">Geri dönün</translation>
 <translation id="595202126637698455">Fəaliyyət izləməsi aktiv edildi</translation>
@@ -995,6 +1003,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> tətbiq istifadə edir</translation>
 <translation id="6045998054441862242">Yüksək kontrast rejimini aktiv edin</translation>
 <translation id="6047696787498798094">Digər istifadəçiyə keçirdiyiniz zaman ekran paylaşması dayandırılacaq. Davam etmək istəyirsiniz?</translation>
+<translation id="6052614013050385269">Linkə sağ düymə ilə klikləyin</translation>
 <translation id="6054305421211936131">Smart kart ilə daxil olun</translation>
 <translation id="6059276912018042191">Son Chrome tabları</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ərzində avtomatik çıxış edəcəksiniz.</translation>
@@ -1027,6 +1036,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6213808132343683860">Qismən skrinşot və ya ekran yazısı çəkin</translation>
 <translation id="6220928844947387476">İndi özünüzü və ekranınızı eyni vaxtda çəkə bilərsiniz</translation>
 <translation id="622484624075952240">Aşağı</translation>
+<translation id="6228457605945141550">Parlaqlığı azaldın</translation>
 <translation id="623116199192908855">Chromebook'dan ekranınızı yayımlayın</translation>
 <translation id="6231419273573514727">Periferik cihaz performansı məhdud ola bilər</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> hazırda kameranızdan və mikrofonunuzdan istifadə edir</translation>
@@ -1197,6 +1207,7 @@ Yeni quraşdırma</translation>
 <translation id="7067196344162293536">Avtodönüş</translation>
 <translation id="7068360136237591149">Faylları açın</translation>
 <translation id="7076293881109082629">Hesaba giriş</translation>
+<translation id="7076878155205969899">Səsləri səssiz rejimə keçirin</translation>
 <translation id="7086931198345821656">Bu güncəlləmə <ph name="DEVICE_TYPE" /> cihazını yenidən formatlamağı tələb edir. Bütün data silinəcək. Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi ilə bağlı ətraflı məlumat əldə edin.</translation>
 <translation id="7088960765736518739">Açarlı idarəetmə</translation>
 <translation id="7098053464892629930">Bütün əlçatan funksiyalara baxmaq üçün Google Play'də <ph name="NAME" /> üçün tətbiqi endirin</translation>
@@ -1332,6 +1343,7 @@ Yeni quraşdırma</translation>
 <translation id="7848989271541991537">Buraya köçürüldü: Səhifə <ph name="PAGE_NUMBER" />, sıra <ph name="ROW_NUMBER" />, sütun <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">İcmala daxil olmaq üçün üç barmaq ilə yuxarı çəkin</translation>
+<translation id="7862292329216937261">Cihazı qonaq kimi istifadə etmək üçün çıxış etməli, sonra ekranın aşağısında "Qonaq kimi baxın" seçməlisiniz.</translation>
 <translation id="7866482334467279021">aktiv</translation>
 <translation id="7868900307798234037">Barmaq izi ilə kiliddən çıxarma</translation>
 <translation id="7872195908557044066">Administratorunuz eSIM-inizi sıfırlayır. Bir neçə dəqiqə gözləyin.</translation>
@@ -1373,6 +1385,7 @@ Yeni quraşdırma</translation>
 <translation id="8036504271468642248">Əvvəlki cümlə</translation>
 <translation id="8042893070933512245">Əlçatımlılıq ayarları menyusunu açın</translation>
 <translation id="8044457332620420407">Klaviatura arxa işığı sönüb</translation>
+<translation id="8048077032188362328">Administrator Hotspotu deaktiv edib.</translation>
 <translation id="8048123526339889627">Bluetooth ayarları</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> adlı şablon artıq mövcuddur</translation>
 <translation id="8052898407431791827">Mübadilə buferinə kopyalandı</translation>
@@ -1585,6 +1598,7 @@ Yeni quraşdırma</translation>
 <translation id="9098969848082897657">Telefonu səssiz edin</translation>
 <translation id="9100887602489003640">Profil əlavə edilir. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="9105450214093926548">Lacros brauzeri işləyərkən ikinci bir istifadəçinin daxil olması dəstəklənmir. Bunun əvəzinə Lacros'da ikinci bir brauzer profili istifadə edin və ya Lacros'u bağlayıb yenidən cəhd edin.</translation>
+<translation id="9120448753905017833">Mobil data vasitəsilə Hotspotdan istifadə etmək üçün WiFi-ı deaktiv etmişik. Data ödənişləri tutula bilər.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> və ya <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Qorunan məzmunu yazmaq olmur</translation>
 <translation id="9161053988251441839">MƏSLƏHƏTLİ TƏTBİQLƏR</translation>

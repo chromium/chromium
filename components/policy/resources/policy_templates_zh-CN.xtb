@@ -6986,9 +6986,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       请注意，此政策取决于操作系统证书验证堆栈是否允许 SHA-1 签名。如果操作系统更新更改了操作系统处理 SHA-1 证书的方式，则此政策可能不再有效。此外，此政策仅用作临时解决方法，旨在为企业提供更多时间来弃用 SHA-1。系统将于 2019 年 1 月 1 日（或左右）取消此政策。
 
       如果此政策未设置或设置为 false，则 <ph name="PRODUCT_NAME" /> 会遵循公开发布的 SHA-1 停用时间表。</translation>
-<translation id="7574067085781592499">从 M113 开始，会为某些用户默认启用第三方存储分区，但可以通过 Chrome flag 停用该功能。
-          如果此政策设为 <ph name="ALLOW_PARTITIONING_VALUE" /> 或未设置，第三方存储分区可以启用。
-          如果此政策设为 <ph name="BLOCK_PARTITIONING_VALUE" />，则第三方存储空间分区无法启用。</translation>
 <translation id="7577082478271919056">允许自助服务终端 Web 应用再打开一个浏览器窗口</translation>
 <translation id="7578142001795552218">此政策旨在授权快速解答功能访问所选内容并将相关信息发送给服务器，以获得单位换算结果。
 
@@ -7599,21 +7596,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
           如果未设置此政策，则“光标突出显示”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="8160572976152509481">仅允许用户使用实体电源按钮关闭设备</translation>
-<translation id="8161309952608059239">以列表形式指定在达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后要运行的一系列操作。
-
-      如果 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策未设置，此政策将不会产生任何效力。
-
-      达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后，<ph name="PRODUCT_NAME" /> 会运行此政策中配置的操作。
-
-      如果此政策为空或未设置，<ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策将不会产生任何效力。
-
-      支持的操作如下：
-
-      “<ph name="CLOSE_BROWSERS_ACTION" />”：关闭该个人资料的所有浏览器窗口和 PWA。在 Android 设备上不受支持。
-
-      “<ph name="SHOW_PROFILE_PICKER_ACTION" />”：显示“个人资料选择器”窗口。在 Android 设备上不受支持。
-
-      “<ph name="CLEAR_BROWSING_HISTORY_ACTION" />”“<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />”“<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />”“<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />”“<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />”“<ph name="CLEAR_AUTOFILL_ACTION" />”“<ph name="CLEAR_SITE_SETTINGS_ACTION" />”“<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />”：清除相应的浏览数据。有关详情，请参阅 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 政策。</translation>
 <translation id="8164144100557223371">停用浏览器实验性功能工具栏入口点</translation>
 <translation id="8164687848393015214">如果此政策已启用，系统会将监控网络数据包（“<ph name="HEARTBEATS_TERM" />”）发送到管理服务器以监控设备在线状态，使服务器能够判断设备是否已离线。
 

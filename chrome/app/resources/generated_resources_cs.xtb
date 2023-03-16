@@ -3717,6 +3717,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4274667386947315930">Přihlašovací údaje</translation>
 <translation id="4274673989874969668">Po opuštění web může pokračovat v synchronizaci, aby dokončil úkoly, jako je nahrání fotek nebo odeslání chatové zprávy</translation>
 <translation id="4275291496240508082">Zvuk spuštění</translation>
+<translation id="4275397969489577657">Zapnout protokolování streamů událostí</translation>
 <translation id="4275830172053184480">Restartovat zařízení</translation>
 <translation id="4277434192562187284">Zdroj konfigurace ve formátu XML</translation>
 <translation id="4278390842282768270">Povoleno</translation>
@@ -4527,6 +4528,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5018207570537526145">Otevřít web rozšíření</translation>
 <translation id="5018526990965779848">Odesílat údaje o využití a diagnostice. Pomozte se zlepšením prostředí Android tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití zařízení a aplikací. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Pokud je zapnuto dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google.</translation>
 <translation id="5020008942039547742">Vybrat jiné okno</translation>
+<translation id="5020651427400641814">Zapnout protokolování řeči</translation>
 <translation id="5021750053540820849">Zatím neaktualizováno</translation>
 <translation id="5024511550058813796">Ve všech synchronizovaných zařízeních budete mít historii, takže budete moci pokračovat v tom, co jste dělali</translation>
 <translation id="5026492829171796515">Pokud chcete přidat účet Google, přihlaste se</translation>
@@ -4959,6 +4961,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5432145523462851548">Zobrazit <ph name="FILE_NAME" /> ve složce</translation>
 <translation id="543338862236136125">Upravit heslo</translation>
 <translation id="5434065355175441495">Šifrování PKCS #1 RSA</translation>
+<translation id="5435274640623994081">Zapnout protokolování</translation>
 <translation id="5435779377906857208">Webu <ph name="HOST" /> vždy povolit přístup k poloze</translation>
 <translation id="5436492226391861498">Čeká se na tunel proxy...</translation>
 <translation id="5436510242972373446">Vyhledat <ph name="SITE_NAME" />:</translation>
@@ -5304,7 +5307,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5751345516399502412">Zkontrolovat připravenost tetheringu</translation>
 <translation id="5755022574660047665">vzpomínky z Fotek Google</translation>
 <translation id="5756163054456765343">C&amp;entrum nápovědy</translation>
-<translation id="5757375109985023827">Vyberte kartu, jejíž náhled chcete zobrazit</translation>
 <translation id="5758631781033351321">Zde najdete svůj seznam četby</translation>
 <translation id="5759728514498647443">Dokumenty odeslané k tisku prostřednictvím aplikace <ph name="APP_NAME" /> lze číst v aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Zadejte informace o účtu Google</translation>
@@ -8521,6 +8523,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8654151524613148204">Litujeme, soubor je příliš velký na to, aby jej váš počítač dokázal zpracovat.</translation>
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655972064210167941">Přihlášení se nezdařilo, protože nelze ověřit vaše heslo. Kontaktujte administrátora nebo to zkuste znovu.</translation>
+<translation id="8656888282555543604">Zapnout protokolování Braillova písma</translation>
 <translation id="8657393004602556571">Chcete zpětnou vazbu zahodit?</translation>
 <translation id="8661290697478713397">Otevřít odkaz v &amp;anonymním okně</translation>
 <translation id="8662671328352114214">Připojení k síti <ph name="TYPE" /></translation>

@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">wykryto zaporę sieciową</translation>
 <translation id="1075811647922107217">Rozmiar strony</translation>
+<translation id="1082009148392559545">Pobieram wygaszacz ekranu</translation>
 <translation id="1094693127011229778">Adres IP jest niedostępny</translation>
 <translation id="1113892970288677790">Wybierz wyselekcjonowane obrazy i zdjęcia</translation>
 <translation id="1119447706177454957">Błąd wewnętrzny</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Zarządzane przez <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Serwery nazw</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
+<translation id="1738949837603788263">Strefa <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Nie udało się załadować obrazów. Sprawdź połączenie sieciowe lub spróbuj załadować obrazy później.</translation>
 <translation id="1751249301761991853">Osobiste</translation>
 <translation id="1753496554272155572">Ikona zamknięcia podglądu tapety</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Rejestracja w firmie</translation>
 <translation id="6379086450106841622">Ekran dotykowy</translation>
 <translation id="6381741036071372448">Sprawdź klawiaturę</translation>
+<translation id="6382182670717268353">Podgląd wygaszacza ekranu</translation>
 <translation id="6388847657025262518">Podajnik dokumentów w skanerze się zaciął. Sprawdź go i spróbuj ponownie.</translation>
 <translation id="6394634179843537518">Dodaj plik</translation>
 <translation id="6410257289063177456">Pliki graficzne</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7180865173735832675">Dostosuj</translation>
+<translation id="7184043045742675738">Aby dostosować przycisk, kliknij dowolny klawisz. Zmień położenie klawisza przy użyciu myszy lub klawiszy strzałek.</translation>
 <translation id="7212734716605298123">Aktualizacje oprogramowania urządzeń zewnętrznych</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
 <translation id="725133483556299729">Wybierz adres e-mail</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekran dotykowy USB</translation>
 <translation id="7595982850646262331">Pozostało: <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Zmień położenie przy użyciu myszy lub klawiszy strzałek.</translation>
 <translation id="7620771111601174153">Dowiedz się więcej w Centrum pomocy</translation>
 <translation id="763165478673169849">Czas ostatniego resetu</translation>
 <translation id="7648838807254605802">duże opóźnienie HTTPS</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Nazwa dostawcy</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>
+<translation id="8820457400746201697">Przenieś niebieski punkt kontaktu do działania. Aby dostosować, wybierz powiązany klawisz.</translation>
 <translation id="8834539327799336565">Obecnie połączone</translation>
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
 <translation id="8855781559874488009">Nie udało się połączyć z witrynami HTTP przez zaporę sieciową</translation>

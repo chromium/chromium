@@ -3714,6 +3714,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4274667386947315930">Oturum açma verileri</translation>
 <translation id="4274673989874969668">Siz bir siteden çıktıktan sonra o site, fotoğrafları yükleme veya sohbet mesajı gönderme gibi görevleri tamamlamak için senkronizasyona devam edebilir</translation>
 <translation id="4275291496240508082">Başlangıç sesi</translation>
+<translation id="4275397969489577657">Etkinlik akış günlük kaydını etkinleştir</translation>
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4277434192562187284">XML yapılandırma kaynağı</translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
@@ -4524,6 +4525,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5018207570537526145">Uzantı web sitesini aç</translation>
 <translation id="5018526990965779848">Kullanım ve teşhis verilerini gönder. Teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a göndererek Android deneyiminizin iyileştirilmesine yardımcı olun. Bu veriler, sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Ek Web ve Uygulama Etkinliği açıksa bu veriler Google Hesabınıza kaydedilebilir.</translation>
 <translation id="5020008942039547742">Farklı bir pencere seç</translation>
+<translation id="5020651427400641814">Konuşma kaydını etkinleştir</translation>
 <translation id="5021750053540820849">Henüz güncellenmedi</translation>
 <translation id="5024511550058813796">Geçmiş bilgilerinizi senkronize edilmiş tüm cihazlarınızda bulabilirsiniz. Bu şekilde, son bıraktığınız yerden devam edebilirsiniz</translation>
 <translation id="5026492829171796515">Google hesabı eklemek için oturum açın</translation>
@@ -4956,6 +4958,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5432145523462851548"><ph name="FILE_NAME" /> dosyasını klasörde göster</translation>
 <translation id="543338862236136125">Şifreyi düzenle</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Şifrelemesi</translation>
+<translation id="5435274640623994081">Ses sinyali günlük kaydını etkinleştir</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> sitesinin konumuma erişmesine her zaman izin ver</translation>
 <translation id="5436492226391861498">Proxy tüneli bekleniyor...</translation>
 <translation id="5436510242972373446">Ara <ph name="SITE_NAME" />:</translation>
@@ -5304,7 +5307,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5751345516399502412">Tethering Hazırlık Durumunu Kontrol Et</translation>
 <translation id="5755022574660047665">Google Fotoğraflar'dan anılar</translation>
 <translation id="5756163054456765343">Y&amp;ardım merkezi</translation>
-<translation id="5757375109985023827">Önizlemek için bir sekme seçin</translation>
 <translation id="5758631781033351321">Okuma listenizi burada bulabilirsiniz</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> aracılığıyla yazdırılmaları için gönderdiğiniz dokümanlar <ph name="APP_NAME" /> tarafından okunabilir.</translation>
 <translation id="5762787084360227629">Google Hesabı bilgilerini gir</translation>
@@ -8518,6 +8520,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8654151524613148204">Maalesef dosya bilgisayarınız için çok büyük.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Şifreniz doğrulanamadığı için oturum açma işlemi başarısız oldu. Lütfen yöneticinizle iletişime geçin veya tekrar deneyin.</translation>
+<translation id="8656888282555543604">Braille günlük kaydını etkinleştir</translation>
 <translation id="8657393004602556571">Geri bildirimi silmek istediğinizden emin misiniz?</translation>
 <translation id="8661290697478713397">Bağlantıyı Giz&amp;li Pencere'de Aç</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> ağına katılın</translation>

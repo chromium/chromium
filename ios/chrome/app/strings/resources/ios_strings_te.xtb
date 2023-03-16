@@ -519,6 +519,7 @@
 <translation id="4737560986434232178">ఇటీవల ఉపయోగించిన ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4747097190499141774">Google Payకి సంబంధించిన పేమెంట్ ఆప్షన్‌లు మరియు అడ్రస్‌లు రహస్య పదబంధం ఎన్‌క్రిప్షన్‌లో ఉండవు. మీ రహస్య పదబంధాన్ని కలిగి ఉన్నవారు మాత్రమే మీ ఎన్‌క్రిప్ట్ చేసిన డేటాను చదవగలరు. రహస్య పదబంధం Google ద్వారా ఎవరికీ పంపబడదు లేదా నిల్వ చేయబడదు. మీరు మీ రహస్య పదబంధాన్ని మర్చిపోతే లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకుంటే, సింక్‌ను రీసెట్ చేయాల్సి ఉంటుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, ఈ పరికరంలో మాత్రమే, <ph name="URL" /></translation>
 <translation id="4751645464639803239">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="4766112107778026136">Discover &amp; ఫాలో అవుతున్నవి</translation>
 <translation id="4775879719735953715">డిఫాల్ట్ బ్రౌజర్</translation>
@@ -943,6 +944,7 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" />‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="7603852183842204213">పాప్-అప్‌లు బ్లాక్ చేయబడ్డాయి (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">పాస్‌వర్డ్‌ను తొలగించండి</translation>
+<translation id="7611459119367035420">మీరు మీ పిన్ చేసిన ట్యాబ్‌లను ఇక్కడ కనుగొనవచ్చు.</translation>
 <translation id="7638584964844754484">రహస్య పదబంధం చెల్లదు</translation>
 <translation id="7646263789464975852">మెనూ → సెట్టింగ్‌లు → భద్రతా తనిఖీ</translation>
 <translation id="7646772052135772216">పాస్‌వర్డ్ సింక్ పనిచేయడం లేదు</translation>
@@ -955,6 +957,7 @@
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7720410380936703141">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7726702057919861819">మెనూ → హిస్టరీ → బ్రౌజింగ్ డేటాను క్లియర్ చేయండి</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ఈ పరికరంలో మాత్రమే ఉంది.</translation>
 <translation id="7738120385185846461">ఒక సమస్యను రిపోర్ట్ చేయండి…</translation>
 <translation id="7741325291586284254">కొత్త అజ్ఞాత ట్యాబ్ పేజీ</translation>
 <translation id="7744394900930577716">ఇతర యాప్‌లలోని పాస్‌వర్డ్‌లు</translation>

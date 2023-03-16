@@ -141,6 +141,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1677472565718498478">Zimesalia <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> haijaunganishwa.</translation>
 <translation id="1677582821739292812">Kuna mtu anaangalia skrini yako</translation>
+<translation id="1679841710523778799">Ongeza ung'aavu</translation>
 <translation id="1683399938733266832">Matumizi ya sasa ya kiini cha kompyuta (CPU): <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Hama</translation>
 <translation id="1698080062160024910">Kipima muda cha <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2849936225196189499">Muhimu</translation>
 <translation id="2860184359326882502">Inayolingana Zaidi</translation>
 <translation id="2865888419503095837">Maelezo ya mtandao</translation>
+<translation id="2872353916818027657">Papasa kiwambo msingi</translation>
 <translation id="2872961005593481000">Zima</translation>
 <translation id="2878884018241093801">Hakuna vipengee vya hivi karibuni</translation>
 <translation id="2885950158625301909">Pata maelezo zaidi</translation>
@@ -470,6 +472,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3445288400492335833">Dakika <ph name="MINUTES" /></translation>
 <translation id="3445925074670675829">Kifaa cha USB-C</translation>
 <translation id="3455468639467374593">Kiolezo cha, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Badilisha kiwango cha ukuzaji</translation>
 <translation id="3465223694362104965">Kibodi nyingine imeunganishwa kwenye kifaa hiki tangu ulipoingia kwenye akaunti maya ya mwisho. Hakikisha kibodi hii ni salama kabla ya kuitumia.</translation>
 <translation id="3465356146291925647">Unadhibitiwa na Msimamizi wako</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -719,6 +722,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="468293128311738995">Programu zilizo kwenye simu yako</translation>
 <translation id="4690510401873698237">Rafu iko upande wa chini</translation>
 <translation id="4696813013609194136">Fungua kifaa ukitumia msimbo wa mzazi</translation>
+<translation id="4698850295812410683">Onyesha zana za stylus</translation>
 <translation id="4702647871202761252">Skrini ya faragha imezimwa</translation>
 <translation id="4706121060329443414">Itajaribu kupakua baadaye. Kwa sasa, matamshi yatatumwa kwa Google ili yachakatwe.</translation>
 <translation id="470644585772471629">Ugeuzaji rangi</translation>
@@ -838,6 +842,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5308380583665731573">Unganisha</translation>
 <translation id="5313326810920013265">Mipangilio ya Bluetooth</translation>
 <translation id="5314219114274263156">Skrini imerekodiwa</translation>
+<translation id="5316716239522500219">Viwambo vya kioo</translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5319712128756744240">Oanisha kifaa kipya</translation>
 <translation id="5322611492012084517">Imeshindwa kupata simu yako</translation>
@@ -990,6 +995,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6045629311476491587">Imetumiwa na programu <ph name="APP_COUNT" /></translation>
 <translation id="6045998054441862242">Washa hali ya utofautishaji wa juu</translation>
 <translation id="6047696787498798094">Itaacha kushiriki skrini unapobadilisha hadi kwa mtumiaji mwingine. Je, unataka kuendelea?</translation>
+<translation id="6052614013050385269">Bofya kulia kiungo</translation>
 <translation id="6054305421211936131">Ingia katika akaunti ukitumia kadi yako mahiri</translation>
 <translation id="6059276912018042191">Vichupo vya Chrome vilivyofunguliwa hivi majuzi</translation>
 <translation id="6062360702481658777">Utaondolewa kwenye akaunti kiotomatiki baada ya <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1022,6 +1028,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6213808132343683860">Piga picha ya skrini au rekodi sehemu ya skrini</translation>
 <translation id="6220928844947387476">Sasa unaweza kujirekodi wewe mwenyewe na skrini yako kwa wakati mmoja</translation>
 <translation id="622484624075952240">Chini</translation>
+<translation id="6228457605945141550">Punguza mwangaza</translation>
 <translation id="623116199192908855">Tuma skrini yako kutoka kwenye Chromebook yako</translation>
 <translation id="6231419273573514727">Huenda vifaa unavyounganisha kwenye kompyuta yako visifanye kazi kikamilifu</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> inatumia kamera na maikrofoni yako kwa sasa</translation>
@@ -1191,6 +1198,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7067196344162293536">Zungusha kiotomatiki</translation>
 <translation id="7068360136237591149">Fungua faili</translation>
 <translation id="7076293881109082629">Unaingia katika akaunti</translation>
+<translation id="7076878155205969899">Zima sauti</translation>
 <translation id="7086931198345821656">Sasisho hili linahitaji utumie powerwash kwenye <ph name="DEVICE_TYPE" /> yako. Data yote itafutwa. Pata maelezo zaidi kuhusu sasisho jipya zaidi la <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Kufikia Kupitia Swichi</translation>
 <translation id="7098053464892629930">Pakua programu ya <ph name="NAME" /> kwenye Google Play ili uone vipengele vyote vinavyopatikana</translation>

@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Otkriven je zaštitni zid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
+<translation id="1082009148392559545">Čuvar ekrana se preuzima</translation>
 <translation id="1094693127011229778">IP adresa nije dostupna</translation>
 <translation id="1113892970288677790">Odaberite neke od izabranih ilustracija i slika</translation>
 <translation id="1119447706177454957">Interna greška</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Serveri imena</translation>
 <translation id="1731082422893354635">Bluetooth tačped</translation>
+<translation id="1738949837603788263"><ph name="ZONE_NUMBER" />. zona</translation>
 <translation id="1745577949879301685">Učitavanje slika nije uspelo. Proverite mrežnu vezu ili probajte da ponovo učitate sliku.</translation>
 <translation id="1751249301761991853">Lično</translation>
 <translation id="1753496554272155572">Izađite iz pregleda pozadine</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
 <translation id="6379086450106841622">Dodirni ekran</translation>
 <translation id="6381741036071372448">Testirajte tastaturu</translation>
+<translation id="6382182670717268353">Pregled Čuvara ekrana</translation>
 <translation id="6388847657025262518">Mehanizam za uvlačenje dokumenata na skeneru je zaglavljen. Proverite mehanizam i probajte ponovo.</translation>
 <translation id="6394634179843537518">Dodajte fajl</translation>
 <translation id="6410257289063177456">Datoteke slika</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
+<translation id="7184043045742675738">Kliknite na bilo koji taster da biste prilagodili dugme. Promenite položaj tastera pomoću tastera miša ili tastera sa strelicama.</translation>
 <translation id="7212734716605298123">Ažuriranja firmvera za eksterne uređaje</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="725133483556299729">Izaberite imejl</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB dodirni ekran</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Promenite položaj pomoću tastera miša ili tastera sa strelicama.</translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="763165478673169849">Vreme poslednjeg resetovanja</translation>
 <translation id="7648838807254605802">Veliko HTTPS kašnjenje</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Naziv dobavljača</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8818152010000655963">Pozadina</translation>
+<translation id="8820457400746201697">Premestite plavu tačku kontakta u radnju. Izaberite odgovarajući taster da biste ga prilagodili.</translation>
 <translation id="8834539327799336565">Trenutno povezani</translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8855781559874488009">Ne možete da se povežete sa HTTP veb-sajtovima kroz zaštitni zid</translation>

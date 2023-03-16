@@ -684,6 +684,7 @@
 <translation id="259821504105826686">ফটোগ্রাফিক ও ডিজিটাল আর্ট</translation>
 <translation id="2601150049980261779">ভালবাসার সিনেমা</translation>
 <translation id="2604589665489080024">পপ মিউজিক</translation>
+<translation id="2606760465469169465">অটোমেটিক যাচাই</translation>
 <translation id="2610561535971892504">কপি করতে ক্লিক করুন</translation>
 <translation id="2617988307566202237">এক্ষেত্রে নিচে দেওয়া তথ্য Chrome <ph name="BEGIN_EMPHASIS" />সেভ করবে না<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -1901,6 +1902,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />আপনি কীভাবে আপনার ডেটা ম্যানেজ করতে পারেন:<ph name="END_BOLD" /> ৪ সপ্তাহের বেশি পুরনো সাইট Chrome অটোমেটিক মুছে দেয়। আপনি আবার ভিজিট করেছেন এমন সাইট তালিকায় আবার দেখা যেতে পারে। এছাড়াও আপনি একটি সাইটকে আপনার জন্য বিজ্ঞাপনের সাজেশন দেওয়া থেকে ব্লক করতে পারেন এবং Chrome সেটিংসে যেকোনও সময় সাইটের সাজেস্ট করা বিজ্ঞাপনগুলি বন্ধ করতে পারেন।</translation>
 <translation id="5610142619324316209">সংযোগ পরীক্ষা করে দেখুন</translation>
 <translation id="5610807607761827392">আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে কার্ড এবং ঠিকানাগুলি পরিচালনা করতে পারেন।</translation>
+<translation id="5611398002774823980">অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="561165882404867731">Google Translate ব্যবহার করে এই পৃষ্ঠা অনুবাদ করুন</translation>
 <translation id="5612720917913232150"><ph name="URL" /> আপনার কম্পিউটারের লোকেশন ব্যবহার করতে চায়</translation>
 <translation id="561669346091975195">টিভিতে কল্পবিজ্ঞান ও কল্পনা শো</translation>
@@ -3186,6 +3188,7 @@
 <translation id="8806285662264631610">স্নান এবং বডিতে ব্যবহার করার প্রোডাক্ট</translation>
 <translation id="8807160976559152894">প্রতিটি পৃষ্ঠার পর ট্রিম করুন</translation>
 <translation id="8809203544698246977">ব্লক করা বিষয়গুলি এখানে দেখা যাবে</translation>
+<translation id="8811470563853401328">অ্যাকাউন্টে ঠিকানা সেভ করবেন?</translation>
 <translation id="8813277370772331957">আমাকে পরে মনে করানো হোক</translation>
 <translation id="8814707942599948500">এনভেলপ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Chrome সেটিংসে Chrome আপডেট করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
@@ -3279,6 +3282,7 @@
 <translation id="9042617223719777575">অধিক ক্ষমতা সম্পন্ন</translation>
 <translation id="9044359186343685026">টাচ আইডি ব্যবহার করুন</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823"><ph name="POLICY_VALUE" />-এ সেট করার জন্য এই অ্যাকশনের <ph name="POLICY_NAME" /> নীতি প্রয়োজন: <ph name="ACTION_LIST" />।</translation>
 <translation id="9048662076076074925">২৪ x ৩৬ ইঞ্চি</translation>
 <translation id="9049981332609050619">আপনি <ph name="DOMAIN" />-এ পৌছানোর প্রয়াস করছেন, কিন্তু সার্ভার একটি ভুল সার্টিফিকেট উপস্থাপন করেছে|</translation>
 <translation id="9050666287014529139">পাসফ্রেজ</translation>

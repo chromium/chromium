@@ -141,6 +141,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">La funció <ph name="FEATURE_NAME" /> no està connectada.</translation>
 <translation id="1677582821739292812">Algú està mirant la teva pantalla</translation>
+<translation id="1679841710523778799">Augmenta la brillantor</translation>
 <translation id="1683399938733266832">Ús actual de la CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Maj</translation>
 <translation id="1698080062160024910">Temporitzador de: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="2860184359326882502">Millor coincidència</translation>
 <translation id="2865888419503095837">Informació de la xarxa</translation>
+<translation id="2872353916818027657">Canvia el monitor principal</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2878884018241093801">No hi ha cap element recent</translation>
 <translation id="2885950158625301909">Més informació</translation>
@@ -470,6 +472,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
 <translation id="3455468639467374593">Plantilla <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Restableix el nivell de zoom</translation>
 <translation id="3465223694362104965">Des del darrer inici de sessió, s'ha connectat un altre teclat a aquest dispositiu. Abans d'utilitzar-lo, assegura't que hi confiïs.</translation>
 <translation id="3465356146291925647">Gestionada per l'administrador</translation>
 <translation id="3477079411857374384">Control+Maj+espai</translation>
@@ -719,6 +722,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="468293128311738995">Aplicacions del telèfon</translation>
 <translation id="4690510401873698237">El prestatge és a la part inferior</translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
+<translation id="4698850295812410683">Mostra les eines del llapis òptic</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
 <translation id="4706121060329443414">La baixada s'intentarà més tard. Per ara, la parla s'enviarà a Google perquè la processi.</translation>
 <translation id="470644585772471629">Inversió de colors</translation>
@@ -838,6 +842,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5308380583665731573">Connecta</translation>
 <translation id="5313326810920013265">Configuració del Bluetooth</translation>
 <translation id="5314219114274263156">S'ha fet una gravació de pantalla</translation>
+<translation id="5316716239522500219">Projecta els monitors</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319712128756744240">Vincula un dispositiu nou</translation>
 <translation id="5322611492012084517">No es troba el telèfon</translation>
@@ -990,6 +995,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6045629311476491587">Utilitzats per <ph name="APP_COUNT" /> aplicacions</translation>
 <translation id="6045998054441862242">Activa el mode d'alt contrast</translation>
 <translation id="6047696787498798094">La compartició de pantalla s'aturarà quan canviïs d'usuari. Vols continuar?</translation>
+<translation id="6052614013050385269">Fes clic amb el botó secundari del ratolí en un enllaç</translation>
 <translation id="6054305421211936131">Inicia la sessió amb la targeta intel·ligent</translation>
 <translation id="6059276912018042191">Pestanyes de Chrome recents</translation>
 <translation id="6062360702481658777">Es tancarà la sessió automàticament d'aquí a <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1022,6 +1028,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6213808132343683860">Fes una captura o una gravació de pantalla parcials</translation>
 <translation id="6220928844947387476">Ara pots gravar-te a tu i gravar la teva pantalla alhora</translation>
 <translation id="622484624075952240">Avall</translation>
+<translation id="6228457605945141550">Disminueix la brillantor</translation>
 <translation id="623116199192908855">Emet la pantalla des d'un Chromebook</translation>
 <translation id="6231419273573514727">És possible que el rendiment dels perifèrics sigui limitat</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> està utilitzant la càmera i el micròfon</translation>
@@ -1191,6 +1198,7 @@ Instal·lació nova</translation>
 <translation id="7067196344162293536">Rotació automàtica</translation>
 <translation id="7068360136237591149">Obre fitxers</translation>
 <translation id="7076293881109082629">Inicia la sessió</translation>
+<translation id="7076878155205969899">Silencia el so</translation>
 <translation id="7086931198345821656">Aquesta actualització requereix executar la funció Powerwash al dispositiu <ph name="DEVICE_TYPE" />. Se'n suprimiran totes les dades. Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Accés amb interruptors</translation>
 <translation id="7098053464892629930">Baixa l'aplicació <ph name="NAME" /> a Google Play per veure totes les funcions disponibles</translation>

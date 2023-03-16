@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Kengaytirilgan - yig‘ish uchun bosing</translation>
 <translation id="2586657967955657006">Klipbord</translation>
 <translation id="2597457036804169544">Saytlar uchun tungi mavzu tatbiq etilmaydi</translation>
+<translation id="2606760465469169465">Avtomatik tekshiruv</translation>
 <translation id="2621115761605608342">Ko‘rsatilgan saytga JavaScript ishga tushirishga ruxsat berish.</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2677748264148917807">Tark etish</translation>
@@ -223,6 +224,7 @@
 <translation id="5197729504361054390">Tanlangan kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytiga ulashiladi.</translation>
 <translation id="5216942107514965959">Oxirgi tashrif: bugun</translation>
 <translation id="5225463052809312700">Kamerani yoqish</translation>
+<translation id="5229337741799419985">Bu sozlama ishlashida shaxsingiz aniqlanmaydi va brauzeringiz tarixi saytlarga koʻrinmaydi</translation>
 <translation id="5234764350956374838">Yopish</translation>
 <translation id="5264323282659631142">Olib tashlash: <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">To‘liq ekran rejimidan chiqish uchun ekranni tepadan pastga torting va “Orqaga” tugmasini bosing.</translation>
@@ -309,6 +311,7 @@
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6689172468748959065">Profil rasmlari</translation>
 <translation id="6697925417670533197">Faol yuklanmalar</translation>
+<translation id="6701547804986694515">Siz ochadigan sayt Chrome orqali real foydalanuvchi ekaningiz haqidagi axborotni saqlashi mumkin. Keyin ochiladigan boshqa saytlar brauzerdan bu axborotni soʻrashi mumkin.</translation>
 <translation id="6722828510648505498">Shaxsni tasdiqlash xizmatlariga kirish oynalarini bloklash</translation>
 <translation id="6746124502594467657">Pastga tushish</translation>
 <translation id="6749077623962119521">Ruxsatlar tiklansinmi?</translation>
@@ -426,6 +429,7 @@
 <translation id="8751914237388039244">Rasmni tanlang</translation>
 <translation id="8801436777607969138">Muayyan saytda JavaScript kodini bloklash.</translation>
 <translation id="8803526663383843427">Qachon yoqilgan</translation>
+<translation id="8805385115381080995">Saytlar shaxsni tasdiqlashni kamroq soʻraydi va shu sababli brauzerdagi ishdan kamroq chalgʻiysiz</translation>
 <translation id="8816026460808729765">Saytlarga sensorlardan foydalanishni taqiqlash</translation>
 <translation id="8823559166155093873">Cookie fayllarni bloklash</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +453,6 @@
 <translation id="9162462602695099906">Bu sahifa xavfli</translation>
 <translation id="9201023452444595544">Har qanday oflayn axborot tozalab tashlanadi</translation>
 <translation id="930525582205581608">Bu sayt olib tashlansinmi?</translation>
+<translation id="947156494302904893">Siz ochadigan va real odam ekaningiz haqidagi axborotni tekshirishi mumkin saytlar</translation>
 <translation id="967624055006145463">Ishlatilgan joy</translation>
 </translationbundle>

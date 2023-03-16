@@ -141,6 +141,7 @@
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функцията „<ph name="FEATURE_NAME" />“ не е свързана.</translation>
 <translation id="1677582821739292812">Някой гледа в екрана ви</translation>
+<translation id="1679841710523778799">Увеличаване на яркостта</translation>
 <translation id="1683399938733266832">Текущо използване на процесора: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Таймер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">Критично</translation>
 <translation id="2860184359326882502">Най-добро съответствие</translation>
 <translation id="2865888419503095837">Информация за мрежата</translation>
+<translation id="2872353916818027657">Размяна на основния монитор</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="2878884018241093801">Няма скорошни елементи</translation>
 <translation id="2885950158625301909">Научете повече</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">USB-C устройство</translation>
 <translation id="3455468639467374593">Шаблон – <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Повторно задаване на мащаба на страницата</translation>
 <translation id="3465223694362104965">След последното ви влизане в профила на това устройство към него е свързана друга клавиатура. Преди да я използвате, проверете дали й имате доверие.</translation>
 <translation id="3465356146291925647">Управлява се от администратора ви</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -719,6 +722,7 @@
 <translation id="468293128311738995">Приложения от телефона ви</translation>
 <translation id="4690510401873698237">Лавицата е най-долу</translation>
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
+<translation id="4698850295812410683">Показване на инструментите за писане</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
 <translation id="4706121060329443414">По-късно ще се направи опит за изтегляне. Засега говорът ще бъде изпратен до Google за обработка.</translation>
 <translation id="470644585772471629">Инвертиране на цветовете</translation>
@@ -838,6 +842,7 @@
 <translation id="5308380583665731573">Свързване</translation>
 <translation id="5313326810920013265">Настройки за Bluetooth</translation>
 <translation id="5314219114274263156">Направен е запис на екрана</translation>
+<translation id="5316716239522500219">Дублиране на мониторите</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5319712128756744240">Сдвояване на ново устройство</translation>
 <translation id="5322611492012084517">Телефонът ви не е намерен</translation>
@@ -990,6 +995,7 @@
 <translation id="6045629311476491587">Използва се от <ph name="APP_COUNT" /> приложения</translation>
 <translation id="6045998054441862242">Включване на режима на висок контраст</translation>
 <translation id="6047696787498798094">Споделянето на екрана ще спре, когато превключите към друг потребител. Искате ли да продължите?</translation>
+<translation id="6052614013050385269">Кликване с десния бутон на мишката върху връзка</translation>
 <translation id="6054305421211936131">Влизане със смарткарта</translation>
 <translation id="6059276912018042191">Скорошни раздели на Chrome</translation>
 <translation id="6062360702481658777">Ще излезете автоматично след <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1022,6 +1028,7 @@
 <translation id="6213808132343683860">Създаване на частична екранна снимка или записване на част от екрана</translation>
 <translation id="6220928844947387476">Вече можете да записвате себе си и екрана си едновременно</translation>
 <translation id="622484624075952240">Клавиш за надолу</translation>
+<translation id="6228457605945141550">Намаляване на яркостта</translation>
 <translation id="623116199192908855">Предаване на екрана ви от вашия Chromebook</translation>
 <translation id="6231419273573514727">Ефективността на периферните устройства може да е ограничена</translation>
 <translation id="6232891689835436217">Понастоящем <ph name="APP_NAME" /> използва камерата и микрофона ви</translation>
@@ -1181,6 +1188,7 @@
 <translation id="7026338066939101231">Намаляване</translation>
 <translation id="7029814467594812963">Изход от сесията</translation>
 <translation id="7032161822340700104">Разрешени са само 6 шаблона. Премахнете един от текущите, за да запазите нов.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> иска да използва <ph name="DEVICE_NAME" />. Включете физическия превключвател за <ph name="DEVICE_NAME" /> на устройството си.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
 <translation id="7042322267639375032">Свиване на лентата на състоянието</translation>
 <translation id="7045033600005038336">Да се замени ли шаблонът?</translation>
@@ -1191,6 +1199,7 @@
 <translation id="7067196344162293536">Автоматично завъртане</translation>
 <translation id="7068360136237591149">„Open files“ („Отвори файлове“)</translation>
 <translation id="7076293881109082629">Влизате</translation>
+<translation id="7076878155205969899">Спиране на звука</translation>
 <translation id="7086931198345821656">Тази актуализация изисква да извършите Powerwash на устройството си <ph name="DEVICE_TYPE" />. Всички данни ще бъдат изтрити. Научете повече за най-новата актуализация на <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Достъп с превключване</translation>
 <translation id="7098053464892629930">Изтеглете приложението <ph name="NAME" /> от Google Play, за да видите всички налични функции</translation>
@@ -1348,6 +1357,7 @@
 <translation id="793716872548410480">Натиснете <ph name="SHORTCUT_KEY_NAME" /> + V, за да видите буферната памет. В нея се запазват последните 5 неща, които сте копирали.</translation>
 <translation id="7942349550061667556">червено</translation>
 <translation id="7944023924886109030">Преглед на всички събития за днес</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> иска да използва <ph name="DEVICE_NAME" /></translation>
 <translation id="7963992254934562106">От <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Избор на папка...</translation>
 <translation id="797512352675305461">Включване или изключване на лупата на цял екран</translation>

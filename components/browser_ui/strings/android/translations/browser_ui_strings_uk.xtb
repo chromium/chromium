@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Розгорнуто – натисніть, щоб згорнути.</translation>
 <translation id="2586657967955657006">Буфер обміну</translation>
 <translation id="2597457036804169544">Не використовувати темну тему для сайтів</translation>
+<translation id="2606760465469169465">Автоматичне підтвердження</translation>
 <translation id="2621115761605608342">Увімкнути JavaScript на певному сайті.</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2677748264148917807">Вийти</translation>
@@ -223,6 +224,7 @@
 <translation id="5197729504361054390">Веб-сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> отримає доступ до вибраних контактів.</translation>
 <translation id="5216942107514965959">Останнє відвідування: сьогодні</translation>
 <translation id="5225463052809312700">Увімкнути камеру</translation>
+<translation id="5229337741799419985">Це налаштування не передбачає вашу ідентифікацію і дозвіл для сайтів на доступ до історії веб-перегляду</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="5264323282659631142">Видалити запит "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Щоб вийти з повноекранного режиму, проведіть пальцем по екрану згори вниз і торкніться кнопки "Назад".</translation>
@@ -309,6 +311,7 @@
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6689172468748959065">Фотографії профілів</translation>
 <translation id="6697925417670533197">Активні завантаження</translation>
+<translation id="6701547804986694515">Сайт, який ви відвідуєте, може зберігати в Chrome інформацію, яка підтверджує, що ви не бот. Завдяки цьому інші відвідувані вами сайти зможуть перевіряти в Chrome, що ви, імовірно, реальна людина.</translation>
 <translation id="6722828510648505498">Блокувати підказки щодо входу від сервісів ідентифікації</translation>
 <translation id="6746124502594467657">Вниз</translation>
 <translation id="6749077623962119521">Скинути дозволи?</translation>
@@ -426,6 +429,7 @@
 <translation id="8751914237388039244">Виберіть зображення</translation>
 <translation id="8801436777607969138">Блокувати JavaScript на певному сайті.</translation>
 <translation id="8803526663383843427">Коли функцію ввімкнено</translation>
+<translation id="8805385115381080995">Ви зможете переглядати веб-сторінки швидше, оскільки сайт більш імовірно не проситиме вас підтвердити, що ви реальна людина</translation>
 <translation id="8816026460808729765">Заборонити сайтам доступ до датчиків</translation>
 <translation id="8823559166155093873">Блокувати файли cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +453,6 @@
 <translation id="9162462602695099906">Ця сторінка небезпечна</translation>
 <translation id="9201023452444595544">Усі дані, збережені офлайн, буде видалено</translation>
 <translation id="930525582205581608">Забути цей сайт?</translation>
+<translation id="947156494302904893">Відвідувані вами сайти можуть перевіряти, що ви реальна людина, а не бот</translation>
 <translation id="967624055006145463">Збережені дані</translation>
 </translationbundle>

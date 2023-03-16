@@ -3720,6 +3720,7 @@
 <translation id="4274667386947315930">登录数据</translation>
 <translation id="4274673989874969668">当您离开网站后，网站可保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
 <translation id="4275291496240508082">启动音</translation>
+<translation id="4275397969489577657">启用事件流记录功能</translation>
 <translation id="4275830172053184480">重启您的设备</translation>
 <translation id="4277434192562187284">XML 配置来源</translation>
 <translation id="4278390842282768270">允许</translation>
@@ -4528,6 +4529,7 @@
 <translation id="5018207570537526145">打开扩展程序网站</translation>
 <translation id="5018526990965779848">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。</translation>
 <translation id="5020008942039547742">选择一个不同的窗口</translation>
+<translation id="5020651427400641814">启用语音登录功能</translation>
 <translation id="5021750053540820849">尚未更新</translation>
 <translation id="5024511550058813796">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>
 <translation id="5026492829171796515">登录后即可添加 Google 帐号</translation>
@@ -4960,6 +4962,7 @@
 <translation id="5432145523462851548">在文件夹中显示 <ph name="FILE_NAME" /></translation>
 <translation id="543338862236136125">修改密码</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
+<translation id="5435274640623994081">启用耳标记录功能</translation>
 <translation id="5435779377906857208">始终允许 <ph name="HOST" /> 使用您的位置信息</translation>
 <translation id="5436492226391861498">正在等待代理隧道的响应...</translation>
 <translation id="5436510242972373446">用 <ph name="SITE_NAME" /> 搜索：</translation>
@@ -5305,7 +5308,6 @@
 <translation id="5751345516399502412">检查网络共享就绪与否</translation>
 <translation id="5755022574660047665">Google 相册中的回忆集锦</translation>
 <translation id="5756163054456765343">帮助中心(&amp;E)</translation>
-<translation id="5757375109985023827">选择一个标签页即可预览</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
 <translation id="5759728514498647443">您通过“<ph name="APP_NAME" />”发送以进行打印的文档可由“<ph name="APP_NAME" />”读取。</translation>
 <translation id="5762787084360227629">输入 Google 帐号信息</translation>
@@ -8526,6 +8528,7 @@
 <translation id="8654151524613148204">很抱歉，文件过大，计算机无法处理。</translation>
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655972064210167941">由于无法验证您的密码，因此登录失败了。请与管理员联系或重试。</translation>
+<translation id="8656888282555543604">启用盲文记录功能</translation>
 <translation id="8657393004602556571">您想舍弃反馈吗？</translation>
 <translation id="8661290697478713397">在隐身窗口中打开链接(&amp;G)</translation>
 <translation id="8662671328352114214">加入<ph name="TYPE" />网络</translation>

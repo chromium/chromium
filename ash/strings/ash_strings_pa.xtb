@@ -141,6 +141,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> ਬਾਕੀ</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ਕਨੈਕਟ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1677582821739292812">ਕੋਈ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਵੱਲ ਦੇਖ ਰਿਹਾ ਹੈ</translation>
+<translation id="1679841710523778799">ਚਮਕ ਵਧਾਓ</translation>
 <translation id="1683399938733266832">CPU ਦੀ ਮੌਜੂਦਾ ਵਰਤੋਂ: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ਟਾਈਮਰ · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">ਆਲੋਚਨਾਤਮਿਕ</translation>
 <translation id="2860184359326882502">ਬਿਹਤਰੀਨ ਮਿਲਾਨ</translation>
 <translation id="2865888419503095837">ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ</translation>
+<translation id="2872353916818027657">ਪ੍ਰਾਈਮਰੀ ਨਿਰੀਖਕ ਸਵੈਪ ਕਰੋ</translation>
 <translation id="2872961005593481000">ਸ਼ਟ ਡਾਊਨ</translation>
 <translation id="2878884018241093801">ਕੋਈ ਹਾਲੀਆ ਆਈਟਮਾਂ ਨਹੀਂ</translation>
 <translation id="2885950158625301909">ਹੋਰ ਜਾਣੋ</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> ਮਿੰਟ</translation>
 <translation id="3445925074670675829">USB-C ਡੀਵਾਈਸ</translation>
 <translation id="3455468639467374593">ਟੈਮਪਲੇਟ, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">ਜ਼ੂਮ ਪੱਧਰ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="3465223694362104965">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪਿਛਲੀ ਵਾਰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਤੋਂ ਬਾਅਦ ਕੋਈ ਹੋਰ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਇਸਨੂੰ ਵਰਤਣ ਤੋਂ ਪਹਿਲਾਂ ਤੁਸੀਂ ਇਸ ਕੀ-ਬੋਰਡ 'ਤੇ ਭਰੋਸਾ ਕਰਦੇ ਹੋ।</translation>
 <translation id="3465356146291925647">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -719,6 +722,7 @@
 <translation id="468293128311738995">ਤੁਹਾਡੇ ਫ਼ੋਨ ਤੋਂ ਐਪਾਂ</translation>
 <translation id="4690510401873698237">ਹੇਠਲੇ 'ਤੇ ਸ਼ੈਲਫ਼</translation>
 <translation id="4696813013609194136">ਮਾਂ-ਪਿਓ ਦੇ ਕੋਡ ਨਾਲ ਡੀਵਾਈਸ ਅਣਲਾਕ ਕਰੋ</translation>
+<translation id="4698850295812410683">ਸਟਾਈਲਸ ਟੂਲ ਦਿਖਾਓ</translation>
 <translation id="4702647871202761252">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਬੰਦ ਹੈ</translation>
 <translation id="4706121060329443414">ਬਾਅਦ ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾਵੇਗੀ। ਫ਼ਿਲਹਾਲ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਲਈ ਬੋਲੀ Google ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ।</translation>
 <translation id="470644585772471629">ਰੰਗ ਪਲਟਨਾ</translation>
@@ -839,6 +843,7 @@
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5313326810920013265">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5314219114274263156">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕੀਤੀ ਗਈ</translation>
+<translation id="5316716239522500219">ਮਿਰਰ ਮਾਨੀਟਰਸ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5319712128756744240">ਨਵਾਂ ਡੀਵਾਈਸ ਜੋੜਾਬੱਧ ਕਰੋ</translation>
 <translation id="5322611492012084517">ਤੁਹਾਡਾ ਫ਼ੋਨ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
@@ -991,6 +996,7 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ਐਪਾਂ ਵੱਲੋਂ ਇਜਾਜ਼ਤਾਂ ਵਰਤੀਆਂ ਗਈਆਂ</translation>
 <translation id="6045998054441862242">ਉੱਚ ਕੰਟ੍ਰਾਸਟ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6047696787498798094">ਜਦੋਂ ਤੁਸੀਂ ਦੂਜੇ ਵਰਤੋਂਕਾਰ ਦੇ ਖਾਤੇ 'ਤੇ ਜਾਉਗੇ ਅਤੇ ਬਦਲੀ ਕਰੋਗੇ ਤਾਂ ਸਕ੍ਰੀਨ ਸਾਂਝਾਕਰਨ ਬੰਦ ਹੋ ਜਾਵੇਗਾ। ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="6052614013050385269">ਕਿਸੇ ਲਿੰਕ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6054305421211936131">ਸਮਾਰਟ ਕਾਰਡ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6059276912018042191">ਹਾਲੀਆ Chrome ਟੈਬਾਂ</translation>
 <translation id="6062360702481658777">ਤੁਹਾਨੂੰ <ph name="LOGOUT_TIME_LEFT" /> ਆਟੋਮੈਟਿਕਲੀ ਸਾਈਨ ਆਉਟ ਕੀਤਾ ਜਾਏਗਾ।</translation>
@@ -1023,6 +1029,7 @@
 <translation id="6213808132343683860">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ ਜਾਂ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕਰੋ</translation>
 <translation id="6220928844947387476">ਤੁਸੀਂ ਹੁਣ ਖੁਦ ਨੂੰ ਅਤੇ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਇੱਕੋ ਸਮੇਂ ਰਿਕਾਰਡ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="622484624075952240">ਹੇਠਾਂ</translation>
+<translation id="6228457605945141550">ਚਮਕ ਘਟਾਓ</translation>
 <translation id="623116199192908855">ਆਪਣੀ Chromebook ਤੋਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="6231419273573514727">ਪੈਰੀਫੈਰਲ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ਐਪ ਫ਼ਿਲਹਾਲ ਤੁਹਾਡਾ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਹੀ ਹੈ</translation>
@@ -1192,6 +1199,7 @@
 <translation id="7067196344162293536">ਸਵੈ ਘੁੰਮਾਓ</translation>
 <translation id="7068360136237591149">ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7076293881109082629">ਸਾਈਨ ਇਨ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="7076878155205969899">ਧੁਨੀ ਮਿਊਟ ਕਰੋ</translation>
 <translation id="7086931198345821656">ਇਸ ਅੱਪਡੇਟ ਲਈ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਨਵੀਨਤਮ <ph name="SYSTEM_APP_NAME" /> ਅੱਪਡੇਟ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="7088960765736518739">ਸਵਿੱਚ ਪਹੁੰਚ</translation>
 <translation id="7098053464892629930">ਸਾਰੀਆਂ ਉਪਲਬਧ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੇਖਣ ਲਈ Google Play 'ਤੇ <ph name="NAME" /> ਲਈ ਐਪ ਡਾਊਨਲੋਡ ਕਰੋ</translation>

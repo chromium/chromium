@@ -142,6 +142,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> oor</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is nie gekoppel nie.</translation>
 <translation id="1677582821739292812">Iemand kyk tans na jou skerm</translation>
+<translation id="1679841710523778799">Verhoog helderheid</translation>
 <translation id="1683399938733266832">CPU se huidige gebruik: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Skuifsleutel</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-afteller · <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2849936225196189499">Kritiek</translation>
 <translation id="2860184359326882502">Beste passing</translation>
 <translation id="2865888419503095837">Netwerkinligting</translation>
+<translation id="2872353916818027657">Ruil primêre monitor</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="2878884018241093801">Geen onlangse items nie</translation>
 <translation id="2885950158625301909">Kom meer te wete</translation>
@@ -472,6 +474,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB C-toestel</translation>
 <translation id="3455468639467374593">Templaat, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Stel zoemvlak terug</translation>
 <translation id="3465223694362104965">Nog 'n sleutelbord is aan hierdie toestel gekoppel vandat jy laas aangemeld het. Maak seker jy vertrou hierdie sleutelbord voordat jy dit gebruik.</translation>
 <translation id="3465356146291925647">Deur jou administrateur bestuur</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -725,6 +728,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="468293128311738995">Apps op jou foon</translation>
 <translation id="4690510401873698237">Rak aan onderkant</translation>
 <translation id="4696813013609194136">Ontsluit toestel met ouerkode</translation>
+<translation id="4698850295812410683">Wys stilusnutsgoed</translation>
 <translation id="4702647871202761252">Privaatheidskerm is af</translation>
 <translation id="4706121060329443414">Sal later probeer aflaai. Spraak sal vir eers na Google toe gestuur word vir verwerking.</translation>
 <translation id="470644585772471629">Kleuromkering</translation>
@@ -844,6 +848,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5308380583665731573">Koppel</translation>
 <translation id="5313326810920013265">Bluetooth-instellings</translation>
 <translation id="5314219114274263156">Skermopname is geneem</translation>
+<translation id="5316716239522500219">Weerspieël monitors</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5319712128756744240">Bind nuwe toestel saam</translation>
 <translation id="5322611492012084517">Kan nie jou foon kry nie</translation>
@@ -996,6 +1001,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6045629311476491587">Word deur <ph name="APP_COUNT" /> apps gebruik</translation>
 <translation id="6045998054441862242">Skakel hoëkontrasmodus aan</translation>
 <translation id="6047696787498798094">Skermdeling sal stop wanneer jy na 'n ander gebruiker oorskakel. Wil jy voortgaan?</translation>
+<translation id="6052614013050385269">Regterklik 'n skakel</translation>
 <translation id="6054305421211936131">Meld met slimkaart aan</translation>
 <translation id="6059276912018042191">Onlangse Chrome-oortjies</translation>
 <translation id="6062360702481658777">Jy sal oor <ph name="LOGOUT_TIME_LEFT" /> outomaties afgemeld word.</translation>
@@ -1028,6 +1034,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6213808132343683860">Neem gedeeltelike skermskoot of skermopname</translation>
 <translation id="6220928844947387476">Jy kan jouself en jou skerm nou op dieselfde tyd opneem</translation>
 <translation id="622484624075952240">Af</translation>
+<translation id="6228457605945141550">Verlaag helderheid</translation>
 <translation id="623116199192908855">Saai jou skerm uit van jou Chromebook af</translation>
 <translation id="6231419273573514727">Randtoestelwerkverrigting kan beperk wees</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> gebruik tans jou kamera en mikrofoon</translation>
@@ -1198,6 +1205,7 @@ Nuwe installasie</translation>
 <translation id="7067196344162293536">Outodraai</translation>
 <translation id="7068360136237591149">Maak lêers oop</translation>
 <translation id="7076293881109082629">Meld tans aan</translation>
+<translation id="7076878155205969899">Demp klank</translation>
 <translation id="7086931198345821656">Hierdie opdatering vereis Powerwash van jou <ph name="DEVICE_TYPE" />. Alle data sal uitgevee word. Kom meer te wete oor die jongste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>
 <translation id="7088960765736518739">Skakelaartoegang</translation>
 <translation id="7098053464892629930">Laai die program vir <ph name="NAME" /> op Google Play af om alle beskikbare kenmerke te sien</translation>

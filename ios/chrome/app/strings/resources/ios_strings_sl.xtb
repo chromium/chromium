@@ -519,6 +519,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4737560986434232178">Iskanje po nedavnih zavihkih</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4747097190499141774">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov iz Googla Pay. Vaše šifrirane podatke lahko bere samo oseba z vašim geslom. Geslo ni poslano Googlu in ni shranjeno v Googlu. Če ga pozabite ali želite spremeniti to nastavitev, boste morali sinhronizacijo ponastaviti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Samo v tej napravi, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nov anonimni zavihek</translation>
 <translation id="4766112107778026136">Odkrivanje in spremljanje</translation>
 <translation id="4775879719735953715">Privzeti brskalnik</translation>
@@ -943,6 +944,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7600965453749440009">Nikoli ne prevedi iz jezika: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pojavna okna so blokirana (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Izbriši geslo</translation>
+<translation id="7611459119367035420">Tukaj so prikazani pripeti zavihki.</translation>
 <translation id="7638584964844754484">Napačno geslo</translation>
 <translation id="7646263789464975852">Meni → Nastavitve → Varnostno preverjanje</translation>
 <translation id="7646772052135772216">Sinhronizacija gesel ne deluje</translation>
@@ -955,6 +957,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7720410380936703141">POSKUSI ZNOVA</translation>
 <translation id="7726702057919861819">Meni → Zgodovina → Izbriši podatke brskanja</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo v tej napravi.</translation>
 <translation id="7738120385185846461">Prijava težave …</translation>
 <translation id="7741325291586284254">Stran z novim anonimnim zavihkom</translation>
 <translation id="7744394900930577716">Gesla v drugih aplikacijah</translation>

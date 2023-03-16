@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">इमेज रिज़ॉल्यूशन</translation>
 <translation id="1972984168337863910">फ़ाइल के लिए सुझाव पैनल को बड़ा करें</translation>
 <translation id="1995337122023280937">फ़ाइल की जगह पर जाएं</translation>
-<translation id="1999709132469742660">सभी यूआरएल, फ़ाइल ऐक्सेस कर सकते हैं</translation>
 <translation id="2001796770603320721">डिस्क में प्रबंधित करें</translation>
 <translation id="2009067268969781306">किसी डिस्क को फ़ॉर्मैट करने से उस पर सेव किया गया पूरा डेटा मिट जाएगा. यह कार्रवाई वापस नहीं ली जा सकती.</translation>
 <translation id="2025955442973426285">टिगरिन्या</translation>
@@ -543,7 +542,6 @@
 <translation id="5323213332664049067">लैटिन अमेरिकी</translation>
 <translation id="5330145655348521461">ये फ़ाइलें किसी अलग डेस्कटॉप पर खुली हैं. उसे देखने के लिए <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)  पर जाएं.</translation>
 <translation id="5330512191124428349">जानकारी पाएं</translation>
-<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> को छोड़कर सभी यूआरएल, फ़ाइल ऐक्सेस कर सकते हैं</translation>
 <translation id="5344246330454251646">Bruschetta के साथ फ़ाइलें और फ़ोल्डर शेयर करने की सुविधा मैनेज करें</translation>
 <translation id="535792325654997756">बिल्लियों के साथ व्यक्ति</translation>
 <translation id="5358764674931277">फ़्रेम दर</translation>
@@ -942,6 +940,7 @@
 <translation id="8492972329130824181">होम नेटवर्क उपलब्ध नहीं है. कनेक्ट करने के लिए, मोबाइल डेटा रोमिंग को चालू करना ज़रूरी है.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> आइटम ढूंढे जा रहे हैं...</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> को डिवाइस सेटअप होने के बाद चालू करें. सेटअप आपका एडमिन मैनेज करता है</translation>
+<translation id="8512483403832814140">किसी भी समय</translation>
 <translation id="8521441079177373948">यूके</translation>
 <translation id="853494022971700746">फ़्रेंच (फ़्रांस)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>

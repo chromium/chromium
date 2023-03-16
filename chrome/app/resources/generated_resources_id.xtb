@@ -3731,6 +3731,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4274667386947315930">Data login</translation>
 <translation id="4274673989874969668">Setelah Anda menutupnya, situs dapat terus melakukan sinkronisasi untuk menyelesaikan tugas, seperti mengupload foto atau mengirim pesan chat</translation>
 <translation id="4275291496240508082">Suara saat menyala</translation>
+<translation id="4275397969489577657">Aktifkan pencatatan streaming acara</translation>
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
 <translation id="4277434192562187284">Sumber konfigurasi XML</translation>
 <translation id="4278390842282768270">Diizinkan</translation>
@@ -4542,6 +4543,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5018207570537526145">Buka situs ekstensi</translation>
 <translation id="5018526990965779848">Kirimkan data penggunaan dan diagnostik. Bantu sempurnakan pengalaman penggunaan Android Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan Anda diaktifkan, data ini mungkin akan disimpan ke Akun Google Anda.</translation>
 <translation id="5020008942039547742">Pilih jendela lain</translation>
+<translation id="5020651427400641814">Aktifkan penyimpanan log ucapan</translation>
 <translation id="5021750053540820849">Belum diperbarui</translation>
 <translation id="5024511550058813796">Histori Anda akan tersedia di semua perangkat yang disinkronkan, sehingga Anda dapat melanjutkan kegiatan Anda</translation>
 <translation id="5026492829171796515">Login untuk menambahkan Akun Google</translation>
@@ -4974,6 +4976,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5432145523462851548">Tampilkan <ph name="FILE_NAME" /> dalam folder</translation>
 <translation id="543338862236136125">Edit sandi</translation>
 <translation id="5434065355175441495">PKCS #1 MD Dengan Enkripsi RSA</translation>
+<translation id="5435274640623994081">Aktifkan pencatatan earcon</translation>
 <translation id="5435779377906857208">Selalu izinkan <ph name="HOST" /> untuk mengakses lokasi Anda</translation>
 <translation id="5436492226391861498">Menunggu terowongan proxy...</translation>
 <translation id="5436510242972373446">Telusuri <ph name="SITE_NAME" />:</translation>
@@ -5321,7 +5324,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5751345516399502412">Periksa Kesiapan Tethering</translation>
 <translation id="5755022574660047665">kenangan dari Google Foto</translation>
 <translation id="5756163054456765343">Pusat bantuan</translation>
-<translation id="5757375109985023827">Pilih tab untuk dipratinjau</translation>
 <translation id="5758631781033351321">Daftar bacaan Anda akan ditampilkan di sini</translation>
 <translation id="5759728514498647443">Dokumen yang Anda kirim untuk dicetak melalui <ph name="APP_NAME" /> dapat dibaca oleh <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Masukkan info Akun Google</translation>
@@ -8535,6 +8537,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8654151524613148204">Maaf, file terlalu besar untuk ditangani komputer Anda.</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655972064210167941">Proses masuk gagal karena sandi Anda tidak dapat diverifikasi. Hubungi administrator atau coba lagi.</translation>
+<translation id="8656888282555543604">Aktifkan pencatatan braille</translation>
 <translation id="8657393004602556571">Ingin menghapus masukan?</translation>
 <translation id="8661290697478713397">Buka Tautan di Jendela Penya&amp;maran</translation>
 <translation id="8662671328352114214">Bergabung dengan jaringan <ph name="TYPE" /></translation>

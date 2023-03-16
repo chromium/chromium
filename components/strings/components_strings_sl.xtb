@@ -152,6 +152,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="132301787627749051">Iskanje slike v odložišču</translation>
 <translation id="1323433172918577554">Pokaži več</translation>
 <translation id="132390688737681464">Shranjevanje in izpolnjevanje naslovov</translation>
+<translation id="1329916999021038454">Pošljite poročilo</translation>
 <translation id="1330449323196174374">Prepogibanje v obliki okna z leve</translation>
 <translation id="1333745675627230582">Igranje igre Dino za Chrome</translation>
 <translation id="1333989956347591814">Vaša dejavnost <ph name="BEGIN_EMPHASIS" />je morda še vedno vidna<ph name="END_EMPHASIS" />:
@@ -527,6 +528,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="219906046732893612">Prenova doma</translation>
 <translation id="2202020181578195191">Vnesite veljavno leto poteka veljavnosti</translation>
 <translation id="2202627062836089804">hrbtni strani kartice</translation>
+<translation id="2204482073374652408">Posodabljanje je končano.</translation>
 <translation id="22081806969704220">Pladenj 3</translation>
 <translation id="2210794033760923560">Naloži poročilo</translation>
 <translation id="2212579473415663542">Ta naslov je shranjen v računu Google (<ph name="ACCOUNT" />). Naslov je mogoče uporabljati v Googlovih izdelkih v kateri koli napravi.</translation>
@@ -615,6 +617,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2441854154602066476">Razpoložljiva plačilna sredstva, ki jih je mogoče izpolniti z dotikom. Tipkovnica je skrita.</translation>
 <translation id="2448295565072560657">Zunanje naprave, priključene na to napravo, medtem ko ste prijavljeni.</translation>
 <translation id="2450021089947420533">Poti</translation>
+<translation id="2456755709261364512">Baterija mora imeti več kot <ph name="REQUIRED_BATTERY_PRECENT" /> % energije</translation>
 <translation id="2463739503403862330">Izpolni</translation>
 <translation id="2465655957518002998">Izbira načina dostave</translation>
 <translation id="2465688316154986572">Spenjanje</translation>
@@ -661,6 +664,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Odslej uporabite zaklepanje zaslona za potrditev kartic</translation>
 <translation id="2553853292994445426">Preverite nastavitve za varni DNS. Morda ste konfigurirali varni strežnik DNS, s katerim se ni mogoče povezati.</translation>
+<translation id="255497580849974774">Med posodabljanjem naj bo naprava priključena na polnilnik.</translation>
 <translation id="2556876185419854533">&amp;Razveljavi urejanje</translation>
 <translation id="2557417190997681027">Poslovna potovanja</translation>
 <translation id="2562087035394240049">Vsebine za pomoč, vsebine »naredite sami« in strokovne vsebine</translation>
@@ -892,6 +896,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="320323717674993345">Prekliči plačilo</translation>
 <translation id="3203366800380907218">Iz spleta</translation>
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
+<translation id="3208701679386778924">Pošljite poročilo, da bomo lahko izboljšali nadaljnje posodobitve sistema ChromeOS.</translation>
 <translation id="3209034400446768650">Stran morda zaračunava</translation>
 <translation id="3212581601480735796">Vaša dejavnost v gostitelju <ph name="HOSTNAME" /> je nadzorovana</translation>
 <translation id="3215092763954878852">Ni bilo mogoče uporabiti WebAuthn</translation>
@@ -1117,6 +1122,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3715545959749027023">Ko Chrome opozori na varnostne dogodke, se ustrezni podatki glede dogodkov pošljejo skrbniku. To lahko vključuje URL-je strani, ki jih obiščete v Chromu, imena ali metapodatke datotek, sesutja brskalnika ali zavihkov in uporabniško ime, s katerim se prijavite v spletne aplikacije, napravo in Chrome.</translation>
 <translation id="3715597595485130451">Vzpostavljanje povezave z omrežjem Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />preveriti strežnik proxy, požarni zid in konfiguracijo DNS-ja<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Med posodobitvijo naprave ne boste mogli uporabljati do 10 minut.</translation>
 <translation id="372429172604983730">Aplikacije, ki lahko povzročijo to napako, so med drugim protivirusni program, požarni zid, programska oprema za spletno filtriranje ali strežnik proxy.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti novo Googlovo predstavitev v Predstavitvah</translation>
 <translation id="3733139489341305600">Avtonomna vozila</translation>
@@ -1154,6 +1160,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3807366285948165054">Zamike slike v X</translation>
 <translation id="3807873520724684969">Škodljiva vsebina je bila blokirana.</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
+<translation id="3812398568375898177">To je nujna posodobitev, ki prinaša izboljšanje delovanja aplikacij za Android v sistemu ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 palcev</translation>
 <translation id="3816482573645936981">Vrednost (nadomeščena)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1258,6 +1265,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4110652170750985508">Pregled plačila</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Išči nazaj</translation>
+<translation id="4113354056388982663">Nujna posodobitev učinkovitosti delovanja sistema Android</translation>
 <translation id="4114146879518089587">Na spletno mesto</translation>
 <translation id="4116663294526079822">Vedno dovoli na tem spletnem mestu</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1438,6 +1446,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite prevesti to stran s Prevajalnikom Google</translation>
 <translation id="4514308731478712184">Izklop Poti</translation>
 <translation id="4515275063822566619">Kartice in naslovi so iz Chroma in Google Računa (<ph name="ACCOUNT_EMAIL" />). Upravljate jih lahko v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">Med postopkom posodabljanja je prišlo do prekinitve naprave.</translation>
 <translation id="4520048001084013693">Prenos te datoteke blokira skrbniški pravilnik.</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" />×<ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Kuverta Monarch</translation>
@@ -1527,6 +1536,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4738601419177586157">Predlog za iskanje poizvedbe <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Upravljaj gesla …</translation>
+<translation id="4743275772928623722">Sistem je bil posodobljen, vendar nekaterih aplikacij in datotek ni bilo mogoče obnoviti. Aplikacije bodo samodejno znova prenesene.</translation>
 <translation id="4744514002166662487">Ustvari predstavitev</translation>
 <translation id="4744603770635761495">Pot do izvedljive datoteke</translation>
 <translation id="4749011317274908093">Uporabljate anonimni način</translation>
@@ -2229,6 +2239,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="646793340882508547">Pustolovske igre</translation>
 <translation id="6468485451923838994">Pisave</translation>
 <translation id="647261751007945333">Pravilniki za naprave</translation>
+<translation id="647330291963761005">Nameščanje posodobitev</translation>
 <translation id="6475672344094591109">Spletna mesta, ki jih obiščete, lahko od Chroma zahtevajo podatke zaradi merjenja uspešnosti oglasov. Chrome ščiti vašo zasebnost tako, da omejuje podatke, ki jih lahko spletna mesta medsebojno delijo.</translation>
 <translation id="6476284679642588870">Upravljanje plačilnih sredstev</translation>
 <translation id="6486200200930923183">Dokumentarni filmi</translation>
@@ -2302,6 +2313,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="6688775486821967877">Virtualna kartica trenutno ni na voljo. Poskusite znova pozneje.</translation>
 <translation id="6689249931105087298">Relativno s stiskanjem črnih pik</translation>
 <translation id="6689271823431384964">Chrome ponuja shranjevanje kartic v račun za Google, ker ste prijavljeni. To lahko spremenite v nastavitvah. Ime imetnika računa je iz vašega računa.</translation>
+<translation id="6691397311652656001">Sprostite več kot <ph name="REQUIRED_FREE_DISK_SPACE" /> prostora</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite poiskati napravo v računu Google.</translation>
 <translation id="6696588630955820014">Gumb za deljenje zavihka, pritisnite Enter, če želite ta zavihek deliti z drugimi tako, da delite povezavo, ustvarite kodo QR, ga predvajate oziroma na kak drug način.</translation>
 <translation id="6698381487523150993">Ustvarjeno:</translation>
@@ -2365,6 +2377,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Potrošniški viri</translation>
 <translation id="6865412394715372076">Te kartice trenutno ni mogoče preveriti</translation>
+<translation id="6868573634057275953">Nadaljujte posodabljanje</translation>
 <translation id="6869334554832814367">Osebna posojila</translation>
 <translation id="6873456682041376666">Zgornji pladenj</translation>
 <translation id="6874604403660855544">&amp;Uveljavi dodajanje</translation>
@@ -2521,9 +2534,11 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="722454870747268814">New Incognito Tab</translation>
 <translation id="7233592378249864828">Tiskanje potrditvenega lista</translation>
 <translation id="7234638337680728591">Cene zemeljskega plina in gorivo za vozila</translation>
+<translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % dokončano | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Tega sporočila ne kaži več za to spletno mesto</translation>
 <translation id="7238585580608191973">Prstni odtis SHA-256</translation>
 <translation id="7240120331469437312">Nadomestno ime subjekta potrdila</translation>
+<translation id="7241863998525879494">Kaj lahko pričakujete</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# ujemanje}one{# ujemanje}two{# ujemanji}few{# ujemanja}other{# ujemanj}}</translation>
@@ -2744,6 +2759,7 @@ Dodatne podrobnosti:
 <translation id="7698864304447945242">Želite posodobiti aplikacijo Storitve Google Play za RR?</translation>
 <translation id="7699293099605015246">Članki trenutno niso na voljo</translation>
 <translation id="7701040980221191251">Nič</translation>
+<translation id="7701544340847569275">Posodobitev je končana z napakami</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Nadaljuj na spletno mesto <ph name="SITE" /> (ni varno)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Smučanje in deskanje</translation>
 <translation id="7706689436519265630">Datoteke, ki jih kopirate ali premaknete, so poslane storitvi Google Cloud ali tretjim osebam v analizo. Lahko so na primer pregledane glede tega, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo, pri čemer so morda shranjene na podlagi pravilnikov podjetja.</translation>

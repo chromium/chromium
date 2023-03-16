@@ -141,6 +141,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
 <translation id="1677507110654891115">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas connectée.</translation>
 <translation id="1677582821739292812">Quelqu'un regarde votre écran</translation>
+<translation id="1679841710523778799">Augmenter la luminosité</translation>
 <translation id="1683399938733266832">Utilisation actuelle du processeur : <ph name="CPU_USEAGE" /> %</translation>
 <translation id="169515659049020177">Maj</translation>
 <translation id="1698080062160024910">Minuteur de <ph name="TOTAL_TIME" /> – <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2849936225196189499">Essentielle</translation>
 <translation id="2860184359326882502">Meilleure correspondance</translation>
 <translation id="2865888419503095837">Informations réseau</translation>
+<translation id="2872353916818027657">Changer de moniteur principal</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2878884018241093801">Aucun élément récent</translation>
 <translation id="2885950158625301909">En savoir plus</translation>
@@ -470,6 +472,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB de type C</translation>
 <translation id="3455468639467374593">Modèle, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Réinitialiser le niveau de zoom</translation>
 <translation id="3465223694362104965">Un autre clavier a été connecté à cet appareil depuis votre dernière connexion. Avant d'utiliser ce clavier, assurez-vous qu'il s'agit d'un clavier de confiance.</translation>
 <translation id="3465356146291925647">Géré par votre administrateur</translation>
 <translation id="3477079411857374384">Ctrl+Maj+Espace</translation>
@@ -718,6 +721,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="468293128311738995">Applis de votre téléphone</translation>
 <translation id="4690510401873698237">Étagère en bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
+<translation id="4698850295812410683">Afficher les outils de stylet</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4706121060329443414">Le téléchargement sera relancé ultérieurement. Entre temps, les paroles seront envoyées à Google pour traitement.</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
@@ -837,6 +841,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5308380583665731573">Connexion</translation>
 <translation id="5313326810920013265">Paramètres Bluetooth</translation>
 <translation id="5314219114274263156">Enregistrement d'écran effectué</translation>
+<translation id="5316716239522500219">Mettre en miroir les moniteurs</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319712128756744240">Associer un nouvel appareil</translation>
 <translation id="5322611492012084517">Impossible de trouver votre téléphone</translation>
@@ -989,6 +994,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6045629311476491587">Utilisés par <ph name="APP_COUNT" /> applis</translation>
 <translation id="6045998054441862242">Activer le mode Contraste élevé</translation>
 <translation id="6047696787498798094">Le partage d'écran s'arrête lorsque vous passez à un autre utilisateur. Voulez-vous continuer ?</translation>
+<translation id="6052614013050385269">Faire un clic droit sur un lien</translation>
 <translation id="6054305421211936131">Se connecter avec une carte à puce</translation>
 <translation id="6059276912018042191">Onglets Chrome récents</translation>
 <translation id="6062360702481658777">Vous allez être déconnecté automatiquement dans <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1021,6 +1027,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6213808132343683860">Effectuer une capture d'écran partielle ou enregistrer une partie de l'écran</translation>
 <translation id="6220928844947387476">Vous pouvez maintenant enregistrer votre écran et vous-même en même temps</translation>
 <translation id="622484624075952240">Bas</translation>
+<translation id="6228457605945141550">Réduire la luminosité</translation>
 <translation id="623116199192908855">Caster l'écran de votre Chromebook</translation>
 <translation id="6231419273573514727">Les performances du périphérique risquent d'être limitées</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre caméra et votre micro</translation>
@@ -1190,6 +1197,7 @@ Nouvelle installation</translation>
 <translation id="7067196344162293536">Rotation automatique</translation>
 <translation id="7068360136237591149">Ouvre des fichiers</translation>
 <translation id="7076293881109082629">Connexion</translation>
+<translation id="7076878155205969899">Couper le son</translation>
 <translation id="7086931198345821656">Cette mise à jour requiert un Powerwash de votre <ph name="DEVICE_TYPE" />. Toutes les données seront supprimées. En savoir plus sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098053464892629930">Téléchargez l'appli pour <ph name="NAME" /> sur Google Play pour voir toutes les fonctionnalités disponibles</translation>

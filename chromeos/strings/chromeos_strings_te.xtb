@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ఫైర్‌వాల్ గుర్తించబడింది</translation>
 <translation id="1075811647922107217">పేజీ సైజ్‌</translation>
+<translation id="1082009148392559545">స్క్రీన్ సేవర్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="1094693127011229778">IP అడ్రస్ అందుబాటులో లేదు</translation>
 <translation id="1113892970288677790">నిర్వహిత ఆర్ట్‌వర్క్, ఇమేజ్‌లను ఎంచుకోండి</translation>
 <translation id="1119447706177454957">అంతర్గత ఎర్రర్</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" />, అలాగే <ph name="SECOND_MANAGER" /> ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="1726100011689679555">పేరు సర్వర్‌లు</translation>
 <translation id="1731082422893354635">బ్లూటూత్ టచ్‌ప్యాడ్</translation>
+<translation id="1738949837603788263">జోన్ <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">ఇమేజ్‌లను లోడ్ చేయడం సాధ్యపడలేదు. మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేయండి లేదా ఇమేజ్‌లను మళ్లీ లోడ్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="1751249301761991853">వ్యక్తిగతం</translation>
 <translation id="1753496554272155572">వాల్‌పేపర్ ప్రివ్యూ నుండి నిష్క్రమించండి</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
 <translation id="6379086450106841622">టచ్‌స్క్రీన్</translation>
 <translation id="6381741036071372448">మీ కీబోర్డ్‌ను టెస్ట్ చేయండి</translation>
+<translation id="6382182670717268353">స్క్రీన్ సేవర్ ప్రివ్యూ</translation>
 <translation id="6388847657025262518">స్కానర్ డాక్యుమెంట్ ఫీడర్ ఇరుక్కుపోయింది. ఫీడర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6394634179843537518">ఫైల్‌ను జోడించండి</translation>
 <translation id="6410257289063177456">చిత్రం ఫైళ్లు</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7180865173735832675">అనుకూలంగా మార్చండి</translation>
+<translation id="7184043045742675738">మీ బటన్‌ను అనుకూలంగా మార్చడానికి ఏదైనా కీపై క్లిక్ చేయండి. మౌస్ లేదా బాణం కీలతో కీ స్థానాన్ని మార్చండి.</translation>
 <translation id="7212734716605298123">బాహ్య పరికరాల కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
 <translation id="725133483556299729">ఈమెయిల్‌ను ఎంచుకోండి</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB టచ్‌స్క్రీన్</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> మిగిలి ఉంది</translation>
+<translation id="7613724632293948900">మౌస్ లేదా బాణం కీలతో స్థానాన్ని మార్చండి.</translation>
 <translation id="7620771111601174153">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
 <translation id="763165478673169849">చివరిగా రీసెట్ చేసిన సమయం</translation>
 <translation id="7648838807254605802">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">ప్రదాత పేరు</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">వాల్‌పేపర్</translation>
+<translation id="8820457400746201697">నీలం రంగు టచ్ పాయింట్‌ను యాక్షన్ పాయింట్‌కు తరలించండి. అనుకూలంగా మార్చడానికి అనుబంధిత కీని ఎంచుకోండి.</translation>
 <translation id="8834539327799336565">ప్రస్తుతం కనెక్ట్ చేయబడింది</translation>
 <translation id="8845001906332463065">సహాయం పొందండి</translation>
 <translation id="8855781559874488009">HTTP వెబ్‌సైట్‌లకు ఫైర్‌వాల్ ద్వారా కనెక్ట్ చేయడం సాధ్యపడదు</translation>

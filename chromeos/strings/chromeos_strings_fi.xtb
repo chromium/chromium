@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Palomuuri havaittu</translation>
 <translation id="1075811647922107217">Sivun koko</translation>
+<translation id="1082009148392559545">Ladataan näytönsäästäjää</translation>
 <translation id="1094693127011229778">IP-osoite ei ole käytettävissä</translation>
 <translation id="1113892970288677790">Valitse taideteoksia ja kuvia</translation>
 <translation id="1119447706177454957">Sisäinen virhe</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Ylläpitäjät: <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nimipalvelimet</translation>
 <translation id="1731082422893354635">Bluetooth-kosketuslevy</translation>
+<translation id="1738949837603788263">Alue <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Kuvien lataaminen epäonnistui. Tarkista verkkoyhteytesi tai kokeile kuvien lataamista uudelleen.</translation>
 <translation id="1751249301761991853">Henkilökohtainen</translation>
 <translation id="1753496554272155572">Poistu taustakuvan esikatselusta</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
 <translation id="6379086450106841622">Kosketusnäyttö</translation>
 <translation id="6381741036071372448">Testaa näppäimistöä</translation>
+<translation id="6382182670717268353">Näytönsäästäjän esikatselu</translation>
 <translation id="6388847657025262518">Skannerin syöttölaite on tukossa. Tarkista syöttölaite ja yritä uudelleen.</translation>
 <translation id="6394634179843537518">Lisää tiedosto</translation>
 <translation id="6410257289063177456">Kuvatiedostot </translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
 <translation id="7180611975245234373">Päivitä</translation>
 <translation id="7180865173735832675">Muokkaa</translation>
+<translation id="7184043045742675738">Muokkaa painiketta klikkaamalla mitä tahansa näppäintä. Sijoita näppäin uudelleen hiirellä tai nuolinäppäimillä.</translation>
 <translation id="7212734716605298123">Ulkoisten laitteiden ohjelmapäivitykset</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
 <translation id="725133483556299729">Valitse sähköpostiosoite</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-kosketusnäyttö</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> jäljellä</translation>
+<translation id="7613724632293948900">Sijoita uudelleen hiirellä tai nuolinäppäimillä.</translation>
 <translation id="7620771111601174153">Lue lisää ohjekeskuksesta</translation>
 <translation id="763165478673169849">Edellinen nollausaika</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Palveluntarjoajan nimi</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Taustakuva</translation>
+<translation id="8820457400746201697">Siirrä sininen kosketuspiste toimintoon. Muokkaa sitä valitsemalla siihen liittyvä näppäin.</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8855781559874488009">HTTP-sivustoihin ei voi yhdistää palomuurin läpi</translation>

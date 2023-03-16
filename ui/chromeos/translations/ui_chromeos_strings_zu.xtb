@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Ukulungiswa kwesithombe</translation>
 <translation id="1972984168337863910">Nweba amaphaneli wempendulo yamafayela</translation>
 <translation id="1995337122023280937">Iya endaweni yefayela</translation>
-<translation id="1999709132469742660">Ukufinyelela ifayela ngawo wonke ama-url</translation>
 <translation id="2001796770603320721">Phatha kuDrayivu</translation>
 <translation id="2009067268969781306">Ukufometha idrayivu kuzosula yonke idatha elondolozwe kuyo. Lesi senzo asikwazi ukuhlehliswa.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -542,7 +541,6 @@
 <translation id="5323213332664049067">Isi-Latin American</translation>
 <translation id="5330145655348521461">Lawa mafayela avuleke kudeskithophu ehlukile. Hamba ku-<ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ukuze uyibuke.</translation>
 <translation id="5330512191124428349">Thola ulwazi</translation>
-<translation id="5337538975554986899">Ukufinyelela ifayela ngawo wonke ama-url ngaphandle kwe-<ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Phatha ukwabelana kwe-Bruschetta</translation>
 <translation id="535792325654997756">Umuntu namakati</translation>
 <translation id="5358764674931277">Izinga lozimele</translation>
@@ -941,6 +939,7 @@
 <translation id="8492972329130824181">Inethiwekhi yasekhaya ayitholakali. Ukuzulazula kwedatha yeselula kufanele kunikwe amandla ukuze kuxhume.</translation>
 <translation id="8499098729323186194">Ikhipha izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="8502913769543567768">Inethiwekhi ye-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Yenza kusebenza ngemva kokusetha idivayisi, Iphathwe ngumlawuli wakho</translation>
+<translation id="8512483403832814140">Noma yisiphi isikhathi</translation>
 <translation id="8521441079177373948">I-UK</translation>
 <translation id="853494022971700746">French (France)</translation>
 <translation id="8540608333167683902">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, imininingwane</translation>

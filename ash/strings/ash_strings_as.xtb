@@ -141,6 +141,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> বাকী</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> সংযোগ হৈ থকা নাই।</translation>
 <translation id="1677582821739292812">কোনোবাই আপোনাৰ স্ক্ৰীনখনৰ ফালে চাই আছে</translation>
+<translation id="1679841710523778799">উজ্জ্বলতা বঢ়াওক</translation>
 <translation id="1683399938733266832">CPUৰ বৰ্তমান ব্যৱহাৰ: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />ৰ টাইমাৰ · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">জটিল</translation>
 <translation id="2860184359326882502">আটাইতকৈ ভালদৰে মিলা</translation>
 <translation id="2865888419503095837">নেটৱৰ্কৰ তথ্য</translation>
+<translation id="2872353916818027657">প্ৰাথমিক নিৰীক্ষণ বিনিময় কৰক</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
 <translation id="2878884018241093801">কোনো শেহতীয়া বস্তু নাই</translation>
 <translation id="2885950158625301909">অধিক জানক</translation>
@@ -719,6 +721,7 @@
 <translation id="468293128311738995">আপোনাৰ ফ’ন থকা এপ্</translation>
 <translation id="4690510401873698237">শ্বেল্ফ একেবাৰে তলিত আছে</translation>
 <translation id="4696813013609194136">অভিভাৱকৰ এক্সেছ ক'ডৰ সহায়ত ডিভাইচ আনলক কৰক</translation>
+<translation id="4698850295812410683">ষ্টাইলাছ সঁজুলিবোৰ দেখুৱাওক</translation>
 <translation id="4702647871202761252">গোপনীয়তাৰ স্ক্ৰীনখন অফ আছে</translation>
 <translation id="4706121060329443414">পাছত ডাউনল’ড কৰিবলৈ প্ৰয়াস কৰা হ’ব। এতিয়াৰ বাবে প্ৰক্ৰিয়াকৰণৰ বাবে Googleলৈ কথন পঠিওৱা হ’ব।</translation>
 <translation id="470644585772471629">ৰং বিপৰীতকৰণ</translation>
@@ -838,6 +841,7 @@
 <translation id="5308380583665731573">সংযোগ কৰক</translation>
 <translation id="5313326810920013265">ব্লুটুথ ছেটিংসমূহ</translation>
 <translation id="5314219114274263156">স্ক্ৰীন ৰেকৰ্ডিং লোৱা হ'ল</translation>
+<translation id="5316716239522500219">আইনা মনিটৰ</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5319712128756744240">নতুন ডিভাইচ পেয়াৰ কৰক</translation>
 <translation id="5322611492012084517">আপোনাৰ ফ’নটো বিচাৰি পোৱা নাই</translation>
@@ -990,6 +994,7 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> টা এপে ব্যৱহাৰ কৰিছে</translation>
 <translation id="6045998054441862242">উচ্চ বৈষাদৃশ্যৰ ম’ডটো অন কৰক</translation>
 <translation id="6047696787498798094">আপুনি যদি অন্য ব্যৱহাৰকাৰীলৈ সলনি কৰে তেতিয়া স্ক্ৰীন শ্বেয়াৰ কৰা বন্ধ হ'ব। আপুনি অব্যাহত ৰাখিব খোজেনে?</translation>
+<translation id="6052614013050385269">কোনো লিংকত মাউছৰ সোঁফালৰ বুটামটোৰে ক্লিক কৰক</translation>
 <translation id="6054305421211936131">স্মার্ট কার্ডৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="6059276912018042191">Chromeৰ শেহতীয়া টেব</translation>
 <translation id="6062360702481658777">আপোনাক স্বয়ংক্ৰিয়ভাৱে <ph name="LOGOUT_TIME_LEFT" />ত ছাইন আউট কৰোৱা হ’ব।</translation>
@@ -1022,6 +1027,7 @@
 <translation id="6213808132343683860">আংশিক স্ক্ৰীনশ্বট লওক অথবা স্ক্ৰীন ৰেকৰ্ডিং কৰক</translation>
 <translation id="6220928844947387476">আপুনি এতিয়া একে সময়তে নিজক আৰু আপোনাৰ স্ক্ৰীনখন ৰেকৰ্ড কৰিব পাৰে</translation>
 <translation id="622484624075952240">Down</translation>
+<translation id="6228457605945141550">উজ্জ্বলতা কমাওক</translation>
 <translation id="623116199192908855">আপোনাৰ Chromebookৰ পৰা আপোনাৰ স্ক্ৰীনখন কাষ্ট কৰক</translation>
 <translation id="6231419273573514727">পৰিধীয় আহিলাৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />এ আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
@@ -1191,6 +1197,7 @@
 <translation id="7067196344162293536">স্বয়ং-ঘূৰ্ণন</translation>
 <translation id="7068360136237591149">ফাইলসমূহ খোলক</translation>
 <translation id="7076293881109082629">ছাইন ইন কৰি থকা হৈছে</translation>
+<translation id="7076878155205969899">ধ্বনি মিউট কৰক</translation>
 <translation id="7086931198345821656">এই আপডে’টটোৰ বাবে আপোনাৰ <ph name="DEVICE_TYPE" />টো পাৱাৰৱাশ্ব কৰাৰ আৱশ্যক। আটাইবোৰ ডেটা মচা হ’ব। শেহতীয়া <ph name="SYSTEM_APP_NAME" /> আপডে’ট সম্পৰ্কে অধিক জানক।</translation>
 <translation id="7088960765736518739">ছুইচ্চ এক্সেছ</translation>
 <translation id="7098053464892629930">উপলব্ধ আটাইবোৰ সুবিধা চাবলৈ <ph name="NAME" />ৰ বাবে Google playৰ পৰা এপ্‌টো ডাউনল’ড কৰক</translation>

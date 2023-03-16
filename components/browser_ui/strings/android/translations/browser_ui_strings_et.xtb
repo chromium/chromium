@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Laiendatud – ahendamiseks klõpsake.</translation>
 <translation id="2586657967955657006">Lõikelaud</translation>
 <translation id="2597457036804169544">Saitidele ei rakendata tumedat teemat</translation>
+<translation id="2606760465469169465">Automaatne kinnitamine</translation>
 <translation id="2621115761605608342">Lubage JavaScript konkreetse saidi jaoks.</translation>
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2677748264148917807">Lahku</translation>
@@ -223,6 +224,7 @@
 <translation id="5197729504361054390">Teie valitud kontakte jagatakse saidiga <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Viimati külastati täna</translation>
 <translation id="5225463052809312700">Lülita kaamera sisse</translation>
+<translation id="5229337741799419985">See seade toimib ilma teid tuvastamata ega luba saitidel vaadata teie sirvimisajalugu</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5264323282659631142">Eemalda „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Täisekraanilt väljumiseks lohistage ülaservast alla ja puudutage tagasinuppu.</translation>
@@ -309,6 +311,7 @@
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6689172468748959065">Profiilifotod</translation>
 <translation id="6697925417670533197">Aktiivsed allalaadimised</translation>
+<translation id="6701547804986694515">Külastatav sait saab Chrome’iga salvestada teavet, mis kinnitab, et te pole robot. Kui jätkate sirvimist, saavad saidid Chrome’iga kontrollida ja teie eelmisel külastatud saidil kinnitada, et olete tõenäoliselt päris inimene</translation>
 <translation id="6722828510648505498">Sisselogimisviibad isikut tuvastavatest teenusest blokeeritakse.</translation>
 <translation id="6746124502594467657">Liiguta alla</translation>
 <translation id="6749077623962119521">Kas lähtestada load?</translation>
@@ -426,6 +429,7 @@
 <translation id="8751914237388039244">Kujutise valimine</translation>
 <translation id="8801436777607969138">JavaScripti blokeerimine konkreetsel saidil.</translation>
 <translation id="8803526663383843427">Kui on sisse lülitatud</translation>
+<translation id="8805385115381080995">Sirvimine on kiirem, kuna sait ei palu teil nii tihti kinnitada seda, et olete päris inimene</translation>
 <translation id="8816026460808729765">Blokeeri saitide jaoks juurdepääs anduritele</translation>
 <translation id="8823559166155093873">Blokeeri küpsisefailid</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +453,6 @@
 <translation id="9162462602695099906">See leht on ohtlik</translation>
 <translation id="9201023452444595544">Kõik võrguühenduseta andmed kustutatakse</translation>
 <translation id="930525582205581608">Kas unustada see sait?</translation>
+<translation id="947156494302904893">Külastatavad saidid saavad kinnitada, et olete päris inimene, mitte robot</translation>
 <translation id="967624055006145463">Salvestatud andmete maht</translation>
 </translationbundle>

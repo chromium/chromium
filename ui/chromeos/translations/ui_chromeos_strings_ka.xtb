@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">სურათის გარჩევადობა</translation>
 <translation id="1972984168337863910">ფაილების გამოხმაურების არეების გაფართოება</translation>
 <translation id="1995337122023280937">ფაილის მდებარეობაზე გადასვლა</translation>
-<translation id="1999709132469742660">ფაილებზე წვდომა ყველა URL-ის მიერ</translation>
 <translation id="2001796770603320721">Google Drive-ში მართვა</translation>
 <translation id="2009067268969781306">დისკის დაფორმატება წაშლის მასში შენახულ ყველა მონაცემს. ამ ქმედებას ვერ გააუქმებთ.</translation>
 <translation id="2025955442973426285">ტიგრინია</translation>
@@ -542,7 +541,6 @@
 <translation id="5323213332664049067">ლათინური ამერიკა</translation>
 <translation id="5330145655348521461">ეს ფაილი გახსნილია სხვადასხვა სამუშაო მაგიდაზე. მის სანახავად გადადით <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-ზე.</translation>
 <translation id="5330512191124428349">ინფორმაციის მიღება</translation>
-<translation id="5337538975554986899">ფაილებზე წვდომა ყველა URL-ის მიერ, გარდა შემდეგისა: <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">გაზიარების მართვა Bruschetta-სთვის</translation>
 <translation id="535792325654997756">პიროვნება კატებით</translation>
 <translation id="5358764674931277">კადრების სიხშირე</translation>

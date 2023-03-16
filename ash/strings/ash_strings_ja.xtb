@@ -141,6 +141,7 @@
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
 <translation id="1677582821739292812">他の人があなたの画面を見ています</translation>
+<translation id="1679841710523778799">明るさを上げる</translation>
 <translation id="1683399938733266832">現在の CPU 使用率: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> タイマー · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">重要</translation>
 <translation id="2860184359326882502">ベストマッチ</translation>
 <translation id="2865888419503095837">ネットワーク情報</translation>
+<translation id="2872353916818027657">メイン モニターを入れ替える</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="2878884018241093801">最近使用されたアイテムはありません</translation>
 <translation id="2885950158625301909">詳細</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3455468639467374593">テンプレート、<ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">拡大縮小をリセットする</translation>
 <translation id="3465223694362104965">前回のログイン後に、別のキーボードがこのデバイスに接続されました。このキーボードを使用する前に信頼できるものかどうか確認してください。</translation>
 <translation id="3465356146291925647">管理者によって管理</translation>
 <translation id="3477079411857374384">Control+Shift+Space</translation>
@@ -719,6 +722,7 @@
 <translation id="468293128311738995">スマートフォンのアプリ</translation>
 <translation id="4690510401873698237">シェルフは一番下にあります</translation>
 <translation id="4696813013609194136">保護者のコードでデバイスをロック解除</translation>
+<translation id="4698850295812410683">タッチペン ツールを表示する</translation>
 <translation id="4702647871202761252">プライバシー スクリーンはオフになっています</translation>
 <translation id="4706121060329443414">ダウンロードは後で試行されます。音声は処理のためにひとまず Google に送信されます。</translation>
 <translation id="470644585772471629">色反転</translation>
@@ -838,6 +842,7 @@
 <translation id="5308380583665731573">接続</translation>
 <translation id="5313326810920013265">Bluetooth 設定</translation>
 <translation id="5314219114274263156">画面を録画しました</translation>
+<translation id="5316716239522500219">モニターをミラーリングする</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319712128756744240">新しいデバイスとペア設定</translation>
 <translation id="5322611492012084517">スマートフォンが見つかりません</translation>
@@ -990,6 +995,7 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> 件のアプリで使用</translation>
 <translation id="6045998054441862242">ハイ コントラスト モードを有効にする</translation>
 <translation id="6047696787498798094">別のユーザーに切り替えると画面の共有は解除されます。続行してもよろしいですか？</translation>
+<translation id="6052614013050385269">リンクを右クリックする</translation>
 <translation id="6054305421211936131">スマートカードでログイン</translation>
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>
 <translation id="6062360702481658777">あと <ph name="LOGOUT_TIME_LEFT" />で自動的にログアウトします。</translation>
@@ -1022,6 +1028,7 @@
 <translation id="6213808132343683860">部分的なスクリーンショットを撮影、または画面を録画します</translation>
 <translation id="6220928844947387476">画面と自分を同時に録画できるようになりました</translation>
 <translation id="622484624075952240">下矢印キー</translation>
+<translation id="6228457605945141550">明るさを下げる</translation>
 <translation id="623116199192908855">Chromebook から画面をキャストする</translation>
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> がカメラとマイクを使用しています</translation>
@@ -1191,6 +1198,7 @@
 <translation id="7067196344162293536">自動回転</translation>
 <translation id="7068360136237591149">ファイルを開いて</translation>
 <translation id="7076293881109082629">ログイン中</translation>
+<translation id="7076878155205969899">音声をミュートする</translation>
 <translation id="7086931198345821656">このアップデートを適用するには、<ph name="DEVICE_TYPE" /> を Powerwash　する必要があります。データはすべて削除されます。<ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください。</translation>
 <translation id="7088960765736518739">スイッチ アクセス</translation>
 <translation id="7098053464892629930">Google Play で <ph name="NAME" /> のアプリをダウンロードして、利用可能なすべての機能を確認してください</translation>

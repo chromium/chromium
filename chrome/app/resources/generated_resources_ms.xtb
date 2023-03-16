@@ -2025,6 +2025,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="272741954544380994">Cari Imej dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Jangan ingatkan saya lagi</translation>
 <translation id="2727712005121231835">Saiz Sebenar</translation>
+<translation id="2727744317940422214">Maaf, kesilapan telah berlaku. Sila failkan maklum balas dengan #bruschetta dalam perihalan. Kod ralat ialah <ph name="ERROR" />. Pembersihan gagal dilaksanakan, anda mungkin perlu membuat pembersihan secara manual.</translation>
 <translation id="2729314457178420145">Kosongkan data semakan imbas (<ph name="URL" />) juga, yang mungkin melog anda keluar daripada Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome sedang mencari cara baharu untuk mengurangkan penjejakan dan memastikan anda lebih selamat semasa anda menyemak imbas. Chrome juga <ph name="ESTIMATE_INTERESTS_LINK" /> dan membenarkan anda mengurusnya. Kemudian, laman yang anda lawati boleh menanyakan Chrome tentang minat anda untuk memaparkan iklan kepada anda.</translation>
 <translation id="2730029791981212295">Menyandarkan apl dan fail Linux</translation>
@@ -3745,6 +3746,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4274667386947315930">Data log masuk</translation>
 <translation id="4274673989874969668">Laman boleh terus menjalankan penyegerakan untuk menyelesaikan tugas, seperti memuat naik foto atau menghantar mesej sembang selepas anda meninggalkan laman itu.</translation>
 <translation id="4275291496240508082">Bunyi permulaan</translation>
+<translation id="4275397969489577657">Dayakan pengelogan strim acara</translation>
 <translation id="4275830172053184480">Mulakan semula peranti anda</translation>
 <translation id="4277434192562187284">Sumber konfigurasi XML</translation>
 <translation id="4278390842282768270">Dibenarkan</translation>
@@ -4557,6 +4559,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5018207570537526145">Buka laman web sambungan</translation>
 <translation id="5018526990965779848">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Akaun Google anda.</translation>
 <translation id="5020008942039547742">Pilih tetingkap lain</translation>
+<translation id="5020651427400641814">Dayakan pengelogan pertuturan</translation>
 <translation id="5021750053540820849">Belum dikemas kini</translation>
 <translation id="5024511550058813796">Sejarah anda boleh didapati pada semua peranti tersegerak anda supaya anda boleh meneruskan perkara yang sedang anda lakukan</translation>
 <translation id="5026492829171796515">Log masuk untuk menambah akaun Google</translation>
@@ -4994,6 +4997,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5432145523462851548">Paparkan <ph name="FILE_NAME" /> dalam folder</translation>
 <translation id="543338862236136125">Edit kata laluan</translation>
 <translation id="5434065355175441495">PKCS #1 Penyulitan RSA</translation>
+<translation id="5435274640623994081">Dayakan pengelogan ikon audio</translation>
 <translation id="5435779377906857208">Sentiasa membenarkan <ph name="HOST" /> untuk mengakses lokasi anda</translation>
 <translation id="5436492226391861498">Menunggu terowong proksi...</translation>
 <translation id="5436510242972373446">Cari <ph name="SITE_NAME" />:</translation>
@@ -5342,7 +5346,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5751345516399502412">Semak Kesediaan Penambatan</translation>
 <translation id="5755022574660047665">kenangan daripada Google Photos</translation>
 <translation id="5756163054456765343">P&amp;usat bantuan</translation>
-<translation id="5757375109985023827">Pilih tab untuk melihat pratonton</translation>
 <translation id="5758631781033351321">Anda dapat menemukan senarai bacaan anda di sini</translation>
 <translation id="5759728514498647443">Dokumen yang anda hantar untuk dicetak melalui <ph name="APP_NAME" /> boleh dibaca oleh <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Masukkan maklumat Google Account anda</translation>
@@ -7570,6 +7573,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7758450972308449809">Laraskan sempadan paparan anda</translation>
 <translation id="7760004034676677601">Adakah ini halaman permulaan yang anda jangkakan?</translation>
 <translation id="7762024824096060040">Tidak boleh menggunakan akaun ini</translation>
+<translation id="7762243782113123335">Maaf, kesilapan telah berlaku. Sila failkan maklum balas dengan #bruschetta dalam perihalan. Kod ralat ialah <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> daripada <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Alih</translation>
@@ -8567,6 +8571,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8654151524613148204">Fail terlalu besar untuk dikendalikan oleh komputer. Maaf.</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655972064210167941">Log masuk gagal kerana kata laluan anda tidak dapat disahkan. Sila hubungi pentadbir anda atau cuba lagi.</translation>
+<translation id="8656888282555543604">Dayakan pengelogan braille</translation>
 <translation id="8657393004602556571">Adakah anda ingin membuang maklum balas?</translation>
 <translation id="8661290697478713397">Buka Pautan dalam Tetingkap Inko&amp;gnito</translation>
 <translation id="8662671328352114214">Sertai rangkaian <ph name="TYPE" /></translation>
@@ -8669,6 +8674,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8740247629089392745">Anda boleh menyerahkan Chromebook ini kepada <ph name="SUPERVISED_USER_NAME" />. Persediaan hampir selesai, kemudian tibalah masa untuk meneroka.</translation>
 <translation id="8740672167979365981">Kemaskinian Chrome OS Flex diperlukan</translation>
 <translation id="8741944563400125534">Panduan persediaan Akses Suis</translation>
+<translation id="8742395827132970586">Pemasangan gagal dilaksanakan, membuat pembersihan</translation>
 <translation id="8742998548129056176">Ini merupakan maklumat umum tentang peranti anda dan cara anda menggunakan peranti itu (seperti aras bateri, aktiviti sistem dan apl serta ralat). Data ini akan digunakan untuk menambah baik Android dan sesetengah maklumat teragregat juga dapat membantu apl Google dan rakan kongsi, seperti pembangun Android, memperbaik apl dan produk mereka.</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8745034592125932220">Tidak dibenarkan menyimpan data pada peranti anda</translation>

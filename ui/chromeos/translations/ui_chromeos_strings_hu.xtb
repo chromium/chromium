@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Képfelbontás</translation>
 <translation id="1972984168337863910">A fájlokhoz tartozó visszajelzési párbeszédpanel kibontása</translation>
 <translation id="1995337122023280937">Ugrás a fájl helyéhez</translation>
-<translation id="1999709132469742660">Fájlhozzáférés minden URL számára</translation>
 <translation id="2001796770603320721">Kezelés a Drive-ban</translation>
 <translation id="2009067268969781306">A meghajtó formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
 <translation id="2025955442973426285">tigrinya</translation>
@@ -543,7 +542,6 @@
 <translation id="5323213332664049067">latin-amerikai</translation>
 <translation id="5330145655348521461">Ezek a fájlok meg vannak nyitva egy másik asztalon. A megtekintésükhöz váltson át <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profiljára.</translation>
 <translation id="5330512191124428349">Információk megtekintése</translation>
-<translation id="5337538975554986899">Fájlhozzáférés minden URL számára, kivéve a következőket: <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Bruschetta-megosztás kezelése</translation>
 <translation id="535792325654997756">Ember macskákkal</translation>
 <translation id="5358764674931277">Képkockasebesség</translation>
@@ -942,6 +940,7 @@
 <translation id="8492972329130824181">Az otthoni hálózat nem áll rendelkezésre. A csatlakozáshoz engedélyezni kell a mobiladatokat használó roamingot.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> elem kibontása…</translation>
 <translation id="8502913769543567768">Hálózat száma: <ph name="NETWORK_INDEX" />., összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, hálózat szolgáltatója: <ph name="NETWORK_PROVIDER_NAME" />, Aktiválás eszközbeállítás után, A rendszergazdája kezeli</translation>
+<translation id="8512483403832814140">Bármikor</translation>
 <translation id="8521441079177373948">egyesült királyságbeli</translation>
 <translation id="853494022971700746">francia (Franciaország)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>

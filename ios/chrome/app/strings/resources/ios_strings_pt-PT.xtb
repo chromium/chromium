@@ -541,6 +541,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="48274138579728272">Marcar como lido</translation>
 <translation id="4833686396768033263">Os separadores recentes estão indisponíveis</translation>
 <translation id="4833786495304741580">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
+<translation id="4834499902900503484">Quando tem sessão iniciada no Chrome, as palavras-passe guardadas aparecem na sua Conta Google. Para desativar esta opção, <ph name="BEGIN_LINK" />aceda às definições<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Os seus marcadores, o histórico, as palavras-passe, entre outros, deixam de ser sincronizados com a sua Conta Google.</translation>
 <translation id="4844899002472726590">Veja e edite tópicos nos quais tem interesse</translation>
 <translation id="4848999860252535517">Apagar a palavra-passe de <ph name="WEBSITE" />?</translation>
@@ -684,6 +685,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5899314093904173337">Para partilhar com pessoas nas proximidades, permita que leiam este código QR com a câmara ou uma app de leitura de códigos QR.</translation>
 <translation id="5911030830365207728">Google Tradutor</translation>
 <translation id="5913600720976431809">Opções de tradução da página</translation>
+<translation id="5922999516621365983">Arrastar o separador para aqui para o fixar.</translation>
 <translation id="5938160824633642847">O dispositivo está quase cheio. Liberte espaço e tente novamente.</translation>
 <translation id="5948291296578561264">Isto permite-lhe guardar fotos na sua biblioteca de fotos.</translation>
 <translation id="5951816930277761335">Partilhe o link</translation>
@@ -883,7 +885,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceitar e mudar de contas</translation>
-<translation id="707592680990535433">Pode gerir as suas preferências depois de iniciar sessão no Chrome com a sua Conta Google.</translation>
 <translation id="7080806333218412752">Envia URLs para a Navegação segura para os verificar. Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças. Associa temporariamente estes dados à sua Conta Google quando tiver sessão iniciada, para garantir a sua proteção nas apps Google.</translation>
 <translation id="7095110968493193530">Para o Gestor de Palavras-passe da Google da conta <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Separadores recentes</translation>

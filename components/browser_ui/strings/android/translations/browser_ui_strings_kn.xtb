@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1006017844123154345">ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
-<translation id="1036348656032585052">ಆಫ್ ಮಾಡು</translation>
+<translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1044891598689252897">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತವೆ</translation>
 <translation id="1124090076051167250">ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಲ್ಲಿರುವ ಆ್ಯಪ್‌ಗಳು ಅಥವಾ ಸೈಟ್‌ಗಳ ಮೂಲಕ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ <ph name="DATASIZE" /> ಯಷ್ಟು ಡೇಟಾ ಹಾಗೂ ಕುಕೀಗಳನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
@@ -17,7 +17,7 @@
 <translation id="1343356790768851700">ಈ ಸೈಟ್ ನೀವು ಇಷ್ಟಪಡುವ ವಿಷಯಗಳನ್ನು ನಿರ್ಧರಿಸುತ್ತದೆ ಮತ್ತು ನಂತರ ಇತರ ಸೈಟ್‌ಗಳಿಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ಸೂಚಿಸುತ್ತದೆ</translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> ಸೈಟ್ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="1371239764779356792">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೇಟಾವನ್ನು ಉಳಿಸಲು ಸೈಟ್ ಒಂದಕ್ಕೆ ಅನುಮತಿಸಿ</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">ಹುಡುಕಿ</translation>
 <translation id="1384959399684842514">ಡೌನ್‌ಲೋಡ್ ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1409426117486808224">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಿಗಾಗಿ ಸರಳೀಕೃತ ವೀಕ್ಷಣೆ</translation>
 <translation id="1415402041810619267">URL ಕಿರಿದುಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -93,6 +93,7 @@
 <translation id="257931822824936280">ವಿಸ್ತರಿಸಲಾಗಿದೆ - ಕುಗ್ಗಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="2586657967955657006">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್</translation>
 <translation id="2597457036804169544">ಸೈಟ್‌ಗಳಿಗೆ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಅನ್ವಯಿಸಬೇಡಿ</translation>
+<translation id="2606760465469169465">ಆಟೋ-ಪರಿಶೀಲನೆ</translation>
 <translation id="2621115761605608342">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗೆ JavaScript ಅನ್ನು ಅನುಮತಿಸಿ.</translation>
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
 <translation id="2677748264148917807">ತೊರೆಯಿರಿ</translation>
@@ -141,7 +142,7 @@
 <translation id="3586500876634962664">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೋಫೋನ್ ಬಳಕೆ</translation>
 <translation id="358794129225322306">ಬಹು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಸೈಟ್‌ ಒಂದಕ್ಕೆ ಅನುಮತಿಸುವುದು.</translation>
 <translation id="3594780231884063836">ವೀಡಿಯೊ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
-<translation id="3596414637720633074">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="3596414637720633074">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="3600792891314830896">ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿ ಧ್ವನಿ ಪ್ಲೇ ಆಗುವುದನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="3602290021589620013">ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="3628308229821498208">ಸೂಚಿಸಲಾದ ಹುಡುಕಾಟಗಳು</translation>
@@ -223,6 +224,7 @@
 <translation id="5197729504361054390">ನೀವು ಆಯ್ಕೆ ಮಾಡುವ ಸಂಪರ್ಕಗಳನ್ನು <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="5216942107514965959">ಇಂದು ಕೊನೆಯಾದಾಗಿ ಭೇಟಿ ನೀಡಲಾಗಿದೆ</translation>
 <translation id="5225463052809312700">ಕ್ಯಾಮರಾ ಆನ್ ಮಾಡಿ</translation>
+<translation id="5229337741799419985">ಈ ಸೆಟ್ಟಿಂಗ್ ನಿಮ್ಮನ್ನು ಗುರುತಿಸದೆ ಅಥವಾ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸದೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ</translation>
 <translation id="5234764350956374838">ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="528192093759286357">ಪೂರ್ಣಪರದೆಯನ್ನು ನಿರ್ಗಮಿಸಲು ಮೇಲಿನಿಂದ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ ಹಾಗೂ ಹಿಂದೆ ಬಟನ್ ಸ್ಪರ್ಶಿಸಿ.</translation>
@@ -309,8 +311,9 @@
 <translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6689172468748959065">ಪ್ರೊಫೈಲ್ ಫೋಟೋಗಳು</translation>
 <translation id="6697925417670533197">ಸಕ್ರಿಯ ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
+<translation id="6701547804986694515">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್, ನೀವು ಬಾಟ್ ಅಲ್ಲ ಎಂದು ಮಾನ್ಯಗೊಳಿಸುವ ಮಾಹಿತಿಯನ್ನು Chrome ನಲ್ಲಿ ಉಳಿಸಬಹುದು. ನೀವು ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರುವಾಗ, ಸೈಟ್‌ಗಳು ನೀವು ನಿಜವಾದ ವ್ಯಕ್ತಿ ಇರಬಹುದು ಎಂಬುದಾಗಿ Chrome ನೊಂದಿಗೆ ಮತ್ತು ನೀವು ಭೇಟಿ ನೀಡಿದ ಹಿಂದಿನ ಸೈಟ್‌ನೊಂದಿಗೆ ಪರಿಶೀಲಿಸಬಹುದು</translation>
 <translation id="6722828510648505498">ಗುರುತಿನ ಸೇವೆಗಳ ಸೈನ್ ಇನ್ ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
-<translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸು</translation>
+<translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸಿ</translation>
 <translation id="6749077623962119521">ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6766622839693428701">ಮುಚ್ಚಲು ಕೆಳಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ.</translation>
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> ಗಾಗಿ ಒಂದು ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ</translation>
@@ -426,6 +429,7 @@
 <translation id="8751914237388039244">ಚಿತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8801436777607969138">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗೆ JavaScript ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
 <translation id="8803526663383843427">ಆನ್ ಆಗಿರುವಾಗ</translation>
+<translation id="8805385115381080995">ಬ್ರೌಸಿಂಗ್ ವೇಗವಾಗಿರುತ್ತದೆ ಏಕೆಂದರೆ ನೀವು ನಿಜವಾದ ವ್ಯಕ್ತಿ ಎಂದು ಪರಿಶೀಲಿಸಲು ಸೈಟ್ ನಿಮ್ಮನ್ನು ಕೇಳುವ ಸಾಧ್ಯತೆ ಕಡಿಮೆ ಇರುತ್ತದೆ</translation>
 <translation id="8816026460808729765">ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸದಂತೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="8823559166155093873">ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +453,6 @@
 <translation id="9162462602695099906">ಈ ಪುಟವು ಅಪಾಯಕಾರಿಯಾಗಿದೆ</translation>
 <translation id="9201023452444595544">ಯಾವುದೇ ಆಫ್‌ಲೈನ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="930525582205581608">ಈ ಸೈಟ್ ಅನ್ನು ಮರೆಯಬೇಕೇ?</translation>
+<translation id="947156494302904893">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ಗಳು ನೀವು ನಿಜವಾದ ವ್ಯಕ್ತಿಯೇ ಹೊರತು ಬಾಟ್ ಅಲ್ಲ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಬಹುದು</translation>
 <translation id="967624055006145463">ಸಂಗ್ರಹಣೆ ಮಾಡಿರುವ ಡೇಟಾ</translation>
 </translationbundle>

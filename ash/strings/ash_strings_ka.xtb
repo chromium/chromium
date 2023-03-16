@@ -141,6 +141,7 @@
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> არ არის დაკავშირებული.</translation>
 <translation id="1677582821739292812">ვიღაც უყურებს თქვენს ეკრანს</translation>
+<translation id="1679841710523778799">სიკაშკაშის მომატება</translation>
 <translation id="1683399938733266832">CPU-ს მიმდინარე მოხმარება: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-იანი ტაიმერი · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">კრიტიკული</translation>
 <translation id="2860184359326882502">საუკეთესო დამთხვევა</translation>
 <translation id="2865888419503095837">ქსელის ინფორმაცია</translation>
+<translation id="2872353916818027657">გადაცვალეთ პირველადი მონიტორი</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
 <translation id="2878884018241093801">ბოლოდროინდელი ერთეულები არ არის</translation>
 <translation id="2885950158625301909">შეიტყვეთ მეტი</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> წთ</translation>
 <translation id="3445925074670675829">USB-C მოწყობილობა</translation>
 <translation id="3455468639467374593">შაბლონი, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">მასშტაბის დონის გადაყენება</translation>
 <translation id="3465223694362104965">სისტემაში თქვენი ბოლო შესვლის შემდეგ ამ მოწყობილობასთან დაკავშირდა სხვა კლავიატურა. აღნიშნული კლავიატურის გამოყენებამდე დარწმუნდით, რომ მას ენდობით.</translation>
 <translation id="3465356146291925647">მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="3477079411857374384">Control-Shift-შორისი</translation>
@@ -719,6 +722,7 @@
 <translation id="468293128311738995">აპები თქვენი ტელეფონიდან</translation>
 <translation id="4690510401873698237">თარო მდებარეობს ქვედა ნაწილში</translation>
 <translation id="4696813013609194136">განბლოკეთ მოწყობილობა მშობლის კოდით</translation>
+<translation id="4698850295812410683">სტილუსის ხელსაწყოების ჩვენება</translation>
 <translation id="4702647871202761252">კონფიდენციალურობის ეკრანი გამორთულია</translation>
 <translation id="4706121060329443414">ჩამოტვირთვას მოგვიანებთ შევეცდებით. ამჟამად მეტყველება გაეგზავნება Google-ს დასამუშავებლად.</translation>
 <translation id="470644585772471629">ფერთა ინვერსია</translation>
@@ -838,6 +842,7 @@
 <translation id="5308380583665731573">დაკავშირება</translation>
 <translation id="5313326810920013265">Bluetooth-ის პარამეტრები</translation>
 <translation id="5314219114274263156">ეკრანის ჩანაწერი გაკეთებულია</translation>
+<translation id="5316716239522500219">მონიტორების არეკვლა</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5319712128756744240">ახალი მოწყობილობის დაწყვილება</translation>
 <translation id="5322611492012084517">თქვენი ტელეფონი ვერ მოიძებნა</translation>
@@ -990,6 +995,7 @@
 <translation id="6045629311476491587">იყენებს <ph name="APP_COUNT" /> აპი</translation>
 <translation id="6045998054441862242">მაღალკონტრასტული რეჟიმის ჩართვა</translation>
 <translation id="6047696787498798094">ეკრანის გაზიარება შეწყდება, როდესაც გადართავთ სხვა მომხმარებელზე. გსურთ გააგრძელოთ?</translation>
+<translation id="6052614013050385269">ბმულზე მარჯვენა ღილაკით დაწკაპუნება</translation>
 <translation id="6054305421211936131">სმარტ-ბარათით შესვლა</translation>
 <translation id="6059276912018042191">Chrome-ის ბოლოდროინდელი ჩანართები</translation>
 <translation id="6062360702481658777">თქვენ ავტომატურად გამოხვალთ ამ პერიოდში: <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1022,6 +1028,7 @@
 <translation id="6213808132343683860">ეკრანის ნაწილობრივი ანაბეჭდის გადაღება ან ეკრანის ჩაწერა</translation>
 <translation id="6220928844947387476">ახლა თქვენი თავის და ეკრანის ჩაწერა ერთდროულად შეგიძლიათ</translation>
 <translation id="622484624075952240">ქვემოთ</translation>
+<translation id="6228457605945141550">სიკაშკაშის დაკლება</translation>
 <translation id="623116199192908855">შეასრულეთ ეკრანის ტრანსლირება თქვენი Chromebook-იდან</translation>
 <translation id="6231419273573514727">შესაძლოა, პერიფერიული მოწყობილობების წარმადობა შეზღუდული იყოს</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს კამერას და მიკროფონს</translation>
@@ -1191,6 +1198,7 @@
 <translation id="7067196344162293536">ავტომატური შეტრიალება</translation>
 <translation id="7068360136237591149">ფაილების გახსნა</translation>
 <translation id="7076293881109082629">მიმდინარეობს სისტემაში შესვლა</translation>
+<translation id="7076878155205969899">ხმის დადუმება</translation>
 <translation id="7086931198345821656">ამ განახლების ფარგლებში საჭიროა თქვენი <ph name="DEVICE_TYPE" />-ის Powerwash. ყველა მონაცემი წაიშლება. შეიტყვეთ მეტი <ph name="SYSTEM_APP_NAME" />-ის ბოლო განახლების შესახებ.</translation>
 <translation id="7088960765736518739">გადამრთველით წვდომა</translation>
 <translation id="7098053464892629930">ყველა ხელმისაწვდომი ფუნქციის სანახავად ჩამოტვირთეთ აპი <ph name="NAME" />-ისთვის Google Play-დან</translation>

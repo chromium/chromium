@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Đã mở rộng - nhấp để thu gọn.</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
 <translation id="2597457036804169544">Không áp dụng giao diện tối cho các trang web</translation>
+<translation id="2606760465469169465">Tự động xác minh</translation>
 <translation id="2621115761605608342">Cho phép JavaScript cho trang web cụ thể.</translation>
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Lần truy cập gần đây nhất: hôm nay</translation>
 <translation id="5225463052809312700">Bật máy ảnh</translation>
+<translation id="5229337741799419985">Chế độ cài đặt này có hiệu lực mà không cần xác định danh tính của bạn hay cho phép các trang web xem nhật ký duyệt web của bạn</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5264323282659631142">Xóa "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Kéo từ trên xuống và chạm vào nút quay lại để thoát khỏi chế độ toàn màn hình.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6689172468748959065">Ảnh tiểu sử</translation>
 <translation id="6697925417670533197">Hiện đang tải xuống</translation>
+<translation id="6701547804986694515">Trang web bạn truy cập có thể lưu thông tin qua Chrome để xác thực rằng bạn không phải là bot. Khi bạn tiếp tục duyệt web, các trang web có thể kiểm tra qua Chrome và xác minh qua trang web mà bạn truy cập trước đó rằng bạn có thể là người thực</translation>
 <translation id="6722828510648505498">Chặn lời nhắc đăng nhập từ các dịch vụ nhận dạng.</translation>
 <translation id="6746124502594467657">Di chuyển xuống</translation>
 <translation id="6749077623962119521">Đặt lại quyền?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Chọn hình ảnh</translation>
 <translation id="8801436777607969138">Chặn JavaScript cho một trang web cụ thể.</translation>
 <translation id="8803526663383843427">Khi bật</translation>
+<translation id="8805385115381080995">Duyệt web nhanh hơn vì trang web ít khi yêu cầu xác minh bạn là người thực hơn</translation>
 <translation id="8816026460808729765">Chặn không cho các trang web sử dụng cảm biến</translation>
 <translation id="8823559166155093873">Chặn cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Đây là trang nguy hiểm</translation>
 <translation id="9201023452444595544">Mọi dữ liệu ngoại tuyến sẽ bị xóa</translation>
 <translation id="930525582205581608">Xóa trang web này?</translation>
+<translation id="947156494302904893">Các trang web bạn truy cập có thể xác minh rằng bạn là người thực chứ không phải bot</translation>
 <translation id="967624055006145463">Dữ liệu đã lưu trữ</translation>
 </translationbundle>

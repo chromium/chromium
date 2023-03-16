@@ -519,6 +519,7 @@ Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn
 <translation id="4737560986434232178">Søk i nylige faner</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4747097190499141774">Kryptering av passordfraser inkluderer ikke betalingsmåter og adresser fra Google Pay. Bare personer som har passordfrasen din, kan lese de krypterte dataene dine. Passordfrasen blir verken sendt til Google eller lagret. Hvis du glemmer den, må du tilbakestille synkroniseringen. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, bare på denne enheten, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4766112107778026136">Discover og følger</translation>
 <translation id="4775879719735953715">Standardnettleser</translation>
@@ -943,6 +944,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7600965453749440009">Oversett aldri <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Blokkerte forgrunnsvinduer (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Slett passordet</translation>
+<translation id="7611459119367035420">Du finner de festede fanene dine her.</translation>
 <translation id="7638584964844754484">Feil passordfrase</translation>
 <translation id="7646263789464975852">Meny → Innstillinger → Sikkerhetssjekk</translation>
 <translation id="7646772052135772216">Passordsynkronisering fungerer ikke</translation>
@@ -955,6 +957,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7720410380936703141">PRØV PÅ NYTT</translation>
 <translation id="7726702057919861819">Meny → Logg → Slett nettlesingsdata</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Bare på denne enheten.</translation>
 <translation id="7738120385185846461">Rapporter et problem…</translation>
 <translation id="7741325291586284254">Ny side i inkognitofane</translation>
 <translation id="7744394900930577716">Passord i andre apper</translation>
@@ -1130,6 +1133,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8952559610785099500">Legg til et passord</translation>
 <translation id="8953046091948372197">Her finner du passordene dine</translation>
 <translation id="895541991026785598">Rapporter et problem</translation>
+<translation id="8971545611707025079">Sjekk på nytt</translation>
 <translation id="8974714402877957201">1. Åpne iPad-innstillingene</translation>
 <translation id="8976382372951310360">Hjelp</translation>
 <translation id="8976414606286374109">Kort lagres i Google-kontoen din.</translation>

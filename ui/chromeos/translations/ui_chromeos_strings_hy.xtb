@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Պատկերի լուծաչափը</translation>
 <translation id="1972984168337863910">Ծավալել ֆայլերի մասին կարծիք հայտնելու վահանակները</translation>
 <translation id="1995337122023280937">Անցնել ֆայլի տեղադրություն</translation>
-<translation id="1999709132469742660">Ֆայլի հասանելիություն բոլոր URL-ների միջոցով</translation>
 <translation id="2001796770603320721">Կառավարել Drive-ում</translation>
 <translation id="2009067268969781306">Ֆորմատավորման արդյունքում կրիչի վրա պահված բոլոր տվյալները կջնջվեն: Այս գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="2025955442973426285">թիգրինյա</translation>
@@ -542,7 +541,6 @@
 <translation id="5323213332664049067">Լատինամերիկյան</translation>
 <translation id="5330145655348521461">Այս ֆայլերը բացված են այլ աշխատասեղանի վրա: Դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="5330512191124428349">Ստանալ տեղեկություններ</translation>
-<translation id="5337538975554986899">Ֆայլի հասանելիություն բոլոր URL-ների միջոցով (բացառությամբ հետևյալների՝ <ph name="NON_RESTRICTED_DESTINATIONS" />)</translation>
 <translation id="5344246330454251646">Կառավարել հասանելիության պարամետրերը Bruschetta-ի համար</translation>
 <translation id="535792325654997756">Կատուներով մարդ</translation>
 <translation id="5358764674931277">Կադրերի արագությունը</translation>

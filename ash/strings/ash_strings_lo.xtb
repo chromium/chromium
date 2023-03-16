@@ -142,6 +142,7 @@
 <translation id="1677472565718498478">ຍັງເຫຼືອ <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ບໍ່ໄດ້ເຊື່ອມຕໍ່.</translation>
 <translation id="1677582821739292812">ມີຄົນກຳລັງເບິ່ງໜ້າຈໍຂອງທ່ານ</translation>
+<translation id="1679841710523778799">ເພີ່ມຄວາມສະຫວ່າງຂຶ້ນ</translation>
 <translation id="1683399938733266832">ການນຳໃຊ້ CPU ປັດຈຸບັນ: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">ໂມງນັບຖອຍຫຼັງ <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@
 <translation id="2849936225196189499">ສໍາຄັນ</translation>
 <translation id="2860184359326882502">ກົງກັນທີ່ສຸດ</translation>
 <translation id="2865888419503095837">ຂໍ້ມູນເຄືອຂ່າຍ</translation>
+<translation id="2872353916818027657">ສັບປ່ຽນການຕິດຕາມເບື້ອງຕົ້ນ</translation>
 <translation id="2872961005593481000">ມອດ</translation>
 <translation id="2878884018241093801">ບໍ່ມີລາຍການຫຼ້າສຸດ</translation>
 <translation id="2885950158625301909">ສຶກສາເພີ່ມເຕີມ</translation>
@@ -472,6 +474,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> ນາທີ</translation>
 <translation id="3445925074670675829">ອຸ​ປະ​ກອນ USB-C</translation>
 <translation id="3455468639467374593">ແມ່ແບບ, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">ຣີເຊັດລະດັບການຊູມ</translation>
 <translation id="3465223694362104965">ແປ້ນພິມອື່ນໄດ້ເຊື່ອມຕໍ່ກັບອຸປະກອນນີ້ແລ້ວນັບແຕ່ທ່ານເຂົ້າສູ່ລະບົບຄັ້ງສຸດທ້າຍ. ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າທ່ານເຊື່ອຖືແປ້ນພິມນີ້ກ່ອນທີ່ທ່ານຈະໃຊ້ມັນ.</translation>
 <translation id="3465356146291925647">ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -724,6 +727,7 @@
 <translation id="468293128311738995">ແອັບຈາກໂທລະສັບຂອງທ່ານ</translation>
 <translation id="4690510401873698237">ຊັ້ນວາງຢູ່ລຸ່ມສຸດ</translation>
 <translation id="4696813013609194136">ປົດລັອກອຸປະກອນດ້ວຍລະຫັດພໍ່ແມ່</translation>
+<translation id="4698850295812410683">ສະແດງເຄື່ອງມືປາຍປາກກາ</translation>
 <translation id="4702647871202761252">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວປິດຢູ່</translation>
 <translation id="4706121060329443414">ຈະລອງດາວໂຫຼດໃໝ່ໃນພາຍຫຼັງ. ການເວົ້າຈະຖືກສົ່ງໄປໃຫ້ Google ເພື່ອປະມວນຜົນສຳລັບຕອນນີ້.</translation>
 <translation id="470644585772471629">ການປີ້ນສີ</translation>
@@ -843,6 +847,7 @@
 <translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="5313326810920013265">ຕັ້ງຄ່າ Bluetooth</translation>
 <translation id="5314219114274263156">ເຮັດການບັນທຶກໜ້າຈໍແລ້ວ</translation>
+<translation id="5316716239522500219">ສ່ອງຈໍ​ຄອມ​ພິວ​ເຕີ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5319712128756744240">ຈັບຄູ່ອຸປະກອນໃໝ່</translation>
 <translation id="5322611492012084517">ບໍ່ສາມາດຊອກເຫັນໂທລະສັບຂອງທ່ານໄດ້</translation>
@@ -995,6 +1000,7 @@
 <translation id="6045629311476491587">ໃຊ້ໂດຍ <ph name="APP_COUNT" /> ແອັບ</translation>
 <translation id="6045998054441862242">ເປີດໂໝດຄວາມຄົມຊັດສູງ</translation>
 <translation id="6047696787498798094">ການແຊຣ໌ໜ້າຈໍຈະຢຸດ ເມື່ອທ່ານຍ້າຍໄປຫາຜູ້ໃຊ້ອື່ນ. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?</translation>
+<translation id="6052614013050385269">ຄລິກຂວາໃສ່ລິ້ງ</translation>
 <translation id="6054305421211936131">ເຂົ້າສູ່ລະບົບດ້ວຍບັດອັດສະລິຍະ</translation>
 <translation id="6059276912018042191">ແຖບ Chrome ຫຼ້າສຸດ</translation>
 <translation id="6062360702481658777">ທ່ານຈະຖືກອອກຈາກລະບົບໃນ <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1027,6 +1033,7 @@
 <translation id="6213808132343683860">ຖ່າຍຮູບໜ້າຈໍ ຫຼື ການບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
 <translation id="6220928844947387476">ຕອນນີ້ທ່ານສາມາດບັນທຶກຕົວທ່ານເອງ ແລະ ໜ້າຈໍຂອງທ່ານພ້ອມກັນໄດ້ແລ້ວ</translation>
 <translation id="622484624075952240">ລົງ</translation>
+<translation id="6228457605945141550">ຫຼຸດຄວາມສະຫວ່າງລົງ</translation>
 <translation id="623116199192908855">ສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານຈາກ Chromebook ຂອງທ່ານ</translation>
 <translation id="6231419273573514727">ປະສິດທິພາບອຸປະກອນຕໍ່ພ່ວງອາດຖືກຈຳກັດໄວ້</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ກຳລັງໃຊ້ກ້ອງ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
@@ -1197,6 +1204,7 @@
 <translation id="7067196344162293536">ໝຸນອັດຕະໂນມັດ</translation>
 <translation id="7068360136237591149">ເປີດໄຟລ໌</translation>
 <translation id="7076293881109082629">ກໍາລັງເຂົ້າ​ລະ​ບົບ</translation>
+<translation id="7076878155205969899">ປິດສຽງ</translation>
 <translation id="7086931198345821656">ອັບເດດນີ້ຕ້ອງມີການ Powerwash <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ຂໍ້ມູນທັງໝົດຈະຖືກລຶບອອກ. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບອັບເດດ <ph name="SYSTEM_APP_NAME" /> ຫຼ້າສຸດ.</translation>
 <translation id="7088960765736518739">ການເຂົ້າເຖິງດ້ວຍປຸ່ມ</translation>
 <translation id="7098053464892629930">ດາວໂຫຼດແອັບສຳລັບ <ph name="NAME" /> ຢູ່ Google Play ເພື່ອເບິ່ງຄຸນສົມບັດທີ່ສາມາດໃຊ້ໄດ້ທັງໝົດ</translation>

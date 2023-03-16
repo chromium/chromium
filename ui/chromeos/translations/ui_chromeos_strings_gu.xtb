@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">છબી રિઝોલ્યુશન</translation>
 <translation id="1972984168337863910">ફાઇલોના પ્રતિસાદની પૅનલ મોટી કરો</translation>
 <translation id="1995337122023280937">ફાઇલના સ્થાન પર જાઓ</translation>
-<translation id="1999709132469742660">તમામ URLs દ્વારા ફાઇલ ઍક્સેસ</translation>
 <translation id="2001796770603320721">ડ્રાઇવમાં મેનેજ કરો</translation>
 <translation id="2009067268969781306">ડ્રાઇવને ફોર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ડિલીટ થઈ જશે. આ છેલ્લા ફેરફારને રદ કરી શકાતો નથી.</translation>
 <translation id="2025955442973426285">ટિગ્રિન્યા</translation>
@@ -543,7 +542,6 @@
 <translation id="5323213332664049067">લેટિન અમેરિકન</translation>
 <translation id="5330145655348521461">આ ફાઇલોને બીજા ડેસ્કટૉપ પર ખોલી હતી. એને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
 <translation id="5330512191124428349">માહિતી મેળવો</translation>
-<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> સિવાય તમામ URLs દ્વારા ફાઇલ ઍક્સેસ</translation>
 <translation id="5344246330454251646">Bruschettaનું શેરિંગ મેનેજ કરો</translation>
 <translation id="535792325654997756">બિલાડીઓ સાથે વ્યક્તિ</translation>
 <translation id="5358764674931277">ફ્રેમ રેટ</translation>
@@ -940,6 +938,7 @@
 <translation id="8492972329130824181">હોમ નેટવર્ક ઉપલબ્ધ નથી. કનેક્ટ કરવા માટે મોબાઇલ ડેટા રોમિંગની સુવિધા ચાલુ કરવી આવશ્યક છે.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> આઇટમને એક્સટ્રેક્ટ કરી રહ્યાં છીએ...</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ડિવાઇસનું સેટઅપ કર્યા પછી સક્રિય કરો, તમારા ઍડમિનિસ્ટ્રેટર દ્વારા સંચાલિત</translation>
+<translation id="8512483403832814140">ગમે ત્યારે</translation>
 <translation id="8521441079177373948">યુકે</translation>
 <translation id="853494022971700746">ફ્રેન્ચ (ફ્રાન્સ)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>

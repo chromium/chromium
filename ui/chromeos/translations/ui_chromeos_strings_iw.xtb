@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">רזולוציית תמונה</translation>
 <translation id="1972984168337863910">הרחבת חלוניות המשוב של קבצים</translation>
 <translation id="1995337122023280937">מעבר אל מיקום הקובץ</translation>
-<translation id="1999709132469742660">‏גישה לקובץ מכל כתובות ה-URL</translation>
 <translation id="2001796770603320721">‏ניהול ב-Drive</translation>
 <translation id="2009067268969781306">פירמוט של התקן אחסון מוחק את כל הנתונים שמאוחסנים בו. לא ניתן לבטל את הפעולה הזו.</translation>
 <translation id="2025955442973426285">תיגרינית</translation>
@@ -544,7 +543,6 @@
 <translation id="5323213332664049067">אמריקאית לטינית</translation>
 <translation id="5330145655348521461">הקבצים האלה נפתחו בשולחן עבודה אחר. יש לעבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי להציג אותם.</translation>
 <translation id="5330512191124428349">פרטי קובץ</translation>
-<translation id="5337538975554986899">‏גישה לקובץ מכל כתובות ה-URL מלבד <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">‏ניהול השיתוף עם Bruschetta</translation>
 <translation id="535792325654997756">אדם עם חתולים</translation>
 <translation id="5358764674931277">קצב פריימים</translation>
@@ -707,6 +705,7 @@
 <translation id="6732801395666424405">האישורים לא נטענו</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> ‏[<ph name="ISSUED_TO" />]‏</translation>
 <translation id="6740270213273127264">‏שיתוף התיקייה עם Bruschetta</translation>
+<translation id="6750737795876287924">הספרייה הנוכחית</translation>
 <translation id="6751256176799620176">תיקייה אחת נבחרה</translation>
 <translation id="6755827872271341378">‏מכשיר עם ChromeOS Flex</translation>
 <translation id="6790428901817661496">הפעלה</translation>

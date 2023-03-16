@@ -141,6 +141,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1677472565718498478">Queda: <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> no se ha conectado.</translation>
 <translation id="1677582821739292812">Alguien está mirando tu pantalla</translation>
+<translation id="1679841710523778799">Aumentar el brillo</translation>
 <translation id="1683399938733266832">Uso actual de la CPU: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="169515659049020177">Mayús</translation>
 <translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="2860184359326882502">Mejor coincidencia</translation>
 <translation id="2865888419503095837">Información de red</translation>
+<translation id="2872353916818027657">Cambiar monitor principal</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878884018241093801">No hay nada reciente</translation>
 <translation id="2885950158625301909">Más información</translation>
@@ -470,6 +472,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3455468639467374593">Plantilla, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Restablecer nivel de zoom</translation>
 <translation id="3465223694362104965">Se ha conectado otro teclado a este dispositivo desde la última vez que iniciaste sesión. Antes de usarlo, asegúrate de que sea de confianza.</translation>
 <translation id="3465356146291925647">Gestionada por el administrador</translation>
 <translation id="3477079411857374384">Control + Mayús + barra espaciadora</translation>
@@ -720,6 +723,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="468293128311738995">Aplicaciones de tu teléfono</translation>
 <translation id="4690510401873698237">La estantería está en la parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear con código parental</translation>
+<translation id="4698850295812410683">Mostrar herramientas del lápiz óptico</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
 <translation id="4706121060329443414">Se intentarán descargar más tarde. De momento, se enviará la voz a Google para procesarse.</translation>
 <translation id="470644585772471629">Invertir colores</translation>
@@ -839,6 +843,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Grabación de pantalla realizada</translation>
+<translation id="5316716239522500219">Proyectar monitores</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319712128756744240">Emparejar nuevo dispositivo</translation>
 <translation id="5322611492012084517">No se puede encontrar tu teléfono</translation>
@@ -991,6 +996,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6045629311476491587">Usados por <ph name="APP_COUNT" /> aplicaciones</translation>
 <translation id="6045998054441862242">Activar el modo Contraste alto</translation>
 <translation id="6047696787498798094">Cuando cambies de usuario, la pantalla dejará de compartirse. ¿Quieres continuar?</translation>
+<translation id="6052614013050385269">Hacer clic con el botón derecho en un enlace</translation>
 <translation id="6054305421211936131">Iniciar sesión con tarjeta inteligente</translation>
 <translation id="6059276912018042191">Pestañas de Chrome recientes</translation>
 <translation id="6062360702481658777">Tu sesión se cerrará automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1023,6 +1029,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6213808132343683860">Hacer captura o grabación de pantalla parcial</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti mismo y tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Flecha hacia abajo</translation>
+<translation id="6228457605945141550">Reducir el brillo</translation>
 <translation id="623116199192908855">Envía el contenido de la pantalla de tu Chromebook</translation>
 <translation id="6231419273573514727">Es posible que el rendimiento de los periféricos esté limitado</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando tu cámara y tu micrófono</translation>
@@ -1192,6 +1199,7 @@ Nueva instalación</translation>
 <translation id="7067196344162293536">Giro automático</translation>
 <translation id="7068360136237591149">Abrir un archivo</translation>
 <translation id="7076293881109082629">Iniciando sesión</translation>
+<translation id="7076878155205969899">Silenciar sonido</translation>
 <translation id="7086931198345821656">Esta actualización requiere que se le haga un Powerwash a tu <ph name="DEVICE_TYPE" />. Se eliminarán todos los datos. Consulta más información sobre la última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Accesibilidad con interruptores</translation>
 <translation id="7098053464892629930">Descarga la aplicación de <ph name="NAME" /> en Google Play para ver todas las funciones disponibles</translation>

@@ -3731,6 +3731,7 @@ Pretende pará-lo?</translation>
 <translation id="4274667386947315930">Dados de início de sessão</translation>
 <translation id="4274673989874969668">Depois de sair de um site, este pode continuar a sincronizar para concluir tarefas, como carregar fotos ou enviar uma mensagem de chat</translation>
 <translation id="4275291496240508082">Som de arranque</translation>
+<translation id="4275397969489577657">Ativar o registo de transmissões de eventos</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4277434192562187284">Origem da configuração XML</translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -4222,6 +4223,7 @@ Pretende pará-lo?</translation>
 <translation id="4708849949179781599">Sair do <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar definições</translation>
 <translation id="4713409221649555176">Eliminar quando fecha todas as janelas</translation>
+<translation id="4715631922189108923">Editar nome do utilizador</translation>
 <translation id="47158868804223727">Clique no nome do grupo para o expandir ou reduzir</translation>
 <translation id="4716483597559580346">Efetuar Powerwash para maior segurança</translation>
 <translation id="471759229191973607">Alterar tema</translation>
@@ -4541,6 +4543,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5018207570537526145">Abrir o Website da extensão</translation>
 <translation id="5018526990965779848">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android ao enviar automaticamente dados de diagnóstico, de utilização do dispositivo e das apps para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
 <translation id="5020008942039547742">Escolher uma janela diferente</translation>
+<translation id="5020651427400641814">Ativar o registo de voz</translation>
 <translation id="5021750053540820849">Ainda por atualizar</translation>
 <translation id="5024511550058813796">Terá o seu histórico em todos os dispositivos sincronizados para que possa continuar o que estava a fazer</translation>
 <translation id="5026492829171796515">Inicie sessão para adicionar uma Conta Google</translation>
@@ -4973,6 +4976,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5432145523462851548">Mostrar <ph name="FILE_NAME" /> numa pasta</translation>
 <translation id="543338862236136125">Editar palavra-passe</translation>
 <translation id="5434065355175441495">PKCS #1 Encriptação RSA</translation>
+<translation id="5435274640623994081">Ativar o registo do ícone sonoro</translation>
 <translation id="5435779377906857208">Permitir sempre que <ph name="HOST" /> aceda à sua localização</translation>
 <translation id="5436492226391861498">A aguardar pelo túnel do proxy...</translation>
 <translation id="5436510242972373446">Pesquisar <ph name="SITE_NAME" />:</translation>
@@ -5321,7 +5325,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5751345516399502412">Rever prontidão da ligação (à Internet) via telemóvel</translation>
 <translation id="5755022574660047665">memórias do Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de Ajuda</translation>
-<translation id="5757375109985023827">Selecione um separador para pré-visualizar</translation>
 <translation id="5758631781033351321">A sua lista de leitura será apresentada aqui</translation>
 <translation id="5759728514498647443">Os documentos enviados para impressão através de <ph name="APP_NAME" /> podem ser lidos por <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Introduzir informações da Conta Google</translation>
@@ -8060,6 +8063,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8203732864715032075">Enviar-lhe notificações e memorizar este computador para a app Mensagens como predefinição. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Os seus ecrãs e periféricos podem ser reiniciados brevemente. Para esta alteração entrar em vigor, desligue e volte a ligar os periféricos.</translation>
 <translation id="820568752112382238">Sites mais visitados</translation>
+<translation id="8206267832882844324">Editar nota</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
 <translation id="8207404892907560325">Escolha uma token de acesso</translation>
@@ -8544,6 +8548,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o seu computador processar. Lamentamos.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">O início de sessão falhou porque não foi possível validar a sua palavra-passe. Contacte o gestor ou tente novamente.</translation>
+<translation id="8656888282555543604">Ativar o registo de braille</translation>
 <translation id="8657393004602556571">Pretende rejeitar o feedback?</translation>
 <translation id="8661290697478713397">Abrir Link numa Janela de Nave&amp;gação Anónima</translation>
 <translation id="8662671328352114214">Ligar à rede <ph name="TYPE" /></translation>

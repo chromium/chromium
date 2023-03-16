@@ -142,6 +142,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> शिल्लक</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> कनेक्ट केलेले नाही.</translation>
 <translation id="1677582821739292812">एखादी व्यक्ती तुमच्या स्क्रीनकडे पाहत आहे</translation>
+<translation id="1679841710523778799">उजळपणा वाढवा</translation>
 <translation id="1683399938733266832">CPU चा सध्याचा वापर: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टायमर· <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@
 <translation id="2849936225196189499">गंभीर</translation>
 <translation id="2860184359326882502">सर्वोत्तम जुळणी</translation>
 <translation id="2865888419503095837">नेटवर्क माहिती</translation>
+<translation id="2872353916818027657">प्राथमिक मॉनिटर स्वॅप करा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
 <translation id="2878884018241093801">अलीकडील कोणतेही आयटम नाहीत</translation>
 <translation id="2885950158625301909">अधिक जाणून घ्या</translation>
@@ -472,6 +474,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनिटे</translation>
 <translation id="3445925074670675829">USB-C डिव्‍हाइस</translation>
 <translation id="3455468639467374593">टेंप्लेट, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">झूम स्तर रीसेट करा</translation>
 <translation id="3465223694362104965">तुम्ही शेवटचे साइन इन केल्यापासून या डिव्हाइसवर दुसरा कीबोर्ड कनेक्ट करण्यात आला आहे. तो वापरण्यापूर्वी तुमचा या कीबोर्डवर विश्वास असल्याची खात्री करा.</translation>
 <translation id="3465356146291925647">तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -724,6 +727,7 @@
 <translation id="468293128311738995">तुमच्या फोनवरील अ‍ॅप्स</translation>
 <translation id="4690510401873698237">शेल्फ तळाशी आहे</translation>
 <translation id="4696813013609194136">पालक कोडने डिव्हाइस अनलॉक करा</translation>
+<translation id="4698850295812410683">स्टायलस टूल दाखवा</translation>
 <translation id="4702647871202761252">गोपनीयता स्क्रीन बंद आहे</translation>
 <translation id="4706121060329443414">नंतर डाउनलोड करण्याचा प्रयत्न केला जाईल. सध्या प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली जाईल.</translation>
 <translation id="470644585772471629">कलर इन्व्हर्जन</translation>
@@ -843,6 +847,7 @@
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5313326810920013265">ब्लूटूथ सेटिंग्ज</translation>
 <translation id="5314219114274263156">स्क्रीन रेकॉर्डिंग घेतले</translation>
+<translation id="5316716239522500219">मॉनिटर मिरर करा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5319712128756744240">नवीन डिव्हाइस पेअर करा</translation>
 <translation id="5322611492012084517">तुमचा फोन आढळला नाही</translation>
@@ -995,6 +1000,7 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> अ‍ॅपने वापरले</translation>
 <translation id="6045998054441862242">उच्च तीव्रता मोड सुरू करा</translation>
 <translation id="6047696787498798094">तुम्ही दुसर्‍या वापरकर्त्यावर स्‍विच करता तेव्‍हा स्क्रीन सामायिकरण थांबेल. तुम्ही सुरू ठेवू इच्छिता?</translation>
+<translation id="6052614013050385269">एखाद्या लिंकवर राइट क्लिक करा</translation>
 <translation id="6054305421211936131">तुमचे स्मार्ट कार्ड वापरून साइन इन करा</translation>
 <translation id="6059276912018042191">अलीकडील Chrome टॅब</translation>
 <translation id="6062360702481658777">तुम्हाला <ph name="LOGOUT_TIME_LEFT" /> मधून स्वयंचलितपणे साइन आउट केले जाईल.</translation>
@@ -1027,6 +1033,7 @@
 <translation id="6213808132343683860">आंशिक स्क्रीनशॉट किंवा स्क्रीन रेकॉर्डिंग करा</translation>
 <translation id="6220928844947387476">तुम्ही आता एकाच वेळी स्वतःला आणि तुमची स्क्रीन रेकॉर्ड करू शकता</translation>
 <translation id="622484624075952240">Down</translation>
+<translation id="6228457605945141550">उजळपणा कमी करा</translation>
 <translation id="623116199192908855">तुमची स्क्रीन तुमच्या Chromebook वरून कास्ट करा</translation>
 <translation id="6231419273573514727">पेरिफेरल परफॉर्मन्स मर्यादित असू शकतो</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> हे सध्या तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
@@ -1197,6 +1204,7 @@
 <translation id="7067196344162293536">स्वयं फिरवा</translation>
 <translation id="7068360136237591149">फाइल उघडा</translation>
 <translation id="7076293881109082629">साइन इन करीत आहे</translation>
+<translation id="7076878155205969899">ध्वनी म्यूट करा</translation>
 <translation id="7086931198345821656">या अपडेट साठी तुमचे <ph name="DEVICE_TYPE" /> Powerwash करणे आवश्यक आहे. सर्व डेटा हटवला जाईल. <ph name="SYSTEM_APP_NAME" /> च्या नवीनतम अपडेटबाबत अधिक जाणून घ्या.</translation>
 <translation id="7088960765736518739">स्विच ॲक्सेस</translation>
 <translation id="7098053464892629930">सर्व उपलब्ध वैशिष्ट्ये पाहण्यासाठी Google Play वर <ph name="NAME" /> साठीचे अ‍ॅप डाउनलोड करा</translation>

@@ -141,6 +141,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1677472565718498478">Koha e mbetur <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> nuk është lidhur.</translation>
 <translation id="1677582821739292812">Dikush po shikon ekranin tënd</translation>
+<translation id="1679841710523778799">Aktivizo ndriçimin</translation>
 <translation id="1683399938733266832">Përdorimi aktual i njësisë CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Kohëmatësi: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2849936225196189499">Vendimtar</translation>
 <translation id="2860184359326882502">Përputhja më e mirë</translation>
 <translation id="2865888419503095837">Informacioni i rrjetit</translation>
+<translation id="2872353916818027657">Ndërro monitorin parësor</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="2878884018241093801">Nuk ka asnjë artikull të fundit</translation>
 <translation id="2885950158625301909">Mëso më shumë</translation>
@@ -470,6 +472,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Pajisja USB-C</translation>
 <translation id="3455468639467374593">Shablloni, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Rivendos nivelin e zmadhimit</translation>
 <translation id="3465223694362104965">Një tastierë tjetër është lidhur me këtë pajisje që nga identifikimi yt i fundit. Sigurohu që e beson këtë tastierë para se ta përdorësh atë.</translation>
 <translation id="3465356146291925647">Menaxhuar nga administratori yt</translation>
 <translation id="3477079411857374384">Control-Shift-Hapësirë</translation>
@@ -719,6 +722,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="468293128311738995">Aplikacionet nga telefoni yt</translation>
 <translation id="4690510401873698237">Rafti në fund</translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
+<translation id="4698850295812410683">Shfaq veglat e stilolapsit</translation>
 <translation id="4702647871202761252">Ekrani i privatësisë është joaktiv</translation>
 <translation id="4706121060329443414">Shkarkimi do të provohet më vonë. Ligjërimi do t'i dërgohet Google për përpunim tani.</translation>
 <translation id="470644585772471629">Anasjellja e ngjyrës</translation>
@@ -838,6 +842,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5308380583665731573">Lidh</translation>
 <translation id="5313326810920013265">Cilësimet e Bluetooth-it</translation>
 <translation id="5314219114274263156">Regjistrimi i ekranit përfundoi</translation>
+<translation id="5316716239522500219">Pasqyro monitorët</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5319712128756744240">Çifto pajisjen e re</translation>
 <translation id="5322611492012084517">Telefoni yt nuk mund të gjendet</translation>
@@ -990,6 +995,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6045629311476491587">Përdorur nga <ph name="APP_COUNT" /> aplikacione</translation>
 <translation id="6045998054441862242">Aktivizo modalitetin "kontrast i lartë"</translation>
 <translation id="6047696787498798094">Ndarja e ekranit do të ndalojë kur të kalosh te një përdorues tjetër. Dëshiron që të vazhdosh?</translation>
+<translation id="6052614013050385269">Kliko me të djathtën te një lidhje</translation>
 <translation id="6054305421211936131">Identifikohu me kartën smart</translation>
 <translation id="6059276912018042191">Skedat e fundit të Chrome</translation>
 <translation id="6062360702481658777">Do të dalësh automatikisht për <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1022,6 +1028,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6213808132343683860">Nxirr regjistrimin e ekranit ose pamjen e pjesshme të ekranit</translation>
 <translation id="6220928844947387476">Tani mund të regjistrosh veten dhe ekranin në të njëjtën kohë</translation>
 <translation id="622484624075952240">Poshtë</translation>
+<translation id="6228457605945141550">Ul ndriçimin</translation>
 <translation id="623116199192908855">Transmeto ekranin nga pajisja jote Chromebook</translation>
 <translation id="6231419273573514727">Cilësia e funksionimit të pajisjeve periferike mund të jetë e kufizuar</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> po përdor aktualisht kamerën dhe mikrofonin tënd</translation>
@@ -1191,6 +1198,7 @@ Instalim i ri</translation>
 <translation id="7067196344162293536">Rrotullim automatik</translation>
 <translation id="7068360136237591149">Hap skedarët</translation>
 <translation id="7076293881109082629">Po identifikohesh</translation>
+<translation id="7076878155205969899">Çaktivizo tingullin</translation>
 <translation id="7086931198345821656">Ky përditësim kërkon që të kryesh Powerwash të <ph name="DEVICE_TYPE" />. Të gjitha të dhënat do të fshihen. Mëso më shumë rreth përditësimit të fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Qasja me çelës</translation>
 <translation id="7098053464892629930">Shkarko aplikacionin për <ph name="NAME" /> në Google Play për të parë të gjitha veçoritë që ofrohen</translation>

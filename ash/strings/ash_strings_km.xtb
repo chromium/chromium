@@ -142,6 +142,7 @@
 <translation id="1677472565718498478">នៅសល់ <ph name="TIME" /></translation>
 <translation id="1677507110654891115">មិនបានភ្ជាប់ <ph name="FEATURE_NAME" /> ទេ។</translation>
 <translation id="1677582821739292812">នរណាម្នាក់កំពុងមើលអេក្រង់របស់អ្នក</translation>
+<translation id="1679841710523778799">បង្កើន​ពន្លឺ</translation>
 <translation id="1683399938733266832">ការ​ប្រើប្រាស់​ CPU បច្ចុប្បន្ន៖ <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">កម្មវិធីកំណត់ម៉ោង <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@
 <translation id="2849936225196189499">សំខាន់</translation>
 <translation id="2860184359326882502">ត្រូវគ្នាបំផុត</translation>
 <translation id="2865888419503095837">ព័ត៌មាន​បណ្តាញ</translation>
+<translation id="2872353916818027657">ផ្តោះប្តូរម៉ូនីទ័របឋម</translation>
 <translation id="2872961005593481000">បិទ</translation>
 <translation id="2878884018241093801">មិនមានធាតុថ្មីៗទេ</translation>
 <translation id="2885950158625301909">ស្វែងយល់បន្ថែម</translation>
@@ -472,6 +474,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> នាទី</translation>
 <translation id="3445925074670675829">ឧបករណ៍ USB-C</translation>
 <translation id="3455468639467374593">ទម្រង់គំរូ, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">កំណត់​កម្រិត​ពង្រីកបង្រួមឡើងវិញ</translation>
 <translation id="3465223694362104965">ចាប់តាំងពី​អ្នកបានចូល​លើកចុងក្រោយ ក្ដារចុច​ផ្សេងទៀត​បានភ្ជាប់ទៅ​ឧបករណ៍នេះ។ សូមប្រាកដថា អ្នកជឿទុកចិត្ត​ក្ដារចុចនេះ មុនពេលដែល​អ្នកប្រើវា។</translation>
 <translation id="3465356146291925647">គ្រប់គ្រង​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -724,6 +727,7 @@
 <translation id="468293128311738995">កម្មវិធីពីទូរសព្ទរបស់​អ្នក</translation>
 <translation id="4690510401873698237">ធ្នើនៅ​ខាងក្រោម</translation>
 <translation id="4696813013609194136">ដោះ​សោ​ឧបករណ៍​ដោយ​ប្រើ​កូដ​សម្រាប់​មាតា​បិតា</translation>
+<translation id="4698850295812410683">បង្ហាញ​ឧបករណ៍​ប៊ិច</translation>
 <translation id="4702647871202761252">អេក្រង់​ឯកជនភាព​ត្រូវបានបិទ</translation>
 <translation id="4706121060329443414">នឹងព្យាយាម​ទាញយក​នៅពេលក្រោយ។ ការនិយាយ​នឹងត្រូវបានផ្ញើទៅ Google ដើម្បីដំណើរការ​សម្រាប់ពេលនេះ។</translation>
 <translation id="470644585772471629">ការបញ្ច្រាស​ពណ៌</translation>
@@ -843,6 +847,7 @@
 <translation id="5308380583665731573">ភ្ជាប់</translation>
 <translation id="5313326810920013265">ការកំណត់​ប៊្លូធូស</translation>
 <translation id="5314219114274263156">បានថតអេក្រង់</translation>
+<translation id="5316716239522500219">ឆ្លុះអេក្រង់ត្រួតពិនិត្យ</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5319712128756744240">ផ្គូផ្គង​ឧបករណ៍ថ្មី</translation>
 <translation id="5322611492012084517">រកទូរសព្ទរបស់អ្នក​មិនឃើញទេ</translation>
@@ -995,6 +1000,7 @@
 <translation id="6045629311476491587">បាន​ប្រើដោយ​កម្មវិធី <ph name="APP_COUNT" /></translation>
 <translation id="6045998054441862242">បើក​មុខងារ​ភាព​ដិត​កម្រិត​ខ្ពស់</translation>
 <translation id="6047696787498798094">ការចែករំលែកអេក្រង់នឹងបញ្ឈប់ នៅពេលដែលអ្នកឆ្លាស់ទៅអ្នកប្រើដ៏ទៃទៀត។ តើអ្នកចង់បន្តទេ?</translation>
+<translation id="6052614013050385269">ចុច​ខាងស្ដាំ​លើ​តំណ</translation>
 <translation id="6054305421211936131">ចូលគណនី​ដោយ​ប្រើ​កាតឆ្លាត​វៃ</translation>
 <translation id="6059276912018042191">ផ្ទាំង Chrome ថ្មីៗ</translation>
 <translation id="6062360702481658777">អ្នកនឹងចាកចេញដោយស្វ័យប្រវត្តិក្នុង <ph name="LOGOUT_TIME_LEFT" />។</translation>
@@ -1027,6 +1033,7 @@
 <translation id="6213808132343683860">ថតវីដេអូអេក្រង់ ឬរូប​អេក្រង់​មួយ​ផ្នែក</translation>
 <translation id="6220928844947387476">ឥឡូវនេះអ្នកអាចថតខ្លួនអ្នក និងអេក្រង់របស់អ្នកក្នុងពេលតែមួយបាន</translation>
 <translation id="622484624075952240">ចុះក្រោម</translation>
+<translation id="6228457605945141550">បន្ថយ​ពន្លឺ</translation>
 <translation id="623116199192908855">ភ្ជាប់​អេក្រង់​របស់​អ្នក​ពី Chromebook របស់​អ្នក</translation>
 <translation id="6231419273573514727">ប្រតិបត្តិការរបស់​ឧបករណ៍សម្រាប់​ភ្ជាប់​ជាមួយ​កុំព្យូទ័រអាចមានកម្រិត</translation>
 <translation id="6232891689835436217">បច្ចុប្បន្ន <ph name="APP_NAME" /> កំពុងប្រើ​កាមេរ៉ា និងមីក្រូហ្វូន​របស់អ្នក</translation>
@@ -1197,6 +1204,7 @@
 <translation id="7067196344162293536">បង្វិល​ស្វ័យ​ប្រវត្តិ</translation>
 <translation id="7068360136237591149">បើក​ឯកសារ</translation>
 <translation id="7076293881109082629">កំពុងចូល</translation>
+<translation id="7076878155205969899">បិទ​សំឡេង</translation>
 <translation id="7086931198345821656">ការដំឡើងកំណែនេះ​តម្រូវឱ្យ powerwash <ph name="DEVICE_TYPE" /> របស់អ្នក។ ទិន្នន័យទាំងអស់​នឹងត្រូវបានលុប។ ស្វែងយល់​បន្ថែម​អំពីកំណែ <ph name="SYSTEM_APP_NAME" /> ថ្មីបំផុត។</translation>
 <translation id="7088960765736518739">មុខងារប្រើឧបករណ៍ចុចសម្រាប់ជនពិការ</translation>
 <translation id="7098053464892629930">ទាញយកកម្មវិធីសម្រាប់ <ph name="NAME" /> នៅលើ Google play ដើម្បីមើលមុខងារដែលអាចប្រើបានទាំងអស់</translation>

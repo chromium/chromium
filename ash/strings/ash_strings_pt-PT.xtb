@@ -142,6 +142,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
 <translation id="1677507110654891115">A funcionalidade <ph name="FEATURE_NAME" /> não está ligada.</translation>
 <translation id="1677582821739292812">Alguém está a olhar para o seu ecrã</translation>
+<translation id="1679841710523778799">Aumentar o brilho</translation>
 <translation id="1683399938733266832">Utilização atual da CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="2860184359326882502">Melhor correspondência</translation>
 <translation id="2865888419503095837">Informações da rede</translation>
+<translation id="2872353916818027657">Trocar monitor principal</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="2878884018241093801">Nenhum item recente</translation>
 <translation id="2885950158625301909">Saber mais</translation>
@@ -472,6 +474,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3455468639467374593">Modelo, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Repor o nível de zoom</translation>
 <translation id="3465223694362104965">Foi ligado outro teclado a este dispositivo desde o seu último acesso. Certifique-se de que confia neste teclado antes de o utilizar.</translation>
 <translation id="3465356146291925647">Gerida pelo administrador</translation>
 <translation id="3477079411857374384">Control-Shift-Espaço</translation>
@@ -724,6 +727,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="468293128311738995">Apps do telemóvel</translation>
 <translation id="4690510401873698237">Prateleira na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
+<translation id="4698850295812410683">Mostrar ferramentas da caneta stylus</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
 <translation id="4706121060329443414">Tentar-se-á a transferência mais tarde. Por enquanto, a voz será enviada para a Google para processamento.</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
@@ -843,6 +847,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5313326810920013265">Definições de Bluetooth</translation>
 <translation id="5314219114274263156">Gravação de ecrã captada</translation>
+<translation id="5316716239522500219">Espelhar monitores</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319712128756744240">Sincronizar novo dispositivo</translation>
 <translation id="5322611492012084517">Não é possível encontrar o telemóvel</translation>
@@ -995,6 +1000,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="6045629311476491587">Usado por <ph name="APP_COUNT" /> apps</translation>
 <translation id="6045998054441862242">Ativar o modo de alto contraste</translation>
 <translation id="6047696787498798094">A partilha do ecrã será interrompida quando mudar para outro utilizador. Pretende continuar?</translation>
+<translation id="6052614013050385269">Clicar com o botão direito num link</translation>
 <translation id="6054305421211936131">Iniciar sessão com cartão inteligente</translation>
 <translation id="6059276912018042191">Separadores do Chrome recentes</translation>
 <translation id="6062360702481658777">A sessão será terminada automaticamente dentro de <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1027,6 +1033,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="6213808132343683860">Fazer uma gravação de ecrã ou uma captura de ecrã parcial</translation>
 <translation id="6220928844947387476">Agora, pode gravar-se a si e ao ecrã em simultâneo</translation>
 <translation id="622484624075952240">Para baixo</translation>
+<translation id="6228457605945141550">Diminuir o brilho</translation>
 <translation id="623116199192908855">Transmitir o ecrã a partir do seu Chromebook</translation>
 <translation id="6231419273573514727">O desempenho do periférico pode estar limitado</translation>
 <translation id="6232891689835436217">A app <ph name="APP_NAME" /> está a usar a câmara e o microfone neste momento</translation>
@@ -1187,6 +1194,7 @@ Nova instalação</translation>
 <translation id="7026338066939101231">Diminuir</translation>
 <translation id="7029814467594812963">Sair da sessão</translation>
 <translation id="7032161822340700104">Apenas são permitidos 6 modelos. Remova um modelo para guardar um novo.</translation>
+<translation id="7034025838182392395">A app <ph name="APP_NAME" /> quer usar o(a) <ph name="DEVICE_NAME" />. Ative o interruptor físico do(a) <ph name="DEVICE_NAME" /> do seu dispositivo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistente Google</translation>
 <translation id="7042322267639375032">Reduzir área de estado</translation>
 <translation id="7045033600005038336">Pretende substituir o modelo?</translation>
@@ -1197,6 +1205,7 @@ Nova instalação</translation>
 <translation id="7067196344162293536">Rotação automática</translation>
 <translation id="7068360136237591149">Abrir ficheiros</translation>
 <translation id="7076293881109082629">Iniciar sessão</translation>
+<translation id="7076878155205969899">Desativar som.</translation>
 <translation id="7086931198345821656">Para fazer esta atualização, é necessário efetuar o Powerwash do dispositivo <ph name="DEVICE_TYPE" />. Todos os dados serão eliminados. Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Acesso por comutador</translation>
 <translation id="7098053464892629930">Transfira a app para <ph name="NAME" /> no Google Play para ver todas as funcionalidades disponíveis</translation>
@@ -1355,6 +1364,7 @@ Nova instalação</translation>
 <translation id="793716872548410480">Prima <ph name="SHORTCUT_KEY_NAME" /> + V para ver a sua área de transferência. Os últimos 5 itens que copiou são guardados na sua área de transferência.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7944023924886109030">Veja todos os eventos de hoje</translation>
+<translation id="7947798320695032612">A app <ph name="APP_NAME" /> quer usar o(a) <ph name="DEVICE_NAME" /></translation>
 <translation id="7963992254934562106">De <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selecionar pasta…</translation>
 <translation id="797512352675305461">Ativar ou desativar a lupa de ecrã inteiro</translation>

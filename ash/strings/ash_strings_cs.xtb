@@ -141,6 +141,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Funkce <ph name="FEATURE_NAME" /> není připojena.</translation>
 <translation id="1677582821739292812">Někdo se dívá na vaši obrazovku</translation>
+<translation id="1679841710523778799">Zvýšit jas</translation>
 <translation id="1683399938733266832">Aktuální využití procesoru: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Časovač na <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2849936225196189499">Kritické</translation>
 <translation id="2860184359326882502">Nejlepší shoda</translation>
 <translation id="2865888419503095837">Informace o síti</translation>
+<translation id="2872353916818027657">Změnit primární monitor</translation>
 <translation id="2872961005593481000">Vypnout</translation>
 <translation id="2878884018241093801">Žádné nedávné položky</translation>
 <translation id="2885950158625301909">Další informace</translation>
@@ -470,6 +472,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Zařízení USB Type-C</translation>
 <translation id="3455468639467374593">Šablona, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Resetovat úroveň přiblížení</translation>
 <translation id="3465223694362104965">K tomuto zařízení je připojena jiná klávesnice než při vašem posledním přihlášení. Před použitím této klávesnice se ujistěte, že jí můžete důvěřovat.</translation>
 <translation id="3465356146291925647">Spravováno vaším administrátorem</translation>
 <translation id="3477079411857374384">Control + Shift + mezerník</translation>
@@ -719,6 +722,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="468293128311738995">Aplikace z telefonu</translation>
 <translation id="4690510401873698237">Polička dole</translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
+<translation id="4698850295812410683">Zobrazit nástroje pro dotykové pero</translation>
 <translation id="4702647871202761252">Obrazovka ochrany soukromí je vypnutá</translation>
 <translation id="4706121060329443414">Soubory zkusíme stáhnout později. Prozatím se řeč bude ke zpracování odesílat do Googlu.</translation>
 <translation id="470644585772471629">Převrácení barev</translation>
@@ -838,6 +842,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5308380583665731573">Připojení</translation>
 <translation id="5313326810920013265">Nastavení Bluetooth</translation>
 <translation id="5314219114274263156">Záznam obrazovky byl pořízen</translation>
+<translation id="5316716239522500219">Zrcadlit monitory</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5319712128756744240">Spárovat nové zařízení</translation>
 <translation id="5322611492012084517">Telefon nebyl nalezen</translation>
@@ -990,6 +995,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="6045629311476491587">Využíváno <ph name="APP_COUNT" /> aplikacemi</translation>
 <translation id="6045998054441862242">Zapnout režim vysokého kontrastu</translation>
 <translation id="6047696787498798094">Pokud přepnete na jiného uživatele, sdílení obrazovky bude ukončeno. Chcete pokračovat?</translation>
+<translation id="6052614013050385269">Kliknout na odkaz pravým tlačítkem</translation>
 <translation id="6054305421211936131">Přihlásit se pomocí chytré karty</translation>
 <translation id="6059276912018042191">Nedávno použité karty Chromu</translation>
 <translation id="6062360702481658777">Za <ph name="LOGOUT_TIME_LEFT" /> budete automaticky odhlášeni.</translation>
@@ -1022,6 +1028,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="6213808132343683860">Pořídit snímek nebo záznam části obrazovky</translation>
 <translation id="6220928844947387476">Nyní můžete nahrávat sebe a obrazovku současně</translation>
 <translation id="622484624075952240">Dolů</translation>
+<translation id="6228457605945141550">Snížit jas</translation>
 <translation id="623116199192908855">Odesílání obrazovky z Chromebooku</translation>
 <translation id="6231419273573514727">Výkon periferního zařízení může být omezen</translation>
 <translation id="6232891689835436217">Aplikace <ph name="APP_NAME" /> používá vaši kameru a mikrofon</translation>
@@ -1191,6 +1198,7 @@ Nová instalace</translation>
 <translation id="7067196344162293536">Automatické otáčení</translation>
 <translation id="7068360136237591149">Otevřít soubory</translation>
 <translation id="7076293881109082629">Přihlášení</translation>
+<translation id="7076878155205969899">Vypnout zvuk</translation>
 <translation id="7086931198345821656">Tato aktualizace vyžaduje vymazání zařízení <ph name="DEVICE_TYPE" /> metodou Powerwash. Všechna data budou smazána. Další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Přístup pomocí přepínačů</translation>
 <translation id="7098053464892629930">Pokud chcete vidět všechny dostupné funkce, stáhněte si na Google Play aplikaci pro <ph name="NAME" /></translation>

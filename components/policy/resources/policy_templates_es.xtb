@@ -7600,21 +7600,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
           Si no se le asigna ningún valor, el resaltado del cursor se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="8160572976152509481">Solo permitir que los usuarios apaguen el dispositivo usando el botón de encendido físico</translation>
-<translation id="8161309952608059239">Lista de acciones que se ejecutarán cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Esta política no tendrá efecto si no se define la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> ejecutará las acciones configuradas en esta política.
-
-      Si esta política se deja vacía o no se define, la política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> no tendrá efecto.
-
-      Estas son las acciones que se pueden realizar:
-
-      <ph name="CLOSE_BROWSERS_ACTION" />: cierra todas las ventanas del navegador y PWAs de este perfil. No se admite en Android.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: muestra la ventana del selector de perfil. No se admite en Android.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" /> y <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: borran los datos de navegación correspondientes. Consulta la política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> para obtener más información.</translation>
 <translation id="8164144100557223371">Inhabilitar el punto de entrada de las funciones experimentales de la barra de herramientas del navegador</translation>
 <translation id="8164687848393015214">Si se habilita la política, se enviarán paquetes de red de monitorización (<ph name="HEARTBEATS_TERM" />) al servidor de administración para monitorizar el estado de la conexión y permitir que el servidor detecte si el dispositivo está sin conexión.
 

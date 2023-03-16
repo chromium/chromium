@@ -3713,6 +3713,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4274667386947315930">Datos de acceso</translation>
 <translation id="4274673989874969668">Después de que sales de los sitios, por lo general se siguen sincronizando para completar tareas, como la de subir fotos o enviar un mensaje de chat.</translation>
 <translation id="4275291496240508082">Sonido de inicio</translation>
+<translation id="4275397969489577657">Habilitar el acceso para la transmisión de eventos</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4277434192562187284">Configuración de la fuente de XML</translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -4523,6 +4524,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5018207570537526145">Abrir el sitio web de la extensión</translation>
 <translation id="5018526990965779848">Envía datos de uso y diagnóstico. Para mejorar tu experiencia de Android, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la Actividad de web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google.</translation>
 <translation id="5020008942039547742">Elegir otra ventana</translation>
+<translation id="5020651427400641814">Habilitar el acceso por voz</translation>
 <translation id="5021750053540820849">Aún no se actualizó</translation>
 <translation id="5024511550058813796">Verás tu historial en todos los dispositivos sincronizados para que puedas retomar la navegación</translation>
 <translation id="5026492829171796515">Accede para agregar una Cuenta de Google</translation>
@@ -4955,6 +4957,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5432145523462851548">Mostrar <ph name="FILE_NAME" /> en carpeta</translation>
 <translation id="543338862236136125">Editar contraseña</translation>
 <translation id="5434065355175441495">PKCS N. º 1, Encriptación RSA</translation>
+<translation id="5435274640623994081">Habilitar el acceso con íconos sonoros</translation>
 <translation id="5435779377906857208">Siempre permitir que <ph name="HOST" /> acceda a tu ubicación</translation>
 <translation id="5436492226391861498">Esperando túnel proxy...</translation>
 <translation id="5436510242972373446">Buscar <ph name="SITE_NAME" />:</translation>
@@ -5302,7 +5305,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5751345516399502412">Comprobar la disponibilidad de la conexión mediante dispositivo móvil</translation>
 <translation id="5755022574660047665">recuerdos de Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de ayuda</translation>
-<translation id="5757375109985023827">Selecciona una pestaña para obtener una vista previa.</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> podrá leer los documentos que envíes a imprimir a través de <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Ingresar la información de la Cuenta de Google</translation>
@@ -8516,6 +8518,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8654151524613148204">El archivo es demasiado grande para que tu equipo lo procese.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">Se produjo un error de acceso porque no se pudo verificar la contraseña. Comunícate con el administrador o vuelve a intentarlo.</translation>
+<translation id="8656888282555543604">Habilitar el acceso con braille</translation>
 <translation id="8657393004602556571">¿Quieres descartar los comentarios?</translation>
 <translation id="8661290697478713397">Abrir el vínculo en una ventana de incó&amp;gnito</translation>
 <translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>

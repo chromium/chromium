@@ -141,6 +141,7 @@
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ไม่เชื่อมต่อ</translation>
 <translation id="1677582821739292812">มีคนกำลังดูหน้าจอของคุณอยู่</translation>
+<translation id="1679841710523778799">เพิ่มความสว่าง</translation>
 <translation id="1683399938733266832">การใช้งานปัจจุบันของ CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">ตัวจับเวลา <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">สำคัญ</translation>
 <translation id="2860184359326882502">ตรงที่สุด</translation>
 <translation id="2865888419503095837">ข้อมูลเครือข่าย</translation>
+<translation id="2872353916818027657">สลับหน้าจอหลัก</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2878884018241093801">ไม่มีรายการล่าสุด</translation>
 <translation id="2885950158625301909">ดูข้อมูลเพิ่มเติม</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="3445925074670675829">อุปกรณ์ USB-C</translation>
 <translation id="3455468639467374593">เทมเพลต <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">รีเซ็ตระดับการซูม</translation>
 <translation id="3465223694362104965">แป้นพิมพ์อีกรายการหนึ่งเชื่อมต่อกับอุปกรณ์นี้นับจากที่คุณลงชื่อเข้าใช้ครั้งล่าสุด โปรดตรวจสอบว่าแป้นพิมพ์นี้เชื่อถือได้ก่อนใช้งาน</translation>
 <translation id="3465356146291925647">จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -715,6 +718,7 @@
 <translation id="468293128311738995">แอปจากโทรศัพท์ของคุณ</translation>
 <translation id="4690510401873698237">ชั้นวางอยู่ด้านล่าง</translation>
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
+<translation id="4698850295812410683">แสดงเครื่องมือสไตลัส</translation>
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
 <translation id="4706121060329443414">ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google ก่อนในขณะนี้</translation>
 <translation id="470644585772471629">การกลับสี</translation>
@@ -834,6 +838,7 @@
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5313326810920013265">การตั้งค่าบลูทูธ</translation>
 <translation id="5314219114274263156">อัดหน้าจอแล้ว</translation>
+<translation id="5316716239522500219">แสดงผลบนหน้าจอ</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5319712128756744240">จับคู่อุปกรณ์ใหม่</translation>
 <translation id="5322611492012084517">ไม่พบโทรศัพท์</translation>
@@ -986,6 +991,7 @@
 <translation id="6045629311476491587">ใช้โดยแอป <ph name="APP_COUNT" /> แอป</translation>
 <translation id="6045998054441862242">เปิดโหมดคอนทราสต์สูง</translation>
 <translation id="6047696787498798094">การแชร์หน้าจอจะหยุดเมื่อคุณสลับไปเป็นผู้ใช้อีกรายหนึ่ง ต้องการดำเนินการต่อไหม</translation>
+<translation id="6052614013050385269">คลิกขวาที่ลิงก์</translation>
 <translation id="6054305421211936131">ลงชื่อเข้าใช้ด้วยสมาร์ทการ์ด</translation>
 <translation id="6059276912018042191">แท็บ Chrome ล่าสุด</translation>
 <translation id="6062360702481658777">คุณจะออกจากระบบโดยอัตโนมัติใน <ph name="LOGOUT_TIME_LEFT" /></translation>
@@ -1018,6 +1024,7 @@
 <translation id="6213808132343683860">จับภาพหน้าจอหรือบันทึกหน้าจอแบบบางส่วน</translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
+<translation id="6228457605945141550">ลดความสว่าง</translation>
 <translation id="623116199192908855">แคสต์หน้าจอจาก Chromebook</translation>
 <translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>
 <translation id="6232891689835436217">"<ph name="APP_NAME" />" กำลังใช้กล้องและไมโครโฟน</translation>
@@ -1187,6 +1194,7 @@
 <translation id="7067196344162293536">หมุนอัตโนมัติ</translation>
 <translation id="7068360136237591149">เปิดไฟล์</translation>
 <translation id="7076293881109082629">กำลังลงชื่อเข้าใช้</translation>
+<translation id="7076878155205969899">ปิดเสียง</translation>
 <translation id="7086931198345821656">การอัปเดตนี้ต้องทำการ Powerwash <ph name="DEVICE_TYPE" /> ระบบจะลบข้อมูลทั้งหมด ดูข้อมูลเพิ่มเติมเกี่ยวกับอัปเดตล่าสุดของ <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="7088960765736518739">การเข้าถึงด้วยสวิตช์</translation>
 <translation id="7098053464892629930">ดาวน์โหลดแอปของ <ph name="NAME" /> ใน Google Play เพื่อดูฟีเจอร์ที่ใช้ได้ทั้งหมด</translation>

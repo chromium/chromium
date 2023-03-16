@@ -883,6 +883,7 @@
 <translation id="1766575458646819543">الخروج من وضع ملء الشاشة</translation>
 <translation id="1766957085594317166">‏يمكنك حفظ كلمات المرور بأمان في حسابك على Google، ولن تضطر إلى كتابتها مرة أخرى مطلقًا.</translation>
 <translation id="1767043563165955993">‏استخدام الحساب مع تطبيقات Android</translation>
+<translation id="1767508543310534319">صدى صوت قراءة علامات الترقيم</translation>
 <translation id="1768212860412467516">إرسال ملاحظات عن <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="1768278914020124551">عفوًا،  حدثت مشكلة أثناء الاتصال بخادم تسجيل الدخول. يُرجى التحقق من اتصالك بالشبكة واسم النطاق، ثم أعد المحاولة.</translation>
 <translation id="1769104665586091481">فتح الرابط في &amp;نافذة جديدة</translation>
@@ -2959,6 +2960,7 @@
 <translation id="360180734785106144">عرض ميزات جديدة عندما تصبح متاحة</translation>
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3602870520245633055">الطباعة والمسح الضوئي</translation>
+<translation id="3602894439067790744">طريقة قراءة الأرقام</translation>
 <translation id="3603622770190368340">الحصول على شهادة الشبكة</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{حساب واحد ({COUNT}) يستخدم كلمة المرور نفسها}zero{‫{COUNT} حساب يستخدم كلمة المرور نفسها}two{حسابان ({COUNT}) يستخدمان كلمة المرور نفسها}few{‫{COUNT} حسابات تستخدم كلمة المرور نفسها}many{‫{COUNT} حسابًا يستخدم كلمة المرور نفسها}other{‫{COUNT} حساب يستخدم كلمة المرور نفسها}}</translation>
 <translation id="3605780360466892872">الزر لأسفل</translation>
@@ -3708,6 +3710,7 @@
 <translation id="4274667386947315930">بيانات تسجيل الدخول</translation>
 <translation id="4274673989874969668">عندما تغادر موقعًا إلكترونيًا، يواصل هذا الموقع الإلكتروني عادةً عملية المزامنة لإكمال المهام، مثل تحميل الصور أو إرسال رسالة محادثة.</translation>
 <translation id="4275291496240508082">الصوت عند بدء التشغيل</translation>
+<translation id="4275397969489577657">تفعيل ميزة تسجيل بث الحدث</translation>
 <translation id="4275830172053184480">إعادة تشغيل جهازك</translation>
 <translation id="4277434192562187284">‏مصدر ملفات XML للإعدادات</translation>
 <translation id="4278390842282768270">منح الإذن</translation>
@@ -4518,6 +4521,7 @@
 <translation id="5018207570537526145">فتح الموقع الإلكتروني الخاص بالإضافة</translation>
 <translation id="5018526990965779848">‏يمكنك إرسال بيانات الاستخدام والتشخيص. يمكنك المساعدة في تحسين تجربة نظام التشغيل Android من خلال إرسال بيانات استخدام التطبيق وبيانات الجهاز وبيانات التشخيص تلقائيًا إلى Google. وسيساعد ذلك في تعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. وسيستفيد أيضًا مطوّرو التطبيقات والشركاء في Google، مثل مطوّري البرامج المتوافقة مع Android، من بعض البيانات المجمّعة. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات"، قد يتم حفظ هذه البيانات في حسابك على Google.</translation>
 <translation id="5020008942039547742">اختيار نافذة مختلفة</translation>
+<translation id="5020651427400641814">تفعيل تسجيل الكلام</translation>
 <translation id="5021750053540820849">لم يتم تحديثه بعد</translation>
 <translation id="5024511550058813796">سيظهر لك سجلّ التصفّح على جميع الأجهزة التي تتم مزامنة حسابك معها، ما يعني أنه يمكنك مواصلة التصفّح من حيث توقفت.</translation>
 <translation id="5026492829171796515">‏تسجيل الدخول لإضافة حساب Google</translation>
@@ -4950,6 +4954,7 @@
 <translation id="5432145523462851548">عرض "<ph name="FILE_NAME" />" في المجلد</translation>
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
 <translation id="5434065355175441495">‏ترميز PKCS #1 RSA</translation>
+<translation id="5435274640623994081">تفعيل ميزة تسجيل الرمز الصوتي</translation>
 <translation id="5435779377906857208">السماح دائمًا للنطاق <ph name="HOST" /> بالوصول إلى موقعك الجغرافي</translation>
 <translation id="5436492226391861498">في انتظار قناة الخادم...</translation>
 <translation id="5436510242972373446">البحث في الموقع <ph name="SITE_NAME" />:</translation>
@@ -5297,7 +5302,6 @@
 <translation id="5751345516399502412">التحقّق من جاهزية التوصيل</translation>
 <translation id="5755022574660047665">‏ذكريات من "صور Google"</translation>
 <translation id="5756163054456765343">مركز المساعدة</translation>
-<translation id="5757375109985023827">اختَر علامة تبويب لمعاينتها.</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
 <translation id="5759728514498647443">يمكن قراءة المستندات التي ترسلها إلى الطباعة عبر <ph name="APP_NAME" /> بواسطة <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">‏إدخال معلومات حساب Google</translation>
@@ -5355,6 +5359,7 @@
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5804259315582798390">تعذَّر تفعيل ميزة استرداد البيانات المحلّية</translation>
 <translation id="5805268472388605531">اضغط مع الاستمرار على مفاتيح لوحة المفاتيح لإظهار علامات التشكيل والرموز الخاصة.</translation>
+<translation id="5805354171420804923">المقارنة بين نتائج البحث بشكل أسرع من خلال اللوحة الجانبية الجديدة</translation>
 <translation id="5805697420284793859">مدير النوافذ</translation>
 <translation id="5806447147478173900">إجمالي مساحة التخزين التي تستخدمها المواقع الإلكترونية المعروضة: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0 درجة (تلقائي)</translation>
@@ -6089,6 +6094,7 @@
 <translation id="6469557521904094793">تفعيل شبكة الجوّال</translation>
 <translation id="6470823736074966819">كتم صوت الإشعارات</translation>
 <translation id="6472893788822429178">عرض زر الصفحة الرئيسية</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{‏تم حفظ كلمة مرور واحدة ({COUNT}) على هذا الجهاز فقط. لاستخدام كلمة المرور على أجهزتك الأخرى، يمكنك &lt;a target='_blank' href='chrome://password-manager/'&gt;حفظها في حسابك على Google‏&lt;/a&gt;.}zero{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدام كلمات المرور على أجهزتك الأخرى، يمكنك &lt;a target='_blank' href='chrome://password-manager/'&gt;حفظها في حسابك على Google‏&lt;/a&gt;.}two{‏تم حفظ كلمتَي مرور ({COUNT}) على هذا الجهاز فقط. لاستخدام كلمتَي المرور على أجهزتك الأخرى، يمكنك &lt;a target='_blank' href='chrome://password-manager/'&gt;حفظهما في حسابك على Google‏&lt;/a&gt;.}few{‏تم حفظ {COUNT} كلمات مرور على هذا الجهاز فقط. لاستخدام كلمات المرور على أجهزتك الأخرى، يمكنك &lt;a target='_blank' href='chrome://password-manager/'&gt;حفظها في حسابك على Google‏&lt;/a&gt;.}many{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدام كلمات المرور على أجهزتك الأخرى، يمكنك &lt;a target='_blank' href='chrome://password-manager/'&gt;حفظها في حسابك على Google‏&lt;/a&gt;.}other{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدام كلمات المرور على أجهزتك الأخرى، يمكنك &lt;a target='_blank' href='chrome://password-manager/'&gt;حفظها في حسابك على Google‏&lt;/a&gt;.}}</translation>
 <translation id="6474498546677193336">‏تعذّر إلغاء المشاركة بسبب استخدام تطبيق لهذا الملف. سيتم إلغاء مشاركة الملف عند إيقاف Linux.</translation>
 <translation id="6474884162850599008">‏إلغاء ربط حساب Google Drive</translation>
 <translation id="6475294023568239942">‏يجب إخلاء بعض المساحة على القرص أو تغيير حجم القرص في Linux من الإعدادات.</translation>
@@ -7247,6 +7253,7 @@
 <translation id="7520766081042531487">بوابة التصفّح المتخفي: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">عرض الاختصارات</translation>
 <translation id="7522255036471229694">‏قل "Ok Google".</translation>
+<translation id="7523117833414447032">عند قراءة الأحرف الكبيرة</translation>
 <translation id="7523585675576642403">إعادة تسمية الملف الشخصي</translation>
 <translation id="7525067979554623046">إنشاء</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{واحد آخر}zero{{NUM_DOWNLOADS} آخر}two{({NUM_DOWNLOADS}) آخران}few{{NUM_DOWNLOADS} أخرى}many{{NUM_DOWNLOADS} أخرى}other{{NUM_DOWNLOADS} أخرى}}</translation>
@@ -7589,6 +7596,7 @@
 <translation id="7817361223956157679">‏لا تعمل لوحة المفاتيح على الشاشة على تطبيقات Linux بعد.</translation>
 <translation id="7818135753970109980">تمت إضافة مظهر جديد (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819605256207059717">حظرت مؤسستك هذا الملف.</translation>
+<translation id="7820400255539998692">يمكنك حذف "<ph name="FILENAME" />" لكي لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="7820561748632634942">هل تريد تخصيص مفاتيح تحكّم إضافية؟</translation>
 <translation id="782057141565633384">نس&amp;خ عنوان الفيديو</translation>
 <translation id="7824864914877854148">تعذَّر إكمال النسخ الاحتياطي بسبب حدوث خطأ</translation>
@@ -8516,6 +8524,7 @@
 <translation id="8654151524613148204">عذرًا، الملف كبير جدًا حتى يتمكن الكمبيوتر من معالجته.</translation>
 <translation id="8655295600908251630">القناة</translation>
 <translation id="8655972064210167941">فشل تسجيل الدخول، نظرًا لعدم القدرة على التحقق من كلمة مرورك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
+<translation id="8656888282555543604">تفعيل ميزة تسجيل لغة برايل</translation>
 <translation id="8657393004602556571">هل تريد تجاهل الملاحظات؟</translation>
 <translation id="8661290697478713397">ف&amp;تح رابط في نافذة التصفح المتخفي</translation>
 <translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>

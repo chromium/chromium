@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">May na-detect na firewall</translation>
 <translation id="1075811647922107217">Laki ng page</translation>
+<translation id="1082009148392559545">Dina-download ang screen saver</translation>
 <translation id="1094693127011229778">Hindi available ang IP address</translation>
 <translation id="1113892970288677790">Pumili ng mga na-curate na artwork at larawan</translation>
 <translation id="1119447706177454957">Panloob na error</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">Document Feeder (Isang bahagi)</translation>
 <translation id="1643449475550628585">Araw-araw na palitan ang larawan sa wallpaper</translation>
 <translation id="1644574205037202324">History</translation>
+<translation id="1651925268237749928">Pumili ka ng naka-share na album. Puwedeng magdagdag o magbago ng mga larawan ang ibang tao. Posibleng gumagamit ang iyong wallpaper ng mga larawang kasalukuyang wala sa album na ito.</translation>
 <translation id="1662989795263954667">Huminto - Wala nang ink</translation>
 <translation id="1664796644829245314">I-preview ang <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Built-in na VPN</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">Pinapamahalaan ng <ph name="FIRST_MANAGER" /> at <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Mga name server</translation>
 <translation id="1731082422893354635">Bluetooth na touchpad</translation>
+<translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Hindi ma-load ang mga larawan. Suriin ang iyong koneksyon sa network o subukang i-load ulit ang mga larawan.</translation>
 <translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Lumabas sa preview ng wallpaper</translation>
@@ -236,6 +239,7 @@
 <translation id="319101249942218879">Pinalitan ang larawan ng avatar</translation>
 <translation id="3192947282887913208">Mga Audio File</translation>
 <translation id="3199982728237701504">Document Feeder (Dalawang bahagi)</translation>
+<translation id="3201315366910775591">Puwedeng i-update ng ibang tao ang mga naka-share na album</translation>
 <translation id="3211671540163313381">D-pad para sa keymapping</translation>
 <translation id="3226405216343213872">Naghahanap ng mga scanner</translation>
 <translation id="3226657629376379887">Menu ng mga pagkilos sa layout</translation>
@@ -598,6 +602,7 @@
 <translation id="636850387210749493">Pagpapatala ng negosyo</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Subukan ang iyong keyboard</translation>
+<translation id="6382182670717268353">Preview ng Screen saver</translation>
 <translation id="6388847657025262518">Nag-jam ang document feeder ng scanner. Tingnan ang feeder at subukan ulit.</translation>
 <translation id="6394634179843537518">Magdagdag ng file</translation>
 <translation id="6410257289063177456">Mga File ng Larawan</translation>
@@ -653,6 +658,7 @@
 <translation id="6838167112108853532">Hindi ma-disable o maalis ang APN na ito. Tiyaking naka-disable o inalis ang mga naka-enable na naka-attach na APN.</translation>
 <translation id="6853312040151791195">Rate ng Pag-discharge</translation>
 <translation id="6889786074662672253">Habang nagre-restart, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posible itong abutin nang ilang minuto at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
+<translation id="6900701049656042631">Walang anumang larawan ang album na ito. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Bumalik sa <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Nakabukas ang takip ng scanner. Isara ang takip at subukan ulit.</translation>
 <translation id="6911383237894364323">Hindi makakonekta sa mga media server</translation>
@@ -687,6 +693,7 @@
 <translation id="7177485034254901881">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7180865173735832675">I-customize</translation>
+<translation id="7184043045742675738">Mag-click sa anumang key para i-customize ang iyong button. Baguhin ang posisyon ng key gamit ang mouse o mga arrow key.</translation>
 <translation id="7212734716605298123">Mga update sa firmware para sa mga external na device</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
 <translation id="725133483556299729">Pumili ng email</translation>
@@ -728,6 +735,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB na touchscreen</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> pa</translation>
+<translation id="7613724632293948900">Baguhin ang posisyon gamit ang mouse o mga arrow key.</translation>
 <translation id="7620771111601174153">Matuto pa sa Help Center</translation>
 <translation id="763165478673169849">Oras ng Huling Pag-reset</translation>
 <translation id="7648838807254605802">Mataas na latency ng HTTPS</translation>
@@ -850,6 +858,7 @@
 <translation id="8798441408945964110">Pangalan ng provider</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
+<translation id="8820457400746201697">Ilipat ang asul na touch point sa isang pagkilos. Piliin ang nauugnay na key para mag-customize.</translation>
 <translation id="8834539327799336565">Kasalukuyang nakakonekta</translation>
 <translation id="8845001906332463065">Humingi ng tulong</translation>
 <translation id="8855781559874488009">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP na website</translation>

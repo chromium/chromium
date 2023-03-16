@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Proširi odjeljak <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Isključivanje zvuka za određenu web-lokaciju.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# kolačić}one{# kolačić}few{# kolačića}other{# kolačića}}</translation>
+<translation id="4478158430052450698">Olakšavanje prilagodbe zumiranja za različite web-lokacije</translation>
 <translation id="4479647676395637221">Web-lokacije moraju tražiti dopuštenje za pristup kameri (preporučeno)</translation>
 <translation id="4505788138578415521">URL je proširen</translation>
 <translation id="4534723447064627427">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašem mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>

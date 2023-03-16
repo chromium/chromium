@@ -684,6 +684,7 @@
 <translation id="259821504105826686">فوٹوگرافک اور ڈیجیٹل آرٹس</translation>
 <translation id="2601150049980261779">رومانوی فلمیں</translation>
 <translation id="2604589665489080024">پاپ میوزک</translation>
+<translation id="2606760465469169465">خودکار تصدیق کریں</translation>
 <translation id="2610561535971892504">کلک کر کے کاپی کریں</translation>
 <translation id="2617988307566202237">‏Chrome درج ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -1902,6 +1903,7 @@
 <translation id="5606444889871204172">‏<ph name="BEGIN_BOLD" />آپ کس طرح اپنے ڈیٹا کا نظم کر سکتے ہیں:<ph name="END_BOLD" /> Chrome ‏4 ہفتوں سے زیادہ پرانی سائٹس کو خودکار طور پر حذف کر دیتا ہے۔ آپ کے کسی سائٹ کو دوبارہ ملاحظہ کرنے پر فہرست میں وہ دوبارہ نظر آ سکتی ہے۔ آپ کسی سائٹ کو اپنے لیے اشتہارات تجویز کرنے سے مسدود اور Chrome کی ترتیبات میں کسی بھی وقت سائٹ کے تجویز کردہ اشتہارات کو آف بھی کر سکتے ہیں۔</translation>
 <translation id="5610142619324316209">کنکشن چیک کیا جا رہا ہے</translation>
 <translation id="5610807607761827392">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کارڈز اور پتوں کا نظم کر سکتے ہیں۔</translation>
+<translation id="5611398002774823980">اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="561165882404867731">‏اس صفحہ کو Google ترجمہ ایپ کی مدد سے ترجمہ کریں</translation>
 <translation id="5612720917913232150"><ph name="URL" /> آپ کے کمپیوٹر کا مقام استعمال کرنا چاہتا ہے</translation>
 <translation id="561669346091975195">‏سائنسی افسانوی اور تصوراتی TV شوز</translation>
@@ -3189,6 +3191,7 @@
 <translation id="8806285662264631610">نہانے اور جسم کے پروڈکٹس</translation>
 <translation id="8807160976559152894">ہر صفحہ کے بعد تراشیں</translation>
 <translation id="8809203544698246977">مسدود کردہ موضوعات یہاں دکھائی دیں گی</translation>
+<translation id="8811470563853401328">اکاؤنٹ میں پتہ محفوظ کریں؟</translation>
 <translation id="8813277370772331957">مجھے بعد میں یاد دلائیں</translation>
 <translation id="8814707942599948500">‏C8 لفافہ</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنی Chrome کی ترتیبات سے Chrome اپ ڈیٹ کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
@@ -3282,6 +3285,7 @@
 <translation id="9042617223719777575">بڑی گنجائش</translation>
 <translation id="9044359186343685026">‏Touch ID کا استعمال کریں</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">ان کارروائیوں کے لیے <ph name="POLICY_NAME" /> پالیسی کو <ph name="POLICY_VALUE" /> پر سیٹ کرنے کی ضرورت ہے: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">‏‎24 x 36 انچ</translation>
 <translation id="9049981332609050619">آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی لیکن سرور نے ایک غلط سرٹیفکیٹ پیش کیا۔</translation>
 <translation id="9050666287014529139">پاس فریز</translation>

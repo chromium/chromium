@@ -141,6 +141,7 @@
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> не е поврзана.</translation>
 <translation id="1677582821739292812">Некој го гледа вашиот екран</translation>
+<translation id="1679841710523778799">Зголемете ја осветленоста</translation>
 <translation id="1683399938733266832">Тековно користење на ЦПУ: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Тајмер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">Критична</translation>
 <translation id="2860184359326882502">Најдобро совпаѓање</translation>
 <translation id="2865888419503095837">Информации за мрежа</translation>
+<translation id="2872353916818027657">Замени примарен монитор</translation>
 <translation id="2872961005593481000">Исклучи</translation>
 <translation id="2878884018241093801">Нема неодамнешни ставки</translation>
 <translation id="2885950158625301909">Дознајте повеќе</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">USB-Ц уред</translation>
 <translation id="3455468639467374593">Шаблон, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Ресетирајте го нивото на зумирање</translation>
 <translation id="3465223694362104965">Друга тастатура се поврзала со уредов од вашето последно најавување. Проверете дали ѝ верувате на тастатурава пред да ја користите.</translation>
 <translation id="3465356146291925647">Управувана од администраторот</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -720,6 +723,7 @@
 <translation id="468293128311738995">Апликации од телефонот</translation>
 <translation id="4690510401873698237">Полицата е најдолу</translation>
 <translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
+<translation id="4698850295812410683">Ги прикажува алатките за пенкалото</translation>
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
 <translation id="4706121060329443414">Подоцна ќе се изврши обид за преземање. Говорот ќе биде испратен до Google за обработка засега.</translation>
 <translation id="470644585772471629">Инверзија на боите</translation>
@@ -839,6 +843,7 @@
 <translation id="5308380583665731573">Поврзи</translation>
 <translation id="5313326810920013265">Поставки за Bluetooth</translation>
 <translation id="5314219114274263156">Направена е снимка од екранот</translation>
+<translation id="5316716239522500219">Отсликај монитори</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5319712128756744240">Спарете нов уред</translation>
 <translation id="5322611492012084517">Не може да се најде телефонот</translation>
@@ -991,6 +996,7 @@
 <translation id="6045629311476491587">Се користи од <ph name="APP_COUNT" /> апликации</translation>
 <translation id="6045998054441862242">Вклучете го режимот со висок контраст</translation>
 <translation id="6047696787498798094">Споделувањето екран ќе запре кога ќе промените на друг корисник. Дали сакате да продолжите?</translation>
+<translation id="6052614013050385269">Десен клик на линк</translation>
 <translation id="6054305421211936131">Најавете се со паметна картичка</translation>
 <translation id="6059276912018042191">Неодамнешни картички на Chrome</translation>
 <translation id="6062360702481658777">Автоматски ќе бидете одјавени за <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1023,6 +1029,7 @@
 <translation id="6213808132343683860">Снимете делумна слика од екранот или снимка од екранот</translation>
 <translation id="6220928844947387476">Сега можете истовремено да се снимате себеси и екранот</translation>
 <translation id="622484624075952240">Долу</translation>
+<translation id="6228457605945141550">Намалете ја осветленоста</translation>
 <translation id="623116199192908855">Емитувајте го екранот од вашиот Chromebook</translation>
 <translation id="6231419273573514727">Перформансите на периферните уреди може да бидат ограничени</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ги користи камерата и микрофонот во моментов</translation>
@@ -1192,6 +1199,7 @@
 <translation id="7067196344162293536">Автоматско ротирање</translation>
 <translation id="7068360136237591149">Отвори датотеки</translation>
 <translation id="7076293881109082629">Пријавување</translation>
+<translation id="7076878155205969899">Го исклучува звукот</translation>
 <translation id="7086931198345821656">Ажурирањево бара фабричко ресетирање на вашиот <ph name="DEVICE_TYPE" />. Сите податоци ќе се избришат. Дознајте повеќе за најновото ажурирање на <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Пристап со прекинувачи</translation>
 <translation id="7098053464892629930">Преземете ја апликацијата за <ph name="NAME" /> на Google Play за да ги видите сите достапни функции</translation>

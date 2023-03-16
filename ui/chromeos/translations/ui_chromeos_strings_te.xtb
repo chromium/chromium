@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">చిత్ర రిజల్యూషన్</translation>
 <translation id="1972984168337863910">అభిప్రాయ ప్యానెల్‌ల ఫైళ్లు విస్తరించు</translation>
 <translation id="1995337122023280937">ఫైల్ లొకేషన్‌కు వెళ్ళు</translation>
-<translation id="1999709132469742660">అన్ని URLలకు ఫైల్ యాక్సెస్</translation>
 <translation id="2001796770603320721">డిస్క్‌లో మేనేజ్ చేయండి</translation>
 <translation id="2009067268969781306">డ్రైవ్‌ను ఫార్మాట్ చేయడం వలన దానిలో నిల్వ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="2025955442973426285">టైగ్రిన్యా</translation>
@@ -543,7 +542,6 @@
 <translation id="5323213332664049067">లాటిన్ అమెరికన్</translation>
 <translation id="5330145655348521461">ఈ ఫైల్స్ వేరే డెస్క్‌టాప్‌లో తెరవబడ్డాయి. దీన్ని చూడటానికి <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)కు తరలించండి.</translation>
 <translation id="5330512191124428349">సమాచారం పొందండి</translation>
-<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" />‌ను మినహాయించి అన్ని URLలకు ఫైల్ యాక్సెస్</translation>
 <translation id="5344246330454251646">Bruschetta షేరింగ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="535792325654997756">పిల్లులతో ఉన్న వ్యక్తి</translation>
 <translation id="5358764674931277">ఫ్రేమ్ రేట్</translation>
@@ -942,6 +940,7 @@
 <translation id="8492972329130824181">ఇంటి నెట్‌వర్క్ అందుబాటులో లేదు. కనెక్ట్ చేయడానికి మొబైల్ డేటా రోమింగ్‌ను తప్పనిసరిగా ఎనేబుల్ చేయాలి.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను సంగ్రహిస్తోంది...</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి, అది మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతోంది</translation>
+<translation id="8512483403832814140">ఎప్పుడైనా</translation>
 <translation id="8521441079177373948">యుకె</translation>
 <translation id="853494022971700746">ఫ్రెంచ్ (ఫ్రాన్స్)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>

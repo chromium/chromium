@@ -1131,7 +1131,8 @@
 <translation id="1962233722219655970">이 페이지에서 사용자 컴퓨터에서 작동하지 않는 Native Client 앱을 사용합니다.</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
 <translation id="1965624977906726414">특별한 권한이 필요하지 않습니다.</translation>
-<translation id="1966649499058910679">각 단어를 읽을 때 강조표시</translation>
+<translation id="1966649499058910679">각 단어를 읽을 때 강조 표시
+</translation>
 <translation id="1967970931040389207">핫스팟 사용 설정</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
 <translation id="1969654639948595766">WebRTC 텍스트 로그(<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
@@ -3730,6 +3731,7 @@
 <translation id="4274667386947315930">로그인 데이터</translation>
 <translation id="4274673989874969668">사이트에서 나간 후에도 사이트가 동기화를 계속하여 사진 업로드나 채팅 메시지 전송과 같은 작업을 마무리합니다.</translation>
 <translation id="4275291496240508082">시작 알림음</translation>
+<translation id="4275397969489577657">이벤트 스트림 로깅 사용</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4277434192562187284">XML 구성 소스</translation>
 <translation id="4278390842282768270">허용됨</translation>
@@ -4541,6 +4543,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5018207570537526145">확장 프로그램 웹사이트 열기</translation>
 <translation id="5018526990965779848">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="5020008942039547742">다른 기간 선택</translation>
+<translation id="5020651427400641814">음성 로깅 사용</translation>
 <translation id="5021750053540820849">아직 업데이트되지 않음</translation>
 <translation id="5024511550058813796">동기화된 모든 기기에 방문 기록이 유지되므로 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="5026492829171796515">로그인하여 Google 계정 추가</translation>
@@ -4973,6 +4976,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5432145523462851548">폴더에서 <ph name="FILE_NAME" /> 보기</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 암호화</translation>
+<translation id="5435274640623994081">이어콘 로깅 사용</translation>
 <translation id="5435779377906857208"><ph name="HOST" />의 위치 액세스 항상 허용</translation>
 <translation id="5436492226391861498">프록시 터널을 기다리는 중...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> 검색:</translation>
@@ -5320,7 +5324,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5751345516399502412">테더링 준비 여부 확인</translation>
 <translation id="5755022574660047665">Google 포토 추억</translation>
 <translation id="5756163054456765343">고객센터(&amp;H)</translation>
-<translation id="5757375109985023827">미리 볼 탭 선택</translation>
 <translation id="5758631781033351321">여기에서 읽기 목록을 확인할 수 있습니다</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" />을(를) 통해 인쇄하려고 전송한 문서를 <ph name="APP_NAME" />에서 읽을 수 있습니다.</translation>
 <translation id="5762787084360227629">Google 계정 정보 입력</translation>
@@ -8535,6 +8538,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8654151524613148204">파일이 너무 커서 컴퓨터에서 처리할 수 없습니다.</translation>
 <translation id="8655295600908251630">채널</translation>
 <translation id="8655972064210167941">비밀번호를 확인할 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
+<translation id="8656888282555543604">점자 로깅 사용</translation>
 <translation id="8657393004602556571">의견을 삭제하시겠습니까?</translation>
 <translation id="8661290697478713397">시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> 네트워크에 연결</translation>

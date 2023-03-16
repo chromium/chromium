@@ -273,6 +273,7 @@
 <translation id="6327105987658262776">ما مِن تحديث متوفّر.</translation>
 <translation id="6412673304250309937">‏يعمل على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chrome. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفّح Chrome أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفّح الآمن".</translation>
 <translation id="6418662306461808273">‏هل تريد الانتقال إلى ملف شخصي حالي على Chrome؟</translation>
+<translation id="6493527311031785448">‏يحاول Google Chrome <ph name="AUTHENTICATION_PURPOSE" />.</translation>
 <translation id="6506909944137591434">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للمكان حولك.</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Google Chrome</translation>
 <translation id="659498884637196217">‏تعديل كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>

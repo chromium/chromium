@@ -141,6 +141,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" />이 연결되어 있지 않습니다.</translation>
 <translation id="1677582821739292812">누가 내 화면을 보고 있습니다.</translation>
+<translation id="1679841710523778799">밝게</translation>
 <translation id="1683399938733266832">현재 CPU 사용량: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 타이머 · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@
 <translation id="2849936225196189499">중요</translation>
 <translation id="2860184359326882502">가장 일치하는 결과</translation>
 <translation id="2865888419503095837">네트워크 정보</translation>
+<translation id="2872353916818027657">기본 모니터 전환</translation>
 <translation id="2872961005593481000">종료</translation>
 <translation id="2878884018241093801">최근 항목이 없습니다.</translation>
 <translation id="2885950158625301909">자세히 알아보기</translation>
@@ -470,6 +472,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3455468639467374593">템플릿, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">확대/축소 수준 재설정</translation>
 <translation id="3465223694362104965">마지막으로 로그인한 이후로 다른 키보드가 이 기기에 연결되었습니다. 사용하기 전에 이 키보드를 신뢰하는지 확인하세요.</translation>
 <translation id="3465356146291925647">관리자가 관리함</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -719,6 +722,7 @@
 <translation id="468293128311738995">휴대전화 앱</translation>
 <translation id="4690510401873698237">실행기 하단에 표시</translation>
 <translation id="4696813013609194136">부모 코드로 기기 잠금 해제</translation>
+<translation id="4698850295812410683">스타일러스 도구 표시</translation>
 <translation id="4702647871202761252">개인 정보 보호 화면이 꺼져 있습니다</translation>
 <translation id="4706121060329443414">다운로드가 나중에 시도됩니다. 일단 처리를 위해 음성 파일이 Google로 전송됩니다.</translation>
 <translation id="470644585772471629">색상 반전</translation>
@@ -838,6 +842,7 @@
 <translation id="5308380583665731573">연결</translation>
 <translation id="5313326810920013265">블루투스 설정</translation>
 <translation id="5314219114274263156">화면 녹화됨</translation>
+<translation id="5316716239522500219">모니터 미러</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5319712128756744240">새 기기와 페어링</translation>
 <translation id="5322611492012084517">휴대전화를 찾을 수 없음</translation>
@@ -990,6 +995,7 @@
 <translation id="6045629311476491587">앱 <ph name="APP_COUNT" />개에서 사용 중</translation>
 <translation id="6045998054441862242">고대비 모드 사용</translation>
 <translation id="6047696787498798094">다른 사용자로 전환하면 화면 공유가 중단됩니다. 계속하시겠습니까?</translation>
+<translation id="6052614013050385269">마우스 오른쪽 버튼으로 링크 클릭</translation>
 <translation id="6054305421211936131">스마트 카드로 로그인</translation>
 <translation id="6059276912018042191">최근 Chrome 탭</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> 후 자동으로 로그아웃됩니다.</translation>
@@ -1022,6 +1028,7 @@
 <translation id="6213808132343683860">부분 스크린샷 찍기 또는 화면 녹화</translation>
 <translation id="6220928844947387476">이제 내 모습과 화면을 동시에 녹화할 수 있습니다.</translation>
 <translation id="622484624075952240">아래</translation>
+<translation id="6228457605945141550">어둡게</translation>
 <translation id="623116199192908855">Chromebook에서 화면 전송하기</translation>
 <translation id="6231419273573514727">주변기기 성능이 제한될 수 있습니다</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />에서 카메라와 마이크를 사용 중입니다.</translation>
@@ -1191,6 +1198,7 @@
 <translation id="7067196344162293536">자동 회전</translation>
 <translation id="7068360136237591149">파일을 열어 줘</translation>
 <translation id="7076293881109082629">로그인</translation>
+<translation id="7076878155205969899">음소거</translation>
 <translation id="7086931198345821656">이 업데이트를 적용하려면 <ph name="DEVICE_TYPE" />의 파워워시가 필요합니다. 모든 데이터가 삭제됩니다. 최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>
 <translation id="7088960765736518739">스위치 제어</translation>
 <translation id="7098053464892629930">사용할 수 있는 모든 기능을 보려면 Google Play에서 <ph name="NAME" /> 앱을 다운로드하세요</translation>

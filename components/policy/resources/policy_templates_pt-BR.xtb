@@ -7135,9 +7135,6 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
       Esta política depende da permissão de assinaturas SHA-1 pela pilha de verificação de certificados do sistema operacional. Se a atualização de um SO alterar o modo como esse sistema lida com certificados SHA-1, talvez esta política deixe de ter efeito. Além disso, esta política é usada como alternativa temporária para dar às empresas mais tempo para deixar de usar SHA-1. Esta política será removida no dia 1 de janeiro de 2019 ou em uma data próxima a essa.
 
       Se esta política não estiver configurada ou estiver configurada como false, o <ph name="PRODUCT_NAME" /> seguirá a programação de suspensão de uso de SHA-1 anunciada publicamente.</translation>
-<translation id="7574067085781592499">O particionamento de armazenamento terceirizado fica ativado por padrão para alguns usuários na versão M113 e mais recentes, mas pode ser desativado por uma Sinalização do Chrome.
-          Se esta política for definida como <ph name="ALLOW_PARTITIONING_VALUE" /> ou for deixada sem definição, esse particionamento poderá ser ativado.
-          Se a política for definida como <ph name="BLOCK_PARTITIONING_VALUE" />, não vai ser possível ativar o particionamento de armazenamento de terceiros.</translation>
 <translation id="7577082478271919056">Permitir que um app da Web de quiosque abra outra janela do navegador</translation>
 <translation id="7578142001795552218">Esta política permite que as Respostas rápidas acessem conteúdos selecionados e enviem informações ao servidor para receber resultados de conversão de unidades.
 
@@ -7779,21 +7776,6 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 
           Se esta política não for definida, o destaque do cursor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="8160572976152509481">Permitir que o dispositivo seja desligado apenas com o botão liga/desliga</translation>
-<translation id="8161309952608059239">Lista de ações a serem executadas quando o tempo limite da política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> for atingido.
-
-      Se a <ph name="IDLE_TIMEOUT_POLICY_NAME" /> não for definida, esta política não terá efeito.
-
-      Quando o tempo limite da <ph name="IDLE_TIMEOUT_POLICY_NAME" /> for atingido, o <ph name="PRODUCT_NAME" /> vai executar as ações configuradas nesta política.
-
-      Se esta política for deixada em branco ou sem definição, a <ph name="IDLE_TIMEOUT_POLICY_NAME" /> não terá efeito.
-
-      As ações disponíveis são:
-
-      <ph name="CLOSE_BROWSERS_ACTION" />: fechar todos os PWAs e janelas do navegador deste perfil. Indisponível no Android.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: mostrar a janela do seletor de perfil. Indisponível no Android.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: limpar os dados de navegação correspondentes. Consulte a política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> para saber mais detalhes.</translation>
 <translation id="8164144100557223371">Desativar o ponto de entrada da barra de ferramentas de recursos experimentais do navegador</translation>
 <translation id="8164687848393015214">Se a política estiver definida como "Ativada", ela enviará pacotes de monitoramento de rede (<ph name="HEARTBEATS_TERM" />) para o servidor de gerenciamento. Com isso, o status de conexão é monitorado e o servidor consegue detectar se o dispositivo está off-line.
 

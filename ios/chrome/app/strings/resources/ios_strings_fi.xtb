@@ -519,6 +519,7 @@ Tietosi salataan synkronoinnin tunnuslauseesi avulla. Aloita synkronointi antama
 <translation id="4737560986434232178">Hiljattain suljetut välilehdet</translation>
 <translation id="473775607612524610">Päivitä</translation>
 <translation id="4747097190499141774">Google Payn maksutapoja tai osoitteita ei salata tunnuslauseella. Salattua dataa voidaan lukea vain tunnuslauseesi avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, synkronointi täytyy nollata. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Vain tällä laitteella, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Uusi incognito-välilehti</translation>
 <translation id="4766112107778026136">Discover ja seuraaminen</translation>
 <translation id="4775879719735953715">Oletusselain</translation>
@@ -943,6 +944,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7600965453749440009">Älä koskaan käännä kieltä <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Ponn.ikk. estetty (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Poista salasana</translation>
+<translation id="7611459119367035420">Kiinnitetyt välilehdet löytyvät täältä.</translation>
 <translation id="7638584964844754484">Väärä tunnuslause.</translation>
 <translation id="7646263789464975852">Valikko → Asetukset → Turvatarkistus</translation>
 <translation id="7646772052135772216">Salasanojen synkronointi ei toimi</translation>
@@ -955,6 +957,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7720410380936703141">YRITÄ UUDELLEEN</translation>
 <translation id="7726702057919861819">Valikko → Asetukset → Poista selaustiedot</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Vain tällä laitteella.</translation>
 <translation id="7738120385185846461">Ilmoita ongelmasta…</translation>
 <translation id="7741325291586284254">Uusi sivu incognito-välilehdellä</translation>
 <translation id="7744394900930577716">Salasanat muissa sovelluksissa</translation>

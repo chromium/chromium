@@ -93,6 +93,7 @@
 <translation id="257931822824936280">প্রসারিত - সঙ্কুচিত করতে ক্লিক করুন৷</translation>
 <translation id="2586657967955657006">ক্লিপবোর্ড</translation>
 <translation id="2597457036804169544">সাইটে ডার্ক থিম প্রয়োগ করবেন না</translation>
+<translation id="2606760465469169465">অটোমেটিক যাচাই</translation>
 <translation id="2621115761605608342">একটি নির্দিষ্ট সাইটের জন্য জাভাস্ক্রিপ্ট মঞ্জুর করুন।</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">আপনার বেছে নেওয়া পরিচিতি <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-এর সাথে শেয়ার করা হবে।</translation>
 <translation id="5216942107514965959">আজ শেষবার দেখা হয়েছে</translation>
 <translation id="5225463052809312700">ক্যামেরা চালু করুন</translation>
+<translation id="5229337741799419985">এই সেটিংটি আপনাকে শনাক্ত না করে বা সাইটগুলিকে আপনার ব্রাউজিং ইতিহাস দেখার অনুমতি না দিয়ে কাজ করে</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' সরান</translation>
 <translation id="528192093759286357">উপর থেকে টেনে আনুন এবং পূর্ণ স্ক্রিন থেকে বেরিয়ে যেতে পিছনে ফেরার বোতাম স্পর্শ করুন।</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6689172468748959065">প্রোফাইল ফটো</translation>
 <translation id="6697925417670533197">ডাউনলোড করা হচ্ছে</translation>
+<translation id="6701547804986694515">আপনি যে বট নন তা যাচাই করার জন্য আপনার ভিজিট করা সাইটগুলি Chrome-এ তথ্য সেভ করতে পারে। আপনি যখন ব্রাউজ করা চালিয়ে যান, তখন সাইটগুলি Chrome-এ চেক করতে পারে এবং প্রথম সাইট থেকে যাচাই করতে পারে যে আপনি সম্ভবত একজন প্রকৃত ব্যক্তি</translation>
 <translation id="6722828510648505498">পরিচয় পরিষেবা প্রদানকারী থেকে সাইন-ইন প্রম্পট ব্লক করুন।</translation>
 <translation id="6746124502594467657">নিচে যান</translation>
 <translation id="6749077623962119521">অনুমতি রিসেট করবেন?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">একটি ছবি বেছে নিন</translation>
 <translation id="8801436777607969138">একটি নির্দিষ্ট সাইটের জন্য জাভাস্ক্রিপ্ট ব্লক করুন।</translation>
 <translation id="8803526663383843427">যখন চালু থাকে</translation>
+<translation id="8805385115381080995">আপনি একজন প্রকৃত ব্যক্তি তা যাচাই করার জন্য সাইটগুলি আপনাকে জিজ্ঞাসা করার সম্ভাবনা কম, তাই ব্রাউজ করা দ্রুততর হবে</translation>
 <translation id="8816026460808729765">সেন্সর অ্যাক্সেস করা থেকে সাইটকে ব্লক করুন</translation>
 <translation id="8823559166155093873">কুকি ব্লক করুন</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">এই পৃষ্ঠাটি বিপজ্জনক</translation>
 <translation id="9201023452444595544">যেকোনও অফলাইন ডেটা মুছে ফেলা যাবে</translation>
 <translation id="930525582205581608">এই সাইট সম্পর্কিত সবকিছু সরিয়ে দেবেন?</translation>
+<translation id="947156494302904893">আপনি যে সাইটগুলি দেখেন সেগুলি যাচাই করতে পারে যে আপনি একজন প্রকৃত ব্যক্তি এবং বট নন</translation>
 <translation id="967624055006145463">ডেটা স্টোর করা হয়েছে</translation>
 </translationbundle>

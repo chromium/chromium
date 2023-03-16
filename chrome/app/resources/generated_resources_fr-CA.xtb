@@ -3717,6 +3717,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4274667386947315930">Données de connexion</translation>
 <translation id="4274673989874969668">Lorsque vous quittez un site, la synchronisation de celui-ci peut se poursuivre afin de terminer certaines tâches, comme téléverser des photos ou envoyer un message de clavardage</translation>
 <translation id="4275291496240508082">Son de démarrage</translation>
+<translation id="4275397969489577657">Activer la journalisation de flux d'événements</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4277434192562187284">Source de configuration XML</translation>
 <translation id="4278390842282768270">Autorisé</translation>
@@ -4527,6 +4528,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5018207570537526145">Ouvrir le site Web pour les extensions</translation>
 <translation id="5018526990965779848">Envoyer les données d'utilisation et de diagnostic. Aidez-nous à améliorer votre expérience Android en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="5020008942039547742">Choisissez une autre fenêtre</translation>
+<translation id="5020651427400641814">Activer la journalisation vocale</translation>
 <translation id="5021750053540820849">Pas encore mis à jour</translation>
 <translation id="5024511550058813796">Vous aurez accès à votre historique sur tous vos appareils synchronisés de sorte que vous pourrez reprendre le cours de vos activités</translation>
 <translation id="5026492829171796515">Connectez-vous pour ajouter un compte Google</translation>
@@ -4959,6 +4961,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5432145523462851548">Afficher <ph name="FILE_NAME" /> dans le dossier</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5434065355175441495">Chiffrement RSA PKCS #1</translation>
+<translation id="5435274640623994081">Activer la journalisation d'icône sonore</translation>
 <translation id="5435779377906857208">Toujours autoriser <ph name="HOST" /> à accéder à votre position</translation>
 <translation id="5436492226391861498">En attente du tunnel mandataire...</translation>
 <translation id="5436510242972373446">Recherche sur <ph name="SITE_NAME" /> :</translation>
@@ -5306,7 +5309,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5751345516399502412">Vérifier la préparation du partage de connexion</translation>
 <translation id="5755022574660047665">souvenirs de Google Photos</translation>
 <translation id="5756163054456765343">Centre d'aide</translation>
-<translation id="5757375109985023827">Sélectionner un onglet pour consulter l'aperçu</translation>
 <translation id="5758631781033351321">Vous trouverez votre liste de lecture ici</translation>
 <translation id="5759728514498647443">Les documents que vous envoyez à l'impression au moyen de <ph name="APP_NAME" /> peuvent être lus par <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Entrer les renseignements à propos de votre compte Google</translation>
@@ -8521,6 +8523,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8654151524613148204">Ce fichier est trop volumineux pour votre ordinateur.</translation>
 <translation id="8655295600908251630">Version</translation>
 <translation id="8655972064210167941">La connexion a échoué, car votre mot de passe n'a pas pu être vérifié. Veuillez communiquer avec votre administrateur ou réessayer.</translation>
+<translation id="8656888282555543604">Activer la journalisation en braille</translation>
 <translation id="8657393004602556571">Voulez-vous supprimer les commentaires?</translation>
 <translation id="8661290697478713397">Ouvrir le lien dans une fenêtre de navi&amp;gation privée</translation>
 <translation id="8662671328352114214">Se joindre au réseau <ph name="TYPE" /></translation>

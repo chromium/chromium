@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Khay nạp tài liệu (1 mặt)</translation>
 <translation id="1643449475550628585">Thay đổi hình nền hàng ngày</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
+<translation id="1651925268237749928">Bạn đã chọn một album chia sẻ. Người khác có thể thêm hoặc thay đổi ảnh. Hình nền của bạn có thể sử dụng ảnh hiện không có trong album này.</translation>
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
 <translation id="1664796644829245314">Xem trước <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN tích hợp sẵn</translation>
@@ -238,6 +239,7 @@
 <translation id="319101249942218879">Đã thay ảnh đại diện</translation>
 <translation id="3192947282887913208">Tệp âm thanh</translation>
 <translation id="3199982728237701504">Khay nạp tài liệu (2 mặt)</translation>
+<translation id="3201315366910775591">Người khác có thể cập nhật album chia sẻ</translation>
 <translation id="3211671540163313381">Ánh xạ phím cho d-pad</translation>
 <translation id="3226405216343213872">Đang tìm máy quét</translation>
 <translation id="3226657629376379887">Trình đơn thao tác của bố cục</translation>
@@ -656,6 +658,7 @@
 <translation id="6838167112108853532">Không thể tắt hoặc xoá APN này. Hãy nhớ tắt hoặc xoá các APN đính kèm đã bật.</translation>
 <translation id="6853312040151791195">Tốc độ xả pin</translation>
 <translation id="6889786074662672253">Khi đang khởi động lại, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình này có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
+<translation id="6900701049656042631">Album này không có ảnh nào. Để thêm ảnh, hãy truy cập <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Quay lại <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Nắp của máy quét đang mở. Hãy đóng nắp máy quét rồi thử lại.</translation>
 <translation id="6911383237894364323">Không thể kết nối với máy chủ phương tiện</translation>

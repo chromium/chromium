@@ -2010,6 +2010,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="272741954544380994">Caută imaginea cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Nu-mi mai reaminti</translation>
 <translation id="2727712005121231835">Dimensiunea actuală</translation>
+<translation id="2727744317940422214">A apărut o eroare. Trimite feedback cu #bruschetta în descriere. Codul de eroare este <ph name="ERROR" />. Nu s-a putut șterge. Poate fi necesar să ștergi manual.</translation>
 <translation id="2729314457178420145">Șterge și datele de navigare (<ph name="URL" />), acțiune care te poate deconecta de la Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome caută noi modalități de a reduce urmărirea și de a te proteja mai bine în timp ce navighezi. În plus, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> și îți dă posibilitatea să le gestionezi. Apoi, site-urile pe care le accesezi pot solicita informații despre interesele tale de la Chrome pentru a-ți afișa anunțuri.</translation>
 <translation id="2730029791981212295">Se face backup pentru aplicațiile și fișierele Linux</translation>
@@ -3730,6 +3731,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4274667386947315930">Date de conectare</translation>
 <translation id="4274673989874969668">După ce ieși de pe un site, acesta poate continua sincronizarea pentru a finaliza activități, cum ar fi încărcarea fotografiilor sau trimiterea unui mesaj de chat</translation>
 <translation id="4275291496240508082">Sunetul la pornire</translation>
+<translation id="4275397969489577657">Activează înregistrarea fluxului de evenimente</translation>
 <translation id="4275830172053184480">Reporniți gadgetul</translation>
 <translation id="4277434192562187284">Sursa de configurare XML</translation>
 <translation id="4278390842282768270">Se permite</translation>
@@ -4540,6 +4542,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5018207570537526145">Deschide site-ul extensiei</translation>
 <translation id="5018526990965779848">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date privind diagnosticarea și utilizarea dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google.</translation>
 <translation id="5020008942039547742">Alege altă fereastră</translation>
+<translation id="5020651427400641814">Activează înregistrarea vocală</translation>
 <translation id="5021750053540820849">Nu s-a actualizat încă</translation>
 <translation id="5024511550058813796">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai</translation>
 <translation id="5026492829171796515">Conectează-te pentru a adăuga un cont Google</translation>
@@ -4972,6 +4975,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5432145523462851548">Afișează <ph name="FILE_NAME" /> în dosar</translation>
 <translation id="543338862236136125">Editează parola</translation>
 <translation id="5434065355175441495">Criptare RSA PKCS #1</translation>
+<translation id="5435274640623994081">Activează înregistrarea audiogramei</translation>
 <translation id="5435779377906857208">Permite întotdeauna accesul <ph name="HOST" /> la locație</translation>
 <translation id="5436492226391861498">Se așteaptă tunelul proxy...</translation>
 <translation id="5436510242972373446">Caută <ph name="SITE_NAME" />:</translation>
@@ -5319,7 +5323,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5751345516399502412">Verifică gradul de pregătire pentru tethering</translation>
 <translation id="5755022574660047665">amintiri din Google Foto</translation>
 <translation id="5756163054456765343">C&amp;entrul de ajutor</translation>
-<translation id="5757375109985023827">Selectează o filă de previzualizat</translation>
 <translation id="5758631781033351321">Aici vei vedea lista de lectură</translation>
 <translation id="5759728514498647443">Documentele pe care le trimiți prin <ph name="APP_NAME" /> pentru a fi printate pot fi citite de <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Introdu informații despre Contul Google</translation>
@@ -7547,6 +7550,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7758450972308449809">Ajustează delimitările afișajului</translation>
 <translation id="7760004034676677601">Aceasta este pagina de pornire la care vă așteptați?</translation>
 <translation id="7762024824096060040">Contul nu poate fi folosit</translation>
+<translation id="7762243782113123335">A apărut o eroare. Trimite feedback cu #bruschetta în descriere. Codul de eroare este <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Adaugă o adresă</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de la <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Mută</translation>
@@ -8543,6 +8547,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8654151524613148204">Din păcate, fișierul este prea mare pentru a putea fi gestionat de computerul dvs.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">Nu s-a conectat, deoarece parola nu a putut fi confirmată. Contactează administratorul sau încearcă din nou.</translation>
+<translation id="8656888282555543604">Activează înregistrarea Braille</translation>
 <translation id="8657393004602556571">Renunți la feedback?</translation>
 <translation id="8661290697478713397">Deschide linkul într-o fereastră inco&amp;gnito</translation>
 <translation id="8662671328352114214">Conectează-te la rețeaua <ph name="TYPE" /></translation>
@@ -8645,6 +8650,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8740247629089392745">Poți să îi dai Chromebookul utilizatorului <ph name="SUPERVISED_USER_NAME" />. Configurarea este aproape gata, apoi conținutul va putea fi explorat.</translation>
 <translation id="8740672167979365981">Este necesară actualizarea sistemului de operare Chrome Flex</translation>
 <translation id="8741944563400125534">Ghid de configurare pentru acces prin comutare</translation>
+<translation id="8742395827132970586">Instalarea a eșuat. Se șterge</translation>
 <translation id="8742998548129056176">Acestea sunt informații generale despre dispozitiv și despre modul în care îl folosești (de exemplu, nivelul bateriei, activitatea pe sistem și în aplicații și erorile). Datele vor fi folosite pentru îmbunătățirea Android și unele informații cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android, să își îmbunătățească aplicațiile și produsele.</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8745034592125932220">Nu are permisiunea de a salva date pe dispozitiv</translation>

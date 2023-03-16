@@ -678,6 +678,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="259821504105826686">Fotografiya va raqamli sanʼat</translation>
 <translation id="2601150049980261779">Melodramalar</translation>
 <translation id="2604589665489080024">Pop musiqa</translation>
+<translation id="2606760465469169465">Avtomatik tekshiruv</translation>
 <translation id="2610561535971892504">Nusxa olish uchun bosing</translation>
 <translation id="2617988307566202237">Chrome quyidagi maʼlumotlarni <ph name="BEGIN_EMPHASIS" />saqlamaydi<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -1885,6 +1886,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Maʼlumotlaringizni qanday boshqarish mumkin:<ph name="END_BOLD" /> Chrome 4 haftadan eski saytlarga oid maʼlumotlarni avtomatik ravishda tozalab turadi. Agar biror saytga qayta kirsangiz, u haqdagi maʼlumot roʻyxatga yana kiritilishi mumkin. Chrome sozlamalari orqali istalgan vaqtda reklama taklif qiladigan saytni bloklash va saytlarning reklama taklif qilishini taqiqlash mumkin.</translation>
 <translation id="5610142619324316209">Internet aloqasini tekshiring</translation>
 <translation id="5610807607761827392">Karta va manzillarni <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali boshqarish mumkin.</translation>
+<translation id="5611398002774823980">Hisobda saqlash</translation>
 <translation id="561165882404867731">Bu sahifani Google Tarjima bilan tarjima qilish</translation>
 <translation id="5612720917913232150"><ph name="URL" /> sayti kompyuteringiz joylashuvi ma’lumotlaridan foydalanmoqchi</translation>
 <translation id="561669346091975195">Ilmiy fantastik va fentezi TV seriallar</translation>
@@ -3164,6 +3166,7 @@ Batafsil axborot:
 <translation id="8806285662264631610">Vanna va tana parvarishi mahsulotlari</translation>
 <translation id="8807160976559152894">Har bir sahifa chekkasini qirqish</translation>
 <translation id="8809203544698246977">Bloklangan mavzular shu yerda chiqadi</translation>
+<translation id="8811470563853401328">Manzil hisobda saqlansinmi?</translation>
 <translation id="8813277370772331957">Keyinroq eslatilsin</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali Chromeni yangilash uchun Enter tugmasini bosing</translation>
@@ -3257,6 +3260,7 @@ Batafsil axborot:
 <translation id="9042617223719777575">Koʻp sigʻimli</translation>
 <translation id="9044359186343685026">Touch ID ishlatish</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Amallarni (<ph name="ACTION_LIST" />) bajarish uchun <ph name="POLICY_NAME" /> siyosati uchun <ph name="POLICY_VALUE" /> qiymatini belgilang.</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>
 <translation id="9049981332609050619">Siz <ph name="DOMAIN" /> domenini ochmoqchi bo‘ldingiz, lekin server taqdim qilgan sertifikat haqiqiy emas.</translation>
 <translation id="9050666287014529139">Kodli ibora</translation>

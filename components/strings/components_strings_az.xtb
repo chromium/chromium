@@ -683,6 +683,7 @@
 <translation id="259821504105826686">Foto və rəqəmsal incəsənət</translation>
 <translation id="2601150049980261779">Romantik filmlər</translation>
 <translation id="2604589665489080024">Pop musiqisi</translation>
+<translation id="2606760465469169465">Avtomatik təsdiqləyin</translation>
 <translation id="2610561535971892504">Kopyalamaq üçün klikləyin</translation>
 <translation id="2617988307566202237">Chrome aşağıdakı məlumatları <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -1896,6 +1897,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Datanızı necə idarə edə bilərsiniz:<ph name="END_BOLD" /> Chrome 4 həftədən köhnə saytları avtomatik silir. Yenidən ziyarət etdiyiniz sayt yenidən siyahıda görünə bilər. Həmçinin, istənilən vaxt Chrome ayarlarında saytın sizə reklam təklif etməsini bloklaya və sayt tərəfindən təklif olunan reklamları deaktiv edə bilərsiniz.</translation>
 <translation id="5610142619324316209">Bağlantınız yoxlanılır</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölməsindən kart və ünvanları idarə edə bilərsiniz.</translation>
+<translation id="5611398002774823980">Hesabda yadda saxlayın</translation>
 <translation id="561165882404867731">Bu səhifəni Google Tərcümə ilə tərcümə edin</translation>
 <translation id="5612720917913232150"><ph name="URL" /> kompüterinizin məkanından istifadə etmək istəyir</translation>
 <translation id="561669346091975195">TV sci-fi və fentezi şouları</translation>
@@ -3182,6 +3184,7 @@
 <translation id="8806285662264631610">Hamam və bədənə qulluq məhsulları</translation>
 <translation id="8807160976559152894">Hər səhifədən sonra kəsin</translation>
 <translation id="8809203544698246977">Bloklanmış mövzular burada görünür</translation>
+<translation id="8811470563853401328">Ünvan hesabda yadda saxlansın?</translation>
 <translation id="8813277370772331957">Sonra xatırladın</translation>
 <translation id="8814707942599948500">Zərf C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında Chrome'u güncəlləyin</translation>
@@ -3275,6 +3278,7 @@
 <translation id="9042617223719777575">Geniş Tutum</translation>
 <translation id="9044359186343685026">Toxunuş ID-dən istifadə edin</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Bu əməliyyatlar üçün <ph name="POLICY_NAME" /> <ph name="POLICY_VALUE" /> olaraq ayarlanmalıdır: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 düym</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> domeninə giriş cəhdi etdiniz, amma server yanlış sertifikat təqdim etdi.</translation>
 <translation id="9050666287014529139">Parol ifadəsi</translation>

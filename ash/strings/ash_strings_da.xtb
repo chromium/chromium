@@ -141,6 +141,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tilbage</translation>
 <translation id="1677507110654891115">Der er ikke forbindelse til <ph name="FEATURE_NAME" />.</translation>
 <translation id="1677582821739292812">Nogen kigger med på din skærm</translation>
+<translation id="1679841710523778799">Skru op for lysstyrken</translation>
 <translation id="1683399938733266832">Aktuel CPU-brug: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Timer på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2849936225196189499">Kritisk</translation>
 <translation id="2860184359326882502">Bedste match</translation>
 <translation id="2865888419503095837">Netværksoplysninger</translation>
+<translation id="2872353916818027657">Skift primær skærm</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="2878884018241093801">Der er ingen nye elementer</translation>
 <translation id="2885950158625301909">Få flere oplysninger</translation>
@@ -470,6 +472,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-enhed</translation>
 <translation id="3455468639467374593">Skabelon, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Nulstil zoomniveauet</translation>
 <translation id="3465223694362104965">Et andet tastatur er blevet tilsluttet denne enhed, siden du sidst loggede ind. Tjek, at du har tillid til dette tastatur, før du bruger det.</translation>
 <translation id="3465356146291925647">Administreret af din administrator</translation>
 <translation id="3477079411857374384">Ctrl-Shift-mellemrumstast</translation>
@@ -677,7 +680,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Genstart enheden nu}=1{Genstart enheden inden for 1 sekund}one{Genstart enheden inden for # sekund}other{Genstart enheden inden for # sekunder}}</translation>
 <translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4477350412780666475">Næste nummer</translation>
-<translation id="4477892968187500306">Denne enhed indeholder muligvis apps, der ikke er blevet bekræftet af Google.</translation>
+<translation id="4477892968187500306">Denne enhed indeholder muligvis apps, der ikke er blevet verificeret af Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ikke-parrede enheder</translation>
 <translation id="4505050298327493054">Aktivt skrivebord.</translation>
@@ -719,6 +722,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="468293128311738995">Apps fra din telefon</translation>
 <translation id="4690510401873698237">Hylden er i bunden</translation>
 <translation id="4696813013609194136">Lås enheden op med forældrekode</translation>
+<translation id="4698850295812410683">Vis styluspenværktøjer</translation>
 <translation id="4702647871202761252">Privatlivsskærmen er slået fra</translation>
 <translation id="4706121060329443414">Downloaden forsøges senere. Tale sendes i mellemtiden til behandling hos Google.</translation>
 <translation id="470644585772471629">Ombytning af farver</translation>
@@ -838,6 +842,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="5313326810920013265">Indstillinger for Bluetooth</translation>
 <translation id="5314219114274263156">Skærmen blev optaget</translation>
+<translation id="5316716239522500219">Spejlvend skærmene</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5319712128756744240">Par en ny enhed</translation>
 <translation id="5322611492012084517">Din telefon blev ikke fundet</translation>
@@ -990,6 +995,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6045629311476491587">Anvendes af <ph name="APP_COUNT" /> apps</translation>
 <translation id="6045998054441862242">Aktivér tilstanden Høj kontrast</translation>
 <translation id="6047696787498798094">Skærmdeling ophører, når du skifter til en anden bruger. Vil du fortsætte?</translation>
+<translation id="6052614013050385269">Højreklik på et link</translation>
 <translation id="6054305421211936131">Log ind med chipkort</translation>
 <translation id="6059276912018042191">Seneste Chrome-faner</translation>
 <translation id="6062360702481658777">Du bliver automatisk logget ud om <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1022,6 +1028,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6213808132343683860">Tag et delvist screenshot, eller lav en skærmoptagelse</translation>
 <translation id="6220928844947387476">Du kan nu optage dig selv og din skærm på samme tid</translation>
 <translation id="622484624075952240">Ned</translation>
+<translation id="6228457605945141550">Skru ned for lysstyrken</translation>
 <translation id="623116199192908855">Cast din skærm fra din Chromebook</translation>
 <translation id="6231419273573514727">Din eksterne enheds ydeevne kan være begrænset</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> anvender i øjeblikket dit kamera og din mikrofon</translation>
@@ -1191,6 +1198,7 @@ Installeret for nylig</translation>
 <translation id="7067196344162293536">Automatisk rotering</translation>
 <translation id="7068360136237591149">Åbn filer</translation>
 <translation id="7076293881109082629">Login</translation>
+<translation id="7076878155205969899">Slå lyden fra</translation>
 <translation id="7086931198345821656">Denne opdatering kræver, at du powerwasher din <ph name="DEVICE_TYPE" />. Alle data vil blive slettet. Få flere oplysninger om den nyeste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>
 <translation id="7088960765736518739">Kontaktadgang</translation>
 <translation id="7098053464892629930">Download appen for <ph name="NAME" /> i Google Play for at se alle tilgængelige funktioner</translation>

@@ -7566,21 +7566,6 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
 
           Якщо це правило не налаштовано, виділення курсора буде вимкнено, але користувач може будь-коли ввімкнути його.</translation>
 <translation id="8160572976152509481">Дозволити користувачам вимикати пристрій лише за допомогою кнопки живлення</translation>
-<translation id="8161309952608059239">Список дій, які виконуються, коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Якщо правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не налаштовано, це правило не діє.
-
-      Коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> виконує дії, указані в цьому правилі.
-
-      Якщо це правило не налаштувати або не вказати для нього значення, правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не діятиме.
-
-      Підтримувані дії:
-
-      <ph name="CLOSE_BROWSERS_ACTION" />: закрити всі вікна веб-переглядача та прогресивні веб-додатки для цього профілю. Не підтримується на пристроях Android.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: показати вікно засобу вибору профілю. Не підтримується на пристроях Android.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: очистити всі відповідні дані веб-перегляду. Щоб дізнатися більше, перегляньте правило <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.</translation>
 <translation id="8164144100557223371">Вимкнути доступ до експериментальних функцій веб-переглядача через панель інструментів</translation>
 <translation id="8164687848393015214">Якщо це правило ввімкнено, мережеві пакети (<ph name="HEARTBEATS_TERM" />) надсилаються на сервер керування, щоб відстежувати статус у мережі й надавати серверу змогу визначати, чи пристрій не підключений до Інтернету.
 

@@ -679,6 +679,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="259821504105826686">Fotograafia ja digitaalkunst</translation>
 <translation id="2601150049980261779">Romantika</translation>
 <translation id="2604589665489080024">Popmuusika</translation>
+<translation id="2606760465469169465">Automaatne kinnitamine</translation>
 <translation id="2610561535971892504">Klõpsake kopeerimiseks</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />ei salvesta<ph name="END_EMPHASIS" /> järgmist teavet.
         <ph name="BEGIN_LIST" />
@@ -1890,6 +1891,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Chrome kustutab automaatselt saidid, mis on vanemad kui 4 nädalat. Saidid, mida uuesti külastate, võivad loendisse tagasi ilmuda. Samuti võite igal ajal Chrome'i seadetes blokeerida reklaamide soovitamise konkreetselt saidilt või lülitada välja saitide soovitatud reklaamid.</translation>
 <translation id="5610142619324316209">Kontrollige ühendust</translation>
 <translation id="5610807607761827392">Kaarte ja aadresse saate hallata menüüs <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Salvesta kontole</translation>
 <translation id="561165882404867731">Tõlkige see leht rakendusega Google'i tõlge</translation>
 <translation id="5612720917913232150"><ph name="URL" /> soovib kasutada teie arvuti asukohta</translation>
 <translation id="561669346091975195">Ulme- ja fantaasiateemalised telesaated</translation>
@@ -3170,6 +3172,7 @@ Lisateave:
 <translation id="8806285662264631610">Vanni- ja kehatooted</translation>
 <translation id="8807160976559152894">Kärbi pärast iga lehte</translation>
 <translation id="8809203544698246977">Blokeeritud teemad ilmuvad siin</translation>
+<translation id="8811470563853401328">Kas salvestada aadress kontole?</translation>
 <translation id="8813277370772331957">Tuleta mulle hiljem meelde</translation>
 <translation id="8814707942599948500">Ümbrik C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes Chrome'i värskendamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
@@ -3263,6 +3266,7 @@ Lisateave:
 <translation id="9042617223719777575">Suur mahutavus</translation>
 <translation id="9044359186343685026">Kasuta Touch ID-d</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Nende toimingute jaoks tuleb reegli <ph name="POLICY_NAME" /> väärtuseks määrata <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 × 36 tolli</translation>
 <translation id="9049981332609050619">Proovisite jõuda domeenile <ph name="DOMAIN" />, kuid server esitas kehtetu sertifikaadi.</translation>
 <translation id="9050666287014529139">Parool</translation>

@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Image resolution</translation>
 <translation id="1972984168337863910">Expand files feedback panels</translation>
 <translation id="1995337122023280937">Go to file location</translation>
-<translation id="1999709132469742660">File access by all URLs</translation>
 <translation id="2001796770603320721">Manage in Drive</translation>
 <translation id="2009067268969781306">Formatting a drive will delete all data stored on it. This action cannot be undone.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -543,7 +542,6 @@
 <translation id="5323213332664049067">Latin American</translation>
 <translation id="5330145655348521461">These files opened on a different desktop. Move to <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) to view it.</translation>
 <translation id="5330512191124428349">Get info</translation>
-<translation id="5337538975554986899">File access by all URLs except <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Manage Bruschetta sharing</translation>
 <translation id="535792325654997756">Person with cats</translation>
 <translation id="5358764674931277">Frame rate</translation>
@@ -942,6 +940,7 @@
 <translation id="8492972329130824181">Home network is not available. Mobile data roaming must be enabled to connect.</translation>
 <translation id="8499098729323186194">Extracting <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="8502913769543567768">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activate after device setup, managed by your administrator</translation>
+<translation id="8512483403832814140">Any time</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">French (France)</translation>
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>

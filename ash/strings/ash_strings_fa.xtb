@@ -142,6 +142,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> باقی‌مانده</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> متصل نیست.</translation>
 <translation id="1677582821739292812">فردی درحال نگاه کردن به صفحه‌نمایش شما است</translation>
+<translation id="1679841710523778799">زیاد کردن روشنایی</translation>
 <translation id="1683399938733266832">‏استفاده فعلی از CPU: <ph name="CPU_USEAGE" />٪</translation>
 <translation id="169515659049020177">تبدیل</translation>
 <translation id="1698080062160024910">زمان‌سنج <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@
 <translation id="2849936225196189499">مهم</translation>
 <translation id="2860184359326882502">بهترین نتیجه منطبق</translation>
 <translation id="2865888419503095837">اطلاعات شبکه</translation>
+<translation id="2872353916818027657">تعویض مانیتور اصلی</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="2878884018241093801">بدون موارد اخیر</translation>
 <translation id="2885950158625301909">بیشتر بدانید</translation>
@@ -472,6 +474,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="3445925074670675829">‏دستگاه USB-C</translation>
 <translation id="3455468639467374593">الگو، <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">بازنشانی بزرگ‌نمایی</translation>
 <translation id="3465223694362104965">از آخرین باری که به سیستم وارد شدید، صفحه‌کلید دیگری به این دستگاه متصل شده است. قبل از استفاده از این صفحه‌کلید، مطمئن شوید به آن اعتماد دارید.</translation>
 <translation id="3465356146291925647">تحت‌مدیریت سرپرست</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -723,6 +726,7 @@
 <translation id="468293128311738995">برنامه‌های تلفن شما</translation>
 <translation id="4690510401873698237">قفسه در پایین است</translation>
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
+<translation id="4698850295812410683">نمایش ابزار قلم</translation>
 <translation id="4702647871202761252">صفحه حریم خصوصی خاموش است</translation>
 <translation id="4706121060329443414">‏بارگیری بعداً انجام خواهد شد. اکنون گفتار برای پردازش به Google ارسال خواهد شد.</translation>
 <translation id="470644585772471629">وارونگی رنگ</translation>
@@ -842,6 +846,7 @@
 <translation id="5308380583665731573">متصل کردن</translation>
 <translation id="5313326810920013265">تنظیمات بلوتوث</translation>
 <translation id="5314219114274263156">ضبط صفحه‌نمایش انجام شد</translation>
+<translation id="5316716239522500219">بازتاب مانیتورها</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5319712128756744240">مرتبط‌سازی دستگاه جدید</translation>
 <translation id="5322611492012084517">تلفنتان پیدا نشد</translation>
@@ -994,6 +999,7 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> برنامه از آن استفاده کرده‌اند</translation>
 <translation id="6045998054441862242">روشن کردن حالت کنتراست بالا</translation>
 <translation id="6047696787498798094">زمانی که به یک کاربر دیگر جابه‌جا می‌شوید، هم‌رسانی صفحه‌نمایش متوقف می‌شود. می‌خواهید ادامه دهید؟</translation>
+<translation id="6052614013050385269">راست کلیک یک پیوند</translation>
 <translation id="6054305421211936131">ورود به سیستم با کارت هوشمند</translation>
 <translation id="6059276912018042191">‏برگه‌های اخیر Chrome</translation>
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>
@@ -1026,6 +1032,7 @@
 <translation id="6213808132343683860">ثبت نماگرفت یا ضبط بخشی از صفحه</translation>
 <translation id="6220928844947387476">اکنون می‌توانید هم‌زمان هم از خودتان و هم از صفحه‌نمایش فیلم‌برداری کنید</translation>
 <translation id="622484624075952240">پیکان پایین</translation>
+<translation id="6228457605945141550">کم کردن روشنایی</translation>
 <translation id="623116199192908855">‏پخش محتوای صفحه‌نمایش از Chromebook</translation>
 <translation id="6231419273573514727">عملکرد لوازم جانبی ممکن است محدود باشند</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> درحال استفاده از دوربین و میکروفون است</translation>
@@ -1196,6 +1203,7 @@
 <translation id="7067196344162293536">چرخش خودکار</translation>
 <translation id="7068360136237591149">‏Open files (فایل‌ها را باز کن)</translation>
 <translation id="7076293881109082629">در حال ورود به سیستم</translation>
+<translation id="7076878155205969899">بی‌صدا کردن</translation>
 <translation id="7086931198345821656">‏برای این به‌روزرسانی، باید روی <ph name="DEVICE_TYPE" /> شما Powerwash اعمال شود. همه داده‌ها حذف خواهد شد. درباره جدیدترین به‌روزرسانی <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
 <translation id="7088960765736518739">دسترسی کلیدی</translation>
 <translation id="7098053464892629930">‏برای دیدن همه ویژگی‌های موجود، برنامه مرتبط با <ph name="NAME" /> را از Google Play بارگیری کنید.</translation>

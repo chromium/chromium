@@ -95,6 +95,7 @@
 <translation id="1407069428457324124">ઘેરી થીમ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. તારીખો વચ્ચે નૅવિગેટ કરવા માટે, ઍરો કીનો ઉપયોગ કરો.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ઇન્સ્ટૉલ કરેલી ઍપ</translation>
+<translation id="1414919006379339073">વર્તમાન વિન્ડો બંધ કરો</translation>
 <translation id="1415846719612499304">નેટવર્કની સૂચિ બતાવો. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">નોટિફિકેશન ક્રિયા કરવા માટે ઉપકરણને અનલૉક કરો</translation>
 <translation id="1420408895951708260">રાત્રિ પ્રકાશને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
@@ -141,6 +142,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> બાકી</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> કનેક્ટ કરેલું નથી.</translation>
 <translation id="1677582821739292812">કોઈ વ્યક્તિ તમારી સ્ક્રીન જોઈ રહી છે</translation>
+<translation id="1679841710523778799">બ્રાઇટનેસ વધારો</translation>
 <translation id="1683399938733266832">CPUનો હાલનો વપરાશ: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ટાઇમર · <ph name="LABEL" /></translation>
@@ -316,6 +318,7 @@
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="263399434338050016">"તમામ પસંદ કરો"</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2647092942972307022">ઉપલબ્ધ <ph name="TOTAL_MEMORY" />માંથી <ph name="USED_MEMORY" /></translation>
 <translation id="2653019840645008922">વિન્ડો કૅપ્ચર</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2658778018866295321">ક્લિક કરો અને ખેંચો</translation>
@@ -357,6 +360,7 @@
 <translation id="2849936225196189499">ટીકાત્મક</translation>
 <translation id="2860184359326882502">શ્રેષ્ઠ મેળ</translation>
 <translation id="2865888419503095837">નેટવર્ક માહિતી</translation>
+<translation id="2872353916818027657">પ્રાથમિક મૉનિટર સ્વેપ કરો</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="2878884018241093801">કોઈ તાજેતરની આઇટમ નથી</translation>
 <translation id="2885950158625301909">વધુ જાણો</translation>
@@ -470,6 +474,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
 <translation id="3445925074670675829">USB-C ઉપકરણ</translation>
 <translation id="3455468639467374593">નમૂનો, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">ઝૂમ લેવલ રીસેટ કરો</translation>
 <translation id="3465223694362104965">તમે છેલ્લે સાઇન ઇન કર્યું તે પછી આ ડિવાઇસ સાથે બીજું કીબોર્ડ કનેક્ટ કરવામાં આવ્યું છે. તમે આ કીબોર્ડનો ઉપયોગ કરો તે પહેલાં ખાતરી કરો કે તમને તેના પર વિશ્વાસ છે.</translation>
 <translation id="3465356146291925647">તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -601,6 +606,7 @@
 <translation id="4112140312785995938">પાછળ કરો</translation>
 <translation id="4114315158543974537">ફોન હબ ચાલુ કરો</translation>
 <translation id="4115378294792113321">કિરમજી</translation>
+<translation id="411881149140864134">ડેસ્કને ડાબી બાજુએ સક્રિય કરો</translation>
 <translation id="412298498316631026">વિન્ડો</translation>
 <translation id="4123259114412175274">તમારા Chromebookને અનલૉક કરવા માટે, તમારા ફોનનું બ્લૂટૂથ ચાલુ હોવાની ખાતરી કરો</translation>
 <translation id="4125970834901680537">ટૅબ્લેટ મોડમાં ઍપમાંનું કન્ટેન્ટ સ્ટ્રીમ કરી શકાતું નથી. લૅપટૉપ મોડમાં ફરી પ્રયાસ કરો.</translation>
@@ -612,6 +618,7 @@
 <translation id="4165275524535002941">કેબલ કદાચ ડિસ્પ્લેને સપોર્ટ ન આપતો હોય</translation>
 <translation id="4177913004758410636">{0,plural, =1{એક દિવસની અંદર ડિવાઇસ અપડેટ કરો}one{# દિવસની અંદર ડિવાઇસ અપડેટ કરો}other{# દિવસની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
+<translation id="4185671786623711291">સક્રિય વિન્ડોને જમણી બાજુએ ડેસ્ક પર ખસેડો</translation>
 <translation id="4192112279662688596">અથવા</translation>
 <translation id="4193857202545160520">ક્લિક અને કીનો ઉપયોગ બતાવો</translation>
 <translation id="4195814663415092787">તમે જ્યાંથી છોડેલું ત્યાંથી ચાલુ કરો</translation>
@@ -689,6 +696,7 @@
 <translation id="453661520163887813">પૂર્ણપણે ચાર્જ થવામાં <ph name="TIME" /></translation>
 <translation id="4538824937723742295">પૂર્ણ સ્ક્રીનનો સ્ક્રીનશૉટ લો</translation>
 <translation id="4544483149666270818">રેકોર્ડ કરવા માટે વિન્ડો પસંદ કરો</translation>
+<translation id="4548482551627849548">સક્રિય વિન્ડોને ડાબી બાજુએ ડેસ્ક પર ખસેડો</translation>
 <translation id="4560576029703263363">ચાલુ</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">પાસવર્ડ છુપાવો</translation>
@@ -719,6 +727,7 @@
 <translation id="468293128311738995">તમારા ફોન પરની ઍપ</translation>
 <translation id="4690510401873698237">શેલ્ફ સૌથી નીચે છે</translation>
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
+<translation id="4698850295812410683">સ્ટાઇલસનાં સાધનો બતાવો</translation>
 <translation id="4702647871202761252">પ્રાઇવસી સ્ક્રીન બંધ છે</translation>
 <translation id="4706121060329443414">થોડા સમય પછી ડાઉનલોડ કરવાનો પ્રયાસ કરવામાં આવશે. હાલ પૂરતું સ્પીચ પ્રક્રિયા કરવા માટે Googleને મોકલવામાં આવશે.</translation>
 <translation id="470644585772471629">વિપરીત રંગમાં બદલવું</translation>
@@ -838,6 +847,7 @@
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
 <translation id="5313326810920013265">Bluetooth સેટિંગ</translation>
 <translation id="5314219114274263156">સ્ક્રીન રેકોર્ડિંગ કર્યું</translation>
+<translation id="5316716239522500219">મિરર મૉનિટર્સ</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5319712128756744240">નવા ડિવાઇસ સાથે જોડાણ કરો</translation>
 <translation id="5322611492012084517">તમારો ફોન શોધી શકાતો નથી</translation>
@@ -990,6 +1000,7 @@
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ઍપ દ્વારા ઉપયોગ કરવામાં આવ્યો</translation>
 <translation id="6045998054441862242">ઉચ્ચ કૉન્ટ્રાસ્ટ મોડ ચાલુ કરો</translation>
 <translation id="6047696787498798094">જ્યારે તમે બીજા વપરાશકર્તા પર સ્વિચ કરો ત્યારે સ્ક્રીન શેરિંગ રોકવામાં આવશે. શું તમે ચાલુ રાખવા માંગો છો?</translation>
+<translation id="6052614013050385269">લિંક પર રાઇટ-ક્લિક કરો</translation>
 <translation id="6054305421211936131">સ્માર્ટ કાર્ડ વડે સાઇન ઇન કરો</translation>
 <translation id="6059276912018042191">તાજેતરની Chrome ટૅબ</translation>
 <translation id="6062360702481658777">તમે ઑટોમૅટિક રીતે <ph name="LOGOUT_TIME_LEFT" /> માં સાઇન આઉટ થઈ જશો.</translation>
@@ -1022,6 +1033,7 @@
 <translation id="6213808132343683860">આંશિક સ્ક્રીનશૉટ અથવા આંશિક સ્ક્રીન રેકોર્ડિંગ લો</translation>
 <translation id="6220928844947387476">હવે તમે તમારું અને તમારી સ્ક્રીનનું રેકોર્ડિંગ એક સાથે કરી શકો છો</translation>
 <translation id="622484624075952240">Down</translation>
+<translation id="6228457605945141550">બ્રાઇટનેસ ઘટાડો</translation>
 <translation id="623116199192908855">તમારી Chromebookમાંથી તમારી સ્ક્રીનને કાસ્ટ કરો</translation>
 <translation id="6231419273573514727">પેરિફેરલનું કાર્યપ્રદર્શન કદાચ મર્યાદિત કરવામાં આવી શકે</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> દ્વારા હાલમાં તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરવામાં આવી રહ્યો છે</translation>
@@ -1066,6 +1078,7 @@
 <translation id="6490471652906364588">USB-C ઉપકરણ (જમણું પોર્ટ)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય તે પહેલાં તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો</translation>
 <translation id="649452524636452238">સ્માર્ટ કાર્ડ પિન</translation>
+<translation id="6495322433318104734">સ્ક્રીન સેવર બતાવે છે, બહાર નીકળવા માટે કોઈપણ કી દબાવો</translation>
 <translation id="6495400115277918834">ચિત્ર-માં-ચિત્ર સુવિધા ચાલુ થઈ ગઈ છે, ફોકસ કરવા માટે Alt+Shift+V દબાવો</translation>
 <translation id="6497418457565568043">ખલેલ પાડશો નહીં ચાલુ છે</translation>
 <translation id="6500896621837555595">અપડેટ કરો</translation>
@@ -1191,6 +1204,7 @@
 <translation id="7067196344162293536">સ્વતઃ ફેરવો</translation>
 <translation id="7068360136237591149">ફાઇલો ખોલો</translation>
 <translation id="7076293881109082629">સાઇન ઇન કરી રહ્યું છે</translation>
+<translation id="7076878155205969899">સાઉન્ડ મ્યૂટ કરો</translation>
 <translation id="7086931198345821656">આ અપડેટ માટે તમારા <ph name="DEVICE_TYPE" />ને પાવરવોશ કરવું જરૂરી છે. બધો ડેટા ડિલીટ કરવામાં આવશે. નવીનતમ <ph name="SYSTEM_APP_NAME" /> અપડેટ વિશે વધુ જાણો.</translation>
 <translation id="7088960765736518739">સ્વિચ ઍક્સેસ</translation>
 <translation id="7098053464892629930">બધી ઉપલબ્ધ સુવિધાઓ જોવા માટે, Google Play પરથી <ph name="NAME" />ની ઍપ ડાઉનલોડ કરો</translation>
@@ -1255,6 +1269,7 @@
 <translation id="746232733191930409">સ્ક્રીન રેકોર્ડિંગ મોડ</translation>
 <translation id="7466449121337984263">કૃપા કરીને સેન્સરને સ્પર્શ કરો</translation>
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
+<translation id="7489261257412536105">પૂર્ણસ્ક્રીનમાં દાખલ થાઓ અથવા તેમાંથી બહાર નીકળો</translation>
 <translation id="7490360161041035804">Google Driveની ફાઇલો સહિત, તમે મહત્ત્વની ફાઇલો પિન કરી શકો છો. પિન કરવા માટે, કોઈ આઇટમ પર કર્સર લઈ જાઓ અથવા Files ખોલો અને કોઈ આઇટમ પર રાઇટ ક્લિક કરો.</translation>
 <translation id="7497767806359279797">ભાષા અને કીબોર્ડ પસંદ કરો</translation>
 <translation id="7508690557411636492">ગયા મહિનામાં ખોલેલી</translation>
@@ -1407,6 +1422,7 @@
 <translation id="8230305195727960608">વિપરીત રંગમાં બદલવાનો મોડ</translation>
 <translation id="8233140502441622270">Keyboard shortcuts ઍપ ખોલો</translation>
 <translation id="8236042855478648955">વિરામ લેવાનો સમય</translation>
+<translation id="8239034820133090126">જમણી બાજુએ ડેસ્કને સક્રિય કરો</translation>
 <translation id="8246282815785366524">આપનું ફરી સ્વાગત છે, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, ફોનની બૅટરી <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446">ઍપ: <ph name="APP_NAME" /></translation>
@@ -1456,6 +1472,7 @@
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />ને સપોર્ટ આપતું નથી. રિઝોલ્યુશનને <ph name="FALLBACK_RESOLUTION" /> પર બદલવામાં આવ્યું હતું. ફેરફારો રાખવા માટે કન્ફર્મ પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="8496402167048257517">નજીકના શેર સુવિધાના સેટિંગ બતાવો</translation>
 <translation id="8507563469658346379">પ્રત્યેક, <ph name="REMAINING_TIME" /></translation>
+<translation id="8511123073331775246">નવું ડેસ્ક બનાવો</translation>
 <translation id="85123341071060231">તમારી Chromebookનું બ્લૂટૂથ બંધ છે. તમારી Chromebook અનલૉક કરવા માટે પાસવર્ડ દાખલ કરો.</translation>
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>
 <translation id="851458219935658693">વર્તમાન ડેસ્કમાંની બધી વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
@@ -1466,6 +1483,7 @@
 <translation id="8546059259582788728">સૉર્ટ કરવાનો છેલ્લો ફેરફાર રદ કરવાનું સફળ થયું</translation>
 <translation id="8551588720239073785">તારીખ અને સમયનાં સેટિંગ</translation>
 <translation id="8553395910833293175">બધા ડેસ્ક માટે પહેલેથી જ સોંપણી કરવામાં આવી છે.</translation>
+<translation id="8555757996376137129">વર્તમાન ડેસ્ક કાઢી નાખો</translation>
 <translation id="856298576161209842">તમે તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો તેવો <ph name="MANAGER" />નો સુઝાવ છે</translation>
 <translation id="8563862697512465947">નોટિફિકેશન સેટિંગ</translation>
 <translation id="857201607579416096">મેનૂને સ્ક્રીનની નીચેના જમણા ખૂણામાં ખસેડ્યું.</translation>

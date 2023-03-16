@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Rezolucija slike</translation>
 <translation id="1972984168337863910">Proširi okna za povratne informacije o datotekama</translation>
 <translation id="1995337122023280937">Idi na lokaciju datoteke</translation>
-<translation id="1999709132469742660">Pristup fajlu preko svih URL-ova</translation>
 <translation id="2001796770603320721">Upravljajte na Disku</translation>
 <translation id="2009067268969781306">Formatiranjem diska izbrisaće se svi podaci sačuvani na njemu. Ova radnja ne može da se opozove.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -543,7 +542,6 @@
 <translation id="5323213332664049067">Latinska Amerika</translation>
 <translation id="5330145655348521461">Ove datoteke su otvorene na drugom profilu. Pređite na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da biste ih pogledali.</translation>
 <translation id="5330512191124428349">Preuzmi podatke</translation>
-<translation id="5337538975554986899">Pristup fajlu preko svih URL-ova osim <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Upravljajte deljenjem sa virtuelnom mašinom Bruschetta</translation>
 <translation id="535792325654997756">Osoba sa mačkama</translation>
 <translation id="5358764674931277">Brzina kadrova</translation>
@@ -942,6 +940,7 @@
 <translation id="8492972329130824181">Kućna mreža nije dostupna. Prenos podataka u romingu mora da bude omogućen radi povezivanja.</translation>
 <translation id="8499098729323186194">Izdvajaju se stavke (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiviraj posle podešavanja uređaja, upravlja administrator</translation>
+<translation id="8512483403832814140">Bilo kada</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">francuski (Francuska)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>

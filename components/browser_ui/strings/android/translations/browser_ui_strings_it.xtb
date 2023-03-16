@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Espandi <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Disattiva l'audio per un sito specifico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
+<translation id="4478158430052450698">Semplifica la personalizzazione dello zoom per diversi siti</translation>
 <translation id="4479647676395637221">Chiedi conferma prima di consentire ai siti di utilizzare la fotocamera (opzione consigliata)</translation>
 <translation id="4505788138578415521">URL espanso</translation>
 <translation id="4534723447064627427">Per consentire all'app <ph name="APP_NAME" /> di accedere al tuo microfono, devi attivare il microfono anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>

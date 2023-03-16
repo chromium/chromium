@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Тармактык коргоо аныкталды</translation>
 <translation id="1075811647922107217">Барактын өлчөмү</translation>
+<translation id="1082009148392559545">Көшөгө жүктөлүп алынууда</translation>
 <translation id="1094693127011229778">IP дареги жеткиликсиз</translation>
 <translation id="1113892970288677790">Санат ишин жана сүрөттөрдү тандаңыз</translation>
 <translation id="1119447706177454957">Ички ката</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> менен <ph name="SECOND_MANAGER" /> башкарат</translation>
 <translation id="1726100011689679555">Ысым серверлери</translation>
 <translation id="1731082422893354635">Bluetooth сенсордук тактасы</translation>
+<translation id="1738949837603788263"><ph name="ZONE_NUMBER" />-аймак</translation>
 <translation id="1745577949879301685">Сүрөттөр жүктөлбөй калды. Тармакка туташууну текшериңиз же сүрөттөрдү кайра жүктөп көрүңүз.</translation>
 <translation id="1751249301761991853">Жеке</translation>
 <translation id="1753496554272155572">Тушкагазды алдын ала көрүү режиминен чыгуу</translation>
@@ -598,6 +600,7 @@
 <translation id="636850387210749493">Корпоративдик каттоо</translation>
 <translation id="6379086450106841622">Сенсордук экран</translation>
 <translation id="6381741036071372448">Баскычтопту колдонуп көрүңүз</translation>
+<translation id="6382182670717268353">Көшөгөнү алдын ала көрүү</translation>
 <translation id="6388847657025262518">Сканердин документ түрмөгү такалып калды. Түрмөктү текшерип, кайра аракет кылыңыз.</translation>
 <translation id="6394634179843537518">Файл кошуу</translation>
 <translation id="6410257289063177456">Сүрөт файлдары</translation>
@@ -687,6 +690,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат. Администраторлор түзмөктү алыстан конфигурациялай алышат.</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7180865173735832675">Өзгөчөлөштүрүү</translation>
+<translation id="7184043045742675738">Баскычты тууралоо үчүн каалаган баскычты басыңыз. Чычкан же жебе баскычтары менен баскычты жылдырыңыз.</translation>
 <translation id="7212734716605298123">Тышкы түзмөктөр үчүн орнотулган программанын жаңыртуулары</translation>
 <translation id="7216409898977639127">Интернет провайдери</translation>
 <translation id="725133483556299729">Электрондук почта дарегин тандоо</translation>
@@ -728,6 +732,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB сенсордук экраны</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> калды</translation>
+<translation id="7613724632293948900">Чычкан же жебе баскычтары менен жылдырыңыз.</translation>
 <translation id="7620771111601174153">Жардам борборуна өтүп, кененирээк маалымат алыңыз</translation>
 <translation id="763165478673169849">Акыркы жолу баштапкы абалга келтирилген убакыт</translation>
 <translation id="7648838807254605802">HTTPS күтүү убакыты жогору</translation>
@@ -850,6 +855,7 @@
 <translation id="8798441408945964110">Жабдуучунун аталышы</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тушкагаз</translation>
+<translation id="8820457400746201697">Аракетти аткаруу үчүн көк түстөгү тийүү чекитин жылдырыңыз. Тууралоо үчүн тийиштүү баскычты тандаңыз.</translation>
 <translation id="8834539327799336565">Учурда туташып турган түзмөктөр</translation>
 <translation id="8845001906332463065">Жардам алуу</translation>
 <translation id="8855781559874488009">HTTP вебсайттарына тармактык коргоо аркылуу туташпай жатат</translation>

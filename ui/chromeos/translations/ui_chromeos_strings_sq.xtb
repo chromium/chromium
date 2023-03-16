@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Rezolucioni i imazhit</translation>
 <translation id="1972984168337863910">Zgjero panelet e komenteve të skedarëve</translation>
 <translation id="1995337122023280937">Shko te vendndodhja e skedarit</translation>
-<translation id="1999709132469742660">Qasja te skedari nga të gjitha URL-të</translation>
 <translation id="2001796770603320721">Menaxhoje te "Disku"</translation>
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
@@ -542,7 +541,6 @@
 <translation id="5323213332664049067">Tastiera amerikano-latine</translation>
 <translation id="5330145655348521461">Këta skedarë u hapën në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
 <translation id="5330512191124428349">Merr informacione</translation>
-<translation id="5337538975554986899">Qasja te skedari nga të gjitha URL-të përveç <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Menaxho ndarjen për Bruschetta</translation>
 <translation id="535792325654997756">Person me mace</translation>
 <translation id="5358764674931277">Shpejtësia e kuadrove</translation>

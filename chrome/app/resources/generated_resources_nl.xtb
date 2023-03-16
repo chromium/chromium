@@ -2004,6 +2004,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="272741954544380994">Afbeelding zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Niet opnieuw herinneren</translation>
 <translation id="2727712005121231835">Normaal</translation>
+<translation id="2727744317940422214">Er is iets misgegaan. Dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />. Opschonen is mislukt. Je moet dit misschien handmatig doen.</translation>
 <translation id="2729314457178420145">Ook browsegegevens wissen (<ph name="URL" />). Als je dit doet, kun je worden uitgelogd bij Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome zoekt nieuwe manieren om tracking te verminderen en je nog beter te beschermen terwijl je browst. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> en biedt je mogelijkheden om ze te beheren. Daarna kunnen sites die je bezoekt Chrome om je interesses vragen, zodat ze je relevante advertenties kunnen laten zien.</translation>
 <translation id="2730029791981212295">Een back-up maken van Linux-apps en -bestanden</translation>
@@ -3715,6 +3716,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4274667386947315930">Inloggegevens</translation>
 <translation id="4274673989874969668">Nadat je een site verlaat, blijft de synchronisatie meestal doorgaan om taken af te ronden, zoals foto's uploaden of chatberichten sturen</translation>
 <translation id="4275291496240508082">Opstartgeluid</translation>
+<translation id="4275397969489577657">Registratie van gebeurtenisstream aanzetten</translation>
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
 <translation id="4277434192562187284">XML-configuratiebron</translation>
 <translation id="4278390842282768270">Toegestaan</translation>
@@ -4524,6 +4526,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5018207570537526145">Website voor extensie openen</translation>
 <translation id="5018526990965779848">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="5020008942039547742">Ander venster kiezen</translation>
+<translation id="5020651427400641814">Spraakregistratie aanzetten</translation>
 <translation id="5021750053540820849">Nog niet geüpdatet</translation>
 <translation id="5024511550058813796">Je krijgt je geschiedenis op al je gesynchroniseerde apparaten, zodat je kunt doorgaan met waar je mee bezig was</translation>
 <translation id="5026492829171796515">Log in om een Google-account toe te voegen</translation>
@@ -4956,6 +4959,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5432145523462851548"><ph name="FILE_NAME" /> in map tonen</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
 <translation id="5434065355175441495">PKCS nr. 1 met RSA-versleuteling</translation>
+<translation id="5435274640623994081">Earconregistratie aanzetten</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> altijd toegang tot je locatie geven</translation>
 <translation id="5436492226391861498">Wachten op proxytunnel...</translation>
 <translation id="5436510242972373446">Zoeken op <ph name="SITE_NAME" />:</translation>
@@ -5301,7 +5305,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5751345516399502412">Gereedheid voor tethering checken</translation>
 <translation id="5755022574660047665">herinneringen uit Google Foto's</translation>
 <translation id="5756163054456765343">H&amp;elpcentrum</translation>
-<translation id="5757375109985023827">Selecteer een tabblad om een voorbeeld te bekijken</translation>
 <translation id="5758631781033351321">Hier vind je je leeslijst</translation>
 <translation id="5759728514498647443">Documenten die je via <ph name="APP_NAME" /> verzendt om af te drukken, kunnen door <ph name="APP_NAME" /> worden gelezen.</translation>
 <translation id="5762787084360227629">Google-accountgegevens opgeven</translation>
@@ -7519,6 +7522,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7758450972308449809">De grenzen van je display aanpassen</translation>
 <translation id="7760004034676677601">Is dit de homepage die je had verwacht?</translation>
 <translation id="7762024824096060040">Kan dit account niet gebruiken</translation>
+<translation id="7762243782113123335">Er is iets misgegaan. Dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Adres toevoegen</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> van <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Verplaatsen</translation>
@@ -8510,6 +8514,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8654151524613148204">Je computer kan het bestand vanwege de grootte helaas niet verwerken.</translation>
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655972064210167941">Het inloggen is mislukt omdat je wachtwoord niet kan worden geverifieerd. Neem contact op met je beheerder of probeer het opnieuw.</translation>
+<translation id="8656888282555543604">Brailleregistratie aanzetten</translation>
 <translation id="8657393004602556571">Wil je de feedback verwijderen?</translation>
 <translation id="8661290697478713397">Link openen in inco&amp;gnitovenster</translation>
 <translation id="8662671328352114214">Deelnemen aan <ph name="TYPE" />-netwerk</translation>
@@ -8611,6 +8616,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8740247629089392745">Je kunt deze Chromebook aan <ph name="SUPERVISED_USER_NAME" /> geven. Het instellen is bijna afgerond. Daarna is het tijd om te verkennen.</translation>
 <translation id="8740672167979365981">Chrome OS Flex-update vereist</translation>
 <translation id="8741944563400125534">Instelgids voor Toegang via schakelaar</translation>
+<translation id="8742395827132970586">Installatie mislukt, bezig met opschonen</translation>
 <translation id="8742998548129056176">Dit is algemene informatie over je apparaat en hoe je het gebruikt (zoals batterijniveau, systeem- en app-activiteit en fouten). De gegevens worden gebruikt om Android te verbeteren voor iedereen. Daarnaast helpen bepaalde verzamelde gegevens Google-apps en -partners, zoals Android-ontwikkelaars, bij de verbetering van hun apps en producten.</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8745034592125932220">Geen toestemming om gegevens op je apparaat op te slaan</translation>

@@ -3716,6 +3716,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4274667386947315930">Datos de inicio de sesión</translation>
 <translation id="4274673989874969668">Cuando sales de un sitio, puede continuar la sincronización para terminar tareas, como subir fotos o enviar un mensaje de chat</translation>
 <translation id="4275291496240508082">Sonido de inicio</translation>
+<translation id="4275397969489577657">Habilitar registro de emisión de eventos</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4277434192562187284">Fuente de configuración de XMLs</translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -4526,6 +4527,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5018207570537526145">Abrir sitio web de la extensión</translation>
 <translation id="5018526990965779848">Envía datos de uso y diagnóstico. Contribuye a mejorar tu experiencia de Android enviando automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos servirán para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en tu cuenta de Google.</translation>
 <translation id="5020008942039547742">Elige otra ventana</translation>
+<translation id="5020651427400641814">Habilitar registro de voz</translation>
 <translation id="5021750053540820849">Aún no se ha actualizado</translation>
 <translation id="5024511550058813796">Tendrás tu historial en todos tus dispositivos sincronizados y podrás continuar con lo que estabas haciendo</translation>
 <translation id="5026492829171796515">Inicia sesión para añadir una cuenta de Google</translation>
@@ -4958,6 +4960,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5432145523462851548">Mostrar <ph name="FILE_NAME" /> en carpeta</translation>
 <translation id="543338862236136125">Cambiar contraseña</translation>
 <translation id="5434065355175441495">PKCS #1 con cifrado RSA</translation>
+<translation id="5435274640623994081">Habilitar registro de audiconos</translation>
 <translation id="5435779377906857208">Permitir siempre que <ph name="HOST" /> acceda a tu ubicación</translation>
 <translation id="5436492226391861498">Esperando túnel proxy...</translation>
 <translation id="5436510242972373446">Buscar <ph name="SITE_NAME" />:</translation>
@@ -5305,7 +5308,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5751345516399502412">Comprobar la preparación de la conexión compartida</translation>
 <translation id="5755022574660047665">recuerdos de Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de ayuda</translation>
-<translation id="5757375109985023827">Selecciona una pestaña para previsualizarla</translation>
 <translation id="5758631781033351321">Aquí verás tu lista de lectura</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> puede leer los documentos que envías para imprimirse a través de <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Introducir información de la cuenta de Google</translation>
@@ -7129,7 +7131,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7412226954991670867">Memoria de la GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configuración completada</translation>
-<translation id="7415484647604548662">Puedes bloquear los sitios que no quieras. Chrome también elimina automáticamente los sitios de la lista si tienen una antigüedad superior a 4 semanas.</translation>
+<translation id="7415484647604548662">Puedes bloquear los sitios que no quieras. Chrome también elimina automáticamente los sitios de la lista que tienen una antigüedad superior a 4 semanas.</translation>
 <translation id="7416091793702109803">Revisar <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">No se pueden cargar los Términos del Servicio. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="7416362041876611053">Error de red desconocido</translation>
@@ -8519,6 +8521,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8654151524613148204">El archivo es demasiado grande para que tu ordenador lo procese.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">Se ha producido un error al iniciar sesión porque no ha sido posible verificar la contraseña. Ponte en contacto con el administrador o vuelve a intentarlo.</translation>
+<translation id="8656888282555543604">Habilitar registro de braille</translation>
 <translation id="8657393004602556571">¿Quieres descartar los comentarios?</translation>
 <translation id="8661290697478713397">Abrir enlace en una ventana de incó&amp;gnito</translation>
 <translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>

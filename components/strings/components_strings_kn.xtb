@@ -18,7 +18,7 @@
           <ph name="LIST_ITEM" />ಉದ್ಯೋಗದಾತರು ಅಥವಾ ಶಾಲೆಗಳು ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ಇಂಟರ್ನೆಟ್ ಸೇವೆ ಒದಗಿಸುವವರು ವೆಬ್ ಟ್ರಾಫಿಕ್ ಅನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
-<translation id="1036348656032585052">ಆಫ್ ಮಾಡು</translation>
+<translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1036881361735705143">ಎನ್ವಲಪ್ C4</translation>
 <translation id="1036982837258183574">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಲು |<ph name="ACCELERATOR" />| ಒತ್ತಿರಿ</translation>
 <translation id="1038106730571050514">ಸಲಹೆಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -62,7 +62,7 @@
 <translation id="112840717907525620">ನೀತಿಯ ಕ್ಯಾಷ್ ಸರಿಯಾಗಿದೆ</translation>
 <translation id="1130564665089811311">ಪುಟ ಅನುವಾದಿಸಿ ಬಟನ್, ಈ ಪುಟವನ್ನು Google Translate ನೊಂದಿಗೆ ಅನುವಾದಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="1131264053432022307">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರ</translation>
-<translation id="1142846828089312304">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="1142846828089312304">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="1147769322402934017">ಆನ್‌ಲೈನ್ ಚಿತ್ರದ ಗ್ಯಾಲರಿಗಳು</translation>
 <translation id="1150979032973867961">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು ನಿಮ್ಮ ಸಾಧನದ ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಂ‌ ಪ್ರಕಾರ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="1151972924205500581">ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
@@ -678,6 +678,7 @@
 <translation id="259821504105826686">ಫೋಟೋಗ್ರಾಫಿಕ್ ಮತ್ತು ಡಿಜಿಟಲ್ ಕಲೆಗಳು</translation>
 <translation id="2601150049980261779">ರೋಮ್ಯಾನ್ಸ್ ಚಲನಚಿತ್ರಗಳು</translation>
 <translation id="2604589665489080024">ಪಾಪ್ ಸಂಗೀತ</translation>
+<translation id="2606760465469169465">ಆಟೋ-ಪರಿಶೀಲನೆ</translation>
 <translation id="2610561535971892504">ನಕಲಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="2617988307566202237">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chrome <ph name="BEGIN_EMPHASIS" />ಉಳಿಸುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -980,7 +981,7 @@
 <translation id="3395827396354264108">ಪಿಕಪ್ ವಿಧಾನ</translation>
 <translation id="3399952811970034796">ವಿತರಣೆಯ ವಿಳಾಸಗಳು</translation>
 <translation id="3402261774528610252">ಈ ಸೈಟ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಬಳಸುವ ಕನೆಕ್ಷನ್, TLS 1.0 ಅಥವಾ TLS 1.1 ಅನ್ನು ಬಳಸುತ್ತದೆ, ಆದರೆ ಈ ಎರಡೂ ಆವೃತ್ತಿಗಳಿಗೆ ಸಮ್ಮತಿಸಿಲ್ಲ ಹಾಗೂ ಮುಂದಿನ ದಿನಗಳಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ. ಒಮ್ಮೆ ಅವುಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ ನಂತರ, ಬಳಕೆದಾರರು ಇನ್ನು ಮುಂದೆ ಈ ಸೈಟ್‌ ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. TLS 1.2 ಅಥವಾ ನಂತರದ ಆವೃತ್ತಿಯನ್ನು ಸರ್ವರ್ ಸಕ್ರಿಯಗೊಳಿಸಬೇಕು.</translation>
-<translation id="3405664148539009465">ಫಾಂಟ್‌ಗಳನ್ನು ಗ್ರಾಹಕೀಯಗೊಳಿಸಿ</translation>
+<translation id="3405664148539009465">ಫಾಂಟ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್‌ ಮಾಡಿ</translation>
 <translation id="3407789382767355356">ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್ ಇನ್</translation>
 <translation id="3409896703495473338">ಭದ್ರತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3414952576877147120">ಗಾತ್ರ:</translation>
@@ -1886,6 +1887,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನೀವು ಹೇಗೆ ನಿರ್ವಹಿಸಬಹುದು:<ph name="END_BOLD" /> Chrome 4 ವಾರಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಸೈಟ್‌ಗಳನ್ನು ಸ್ವಯಂ-ಅಳಿಸುತ್ತದೆ. ನೀವು ಮತ್ತೊಮ್ಮೆ ಭೇಟಿ ನೀಡುವ ಸೈಟ್ ಪಟ್ಟಿಯಲ್ಲಿ ಪುನಃ ಕಾಣಿಸಿಕೊಳ್ಳಬಹುದು. ನಿಮಗಾಗಿ ಜಾಹೀರಾತುಗಳನ್ನು ಸೂಚಿಸದಂತೆ ನೀವು ಸೈಟ್ ಒಂದನ್ನು ನಿರ್ಬಂಧಿಸಬಹುದು ಮತ್ತು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಸೈಟ್ ಸೂಚಿಸಿದ ಜಾಹೀರಾತುಗಳನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="5610142619324316209">ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5610807607761827392">ನೀವು ಕಾರ್ಡ್‌ಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ನಿರ್ವಹಿಸಬಹುದು.</translation>
+<translation id="5611398002774823980">ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಿ</translation>
 <translation id="561165882404867731">Google Translate ಮೂಲಕ ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನ ಸ್ಥಳವನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="561669346091975195">ಟಿವಿ ಸೈ-ಫೈ ಮತ್ತು ಫ್ಯಾಂಟಸಿ ಶೋಗಳು</translation>
@@ -2260,7 +2262,7 @@
 <translation id="6587923378399804057">ನೀವು ನಕಲಿಸಿದ ಲಿಂಕ್</translation>
 <translation id="6591833882275308647">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು ನಿರ್ವಹಿಸಲಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="6592952801936330159">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಬಟನ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿನ ಸೈಟ್‌ಗಳಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗಿರುವ ಅನುಮತಿಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಲು Enter ಒತ್ತಿ</translation>
-<translation id="6596325263575161958">ಎನ್‌ಕ್ರಿಫ್ಶನ್ ಆಯ್ಕೆಗಳು</translation>
+<translation id="6596325263575161958">ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ ಆಯ್ಕೆಗಳು</translation>
 <translation id="6597665340361269064">90 ಡಿಗ್ರಿಗಳು</translation>
 <translation id="6599642189720630047">ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾದ ಉತ್ಪನ್ನಗಳು</translation>
 <translation id="6611723696964473273">ಆರ್ಥಿಕತೆ ಕುರಿತಾದ ಸುದ್ದಿ</translation>
@@ -2595,7 +2597,7 @@
       &lt;li&gt; &lt;strong&gt;ಅನ್ವಯಿಸಿ&lt;/strong&gt; ಕ್ಲಿಕ್ ಮಾಡಿ, ನಂತರ &lt;strong&gt;ಸರಿ&lt;/strong&gt; ಕ್ಲಿಕ್ ಮಾಡಿ
       &lt;li&gt;ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಶಾಶ್ವತವಾಗಿ ತೆಗೆದುಹಾಕುವುದು ಹೇಗೆ ಎಂದು ತಿಳಿದುಕೊಳ್ಳಲು &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome ಸಹಾಯ ಕೇಂದ್ರಕ್ಕೆ&lt;/a&gt; ಭೇಟಿ ನೀಡಿ &lt;/ol&gt;</translation>
 <translation id="7410471291937727359">ಸುಂದರ</translation>
-<translation id="741204030948306876">ಹೌದು, ನಾನಿದ್ದೇನೆ</translation>
+<translation id="741204030948306876">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="7416351320495623771">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ…</translation>
 <translation id="7418620734632363981">ಪ್ರೋಗ್ರಾಮಿಂಗ್</translation>
 <translation id="7419106976560586862">ಪ್ರೊಫೈಲ್ ಹಾದಿ</translation>
@@ -2864,7 +2866,7 @@
 <translation id="8034522405403831421">ಈ ಪುಟವು <ph name="SOURCE_LANGUAGE" /> ನಲ್ಲಿ ಇದೆ. ಇದನ್ನು <ph name="TARGET_LANGUAGE" /> ಗೆ ಅನುವಾದಿಸುವುದೇ?</translation>
 <translation id="8035152190676905274">ಪೆನ್</translation>
 <translation id="8037117624646282037">ಸಾಧನವನ್ನು ಇತ್ತೀಚೆಗೆ ಯಾರೆಲ್ಲಾ ಬಳಸಿದ್ದಾರೆ</translation>
-<translation id="8037357227543935929">ಕೇಳು (ಡಿಫಾಲ್ಟ್)</translation>
+<translation id="8037357227543935929">ಕೇಳಿ (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="803771048473350947">ಫೈಲ್</translation>
 <translation id="8038817883578389970">ಆಟೋ ರೇಸಿಂಗ್</translation>
 <translation id="8041089156583427627">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
@@ -2901,7 +2903,7 @@
 <translation id="8102225008113166873">ಶೈಕ್ಷಣಿಕ ಕಾನ್ಫರೆನ್ಸ್‌ಗಳು ಮತ್ತು ಪ್ರಕಾಶನಗಳು</translation>
 <translation id="8103161714697287722">ಪಾವತಿ ವಿಧಾನ</translation>
 <translation id="8103643211515685474">ಹೇಗಾದರೂ ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
-<translation id="8105368624971345109">ಆಫ್ ಮಾಡು</translation>
+<translation id="8105368624971345109">ಆಫ್‌ ಮಾಡಿ</translation>
 <translation id="810875025413331850">ಯಾವುದೇ ಹತ್ತಿರದ ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="8116925261070264013">ಮ್ಯೂಟ್‌ ಆಗಿರುವುದು</translation>
 <translation id="8118489163946903409">ಪಾವತಿ ವಿಧಾನ</translation>
@@ -3165,6 +3167,7 @@
 <translation id="8806285662264631610">ಸ್ನಾನ ಮತ್ತು ದೇಹದ ಆರೈಕೆಯ ಉತ್ಪನ್ನಗಳು</translation>
 <translation id="8807160976559152894">ಪ್ರತಿ ಪುಟದ ನಂತರ ಟ್ರಿಮ್ ಮಾಡಿ</translation>
 <translation id="8809203544698246977">ನಿರ್ಬಂಧಿಸಲಾದ ವಿಷಯಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
+<translation id="8811470563853401328">ಖಾತೆಯಲ್ಲಿ ವಿಳಾಸವನ್ನು ಉಳಿಸಬೇಕೇ?</translation>
 <translation id="8813277370772331957">ನಂತರ ನನಗೆ ಜ್ಞಾಪಿಸಿ</translation>
 <translation id="8814707942599948500">ಎನ್ವಲಪ್ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
@@ -3258,6 +3261,7 @@
 <translation id="9042617223719777575">ಅಧಿಕ ಸಾಮರ್ಥ್ಯ</translation>
 <translation id="9044359186343685026">ಸ್ಪರ್ಶ ಐಡಿ ಬಳಸಿ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">ಈ ಕ್ರಿಯೆಗಳಿಗೆ <ph name="POLICY_NAME" /> ನೀತಿಯನ್ನು <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" /> ಗೆ ಸೆಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="9048662076076074925">24 x 36 ಇಂಚು</translation>
 <translation id="9049981332609050619">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿರುವಿರಿ, ಆದರೆ ಸರ್ವರ್ ಅಮಾನ್ಯ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೀಡಿದೆ.</translation>
 <translation id="9050666287014529139">ಪಾಸ್‌ಫ್ರೇಸ್</translation>
@@ -3352,7 +3356,7 @@
 <translation id="963837307749850257">ಎಲ್ಲಾ ಬಳಕೆದಾರರು</translation>
 <translation id="964050462028070434">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಿ…</translation>
 <translation id="96680173638229310">ಆಟೋಗಳು ಮತ್ತು ವಾಹನಗಳು</translation>
-<translation id="969892804517981540">ಅಧಿಕೃತವಾಗಿ ನಿರ್ಮಿಸಿ</translation>
+<translation id="969892804517981540">ಅಧಿಕೃತ ಬಿಲ್ಡ್‌</translation>
 <translation id="973773823069644502">ವಿತರಣೆ ವಿಳಾಸವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಐಟಂ}one{# ಐಟಂಗಳು}other{# ಐಟಂಗಳು}}</translation>
 <translation id="976522784004777030">5 x 8 ಇಂಚು</translation>

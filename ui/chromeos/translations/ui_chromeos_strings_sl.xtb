@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Ločljivost slike</translation>
 <translation id="1972984168337863910">Razširitev datotek podoken povratnih informacij</translation>
 <translation id="1995337122023280937">Na lokacijo datoteke</translation>
-<translation id="1999709132469742660">Dostop do datotek za vse URL-je</translation>
 <translation id="2001796770603320721">Upravljanje v Googlu Drive</translation>
 <translation id="2009067268969781306">Če formatirate pogon, se izbrišejo vsi podatki, shranjeni na njem. Tega dejanja ni mogoče razveljaviti.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -543,7 +542,6 @@
 <translation id="5323213332664049067">Latinskoameriško</translation>
 <translation id="5330145655348521461">Te datoteke so odprte na drugem namizju. Če si jih želite ogledati, preklopite na uporabnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Pridobi podatke</translation>
-<translation id="5337538975554986899">Dostop do datotek za vse URL-je razen za <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Upravljanje deljenja z Bruschetto</translation>
 <translation id="535792325654997756">Oseba z mačkami</translation>
 <translation id="5358764674931277">Število sličic v sekundi</translation>
@@ -942,6 +940,7 @@
 <translation id="8492972329130824181">Domače omrežje ni na voljo. Za povezavo mora biti omogočeno mobilno podatkovno gostovanje.</translation>
 <translation id="8499098729323186194">Razširjanje elementov (<ph name="NUMBER_OF_ITEMS" />) …</translation>
 <translation id="8502913769543567768">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiviranje po nastavitvi naprave, upravlja skrbnik</translation>
+<translation id="8512483403832814140">Kadar koli</translation>
 <translation id="8521441079177373948">Združeno kraljestvo</translation>
 <translation id="853494022971700746">francoščina (Francija)</translation>
 <translation id="8540608333167683902">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>

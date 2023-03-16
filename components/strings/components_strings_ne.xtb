@@ -152,6 +152,7 @@
 <translation id="132301787627749051">क्लिपबोर्डको छवि खोज्नुहोस्</translation>
 <translation id="1323433172918577554">थप देखाउनुहोस्</translation>
 <translation id="132390688737681464">ठेगाना सुरक्षित गरी फारम भर्नुहोस््</translation>
+<translation id="1329916999021038454">रिपोर्ट पेस गर्नुहोस्</translation>
 <translation id="1330449323196174374">बायाँ गेट फोल्ड</translation>
 <translation id="1333745675627230582">Chrome Dino गेम खेल्नुहोस्</translation>
 <translation id="1333989956347591814">तपाईंको क्रियाकलाप निम्नले <ph name="BEGIN_EMPHASIS" />सम्भवतः अझै पनि देख्नसक्छन्<ph name="END_EMPHASIS" />:
@@ -527,6 +528,7 @@
 <translation id="219906046732893612">घरको स्तरोन्नति</translation>
 <translation id="2202020181578195191">म्याद सकिने मान्य वर्ष प्रविष्टि गर्नुहोस्</translation>
 <translation id="2202627062836089804">आफ्नो कार्डको पछाडिको भाग</translation>
+<translation id="2204482073374652408">अपडेट गर्ने कार्य सम्पन्न भयो!</translation>
 <translation id="22081806969704220">ट्रे ३</translation>
 <translation id="2210794033760923560">रिपोर्ट अपलोड गर्नुहोस्</translation>
 <translation id="2212579473415663542">यो ठेगाना तपाईंको Google खाता (<ph name="ACCOUNT" />) मा सेभ गरिएको छ। तपाईं जुनसुकै डिभाइसमा रहेका Google का सबै उत्पादनहरूमा यो ठेगाना प्रयोग गर्न सक्नुहुन्छ।</translation>
@@ -615,6 +617,7 @@
 <translation id="2441854154602066476">एक पटक टच गरेकै भरमा विवरण भर्न मिल्ने भुक्तानी विधिहरूको सूची। किबोर्ड लुकाइएको छ।</translation>
 <translation id="2448295565072560657">तपाईं लग इन भएका बेला यो डिभाइससँग एट्याच गरिएका सहायक डिभाइसहरू</translation>
 <translation id="2450021089947420533">Journeys</translation>
+<translation id="2456755709261364512">तपाईंको ब्याट्री अनिवार्य रूपमा कम्तीमा पनि <ph name="REQUIRED_BATTERY_PRECENT" />% हुने गरी चार्ज गरिएको हुनु पर्छ</translation>
 <translation id="2463739503403862330">पूर्ण जानकारी भर्नुहोस्</translation>
 <translation id="2465655957518002998">डेलिभरीको विधि छनौट गर्नुहोस्</translation>
 <translation id="2465688316154986572">स्टिच</translation>
@@ -661,6 +664,7 @@
 <translation id="2552246211866555379">हागाकी</translation>
 <translation id="2552295903035773204">अबदेखि कार्डहरू पुष्टि गर्न स्क्रिन लक प्रयोग गर्नुहोस्</translation>
 <translation id="2553853292994445426">आफ्नो सुरक्षित DNS सेटिङको जाँच गर्नुहोस्। तपाईंले जोड्न नसकिएका सुरक्षित DNS सर्भर कन्फिगर गर्नुभएको हुन सक्छ।</translation>
+<translation id="255497580849974774">कृपया अपडेट भइरहेका बेला आफ्नो डिभाइसमा चार्जर जोडिराख्नुहोस्।</translation>
 <translation id="2556876185419854533">सम्पादन &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="2557417190997681027">व्यावसायिक यात्रा</translation>
 <translation id="2562087035394240049">गर्ने तरिका, आफैँले गर्न सकिने कुरा र विशेषज्ञले लेखेका सामग्री</translation>
@@ -679,6 +683,7 @@
 <translation id="259821504105826686">फोटोग्राफी र डिजिटल कला</translation>
 <translation id="2601150049980261779">रोमान्स चल‍चित्रहरू</translation>
 <translation id="2604589665489080024">पप सङ्गीत</translation>
+<translation id="2606760465469169465">स्वतः पुष्टि गर्ने अनुमति</translation>
 <translation id="2610561535971892504">क्लिक टु कपी</translation>
 <translation id="2617988307566202237">Chrome ले निम्न जानकारी <ph name="BEGIN_EMPHASIS" />सेभ गर्ने छैन<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -889,6 +894,7 @@
 <translation id="320323717674993345">भुक्तानी रद्द गर्नुहोस्</translation>
 <translation id="3203366800380907218">वेबबाट प्राप्त</translation>
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
+<translation id="3208701679386778924">हामी ChromeOS का अपडेटहरूको गुणस्तर अझ सुधार गर्न सकौँ भन्नाका लागि कृपया रिपोर्ट पेस गर्नुहोस्।</translation>
 <translation id="3209034400446768650">यो पृष्ठले शुल्क लिन सक्छ</translation>
 <translation id="3212581601480735796">तपाईंले <ph name="HOSTNAME" /> मा गर्ने क्रियाकलापमाथि निगरानी गरिँदै छ</translation>
 <translation id="3215092763954878852">WebAuthn प्रयोग गर्न सकिएन</translation>
@@ -1114,6 +1120,7 @@
 <translation id="3715545959749027023">Chrome ले सुरक्षासँग जोडिएका घटनाहरूका बारेमा रिपोर्ट गर्दा ती घटनासँग सम्बन्धित डेटा तपाईंका एड्मिनलाई पठाइन्छ। यो डेटाअन्तर्गत तपाईंले Chrome मा खोल्नुभएका पेजका URL, फाइलका नाम वा मेटाडेटा तथा तपाईंले आफ्नो डिभाइस, Chrome र वेबमा आधारित एपहरूमा साइन इन गर्न प्रयोग गर्ने युजरनेम समावेश हुन सक्छन्।</translation>
 <translation id="3715597595485130451">Wi-Fi मा कनेक्ट गर्नुहोस्</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र DNS को कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">तपाईं डिभाइस अपडेट भइरहेका बेला १० मिनेटसम्म उक्त डिभाइस प्रयोग गर्न सक्नुहुन्न।</translation>
 <translation id="372429172604983730">यो त्रुटि उत्पन्न गराउन सक्ने एपहरूमा एन्टिभाइरस, फायरवाल र वेब-फिल्टर वा प्रोक्सी सफ्टवेयर पर्दछन्।</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3733139489341305600">चालकविहीन सवारी साधनहरू</translation>
@@ -1151,6 +1158,7 @@
 <translation id="3807366285948165054">छविको X सिफ्ट</translation>
 <translation id="3807873520724684969">हानिकारक सामग्रीमाथि रोक लगाइयो।</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
+<translation id="3812398568375898177">यो ChromeOS मा Android एपहरूको पर्फर्मेन्स सुधार गर्ने अत्यावश्यक अपडेट हो।</translation>
 <translation id="3815434930383843058">८ x १२ इन्च</translation>
 <translation id="3816482573645936981">मान (यो मानको साटो लागू गरिएको)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1255,6 +1263,7 @@
 <translation id="4110652170750985508">आफ्नो भुक्तानीको समीक्षा गर्नुहोस्</translation>
 <translation id="4111546256784973544">पेन्टबल</translation>
 <translation id="4112140312785995938">पछाडि जानुहोस्</translation>
+<translation id="4113354056388982663">Android को पर्फर्मेन्स सुधार गर्ने अत्यावश्यक अपडेट</translation>
 <translation id="4114146879518089587">साइटमा जानुहोस्</translation>
 <translation id="4116663294526079822">सधैं यस साइटमा अनुमति दिनुहोस्</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1435,6 +1444,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google अनुवादक प्रयोग गरी यो पृष्ठ अनुवाद गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4514308731478712184">Journeys अफ गर्नुहोस्</translation>
 <translation id="4515275063822566619">कार्ड र ठेगानाहरू तपाईंको Chrome र Google खाता (<ph name="ACCOUNT_EMAIL" />) बाट प्राप्त भएका हुन्। तपाईं  <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" /> मा गई तिनीहरूलाई व्यवस्थित गर्न सक्नुहुन्छ।</translation>
+<translation id="4519245469315452746">अपडेट भइरहेका बेला तपाईंको डिभाइस अवरुद्ध भएको थियो।</translation>
 <translation id="4520048001084013693">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल डाउनलोड गर्न पाइँदैन</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> मिलिमिटर (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Envelope Monarch</translation>
@@ -1524,6 +1534,7 @@
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> को खोजसम्बन्धी सुझाव</translation>
 <translation id="4742407542027196863">पासवर्डहरूको व्यवस्थापन गर्नुहोस्…</translation>
+<translation id="4743275772928623722">सिस्टम अपडेट गरिएको छ तर तपाईंका केही एप र फाइलहरू भने रिकभर गर्न सकिएन। तपाईंका एपहरू फेरि स्वतः डाउनलोड गरिने छन्।</translation>
 <translation id="4744514002166662487">प्रेजेन्टेसन बनाउनुहोस्</translation>
 <translation id="4744603770635761495">कार्यान्वयनयोग्य मार्ग</translation>
 <translation id="4749011317274908093">तपाईं इन्कोग्निटो मोडमा जानुभएको छ</translation>
@@ -1887,6 +1898,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />तपाईं आफ्नो जानकारी कसरी व्यवस्थापन गर्न सक्नुहुन्छ:<ph name="END_BOLD" /> Chrome ले ४ हप्ताभन्दा पुराना साइटहरू स्वतः मेटाउँछ। तपाईंले कुनै साइट फेरि खोल्नुभयो भने यो सूचीमा उक्त साइट पुनः देखिन सक्छ। तपाईं जुनसुकै बेला Chrome का सेटिङमा गई कुनै साइटले तपाईंलाई विज्ञापन सिफारिस गर्न नपाउने गरी उक्त साइट ब्लक गर्न र "साइटले सिफारिस गरेका विज्ञापनहरू" अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="5610142619324316209">जडानलाई जाँच गर्नुहोस्</translation>
 <translation id="5610807607761827392">तपाईं <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" /> मा गई कार्ड र ठेगानाहरूको व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
+<translation id="5611398002774823980">खातामा सेभ गर्नुहोस्</translation>
 <translation id="561165882404867731">Google अनुवादकका सहायताले यो पृष्ठ अनुवाद गर्नुहोस्</translation>
 <translation id="5612720917913232150"><ph name="URL" /> तपाईंको कम्प्युटरको स्थान प्रयोग गर्न चाहन्छ</translation>
 <translation id="561669346091975195">विज्ञान कथा तथा स्वैरकल्पनासम्बन्धी टिभी सोहरू</translation>
@@ -2225,6 +2237,7 @@
 <translation id="646793340882508547">साहसिक खेलहरू</translation>
 <translation id="6468485451923838994">फन्टहरू</translation>
 <translation id="647261751007945333">यन्त्र नीतिहरू</translation>
+<translation id="647330291963761005">अपडेटहरू इन्स्टल गरिँदै छन्</translation>
 <translation id="6475672344094591109">तपाईंले खोल्ने साइटहरूले आफ्ना विज्ञापनको पर्फर्मेन्स मापन गर्न Chrome सँग जानकारी माग्न सक्छन्। Chrome ले एपहरूलाई एक अर्काका बिचमा सीमित जानकारी मात्र सेयर गर्न दिएर तपाईंको गोपनीयता सुरक्षित राख्छ।</translation>
 <translation id="6476284679642588870">भुक्तानी विधिहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="6486200200930923183">वृत्तचित्रात्मक चलचित्रहरू</translation>
@@ -2298,6 +2311,7 @@
 <translation id="6688775486821967877">भर्चुअल कार्ड हाल उपलब्ध छैन। कृपया पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6689249931105087298">कालो बिन्दुको कम्प्रेसनसँग सापेक्ष</translation>
 <translation id="6689271823431384964">तपाईं साइन इन हुनुभएकाले Chrome ले तपाईंको Google खातामा तपाईंका कार्डहरू सुरक्षित गरिदिने प्रस्ताव गर्दै छ। तपाईं सेटिङहरूमा गई उक्त व्यवहार परिवर्तन गर्न सक्नुहुन्छ। कार्डवाहकको नामका रूपमा तपाईंको खातामा भएको नाम प्रयोग गरिन्छ।</translation>
+<translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> भन्दा बढी ठाउँ खाली गर्नुहोस्</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं Google खातामा आफ्नो डिभाइस खोज्न चाहनुहुन्छ भने ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="6696588630955820014">"यो ट्याब सेयर गर्नुहोस्" बटन, लिंक सेयर गरेर, QR कोड बनाएर, कास्ट गरेर वा अन्य तरिकाले यो ट्याब सेयर गर्न Enter थिच्नुहोस्</translation>
 <translation id="6698381487523150993">सिर्जना गरिएको:</translation>
@@ -2361,6 +2375,7 @@
 <translation id="6864189428899665393">२६७x३८९ मि.मि.</translation>
 <translation id="686485648936420384">उपभोक्ता स्रोतसाधन</translation>
 <translation id="6865412394715372076">यो कार्ड यस बखत पुष्टि गर्न सकिँदैन</translation>
+<translation id="6868573634057275953">अपडेट गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="6869334554832814367">व्यक्तिगत कर्जा</translation>
 <translation id="6873456682041376666">सिरानको ट्रे</translation>
 <translation id="6874604403660855544">&amp;रिडु जोड</translation>
@@ -2517,9 +2532,11 @@
 <translation id="722454870747268814">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="7233592378249864828">पुष्टि गर्ने पाना प्रिन्ट गर्नुहोस्</translation>
 <translation id="7234638337680728591">पेट्रोलको मूल्य तथा इन्धनसम्बन्धी स्रोतसाधनहरू</translation>
+<translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूरा भयो | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">यो साइटका हकमा यो सन्देश फेरि नदेखाइयोस्</translation>
 <translation id="7238585580608191973">SHA-256 अङ्गुठाछाप</translation>
 <translation id="7240120331469437312">प्रमाणपत्र विषय वैकल्पिक नाम</translation>
+<translation id="7241863998525879494">अपेक्षा गर्न सकिने कुराहरू</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# वटा मिल्दोजुल्दो क्लस्टर}other{# वटा मिल्दोजुल्दा क्लस्टर}}</translation>
@@ -2740,6 +2757,7 @@
 <translation id="7698864304447945242">Google Play Services for AR अपडेट गर्ने हो?</translation>
 <translation id="7699293099605015246">अहिले लेखहरू उपलब्ध छैनन्</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
+<translation id="7701544340847569275">अपडेट गर्ने कार्य त्रुटिसहित सम्पन्न भएको छ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> मा अगाडि बढ्नु (असुरक्षित छ)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">स्किइङ तथा स्नोबोर्डिङ</translation>
 <translation id="7706689436519265630">तपाईंले कपी गर्नुभएका वा सार्नुभएका फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्षकहाँ पठाइन्छन्। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा ती फाइल भण्डारण गरिन सक्छ।</translation>
@@ -3167,6 +3185,7 @@
 <translation id="8806285662264631610">नुहाउने तथा शरीरमा लगाइने उत्पादनहरू</translation>
 <translation id="8807160976559152894">हरेक पृष्ठपछि छाँटकाँट गर्नुहोस्</translation>
 <translation id="8809203544698246977">ब्लक गरिएका विषयहरू यहाँ देखिने छन्</translation>
+<translation id="8811470563853401328">यो ठेगाना खातामा सेभ गर्ने हो?</translation>
 <translation id="8813277370772331957">मलाई पछि सम्झाउनुहोस्</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -3260,6 +3279,7 @@
 <translation id="9042617223719777575">धेरै क्षमता भएको</translation>
 <translation id="9044359186343685026">Touch ID प्रयोग गर्नुहोस्</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">यी कारबाही गर्न <ph name="POLICY_NAME" /> नामक नीति बदलेर <ph name="POLICY_VALUE" /> बनाउनु पर्ने हुन्छ: <ph name="ACTION_LIST" />।</translation>
 <translation id="9048662076076074925">२४ x ३६ इन्च</translation>
 <translation id="9049981332609050619">तपाइँले <ph name="DOMAIN" /> मा पुग्ने प्रयास गर्नुभयो, तर सर्भरले एक अवैध प्रमाणपत्र प्रदर्शन गर्‍यो।</translation>
 <translation id="9050666287014529139">पासफ्रेज</translation>

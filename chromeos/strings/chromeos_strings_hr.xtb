@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Otkriven je vatrozid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
+<translation id="1082009148392559545">Preuzimanje čuvara zaslona</translation>
 <translation id="1094693127011229778">IP adresa nije dostupna</translation>
 <translation id="1113892970288677790">Odaberite birana umjetnička djela i slike</translation>
 <translation id="1119447706177454957">Interna pogreška</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">Ulagač dokumenata (jednostrano)</translation>
 <translation id="1643449475550628585">Svakodnevno mijenjanje slike pozadine</translation>
 <translation id="1644574205037202324">Povijest</translation>
+<translation id="1651925268237749928">Odabrali ste dijeljeni album. Druge osobe mogu dodavati ili mijenjati fotografije. Za pozadinu se mogu upotrebljavati fotografije koje trenutačno nisu u ovom albumu.</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
 <translation id="1664796644829245314">Pregled: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">Upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Poslužitelji naziva</translation>
 <translation id="1731082422893354635">Bluetooth dodirna podloga</translation>
+<translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Učitavanje slika nije uspjelo. Provjerite mrežnu vezu ili pokušajte ponovo učitati slike.</translation>
 <translation id="1751249301761991853">Osobno</translation>
 <translation id="1753496554272155572">Zatvaranje pregleda pozadina</translation>
@@ -236,6 +239,7 @@
 <translation id="319101249942218879">Promijenjena je slika avatara</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3199982728237701504">Ulagač dokumenata (dvostrano)</translation>
+<translation id="3201315366910775591">Druge osobe mogu ažurirati dijeljene albume</translation>
 <translation id="3211671540163313381">Ploha za smjerove za mapiranje tipki</translation>
 <translation id="3226405216343213872">Traženje skenera</translation>
 <translation id="3226657629376379887">Izbornik aktivnosti izgleda</translation>
@@ -598,6 +602,7 @@
 <translation id="636850387210749493">Prijava poduzeća</translation>
 <translation id="6379086450106841622">Dodirni zaslon</translation>
 <translation id="6381741036071372448">Testirajte tipkovnicu</translation>
+<translation id="6382182670717268353">Pregled čuvara zaslona</translation>
 <translation id="6388847657025262518">Ulagač dokumenata u skener je zaglavljen. Provjerite ulagač i pokušajte ponovo.</translation>
 <translation id="6394634179843537518">Dodaj datoteku</translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
@@ -653,6 +658,7 @@
 <translation id="6838167112108853532">Taj se APN ne može onemogućiti niti ukloniti. Ako imate omogućene pridružene APN-ove, onemogućite ih ili uklonite.</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
 <translation id="6889786074662672253">Prilikom ažuriranja nemojte iskopčavati ovaj vanjski uređaj niti isključivati računalo. Ovaj prozor možete minimizirati. To može potrajati nekoliko minuta i vaš vanjski uređaj tada možda neće funkcionirati.</translation>
+<translation id="6900701049656042631">Ovaj album ne sadrži nijednu fotografiju. Da biste dodali fotografije, posjetite <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Natrag na <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite poklopac i pokušajte ponovo.</translation>
 <translation id="6911383237894364323">Povezivanje s medijskim poslužiteljima nije uspjelo</translation>
@@ -687,6 +693,7 @@
 <translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu konfigurirati uređaj na daljinu.</translation>
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
+<translation id="7184043045742675738">Kliknite bilo koju tipku da biste prilagodili gumb. Premjestite tipku pomoću miša ili tipki sa strelicama.</translation>
 <translation id="7212734716605298123">Ažuriranja opreme za vanjske uređaje</translation>
 <translation id="7216409898977639127">Davatelj mobilnih usluga</translation>
 <translation id="725133483556299729">Odaberite e-poštu</translation>
@@ -728,6 +735,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB dodirni zaslon</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Premjestite pomoću miša ili tipki sa strelicama.</translation>
 <translation id="7620771111601174153">Saznajte više u centru za pomoć</translation>
 <translation id="763165478673169849">Vrijeme posljednjeg poništavanja</translation>
 <translation id="7648838807254605802">Visoka latencija HTTPS-a</translation>
@@ -850,6 +858,7 @@
 <translation id="8798441408945964110">Naziv davatelja usluge</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Pozadina</translation>
+<translation id="8820457400746201697">Premjestite plavu točku dodira na radnju. Odaberite povezani ključ da biste ga prilagodili.</translation>
 <translation id="8834539327799336565">Trenutačno povezano</translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8855781559874488009">Povezivanje s HTTP web-lokacijama putem vatrozida nije uspjelo</translation>

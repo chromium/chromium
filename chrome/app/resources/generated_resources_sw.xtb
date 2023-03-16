@@ -3726,6 +3726,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4274667386947315930">Data ya kuingia katika akaunti</translation>
 <translation id="4274673989874969668">Ukifunga tovuti, inaweza kuendelea kusawazisha ili kukamilisha majukumu, kama vile kupakia picha au kutuma ujumbe kwenye gumzo</translation>
 <translation id="4275291496240508082">Sauti ya kufunguka</translation>
+<translation id="4275397969489577657">Washa kumbukumbu za mtiririko wa tukio</translation>
 <translation id="4275830172053184480">Washa upya kifaa chako</translation>
 <translation id="4277434192562187284">Chanzo cha mipangilio ya XML</translation>
 <translation id="4278390842282768270">Imeruhusiwa</translation>
@@ -4537,6 +4538,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5018207570537526145">Fungua tovuti ya kiendelezi</translation>
 <translation id="5018526990965779848">Tuma data ya matumizi na uchunguzi. Tusaidie kuboresha jinsi unavyotumia Android kwa kutuma kiotomatiki data ya uchunguzi na matumizi ya kifaa na programu kwa Google. Maelezo haya yatatusaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya maelezo yaliyojumlishwa pia yatasaidia programu na washirika wa Google kama vile wasanidi programu za Android. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu, huenda data hii itahifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="5020008942039547742">Chagua dirisha tofauti</translation>
+<translation id="5020651427400641814">Washa kumbukumbu za matamshi</translation>
 <translation id="5021750053540820849">Bado haijasasishwa</translation>
 <translation id="5024511550058813796">Utapata historia yako kwenye vifaa vyako vyote vilivyosawazishwa, ili uweze kuendeleza ulichokuwa ukifanya</translation>
 <translation id="5026492829171796515">Ingia katika akaunti ili uweke akaunti ya Google</translation>
@@ -4969,6 +4971,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5432145523462851548">Onyesha <ph name="FILE_NAME" /> katika folda</translation>
 <translation id="543338862236136125">Badilisha nenosiri</translation>
 <translation id="5434065355175441495">PKCS #1 Usimbaji wa RSA</translation>
+<translation id="5435274640623994081">Washa kumbukumbu za sehemu ya kiashiria cha sauti</translation>
 <translation id="5435779377906857208">Ruhusu <ph name="HOST" /> kila wakati ifikie maelezo ya mahali ulipo</translation>
 <translation id="5436492226391861498">Inasubiri handaki la proksi...</translation>
 <translation id="5436510242972373446">Tafuta <ph name="SITE_NAME" />:</translation>
@@ -5316,7 +5319,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5751345516399502412">Kagua Utayari wa Kipengele cha Kusambaza Mtandao</translation>
 <translation id="5755022574660047665">kumbukumbu kutoka huduma ya Picha kwenye Google</translation>
 <translation id="5756163054456765343">Kituo cha Usaidizi</translation>
-<translation id="5757375109985023827">Chagua kichupo cha kukagua kwanza</translation>
 <translation id="5758631781033351321">Utapata orodha yako ya kusoma hapa</translation>
 <translation id="5759728514498647443">Hati unazotuma zichapishwe kupitia <ph name="APP_NAME" /> zinaweza kusomwa na <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Weka maelezo ya Akaunti ya Google</translation>
@@ -8531,6 +8533,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8654151524613148204">Faili hii ni kubwa sana kwa kompyuta yako kuishughulikia. Samahani.</translation>
 <translation id="8655295600908251630">Kituo</translation>
 <translation id="8655972064210167941">Haikufaulu kuingia katika akaunti kwa sababu nenosiri lako halikuthibitishwa. Tafadhali wasiliana na msimamizi wako au jaribu tena.</translation>
+<translation id="8656888282555543604">Washa kumbukumbu za nukta nundu</translation>
 <translation id="8657393004602556571">Ungependa kuondoa maoni?</translation>
 <translation id="8661290697478713397">Fungua Kiungo katika Dirisha &amp;Fiche</translation>
 <translation id="8662671328352114214">Jiunge na mtandao wa <ph name="TYPE" /></translation>

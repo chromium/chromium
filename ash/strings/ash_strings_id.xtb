@@ -141,6 +141,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1677472565718498478">Sisa waktu <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> tidak terhubung.</translation>
 <translation id="1677582821739292812">Seseorang sedang melihat layar Anda</translation>
+<translation id="1679841710523778799">Meningkatkan kecerahan</translation>
 <translation id="1683399938733266832">Penggunaan CPU saat ini: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Timer <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2849936225196189499">Kritis</translation>
 <translation id="2860184359326882502">Paling Cocok</translation>
 <translation id="2865888419503095837">Info jaringan</translation>
+<translation id="2872353916818027657">Tukar monitor utama</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2878884018241093801">Tidak ada item baru-baru ini</translation>
 <translation id="2885950158625301909">Pelajari lebih lanjut</translation>
@@ -470,6 +472,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> menit</translation>
 <translation id="3445925074670675829">Perangkat USB-C</translation>
 <translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Mereset tingkat zoom</translation>
 <translation id="3465223694362104965">Keyboard lain telah terhubung ke perangkat ini sejak terakhir kali Anda login. Pastikan Anda memercayai keyboard ini sebelum menggunakannya.</translation>
 <translation id="3465356146291925647">Dikelola oleh Administrator Anda</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -719,6 +722,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="468293128311738995">Aplikasi dari ponsel Anda</translation>
 <translation id="4690510401873698237">Rak di bagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
+<translation id="4698850295812410683">Menampilkan fitur stilus</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
 <translation id="4706121060329443414">Download akan dicoba nanti. Untuk saat ini, ucapan akan dikirim ke Google untuk diproses.</translation>
 <translation id="470644585772471629">Inversi warna</translation>
@@ -838,6 +842,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5308380583665731573">Hubungkan</translation>
 <translation id="5313326810920013265">Setelan bluetooth</translation>
 <translation id="5314219114274263156">Perekaman layar diambil</translation>
+<translation id="5316716239522500219">Cerminkan monitor</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319712128756744240">Sambungkan perangkat baru</translation>
 <translation id="5322611492012084517">Tidak dapat menemukan ponsel Anda</translation>
@@ -990,6 +995,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6045629311476491587">Digunakan oleh <ph name="APP_COUNT" /> aplikasi</translation>
 <translation id="6045998054441862242">Mengaktifkan mode kontras tinggi</translation>
 <translation id="6047696787498798094">Berbagi layar akan berhenti saat Anda beralih ke pengguna lain. Ingin melanjutkan?</translation>
+<translation id="6052614013050385269">Mengklik kanan link</translation>
 <translation id="6054305421211936131">Login dengan kartu smart</translation>
 <translation id="6059276912018042191">Tab Chrome terbaru</translation>
 <translation id="6062360702481658777">Anda akan dikeluarkan secara otomatis dalam <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1022,6 +1028,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6213808132343683860">Ambil screenshot atau rekaman layar sebagian</translation>
 <translation id="6220928844947387476">Anda kini dapat merekam diri Anda dan layar secara bersamaan</translation>
 <translation id="622484624075952240">Bawah</translation>
+<translation id="6228457605945141550">Mengurangi kecerahan</translation>
 <translation id="623116199192908855">Transmisikan layar dari Chromebook</translation>
 <translation id="6231419273573514727">Performa periferal mungkin dibatasi</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon Anda</translation>
@@ -1191,6 +1198,7 @@ Baru diinstal</translation>
 <translation id="7067196344162293536">Putar otomatis</translation>
 <translation id="7068360136237591149">Buka file</translation>
 <translation id="7076293881109082629">Sedang masuk</translation>
+<translation id="7076878155205969899">Mematikan suara</translation>
 <translation id="7086931198345821656">Update ini mengharuskan Anda melakukan powerwash <ph name="DEVICE_TYPE" />. Semua data akan dihapus. Pelajari update <ph name="SYSTEM_APP_NAME" /> terbaru lebih lanjut.</translation>
 <translation id="7088960765736518739">Tombol Akses</translation>
 <translation id="7098053464892629930">Download aplikasi untuk <ph name="NAME" /> di Google Play guna melihat semua fitur yang tersedia</translation>

@@ -142,6 +142,7 @@
 <translation id="1677472565718498478">Засталося <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функцыя "<ph name="FEATURE_NAME" />" не падключана.</translation>
 <translation id="1677582821739292812">Нехта глядзіць на ваш экран</translation>
+<translation id="1679841710523778799">Павялічыць яркасць</translation>
 <translation id="1683399938733266832">Бягучая загрузка ЦП: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -359,6 +360,7 @@
 <translation id="2849936225196189499">Крытычна важнае</translation>
 <translation id="2860184359326882502">Найлепшае супадзенне</translation>
 <translation id="2865888419503095837">Інфармацыя аб сетцы</translation>
+<translation id="2872353916818027657">Змяніць асноўны манітор</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="2878884018241093801">Няма нядаўніх элементаў</translation>
 <translation id="2885950158625301909">Даведацца больш</translation>
@@ -724,6 +726,7 @@
 <translation id="468293128311738995">Праграмы з вашага тэлефона</translation>
 <translation id="4690510401873698237">Паліца ўнізе</translation>
 <translation id="4696813013609194136">Разблакіруйце прыладу бацькоўскім кодам</translation>
+<translation id="4698850295812410683">Паказаць інструменты стыла</translation>
 <translation id="4702647871202761252">Экран прыватнасці выключаны</translation>
 <translation id="4706121060329443414">Спроба спампоўвання будзе зроблена пазней. Пакуль што аўдыяматэрыял будзе адпраўлены для апрацоўкі ў Google.</translation>
 <translation id="470644585772471629">Інверсія колераў</translation>
@@ -843,6 +846,7 @@
 <translation id="5308380583665731573">Падключыцца</translation>
 <translation id="5313326810920013265">Налады Bluetooth</translation>
 <translation id="5314219114274263156">Запіс экрана зроблены</translation>
+<translation id="5316716239522500219">Адлюстроўваць маніторы</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5319712128756744240">Спалучыць новую прыладу</translation>
 <translation id="5322611492012084517">Не ўдалося знайсці тэлефон</translation>
@@ -995,6 +999,7 @@
 <translation id="6045629311476491587">Выкарыстоўваюцца <ph name="APP_COUNT" /> праграмамі</translation>
 <translation id="6045998054441862242">Уключыць рэжым высокай кантраснасці</translation>
 <translation id="6047696787498798094">Пры пераключэнні на іншага карыстальніка абагульванне экрана перастане працаваць. Працягнуць?</translation>
+<translation id="6052614013050385269">Націснуць правай кнопкай мышы на спасылцы</translation>
 <translation id="6054305421211936131">Увайсці з дапамогай разумнай карткі</translation>
 <translation id="6059276912018042191">Нядаўна адкрытыя ўкладкі Chrome</translation>
 <translation id="6062360702481658777">Праз <ph name="LOGOUT_TIME_LEFT" /> будзе выкананы аўтаматычны выхад.</translation>
@@ -1027,6 +1032,7 @@
 <translation id="6213808132343683860">Зрабіць здымак або запіс часткі экрана</translation>
 <translation id="6220928844947387476">Цяпер можна адначасова весці запіс экрана і відарыса з камеры</translation>
 <translation id="622484624075952240">Уніз</translation>
+<translation id="6228457605945141550">Паменшыць яркасць</translation>
 <translation id="623116199192908855">Трансляцыя экрана з прылады Chromebook</translation>
 <translation id="6231419273573514727">Прадукцыйнасць перыферыйных прылад можа быць абмежаванай</translation>
 <translation id="6232891689835436217">Зараз <ph name="APP_NAME" /> выкарыстоўвае камеру і мікрафон</translation>
@@ -1197,6 +1203,7 @@
 <translation id="7067196344162293536">Аўтапаварот</translation>
 <translation id="7068360136237591149">Адкрыць файлы</translation>
 <translation id="7076293881109082629">Уваход</translation>
+<translation id="7076878155205969899">Выключыць гук</translation>
 <translation id="7086931198345821656">Для ўсталявання абнаўлення на прыладу <ph name="DEVICE_TYPE" /> патрабуецца скід налад з выкарыстаннем Powerwash. Усе даныя будуць выдалены. Даведайцеся больш пра апошняе абнаўленне <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Доступ праз пераключальнікі</translation>
 <translation id="7098053464892629930">Спампуйце з Google Play праграму <ph name="NAME" />, каб азнаёміцца з усімі даступнымі функцыямі</translation>

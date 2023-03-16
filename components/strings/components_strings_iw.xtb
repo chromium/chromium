@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">גופנים</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">כדאי לפנות אל מנהל המערכת.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />כניסה<ph name="END_LINK" /> לרשת</translation>
 <translation id="1736420071277903564">מחשב</translation>
 <translation id="1740951997222943430">עליך להזין חודש תפוגה חוקי</translation>
 <translation id="1741613555002899862">‏יש לציין מחרוזת חוקית כשהערך של DnsOverHttpsMode הוא <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -896,6 +897,7 @@
 <translation id="3215092763954878852">‏לא ניתן להשתמש ב-WebAuthn</translation>
 <translation id="3216313131063488104">בלוז</translation>
 <translation id="3218181027817787318">יחסי</translation>
+<translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{נדרש עדכון עכשיו}=2{נדרש עדכון עד מחר}one{נדרש עדכון תוך # ימים}other{נדרש עדכון תוך # ימים}}</translation>
 <translation id="3223287115535306850">סמל הפעלת האפליקציה</translation>
 <translation id="3223425961342298674">אין הרשאת גישה למיקום</translation>
 <translation id="3225919329040284222">השרת הציג אישור שאינו תואם את הציפיות המובנות. ציפיות אלה נכללות עבור אתרי אינטרנט מסוימים בעלי אבטחה גבוהה כדי להגן עליך.</translation>
@@ -1195,6 +1197,7 @@
 <translation id="3949601375789751990">היסטוריית הגלישה שלך מופיעה כאן</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">אין אמצעי תשלום שמורים</translation>
+<translation id="3950574001630941635">הפעלה מחדש של המדריך</translation>
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="3958057596965527988">‏4x4 אינץ'</translation>
 <translation id="3961148744525529027">גיליון פרטי התשלום פתוח בחצי גובה המסך</translation>
@@ -1379,6 +1382,7 @@
 <translation id="4350629523305688469">מגש מרובה פונקציות</translation>
 <translation id="4351060348582610152">‏<ph name="ORIGIN" /> מבקש לבצע סריקה כדי לאתר מכשירי Bluetooth בקרבת מקום. המכשירים הבאים נמצאו:</translation>
 <translation id="4351175281479794167">עליך להזין קוד אימות</translation>
+<translation id="4355383636893709732">‏עדכון של ChromeOS לאפליקציות ל-Android</translation>
 <translation id="4356973930735388585">תוקפים באתר הזה עשויים לנסות להתקין במחשב שלך תוכניות מסוכנות שגונבות או מוחקות מידע שלך (לדוגמה: תמונות, סיסמאות, הודעות ופרטי כרטיסי אשראי).</translation>
 <translation id="4358059973562876591">‏לא ניתן להחיל את התבניות שבחרת עקב שגיאה במדיניות DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">ניהול אמצעי תשלום...</translation>
@@ -1763,6 +1767,7 @@ Del</translation>
 <translation id="5288393065350884210">חשבונאות וביקורת</translation>
 <translation id="5288808348893593856">‏חיבור האתר מאובטח אלא אם תתקבל הודעה שונה מ-Chrome</translation>
 <translation id="5289384342738547352">טיפול במסמכים מרובים</translation>
+<translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{נדרש עדכון היום}=2{נדרש עדכון עד מחר}one{נדרש עדכון תוך # ימים}other{נדרש עדכון תוך # ימים}}</translation>
 <translation id="5293919335876685914">מכוניות קוּפּה</translation>
 <translation id="5296589789433599000">בישול ומתכונים</translation>
 <translation id="5299298092464848405">שגיאה בניתוח המדיניות</translation>
@@ -1958,6 +1963,7 @@ Del</translation>
 <translation id="5786044859038896871">האם ברצונך למלא את פרטי הכרטיס שלך?</translation>
 <translation id="578633867165174378">‏Chrome איתר את הסיסמה שבה השתמשת עכשיו בפרצה באבטחת מידע. מומלץ לשנות את הסיסמה הזו מיד.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="580241730938216256">התחלת העדכון</translation>
 <translation id="5803412860119678065">האם ברצונך למלא את פרטי הכרטיס <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5808435672482059465">‏הצגת ההיסטוריה ב‑Chrome</translation>
@@ -2489,6 +2495,7 @@ Del</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">לבנדר</translation>
 <translation id="7156870133441232244">‏יש לשדרג את השרת ל-TLS 1.2 ואילך.</translation>
+<translation id="7160999678034985039">עליך לשמור את העבודה ולהתחיל את העדכון אחרי ששמרת הכול.</translation>
 <translation id="7163295244162773898">{0,plural, =1{להעתיק את הקובץ הסודי?}one{להעתיק את הקבצים הסודיים?}two{להעתיק את הקבצים הסודיים?}other{להעתיק את הקבצים הסודיים?}}</translation>
 <translation id="717330890047184534">‏מזהה GAIA:</translation>
 <translation id="7174545416324379297">משולבת</translation>
@@ -2735,6 +2742,7 @@ Del</translation>
 <translation id="7687305263118037187">זמן קצוב לתפוגה של ניסיון חוזר</translation>
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">סדר דפים התקבל</translation>
+<translation id="769424100851389104">להתחלת העדכון</translation>
 <translation id="7696089921647603491">רוק קלאסי ואולדיז</translation>
 <translation id="769721561045429135">יש לך כרגע כרטיסים שאפשר להשתמש בהם רק במכשיר הזה. כדי לעיין בכרטיסים יש ללחוץ על 'המשך'.</translation>
 <translation id="7698864304447945242">‏לעדכן את Google Play Services למציאות רבודה?</translation>
@@ -2759,6 +2767,7 @@ Del</translation>
 <translation id="774634243536837715">תוכן מסוכן נחסם.</translation>
 <translation id="7751971323486164747">‏התאמה אישית של הגופנים וגודל הטקסט ב-Chrome</translation>
 <translation id="7752995774971033316">ללא ניהול</translation>
+<translation id="7754587126786572336">‏הכרטיסיות והאפליקציות שלך ב-Chrome ייסגרו כשהעדכון יתחיל</translation>
 <translation id="7755287808199759310">אחד מההורים שלך יכול לבטל בשבילך את החסימה</translation>
 <translation id="7755624218968747854">הגליל הראשי</translation>
 <translation id="7758069387465995638">ייתכן שחומת אש או תוכנת אנטי-וירוס חסמו את החיבור.</translation>

@@ -519,6 +519,7 @@ Jūsu dati ir šifrēti, izmantojot jūsu sinhronizācijas ieejas frāzi. Lai s�
 <translation id="4737560986434232178">Meklēt nesen atvērtajās cilnēs</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4747097190499141774">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses no pakalpojuma Google Pay. Jūsu šifrētos datus var lasīt tikai personas, kurām ir zināma jūsu ieejas frāze. Ieejas frāze netiek sūtīta Google serveriem un netiek tajos glabāta. Ja aizmirsīsiet ieejas frāzi vai vēlēsieties mainīt šo iestatījumu, jums būs jāatiestata sinhronizācija. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />. Tikai šajā ierīcē. <ph name="URL" /></translation>
 <translation id="4751645464639803239">Jauna inkognito cilne</translation>
 <translation id="4766112107778026136">Discover un sekošana</translation>
 <translation id="4775879719735953715">Noklusējuma pārlūks</translation>
@@ -943,6 +944,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7600965453749440009">Nekad netulkot saturu, kas rakstīts <ph name="LANGUAGE" /> valodā</translation>
 <translation id="7603852183842204213">Bloķ. uznir. logi (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Dzēst paroli</translation>
+<translation id="7611459119367035420">Šeit varat atrast savas piespraustās cilnes.</translation>
 <translation id="7638584964844754484">Nepareiza ieejas frāze</translation>
 <translation id="7646263789464975852">Izvēlne → Iestatījumi → Drošības pārbaude</translation>
 <translation id="7646772052135772216">Paroļu sinhronizācija nedarbojas</translation>
@@ -955,6 +957,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7701040980221191251">Nav</translation>
 <translation id="7720410380936703141">MĒĢINĀT VĒLREIZ</translation>
 <translation id="7726702057919861819">Izvēlne → Vēsture → Notīrīt pārlūkošanas datus</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Tikai šajā ierīcē.</translation>
 <translation id="7738120385185846461">Ziņot par problēmu…</translation>
 <translation id="7741325291586284254">Jauna inkognito cilnes lapa</translation>
 <translation id="7744394900930577716">Paroles citās lietotnēs</translation>

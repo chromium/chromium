@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Развернуто. Нажмите, чтобы свернуть.</translation>
 <translation id="2586657967955657006">Буфер обмена</translation>
 <translation id="2597457036804169544">Тёмная тема не используется для сайтов.</translation>
+<translation id="2606760465469169465">Автоматическая проверка</translation>
 <translation id="2621115761605608342">Разрешить JavaScript для конкретного сайта</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2677748264148917807">Закрыть</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> получит доступ к выбранным контактам.</translation>
 <translation id="5216942107514965959">Последнее посещение: сегодня</translation>
 <translation id="5225463052809312700">Включить камеру</translation>
+<translation id="5229337741799419985">Ваши персональные данные не раскрываются, а сайтам не разрешается просматривать историю браузера.</translation>
 <translation id="5234764350956374838">Закрыть</translation>
 <translation id="5264323282659631142">Удалить элемент "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6689172468748959065">Фото профиля</translation>
 <translation id="6697925417670533197">Текущие скачивания</translation>
+<translation id="6701547804986694515">Сайт, который вы посещаете, может сохранять в Chrome информацию о том, что вы реальный пользователь. Затем другие сайты также могут запрашивать эти данные у браузера.</translation>
 <translation id="6722828510648505498">Вы можете запретить предложения войти в аккаунт от сервисов подтверждения личности.</translation>
 <translation id="6746124502594467657">Переместить вниз</translation>
 <translation id="6749077623962119521">Отозвать разрешения?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Выберите фото</translation>
 <translation id="8801436777607969138">Блокировать код JavaScript на определенном сайте</translation>
 <translation id="8803526663383843427">Функция включена</translation>
+<translation id="8805385115381080995">Сайты реже запрашивают проверку личности, поэтому вы меньше отвлекаетесь от работы в браузере.</translation>
 <translation id="8816026460808729765">Закрыть сайтам доступ к датчикам</translation>
 <translation id="8823559166155093873">Блокировать файлы cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Опасная страница</translation>
 <translation id="9201023452444595544">Все офлайн-данные будут удалены.</translation>
 <translation id="930525582205581608">Удалить этот сайт?</translation>
+<translation id="947156494302904893">Сайты, которые вы посещаете, могут получать данные о том, что вы реальный человек</translation>
 <translation id="967624055006145463">Объем памяти</translation>
 </translationbundle>

@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Geniş - Qısaltmaq üçün klikləyin</translation>
 <translation id="2586657967955657006">Mübadilə buferi</translation>
 <translation id="2597457036804169544">Saytlara tünd tema tətbiq etməyin</translation>
+<translation id="2606760465469169465">Avtomatik təsdiqləyin</translation>
 <translation id="2621115761605608342">Xüsusi sayt üçün JavaScript'ə icazə verin.</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Seçdiyiniz kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ilə paylaşılacaq.</translation>
 <translation id="5216942107514965959">Son ziyarət bu gün olub</translation>
 <translation id="5225463052809312700">Kameranı aktiv edin</translation>
+<translation id="5229337741799419985">Bu ayar kimliyinizi müəyyən etmədən və ya saytlara brauzer tarixçəsini görmək imkanı vermədən işləyir</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" daxiletməsini silin</translation>
 <translation id="528192093759286357">Yuxarıdan sürüşdürün və tam ekrandan çıxmaq üçün geri düyməsinə basın.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6689172468748959065">Profil fotoları</translation>
 <translation id="6697925417670533197">Aktiv endirmələr</translation>
+<translation id="6701547804986694515">Daxil olduğunuz sayt bot olmadığınızı təsdiq edən Chrome ilə məlumatları yadda saxlaya bilər. Baxmağa davam etdikcə saytlar Chrome ilə yoxlanış apara və daxil olduğunuz əvvəlki sayt ilə real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="6722828510648505498">Kimlik xidmətlərindən daxil olma sorğularını bloklayın.</translation>
 <translation id="6746124502594467657">Aşağı köçürün</translation>
 <translation id="6749077623962119521">İcazələr sıfırlansın?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Şəkil seçin</translation>
 <translation id="8801436777607969138">JavaScript'i bəzi saytlarda blok edin.</translation>
 <translation id="8803526663383843427">Aktiv olduqda</translation>
+<translation id="8805385115381080995">Saytın real insan olduğunuzu təsdiqləmək ehtimalı az olduğuna görə daha sürətlə baxmaq olur</translation>
 <translation id="8816026460808729765">Saytların sensorlara girişini blok edin</translation>
 <translation id="8823559166155093873">Kukiləri bloklayın</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Bu səhifə təhlükəlidir</translation>
 <translation id="9201023452444595544">Oflayn data silinəcək</translation>
 <translation id="930525582205581608">Bu sayt unudulsun?</translation>
+<translation id="947156494302904893">Daxil olduğunuz saytlar bot yox, real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="967624055006145463">Yadda saxlanmış data</translation>
 </translationbundle>

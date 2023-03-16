@@ -3714,6 +3714,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4274667386947315930">Datos de inicio de sesión</translation>
 <translation id="4274673989874969668">Unha vez que saes dun sitio, este pode seguir sincronizando datos para finalizar tarefas (por exemplo, cargar fotos ou enviar mensaxes de chat)</translation>
 <translation id="4275291496240508082">Son de inicio</translation>
+<translation id="4275397969489577657">Activar rexistro de emisión de eventos</translation>
 <translation id="4275830172053184480">Reinicia o dispositivo</translation>
 <translation id="4277434192562187284">Fonte da configuración XML</translation>
 <translation id="4278390842282768270">Permitida</translation>
@@ -4524,6 +4525,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5018207570537526145">Abrir sitio web da extensión</translation>
 <translation id="5018526990965779848">Enviar datos de uso e diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a túa experiencia en Android. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="5020008942039547742">Seleccionar ventá diferente</translation>
+<translation id="5020651427400641814">Activar rexistro de voz</translation>
 <translation id="5021750053540820849">Aínda non se actualizou</translation>
 <translation id="5024511550058813796">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>
 <translation id="5026492829171796515">Iniciar sesión para engadir unha conta de Google</translation>
@@ -4956,6 +4958,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5432145523462851548">Mostrar <ph name="FILE_NAME" /> no cartafol</translation>
 <translation id="543338862236136125">Editar contrasinal</translation>
 <translation id="5434065355175441495">Cifrado PKCS n.º 1 RSA</translation>
+<translation id="5435274640623994081">Activar rexistro de iconas auditivas</translation>
 <translation id="5435779377906857208">Permitir sempre que <ph name="HOST" /> acceda á túa localización</translation>
 <translation id="5436492226391861498">Agardando túnel proxy...</translation>
 <translation id="5436510242972373446">Buscar <ph name="SITE_NAME" />:</translation>
@@ -5301,7 +5304,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5751345516399502412">Comprobar preparación para conexión compartida</translation>
 <translation id="5755022574660047665">lembranzas de Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de axuda</translation>
-<translation id="5757375109985023827">Selecciona unha pestana para acceder á vista previa</translation>
 <translation id="5758631781033351321">Aquí atoparás a túa lista de lecturas</translation>
 <translation id="5759728514498647443">Os documentos que envías a imprimir a través de <ph name="APP_NAME" /> pódense ler con <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Indicar información da Conta de Google</translation>
@@ -8513,6 +8515,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o ordenador o poida manexar.</translation>
 <translation id="8655295600908251630">Canle</translation>
 <translation id="8655972064210167941">Produciuse un erro no inicio de sesión porque o teu contrasinal non se puido verificar. Contacta co administrador ou téntao de novo.</translation>
+<translation id="8656888282555543604">Activar rexistro de braille</translation>
 <translation id="8657393004602556571">Queres descartar o comentario?</translation>
 <translation id="8661290697478713397">Abrir ligazón na ventá de incó&amp;gnito</translation>
 <translation id="8662671328352114214">Unirse á rede <ph name="TYPE" /></translation>

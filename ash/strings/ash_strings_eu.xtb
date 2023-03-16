@@ -141,6 +141,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> geratzen dira</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ez dago konektatuta.</translation>
 <translation id="1677582821739292812">Norbait zure pantailari begira dago</translation>
+<translation id="1679841710523778799">Handitu distira</translation>
 <translation id="1683399938733266832">PUZaren oraingo erabilera: % <ph name="CPU_USEAGE" /></translation>
 <translation id="169515659049020177">Maius</translation>
 <translation id="1698080062160024910">Tenporizadorea: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2849936225196189499">Ezinbestekoa</translation>
 <translation id="2860184359326882502">Emaitzarik onena</translation>
 <translation id="2865888419503095837">Sarearen informazioa</translation>
+<translation id="2872353916818027657">Trukatu monitore nagusia</translation>
 <translation id="2872961005593481000">Itzali</translation>
 <translation id="2878884018241093801">Ez dago azken elementurik</translation>
 <translation id="2885950158625301909">Lortu informazio gehiago</translation>
@@ -470,6 +472,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C gailua</translation>
 <translation id="3455468639467374593">Txantiloia, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Berrezarri zoom-maila</translation>
 <translation id="3465223694362104965">Beste teklatu bat konektatu da gailu honetara saioa hasi zenuen azken alditik. Teklatua erabili aurretik, ziurtatu fidagarria dela.</translation>
 <translation id="3465356146291925647">Administratzaileak kudeatua</translation>
 <translation id="3477079411857374384">Kontrol + Maius + zuriunea</translation>
@@ -720,6 +723,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="468293128311738995">Telefonoko aplikazioak</translation>
 <translation id="4690510401873698237">Apala behealdean dago</translation>
 <translation id="4696813013609194136">Desblokeatu gailua gurasoen kodearekin</translation>
+<translation id="4698850295812410683">Erakutsi arkatzaren tresnak</translation>
 <translation id="4702647871202761252">Desaktibatuta dago pribatutasun-pantaila</translation>
 <translation id="4706121060329443414">Geroago saiatuko da deskargatzen berriro. Hizketa Google-ra bidaliko da prozesatzeko, oraingoz.</translation>
 <translation id="470644585772471629">Koloreen alderantzikatzea</translation>
@@ -839,6 +843,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5308380583665731573">Konektatu</translation>
 <translation id="5313326810920013265">Bluetootharen ezarpenak</translation>
 <translation id="5314219114274263156">Grabatu da pantaila</translation>
+<translation id="5316716239522500219">Ispilatu monitoreak</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5319712128756744240">Parekatu beste gailu batekin</translation>
 <translation id="5322611492012084517">Ezin da aurkitu telefonoa</translation>
@@ -991,6 +996,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> aplikaziok erabili dituzte</translation>
 <translation id="6045998054441862242">Aktibatu kontraste handiko modua</translation>
 <translation id="6047696787498798094">Pantaila-partekatzea gelditu egingo da beste erabiltzaile batera aldatzen zarenean. Jarraitu nahi duzu?</translation>
+<translation id="6052614013050385269">Egin klik esteka batean eskuineko botoiarekin</translation>
 <translation id="6054305421211936131">Hasi saioa txartel adimendunarekin</translation>
 <translation id="6059276912018042191">Azkenaldian erabilitako Chrome-ko fitxak</translation>
 <translation id="6062360702481658777">Saioa automatikoki amaituko da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan.</translation>
@@ -1023,6 +1029,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6213808132343683860">Egin zati baten pantaila-argazki edo -grabaketa bat</translation>
 <translation id="6220928844947387476">Zeure burua eta pantaila aldi berean graba ditzakezu orain</translation>
 <translation id="622484624075952240">Behera</translation>
+<translation id="6228457605945141550">Txikitu distira</translation>
 <translation id="623116199192908855">Igorri pantaila Chromebook-etik</translation>
 <translation id="6231419273573514727">Baliteke gailu periferikoaren errendimendua mugatuta egotea</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> kamera eta mikrofonoa erabiltzen ari da une honetan</translation>
@@ -1192,6 +1199,7 @@ Berriki instalatu da</translation>
 <translation id="7067196344162293536">Biratu automatikoki</translation>
 <translation id="7068360136237591149">Ireki fitxategiak</translation>
 <translation id="7076293881109082629">Saioa hasten</translation>
+<translation id="7076878155205969899">Desaktibatu audioa</translation>
 <translation id="7086931198345821656"><ph name="DEVICE_TYPE" /> gailuan Powerwash erabili behar da sistema eguneratzeko. Datu guztiak ezabatuko dira. Lortu informazio gehiago <ph name="SYSTEM_APP_NAME" /> aplikazioaren azken eguneratzeari buruz.</translation>
 <translation id="7088960765736518739">Erabilerraztasun-osagarria</translation>
 <translation id="7098053464892629930">Deskargatu <ph name="NAME" /> aplikazioa Google Play-tik erabilgarri dauzkan eginbideak ikusteko</translation>

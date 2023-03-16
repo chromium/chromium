@@ -9,6 +9,7 @@
 <translation id="113122355610423240">Chromium er standardnettleseren din</translation>
 <translation id="1131805035311359397">For å sjekke om passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{Administratoren din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på ett minutt. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}other{Administratoren din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på # minutter. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}}</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Minnesparing har gjort Chromium raskere</translation>
 <translation id="1315551408014407711">Konfigurer den nye Chromium-profilen din</translation>
@@ -23,6 +24,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="1640672724030957280">Laster ned …</translation>
 <translation id="1708666629004767631">En ny, sikrere versjon av Chromium er tilgjengelig.</translation>
 <translation id="17264556997921157">Du kan se og fjerne interesseemnene som nettsteder bruker for å vise deg annonser. Chromium anslår interessene dine basert på den nylige nettleserloggen din.</translation>
+<translation id="1733725117201708356">Chromium sletter snart nettlesingsdata</translation>
 <translation id="1745121272106313518">Chromium startes på nytt om <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">La Chromium kjøre i bakgrunnen</translation>
 <translation id="1779356040007214683">For å gjøre Chromium tryggere, har vi deaktivert noen utvidelser som ikke er oppført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt uten at du har vært klar over det.</translation>
@@ -53,6 +55,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2384373936468275798">ChromiumOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="2396765026452590966">Utvidelsen «<ph name="EXTENSION_NAME" />» har endret hvilken side som vises når du starter Chromium.</translation>
 <translation id="2401032172288869980">Chromium trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
+<translation id="2478295928299953161">Chromium lukkes snart</translation>
 <translation id="2483889755041906834">I Chromium</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
 <translation id="2560420686485554789">Chromium må ha lagringstilgang for å laste ned filer</translation>
@@ -171,6 +174,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4987820182225656817">Gjester kan bruke Chromium uten å etterlate seg spor.</translation>
 <translation id="4994636714258228724">Legg til deg selv i Chromium</translation>
 <translation id="5114678101347489141">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av dataene dine og likevel gi deg den samme nettlesingsopplevelsen</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{Administratoren din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på ett minutt.}other{Administratoren din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på # minutter.}}</translation>
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> er allerede logget på denne Chromium-profilen. Dette medfører at det blir opprettet en ny Chromium-profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">For å bruke endringene dine må du starte Chromium på nytt</translation>
@@ -214,6 +218,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6119438414301547735">Tillat at utvidelsen viser tilgangsforespørsler på Chromium-verktøylinjen</translation>
 <translation id="6120345080069858279">Chromium lagrer dette passordet i Google-kontoen din, så du trenger ikke å huske det.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> er farlig, så Chromium har blokkert den.</translation>
+<translation id="6132897690380286411">Chromium lukkes snart og sletter data</translation>
 <translation id="6134968993075716475">Safe Browsing er slått av. Chromium anbefaler at du slår det på.</translation>
 <translation id="6145820983052037069">Du kan bytte mellom Chromium-profiler her</translation>
 <translation id="6183079672144801177">Sørg for at du er logget på Chromium på <ph name="TARGET_DEVICE_NAME" />, og prøv å sende på nytt.</translation>
@@ -233,6 +238,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6327105987658262776">Ingen oppdatering er tilgjengelig.</translation>
 <translation id="6333502561965082103">En annen handling er i gang på Chromium. Prøv på nytt senere.</translation>
 <translation id="6334986366598267305">Nå er det enklere å bruke Chromium med Google-kontoen din og på datamaskiner du deler med andre.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Administratoren din sletter automatisk nettlesingsdata når nettleseren ikke har vært i bruk på ett minutt. Dette kan omfatte loggen, autofyll og nedlastinger. De eksisterende fanene dine forblir åpne.}other{Administratoren din sletter automatisk nettlesingsdata når nettleseren ikke har vært i bruk på # minutter. Dette kan omfatte loggen, autofyll og nedlastinger. De eksisterende fanene dine forblir åpne.}}</translation>
 <translation id="6373523479360886564">Er du sikker på at du vil avinstallere Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Slik bruker vi disse dataene:<ph name="END_BOLD" /> Chromium kan anslå interessene dine. Senere kan nettsteder du besøker, spørre Chromium om interessene dine for å kunne sette personlig preg på annonsene du ser.</translation>
 <translation id="6403826409255603130">Chromium er en nettleser som kjører nettsider og programmer i lynets hastighet. Den er rask, stabil og enkel å bruke. Surf på nettet på en tryggere måte med Chromium, som har innebygd beskyttelse mot skadelig programvare og nettfisking.</translation>
@@ -362,6 +368,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8986207147630327271">Du er i ferd med å legge til en jobbprofil i denne nettleseren og gi administratoren din kontroll over kun jobbprofilen.</translation>
 <translation id="9019929317751753759">For å gjøre Chromium tryggere har vi slått av følgende utvidelse som ikke finnes i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt til uten at du vet det.</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>
+<translation id="907832235989677238">Logg på Chromium. Hvis du vil logge på en konto bare én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruke enheten som gjest<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium startes på nytt om en time}other{Chromium startes på nytt om # timer}}</translation>
 <translation id="9106612006984859720">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.1.</translation>

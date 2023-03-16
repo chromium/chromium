@@ -7518,21 +7518,6 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
 
           Ist die Richtlinie nicht konfiguriert, ist "Mauszeiger hervorheben" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="8160572976152509481">Geräteausschaltung nur mit der physischen Ein-/Aus-Taste zulassen</translation>
-<translation id="8161309952608059239">Liste der Aktionen, die ausgeführt werden sollen, wenn das Zeitlimit in der Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> erreicht ist.
-
-      Wenn die Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> nicht konfiguriert ist, hat diese Richtlinie keine Auswirkungen.
-
-      Wird das Zeitlimit in der Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> erreicht, führt <ph name="PRODUCT_NAME" /> die in dieser Richtlinie konfigurierten Aktionen aus.
-
-      Wenn diese Richtlinie leer oder nicht konfiguriert ist, hat die Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> keine Auswirkungen.
-
-      Unterstützte Aktionen:
-
-      „<ph name="CLOSE_BROWSERS_ACTION" />“: Alle Browserfenster und PWAs für dieses Profil werden geschlossen. Wird auf Android-Geräten nicht unterstützt.
-
-      „<ph name="SHOW_PROFILE_PICKER_ACTION" />“: Das Fenster mit der Profilauswahl wird angezeigt. Wird auf Android-Geräten nicht unterstützt.
-
-      „<ph name="CLEAR_BROWSING_HISTORY_ACTION" />“, „<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />“, „<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />“, „<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />“, „<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />“, „<ph name="CLEAR_AUTOFILL_ACTION" />“, „<ph name="CLEAR_SITE_SETTINGS_ACTION" />“, „<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />“: Die entsprechenden Browserdaten werden gelöscht. Weitere Informationen findest du in der Richtlinie „<ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />“.</translation>
 <translation id="8164144100557223371">Eintrittspunkt für experimentelle Browserfunktionen auf Symbolleiste deaktivieren</translation>
 <translation id="8164687848393015214">Ist die Richtlinie aktiviert, werden Kontrollnetzwerkpakete (<ph name="HEARTBEATS_TERM" />) zur Überwachung des Onlinestatus an den Verwaltungsserver gesendet, damit er erkennt, wenn das Gerät offline ist.
 

@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Rozwiń <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# plik cookie}few{# pliki cookie}many{# plików cookie}other{# pliku cookie}}</translation>
+<translation id="4478158430052450698">Łatwiejsze dostosowywanie powiększenia w różnych witrynach</translation>
 <translation id="4479647676395637221">Pytaj, zanim zezwolisz stronom na korzystanie z aparatu (zalecane)</translation>
 <translation id="4505788138578415521">URL pokazany w całości</translation>
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>

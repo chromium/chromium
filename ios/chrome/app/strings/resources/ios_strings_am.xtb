@@ -519,6 +519,7 @@
 <translation id="4737560986434232178">የቅርብ ጊዜ ትሮችን ይፈልጉ</translation>
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4747097190499141774">የእርስዎ የይለፍ ሐረግ ያለው ሰው ብቻ ነው የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው። የይለፍ ሐረጉ ወደ Google አይላክም እንዲሁም አይከማችም። የእርስዎን የይለፍ ሐረግ ከረሱት ወይም ይህን ቅንብር መለወጥ ከፈለጉ ማሥመሩን ዳግም ማስጀመር ያስፈልገዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />፣ <ph name="STATE" />፣ በዚህ መሣሪያ ላይ ብቻ፣ <ph name="URL" /></translation>
 <translation id="4751645464639803239">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="4766112107778026136">ምርምር እና በመከተል ላይ</translation>
 <translation id="4775879719735953715">ነባሪ አሳሽ፦</translation>
@@ -943,6 +944,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ን በጭራሽ አትተርጉም</translation>
 <translation id="7603852183842204213">ብቅ-ባዮች ታግደዋል (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">የይለፍ ቃልን ሰርዝ</translation>
+<translation id="7611459119367035420">የተሰኩ ትሮችን እዚህ ማግኘት ይችላሉ።</translation>
 <translation id="7638584964844754484">ትክክል ያልሆነ የይለፍ ሐረግ</translation>
 <translation id="7646263789464975852">ምናሌ → ቅንብሮች → የደህንነት ፍተሻ</translation>
 <translation id="7646772052135772216">የይለፍ ቃል ስምረት እየሠራ አይደለም</translation>
@@ -955,6 +957,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7701040980221191251">ምንም</translation>
 <translation id="7720410380936703141">እንደገና ይሞክሩ</translation>
 <translation id="7726702057919861819">ምናሌ → ታሪክ → የአሰሳ ውሂብን አጽዳ</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />። በዚህ መሣሪያ ላይ ብቻ።</translation>
 <translation id="7738120385185846461">አንድ ችግር ሪፖርት አድርግ…</translation>
 <translation id="7741325291586284254">አዲስ ማንነት የማያሳውቅ የትር ገጽ</translation>
 <translation id="7744394900930577716">በሌሎች መተግበሪያዎች ውስጥ ያሉ የይለፍ ቃላት</translation>

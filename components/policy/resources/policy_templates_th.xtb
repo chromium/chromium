@@ -7517,19 +7517,6 @@
 
           หากไม่มีการตั้งค่านโยบายนี้ ระบบจะปิดฟีเจอร์ไฮไลต์เคอร์เซอร์ในขั้นต้น แต่ผู้ใช้เปิดใช้ได้ทุกเมื่อ</translation>
 <translation id="8160572976152509481">อนุญาตให้ผู้ใช้ปิดอุปกรณ์โดยใช้ปุ่มเปิด/ปิดบนอุปกรณ์เท่านั้น</translation>
-<translation id="8161309952608059239">รายการการดำเนินการที่จะเรียกใช้เมื่อหมดเวลาตามนโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" />
-
-      หากไม่ได้ตั้งค่านโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> ไว้ นโยบายนี้จะไม่มีผล
-
-      เมื่อหมดเวลาตามนโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> <ph name="PRODUCT_NAME" /> จะเรียกใช้การดำเนินการที่กำหนดค่าไว้ในนโยบายนี้
-
-      หากนโยบายนี้ว่างเปล่าหรือไม่ได้ตั้งค่า นโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> จะไม่มีผล
-
-      การดำเนินการที่รองรับ ได้แก่ "<ph name="CLOSE_BROWSERS_ACTION" />": ปิดหน้าต่างเบราว์เซอร์และ PWA ทั้งหมดสำหรับโปรไฟล์นี้ ไม่รองรับใน Android
-
-      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": แสดงหน้าต่างเครื่องมือเลือกโปรไฟล์ ไม่รองรับใน Android
-
-      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": ล้างข้อมูลการท่องเว็บที่เกี่ยวข้อง ดูรายละเอียดเพิ่มเติมจากนโยบาย <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /></translation>
 <translation id="8164144100557223371">ปิดจุดเข้าใช้งานแถบเครื่องมือสำหรับฟีเจอร์ทดลองของเบราว์เซอร์</translation>
 <translation id="8164687848393015214">การตั้งค่านโยบายเป็น "เปิดใช้" จะส่งการตรวจสอบแพ็กเก็ตเครือข่าย (<ph name="HEARTBEATS_TERM" />) ไปยังเซิร์ฟเวอร์การจัดการเพื่อตรวจสอบสถานะออนไลน์ เพื่อให้เซิร์ฟเวอร์ตรวจสอบว่าอุปกรณ์ออฟไลน์อยู่หรือไม่
 

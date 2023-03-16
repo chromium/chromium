@@ -93,6 +93,7 @@
 <translation id="257931822824936280">پھیلایا ہوا - سکیڑنے کیلئے کلک کریں۔</translation>
 <translation id="2586657967955657006">کلپ بورڈ</translation>
 <translation id="2597457036804169544">سائٹس پر گہری تھیم لاگو نہ کریں</translation>
+<translation id="2606760465469169465">خودکار تصدیق کریں</translation>
 <translation id="2621115761605608342">‏کسی مخصوص سائٹ کیلئے JavaScript کی اجازت دیں۔</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">آپ کے منتخب کردہ رابطوں کا <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> کے ساتھ اشتراک کیا جائے گا۔</translation>
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
 <translation id="5225463052809312700">کیمرا آن کریں</translation>
+<translation id="5229337741799419985">یہ ترتیب آپ کی شناخت کیے بغیر یا سائٹس کو آپ کی براؤزنگ کی سرگزشت دیکھنے کی اجازت دیے بغیر کام کرتی ہے</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
 <translation id="5264323282659631142">’<ph name="CHIP_LABEL" />‘ ہٹائیں</translation>
 <translation id="528192093759286357">پوری اسکرین سے باہر نکلنے کیلئے اوپر سے گھسیٹیں اور پیچھے جائیں بٹن کو ٹچ کریں۔</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6689172468748959065">پروفائل کی تصاویر</translation>
 <translation id="6697925417670533197">فعال ڈاؤن لوڈز</translation>
+<translation id="6701547804986694515">‏آپ کی ملاحظہ کردہ سائٹ Chrome کے ساتھ ایسی معلومات محفوظ کر سکتی ہے جو اس بات کی تصدیق کرتی ہے کہ آپ بوٹ نہیں ہیں۔ چونکہ آپ براؤز کرتے رہتے ہیں، اس لیے سائٹس Chrome سے رابطہ کر کے آپ کی ملاحظہ کردہ گزشتہ سائٹ سے یہ تصدیق کر سکتی ہیں کہ آپ ممکنہ طور پر ایک حقیقی شخص ہیں</translation>
 <translation id="6722828510648505498">شناختی سروسز سے سائن ان کے پرامپٹس مسدود کریں۔</translation>
 <translation id="6746124502594467657">نیچے منتقل کریں</translation>
 <translation id="6749077623962119521">اجازتیں ری سیٹ کریں؟</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">ایک تصویر منتخب کریں</translation>
 <translation id="8801436777607969138">‏کسی مخصوص سائٹ کیلئے JavaScript کو مسدود کریں۔</translation>
 <translation id="8803526663383843427">آن ہونے پر</translation>
+<translation id="8805385115381080995">براؤزنگ تیز تر ہے کیونکہ کسی سائٹ کے آپ سے اس بات کی تصدیق کرنے کے لیے کہنے کا امکان کم ہوتا ہے کہ آپ ایک حقیقی شخص ہیں</translation>
 <translation id="8816026460808729765">سینسرز تک رسائی حاصل کرنے سے سائٹس کو مسدود کریں</translation>
 <translation id="8823559166155093873">کوکیز کو مسدود کریں</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">یہ صفحہ خطرناک ہے</translation>
 <translation id="9201023452444595544">آف لائن تمام ڈيٹا صاف ہو جائے گا</translation>
 <translation id="930525582205581608">اس سائٹ کو بھول جائیں؟</translation>
+<translation id="947156494302904893">آپ کی ملاحظہ کردہ سائٹس اس بات کی تصدیق کر سکتی ہیں کہ آپ ایک حقیقی شخص ہیں نہ کہ ایک بوٹ</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>
 </translationbundle>

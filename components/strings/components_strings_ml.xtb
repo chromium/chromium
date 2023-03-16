@@ -683,6 +683,7 @@
 <translation id="259821504105826686">ഫോട്ടോഗ്രാഫിക്, ഡിജിറ്റൽ ആർട്ട്സ്</translation>
 <translation id="2601150049980261779">പ്രണയ സിനിമകൾ</translation>
 <translation id="2604589665489080024">പോപ്പ് സംഗീതം</translation>
+<translation id="2606760465469169465">സ്വയമേവ പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="2610561535971892504">പകർത്താൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="2617988307566202237">ഇനിപ്പറയുന്ന വിവരങ്ങൾ Chrome <ph name="BEGIN_EMPHASIS" />സംരക്ഷിക്കില്ല<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -1899,6 +1900,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ മാനേജ് ചെയ്യാം:<ph name="END_BOLD" /> 4 ആഴ്ചയിലധികം പഴക്കമുള്ള സൈറ്റുകൾ Chrome സ്വയമേവ ഇല്ലാതാക്കുന്നു. നിങ്ങൾ വീണ്ടും സന്ദർശിക്കുന്ന ഒരു സൈറ്റ്, ലിസ്റ്റിൽ വീണ്ടും ദൃശ്യമായേക്കാം. Chrome ക്രമീകരണത്തിൽ ഏത് സമയത്തും, നിങ്ങൾക്ക് പരസ്യങ്ങൾ നിർദ്ദേശിക്കുന്നതിൽ നിന്ന് ഒരു സൈറ്റിനെ ബ്ലോക്ക് ചെയ്യാനും സൈറ്റ് നിർദ്ദേശിച്ച പരസ്യങ്ങൾ ഓഫാക്കാനുമാകും.</translation>
 <translation id="5610142619324316209">കണക്ഷൻ പരിശോധിക്കുന്നു</translation>
 <translation id="5610807607761827392">നിങ്ങൾക്ക് <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> കാർഡുകളും വിലാസങ്ങളും മാനേജ് ചെയ്യാം.</translation>
+<translation id="5611398002774823980">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="561165882404867731">Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="5612720917913232150">നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്‍റെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="561669346091975195">സയൻസ് ഫിക്ഷൻ, ഫാന്റസി ടിവി ഷോകൾ</translation>
@@ -3183,6 +3185,7 @@
 <translation id="8806285662264631610">കുളിക്കാനും ശരീര സംരക്ഷണത്തിനുമുള്ള ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="8807160976559152894">ഓരോ പേജിന് ശേഷവും ട്രിം ചെയ്യുക</translation>
 <translation id="8809203544698246977">ബ്ലോക്ക് ചെയ്ത വിഷയങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
+<translation id="8811470563853401328">വിലാസം അക്കൗണ്ടിൽ സംരക്ഷിക്കണോ?</translation>
 <translation id="8813277370772331957">എന്നെ പിന്നീട് ഓർമ്മിപ്പിക്കുക</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
@@ -3276,6 +3279,7 @@
 <translation id="9042617223719777575">ഉയർന്ന ശേഷി</translation>
 <translation id="9044359186343685026">ടച്ച് ഐഡി ഉപയോഗിക്കുക</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">ഇവ ചെയ്യാൻ, <ph name="POLICY_NAME" /> നയം <ph name="POLICY_VALUE" /> എന്നതായി സജ്ജീകരിക്കണം: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 ഇഞ്ച്</translation>
 <translation id="9049981332609050619">നിങ്ങള്‍ <ph name="DOMAIN" /> എന്നതില്‍ എത്താന്‍ ശ്രമിച്ചു, പക്ഷേ സെര്‍വര്‍ ഒരു അസാധുവായ സര്‍ട്ടിഫിക്കറ്റ് അവതരിപ്പിച്ചു.</translation>
 <translation id="9050666287014529139">പാസ്ഫ്രെയ്‍സ്</translation>

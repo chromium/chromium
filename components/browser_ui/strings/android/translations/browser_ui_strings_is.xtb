@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Stækka <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Slökkva á hljóði á tilteknu vefsvæði.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# fótspor}one{# fótspor}other{# fótspor}}</translation>
+<translation id="4478158430052450698">Einfaldaðu sérsnið aðdráttar fyrir mismunandi vefsvæði</translation>
 <translation id="4479647676395637221">Spyrja áður en vefsvæðum er veitt heimild til að nota myndavélina þína (ráðlagt)</translation>
 <translation id="4505788138578415521">Öll vefslóðin</translation>
 <translation id="4534723447064627427">Til að veita <ph name="APP_NAME" /> aðgang að hljóðnemanum þarftu einnig að kveikja á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>

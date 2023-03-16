@@ -1243,6 +1243,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7707922173985738739">Usar dados móveis</translation>
 <translation id="7709094866268987903">Os interesses que você removeu vão aparecer aqui</translation>
 <translation id="7709918231054955894">Acesse todas as suas guias</translation>
+<translation id="772434085369393266">Fazer upgrade das navegações para HTTPS e enviar um aviso antes de carregar sites que não têm suporte a esse protocolo. Não é possível mudar essa configuração porque a Proteção Avançada está ativada.</translation>
 <translation id="7725024127233776428">As páginas favoritas são exibidas aqui</translation>
 <translation id="7757787379047923882">Texto compartilhado por <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Cartão SD <ph name="SD_CARD_NUMBER" /></translation>

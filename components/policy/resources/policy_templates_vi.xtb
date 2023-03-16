@@ -7081,9 +7081,6 @@ Chính sách này sẽ thay thế chính sách <ph name="WINDOW_PLACEMENT_BLOCKE
       Hãy lưu ý rằng chính sách này phụ thuộc vào ngăn xếp xác minh chứng chỉ hệ điều hành cho phép chữ ký SHA-1. Nếu bản cập nhật HĐH thay đổi khả năng xử lý HĐH của chứng chỉ SHA-1 thì chính sách này có thể không còn hiệu lực nữa.  Ngoài ra, theo dự kiến, chính sách này sẽ là giải pháp tạm thời nhằm cho các doanh nghiệp thêm thời gian để di chuyển khỏi SHA-1.  Chính sách này sẽ bị xóa vào hoặc khoảng ngày 01 tháng 01 năm 2019.
 
       Nếu bạn chưa đặt chính sách này hoặc nếu bạn đặt chính sách này thành false thì <ph name="PRODUCT_NAME" /> sẽ tuân theo lịch biểu ngừng hoạt động SHA-1 đã được thông báo công khai.</translation>
-<translation id="7574067085781592499">Tính năng phân vùng bộ nhớ của bên thứ ba được bật theo mặc định đối với một số người dùng kể từ phiên bản M113, nhưng bạn vẫn có thể tắt tính năng này thông qua cờ Chrome.
-          Nếu bạn đặt chính sách này thành <ph name="ALLOW_PARTITIONING_VALUE" /> hoặc chưa đặt, thì tính năng phân vùng bộ nhớ của bên thứ ba có thể được bật.
-          Nếu bạn đặt chính sách này thành <ph name="BLOCK_PARTITIONING_VALUE" />, thì người dùng sẽ không thể bật tính năng phân vùng bộ nhớ của bên thứ ba.</translation>
 <translation id="7577082478271919056">Cho phép ứng dụng web kiosk mở một cửa sổ trình duyệt khác</translation>
 <translation id="7578142001795552218">Chính sách này cấp cho tính năng Thông tin nhanh quyền truy cập vào nội dung đã chọn và gửi thông tin đó đến máy chủ để nhận kết quả chuyển đổi đơn vị.
 
@@ -7712,21 +7709,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng làm nổi bật con trỏ sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="8160572976152509481">Chỉ cho phép người dùng tắt thiết bị bằng nút nguồn vật lý</translation>
-<translation id="8161309952608059239">Danh sách thao tác sẽ diễn ra khi hết thời gian chờ do chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> quy định.
-
-      Nếu bạn không đặt chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" />, chính sách này sẽ không có hiệu lực.
-
-      Khi hết thời gian chờ do chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> quy định, <ph name="PRODUCT_NAME" /> sẽ thực hiện các thao tác được định cấu hình trong chính sách này.
-
-      Nếu bạn để trống hoặc không đặt chính sách này, thì chính sách <ph name="IDLE_TIMEOUT_POLICY_NAME" /> sẽ không có hiệu lực.
-
-      Các thao tác được hỗ trợ là:
-
-      "<ph name="CLOSE_BROWSERS_ACTION" />": đóng tất cả cửa sổ trình duyệt và PWA của hồ sơ này. Không được hỗ trợ trên Android.
-
-      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": hiện cửa sổ Bộ chọn hồ sơ. Không được hỗ trợ trên Android.
-
-      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": xoá dữ liệu duyệt web tương ứng. Hãy xem chính sách <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> để biết thêm chi tiết.</translation>
 <translation id="8164144100557223371">Tắt điểm truy cập vào các tính năng thử nghiệm của trình duyệt trên thanh công cụ</translation>
 <translation id="8164687848393015214">Nếu bạn đặt chính sách thành Bật (<ph name="HEARTBEATS_TERM" />), thì thiết bị sẽ gửi thông tin theo dõi gói mạng đến máy chủ quản lý để theo dõi trạng thái trực tuyến, giúp máy chủ phát hiện xem thiết bị có kết nối mạng hay không.
 

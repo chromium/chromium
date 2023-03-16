@@ -3715,6 +3715,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4274667386947315930">Saioa hasteko datuak</translation>
 <translation id="4274673989874969668">Webgune batetik irteten zarenean, webguneak sinkronizatzen jarrai dezake zereginak amaitzeko, hala nola argazkiak kargatzeko edo txat-mezuak bidaltzeko</translation>
 <translation id="4275291496240508082">Abioko soinua</translation>
+<translation id="4275397969489577657">Gaitu gertaeren jarioa erregistratzeko aukera</translation>
 <translation id="4275830172053184480">Berrabiarazi gailua</translation>
 <translation id="4277434192562187284">XML darabilen konfigurazioaren iturburua</translation>
 <translation id="4278390842282768270">Baimenduta</translation>
@@ -4525,6 +4526,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5018207570537526145">Ireki luzapenaren webgunea</translation>
 <translation id="5018526990965779848">Bidali erabilera- eta diagnostiko-datuak. Bidali diagnostikoak eta gailu zein aplikazioen erabilera-datuak Google-ri automatikoki darabiltzazun Android-en zerbitzuak hobetzeko. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea.</translation>
 <translation id="5020008942039547742">Aukeratu beste leiho bat</translation>
+<translation id="5020651427400641814">Gaitu hizketa erregistratzeko aukera</translation>
 <translation id="5021750053540820849">Oraindik ez da eguneratu</translation>
 <translation id="5024511550058813796">Sinkronizatutako gailu guztietan ikusi ahalko duzu historia, egiten ari zinenari berrekiteko</translation>
 <translation id="5026492829171796515">Hasi saioa Google-ko kontu bat gehitzeko</translation>
@@ -4957,6 +4959,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5432145523462851548">Erakutsi <ph name="FILE_NAME" /> karpetan</translation>
 <translation id="543338862236136125">Editatu pasahitza</translation>
 <translation id="5434065355175441495">PKCS #1 RSA enkriptatzea</translation>
+<translation id="5435274640623994081">Gaitu tonuak erregistratzeko aukera</translation>
 <translation id="5435779377906857208">Eman beti kokapena erabiltzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="5436492226391861498">Proxy-tunelaren zain…</translation>
 <translation id="5436510242972373446">Bilatu <ph name="SITE_NAME" /> bidez:</translation>
@@ -5302,7 +5305,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5751345516399502412">Egiaztatu konexioa partekatzeko aukeraren erabilgarritasuna</translation>
 <translation id="5755022574660047665">Google Argazkiak zerbitzuko oroitzapenak</translation>
 <translation id="5756163054456765343">&amp;Laguntza-zentroa</translation>
-<translation id="5757375109985023827">Hautatu fitxa bat haren aurrebista ikusteko</translation>
 <translation id="5758631781033351321">Irakurketa-zerrenda aurkituko duzu hemen</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> aplikazioaren bidez inprimatzera bidaltzen dituzun dokumentuak <ph name="APP_NAME" /> aplikazioak irakur ditzake.</translation>
 <translation id="5762787084360227629">Idatzi Google-ko kontuari buruzko informazioa</translation>
@@ -8514,6 +8516,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8654151524613148204">Fitxategia handiegia da ordenagailuak kudeatu ahal izateko.</translation>
 <translation id="8655295600908251630">Kanala</translation>
 <translation id="8655972064210167941">Ezin izan da hasi saioa, ezin izan delako egiaztatu pasahitza. Jarri administratzailearekin harremanetan edo saiatu berriro.</translation>
+<translation id="8656888282555543604">Gaitu braille-teklatua erregistratzeko aukera</translation>
 <translation id="8657393004602556571">Oharrak baztertu nahi dituzu?</translation>
 <translation id="8661290697478713397">Ireki esteka &amp;ezkutuko moduko leihoan</translation>
 <translation id="8662671328352114214">Sartu <ph name="TYPE" /> sarean</translation>

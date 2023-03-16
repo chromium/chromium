@@ -519,6 +519,7 @@ Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste
 <translation id="4737560986434232178">Pretraživanje nedavnih kartica</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4747097190499141774">Enkripcija šifrom ne uključuje podatke o načinima plaćanja i adresama s Google Paya. Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu niti se na njemu pohranjuje. Ako zaboravite šifru ili želite promijeniti tu postavku, morate poništiti sinkronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, samo na ovom uređaju, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nova anonimna kartica</translation>
 <translation id="4766112107778026136">Preporuke i praćenje</translation>
 <translation id="4775879719735953715">Zadani preglednik</translation>
@@ -540,6 +541,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="48274138579728272">Označi kao pročitano</translation>
 <translation id="4833686396768033263">Nedavne kartice nisu dostupne</translation>
 <translation id="4833786495304741580">Automatski šalje Googleu statistiku upotrebe i izvješća o padu programa.</translation>
+<translation id="4834499902900503484">Kada ste prijavljeni u Chrome, zaporke koje spremite spremit će se na vaš Google račun. Da biste to isključili, <ph name="BEGIN_LINK" />idite na postavke<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Vaše oznake, povijest, zaporke i druge stavke više se neće sinkronizirati s vašim Google računom.</translation>
 <translation id="4844899002472726590">Pregled i uređivanje tema koje vas zanimaju</translation>
 <translation id="4848999860252535517">Želite li izbrisati zaporku za <ph name="WEBSITE" />?</translation>
@@ -683,6 +685,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5899314093904173337">Za dijeljenje s osobama u blizini dopustite im da skeniraju ovaj QR kôd pomoću kamere ili aplikacije za skeniranje QR kodova</translation>
 <translation id="5911030830365207728">Google prevoditelj</translation>
 <translation id="5913600720976431809">Opcije prevođenja stranice</translation>
+<translation id="5922999516621365983">Povucite karticu ovdje da biste je prikvačili.</translation>
 <translation id="5938160824633642847">Uređaj je gotovo pun. Oslobodite prostor i pokušajte ponovo.</translation>
 <translation id="5948291296578561264">To vam omogućuje da spremite fotografije u zbirku fotografija.</translation>
 <translation id="5951816930277761335">Dijelite vezu</translation>
@@ -943,6 +946,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Blokirani skočni (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Izbriši zaporku</translation>
+<translation id="7611459119367035420">Prikvačene kartice možete pronaći ovdje.</translation>
 <translation id="7638584964844754484">Pogrešna zaporka</translation>
 <translation id="7646263789464975852">Izbornik → Postavke → Sigurnosna provjera</translation>
 <translation id="7646772052135772216">Sinkronizacija zaporki ne radi</translation>
@@ -955,6 +959,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7701040980221191251">Nema ih</translation>
 <translation id="7720410380936703141">PONOVI</translation>
 <translation id="7726702057919861819">Izbornik → Povijest → Brisanje podataka o pregledavanju</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Samo na ovom uređaju.</translation>
 <translation id="7738120385185846461">Prijavite problem…</translation>
 <translation id="7741325291586284254">Stranica nove anonimne kartice</translation>
 <translation id="7744394900930577716">Zaporke u drugim aplikacijama</translation>

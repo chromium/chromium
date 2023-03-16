@@ -683,6 +683,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="259821504105826686">Nghệ thuật kỹ thuật số và nhiếp ảnh</translation>
 <translation id="2601150049980261779">Phim lãng mạn</translation>
 <translation id="2604589665489080024">Nhạc pop</translation>
+<translation id="2606760465469169465">Tự động xác minh</translation>
 <translation id="2610561535971892504">Nhấp để sao chép</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />sẽ không lưu<ph name="END_EMPHASIS" /> những thông tin sau:
         <ph name="BEGIN_LIST" />
@@ -1900,6 +1901,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Chrome tự động xoá những trang web đã tồn tại hơn 4 tuần. Trang web bạn truy cập lại có thể xuất hiện lại trong danh sách. Bạn cũng có thể chặn không cho một trang web đề xuất quảng cáo cho mình và tắt quảng cáo do trang web đề xuất bất cứ lúc nào trong phần cài đặt trên Chrome.</translation>
 <translation id="5610142619324316209">Kiểm tra kết nối</translation>
 <translation id="5610807607761827392">Bạn có thể quản lý thẻ và địa chỉ trong <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Lưu trong tài khoản</translation>
 <translation id="561165882404867731">Dịch trang này bằng Google Dịch</translation>
 <translation id="5612720917913232150"><ph name="URL" /> muốn sử dụng thông tin vị trí máy tính của bạn</translation>
 <translation id="561669346091975195">Chương trình truyền hình khoa học viễn tưởng và giả tưởng</translation>
@@ -3187,6 +3189,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8806285662264631610">Sản phẩm tắm gội và chăm sóc cơ thể</translation>
 <translation id="8807160976559152894">Cắt bỏ sau mỗi trang</translation>
 <translation id="8809203544698246977">Chủ đề bị chặn sẽ xuất hiện tại đây</translation>
+<translation id="8811470563853401328">Lưu địa chỉ trong tài khoản?</translation>
 <translation id="8813277370772331957">Nhắc tôi sau</translation>
 <translation id="8814707942599948500">Phong bì C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để cập nhật Chrome trong phần cài đặt của Chrome</translation>
@@ -3280,6 +3283,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9042617223719777575">Khay sức chứa lớn</translation>
 <translation id="9044359186343685026">Sử dụng Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Những hành động sau yêu cầu bạn phải đặt chính sách <ph name="POLICY_NAME" /> thành <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 inch</translation>
 <translation id="9049981332609050619">Bạn đã cố truy cập vào <ph name="DOMAIN" />, nhưng máy chủ cho biết chứng chỉ không hợp lệ.</translation>
 <translation id="9050666287014529139">Cụm mật khẩu</translation>

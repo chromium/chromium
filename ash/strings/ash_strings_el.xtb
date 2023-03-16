@@ -142,6 +142,7 @@
 <translation id="1677472565718498478">Απομένουν <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Η λειτουργία <ph name="FEATURE_NAME" /> δεν συνδέθηκε.</translation>
 <translation id="1677582821739292812">Κάποιο άτομο βλέπει την οθόνη σας</translation>
+<translation id="1679841710523778799">Αύξηση φωτεινότητας</translation>
 <translation id="1683399938733266832">Τρέχουσα χρήση CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Χρονόμετρο <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -360,6 +361,7 @@
 <translation id="2849936225196189499">Κρίσιμη</translation>
 <translation id="2860184359326882502">Βέλτιστη αντιστοίχιση</translation>
 <translation id="2865888419503095837">Πληροφορίες δικτύου</translation>
+<translation id="2872353916818027657">Αλλαγή κύριας οθόνης</translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
 <translation id="2878884018241093801">Δεν υπάρχουν πρόσφατα στοιχεία</translation>
 <translation id="2885950158625301909">Μάθετε περισσότερα</translation>
@@ -473,6 +475,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> λεπτά</translation>
 <translation id="3445925074670675829">Συσκευή USB-C</translation>
 <translation id="3455468639467374593">Πρότυπο, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Επαναφορά επιπέδου εστίασης</translation>
 <translation id="3465223694362104965">Ένα άλλο πληκτρολόγιο έχει συνδεθεί με αυτήν τη συσκευή από την τελευταία σύνδεσή σας. Βεβαιωθείτε ότι εμπιστεύεστε αυτό το πληκτρολόγιο πριν το χρησιμοποιήσετε.</translation>
 <translation id="3465356146291925647">Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -726,6 +729,7 @@
 <translation id="468293128311738995">Εφαρμογές από το τηλέφωνό σας</translation>
 <translation id="4690510401873698237">Ράφι στο κάτω μέρος</translation>
 <translation id="4696813013609194136">Ξεκλείδωμα συσκευής με κωδικό γονέα</translation>
+<translation id="4698850295812410683">Εμφάνιση εργαλείων γραφίδας</translation>
 <translation id="4702647871202761252">Η οθόνη απορρήτου είναι απενεργοποιημένη.</translation>
 <translation id="4706121060329443414">Θα γίνει προσπάθεια για λήψη αργότερα. Προς το παρόν, η ομιλία θα σταλεί στην Google για επεξεργασία.</translation>
 <translation id="470644585772471629">Αντιστροφή χρωμάτων</translation>
@@ -845,6 +849,7 @@
 <translation id="5308380583665731573">Σύνδεση</translation>
 <translation id="5313326810920013265">Ρυθμίσεις Bluetooth</translation>
 <translation id="5314219114274263156">Λήψη εγγραφής οθόνης</translation>
+<translation id="5316716239522500219">Κατοπτρισμός οθονών</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5319712128756744240">Σύζευξη νέας συσκευής</translation>
 <translation id="5322611492012084517">Δεν βρίσκετε το τηλέφωνό σας</translation>
@@ -998,6 +1003,7 @@
 <translation id="6045629311476491587">Χρησιμοποιείται από <ph name="APP_COUNT" /> εφαρμογές</translation>
 <translation id="6045998054441862242">Ενεργοποίηση λειτουργίας υψηλής αντίθεσης</translation>
 <translation id="6047696787498798094">Η κοινή χρήση οθόνης θα διακοπεί κατά την εναλλαγή σε άλλον χρήστη. Θέλετε να συνεχίσετε;</translation>
+<translation id="6052614013050385269">Δεξί κλικ σε έναν σύνδεσμο</translation>
 <translation id="6054305421211936131">Σύνδεση με έξυπνη κάρτα</translation>
 <translation id="6059276912018042191">Πρόσφατες καρτέλες Chrome</translation>
 <translation id="6062360702481658777">Θα αποσυνδεθείτε αυτόματα σε <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -1030,6 +1036,7 @@
 <translation id="6213808132343683860">Λήψη μερικού στιγμιότυπου οθόνης ή μερικής εγγραφής οθόνης</translation>
 <translation id="6220928844947387476">Μπορείτε πλέον να κάνετε ταυτόχρονη εγγραφή του εαυτού σας και της οθόνης σας.</translation>
 <translation id="622484624075952240">Κάτω</translation>
+<translation id="6228457605945141550">Μείωση φωτεινότητας</translation>
 <translation id="623116199192908855">Μετάδοση της οθόνης από το Chromebook</translation>
 <translation id="6231419273573514727">Η απόδοση των περιφερειακών ενδέχεται να είναι περιορισμένη</translation>
 <translation id="6232891689835436217">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί την κάμερα και το μικρόφωνό σας αυτήν τη στιγμή.</translation>
@@ -1200,6 +1207,7 @@
 <translation id="7067196344162293536">Αυτόματη περιστροφή</translation>
 <translation id="7068360136237591149">Άνοιγμα αρχείων</translation>
 <translation id="7076293881109082629">Σύνδεση</translation>
+<translation id="7076878155205969899">Σίγαση ήχου</translation>
 <translation id="7086931198345821656">Αυτή η ενημέρωση απαιτεί Powerwash της συσκευής <ph name="DEVICE_TYPE" />. Όλα τα δεδομένα θα διαγραφούν. Μάθετε περισσότερα σχετικά με την πιο πρόσφατη ενημέρωση της εφαρμογής <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Πρόσβαση με διακόπτη</translation>
 <translation id="7098053464892629930">Κατεβάστε την εφαρμογή για το <ph name="NAME" /> στο Google Play για να δείτε όλες τις διαθέσιμες λειτουργίες</translation>

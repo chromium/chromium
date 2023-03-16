@@ -119,7 +119,6 @@
 <translation id="1942765061641586207">Rezolucija slike</translation>
 <translation id="1972984168337863910">Proširivanje ploča za povratne informacije o fajlovima</translation>
 <translation id="1995337122023280937">Posjeti lokaciju fajla</translation>
-<translation id="1999709132469742660">Pristup fajlu putem svih URL-ova</translation>
 <translation id="2001796770603320721">Upravljajte na Disku</translation>
 <translation id="2009067268969781306">Formatiranjem diska ćete izbrisati sve podatke koji su na njemu pohranjeni. Ova radnja se ne može poništiti.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -543,7 +542,6 @@
 <translation id="5323213332664049067">Latinoamerička</translation>
 <translation id="5330145655348521461">Ovi fajlovi su otvoreni na drugoj radnoj površini. Prebacite se na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da ih vidite.</translation>
 <translation id="5330512191124428349">Preuzmite informacije</translation>
-<translation id="5337538975554986899">Pristup fajlu putem svih URL-ova osim <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="5344246330454251646">Upravljajte dijeljenjem s Bruschettom</translation>
 <translation id="535792325654997756">Osoba s mačkama</translation>
 <translation id="5358764674931277">Broj slika u sekundi</translation>

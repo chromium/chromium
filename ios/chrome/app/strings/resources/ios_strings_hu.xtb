@@ -519,6 +519,7 @@ Adatai az összetett szinkronizálási jelszavával vannak titkosítva. Írja be
 <translation id="4737560986434232178">Keresés a legutóbb megnyitott lapokon</translation>
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="4747097190499141774">Az összetett jelszavas titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket. Titkosított adatait csak az olvashatja el, aki rendelkezik az Ön összetett jelszavával. Az összetett jelszót a Google nem kapja meg, és nem is tárolja. Ha elfelejtette összetett jelszavát, vagy módosítaná ezt a beállítást, alaphelyzetbe kell állítania a szinkronizálást. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" /> Csak erre az eszközre, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Új inkognitó lap</translation>
 <translation id="4766112107778026136">Discover és követés</translation>
 <translation id="4775879719735953715">Alapértelmezett böngésző</translation>
@@ -943,6 +944,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7600965453749440009">Soha ne fordítsa le a(z) <ph name="LANGUAGE" /> nyelvű szöveget</translation>
 <translation id="7603852183842204213">Pop-up letiltva (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Jelszó törlése</translation>
+<translation id="7611459119367035420">Itt találja a rögzített lapokat.</translation>
 <translation id="7638584964844754484">Hibás összetett jelszó</translation>
 <translation id="7646263789464975852">Menü → Beállítások → Biztonsági ellenőrzés</translation>
 <translation id="7646772052135772216">Nem működik a jelszavak szinkronizálása</translation>
@@ -955,6 +957,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7701040980221191251">Nincs</translation>
 <translation id="7720410380936703141">ÚJRA</translation>
 <translation id="7726702057919861819">Menü → Előzmények → Böngészési adatok törlése</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Csak erre az eszközre.</translation>
 <translation id="7738120385185846461">Hibabejelentés…</translation>
 <translation id="7741325291586284254">Új inkognitó lap oldal</translation>
 <translation id="7744394900930577716">Más alkalmazásoknál használt jelszavak</translation>
@@ -1130,6 +1133,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8952559610785099500">Jelszó hozzáadása</translation>
 <translation id="8953046091948372197">Itt láthatja majd a jelszavait</translation>
 <translation id="895541991026785598">Hibabejelentés</translation>
+<translation id="8971545611707025079">Ellenőrzés újra</translation>
 <translation id="8974714402877957201">1. Nyissa meg az iPad Beállítások menüjét.</translation>
 <translation id="8976382372951310360">Súgó</translation>
 <translation id="8976414606286374109">A kártyákat a rendszer az Ön Google-fiókjába menti.</translation>

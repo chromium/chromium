@@ -519,6 +519,7 @@ Seus dados são criptografados com sua senha longa de sincronização. Informe-a
 <translation id="4737560986434232178">Pesquisar guias recentes</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4747097190499141774">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay. Só alguém com acesso a sua senha longa pode ler seus dados criptografados. Essa senha não é enviada ou armazenada pelo Google. Se você esquecer a senha longa ou quiser alterar essa configuração, será necessário redefinir a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, somente neste dispositivo, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nova guia anônima</translation>
 <translation id="4766112107778026136">Discover e seguindo</translation>
 <translation id="4775879719735953715">Navegador padrão</translation>
@@ -943,6 +944,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Excluir senha</translation>
+<translation id="7611459119367035420">As guias fixadas aparecem aqui.</translation>
 <translation id="7638584964844754484">Senha incorreta</translation>
 <translation id="7646263789464975852">Menu → Configurações → Confirmação de segurança</translation>
 <translation id="7646772052135772216">A sincronização de senha não está funcionando</translation>
@@ -955,6 +957,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
 <translation id="7726702057919861819">Menu → Histórico → Remover dados de navegação</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Somente neste dispositivo.</translation>
 <translation id="7738120385185846461">Informar um problema…</translation>
 <translation id="7741325291586284254">Nova página de guia anônima</translation>
 <translation id="7744394900930577716">Senhas em outros apps</translation>

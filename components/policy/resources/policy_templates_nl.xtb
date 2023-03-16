@@ -7516,21 +7516,6 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 
           Als dit beleid niet is ingesteld, staat de functie voor cursormarkering in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="8160572976152509481">Gebruikers alleen toestaan het apparaat uit te zetten met de aan/uit-knop op het apparaat</translation>
-<translation id="8161309952608059239">Lijst met acties die moeten worden uitgevoerd als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt.
-
-      Als het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> niet is ingesteld, heeft dit beleid geen effect.
-
-      Als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt, voert <ph name="PRODUCT_NAME" /> de acties uit die in dit beleid zijn ingesteld.
-
-      Als je dit beleid leeg laat of niet instelt, heeft het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> geen effect.
-
-      Deze acties worden ondersteund:
-
-<ph name="CLOSE_BROWSERS_ACTION" />: alle browservensters en PWA's voor dit profiel sluiten. Niet ondersteund in Android.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: het profielkiezervenster tonen. Niet ondersteund in Android.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: de bijbehorende browsegegevens wissen. Zie het beleid <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> voor meer informatie.</translation>
 <translation id="8164144100557223371">Beginpunt voor werkbalk met experimentele browserfuncties uitzetten</translation>
 <translation id="8164687848393015214">Als je het beleid toepast, worden controlenetwerkpakketten (<ph name="HEARTBEATS_TERM" />) naar de beheerserver gestuurd, zodat de server kan waarnemen of het apparaat offline is.
 

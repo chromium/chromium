@@ -3745,6 +3745,7 @@
 <translation id="4274667386947315930">登入資料</translation>
 <translation id="4274673989874969668">在您離開網站後，網站通常會保持同步以完成工作，例如上載相片或傳送即時通訊訊息</translation>
 <translation id="4275291496240508082">啟動音效</translation>
+<translation id="4275397969489577657">啟用活動串流記錄</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4277434192562187284">XML 設定來源</translation>
 <translation id="4278390842282768270">已允許</translation>
@@ -4556,6 +4557,7 @@
 <translation id="5018207570537526145">開啟擴充程式網站</translation>
 <translation id="5018526990965779848">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您的 Android 使用體驗。這可協助改善系統及應用程式的穩定性及其他功能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。</translation>
 <translation id="5020008942039547742">選擇其他視窗</translation>
+<translation id="5020651427400641814">啟用語音記錄功能</translation>
 <translation id="5021750053540820849">尚未更新</translation>
 <translation id="5024511550058813796">您可在所有已同步的裝置上查看記錄，繼續執行先前的任何工作</translation>
 <translation id="5026492829171796515">登入即可新增 Google 帳戶</translation>
@@ -4988,6 +4990,7 @@
 <translation id="5432145523462851548">喺資料夾入面顯示 <ph name="FILE_NAME" /></translation>
 <translation id="543338862236136125">修改密碼</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
+<translation id="5435274640623994081">啟用 Earcon 記錄</translation>
 <translation id="5435779377906857208">一律允許 <ph name="HOST" /> 存取您的位置</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道…</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
@@ -5333,7 +5336,6 @@
 <translation id="5751345516399502412">檢查網絡共享準備工作</translation>
 <translation id="5755022574660047665">來自「Google 相片」的回憶</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
-<translation id="5757375109985023827">選取要預覽的分頁</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
 <translation id="5759728514498647443">您透過「<ph name="APP_NAME" />」傳送列印的文件可使用「<ph name="APP_NAME" />」讀取。</translation>
 <translation id="5762787084360227629">輸入 Google 帳戶資料</translation>
@@ -8556,6 +8558,7 @@
 <translation id="8654151524613148204">抱歉，檔案過大，您的裝置無法處理。</translation>
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655972064210167941">系統無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
+<translation id="8656888282555543604">啟用點字記錄</translation>
 <translation id="8657393004602556571">您要捨棄這則意見嗎？</translation>
 <translation id="8661290697478713397">在無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網絡</translation>

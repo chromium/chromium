@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Laajenna <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Mykistä tietyn sivuston äänet.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# eväste}other{# evästettä}}</translation>
+<translation id="4478158430052450698">Helpota zoomauksen muokkausta eri sivustoilla</translation>
 <translation id="4479647676395637221">Pyydä lupaa, kun sivustot yrittävät käyttää kameraasi (suositus).</translation>
 <translation id="4505788138578415521">URL näkyy laajennettuna</translation>
 <translation id="4534723447064627427">Laita mikrofoni päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn mikrofoniisi.</translation>

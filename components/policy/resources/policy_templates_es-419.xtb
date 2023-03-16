@@ -7675,21 +7675,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
           Si no la estableces, la función de resaltar la posición del cursor estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="8160572976152509481">Permitir que los usuarios desactiven el dispositivo solo con el botón de encendido físico</translation>
-<translation id="8161309952608059239">Lista de acciones para ejecutar cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Si no estableces la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, esta política no tendrá efecto.
-
-      Cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> ejecuta las acciones configuradas en esta política.
-
-      Si la dejas vacía o no la estableces, la política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> no tendrá efecto.
-
-      Se admiten las siguientes acciones:
-
-      "<ph name="CLOSE_BROWSERS_ACTION" />": cierra todas las ventanas del navegador y las AWPs de este perfil. No es compatible con Android.
-
-      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": muestra la ventana del Selector de perfiles. No es compatible con Android.
-
-      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" , "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" , "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": borran los datos de navegación correspondientes. Para obtener más información, consulta la política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.</translation>
 <translation id="8164144100557223371">Inhabilita el punto de entrada de la barra de herramientas para las funciones experimentales del navegador</translation>
 <translation id="8164687848393015214">Si habilitas la política, se enviarán paquetes de red de control (<ph name="HEARTBEATS_TERM" />) al servidor de administración para controlar el estado de conexión, lo que permite que el servidor detecte si el dispositivo está desconectado de Internet.
 

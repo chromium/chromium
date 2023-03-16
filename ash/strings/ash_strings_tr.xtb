@@ -141,6 +141,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> bağlı değil.</translation>
 <translation id="1677582821739292812">Ekranınıza bakan biri var</translation>
+<translation id="1679841710523778799">Parlaklığı artırır</translation>
 <translation id="1683399938733266832">Mevcut CPU kullanımı: %<ph name="CPU_USEAGE" /></translation>
 <translation id="169515659049020177">ÜstKrktr</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> zamanlayıcı· <ph name="LABEL" /></translation>
@@ -357,6 +358,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2849936225196189499">Önemli</translation>
 <translation id="2860184359326882502">En İyi Eşleşme</translation>
 <translation id="2865888419503095837">Ağ bilgisi</translation>
+<translation id="2872353916818027657">Birincil monitörü değiştir</translation>
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="2878884018241093801">Yeni öğe yok</translation>
 <translation id="2885950158625301909">Daha fazla bilgi</translation>
@@ -470,6 +472,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dk.</translation>
 <translation id="3445925074670675829">USB-C cihaz</translation>
 <translation id="3455468639467374593">Şablon, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="346243998268439747">Yakınlaştırma düzeyini sıfırlar</translation>
 <translation id="3465223694362104965">Açtığınız son oturumdan sonra bu cihaza başka bir klavye bağlandı. Kullanmadan önce bu klavyeye güvendiğinizden emin olun.</translation>
 <translation id="3465356146291925647">Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="3477079411857374384">Control-Üst Karakter-Boşluk</translation>
@@ -719,6 +722,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="468293128311738995">Telefonunuzdaki uygulamalar</translation>
 <translation id="4690510401873698237">Raf, ekranın alt tarafında</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
+<translation id="4698850295812410683">Ekran kalemi araçlarını görüntüler</translation>
 <translation id="4702647871202761252">Gizlilik ekranı kapalı</translation>
 <translation id="4706121060329443414">İndirme işlemi daha sonra tekrar denenecek. Konuşma şimdilik işlenmek üzere Google'a gönderilecek.</translation>
 <translation id="470644585772471629">Rengi ters çevirme</translation>
@@ -838,6 +842,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5308380583665731573">Bağlan</translation>
 <translation id="5313326810920013265">Bluetooth ayarları</translation>
 <translation id="5314219114274263156">Ekran kaydı alındı</translation>
+<translation id="5316716239522500219">Monitörleri yansıt</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5319712128756744240">Yeni cihaz eşle</translation>
 <translation id="5322611492012084517">Telefonunuz bulunamıyor</translation>
@@ -990,6 +995,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> uygulama tarafından kullanıldı</translation>
 <translation id="6045998054441862242">Yüksek kontrast modunu etkinleştirir</translation>
 <translation id="6047696787498798094">Başka bir kullanıcıya geçtiğinizde ekran paylaşma özelliği durur. Devam etmek istiyor musunuz?</translation>
+<translation id="6052614013050385269">Bağlantıyı sağ tıklar</translation>
 <translation id="6054305421211936131">Akıllı kartla oturum aç</translation>
 <translation id="6059276912018042191">Son Chrome sekmeleri</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> içinde otomatik olarak çıkış yapacaksınız.</translation>
@@ -1022,6 +1028,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6213808132343683860">Kısmi ekran görüntüsü veya ekran kaydı alın</translation>
 <translation id="6220928844947387476">Artık aynı anda hem kendinizi hem ekranınızı kaydedebilirsiniz</translation>
 <translation id="622484624075952240">Aşağı</translation>
+<translation id="6228457605945141550">Parlaklığı azaltır</translation>
 <translation id="623116199192908855">Chromebook'unuzdan ekranınızı yayınlayın</translation>
 <translation id="6231419273573514727">Çevre birimlerinin performansı sınırlı olabilir</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> şu anda kameranızı ve mikrofonunuzu kullanıyor</translation>
@@ -1191,6 +1198,7 @@ Yeni yüklenmiş</translation>
 <translation id="7067196344162293536">Otomatik döndür</translation>
 <translation id="7068360136237591149">Dosya aç</translation>
 <translation id="7076293881109082629">Oturum açılıyor</translation>
+<translation id="7076878155205969899">Sesi kapat</translation>
 <translation id="7086931198345821656">Bu güncelleme için <ph name="DEVICE_TYPE" /> cihazınızda Powerwash işlemi yapılması gerekiyor. Tüm veriler silinecektir. En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin.</translation>
 <translation id="7088960765736518739">Anahtar Erişimi</translation>
 <translation id="7098053464892629930">Kullanılabilen tüm özellikleri görmek için Google Play'de <ph name="NAME" /> için geliştirilen uygulamayı indirin</translation>
