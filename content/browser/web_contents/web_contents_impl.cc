@@ -7275,8 +7275,14 @@ double WebContentsImpl::GetPendingPageZoomLevel() {
     return HostZoomMap::GetZoomLevel(this);
 
   GURL url = pending_entry->GetURL();
+#if BUILDFLAG(IS_ANDROID)
+  return HostZoomMap::GetForWebContents(this)->GetZoomLevelForHostAndScheme(
+      url.scheme(), net::GetHostOrSpecFromURL(url),
+      pending_entry->GetIsOverridingUserAgent());
+#else
   return HostZoomMap::GetForWebContents(this)->GetZoomLevelForHostAndScheme(
       url.scheme(), net::GetHostOrSpecFromURL(url));
+#endif
 }
 
 bool WebContentsImpl::IsPictureInPictureAllowedForFullscreenVideo() const {

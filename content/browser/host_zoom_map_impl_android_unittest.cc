@@ -41,8 +41,14 @@ TEST_F(HostZoomMapAndroidTest, GetDesktopSiteZoomScale_DesktopUserAgent) {
       .GetLastCommittedEntry()
       ->SetIsOverridingUserAgent(true);
 
+  bool is_overriding_user_agent = web_contents()
+                                      ->GetController()
+                                      .GetLastCommittedEntry()
+                                      ->GetIsOverridingUserAgent();
+
   HostZoomMapImpl host_zoom_map;
-  EXPECT_DOUBLE_EQ(1.1, host_zoom_map.GetDesktopSiteZoomScale(web_contents()));
+  EXPECT_DOUBLE_EQ(
+      1.1, host_zoom_map.GetDesktopSiteZoomScale(is_overriding_user_agent));
 }
 
 // Tests that a Finch-configured desktop site zoom scale is returned when the
@@ -59,8 +65,14 @@ TEST_F(HostZoomMapAndroidTest,
       .GetLastCommittedEntry()
       ->SetIsOverridingUserAgent(true);
 
+  bool is_overriding_user_agent = web_contents()
+                                      ->GetController()
+                                      .GetLastCommittedEntry()
+                                      ->GetIsOverridingUserAgent();
+
   HostZoomMapImpl host_zoom_map;
-  EXPECT_DOUBLE_EQ(1.3, host_zoom_map.GetDesktopSiteZoomScale(web_contents()));
+  EXPECT_DOUBLE_EQ(
+      1.3, host_zoom_map.GetDesktopSiteZoomScale(is_overriding_user_agent));
 }
 
 // Tests that a desktop site zoom scale of 1.0 (no Request Desktop Site zoom) is
@@ -75,8 +87,14 @@ TEST_F(HostZoomMapAndroidTest, GetDesktopSiteZoomScale_MobileUserAgent) {
       .GetLastCommittedEntry()
       ->SetIsOverridingUserAgent(false);
 
+  bool is_overriding_user_agent = web_contents()
+                                      ->GetController()
+                                      .GetLastCommittedEntry()
+                                      ->GetIsOverridingUserAgent();
+
   HostZoomMapImpl host_zoom_map;
-  EXPECT_DOUBLE_EQ(1.0, host_zoom_map.GetDesktopSiteZoomScale(web_contents()));
+  EXPECT_DOUBLE_EQ(
+      1.0, host_zoom_map.GetDesktopSiteZoomScale(is_overriding_user_agent));
 }
 
 }  // namespace content

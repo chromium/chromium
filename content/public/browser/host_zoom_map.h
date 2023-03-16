@@ -186,6 +186,13 @@ class HostZoomMap {
 
   virtual void SetDefaultZoomLevelPrefCallback(
       DefaultZoomChangedCallback callback) = 0;
+
+  // TODO(crbug.com/1424904): Make an Android-specific impl of host_zoom_map, or
+  //                          combine method with GetZoomLevelForHostAndScheme.
+  virtual double GetZoomLevelForHostAndScheme(
+      const std::string& scheme,
+      const std::string& host,
+      bool is_overriding_user_agent) = 0;
 #endif
 
  protected:
