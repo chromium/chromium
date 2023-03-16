@@ -2757,11 +2757,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)handleCloseAllButtonForRegularTabsWithAnchor:(UIBarButtonItem*)anchor {
-  DCHECK_EQ(self.undoCloseAllAvailable,
-            self.regularTabsViewController.gridEmpty);
+  const BOOL hasPinnedTabs =
+      (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.collectionEmpty);
+  const BOOL hasOpenTabs =
+      !self.regularTabsViewController.gridEmpty || hasPinnedTabs;
+  DCHECK_EQ(self.undoCloseAllAvailable, !hasOpenTabs);
+
   if (self.undoCloseAllAvailable) {
     [self undoCloseAllItemsForRegularTabs];
-  } else if (IsPinnedTabsEnabled()) {
+  } else if (hasPinnedTabs) {
     [self confirmCloseAllItemsForRegularTabs:anchor];
   } else {
     [self saveAndCloseAllItemsForRegularTabs];
