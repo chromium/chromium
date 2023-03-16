@@ -189,6 +189,9 @@ bool InstallSystemdUnits(UpdaterScope scope) {
     return false;
   }
 
+  // Uninstall existing units if they exist.
+  UninstallSystemdUnits(scope);
+
   if (!InstallSystemdUnit(
           unit_dir->AppendASCII(kUpdaterServiceName),
           base::StringPrintf(
