@@ -19,8 +19,7 @@ template("system_webview_bundle") {
   _base_module_version_code =
       "@FileArg($_rebased_base_module_build_config:deps_info:version_code)"
 
-  # TODO(agrieve): Enable once downstream is updated.
-  # assert(_is_trichrome == defined(invoker.static_library_provider))
+  assert(_is_trichrome == defined(invoker.static_library_provider))
 
   if (webview_includes_weblayer && weblayer_in_split) {
     # TODO(crbug.com/1105096): If WebView starts using

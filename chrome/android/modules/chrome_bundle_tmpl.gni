@@ -27,6 +27,8 @@ template("chrome_bundle") {
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
 
+  assert(_is_trichrome == defined(invoker.static_library_provider))
+
   # Put //chrome Java code and resources into a dedicated split to isolate
   # renderer processes from needing to load it.
   _base_target_gen_dir =
