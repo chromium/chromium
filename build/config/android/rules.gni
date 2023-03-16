@@ -3206,6 +3206,32 @@ if (enable_java_templates && is_android) {
       }
 
       _final_dex_target_dep = ":$_final_dex_target_name"
+
+      _use_baseline_profile =
+          _proguard_enabled && defined(invoker.baseline_profile_path) &&
+          enable_baseline_profiles
+      if (_use_baseline_profile) {
+        _binary_profile_target = "${_template_name}__binary_baseline_profile"
+        _binary_baseline_profile_path =
+            "$target_out_dir/$_template_name.baseline.prof"
+        _binary_baseline_profile_metadata_path =
+            _binary_baseline_profile_path + "m"
+        create_binary_profile(_binary_profile_target) {
+          forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+          binary_baseline_profile_path = _binary_baseline_profile_path
+          binary_baseline_profile_metadata_path =
+              _binary_baseline_profile_metadata_path
+          proguard_mapping_path = _proguard_mapping_path
+          build_config = _build_config
+          hrf_profile_path = invoker.baseline_profile_path
+          deps = [
+            ":$_build_config_target",
+            _final_dex_target_dep,
+          ]
+        }
+      } else {
+        not_needed(invoker, [ "baseline_profile_path" ])
+      }
     }
 
     _all_native_libs_deps = _native_libs_deps + _secondary_abi_native_libs_deps
@@ -3317,6 +3343,15 @@ if (enable_java_templates && is_android) {
           if (defined(_final_dex_path)) {
             dex_path = _final_dex_path
             deps += [ _final_dex_target_dep ]
+            if (_use_baseline_profile) {
+              extra_assets = [
+                rebase_path(_binary_baseline_profile_path, root_build_dir) +
+                    ":dexopt/baseline.prof",
+                rebase_path(_binary_baseline_profile_metadata_path,
+                            root_build_dir) + ":dexopt/baseline.profm",
+              ]
+              deps += [ ":$_binary_profile_target" ]
+            }
           }
 
           output_apk_path = _final_apk_path
@@ -3540,6 +3575,7 @@ if (enable_java_templates && is_android) {
             "apk_under_test",
             "app_as_shared_lib",
             "assert_no_deps",
+            "baseline_profile_path",
             "build_config_include_product_version_resource",
             "bundles_supported",
             "chromium_code",
@@ -5074,9 +5110,9 @@ if (enable_java_templates && is_android) {
       _module_target = _module.module_target
       _module_build_config = _module.build_config
       _module_build_config_target = _module.build_config_target
+      _module_target_name = get_label_info(_module_target, "name")
 
       if (!_proguard_enabled) {
-        _module_target_name = get_label_info(_module_target, "name")
         _dex_target = "${_module_target_name}__final_dex"
         _dex_path = "$target_out_dir/$_module_target_name/$_module_target_name.mergeddex.jar"
         dex(_dex_target) {
@@ -5096,6 +5132,32 @@ if (enable_java_templates && is_android) {
         }
       }
       _dex_target_for_module = ":$_dex_target"
+
+      _use_baseline_profile =
+          _proguard_enabled && defined(invoker.baseline_profile_path) &&
+          enable_baseline_profiles
+      if (_use_baseline_profile) {
+        _binary_profile_target =
+            "${_module_target_name}__binary_baseline_profile"
+        _binary_baseline_profile_path = "$target_out_dir/$_module_target_name/$_module_target_name.baseline.prof"
+        _binary_baseline_profile_metadata_path =
+            _binary_baseline_profile_path + "m"
+        create_binary_profile(_binary_profile_target) {
+          forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+          binary_baseline_profile_path = _binary_baseline_profile_path
+          binary_baseline_profile_metadata_path =
+              _binary_baseline_profile_metadata_path
+          proguard_mapping_path = _proguard_mapping_path
+          build_config = _module_build_config
+          hrf_profile_path = invoker.baseline_profile_path
+          deps = [
+            _dex_target_for_module,
+            _module_build_config_target,
+          ]
+        }
+      } else {
+        not_needed(invoker, [ "baseline_profile_path" ])
+      }
 
       # Generate one module .zip file per bundle module.
       #
@@ -5147,6 +5209,16 @@ if (enable_java_templates && is_android) {
           secondary_abi_native_libraries_config =
               _secondary_abi_native_libraries_config
           deps += [ ":$_secondary_abi_native_libraries_config_target" ]
+        }
+
+        if (_use_baseline_profile) {
+          extra_assets = [
+            rebase_path(_binary_baseline_profile_path, root_build_dir) +
+                ":dexopt/baseline.prof",
+            rebase_path(_binary_baseline_profile_metadata_path,
+                        root_build_dir) + ":dexopt/baseline.profm",
+          ]
+          deps += [ ":$_binary_profile_target" ]
         }
       }
 

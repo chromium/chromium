@@ -2399,6 +2399,7 @@ if (current_toolchain == default_toolchain) {
                                "add_view_trace_events",
                                "apk_name",
                                "bundle_target",
+                               "baseline_profile_path",
                                "is_base_module",
                                "target_type",
                                "enable_lint",
@@ -2426,6 +2427,7 @@ if (current_toolchain == default_toolchain) {
     target_type = "android_apk"
     apk_name = "ChromePublic"
     enable_multidex = is_java_debug
+    baseline_profile_path = "//chrome/android/baseline_profiles/profile.txt"
   }
 
   android_library("monochrome_java") {
@@ -3176,6 +3178,7 @@ if (current_toolchain == default_toolchain) {
       forward_variables_from(invoker,
                              [
                                "add_view_trace_events",
+                               "baseline_profile_path",
                                "enable_lint",
                                "include_32_bit_webview",
                                "include_64_bit_webview",
@@ -3272,6 +3275,7 @@ if (current_toolchain == default_toolchain) {
       is_trichrome = true
       static_library_provider = ":trichrome_library_apk"
       add_view_trace_events = true
+      baseline_profile_path = "//chrome/android/baseline_profiles/profile.txt"
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
         include_64_bit_webview = true
