@@ -99,14 +99,34 @@ TEST(FileTest, DeleteFilesWarnIfFailed) {
   ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_path, &file_path));
 
   // empty the directory
-  base::FileEnumerator dir_enum(dir_path, /*recursive=*/false,
-                                base::FileEnumerator::FILES,
-                                FILE_PATH_LITERAL("*"));
-  ASSERT_TRUE(DeleteFilesWarnIfFailed(dir_enum))
+  ASSERT_TRUE(DeleteFilesWarnIfFailed(base::FileEnumerator(
+      dir_path, /*recursive=*/false, base::FileEnumerator::FILES,
+      FILE_PATH_LITERAL("*"))))
       << "Failed to delete " << file_path.MaybeAsASCII();
   ASSERT_FALSE(base::PathExists(file_path))
       << "Deletion succeeds but " << file_path.MaybeAsASCII()
       << " still exists.";
+}
+
+TEST(FileTest, DeleteFilesWarnIfFailedSubSubDir) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const auto dir_path = temp_dir.GetPath();
+  ASSERT_TRUE(base::DirectoryExists(dir_path));
+
+  ASSERT_TRUE(
+      base::CreateDirectory(dir_path.Append(FILE_PATH_LITERAL("subdir0"))));
+  ASSERT_TRUE(base::CreateDirectory(
+      dir_path.Append(FILE_PATH_LITERAL("subdir0/subdir1"))));
+  ASSERT_TRUE(base::CreateDirectory(
+      dir_path.Append(FILE_PATH_LITERAL("subdir0/subdir1/subdir2"))));
+
+  // empty the directory
+  ASSERT_TRUE(DeleteFilesWarnIfFailed(base::FileEnumerator(
+      dir_path, /*recursive=*/true,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES)));
+  ASSERT_FALSE(base::PathExists(dir_path.Append(FILE_PATH_LITERAL("subdir0"))))
+      << dir_path << " is not empty.";
 }
 
 TEST(FileTest, ReadWriteFile) {
