@@ -214,6 +214,10 @@ void ReadAnythingController::TreeRemoved(ui::AXTreeID ax_tree_id) {
   model_->OnAXTreeDestroyed(ax_tree_id);
 }
 
+void ReadAnythingController::PrimaryPageChanged(content::Page& page) {
+  OnActiveAXTreeIDChanged();
+}
+
 void ReadAnythingController::OnActiveWebContentsChanged() {
   // TODO(crbug.com/1266555): Disable accessibility.and stop observing events
   // on the now inactive tab. But make sure that we don't disable it for
@@ -223,22 +227,10 @@ void ReadAnythingController::OnActiveWebContentsChanged() {
   //    inactive.
   // 2. Set an AXContext on the web contents with web contents only mode
   //    enabled.
-
-  ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
-  ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   content::WebContents* web_contents = nullptr;
   if (active_) {
     web_contents = browser_->tab_strip_model()->GetActiveWebContents();
-    if (web_contents) {
-      content::RenderFrameHost* render_frame_host =
-          web_contents->GetPrimaryMainFrame();
-      if (render_frame_host) {
-        tree_id = render_frame_host->GetAXTreeID();
-        ukm_source_id = render_frame_host->GetPageUkmSourceId();
-      }
-    }
   }
-
   Observe(web_contents);
   // Enable accessibility for the top level render frame and all descendants.
   // This causes AXTreeSerializer to reset and send accessibility events of
@@ -248,6 +240,21 @@ void ReadAnythingController::OnActiveWebContentsChanged() {
   if (web_contents) {
     web_contents->EnableWebContentsOnlyAccessibilityMode();
   }
+  OnActiveAXTreeIDChanged();
+}
+
+void ReadAnythingController::OnActiveAXTreeIDChanged() {
+  ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
+  ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+  if (active_ && web_contents()) {
+    content::RenderFrameHost* render_frame_host =
+        web_contents()->GetPrimaryMainFrame();
+    if (render_frame_host) {
+      tree_id = render_frame_host->GetAXTreeID();
+      ukm_source_id = render_frame_host->GetPageUkmSourceId();
+    }
+  }
+
   model_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id);
 }
 
