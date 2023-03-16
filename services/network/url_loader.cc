@@ -1171,7 +1171,7 @@ LocalNetworkAccessCheckResult URLLoader::LocalNetworkAccessCheck(
       *local_network_access_checker_.ResponseAddressSpace();
 
   url_request_->net_log().AddEvent(
-      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_CHECK, [&] {
         base::Value::Dict dict;
         dict.Set("client_address_space",
                  IPAddressSpaceToStringPiece(

@@ -1933,7 +1933,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
   std::ignore = Load(test_server()->GetURL("/empty.html"));
 
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
-      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK);
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_CHECK);
 
   ASSERT_THAT(entries, SizeIs(1));
 
@@ -1961,7 +1961,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckFailure) {
   std::ignore = Load(test_server()->GetURL("/empty.html"));
 
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntriesWithType(
-      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK);
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_CHECK);
 
   ASSERT_THAT(entries, SizeIs(1));
 
