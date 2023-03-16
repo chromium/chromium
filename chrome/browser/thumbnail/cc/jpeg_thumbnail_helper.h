@@ -40,23 +40,12 @@ class JpegThumbnailHelper {
                 post_read_task);
   void Delete(thumbnail::TabId tab_id);
 
-  // Member function to retrieve the JPEG file path using the stored base
-  // path, and is exposed publicly primarily for unit testing purposes.
-  base::FilePath GetJpegFilePath(thumbnail::TabId tab_id);
-
  private:
-  static void CompressTask(
-      double jpeg_aspect_ratio,
-      const SkBitmap& bitmap,
-      base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task);
-  static void WriteTask(base::FilePath file_path,
-                        std::vector<uint8_t> compressed_data,
-                        base::OnceClosure post_write_task);
-  static void ReadTask(
-      base::FilePath file_path,
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
-          post_read_task);
-  static void DeleteTask(base::FilePath file_path);
+  friend class JpegThumbnailHelperTest;
+
+  // Member function to retrieve the JPEG file path using the stored base
+  // path, and is exposed primarily for unit testing purposes.
+  base::FilePath GetJpegFilePath(thumbnail::TabId tab_id);
 
   const base::FilePath base_path_;
 

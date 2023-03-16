@@ -14,34 +14,8 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace thumbnail {
-
-JpegThumbnailHelper::JpegThumbnailHelper(
-    const base::FilePath& base_path,
-    scoped_refptr<base::SequencedTaskRunner> file_task_runner)
-    : base_path_(base_path),
-      default_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      file_task_runner_(file_task_runner) {}
-
-JpegThumbnailHelper::~JpegThumbnailHelper() {
-  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
-}
-
-void JpegThumbnailHelper::Compress(
-    double jpeg_aspect_ratio,
-    const SkBitmap& bitmap,
-    base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
-  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&JpegThumbnailHelper::CompressTask, jpeg_aspect_ratio,
-                     bitmap,
-                     base::BindPostTask(default_task_runner_,
-                                        std::move(post_processing_task))));
-}
-
-void JpegThumbnailHelper::CompressTask(
+namespace {
+void CompressTask(
     double jpeg_aspect_ratio,
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
@@ -75,22 +49,9 @@ void JpegThumbnailHelper::CompressTask(
   std::move(post_processing_task).Run(std::move(data));
 }
 
-void JpegThumbnailHelper::Write(TabId tab_id,
-                                std::vector<uint8_t> compressed_data,
-                                base::OnceClosure post_write_task) {
-  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
-  base::FilePath file_path = GetJpegFilePath(tab_id);
-  file_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&JpegThumbnailHelper::WriteTask, file_path,
-                     compressed_data,
-                     base::BindPostTask(default_task_runner_,
-                                        std::move(post_write_task))));
-}
-
-void JpegThumbnailHelper::WriteTask(base::FilePath file_path,
-                                    std::vector<uint8_t> compressed_data,
-                                    base::OnceClosure post_write_task) {
+void WriteTask(base::FilePath file_path,
+               std::vector<uint8_t> compressed_data,
+               base::OnceClosure post_write_task) {
   DCHECK(!compressed_data.empty());
 
   int bytes_written = base::WriteFile(
@@ -104,22 +65,9 @@ void JpegThumbnailHelper::WriteTask(base::FilePath file_path,
   std::move(post_write_task).Run();
 }
 
-void JpegThumbnailHelper::Read(
-    TabId tab_id,
-    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
-        post_read_task) {
-  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
-  base::FilePath file_path = GetJpegFilePath(tab_id);
-  file_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&JpegThumbnailHelper::ReadTask, file_path,
-                                base::BindPostTask(default_task_runner_,
-                                                   std::move(post_read_task))));
-}
-
-void JpegThumbnailHelper::ReadTask(
-    base::FilePath file_path,
-    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
-        post_read_task) {
+void ReadTask(base::FilePath file_path,
+              base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+                  post_read_task) {
   absl::optional<std::vector<uint8_t>> read_data =
       base::ReadFileToBytes(file_path);
 
@@ -130,17 +78,68 @@ void JpegThumbnailHelper::ReadTask(
   std::move(post_read_task).Run(std::move(read_data));
 }
 
-void JpegThumbnailHelper::Delete(TabId tab_id) {
-  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
-  base::FilePath file_path = GetJpegFilePath(tab_id);
-  file_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&JpegThumbnailHelper::DeleteTask, file_path));
-}
-
-void JpegThumbnailHelper::DeleteTask(base::FilePath file_path) {
+void DeleteTask(base::FilePath file_path) {
   if (base::PathExists(file_path)) {
     base::DeleteFile(file_path);
   }
+}
+
+}  // anonymous namespace
+
+JpegThumbnailHelper::JpegThumbnailHelper(
+    const base::FilePath& base_path,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner)
+    : base_path_(base_path),
+      default_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      file_task_runner_(file_task_runner) {}
+
+JpegThumbnailHelper::~JpegThumbnailHelper() {
+  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
+}
+
+void JpegThumbnailHelper::Compress(
+    double jpeg_aspect_ratio,
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
+  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&CompressTask, jpeg_aspect_ratio, bitmap,
+                     base::BindPostTask(default_task_runner_,
+                                        std::move(post_processing_task))));
+}
+
+void JpegThumbnailHelper::Write(TabId tab_id,
+                                std::vector<uint8_t> compressed_data,
+                                base::OnceClosure post_write_task) {
+  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
+  base::FilePath file_path = GetJpegFilePath(tab_id);
+  file_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WriteTask, file_path, compressed_data,
+                     base::BindPostTask(default_task_runner_,
+                                        std::move(post_write_task))));
+}
+
+void JpegThumbnailHelper::Read(
+    TabId tab_id,
+    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+        post_read_task) {
+  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
+  base::FilePath file_path = GetJpegFilePath(tab_id);
+  file_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&ReadTask, file_path,
+                                base::BindPostTask(default_task_runner_,
+                                                   std::move(post_read_task))));
+}
+
+void JpegThumbnailHelper::Delete(TabId tab_id) {
+  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
+  base::FilePath file_path = GetJpegFilePath(tab_id);
+  file_task_runner_->PostTask(FROM_HERE,
+                              base::BindOnce(&DeleteTask, file_path));
 }
 
 base::FilePath JpegThumbnailHelper::GetJpegFilePath(TabId tab_id) {

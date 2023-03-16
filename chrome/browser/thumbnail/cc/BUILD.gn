@@ -35,6 +35,8 @@ source_set("cc") {
   ]
 
   sources = [
+    "etc1_thumbnail_helper.cc",
+    "etc1_thumbnail_helper.h",
     "jpeg_thumbnail_helper.cc",
     "jpeg_thumbnail_helper.h",
     "scoped_ptr_expiring_cache.h",
@@ -73,10 +75,14 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "etc1_thumbnail_helper_unittest.cc",
       "jpeg_thumbnail_helper_unittest.cc",
       "thumbnail_cache_unittest.cc",
     ]
 
-    deps += [ "//ui/android" ]
+    deps += [
+      "//third_party/android_opengl/etc1",
+      "//ui/android",
+    ]
   }
 }

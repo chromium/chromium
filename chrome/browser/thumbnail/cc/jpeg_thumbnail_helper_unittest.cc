@@ -27,7 +27,7 @@
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
-namespace thumbnailJPEG {
+namespace thumbnail {
 namespace {
 
 constexpr int kDimension = 16;
@@ -186,4 +186,4 @@ SkPaint JpegThumbnailHelperTest::SetupPaint() {
   return paint;
 }
 
-}  // namespace thumbnailJPEG
+}  // namespace thumbnail
