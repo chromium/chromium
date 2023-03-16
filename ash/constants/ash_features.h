@@ -5,6 +5,7 @@
 #ifndef ASH_CONSTANTS_ASH_FEATURES_H_
 #define ASH_CONSTANTS_ASH_FEATURES_H_
 
+#include "ash/constants/ambient_video.h"
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -570,6 +571,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kTerminalMultiProfile);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kTerminalSftp);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kTerminalTmuxIntegration);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kTimeOfDayScreenSaver);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<AmbientVideo> kTimeOfDayScreenSaverVideo;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kTimeOfDayWallpaper);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kTrafficCountersEnabled);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kTrilinearFiltering);
