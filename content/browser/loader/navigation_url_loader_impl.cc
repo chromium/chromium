@@ -1351,34 +1351,12 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
     direct_factory_for_webui->Clone(std::move(factory_receiver));
   }
 
-  mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
-      header_client;
+  network_loader_factory_ = CreateNetworkLoaderFactory(
+      browser_context_, storage_partition_, frame_tree_node, ukm_id,
+      &bypass_redirect_checks_);
 
-  // Initialize proxied factory remote/receiver if necessary.
-  // This also populates `bypass_redirect_checks_`.
   GetContentClient()->browser()->RegisterNonNetworkNavigationURLLoaderFactories(
       frame_tree_node_id_, ukm_id, &non_network_url_loader_factories_);
-
-  // The embedder may want to proxy all network-bound URLLoaderFactory
-  // receivers that it can. If it elects to do so, those proxies will be
-  // connected when loader is created if the request type supports proxying.
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory;
-  auto factory_receiver = pending_factory.InitWithNewPipeAndPassReceiver();
-  // Here we give nullptr for `factory_override`, because CORS is no-op for
-  // navigations.
-  bool use_proxy = GetContentClient()->browser()->WillCreateURLLoaderFactory(
-      browser_context_, frame_tree_node->current_frame_host(),
-      frame_tree_node->current_frame_host()->GetProcess()->GetID(),
-      ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
-      frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
-      &factory_receiver, &header_client, &bypass_redirect_checks_,
-      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
-  if (devtools_instrumentation::WillCreateURLLoaderFactory(
-          frame_tree_node->current_frame_host(), /*is_navigation=*/true,
-          /*is_download=*/false, &factory_receiver,
-          /*factory_override=*/nullptr)) {
-    use_proxy = true;
-  }
 
   bool is_nav_allowed =
       base::FeatureList::IsEnabled(
@@ -1433,32 +1411,64 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   for (auto& iter : non_network_url_loader_factories_)
     known_schemes_.insert(iter.first);
 
+  start_closure_ = base::BindOnce(
+      &NavigationURLLoaderImpl::StartImpl, base::Unretained(this),
+      std::move(prefetched_signed_exchange_cache), std::move(factory_for_webui),
+      std::move(accept_langs));
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
+    BrowserContext* browser_context,
+    StoragePartitionImpl* storage_partition,
+    FrameTreeNode* frame_tree_node,
+    const ukm::SourceIdObj& ukm_id,
+    bool* bypass_redirect_checks) {
+  mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
+      header_client;
+
+  // The embedder may want to proxy all network-bound URLLoaderFactory
+  // receivers that it can. If it elects to do so, those proxies will be
+  // connected when loader is created if the request type supports proxying.
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory;
+  auto factory_receiver = pending_factory.InitWithNewPipeAndPassReceiver();
+  // Here we give nullptr for `factory_override`, because CORS is no-op for
+  // navigations.
+  bool use_proxy = GetContentClient()->browser()->WillCreateURLLoaderFactory(
+      browser_context, frame_tree_node->current_frame_host(),
+      frame_tree_node->current_frame_host()->GetProcess()->GetID(),
+      ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
+      frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
+      &factory_receiver, &header_client, bypass_redirect_checks,
+      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+  if (devtools_instrumentation::WillCreateURLLoaderFactory(
+          frame_tree_node->current_frame_host(), /*is_navigation=*/true,
+          /*is_download=*/false, &factory_receiver,
+          /*factory_override=*/nullptr)) {
+    use_proxy = true;
+  }
+
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory;
   if (header_client) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     CreateURLLoaderFactoryWithHeaderClient(
         std::move(header_client),
-        factory_remote.InitWithNewPipeAndPassReceiver(), storage_partition_);
+        factory_remote.InitWithNewPipeAndPassReceiver(), storage_partition);
     network_loader_factory =
         base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
             std::move(factory_remote));
   } else {
     network_loader_factory =
-        storage_partition_->GetURLLoaderFactoryForBrowserProcess();
+        storage_partition->GetURLLoaderFactoryForBrowserProcess();
   }
   DCHECK(network_loader_factory);
-  if (use_proxy) {
-    network_loader_factory->Clone(std::move(factory_receiver));
-    network_loader_factory =
-        base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-            std::move(pending_factory));
+  if (!use_proxy) {
+    return network_loader_factory;
   }
-  network_loader_factory_ = network_loader_factory;
 
-  start_closure_ = base::BindOnce(
-      &NavigationURLLoaderImpl::StartImpl, base::Unretained(this),
-      std::move(prefetched_signed_exchange_cache), std::move(factory_for_webui),
-      std::move(accept_langs));
+  network_loader_factory->Clone(std::move(factory_receiver));
+  return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+      std::move(pending_factory));
 }
 
 void NavigationURLLoaderImpl::Start() {
