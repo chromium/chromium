@@ -29,9 +29,6 @@
 
 namespace {
 
-constexpr const char* kBatterySamplingDelayHistogramName =
-    "Power.BatterySamplingDelay";
-
 // Calculates the UKM bucket |value| falls in and returns it. This uses an
 // exponential bucketing approach with an exponent base of 1.3, resulting in
 // 17 buckets for an interval of 120 seconds.
@@ -203,8 +200,7 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
     //       |battery_level_provider_|.
     battery_level_provider_->GetBatteryState(base::BindOnce(
         &PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled,
-        base::Unretained(this), metrics, interval_duration,
-        /*battery_sample_begin_time=*/now));
+        base::Unretained(this), metrics, interval_duration));
   } else {
     // Get usage scenario data.
     auto long_interval_data =
@@ -216,16 +212,10 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
 void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
     const ProcessMonitor::Metrics& aggregated_process_metrics,
     base::TimeDelta interval_duration,
-    base::TimeTicks battery_sample_begin_time,
     const absl::optional<base::BatteryLevelProvider::BatteryState>&
         new_battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(battery_level_provider_);
-
-  // Report time it took to sample the battery state.
-  base::UmaHistogramMicrosecondsTimes(
-      kBatterySamplingDelayHistogramName,
-      base::TimeTicks::Now() - battery_sample_begin_time);
 
   // Evaluate battery discharge mode and rate.
   auto previous_battery_state =

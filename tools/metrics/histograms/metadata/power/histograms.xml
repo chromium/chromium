@@ -1145,17 +1145,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.BatterySamplingDelay" units="microseconds"
-    expires_after="2023-04-16">
-  <owner>etiennep@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    The delay in microseconds between the time a battery charge level query was
-    schedule and the time the state is made available, reported everytime the
-    battery charge level is sampled. Reported for all users on Windows and Mac.
-  </summary>
-</histogram>
-
 <histogram name="Power.BitfixChunks" units="units" expires_after="M77">
   <owner>dianders@chromium.org</owner>
   <summary>

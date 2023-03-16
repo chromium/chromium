@@ -106,7 +106,6 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   void OnBatteryAndAggregatedProcessMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
-      base::TimeTicks battery_sample_begin_time,
       const absl::optional<base::BatteryLevelProvider::BatteryState>&
           new_battery_state);
 
