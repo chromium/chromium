@@ -27,6 +27,22 @@ namespace ash {
 
 class ScopedScreenLockBlocker;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "ArcVmDataMigrationScreenSetupFailure" in tools/metrics/histograms/enums.xml.
+enum class ArcVmDataMigrationScreenSetupFailure {
+  kGetVmInfoFailure = 0,
+  kStopVmFailure = 1,
+  kStopUpstartJobsFailure = 2,
+  kGetFreeDiskSpaceFailure = 3,
+  kGetAndroidDataSizeFailure = 4,
+  kCreateDiskImageDBusFailure = 5,
+  kCreateDiskImageGeneralFailure = 6,
+  kArcVmDataMigratorStartFailure = 7,
+  kStartMigrationFailure = 8,
+  kMaxValue = kStartMigrationFailure,
+};
+
 class ArcVmDataMigrationScreen : public BaseScreen,
                                  public ArcVmDataMigratorClient::Observer,
                                  public ConciergeClient::VmObserver,
@@ -102,7 +118,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   void HandleFinish();
   void HandleReport();
 
-  void HandleSetupFailure();
+  void HandleSetupFailure(ArcVmDataMigrationScreenSetupFailure failure);
 
   // Handle errors that are expected to be retriable after going back to the
   // desktop and re-entering the migration flow. Should not be called when

@@ -64,6 +64,95 @@ constexpr char kUserActionResume[] = "resume";
 constexpr char kUserActionFinish[] = "finish";
 constexpr char kUserActionReport[] = "report";
 
+constexpr int kMinDiskSpaceForUmaCustomCountsInGB = 1;
+constexpr int kMaxDiskSpaceForUmaCustomCountsInGB = 512;
+constexpr int kNumBucketsForUmaCustomCounts = 50;
+
+// Please keep in sync with "ArcVmDataMigrationType" in
+// tools/metrics/histograms/metadata/arc/histograms.xml.
+constexpr char kNewMigrationVariant[] = "NewMigration";
+constexpr char kResumeMigrationVariant[] = "ResumeMigration";
+
+// Please keep in sync with "SatisfiedOrNot" in
+// tools/metrics/histograms/metadata/arc/histograms.xml.
+constexpr char kDiskSpaceRequirementSatisfiedVariant[] = "Satisfied";
+constexpr char kDiskSpaceRequirementUnsatisfiedVariant[] = "Unsatisfied";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "ArcVmDataMigrationScreenEvent" in tools/metrics/histograms/enums.xml.
+enum class ArcVmDataMigrationScreenEvent {
+  kWelcomeScreenShown = 0,
+  kSkipButtonClicked = 1,
+  kUpdateButtonClicked = 2,
+  kProgressScreenShown = 3,
+  kResumeScreenShown = 4,
+  kSuccessScreenShown = 5,
+  kFailureScreenShown = 6,
+  kFinishButtonClicked = 7,
+  kReportButtonClicked = 8,
+  kMaxValue = kReportButtonClicked,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "ArcVmDataMigrationScreenInitialState" in tools/metrics/histograms/enums.xml.
+enum class ArcVmDataMigrationScreenInitialState {
+  kMigrationReady = 0,
+  kNotEnoughFreeDiskSpace = 1,
+  kNotEnoughBattery = 2,
+  kMaxValue = kNotEnoughBattery,
+};
+
+void ReportEvent(ArcVmDataMigrationScreenEvent event, bool resuming) {
+  base::UmaHistogramEnumeration(
+      base::StringPrintf(
+          "Arc.VmDataMigration.ScreenEvent.On%s",
+          resuming ? kResumeMigrationVariant : kNewMigrationVariant),
+      event);
+}
+
+void ReportInitialState(ArcVmDataMigrationScreenInitialState state,
+                        bool resuming) {
+  base::UmaHistogramEnumeration(
+      base::StringPrintf(
+          "Arc.VmDataMigration.ScreenInitialState.On%s",
+          resuming ? kResumeMigrationVariant : kNewMigrationVariant),
+      state);
+}
+
+void ReportSetupFailure(ArcVmDataMigrationScreenSetupFailure failure,
+                        bool resuming) {
+  base::UmaHistogramEnumeration(
+      base::StringPrintf(
+          "Arc.VmDataMigration.ScreenSetupFailure.On%s",
+          resuming ? kResumeMigrationVariant : kNewMigrationVariant),
+      failure);
+}
+
+void ReportDesiredDiskImageSize(uint64_t disk_image_size_in_bytes,
+                                bool has_enough_free_disk_space) {
+  base::UmaHistogramCustomCounts(
+      base::StringPrintf("Arc.VmDataMigration.DesiredDiskImageSizeInGB.%s",
+                         has_enough_free_disk_space
+                             ? kDiskSpaceRequirementSatisfiedVariant
+                             : kDiskSpaceRequirementUnsatisfiedVariant),
+      disk_image_size_in_bytes >> 30, kMinDiskSpaceForUmaCustomCountsInGB,
+      kMaxDiskSpaceForUmaCustomCountsInGB, kNumBucketsForUmaCustomCounts);
+}
+
+void ReportRequiredFreeDiskSpace(uint64_t required_free_disk_space_in_bytes,
+                                 bool has_enough_free_disk_space) {
+  base::UmaHistogramCustomCounts(
+      base::StringPrintf("Arc.VmDataMigration.RequiredFreeDiskSpaceInGB.%s",
+                         has_enough_free_disk_space
+                             ? kDiskSpaceRequirementSatisfiedVariant
+                             : kDiskSpaceRequirementUnsatisfiedVariant),
+      required_free_disk_space_in_bytes >> 30,
+      kMinDiskSpaceForUmaCustomCountsInGB, kMaxDiskSpaceForUmaCustomCountsInGB,
+      kNumBucketsForUmaCustomCounts);
+}
+
 std::string GetChromeOsUsername(Profile* profile) {
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile));
   return cryptohome::CreateAccountIdentifierFromAccountId(account).account_id();
@@ -201,7 +290,7 @@ void ArcVmDataMigrationScreen::OnGetVmInfoResponse(
     absl::optional<vm_tools::concierge::GetVmInfoResponse> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "GetVmInfo for ARCVM failed: No D-Bus response";
-    HandleSetupFailure();
+    HandleSetupFailure(ArcVmDataMigrationScreenSetupFailure::kGetVmInfoFailure);
     return;
   }
 
@@ -234,7 +323,7 @@ void ArcVmDataMigrationScreen::OnStopVmResponse(
                << (response.has_value() ? response->failure_reason()
                                         : "No D-Bus response");
     concierge_observation_.Reset();
-    HandleSetupFailure();
+    HandleSetupFailure(ArcVmDataMigrationScreenSetupFailure::kStopVmFailure);
   }
 }
 
@@ -254,7 +343,8 @@ void ArcVmDataMigrationScreen::OnArcUpstartJobsStopped(bool result) {
   // |result| is true when there are no stale Upstart jobs.
   if (!result) {
     LOG(ERROR) << "Failed to stop ARC Upstart jobs";
-    HandleSetupFailure();
+    HandleSetupFailure(
+        ArcVmDataMigrationScreenSetupFailure::kStopUpstartJobsFailure);
     return;
   }
 
@@ -287,7 +377,8 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
     absl::optional<int64_t> reply) {
   if (!reply.has_value() || reply.value() < 0) {
     LOG(ERROR) << "Failed to get free disk space from spaced";
-    HandleSetupFailure();
+    HandleSetupFailure(
+        ArcVmDataMigrationScreenSetupFailure::kGetFreeDiskSpaceFailure);
     return;
   }
 
@@ -309,7 +400,8 @@ void ArcVmDataMigrationScreen::OnGetAndroidDataSizeResponse(
     absl::optional<int64_t> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "Failed to get the size of Android /data";
-    HandleSetupFailure();
+    HandleSetupFailure(
+        ArcVmDataMigrationScreenSetupFailure::kGetAndroidDataSizeFailure);
     return;
   }
 
@@ -325,14 +417,21 @@ void ArcVmDataMigrationScreen::OnGetAndroidDataSizeResponse(
           android_data_size, free_disk_space);
   VLOG(1) << "Required free disk space for the migration is "
           << required_free_disk_space;
-  if (free_disk_space < required_free_disk_space) {
-    // TODO(b/272151802): Report the unmet required free disk space to UMA.
+  bool has_enough_free_disk_space = free_disk_space >= required_free_disk_space;
+  ReportDesiredDiskImageSize(disk_size_, has_enough_free_disk_space);
+  ReportRequiredFreeDiskSpace(required_free_disk_space,
+                              has_enough_free_disk_space);
+  if (!has_enough_free_disk_space) {
     view_->SetRequiredFreeDiskSpace(required_free_disk_space);
     // Update the UI to show the low disk space warning and return, because the
     // user cannot free up the disk space while in the screen, and thus there is
     // no point in reporting the battery state in this case.
     DCHECK_EQ(current_ui_state_,
               ArcVmDataMigrationScreenView::UIState::kLoading);
+    ReportEvent(ArcVmDataMigrationScreenEvent::kWelcomeScreenShown, resuming_);
+    ReportInitialState(
+        ArcVmDataMigrationScreenInitialState::kNotEnoughFreeDiskSpace,
+        resuming_);
     UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
     return;
   }
@@ -377,8 +476,8 @@ void ArcVmDataMigrationScreen::PowerChanged(
   if (!view_) {
     return;
   }
-  view_->SetBatteryState(battery_percent_ >= kMinimumBatteryPercent,
-                         is_connected_to_charger_);
+  bool has_enough_battery = battery_percent_ >= kMinimumBatteryPercent;
+  view_->SetBatteryState(has_enough_battery, is_connected_to_charger_);
 
   if (update_button_pressed_ ||
       current_ui_state_ != ArcVmDataMigrationScreenView::UIState::kLoading) {
@@ -386,9 +485,19 @@ void ArcVmDataMigrationScreen::PowerChanged(
     return;
   }
 
+  if (has_enough_battery) {
+    ReportInitialState(ArcVmDataMigrationScreenInitialState::kMigrationReady,
+                       resuming_);
+  } else {
+    ReportInitialState(ArcVmDataMigrationScreenInitialState::kNotEnoughBattery,
+                       resuming_);
+  }
+
   if (resuming_) {
+    ReportEvent(ArcVmDataMigrationScreenEvent::kResumeScreenShown, resuming_);
     UpdateUIState(ArcVmDataMigrationScreenView::UIState::kResume);
   } else {
+    ReportEvent(ArcVmDataMigrationScreenEvent::kWelcomeScreenShown, resuming_);
     UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
   }
 }
@@ -436,7 +545,8 @@ void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
     absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "Failed to create a disk image for /data: No D-Bus response";
-    HandleSetupFailure();
+    HandleSetupFailure(
+        ArcVmDataMigrationScreenSetupFailure::kCreateDiskImageDBusFailure);
     return;
   }
 
@@ -455,7 +565,8 @@ void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
       LOG(ERROR) << "Failed to create a disk image for /data. Status: "
                  << response->status()
                  << ", reason: " << response->failure_reason();
-      HandleSetupFailure();
+      HandleSetupFailure(
+          ArcVmDataMigrationScreenSetupFailure::kCreateDiskImageGeneralFailure);
       return;
   }
 
@@ -473,7 +584,8 @@ void ArcVmDataMigrationScreen::OnArcVmDataMigratorStarted(bool result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result) {
     LOG(ERROR) << "Failed to start arcvm-data-migrator";
-    HandleSetupFailure();
+    HandleSetupFailure(
+        ArcVmDataMigrationScreenSetupFailure::kArcVmDataMigratorStartFailure);
     return;
   }
 
@@ -482,6 +594,7 @@ void ArcVmDataMigrationScreen::OnArcVmDataMigratorStarted(bool result) {
   DCHECK(ArcVmDataMigratorClient::Get());
   DCHECK(!migration_progress_observation_.IsObserving());
   migration_progress_observation_.Observe(ArcVmDataMigratorClient::Get());
+  ReportEvent(ArcVmDataMigrationScreenEvent::kProgressScreenShown, resuming_);
   UpdateUIState(ArcVmDataMigrationScreenView::UIState::kProgress);
   SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                               arc::ArcVmDataMigrationStatus::kStarted);
@@ -502,7 +615,8 @@ void ArcVmDataMigrationScreen::OnStartMigrationResponse(bool result) {
   if (!result) {
     LOG(ERROR) << "Failed to start migration";
     migration_progress_observation_.Reset();
-    HandleSetupFailure();
+    HandleSetupFailure(
+        ArcVmDataMigrationScreenSetupFailure::kStartMigrationFailure);
     return;
   }
 }
@@ -525,6 +639,8 @@ void ArcVmDataMigrationScreen::OnDataMigrationProgress(
       migration_progress_observation_.Reset();
       SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                   arc::ArcVmDataMigrationStatus::kFinished);
+      ReportEvent(ArcVmDataMigrationScreenEvent::kSuccessScreenShown,
+                  resuming_);
       UpdateUIState(ArcVmDataMigrationScreenView::UIState::kSuccess);
       return;
     case arc::data_migrator::DATA_MIGRATION_FAILED:
@@ -611,6 +727,7 @@ void ArcVmDataMigrationScreen::OnArcDataRemoved(bool success) {
       arc::ArcVmDataMigrationFinishReason::kMigrationFailure);
   SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                               arc::ArcVmDataMigrationStatus::kFinished);
+  ReportEvent(ArcVmDataMigrationScreenEvent::kFailureScreenShown, resuming_);
   UpdateUIState(ArcVmDataMigrationScreenView::UIState::kFailure);
 }
 
@@ -638,7 +755,7 @@ void ArcVmDataMigrationScreen::UpdateUIState(
 }
 
 void ArcVmDataMigrationScreen::HandleSkip() {
-  // TODO(b/258278176): Properly handle the skip action.
+  ReportEvent(ArcVmDataMigrationScreenEvent::kSkipButtonClicked, resuming_);
   chrome::AttemptRelaunch();
 }
 
@@ -648,6 +765,7 @@ void ArcVmDataMigrationScreen::HandleUpdate() {
     return;
   }
   update_button_pressed_ = true;
+  ReportEvent(ArcVmDataMigrationScreenEvent::kUpdateButtonClicked, resuming_);
   UpdateUIState(ArcVmDataMigrationScreenView::UIState::kLoading);
   if (resuming_) {
     TriggerMigration();
@@ -662,10 +780,12 @@ void ArcVmDataMigrationScreen::HandleResume() {
 }
 
 void ArcVmDataMigrationScreen::HandleFinish() {
+  ReportEvent(ArcVmDataMigrationScreenEvent::kFinishButtonClicked, resuming_);
   chrome::AttemptRelaunch();
 }
 
 void ArcVmDataMigrationScreen::HandleReport() {
+  ReportEvent(ArcVmDataMigrationScreenEvent::kReportButtonClicked, resuming_);
   const int64_t unique_identifier =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
   const std::string description_template =
@@ -675,8 +795,9 @@ void ArcVmDataMigrationScreen::HandleReport() {
   login_feedback.Request(description_template);
 }
 
-void ArcVmDataMigrationScreen::HandleSetupFailure() {
-  // TODO(b/272151802): Report the reason to UMA.
+void ArcVmDataMigrationScreen::HandleSetupFailure(
+    ArcVmDataMigrationScreenSetupFailure failure) {
+  ReportSetupFailure(failure, resuming_);
   if (resuming_) {
     // Treat as a migration failure (i.e., wipe /data, mark the migration as
     // finished, and show the failure screen) to avoid unmanageable resumes.

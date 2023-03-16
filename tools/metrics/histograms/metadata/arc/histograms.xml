@@ -135,6 +135,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".Unmanaged" summary="User with optional Play Store feature"/>
 </variants>
 
+<variants name="ArcVmDataMigrationType">
+  <variant name="NewMigration" summary="new migration"/>
+  <variant name="ResumeMigration" summary="resume migration"/>
+</variants>
+
 <variants name="FileTypeByDirectoryOrNot">
   <variant name="Directories" summary="directories"/>
   <variant name="Files"
@@ -2280,6 +2285,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.DesiredDiskImageSizeInGB.{SatisfiedOrNot}"
+    units="GB" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The desired disk image size for the destination of ARCVM /data migration.
+    Reported each time the initial screen is shown and the free disk space
+    requirement is {SatisfiedOrNot}.
+  </summary>
+  <token key="SatisfiedOrNot">
+    <variant name="Satisfied" summary="satisfied"/>
+    <variant name="Unsatisfied" summary="not satisfied"/>
+  </token>
+</histogram>
+
 <histogram name="Arc.VmDataMigration.Duration" units="seconds"
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
@@ -2439,6 +2460,62 @@ chromium-metrics-reviews@google.com.
         summary="the confirmation dialog is shown"/>
     <variant name="NotificationShown" summary="the notification is shown"/>
   </token>
+</histogram>
+
+<histogram
+    name="Arc.VmDataMigration.RequiredFreeDiskSpaceInGB.{SatisfiedOrNot}"
+    units="GB" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The size of free disk space required for the ARCVM /data migration. Reported
+    each time the initial screen is shown and the free disk space requirement is
+    {SatisfiedOrNot}.
+  </summary>
+  <token key="SatisfiedOrNot">
+    <variant name="Satisfied" summary="satisfied"/>
+    <variant name="Unsatisfied" summary="not satisfied"/>
+  </token>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.ScreenEvent.On{ArcVmDataMigrationType}"
+    enum="ArcVmDataMigrationScreenEvent" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    Records events happening in the screen flow of ARCVM /data migration.
+    Recorded when an event happens during a {ArcVmDataMigrationType}.
+  </summary>
+  <token key="ArcVmDataMigrationType" variants="ArcVmDataMigrationType"/>
+</histogram>
+
+<histogram
+    name="Arc.VmDataMigration.ScreenInitialState.On{ArcVmDataMigrationType}"
+    enum="ArcVmDataMigrationScreenInitialState" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The initial state of the screen flow of ARCVM /data migration. Recorded at
+    the beginning of each {ArcVmDataMigrationType}.
+  </summary>
+  <token key="ArcVmDataMigrationType" variants="ArcVmDataMigrationType"/>
+</histogram>
+
+<histogram
+    name="Arc.VmDataMigration.ScreenSetupFailure.On{ArcVmDataMigrationType}"
+    enum="ArcVmDataMigrationScreenSetupFailure" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    Records failures in the setup phase of the screen flow of ARCVM /data
+    migration. Recorded when a failure happens during a
+    {ArcVmDataMigrationType}.
+  </summary>
+  <token key="ArcVmDataMigrationType" variants="ArcVmDataMigrationType"/>
 </histogram>
 
 <histogram name="Arc.VmDataMigration.SetupResult"
