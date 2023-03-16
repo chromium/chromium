@@ -11,9 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/content_creation/notes/core/templates/template_fetcher.h"
 #include "components/content_creation/notes/core/templates/template_storage.pb.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
 
@@ -28,20 +26,11 @@ class NoteTemplate;
 using GetTemplatesCallback =
     base::OnceCallback<void(std::vector<NoteTemplate>)>;
 
-// If set, it will use data from a local file rather than gstatic to serve
-// templates to the user. Used to test updated template files before committing
-// to gstatic.
-constexpr char kLocalDynamicTemplatesForTesting[] =
-    "local-dynamic-templates-for-testing";
-
 // Instance in charge of generating the ordered list of note templates to be
 // offered to the user.
 class TemplateStore {
  public:
-  explicit TemplateStore(
-      PrefService* pref_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader,
-      std::string country_code);
+  explicit TemplateStore(PrefService* pref_service, std::string country_code);
   virtual ~TemplateStore();
 
   // Not copyable or movable.
@@ -57,18 +46,11 @@ class TemplateStore {
   // the user.
   bool TemplateLocationAvailable(proto::CollectionItem current_template);
 
-  // Calls Start() in TemplateFetcher to do a GET request and send the
-  // data from the URL to OnFetchTemplateComplete.
-  void FetchTemplates(GetTemplatesCallback callback);
-
   // Gets the set of templates to be used for generating stylized notes. Will
   // invoke |callback| with the results.
   virtual void GetTemplates(GetTemplatesCallback callback);
 
  protected:
-  void OnFetchTemplateComplete(GetTemplatesCallback callback,
-                               std::string response_body);
-
   // Function which generates the ordered list of default templates to be
   // offered to the user.
   static std::vector<NoteTemplate> BuildDefaultTemplates();
@@ -81,8 +63,6 @@ class TemplateStore {
   // of |note_templates|, and will send them to the user via |callback|.
   void OnTemplatesReceived(GetTemplatesCallback callback,
                            std::vector<NoteTemplate> note_templates);
-
-  std::unique_ptr<TemplateFetcher> fetcher_;
 
   // Task runner delegating tasks to the ThreadPool.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

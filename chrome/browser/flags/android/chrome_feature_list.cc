@@ -321,7 +321,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kVoiceSearchAudioCapturePolicy,
     &kVoiceButtonInTopToolbar,
     &kWebOtpCrossDeviceSimpleString,
-    &content_creation::kWebNotesDynamicTemplates,
     &content_creation::kWebNotesStylizeEnabled,
     &kWebApkAllowIconUpdate,
     &kWebApkInstallService,

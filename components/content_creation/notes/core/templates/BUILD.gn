@@ -10,10 +10,6 @@ static_library("templates") {
     "note_template.h",
     "template_constants.cc",
     "template_constants.h",
-    "template_fetcher.cc",
-    "template_fetcher.h",
-    "template_metrics.cc",
-    "template_metrics.h",
     "template_store.cc",
     "template_store.h",
   ]
@@ -26,8 +22,6 @@ static_library("templates") {
     "//components/content_creation/notes/core:prefs",
     "//components/prefs",
     "//components/strings:components_strings",
-    "//services/network/public/cpp:cpp",
-    "//services/network/public/cpp:cpp_base",
     "//ui/base",
   ]
 }

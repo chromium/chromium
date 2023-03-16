@@ -32,7 +32,6 @@ after discussions on the right group.
       <annotation id="oma_download_handler_android"/>
       <annotation id="partner_bookmarks_reader_get_favicon"/>
       <annotation id="permission_request_creator"/>
-      <annotation id="pull_template_request"/>
       <annotation id="rlz"/>
       <annotation id="webapk_create"/>
       <annotation id="webapk_create_for_service"/>

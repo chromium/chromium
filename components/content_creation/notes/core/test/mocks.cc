@@ -7,7 +7,7 @@
 namespace content_creation {
 namespace test {
 
-MockTemplateStore::MockTemplateStore() : TemplateStore(nullptr, nullptr, "") {}
+MockTemplateStore::MockTemplateStore() : TemplateStore(nullptr, "") {}
 MockTemplateStore::~MockTemplateStore() = default;
 
 }  // namespace test

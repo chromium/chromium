@@ -59,8 +59,8 @@ KeyedService* NoteServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new NoteService(std::make_unique<TemplateStore>(
-      profile->GetPrefs(), profile->GetURLLoaderFactory(), GetCountryCode()));
+  return new NoteService(
+      std::make_unique<TemplateStore>(profile->GetPrefs(), GetCountryCode()));
 }
 
 }  // namespace content_creation

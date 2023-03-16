@@ -548,7 +548,6 @@ public abstract class ChromeFeatureList {
     public static final String VIDEO_TUTORIALS = "VideoTutorials";
     public static final String VOICE_BUTTON_IN_TOP_TOOLBAR = "VoiceButtonInTopToolbar";
     public static final String VOICE_SEARCH_AUDIO_CAPTURE_POLICY = "VoiceSearchAudioCapturePolicy";
-    public static final String WEBNOTES_DYNAMIC_TEMPLATES = "WebNotesDynamicTemplates";
     public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
     public static final String WEB_APK_ALLOW_ICON_UPDATA = "WebApkAllowIconUpdate";
     public static final String WEB_APK_INSTALL_COMPLETE_NOTIFICATION =

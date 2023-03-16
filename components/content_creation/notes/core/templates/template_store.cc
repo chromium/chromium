@@ -17,10 +17,8 @@
 #include "components/content_creation/notes/core/note_prefs.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
 #include "components/content_creation/notes/core/templates/template_constants.h"
-#include "components/content_creation/notes/core/templates/template_fetcher.h"
 #include "components/content_creation/notes/core/templates/template_types.h"
 #include "components/prefs/pref_service.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace content_creation {
 
@@ -41,62 +39,22 @@ bool ConvertProtoDateToTime(proto::Date date, base::Time& time_date) {
   return base::Time::FromLocalExploded(exploded_date, &time_date);
 }
 
-std::string FetchTemplatesFromFile(base::FilePath local_path) {
-  std::string data;
-
-  if (!base::ReadFileToString(local_path, &data)) {
-    return "";
-  }
-
-  return data;
-}
-
 }  // namespace
 
-TemplateStore::TemplateStore(
-    PrefService* pref_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader,
-    std::string country_code)
+TemplateStore::TemplateStore(PrefService* pref_service,
+                             std::string country_code)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING})),
       pref_service_(pref_service),
-      country_code_(country_code) {
-  fetcher_ = std::make_unique<TemplateFetcher>(url_loader);
-}
+      country_code_(country_code) {}
 
 TemplateStore::~TemplateStore() = default;
 
-void TemplateStore::FetchTemplates(GetTemplatesCallback callback) {
-  fetcher_->Start(base::BindOnce(&TemplateStore::OnFetchTemplateComplete,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 std::move(callback)));
-}
-
 void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kLocalDynamicTemplatesForTesting)) {
-    OnFetchTemplateComplete(
-        std::move(callback),
-        FetchTemplatesFromFile(
-            base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-                kLocalDynamicTemplatesForTesting)));
-    return;
-  }
-
-  if (IsDynamicTemplatesEnabled()) {
-    FetchTemplates(std::move(callback));
-  } else {
-    task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&TemplateStore::BuildDefaultTemplates),
-        base::BindOnce(&TemplateStore::OnTemplatesReceived,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-}
-
-void TemplateStore::OnFetchTemplateComplete(GetTemplatesCallback callback,
-                                            std::string response_body) {
-  OnTemplatesReceived(std::move(callback),
-                      ParseTemplatesFromString(response_body));
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&TemplateStore::BuildDefaultTemplates),
+      base::BindOnce(&TemplateStore::OnTemplatesReceived,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 // static

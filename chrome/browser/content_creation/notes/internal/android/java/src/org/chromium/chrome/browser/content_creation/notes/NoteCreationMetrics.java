@@ -9,7 +9,6 @@ import android.content.ComponentName;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.share_sheet.ChromeProvidedSharingOptionsProvider;
 
 import java.lang.annotation.Retention;
@@ -81,7 +80,6 @@ public final class NoteCreationMetrics {
         recordNoteCreated(/*created=*/true);
         recordNbTemplateChanges(nbChanges);
         recordSelectedTemplateId(selectedTemplateId);
-        recordSelectedTemplateIndex(selectedTemplateIndex);
     }
 
     /**
@@ -178,33 +176,15 @@ public final class NoteCreationMetrics {
      * @param selectedTemplateId The id of the selected template.
      */
     private static void recordSelectedTemplateId(@NoteTemplateIds int selectedTemplateId) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_DYNAMIC_TEMPLATES)) {
-            assert selectedTemplateId < NoteTemplateIds.NUM_ENTRIES;
-            assert selectedTemplateId >= 0;
+        assert selectedTemplateId < NoteTemplateIds.NUM_ENTRIES;
+        assert selectedTemplateId >= 0;
 
-            if (selectedTemplateId >= NoteTemplateIds.NUM_ENTRIES) {
-                selectedTemplateId = NoteTemplateIds.UNKNOWN;
-            }
-
-            RecordHistogram.recordEnumeratedHistogram("NoteCreation.SelectedTemplate",
-                    selectedTemplateId, NoteTemplateIds.NUM_ENTRIES);
-            return;
+        if (selectedTemplateId >= NoteTemplateIds.NUM_ENTRIES) {
+            selectedTemplateId = NoteTemplateIds.UNKNOWN;
         }
-        RecordHistogram.recordExactLinearHistogram("NoteCreation.SelectedDynamicTemplateID",
-                selectedTemplateId, MAX_NUMBER_OF_TEMPLATES);
-    }
 
-    /**
-     * Records the index of the template that was selected by the user.
-     *
-     * @param selectedTemplateIndex The index of the selected template.
-     */
-    private static void recordSelectedTemplateIndex(int selectedTemplateIndex) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_DYNAMIC_TEMPLATES)) {
-            return;
-        }
-        RecordHistogram.recordExactLinearHistogram("NoteCreation.SelectedDynamicTemplateIndex",
-                selectedTemplateIndex, MAX_NUMBER_OF_TEMPLATES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "NoteCreation.SelectedTemplate", selectedTemplateId, NoteTemplateIds.NUM_ENTRIES);
     }
 
     // Empty private constructor for the "static" class.

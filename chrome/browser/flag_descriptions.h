@@ -2432,9 +2432,6 @@ extern const char kWebFeedSortDescription[];
 extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
 
-extern const char kWebNotesDynamicTemplatesName[];
-extern const char kWebNotesDynamicTemplatesDescription[];
-
 extern const char kPasswordEditDialogWithDetailsName[];
 extern const char kPasswordEditDialogWithDetailsDescription[];
 

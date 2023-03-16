@@ -17,16 +17,14 @@
 #include "components/content_creation/notes/core/templates/template_storage.pb.h"
 #include "components/content_creation/notes/core/templates/template_types.h"
 #include "components/prefs/testing_pref_service.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content_creation {
 
 class TemplateStoreTest : public testing::Test {
   void SetUp() override {
-    template_store_ = std::make_unique<TemplateStore>(
-        &testing_pref_service_, test_url_loader_factory(), "US");
+    template_store_ =
+        std::make_unique<TemplateStore>(&testing_pref_service_, "US");
 
     // This is set to the Linux Epoch because it is a unittest.
     jan_01_1970_ = base::Time::NowFromSystemTime();
@@ -41,10 +39,6 @@ class TemplateStoreTest : public testing::Test {
   }
 
  protected:
-  scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory() {
-    return test_url_loader_factory_.GetSafeWeakWrapper();
-  }
-
   void ValidateTemplates(const std::vector<NoteTemplate>& note_templates) {
     std::unordered_set<NoteTemplateIds> ids_set;
     for (const NoteTemplate& note_template : note_templates) {
@@ -183,26 +177,6 @@ class TemplateStoreTest : public testing::Test {
     return lovely;
   }
 
-  std::string GetOneMaxTemplatesValidProtoString() {
-    std::string data;
-
-    proto::Collection collection;
-    collection.set_max_template_number(1);
-
-    proto::NoteTemplate classic = GetClassicTemplate();
-    proto::NoteTemplate friendly = GetFriendlyTemplate();
-
-    proto::CollectionItem* classic_template = collection.add_collectionitems();
-    classic_template->set_allocated_notetemplate(
-        new proto::NoteTemplate(classic));
-    proto::CollectionItem* friendly_template = collection.add_collectionitems();
-    friendly_template->set_allocated_notetemplate(
-        new proto::NoteTemplate(friendly));
-
-    collection.SerializeToString(&data);
-    return data;
-  }
-
   std::string GetInvalidProtoString() {
     std::string data;
 
@@ -230,7 +204,6 @@ class TemplateStoreTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple testing_pref_service_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TemplateStore> template_store_;
 
   base::Time jan_01_1970_;
@@ -244,8 +217,7 @@ class TemplateStoreTest : public testing::Test {
 // Tests that the store does return templates, and also validates the
 // templates' information.
 TEST_F(TemplateStoreTest, DefaultTemplates) {
-  scoped_feature_list_.InitWithFeatures({kWebNotesStylizeEnabled},
-                                        {kWebNotesDynamicTemplates});
+  scoped_feature_list_.InitAndEnableFeature(kWebNotesStylizeEnabled);
   base::RunLoop run_loop;
 
   template_store_->GetTemplates(base::BindLambdaForTesting(
@@ -382,35 +354,10 @@ TEST_F(TemplateStoreTest, ImpossibleDates) {
                                                       jan_01_1970_));
 }
 
-// Tests that it will stop at the set maximum number of templates even if there
-// are more templates that are available.
-TEST_F(TemplateStoreTest, OneMaxTemplates) {
-  test_url_loader_factory_.AddResponse(
-      kTemplateUrl, GetOneMaxTemplatesValidProtoString(), net::HTTP_OK);
-  scoped_feature_list_.InitWithFeatures(
-      {kWebNotesStylizeEnabled, kWebNotesDynamicTemplates}, {});
-  base::RunLoop run_loop;
-
-  template_store_->GetTemplates(base::BindLambdaForTesting(
-      [&run_loop, this](std::vector<NoteTemplate> templates) {
-        EXPECT_EQ(1U, templates.size());
-        // Tests to make sure it got the first template and not the second one.
-        EXPECT_EQ(static_cast<int>(templates.at(0).id()), 1);
-
-        ValidateTemplates(templates);
-
-        run_loop.Quit();
-      }));
-
-  run_loop.Run();
-}
-
 // Tests that default templates are available if it is given invalid
 // Protobuf data.
 TEST_F(TemplateStoreTest, EmptyString) {
-  test_url_loader_factory_.AddResponse(kTemplateUrl, "", net::HTTP_OK);
-  scoped_feature_list_.InitWithFeatures(
-      {kWebNotesStylizeEnabled, kWebNotesDynamicTemplates}, {});
+  scoped_feature_list_.InitAndEnableFeature(kWebNotesStylizeEnabled);
   base::RunLoop run_loop;
 
   template_store_->GetTemplates(base::BindLambdaForTesting(
@@ -480,8 +427,7 @@ TEST_F(TemplateStoreTest, MultipleLocations) {
 // undetermined location, but the template has a location.
 TEST_F(TemplateStoreTest, UndeterminedLocation) {
   std::unique_ptr<TemplateStore> empty_location =
-      std::make_unique<TemplateStore>(&testing_pref_service_,
-                                      test_url_loader_factory(), "");
+      std::make_unique<TemplateStore>(&testing_pref_service_, "");
 
   proto::CollectionItem* undetermined_location =
       collection_.add_collectionitems();
@@ -498,8 +444,7 @@ TEST_F(TemplateStoreTest, UndeterminedLocation) {
 // unspecified, even if the user has an undetermined location.
 TEST_F(TemplateStoreTest, AvailableToAllAndUndeterminedLocation) {
   std::unique_ptr<TemplateStore> empty_location =
-      std::make_unique<TemplateStore>(&testing_pref_service_,
-                                      test_url_loader_factory(), "");
+      std::make_unique<TemplateStore>(&testing_pref_service_, "");
 
   proto::CollectionItem* undetermined_location =
       collection_.add_collectionitems();

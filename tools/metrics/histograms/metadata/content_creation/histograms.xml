@@ -70,6 +70,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NoteCreation.SelectedDynamicTemplateID" units="count"
     expires_after="2023-04-23">
+  <obsolete>
+    Removed 2023-03
+  </obsolete>
   <owner>graysonlafleur@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -82,6 +85,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NoteCreation.SelectedDynamicTemplateIndex" units="count"
     expires_after="2023-04-23">
+  <obsolete>
+    Removed 2023-03
+  </obsolete>
   <owner>graysonlafleur@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -112,6 +118,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NoteCreation.TemplateFetchSuccess" enum="BooleanSuccess"
     expires_after="2023-04-23">
+  <obsolete>
+    Removed 2023-03
+  </obsolete>
   <owner>graysonlafleur@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>

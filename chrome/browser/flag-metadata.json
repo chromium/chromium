@@ -7386,11 +7386,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "webnotes-dynamic-templates",
-    "owners": ["chrome-creation@google.com"],
-    "expiry_milestone": 103
-  },
-  {
     "name": "webnotes-publish",
     "owners": [ "sebsg", "gayane"],
     "expiry_milestone": 100
