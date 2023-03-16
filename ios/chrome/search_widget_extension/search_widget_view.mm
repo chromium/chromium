@@ -16,6 +16,20 @@ namespace {
 
 const CGFloat kMaxContentSize = 421;
 
+UIImage* CreateSymbol(NSString* symbol_name, bool system_symbol) {
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:24
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+  if (system_symbol) {
+    return [UIImage systemImageNamed:symbol_name
+                   withConfiguration:configuration];
+  }
+  return [UIImage imageNamed:symbol_name
+                    inBundle:nil
+           withConfiguration:configuration];
+}
+
 }  // namespace
 
 @interface SearchWidgetView ()
@@ -138,25 +152,25 @@ const CGFloat kMaxContentSize = 421;
                   actionSelector:@selector(openSearch:)
                            title:NSLocalizedString(@"IDS_IOS_NEW_SEARCH",
                                                    @"New Search")
-                       imageName:@"quick_action_search"],
+                          symbol:CreateSymbol(@"magnifyingglass", YES)],
         [[SearchActionView alloc]
             initWithActionTarget:self.target
                   actionSelector:@selector(openIncognito:)
                            title:NSLocalizedString(@"IDS_IOS_INCOGNITO_SEARCH",
                                                    @"Incognito Search")
-                       imageName:@"quick_action_incognito_search"],
+                          symbol:CreateSymbol(@"quick_action_incognito", NO)],
         [[SearchActionView alloc]
             initWithActionTarget:self.target
                   actionSelector:@selector(openVoice:)
                            title:NSLocalizedString(@"IDS_IOS_VOICE_SEARCH",
                                                    @"Voice Search")
-                       imageName:@"quick_action_voice_search"],
+                          symbol:CreateSymbol(@"mic", YES)],
         [[SearchActionView alloc]
             initWithActionTarget:self.target
                   actionSelector:@selector(openQRCode:)
                            title:NSLocalizedString(@"IDS_IOS_SCAN_QR_CODE",
                                                    @"Scan QR Code")
-                       imageName:@"quick_action_scan_qr_code"],
+                          symbol:CreateSymbol(@"qrcode", YES)],
       ]];
 
   actionsContentStack.axis = UILayoutConstraintAxisHorizontal;

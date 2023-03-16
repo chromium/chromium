@@ -104,8 +104,8 @@
 	<key>UIApplicationShortcutItems</key>
 	<array>
 		<dict>
-			<key>UIApplicationShortcutItemIconFile</key>
-			<string>quick_action_new_search</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>magnifyingglass</string>
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>IDS_IOS_APPLICATION_SHORTCUT_NEWSEARCH_TITLE</string>
 			<key>UIApplicationShortcutItemType</key>
@@ -113,23 +113,23 @@
 		</dict>
 		<dict>
 			<key>UIApplicationShortcutItemIconFile</key>
-			<string>quick_action_incognito_search</string>
+			<string>quick_action_incognito</string>
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE</string>
 			<key>UIApplicationShortcutItemType</key>
 			<string>OpenIncognitoSearch</string>
 		</dict>
 		<dict>
-			<key>UIApplicationShortcutItemIconFile</key>
-			<string>quick_action_voice_search</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>mic</string>
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>IDS_IOS_APPLICATION_SHORTCUT_VOICE_SEARCH_TITLE</string>
 			<key>UIApplicationShortcutItemType</key>
 			<string>OpenVoiceSearch</string>
 		</dict>
 		<dict>
-			<key>UIApplicationShortcutItemIconFile</key>
-			<string>quick_action_qr_scanner</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>qrcode</string>
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>IDS_IOS_APPLICATION_SHORTCUT_QR_SCANNER_TITLE</string>
 			<key>UIApplicationShortcutItemType</key>

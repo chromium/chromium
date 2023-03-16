@@ -33,10 +33,7 @@ ios_appex_bundle("search_widget_extension") {
   deps = [
     ":search_widget",
     ":system_strings",
-    "resources:quick_action_incognito_search",
-    "resources:quick_action_scan_qr_code",
-    "resources:quick_action_search",
-    "resources:quick_action_voice_search",
+    "resources:quick_action_incognito",
   ]
 
   assert_no_deps = ios_extension_assert_no_deps

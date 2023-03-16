@@ -5,27 +5,9 @@
         "color-space" : "display-p3",
         "components" : {
           "alpha" : "1.000",
-          "red" : "0.376",
-          "green" : "0.387",
-          "blue" : "0.406"
-        }
-      },
-      "idiom" : "universal"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "light"
-        }
-      ],
-      "color" : {
-        "color-space" : "display-p3",
-        "components" : {
-          "alpha" : "1.000",
-          "red" : "0.376",
-          "green" : "0.387",
-          "blue" : "0.406"
+          "red" : "0x5F",
+          "green" : "0x63",
+          "blue" : "0x68"
         }
       },
       "idiom" : "universal"
@@ -41,9 +23,9 @@
         "color-space" : "display-p3",
         "components" : {
           "alpha" : "1.000",
-          "red" : "0.744",
-          "green" : "0.756",
-          "blue" : "0.774"
+          "red" : "0xBD",
+          "green" : "0xC1",
+          "blue" : "0xC6"
         }
       },
       "idiom" : "universal"
@@ -59,31 +41,9 @@
         "color-space" : "display-p3",
         "components" : {
           "alpha" : "1.000",
-          "red" : "0.000",
-          "green" : "0.000",
-          "blue" : "0.000"
-        }
-      },
-      "idiom" : "universal"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "light"
-        },
-        {
-          "appearance" : "contrast",
-          "value" : "high"
-        }
-      ],
-      "color" : {
-        "color-space" : "display-p3",
-        "components" : {
-          "alpha" : "1.000",
-          "red" : "0.000",
-          "green" : "0.000",
-          "blue" : "0.000"
+          "red" : "0x00",
+          "green" : "0x00",
+          "blue" : "0x00"
         }
       },
       "idiom" : "universal"
@@ -103,9 +63,9 @@
         "color-space" : "display-p3",
         "components" : {
           "alpha" : "1.000",
-          "red" : "1.000",
-          "green" : "1.000",
-          "blue" : "1.000"
+          "red" : "0xFF",
+          "green" : "0xFF",
+          "blue" : "0xFF"
         }
       },
       "idiom" : "universal"

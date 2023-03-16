@@ -64,6 +64,7 @@ swift_source_set("widget_kit_extension_swift") {
     "resources:lockscreen_game_logo",
     "resources:lockscreen_incognito_logo",
     "resources:lockscreen_voicesearch_logo",
+    "resources:widget_actions_icon_color",
     "resources:widget_actions_row_background_color",
     "resources:widget_background_color",
     "resources:widget_chrome_logo",
@@ -71,11 +72,9 @@ swift_source_set("widget_kit_extension_swift") {
     "resources:widget_dino_background_placeholder",
     "resources:widget_incognito_icon",
     "resources:widget_lens_icon",
-    "resources:widget_qr_icon",
     "resources:widget_search_bar_color",
     "resources:widget_separator_color",
     "resources:widget_text_color",
-    "resources:widget_voice_search_icon",
     "//ios/chrome/common/app_group:helper",
   ]
 

@@ -19,8 +19,7 @@
 - (instancetype)initWithActionTarget:(id)target
                       actionSelector:(SEL)actionSelector
                                title:(NSString*)title
-                           imageName:(NSString*)imageName
-    NS_DESIGNATED_INITIALIZER;
+                              symbol:(UIImage*)symbol NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 

@@ -191,7 +191,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
   self.passwordButton.hidden = self.isPasswordButtonHidden;
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // TODO(crbug.com/1418068):Simplify after minimum version required is >=
   // iOS 15.
   if (base::ios::IsRunningOnIOS15OrLater() &&
       IsUIButtonConfigurationEnabled()) {

@@ -4,38 +4,9 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("quick_action_search") {
+symbolset("quick_action_incognito") {
   sources = [
-    "quick_action_search.imageset/Contents.json",
-    "quick_action_search.imageset/quick_action_search.png",
-    "quick_action_search.imageset/quick_action_search@2x.png",
-    "quick_action_search.imageset/quick_action_search@3x.png",
-  ]
-}
-
-imageset("quick_action_incognito_search") {
-  sources = [
-    "quick_action_incognito_search.imageset/Contents.json",
-    "quick_action_incognito_search.imageset/quick_action_incognito_search.png",
-    "quick_action_incognito_search.imageset/quick_action_incognito_search@2x.png",
-    "quick_action_incognito_search.imageset/quick_action_incognito_search@3x.png",
-  ]
-}
-
-imageset("quick_action_voice_search") {
-  sources = [
-    "quick_action_voice_search.imageset/Contents.json",
-    "quick_action_voice_search.imageset/quick_action_voice_search.png",
-    "quick_action_voice_search.imageset/quick_action_voice_search@2x.png",
-    "quick_action_voice_search.imageset/quick_action_voice_search@3x.png",
-  ]
-}
-
-imageset("quick_action_scan_qr_code") {
-  sources = [
-    "quick_action_scan_qr_code.imageset/Contents.json",
-    "quick_action_scan_qr_code.imageset/quick_action_scan_qr_code.png",
-    "quick_action_scan_qr_code.imageset/quick_action_scan_qr_code@2x.png",
-    "quick_action_scan_qr_code.imageset/quick_action_scan_qr_code@3x.png",
+    "quick_action_incognito.symbolset/Contents.json",
+    "quick_action_incognito.symbolset/incognito.cr.svg",
   ]
 }

@@ -85,6 +85,13 @@ struct QuickActionsWidgetEntryView: View {
   private let qrA11yLabel: LocalizedStringKey =
     "IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_QR_SCAN_A11Y_LABEL"
 
+  func symbolWithName(symbolName: String, system: Bool) -> some View {
+    let image = system ? Image(systemName: symbolName) : Image(symbolName)
+    return image.foregroundColor(Color("widget_actions_icon_color")).font(
+      .system(size: 20, weight: .medium)
+    ).imageScale(.medium)
+  }
+
   var body: some View {
     VStack(spacing: 0) {
       ZStack {
@@ -133,7 +140,7 @@ struct QuickActionsWidgetEntryView: View {
           // the custom placeholder otherwise.
           if redactionReasons.isEmpty {
             Link(destination: WidgetConstants.QuickActionsWidget.incognitoUrl) {
-              Image("widget_incognito_icon")
+              symbolWithName(symbolName: "widget_incognito_icon", system: false)
                 .frame(minWidth: 0, maxWidth: .infinity)
             }
             .accessibility(label: Text(incognitoA11yLabel))
@@ -141,20 +148,20 @@ struct QuickActionsWidgetEntryView: View {
             Link(
               destination: WidgetConstants.QuickActionsWidget.voiceSearchUrl
             ) {
-              Image("widget_voice_search_icon")
+              symbolWithName(symbolName: "mic", system: true)
                 .frame(minWidth: 0, maxWidth: .infinity)
             }
             .accessibility(label: Text(voiceSearchA11yLabel))
             Separator(height: separatorHeight)
             if entry.useLens {
               Link(destination: WidgetConstants.QuickActionsWidget.lensUrl) {
-                Image("widget_lens_icon")
+                symbolWithName(symbolName: "widget_lens_icon", system: false)
                   .frame(minWidth: 0, maxWidth: .infinity)
               }
               .accessibility(label: Text(lensA11yLabel))
             } else {
               Link(destination: WidgetConstants.QuickActionsWidget.qrCodeUrl) {
-                Image("widget_qr_icon")
+                symbolWithName(symbolName: "qrcode", system: true)
                   .frame(minWidth: 0, maxWidth: .infinity)
               }
               .accessibility(label: Text(qrA11yLabel))

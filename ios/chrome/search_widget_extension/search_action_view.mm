@@ -26,7 +26,7 @@ const CGFloat kIconSize = 35;
 - (instancetype)initWithActionTarget:(id)target
                       actionSelector:(SEL)actionSelector
                                title:(NSString*)title
-                           imageName:(NSString*)imageName {
+                              symbol:(UIImage*)symbol {
   DCHECK(target);
   self = [super initWithFrame:CGRectZero];
   if (self) {
@@ -90,10 +90,9 @@ const CGFloat kIconSize = 35;
     [self addSubview:stack];
     AddSameConstraints(self, stack);
 
-    UIImage* iconImage = [UIImage imageNamed:imageName];
-    iconImage =
-        [iconImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    UIImageView* icon = [[UIImageView alloc] initWithImage:iconImage];
+    symbol = [symbol imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImageView* icon = [[UIImageView alloc] initWithImage:symbol];
+    icon.contentMode = UIViewContentModeCenter;
     icon.translatesAutoresizingMaskIntoConstraints = NO;
     [primaryEffectView.contentView addSubview:icon];
     AddSameConstraints(primaryEffectView.contentView, icon);

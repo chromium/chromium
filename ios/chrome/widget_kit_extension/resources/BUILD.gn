@@ -73,56 +73,26 @@ imageset("widget_dino_background") {
   ]
 }
 
-imageset("widget_incognito_icon") {
+symbolset("widget_incognito_icon") {
   sources = [
-    "widget_incognito_icon.imageset/Contents.json",
-    "widget_incognito_icon.imageset/widget_incognito_icon_dark.png",
-    "widget_incognito_icon.imageset/widget_incognito_icon_dark@2x.png",
-    "widget_incognito_icon.imageset/widget_incognito_icon_dark@3x.png",
-    "widget_incognito_icon.imageset/widget_incognito_icon_light.png",
-    "widget_incognito_icon.imageset/widget_incognito_icon_light@2x.png",
-    "widget_incognito_icon.imageset/widget_incognito_icon_light@3x.png",
+    "widget_incognito_icon.symbolset/Contents.json",
+    "widget_incognito_icon.symbolset/incognito.cr.svg",
   ]
 }
 
-imageset("widget_qr_icon") {
+symbolset("widget_lens_icon") {
   sources = [
-    "widget_qr_icon.imageset/Contents.json",
-    "widget_qr_icon.imageset/widget_qr_icon_dark.png",
-    "widget_qr_icon.imageset/widget_qr_icon_dark@2x.png",
-    "widget_qr_icon.imageset/widget_qr_icon_dark@3x.png",
-    "widget_qr_icon.imageset/widget_qr_icon_light.png",
-    "widget_qr_icon.imageset/widget_qr_icon_light@2x.png",
-    "widget_qr_icon.imageset/widget_qr_icon_light@3x.png",
-  ]
-}
-
-imageset("widget_lens_icon") {
-  sources = [
-    "widget_lens_icon.imageset/Contents.json",
-    "widget_lens_icon.imageset/widget_lens_icon_dark.png",
-    "widget_lens_icon.imageset/widget_lens_icon_dark@2x.png",
-    "widget_lens_icon.imageset/widget_lens_icon_dark@3x.png",
-    "widget_lens_icon.imageset/widget_lens_icon_light.png",
-    "widget_lens_icon.imageset/widget_lens_icon_light@2x.png",
-    "widget_lens_icon.imageset/widget_lens_icon_light@3x.png",
-  ]
-}
-
-imageset("widget_voice_search_icon") {
-  sources = [
-    "widget_voice_search_icon.imageset/Contents.json",
-    "widget_voice_search_icon.imageset/widget_voice_search_icon_dark.png",
-    "widget_voice_search_icon.imageset/widget_voice_search_icon_dark@2x.png",
-    "widget_voice_search_icon.imageset/widget_voice_search_icon_dark@3x.png",
-    "widget_voice_search_icon.imageset/widget_voice_search_icon_light.png",
-    "widget_voice_search_icon.imageset/widget_voice_search_icon_light@2x.png",
-    "widget_voice_search_icon.imageset/widget_voice_search_icon_light@3x.png",
+    "widget_lens_icon.symbolset/Contents.json",
+    "widget_lens_icon.symbolset/lens.cr.svg",
   ]
 }
 
 colorset("widget_actions_row_background_color") {
   sources = [ "widget_actions_row_background_color.colorset/Contents.json" ]
+}
+
+colorset("widget_actions_icon_color") {
+  sources = [ "widget_actions_icon_color.colorset/Contents.json" ]
 }
 
 colorset("widget_search_bar_color") {

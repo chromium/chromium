@@ -154,43 +154,13 @@ generate_localizable_strings("system_strings") {
   deps = [ "//ios/chrome/app/resources:packed_resources" ]
 }
 
-imageset("quick_action_incognito_search") {
+symbolset("quick_action_incognito") {
   sources = [
-    "quick_action_incognito_search.imageset/Contents.json",
-    "quick_action_incognito_search.imageset/quick_action_incognito_search@2x.png",
-    "quick_action_incognito_search.imageset/quick_action_incognito_search@3x.png",
-  ]
-}
-
-imageset("quick_action_new_search") {
-  sources = [
-    "quick_action_new_search.imageset/Contents.json",
-    "quick_action_new_search.imageset/quick_action_new_search@2x.png",
-    "quick_action_new_search.imageset/quick_action_new_search@3x.png",
-  ]
-}
-
-imageset("quick_action_qr_scanner") {
-  sources = [
-    "quick_action_qr_scanner.imageset/Contents.json",
-    "quick_action_qr_scanner.imageset/quick_action_qr_scanner@2x.png",
-    "quick_action_qr_scanner.imageset/quick_action_qr_scanner@3x.png",
-  ]
-}
-
-imageset("quick_action_voice_search") {
-  sources = [
-    "quick_action_voice_search.imageset/Contents.json",
-    "quick_action_voice_search.imageset/quick_action_voice_search@2x.png",
-    "quick_action_voice_search.imageset/quick_action_voice_search@3x.png",
+    "quick_action_incognito.symbolset/Contents.json",
+    "quick_action_incognito.symbolset/incognito.cr.svg",
   ]
 }
 
 group("quick_action_icons") {
-  public_deps = [
-    ":quick_action_incognito_search",
-    ":quick_action_new_search",
-    ":quick_action_qr_scanner",
-    ":quick_action_voice_search",
-  ]
+  public_deps = [ ":quick_action_incognito" ]
 }
