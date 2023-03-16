@@ -54,6 +54,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.ColorUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -186,11 +187,13 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 || !BuildCompat.isAtLeastU()) {
             return;
         }
+        // TODO(crbug.com/1423489): Replace the reflection with the normal API.
         try {
             Method method = Activity.class.getMethod(
                     "setAllowCrossUidActivitySwitchFromBelow", boolean.class);
             method.invoke(this, true);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException
+                | RuntimeException e) {
             assert false : "CCT may not be launched or finished by background apps";
         }
     }
