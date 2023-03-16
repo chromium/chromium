@@ -7434,7 +7434,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         All Bookmarks
       </message>
       <message name="IDS_BOOKMARKS_LABEL_TRACKED_PRODUCTS" desc="Label on a button within the bookmarks side panel for filtering bookmarks by price tracking data.">
-        Products
+        Tracked products
       </message>
       <message name="IDS_BOOKMARKS_SORT_NEWEST" desc="Label for the newest-first bookmarks sort type">
         Newest
