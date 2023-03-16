@@ -36,11 +36,17 @@ class ArcSystemStateBridge : public KeyedService,
   ArcSystemStateBridge& operator=(const ArcSystemStateBridge&) = delete;
   ~ArcSystemStateBridge() override;
 
+  const mojom::SystemAppRunningState& system_app_running_state() {
+    return *state_;
+  }
+
   // mojom::SystemStateHost override:
   void UpdateAppRunningState(mojom::SystemAppRunningStatePtr state) override;
 
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+
+  mojom::SystemAppRunningStatePtr state_;
 
   Profile* const profile_;
 

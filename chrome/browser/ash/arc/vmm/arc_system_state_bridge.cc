@@ -58,7 +58,7 @@ ArcSystemStateBridge::~ArcSystemStateBridge() {
 
 void ArcSystemStateBridge::UpdateAppRunningState(
     mojom::SystemAppRunningStatePtr state) {
-  // TODO(sstan): Implementation.
+  state_ = state.Clone();
 }
 
 }  // namespace arc
