@@ -374,18 +374,11 @@ void AuthenticatorRequestDialogModel::TryUsbDevice() {
 }
 
 void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
-  // Never try the platform authenticator if the request is known in advance to
-  // fail. Proceed to a special error screen instead.
   if (transport_availability_.request_type ==
       device::FidoRequestType::kGetAssertion) {
-    DCHECK_NE(transport_availability_.has_platform_authenticator_credential,
-              device::FidoRequestHandlerBase::RecognizedCredential::kUnknown);
-    if (transport_availability_.has_platform_authenticator_credential ==
-        device::FidoRequestHandlerBase::RecognizedCredential::
-            kNoRecognizedCredential) {
-      SetCurrentStep(Step::kErrorInternalUnrecognized);
-      return;
-    }
+    DCHECK_EQ(transport_availability_.has_platform_authenticator_credential,
+              device::FidoRequestHandlerBase::RecognizedCredential::
+                  kHasRecognizedCredential);
 
     // If the platform authenticator reports known credentials, show them in the
     // UI.
