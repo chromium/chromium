@@ -227,16 +227,6 @@ TEST(RecordTileImpressionTest, ShouldRecordUmaForIconType) {
                            .WithVisualType(ICON_REAL)
                            .WithIconType(IconType::kWebManifestIcon)
                            .Build());
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("NewTabPage.TileFaviconType.IconsColor"),
-      ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("NewTabPage.TileFaviconType.IconsReal"),
-      ElementsAre(base::Bucket(/*min=*/4, /*count=*/1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.TileFaviconType"),
-              ElementsAre(base::Bucket(/*min=*/2, /*count=*/1),
-                          base::Bucket(/*min=*/4, /*count=*/1)));
 }
 
 TEST(RecordTileClickTest, ShouldRecordUmaForIcon) {
@@ -350,17 +340,6 @@ TEST(RecordTileClickTest, ShouldRecordClicksForIconType) {
                       .WithVisualType(ICON_REAL)
                       .WithIconType(IconType::kWebManifestIcon)
                       .Build());
-
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "NewTabPage.TileFaviconTypeClicked.IconsColor"),
-              ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "NewTabPage.TileFaviconTypeClicked.IconsReal"),
-              ElementsAre(base::Bucket(/*min=*/4, /*count=*/1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("NewTabPage.TileFaviconTypeClicked"),
-      ElementsAre(base::Bucket(/*min=*/2, /*count=*/1),
-                  base::Bucket(/*min=*/4, /*count=*/1)));
 }
 
 }  // namespace

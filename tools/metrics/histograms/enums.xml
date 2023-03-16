@@ -37670,23 +37670,6 @@ Called by update_extension_permission.py.-->
   <int value="2" label="FAILURE">Failure - favicon not available</int>
 </enum>
 
-<enum name="FaviconType">
-  <summary>
-    Defines the icon type stored as cached in the history backend.
-  </summary>
-  <int value="0" label="Invalid">Not an actual icon.</int>
-  <int value="1" label="Favicon">
-    Regular favicon (e.g. rel=&quot;icon&quot;).
-  </int>
-  <int value="2" label="TouchIcon">
-    Touch icon (rel=&quot;apple-touch-icon&quot;).
-  </int>
-  <int value="3" label="TouchPrecomposedIcon">
-    Precomposed touch icon (rel=&quot;apple-touch-icon-precomposed&quot;).
-  </int>
-  <int value="4" label="WebManifestIcon">Icon listed in a Web Manifest.</int>
-</enum>
-
 <enum name="FCMInvalidationMessageStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Public topic empty"/>

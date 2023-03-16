@@ -2039,30 +2039,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.TileFaviconType" enum="FaviconType"
-    expires_after="M90">
-  <owner>dbeam@chromium.org</owner>
-  <owner>yyushkina@chromium.org</owner>
-  <summary>
-    The favicon type that was chosen to represent a most visited tile displayed
-    on the new tab page, logged at impression time. Note that these values don't
-    involve an actual icon being displayed because a scrabble time might have
-    been displayed instead (see NewTabPage.TileType).
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.TileFaviconTypeClicked" enum="FaviconType"
-    expires_after="M90">
-  <owner>dbeam@chromium.org</owner>
-  <owner>yyushkina@chromium.org</owner>
-  <summary>
-    The favicon type that was chosen to represent a most visited tile displayed
-    on the new tab page, logged when a tile is clicked. Note that these values
-    don't involve an actual icon being displayed (see
-    NewTabPage.TileTypeClicked).
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.TileOfflineAvailable" enum="MostVisitedTileIndex"
     expires_after="M77">
   <owner>treib@chromium.org</owner>

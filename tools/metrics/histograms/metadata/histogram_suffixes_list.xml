@@ -1273,8 +1273,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="Cras_StreamType" separator=".">
   <suffix name="Default" label="Default"/>
-  <suffix name="VoiceCommunication" label="WebRTC"/>
   <suffix name="ProAudio" label="ProAudio"/>
+  <suffix name="VoiceCommunication" label="WebRTC"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.ARC"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.ARCVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>
@@ -3086,8 +3086,6 @@ chromium-metrics-reviews@google.com.
       label="Default gray box in place of a thumbnail/screenshot."/>
   <affected-histogram name="NewTabPage.MostVisited"/>
   <affected-histogram name="NewTabPage.SuggestionsImpression"/>
-  <affected-histogram name="NewTabPage.TileFaviconType"/>
-  <affected-histogram name="NewTabPage.TileFaviconTypeClicked"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPageLogoShownFromCache" separator=".">
