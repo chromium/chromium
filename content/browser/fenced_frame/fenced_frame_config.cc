@@ -89,7 +89,7 @@ FencedFrameConfig::FencedFrameConfig(
                   VisibilityToEmbedder::kOpaque,
                   VisibilityToContent::kTransparent),
       deprecated_should_freeze_initial_size_(absl::in_place,
-                                             true,
+                                             false,
                                              VisibilityToEmbedder::kTransparent,
                                              VisibilityToContent::kOpaque),
       shared_storage_budget_metadata_(absl::in_place,

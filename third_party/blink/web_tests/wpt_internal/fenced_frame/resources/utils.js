@@ -218,41 +218,49 @@ function attachContext(object_constructor, html, headers, origin) {
 // function.
 // 1. crbug.com/1372536: resize-lock-input.https.html
 // 2. crbug.com/1394559: unfenced-top.https.html
-async function attachOpaqueContext(generator_api, object_constructor, html, headers, origin) {
+async function attachOpaqueContext(generator_api, resolve_to_config, object_constructor, html, headers, origin) {
   const [uuid, url] = generateRemoteContextURL(headers, origin);
-  const urn = await (generator_api == 'fledge' ? generateURNFromFledge(url, []) : runSelectURL(url));
-  const object = object_constructor(urn);
+  const id = await (generator_api == 'fledge' ? generateURNFromFledge(url, [], [], resolve_to_config) : runSelectURL(url, [], resolve_to_config));
+  const object = object_constructor(id);
   return buildRemoteContextForObject(object, uuid, html);
 }
 
-function attachPotentiallyOpaqueContext(generator_api, frame_constructor, html, headers, origin) {
+function attachPotentiallyOpaqueContext(generator_api, resolve_to_config, frame_constructor, html, headers, origin) {
   generator_api = generator_api.toLowerCase();
   if (generator_api == 'fledge' || generator_api == 'sharedstorage') {
-    return attachOpaqueContext(generator_api, frame_constructor, html, headers, origin);
+    return attachOpaqueContext(generator_api, resolve_to_config, frame_constructor, html, headers, origin);
   } else {
     return attachContext(frame_constructor, html, headers, origin);
   }
 }
 
-function attachFrameContext(element_name, generator_api, html, headers, attributes, origin) {
-  frame_constructor = (url) => {
+function attachFrameContext(element_name, generator_api, resolve_to_config, html, headers, attributes, origin) {
+  frame_constructor = (id) => {
     frame = document.createElement(element_name);
     attributes.forEach(attribute => {
       frame.setAttribute(attribute[0], attribute[1]);
     });
-    frame.src = url;
+    if (resolve_to_config) {
+      frame.config = id;
+    } else {
+      frame.src = id;
+    }
     document.body.append(frame);
     return frame;
   };
-  return attachPotentiallyOpaqueContext(generator_api, frame_constructor, html, headers, origin);
+  return attachPotentiallyOpaqueContext(generator_api, resolve_to_config, frame_constructor, html, headers, origin);
 }
 
-function replaceFrameContext(frame_proxy, {generator_api="", html="", headers=[], origin=""}={}) {
-  frame_constructor = (url) => {
-    frame_proxy.element.src = url;
+function replaceFrameContext(frame_proxy, {generator_api="", resolve_to_config=false, html="", headers=[], origin=""}={}) {
+  frame_constructor = (id) => {
+    if (resolve_to_config) {
+      frame_proxy.element.config = id;
+    } else {
+      frame_proxy.element.src = id;
+    }
     return frame_proxy.element;
   };
-  return attachPotentiallyOpaqueContext(generator_api, frame_constructor, html, headers, origin);
+  return attachPotentiallyOpaqueContext(generator_api, resolve_to_config, frame_constructor, html, headers, origin);
 }
 
 // Attach a fenced frame that waits for scripts to execute.
@@ -261,20 +269,22 @@ function replaceFrameContext(frame_proxy, {generator_api="", html="", headers=[]
 //    Supports (case-insensitive) "fledge" and "sharedstorage", or any other
 //    value as a default.
 //    If you generate a urn, then you need to await the result of this function.
+// - resolve_to_config: whether a config should be used. (currently only works
+//    for FLEDGE and sharedStorage generator_api)
 // - html: extra HTML source code to inject into the loaded frame
 // - headers: an array of header pairs [[key, value], ...]
 // - attributes: an array of attribute pairs to set on the frame [[key, value], ...]
 // - origin: origin of the url, default to location.origin if not set
 // Returns a proxy that acts like the frame HTML element, but with an extra
 // function `execute`. See `attachFrameContext` or the README for more details.
-function attachFencedFrameContext({generator_api="", html = "", headers=[], attributes=[], origin=""}={}) {
-  return attachFrameContext('fencedframe', generator_api, html, headers, attributes, origin);
+function attachFencedFrameContext({generator_api="", resolve_to_config=false, html = "", headers=[], attributes=[], origin=""}={}) {
+  return attachFrameContext('fencedframe', generator_api, resolve_to_config, html, headers, attributes, origin);
 }
 
 // Attach an iframe that waits for scripts to execute.
 // See `attachFencedFrameContext` for more details.
 function attachIFrameContext({generator_api="", html="", headers=[], attributes=[], origin=""}={}) {
-  return attachFrameContext('iframe', generator_api, html, headers, attributes, origin);
+  return attachFrameContext('iframe', generator_api, /*resolve_to_config=*/false, html, headers, attributes, origin);
 }
 
 // Open a window that waits for scripts to execute.

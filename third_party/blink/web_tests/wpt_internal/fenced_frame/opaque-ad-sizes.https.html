@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test frame size restrictions in opaque ads mode.</title>
+<title>Test frame size restrictions in FLEDGE.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -10,7 +10,7 @@
 <body>
 <script>
 async function runTest(input_width, input_height, output_width, output_height) {
-  // Attach a fenced frame whose outer container has dimensions
+  // Attach a FLEDGE fenced frame whose outer container has dimensions
   // `input_width` by `input_height`.
   const frame = await attachFencedFrameContext({
       generator_api: "fledge", attributes: [["mode", "opaque-ads"],
@@ -18,11 +18,11 @@ async function runTest(input_width, input_height, output_width, output_height) {
 
   const assert_dimensions =
       (label, input_width, input_height, output_width, output_height) => {
-    assert_equals(window.innerWidth, output_width,
-        label + " the innerWidth " + input_width + " coerces to " + output_width);
     assert_equals(getComputedStyle(document.documentElement).width,
         output_width+"px",
         label + " the computed width coerces to " + output_width);
+    assert_equals(window.innerWidth, output_width,
+        label + " the innerWidth " + input_width + " coerces to " + output_width);
     assert_equals(window.innerHeight, output_height,
         label + " the innerHeight " + input_height + " coerces to " + output_height);
   }
