@@ -61282,6 +61282,7 @@ from previous Chrome versions.
   <int value="-460486807" label="ConsolidatedSiteStorageControls:enabled"/>
   <int value="-460313418" label="ProgressBarThrottle:enabled"/>
   <int value="-460081932" label="CustomFeedbackUi:disabled"/>
+  <int value="-460062351" label="VariationsGoogleGroupFiltering:disabled"/>
   <int value="-459469509" label="SidePanelImprovedClobbering:enabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
   <int value="-458308082" label="ContextualTriggersSelectionMenu:disabled"/>
@@ -62608,6 +62609,7 @@ from previous Chrome versions.
   <int value="297354085" label="MoreVideoCaptureBuffers:disabled"/>
   <int value="297750703" label="DesktopPWAsAppIconShortcutsMenu:enabled"/>
   <int value="299466814" label="ChromeWhatsNewUI:enabled"/>
+  <int value="299526582" label="VariationsGoogleGroupFiltering:enabled"/>
   <int value="299792415" label="OmniboxSuggestionTransparencyOptions:enabled"/>
   <int value="300095239" label="FCMInvalidations:enabled"/>
   <int value="300870732" label="ShelfDimming:disabled"/>

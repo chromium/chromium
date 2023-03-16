@@ -2005,6 +2005,9 @@ extern const char kDmTokenDeletionDescription[];
 extern const char kPolicyMergeMultiSourceName[];
 extern const char kPolicyMergeMultiSourceDescription[];
 
+extern const char kEnableVariationsGoogleGroupFilteringName[];
+extern const char kEnableVariationsGoogleGroupFilteringDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)
