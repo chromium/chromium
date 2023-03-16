@@ -164,8 +164,7 @@ String DetermineNavigationType(WebFrameLoadType type) {
   return String();
 }
 
-NavigationApi::NavigationApi(LocalDOMWindow* window)
-    : ExecutionContextLifecycleObserver(window), window_(window) {}
+NavigationApi::NavigationApi(LocalDOMWindow* window) : window_(window) {}
 
 void NavigationApi::setOnnavigate(EventListener* listener) {
   UseCounter::Count(window_, WebFeature::kAppHistory);
@@ -926,18 +925,6 @@ void NavigationApi::TraverseCancelled(
   upcoming_traversals_.erase(traversal);
 }
 
-void NavigationApi::ContextDestroyed() {
-  if (ongoing_navigation_) {
-    ongoing_navigation_->CleanupForWillNeverSettle();
-    ongoing_navigation_ = nullptr;
-  }
-
-  for (auto& traversal : upcoming_traversals_.Values()) {
-    traversal->CleanupForWillNeverSettle();
-  }
-  upcoming_traversals_.clear();
-}
-
 bool NavigationApi::HasNonDroppedOngoingNavigation() const {
   bool has_ongoing_intercept = ongoing_navigate_event_ &&
                                ongoing_navigate_event_->HasNavigationActions();
@@ -1040,7 +1027,6 @@ void NavigationApi::RemovedEventListener(
 
 void NavigationApi::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(window_);
   visitor->Trace(entries_);
   visitor->Trace(transition_);
