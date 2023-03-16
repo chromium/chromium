@@ -8188,6 +8188,10 @@ if (!is_android) {
       "//net:test_support",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
     ]
+
+    if (!is_chromeos) {
+      public_deps += [ "//chrome/browser/ui/webui/app_home:mojo_bindings" ]
+    }
   }
 }
 

@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -138,6 +139,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 #else
+#include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
+#include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #endif
 
@@ -2227,6 +2230,15 @@ void WebAppIntegrationTestDriver::CheckAppListEmpty() {
       GetStateForProfile(after_state_change_action_state_.get(), profile());
   ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state->apps.empty());
+#if !BUILDFLAG(IS_CHROMEOS)
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler();
+  base::test::TestFuture<std::vector<app_home::mojom::AppInfoPtr>>
+      result_future;
+  app_home_page_handler.GetApps(result_future.GetCallback());
+  EXPECT_TRUE(
+      result_future.Get<std::vector<app_home::mojom::AppInfoPtr>>().empty());
+#endif
   AfterStateCheckAction();
 }
 
@@ -2234,8 +2246,20 @@ void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  GURL icon_url =
-      apps::AppIconSource::GetIconURL(active_app_id_, icon_size::k128);
+  GURL icon_url;
+  int icon_size_to_test = icon_size::k128;
+#if !BUILDFLAG(IS_CHROMEOS)
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler();
+  app_home::mojom::AppInfoPtr expected_app;
+  expected_app = app_home_page_handler.GetApp(active_app_id_);
+
+  EXPECT_NE(expected_app, app_home::mojom::AppInfoPtr());
+  icon_url = expected_app->icon_url;
+  icon_size_to_test = icon_size::k64;
+#else
+  icon_url = apps::AppIconSource::GetIconURL(active_app_id_, icon_size::k128);
+#endif
   SkBitmap icon_bitmap;
   base::RunLoop run_loop;
 
@@ -2260,7 +2284,7 @@ void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
   // Compare the center pixel color instead of top left corner
   // The app list icon has a filter that changes the color at the corner.
   EXPECT_EQ(expected_color,
-            icon_bitmap.getColor(icon_size::k128 / 2, icon_size::k128 / 2));
+            icon_bitmap.getColor(icon_size_to_test / 2, icon_size_to_test / 2));
   chrome::CloseTab(browser());
   AfterStateCheckAction();
 }
@@ -2274,18 +2298,16 @@ void WebAppIntegrationTestDriver::CheckAppInListNotLocallyInstalled(Site site) {
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_FALSE(app_state->is_installed_locally);
-  AfterStateCheckAction();
-}
+#if !BUILDFLAG(IS_CHROMEOS)
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler();
+  app_home::mojom::AppInfoPtr expected_app;
+  const AppId app_id = GetAppIdBySiteMode(site);
+  expected_app = app_home_page_handler.GetApp(app_id);
 
-void WebAppIntegrationTestDriver::CheckAppInListTabbed(Site site) {
-  if (!BeforeStateCheckAction(__FUNCTION__)) {
-    return;
-  }
-  // Note: This is a partially supported action.
-  absl::optional<AppState> app_state =
-      GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
-  ASSERT_TRUE(app_state.has_value());
-  EXPECT_EQ(app_state->user_display_mode, mojom::UserDisplayMode::kBrowser);
+  EXPECT_NE(expected_app, app_home::mojom::AppInfoPtr());
+  EXPECT_FALSE(expected_app->is_locally_installed);
+#endif
   AfterStateCheckAction();
 }
 
@@ -2298,6 +2320,38 @@ void WebAppIntegrationTestDriver::CheckAppInListWindowed(Site site) {
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(app_state->user_display_mode, mojom::UserDisplayMode::kStandalone);
+#if !BUILDFLAG(IS_CHROMEOS)
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler();
+  app_home::mojom::AppInfoPtr expected_app;
+  const AppId app_id = GetAppIdBySiteMode(site);
+  expected_app = app_home_page_handler.GetApp(app_id);
+
+  EXPECT_NE(expected_app, app_home::mojom::AppInfoPtr());
+  EXPECT_TRUE(expected_app->open_in_window);
+#endif
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppInListTabbed(Site site) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  // Note: This is a partially supported action.
+  absl::optional<AppState> app_state =
+      GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
+  ASSERT_TRUE(app_state.has_value());
+  EXPECT_EQ(app_state->user_display_mode, mojom::UserDisplayMode::kBrowser);
+#if !BUILDFLAG(IS_CHROMEOS)
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler();
+  app_home::mojom::AppInfoPtr expected_app;
+  const AppId app_id = GetAppIdBySiteMode(site);
+  expected_app = app_home_page_handler.GetApp(app_id);
+
+  EXPECT_NE(expected_app, app_home::mojom::AppInfoPtr());
+  EXPECT_FALSE(expected_app->open_in_window);
+#endif
   AfterStateCheckAction();
 }
 
@@ -2361,6 +2415,16 @@ void WebAppIntegrationTestDriver::CheckAppNotInList(Site site) {
   absl::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   EXPECT_FALSE(app_state.has_value());
+#if !BUILDFLAG(IS_CHROMEOS)
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler();
+  app_home::mojom::AppInfoPtr expected_app;
+  const AppId app_id = GetAppIdBySiteMode(site);
+  expected_app = app_home_page_handler.GetApp(app_id);
+
+  // An empty app received means that the app does not exist in chrome://apps.
+  EXPECT_EQ(expected_app, app_home::mojom::AppInfoPtr());
+#endif
   AfterStateCheckAction();
 }
 
@@ -3700,6 +3764,22 @@ WebAppIntegrationTestDriver::GetTestServerForSiteMode(Site site) const {
   return *delegate_->EmbeddedTestServer();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+webapps::AppHomePageHandler
+WebAppIntegrationTestDriver::GetTestAppHomePageHandler() {
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  DCHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  mojo::PendingReceiver<app_home::mojom::Page> page;
+  mojo::Remote<app_home::mojom::PageHandler> page_handler;
+  return webapps::AppHomePageHandler(&test_web_ui, profile(),
+                                     page_handler.BindNewPipeAndPassReceiver(),
+                                     page.InitWithNewPipeAndPassRemote());
+}
+#endif
+
 WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
@@ -3717,6 +3797,8 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.
   disabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
+#else
+  enabled_features.push_back(features::kDesktopPWAsAppHomePage);
 #endif
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }

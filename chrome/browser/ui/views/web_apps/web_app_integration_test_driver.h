@@ -34,6 +34,10 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
+#endif
+
 class Browser;
 class PageActionIconView;
 
@@ -446,6 +450,10 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   PageActionIconView* intent_picker_view();
 
   const net::EmbeddedTestServer& GetTestServerForSiteMode(Site site_mode) const;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  webapps::AppHomePageHandler GetTestAppHomePageHandler();
+#endif
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

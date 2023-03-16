@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "chrome/browser/ui/webui/app_home/app_home.mojom-shared.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -109,6 +108,8 @@ class AppHomePageHandler
   void SetUserDisplayMode(
       const std::string& app_id,
       web_app::mojom::UserDisplayMode display_mode) override;
+
+  app_home::mojom::AppInfoPtr GetApp(const web_app::AppId& app_id);
 
  private:
   Browser* GetCurrentBrowser();
