@@ -35,6 +35,9 @@
 // ID to validate the credential before providing it to the system.
 @property(nonatomic, readonly) NSString* validationIdentifier;
 
+// Attached note to the credential.
+@property(nonatomic, readonly) NSString* note;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_CREDENTIAL_H_

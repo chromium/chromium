@@ -28,6 +28,7 @@
 @synthesize serviceName = _serviceName;
 @synthesize user = _user;
 @synthesize validationIdentifier = _validationIdentifier;
+@synthesize note = _note;
 
 - (instancetype)initWithServiceName:(NSString*)serviceName
                   serviceIdentifier:(NSString*)serviceIdentifier

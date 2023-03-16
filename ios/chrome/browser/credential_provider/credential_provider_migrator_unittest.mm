@@ -41,7 +41,8 @@ ArchivableCredential* TestCredential() {
                                      serviceIdentifier:url
                                            serviceName:nil
                                                   user:username
-                                  validationIdentifier:nil];
+                                  validationIdentifier:nil
+                                                  note:nil];
 }
 
 class CredentialProviderMigratorTest : public PlatformTest {

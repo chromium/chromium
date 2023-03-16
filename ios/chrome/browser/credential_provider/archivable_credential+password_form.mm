@@ -10,6 +10,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 #import "url/gurl.h"
 
@@ -38,6 +39,9 @@ password_manager::PasswordForm PasswordFormFromCredential(
   form.username_value = SysNSStringToUTF16(credential.user);
   form.encrypted_password = SysNSStringToUTF8(credential.keychainIdentifier);
   form.times_used_in_html_form = credential.rank;
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    form.SetNoteWithEmptyUniqueDisplayName(SysNSStringToUTF16(credential.note));
+  }
 
   return form;
 }
@@ -58,6 +62,11 @@ password_manager::PasswordForm PasswordFormFromCredential(
 
   NSString* serviceIdentifier = SysUTF8ToNSString(passwordForm.url.spec());
   NSString* serviceName = SysUTF8ToNSString(site_name);
+
+  NSString* note = @"";
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    note = SysUTF16ToNSString(passwordForm.GetNoteWithEmptyUniqueDisplayName());
+  }
 
   if (password_manager::IsValidAndroidFacetURI(passwordForm.signon_realm)) {
     NSString* webRealm = SysUTF8ToNSString(passwordForm.affiliated_web_realm);
@@ -95,7 +104,8 @@ password_manager::PasswordForm PasswordFormFromCredential(
              serviceIdentifier:serviceIdentifier
                    serviceName:serviceName
                           user:SysUTF16ToNSString(passwordForm.username_value)
-          validationIdentifier:validationIdentifier];
+          validationIdentifier:validationIdentifier
+                          note:note];
 }
 
 @end

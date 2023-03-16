@@ -24,7 +24,8 @@ ArchivableCredential* TestCredential() {
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
                                                   user:@"user"
-                                  validationIdentifier:@"validationIdentifier"];
+                                  validationIdentifier:@"validationIdentifier"
+                                                  note:@"note"];
 }
 
 // Tests that an MemoryCredentialStore can be created.
@@ -58,7 +59,8 @@ TEST_F(MemoryCredentialStoreTest, update) {
          serviceIdentifier:@"other_serviceIdentifier"
                serviceName:@"other_serviceName"
                       user:@"other_user"
-      validationIdentifier:@"other_validationIdentifier"];
+      validationIdentifier:@"other_validationIdentifier"
+                      note:@"other_note"];
 
   [credentialStore updateCredential:updatedCredential];
   EXPECT_EQ(1u, credentialStore.credentials.count);

@@ -24,7 +24,7 @@
                     serviceName:(NSString*)serviceName
                            user:(NSString*)user
            validationIdentifier:(NSString*)validationIdentifier
-    NS_DESIGNATED_INITIALIZER;
+                           note:(NSString*)note NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

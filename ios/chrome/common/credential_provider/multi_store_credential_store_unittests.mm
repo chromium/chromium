@@ -29,7 +29,8 @@ ArchivableCredential* TestCredential(NSString* user) {
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
                                                   user:user
-                                  validationIdentifier:@"validationIdentifier"];
+                                  validationIdentifier:@"validationIdentifier"
+                                                  note:@"note"];
 }
 
 NSArray<id<CredentialStore>>* TestStoreArray() {

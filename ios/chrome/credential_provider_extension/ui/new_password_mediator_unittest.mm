@@ -109,7 +109,8 @@ ArchivableCredential* TestCredential(NSString* recordIdentifier) {
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
                                                   user:@"user"
-                                  validationIdentifier:@"validationIdentifier"];
+                                  validationIdentifier:@"validationIdentifier"
+                                                  note:@"note"];
 }
 
 class NewPasswordMediatorTest : public PlatformTest {
@@ -172,6 +173,7 @@ TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   // gets saved to disk.
   NSString* testUsername = @"user";
   NSString* testPassword = @"password";
+  NSString* testNote = @"note";
 
   responseHandler_.receivedCredentialBlock = ^() {
     blockWaitCompleted = YES;
@@ -180,6 +182,7 @@ TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   blockWaitCompleted = NO;
   [mediator_ saveCredentialWithUsername:testUsername
                                password:testPassword
+                                   note:testNote
                           shouldReplace:NO];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
     return blockWaitCompleted;
@@ -235,8 +238,10 @@ TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   blockWaitCompleted = NO;
   NSString* testUsername = @"user";
   NSString* testPassword = @"password";
+  NSString* testNote = @"note";
   [mediator_ saveCredentialWithUsername:testUsername
                                password:testPassword
+                                   note:testNote
                           shouldReplace:NO];
 
   EXPECT_TRUE(uiHandler_.alertedCredentialExists);
@@ -248,6 +253,7 @@ TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   blockWaitCompleted = NO;
   [mediator_ saveCredentialWithUsername:testUsername
                                password:testPassword
+                                   note:testNote
                           shouldReplace:YES];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
     return blockWaitCompleted;

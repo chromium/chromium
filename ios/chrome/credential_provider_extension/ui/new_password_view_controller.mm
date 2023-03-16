@@ -14,6 +14,7 @@
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_footer_view.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_table_cell.h"
+#import "ios/chrome/credential_provider_extension/ui/password_note_cell.h"
 #import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,10 +27,24 @@ namespace {
 // view.
 const CGFloat kTableViewTopSpace = 14;
 
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  SectionIdentifierPassword,
+  SectionIdentifierNote,
+  SectionIdentifierNumSections
+};
+
+// TODO(crbug.com/1414897): Replace with checking feature flag value when build
+// deps are resolved (as currenly importing feature file would add deps
+// disallowed in extensions).
+bool IsPasswordNotesWithBackupEnabled() {
+  return false;
+}
+
 }  // namespace
 
 @interface NewPasswordViewController () <FormInputAccessoryViewDelegate,
                                          NewPasswordTableCellDelegate,
+                                         PasswordNoteCellDelegate,
                                          UITableViewDataSource>
 
 // The current creation type of the entered password.
@@ -43,6 +58,9 @@ const CGFloat kTableViewTopSpace = 14;
 
 // The cell for password entry
 @property(nonatomic, readonly) NewPasswordTableCell* passwordCell;
+
+// The cell for note entry.
+@property(nonatomic, readonly) PasswordNoteCell* noteCell;
 
 @end
 
@@ -92,12 +110,20 @@ const CGFloat kTableViewTopSpace = 14;
          forCellReuseIdentifier:NewPasswordTableCell.reuseID];
   [self.tableView registerClass:[NewPasswordFooterView class]
       forHeaderFooterViewReuseIdentifier:NewPasswordFooterView.reuseID];
+  if (IsPasswordNotesWithBackupEnabled()) {
+    [self.tableView registerClass:[PasswordNoteCell class]
+           forCellReuseIdentifier:PasswordNoteCell.reuseID];
+  }
 }
 
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
+  if (section == SectionIdentifierNote) {
+    return 1;
+  }
+
   // If password sync is not on (represented by the user's email not being
   // available as used in the sync disclaimer), then don't show the "Suggest
   // Strong Password" button.
@@ -108,8 +134,27 @@ const CGFloat kTableViewTopSpace = 14;
                           : NewPasswordTableCellTypeNumRows - 1;
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  if (IsPasswordNotesWithBackupEnabled()) {
+    return SectionIdentifierNumSections;
+  }
+
+  return SectionIdentifierNumSections - 1;
+}
+
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (IsPasswordNotesWithBackupEnabled() &&
+      indexPath.section == SectionIdentifierNote) {
+    DCHECK(indexPath.row == 0);
+    PasswordNoteCell* cell =
+        [tableView dequeueReusableCellWithIdentifier:PasswordNoteCell.reuseID];
+    [cell configureCell];
+    cell.delegate = self;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    return cell;
+  }
+
   NewPasswordTableCell* cell = [tableView
       dequeueReusableCellWithIdentifier:NewPasswordTableCell.reuseID];
   cell.textField.inputAccessoryView = self.accessoryView;
@@ -143,15 +188,23 @@ const CGFloat kTableViewTopSpace = 14;
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
-  return [tableView
-      dequeueReusableHeaderFooterViewWithIdentifier:NewPasswordFooterView
-                                                        .reuseID];
+  if (section == SectionIdentifierPassword) {
+    return [tableView
+        dequeueReusableHeaderFooterViewWithIdentifier:NewPasswordFooterView
+                                                          .reuseID];
+  }
+
+  return nil;
 }
 
 #pragma mark - UITableViewDelegate
 
 - (NSIndexPath*)tableView:(UITableView*)tableView
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (indexPath.section == SectionIdentifierNote) {
+    return nil;
+  }
+
   switch (indexPath.row) {
     case NewPasswordTableCellTypeUsername:
     case NewPasswordTableCellTypePassword:
@@ -175,7 +228,7 @@ const CGFloat kTableViewTopSpace = 14;
 - (NewPasswordTableCell*)usernameCell {
   NSIndexPath* usernameIndexPath =
       [NSIndexPath indexPathForRow:NewPasswordTableCellTypeUsername
-                         inSection:0];
+                         inSection:SectionIdentifierPassword];
   NewPasswordTableCell* usernameCell =
       [self.tableView cellForRowAtIndexPath:usernameIndexPath];
 
@@ -185,11 +238,29 @@ const CGFloat kTableViewTopSpace = 14;
 - (NewPasswordTableCell*)passwordCell {
   NSIndexPath* passwordIndexPath =
       [NSIndexPath indexPathForRow:NewPasswordTableCellTypePassword
-                         inSection:0];
+                         inSection:SectionIdentifierPassword];
   NewPasswordTableCell* passwordCell =
       [self.tableView cellForRowAtIndexPath:passwordIndexPath];
 
   return passwordCell;
+}
+
+- (PasswordNoteCell*)noteCell {
+  NSIndexPath* noteIndexPath =
+      [NSIndexPath indexPathForRow:0 inSection:SectionIdentifierNote];
+  PasswordNoteCell* noteCell =
+      [self.tableView cellForRowAtIndexPath:noteIndexPath];
+
+  return noteCell;
+}
+
+#pragma mark - PasswordNoteCellDelegate
+
+- (void)textViewDidChangeInCell:(PasswordNoteCell*)cell {
+  // Refresh the cell's height to make the note fully visible while typing or to
+  // clear unnecessary blank lines while removing characters.
+  [self.tableView beginUpdates];
+  [self.tableView endUpdates];
 }
 
 #pragma mark - NewPasswordTableCellDelegate
@@ -247,7 +318,7 @@ const CGFloat kTableViewTopSpace = 14;
 - (NSString*)currentUsername {
   NSIndexPath* usernameIndexPath =
       [NSIndexPath indexPathForRow:NewPasswordTableCellTypeUsername
-                         inSection:0];
+                         inSection:SectionIdentifierPassword];
   NewPasswordTableCell* usernameCell =
       [self.tableView cellForRowAtIndexPath:usernameIndexPath];
   return usernameCell.textField.text;
@@ -256,10 +327,18 @@ const CGFloat kTableViewTopSpace = 14;
 - (NSString*)currentPassword {
   NSIndexPath* passwordIndexPath =
       [NSIndexPath indexPathForRow:NewPasswordTableCellTypePassword
-                         inSection:0];
+                         inSection:SectionIdentifierPassword];
   NewPasswordTableCell* passwordCell =
       [self.tableView cellForRowAtIndexPath:passwordIndexPath];
   return passwordCell.textField.text;
+}
+
+- (NSString*)currentNote {
+  NSIndexPath* noteIndexPath =
+      [NSIndexPath indexPathForRow:0 inSection:SectionIdentifierNote];
+  PasswordNoteCell* noteCell =
+      [self.tableView cellForRowAtIndexPath:noteIndexPath];
+  return noteCell.textView.text;
 }
 
 // Saves the current data as a credential. If `shouldReplace` is YES, then the
@@ -268,9 +347,12 @@ const CGFloat kTableViewTopSpace = 14;
 - (void)saveCredential:(BOOL)shouldReplace {
   NSString* username = [self currentUsername];
   NSString* password = [self currentPassword];
+  NSString* note =
+      IsPasswordNotesWithBackupEnabled() ? [self currentNote] : @"";
 
   [self.credentialHandler saveCredentialWithUsername:username
                                             password:password
+                                                note:note
                                        shouldReplace:shouldReplace];
 }
 

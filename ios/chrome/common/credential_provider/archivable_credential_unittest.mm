@@ -24,7 +24,8 @@ ArchivableCredential* TestCredential() {
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
                                                   user:@"user"
-                                  validationIdentifier:@"validationIdentifier"];
+                                  validationIdentifier:@"validationIdentifier"
+                                                  note:@"note"];
 }
 
 // Tests that an ArchivableCredential can be created.
@@ -37,7 +38,8 @@ TEST_F(ArchivableCredentialTest, create) {
                                   serviceIdentifier:@"serviceIdentifier"
                                         serviceName:@"serviceName"
                                                user:@"user"
-                               validationIdentifier:@"validationIdentifier"];
+                               validationIdentifier:@"validationIdentifier"
+                                               note:@"note"];
   EXPECT_TRUE(credential);
 }
 
@@ -100,7 +102,8 @@ TEST_F(ArchivableCredentialTest, equality) {
          serviceIdentifier:@"other_serviceIdentifier"
                serviceName:@"other_serviceName"
                       user:@"other_user"
-      validationIdentifier:@"other_validationIdentifier"];
+      validationIdentifier:@"other_validationIdentifier"
+                      note:@"other_note"];
   EXPECT_NSNE(credential, credentialSameIdentifier);
 
   ArchivableCredential* credentialDiferentIdentifier =
@@ -111,7 +114,8 @@ TEST_F(ArchivableCredentialTest, equality) {
                                   serviceIdentifier:@"serviceIdentifier"
                                         serviceName:@"serviceName"
                                                user:@"user"
-                               validationIdentifier:@"validationIdentifier"];
+                               validationIdentifier:@"validationIdentifier"
+                                               note:@"note"];
   EXPECT_NSNE(credential, credentialDiferentIdentifier);
 
   EXPECT_NSNE(credential, nil);

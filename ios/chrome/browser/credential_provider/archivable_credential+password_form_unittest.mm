@@ -124,7 +124,8 @@ TEST_F(ArchivableCredentialPasswordFormTest, PasswordFormFromCredential) {
                                   serviceIdentifier:url
                                         serviceName:nil
                                                user:username
-                               validationIdentifier:nil];
+                               validationIdentifier:nil
+                                               note:nil];
   EXPECT_TRUE(credential);
 
   PasswordForm passwordForm = PasswordFormFromCredential(credential);

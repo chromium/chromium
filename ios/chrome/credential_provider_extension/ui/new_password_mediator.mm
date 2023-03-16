@@ -79,6 +79,7 @@ using base::SysUTF16ToNSString;
 
 - (void)saveCredentialWithUsername:(NSString*)username
                           password:(NSString*)password
+                              note:(NSString*)note
                      shouldReplace:(BOOL)shouldReplace {
   if (!shouldReplace && [self credentialExistsForUsername:username]) {
     [self.uiHandler alertUserCredentialExists];
@@ -86,7 +87,9 @@ using base::SysUTF16ToNSString;
   }
 
   ArchivableCredential* credential =
-      [self createNewCredentialWithUsername:username password:password];
+      [self createNewCredentialWithUsername:username
+                                   password:password
+                                       note:note];
 
   if (!credential) {
     [self.uiHandler alertSavePasswordFailed];
@@ -120,7 +123,8 @@ using base::SysUTF16ToNSString;
 
 // Creates a new credential but doesn't add it to any stores.
 - (ArchivableCredential*)createNewCredentialWithUsername:(NSString*)username
-                                                password:(NSString*)password {
+                                                password:(NSString*)password
+                                                    note:(NSString*)note {
   NSString* identifier = [self currentIdentifier];
   NSURL* url = [NSURL URLWithString:identifier];
   NSString* recordIdentifier = RecordIdentifierForData(url, username);
@@ -141,7 +145,8 @@ using base::SysUTF16ToNSString;
                                      serviceIdentifier:identifier
                                            serviceName:url.host ?: identifier
                                                   user:username
-                                  validationIdentifier:validationIdentifier];
+                                  validationIdentifier:validationIdentifier
+                                                  note:note];
 }
 
 // Saves the given credential to disk and calls `completion` once the operation

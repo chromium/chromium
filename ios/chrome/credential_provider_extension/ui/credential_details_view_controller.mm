@@ -14,6 +14,7 @@
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/password_note_cell.h"
 #import "ios/chrome/credential_provider_extension/ui/tooltip_view.h"
 #import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
@@ -35,8 +36,16 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
   RowIdentifierURL,
   RowIdentifierUsername,
   RowIdentifierPassword,
+  RowIdentifierNote,
   NumRows
 };
+
+// TODO(crbug.com/1414897): Replace with checking feature flag value when build
+// deps are resolved (as currenly importing feature file would add deps
+// disallowed in extensions).
+bool IsPasswordNotesWithBackupEnabled() {
+  return false;
+}
 
 }  // namespace
 
@@ -104,11 +113,29 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  return RowIdentifier::NumRows;
+  if (IsPasswordNotesWithBackupEnabled()) {
+    return RowIdentifier::NumRows;
+  }
+
+  return RowIdentifier::NumRows - 1;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (indexPath.row == RowIdentifier::RowIdentifierNote &&
+      IsPasswordNotesWithBackupEnabled()) {
+    PasswordNoteCell* cell =
+        [tableView dequeueReusableCellWithIdentifier:PasswordNoteCell.reuseID];
+    if (!cell) {
+      cell = [[PasswordNoteCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                     reuseIdentifier:PasswordNoteCell.reuseID];
+    }
+    [cell configureCell];
+    cell.textView.text = self.credential.note;
+    cell.textView.editable = NO;
+    return cell;
+  }
+
   UITableViewCell* cell =
       [tableView dequeueReusableCellWithIdentifier:kCellIdentifier];
   if (!cell) {
@@ -138,6 +165,8 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
       cell.textLabel.text = NSLocalizedString(
           @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_PASSWORD", @"Password");
       cell.detailTextLabel.text = [self password];
+      break;
+    case RowIdentifier::RowIdentifierNote:
       break;
     default:
       break;
