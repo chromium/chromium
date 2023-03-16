@@ -11,6 +11,10 @@
 // chrome/test/data/extensions/api_test/stubs_app/manifest.json
 
 {
+  "activeTab": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
+  },
   "alarms": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]

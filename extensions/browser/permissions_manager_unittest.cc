@@ -40,9 +40,12 @@ class PermissionsManagerUnittest : public ExtensionsTest {
   PermissionsManagerUnittest& operator=(const PermissionsManagerUnittest&) =
       delete;
 
+  scoped_refptr<const Extension> AddExtension(const std::string& name);
   scoped_refptr<const Extension> AddExtensionWithHostPermission(
       const std::string& name,
       const std::string& host_permission);
+  scoped_refptr<const Extension> AddExtensionWithActiveTab(
+      const std::string& name);
 
   // Returns the restricted sites stored in `manager_`.
   std::set<url::Origin> GetRestrictedSitesFromManager();
@@ -79,6 +82,11 @@ void PermissionsManagerUnittest::SetUp() {
   extension_prefs_ = ExtensionPrefs::Get(browser_context());
 }
 
+scoped_refptr<const Extension> PermissionsManagerUnittest::AddExtension(
+    const std::string& name) {
+  return AddExtensionWithHostPermission(name, "");
+}
+
 scoped_refptr<const Extension>
 PermissionsManagerUnittest::AddExtensionWithHostPermission(
     const std::string& name,
@@ -90,6 +98,21 @@ PermissionsManagerUnittest::AddExtensionWithHostPermission(
               "host_permissions",
               extensions::ListBuilder().Append(host_permission).Build())
           .Build();
+
+  ExtensionRegistryFactory::GetForBrowserContext(browser_context())
+      ->AddEnabled(extension);
+
+  return extension;
+}
+
+scoped_refptr<const Extension>
+PermissionsManagerUnittest::AddExtensionWithActiveTab(const std::string& name) {
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder(name)
+          .SetManifestVersion(3)
+          .AddPermission("activeTab")
+          .Build();
+  DCHECK(extension->permissions_data()->HasAPIPermission("activeTab"));
 
   ExtensionRegistryFactory::GetForBrowserContext(browser_context())
       ->AddEnabled(extension);
@@ -315,8 +338,7 @@ TEST_F(PermissionsManagerUnittest,
 }
 
 TEST_F(PermissionsManagerUnittest, GetSiteAccess_ActiveTab) {
-  auto extension =
-      AddExtensionWithHostPermission("ActiveTab Extension", "activeTab");
+  auto extension = AddExtensionWithActiveTab("ActiveTab Extension");
 
   const GURL url("https://example.com");
   {
@@ -332,7 +354,7 @@ TEST_F(PermissionsManagerUnittest, GetSiteAccess_ActiveTab) {
 }
 
 TEST_F(PermissionsManagerUnittest, GetSiteAccess_NoHostPermissions) {
-  auto extension = AddExtensionWithHostPermission("Test", "Extension");
+  auto extension = AddExtension("Test");
 
   const GURL url("https://example.com");
   {

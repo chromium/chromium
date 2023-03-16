@@ -61,7 +61,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kAccessibilityFeaturesRead, "accessibilityFeatures.read"},
     {APIPermissionID::kAccessibilityPrivate, "accessibilityPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kActiveTab, "activeTab"},
     {APIPermissionID::kBookmark, "bookmarks"},
     {APIPermissionID::kBrailleDisplayPrivate, "brailleDisplayPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},

@@ -36,10 +36,6 @@
       "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E"
     ]
   },
-  "activeTab": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-  },
   "activityLogPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
