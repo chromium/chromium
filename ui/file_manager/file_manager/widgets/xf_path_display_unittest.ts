@@ -9,7 +9,6 @@ import {waitForElementUpdate} from '../common/js/unittest_util.js';
 
 import {XfPathDisplayElement} from './xf_path_display.js';
 
-
 /**
  * Creates new <xf-search-options> element for each test.
  */
@@ -25,7 +24,7 @@ function getFolderText(element: XfPathDisplayElement): string {
   for (let i = 0; i < divList.length; ++i) {
     const divNode = divList[i];
     if (divNode) {
-      text.push(divNode.innerText);
+      text.push(divNode.className === 'separator' ? '/' : divNode.innerText);
     }
   }
   return text.join('');
@@ -53,7 +52,7 @@ export async function testPathDisplay(done: () => void) {
   for (const path of pathList) {
     element.path = path;
     await waitForElementUpdate(element);
-    assertEquals(path.replaceAll('/', '>'), getFolderText(element));
+    assertEquals(path, getFolderText(element));
   }
   done();
 }

@@ -37,7 +37,7 @@ export class XfPathDisplayElement extends XfBase {
     return html`
       ${repeat(head, (e) => html`
               <div class="folder" tabindex="0">${e}</div>
-              <div class="separator">&gt;</div>`)}
+              <div class="separator"></div>`)}
       <div class="folder" tabindex="0">${tail}</div>
     `;
   }
@@ -82,7 +82,13 @@ function getCSS(): CSSResultGroup {
       min-width: auto;
     }
     div.separator {
-      padding: 0px 0.5ex;
+      -webkit-mask-image: url(/foreground/images/files/ui/arrow_right.svg);
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+      background-color: var(--cros-text-color-secondary);
+      width: 20px;
+      height: 20px;
+      padding: 0 2px;
     }
   `;
 }
