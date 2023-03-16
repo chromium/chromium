@@ -8,7 +8,10 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/system_notification_builder.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/default_clock.h"
@@ -29,8 +32,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
@@ -277,6 +283,20 @@ void EolNotification::MaybeShowEolIncentiveNotification(base::Time eol_date) {
 void EolNotification::ShowIncentiveNotification() {
   message_center::RichNotificationData data;
   ash::SystemNotificationBuilder notification_builder;
+
+  gfx::ImageSkia incentive_image =
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_EOL_INCENTIVE_NOTIFICATION);
+  SkBitmap background_bitmap;
+  background_bitmap.allocN32Pixels(incentive_image.width(),
+                                   incentive_image.height());
+  background_bitmap.eraseColor(
+      DarkLightModeController::Get()->IsDarkModeEnabled() ? gfx::kGoogleGrey800
+                                                          : SK_ColorWHITE);
+  gfx::ImageSkia background =
+      gfx::ImageSkia::CreateFrom1xBitmap(background_bitmap);
+  data.image = gfx::Image(gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      background, incentive_image));
 
   // TODO (b/271150076): Add localized string IDS once strings get finalized.
   data.buttons.emplace_back(u"Claim Offer");

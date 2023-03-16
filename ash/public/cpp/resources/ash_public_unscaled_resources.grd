@@ -32,6 +32,7 @@
       <!-- System tray Cast images -->
       <include name="IDR_TRAY_CAST_ZERO_STATE_DARK" file="unscaled_resources/tray_cast_zero_state_dark.png" type="BINDATA" />
       <include name="IDR_TRAY_CAST_ZERO_STATE_LIGHT" file="unscaled_resources/tray_cast_zero_state_light.png" type="BINDATA" />
+      <include name="IDR_EOL_INCENTIVE_NOTIFICATION" file="unscaled_resources/eol_incentive_notification_image.png" type="BINDATA" />
     </includes>
     <structures>
       <structure type="lottie" name="IDR_PHONE_HUB_ONBOARDING_IMAGE" file="unscaled_resources/phone_hub_onboarding_image.json" compress="gzip" />
