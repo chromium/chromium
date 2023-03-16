@@ -2140,6 +2140,7 @@ void StoragePartitionImpl::OnClearSiteData(
     const std::string& header_value,
     int load_flags,
     const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    bool partitioned_state_allowed_only,
     OnClearSiteDataCallback callback) {
   DCHECK(initialized_);
   auto browser_context_getter = base::BindRepeating(
@@ -2155,7 +2156,8 @@ void StoragePartitionImpl::OnClearSiteData(
 
   ClearSiteDataHandler::HandleHeader(
       browser_context_getter, web_contents_getter, url, header_value,
-      load_flags, cookie_partition_key, storage_key, std::move(callback));
+      load_flags, cookie_partition_key, storage_key,
+      partitioned_state_allowed_only, std::move(callback));
 }
 
 #if BUILDFLAG(IS_ANDROID)

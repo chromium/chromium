@@ -104,10 +104,12 @@ void ClearSiteDataHandler::HandleHeader(
     int load_flags,
     const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     const absl::optional<blink::StorageKey>& storage_key,
+    bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
   ClearSiteDataHandler handler(browser_context_getter, web_contents_getter, url,
                                header_value, load_flags, cookie_partition_key,
-                               storage_key, std::move(callback),
+                               storage_key, partitioned_state_allowed_only,
+                               std::move(callback),
                                std::make_unique<ConsoleMessagesDelegate>());
   handler.HandleHeaderAndOutputConsoleMessages();
 }
@@ -134,6 +136,7 @@ ClearSiteDataHandler::ClearSiteDataHandler(
     int load_flags,
     const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     const absl::optional<blink::StorageKey>& storage_key,
+    bool partitioned_state_allowed_only,
     base::OnceClosure callback,
     std::unique_ptr<ConsoleMessagesDelegate> delegate)
     : browser_context_getter_(browser_context_getter),
@@ -143,6 +146,7 @@ ClearSiteDataHandler::ClearSiteDataHandler(
       load_flags_(load_flags),
       cookie_partition_key_(cookie_partition_key),
       storage_key_(storage_key),
+      partitioned_state_allowed_only_(partitioned_state_allowed_only),
       callback_(std::move(callback)),
       delegate_(std::move(delegate)) {
   DCHECK(browser_context_getter_);
@@ -336,7 +340,8 @@ void ClearSiteDataHandler::ExecuteClearingTask(
   ClearSiteData(browser_context_getter_, origin, clear_cookies, clear_storage,
                 clear_cache, storage_buckets_to_remove,
                 true /*avoid_closing_connections*/, cookie_partition_key_,
-                storage_key_, std::move(callback));
+                storage_key_, partitioned_state_allowed_only_,
+                std::move(callback));
 }
 
 // static

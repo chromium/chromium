@@ -213,6 +213,10 @@ bool BrowsingDataFilterBuilderImpl::MatchesAllOriginsAndDomains() {
   return mode_ == Mode::kPreserve && origins_.empty() && domains_.empty();
 }
 
+void BrowsingDataFilterBuilderImpl::SetPartitionedStateAllowedOnly(bool value) {
+  partitioned_state_only_ = value;
+}
+
 base::RepeatingCallback<bool(const GURL&)>
 BrowsingDataFilterBuilderImpl::BuildUrlFilter() {
   if (MatchesAllOriginsAndDomains())
@@ -273,6 +277,8 @@ BrowsingDataFilterBuilderImpl::BuildCookieDeletionFilter() {
 
   deletion_filter->cookie_partition_key_collection =
       cookie_partition_key_collection_;
+
+  deletion_filter->partitioned_state_only = partitioned_state_only_;
 
   switch (mode_) {
     case Mode::kDelete:

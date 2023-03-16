@@ -602,4 +602,47 @@ TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
   }
 }
 
+TEST(CookieDeletionInfoTest, MatchesExcludeUnpartitionedCookies) {
+  struct TestCase {
+    const std::string desc;
+    const absl::optional<CookiePartitionKey> cookie_partition_key;
+    bool partitioned_state_only;
+    bool expects_match;
+  } test_cases[] = {
+      {"Unpartitioned cookie not excluded", absl::nullopt, false, true},
+      {"Unpartitioned cookie excluded", absl::nullopt, true, false},
+      {"Partitioned cookie when unpartitioned not excluded",
+       CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")), false,
+       true},
+      {"Partitioned cookie when unpartitioned excluded",
+       CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")), true,
+       true},
+      {"Nonced partitioned cookie when unpartitioned not excluded",
+       CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"),
+                                             base::UnguessableToken::Create()),
+       false, true},
+      {"Nonced partitioned cookie when unpartitioned excluded",
+       CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"),
+                                             base::UnguessableToken::Create()),
+       true, true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.desc);
+    auto cookie = CanonicalCookie::Create(
+        GURL("https://www.example.com"),
+        "__Host-foo=bar; Secure; Path=/; Partitioned", base::Time::Now(),
+        /*server_time=*/absl::nullopt, test_case.cookie_partition_key);
+    CookieDeletionInfo delete_info;
+    delete_info.partitioned_state_only = test_case.partitioned_state_only;
+    EXPECT_EQ(
+        test_case.expects_match,
+        delete_info.Matches(
+            *cookie, CookieAccessParams{
+                         net::CookieAccessSemantics::UNKNOWN,
+                         /*delegate_treats_url_as_trustworthy=*/false,
+                         CookieSamePartyStatus::kNoSamePartyEnforcement}));
+  }
+}
+
 }  // namespace net

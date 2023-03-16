@@ -786,6 +786,7 @@ class BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest
         /*avoid_closing_connections=*/true,
         /*cookie_partition_key=*/cookie_partition_key,
         /*storage_key=*/storage_key,
+        /*partitioned_state_allowed_only=*/false,
         /*callback=*/loop.QuitClosure());
     loop.Run();
   }
@@ -972,6 +973,7 @@ class BrowsingDataRemoverStorageBucketsBrowserTest
         /*avoid_closing_connections=*/true,
         /*cookie_partition_key=*/absl::nullopt,
         /*storage_key=*/storage_key,
+        /*partitioned_state_allowed_only=*/false,
         /*callback=*/loop.QuitClosure());
     loop.Run();
   }

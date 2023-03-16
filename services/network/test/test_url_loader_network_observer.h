@@ -51,6 +51,7 @@ class TestURLLoaderNetworkObserver
       const std::string& header_value,
       int32_t load_flags,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      bool partitioned_state_allowed_only,
       OnClearSiteDataCallback callback) override;
   void OnLoadingStateUpdate(mojom::LoadInfoPtr info,
                             OnLoadingStateUpdateCallback callback) override;

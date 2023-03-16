@@ -31,6 +31,7 @@ CONTENT_EXPORT void ClearSiteData(
     bool avoid_closing_connections,
     const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     const absl::optional<blink::StorageKey>& storage_key,
+    bool partitioned_state_allowed_only,
     base::OnceClosure callback);
 
 }  // namespace content

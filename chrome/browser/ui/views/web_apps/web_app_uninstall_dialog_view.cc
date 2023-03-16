@@ -196,7 +196,9 @@ void WebAppUninstallDialogDelegateView::ClearWebAppSiteData() {
                          /*storage_buckets_to_remove=*/{},
                          /*avoid_closing_connections=*/false,
                          /*cookie_partition_key=*/absl::nullopt,
-                         /*storage_key=*/absl::nullopt, base::DoNothing());
+                         /*storage_key=*/absl::nullopt,
+                         /*partitioned_state_allowed_only=*/false,
+                         base::DoNothing());
 }
 
 void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {

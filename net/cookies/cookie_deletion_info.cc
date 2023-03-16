@@ -136,6 +136,10 @@ bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
     return false;
   }
 
+  if (partitioned_state_only && !cookie.IsPartitioned()) {
+    return false;
+  }
+
   return true;
 }
 

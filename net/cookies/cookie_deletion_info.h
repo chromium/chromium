@@ -146,6 +146,10 @@ struct NET_EXPORT CookieDeletionInfo {
   // all partitions.
   CookiePartitionKeyCollection cookie_partition_key_collection =
       CookiePartitionKeyCollection::ContainsAll();
+
+  // If true, third-party cookie blocking applies to the context that triggered
+  // the deletion. In this case, we should only delete partitioned cookies.
+  bool partitioned_state_only = false;
 };
 
 }  // namespace net
