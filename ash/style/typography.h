@@ -15,6 +15,28 @@ class Label;
 namespace ash {
 
 enum class ASH_EXPORT TypographyToken {
+  /* Legacy tokens */
+  kLegacyDisplay1,
+  kLegacyDisplay2,
+  kLegacyDisplay3,
+  kLegacyDisplay4,
+  kLegacyDisplay5,
+  kLegacyDisplay6,
+  kLegacyDisplay7,
+  kLegacyTitle1,
+  kLegacyTitle2,
+  kLegacyHeadline1,
+  kLegacyHeadline2,
+  kLegacyButton1,
+  kLegacyButton2,
+  kLegacyBody1,
+  kLegacyBody2,
+  kLegacyAnnotation1,
+  kLegacyAnnotation2,
+  kLegacyLabel1,
+  kLegacyLabel2,
+  kLastLegacyToken = kLegacyLabel2,
+
   // cros.typography tokens
   kCrosDisplay0,
   kCrosDisplay1,
