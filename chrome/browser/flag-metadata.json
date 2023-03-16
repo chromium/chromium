@@ -7169,11 +7169,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "use-sf-symbols",
-    "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 113
-  },
-  {
     "name": "use-sf-symbols-omnibox",
     "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 114

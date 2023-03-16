@@ -100,9 +100,6 @@ BASE_DECLARE_FEATURE(kRemoveExcessNTPs);
 // Chrome.
 BASE_DECLARE_FEATURE(kEnableShortenedPasswordAutoFillInstruction);
 
-// Feature flag to switch images to SFSymbols when enabled.
-BASE_DECLARE_FEATURE(kUseSFSymbols);
-
 // Feature flag to switch images to SFSymbols in the omnibox when enabled.
 BASE_DECLARE_FEATURE(kUseSFSymbolsInOmnibox);
 

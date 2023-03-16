@@ -988,10 +988,6 @@ const char kUseLoadSimulatedRequestForOfflinePageDescription[] =
     "When enabled, the offline pages uses the iOS 15 "
     "loadSimulatedRequest:responseHTMLString: API";
 
-const char kUseSFSymbolsName[] = "Replace Image by SFSymbols";
-const char kUseSFSymbolsDescription[] =
-    "When enabled, images are replaced by SFSymbols";
-
 const char kUseSFSymbolsInOmniboxName[] =
     "Replace Image by SFSymbols in Omnibox";
 const char kUseSFSymbolsInOmniboxDescription[] =

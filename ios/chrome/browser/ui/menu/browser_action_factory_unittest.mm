@@ -50,9 +50,7 @@ class BrowserActionFactoryTest : public PlatformTest {
  protected:
   BrowserActionFactoryTest()
       : test_title_(@"SomeTitle"),
-        scene_state_([[SceneState alloc] initWithAppState:nil]) {
-    feature_list_.InitAndEnableFeature(kUseSFSymbols);
-  }
+        scene_state_([[SceneState alloc] initWithAppState:nil]) {}
 
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;

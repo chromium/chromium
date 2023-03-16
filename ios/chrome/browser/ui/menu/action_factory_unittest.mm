@@ -34,9 +34,7 @@ MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
 // Test fixture for the ActionFactory.
 class ActionFactoryTest : public PlatformTest {
  protected:
-  ActionFactoryTest() : test_title_(@"SomeTitle") {
-    feature_list_.InitAndEnableFeature(kUseSFSymbols);
-  }
+  ActionFactoryTest() : test_title_(@"SomeTitle") {}
 
   // Creates a blue square.
   UIImage* CreateMockImage() {

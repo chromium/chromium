@@ -857,11 +857,6 @@ extern const char kUseLoadSimulatedRequestForOfflinePageName[];
 extern const char kUseLoadSimulatedRequestForOfflinePageDescription[];
 
 // Title and description for the flag to enable the replacement of images
-// by SFSymbols.
-extern const char kUseSFSymbolsName[];
-extern const char kUseSFSymbolsDescription[];
-
-// Title and description for the flag to enable the replacement of images
 // by SFSymbols in omnibox.
 extern const char kUseSFSymbolsInOmniboxName[];
 extern const char kUseSFSymbolsInOmniboxDescription[];

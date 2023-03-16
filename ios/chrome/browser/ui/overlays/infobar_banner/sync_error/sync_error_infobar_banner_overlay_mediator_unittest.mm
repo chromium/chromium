@@ -97,9 +97,6 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest, SetUpConsumerWithMessages) {
 // consumer's icon using SF symbol.
 TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
        SetUpConsumerWithIconSettingsUseSFSymbol) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kUseSFSymbols);
-
   mediator_.consumer = consumer_mock_;
   // Verify that the infobar's icon was set up properly.
   OCMExpect([consumer_mock_
@@ -107,18 +104,4 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
   OCMExpect([consumer_mock_
       setIconBackgroundColor:[UIColor colorNamed:kRed500Color]]);
   OCMExpect([consumer_mock_ setUseIconBackgroundTint:true]);
-}
-
-// Tests that a SyncErrorInfobarBannerOverlayMediator correctly sets up its
-// consumer's icon using legacy asset.
-TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
-       SetUpConsumerWithIconSettingsUseLegacyAsset) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kUseSFSymbols);
-
-  mediator_.consumer = consumer_mock_;
-  // Verify that the infobar's icon was set up properly.
-  OCMExpect([consumer_mock_ setIconImageTintColor:nullptr]);
-  OCMExpect([consumer_mock_ setIconBackgroundColor:nullptr]);
-  OCMExpect([consumer_mock_ setUseIconBackgroundTint:false]);
 }

@@ -45,7 +45,7 @@ UIImage* SymbolWithConfiguration(NSString* symbol_name,
 }  // namespace
 
 bool UseSymbols() {
-  return base::FeatureList::IsEnabled(kUseSFSymbols);
+  return true;
 }
 
 bool UseSymbolsInOmnibox() {
