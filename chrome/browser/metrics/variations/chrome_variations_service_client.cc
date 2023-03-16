@@ -4,14 +4,22 @@
 
 #include "chrome/browser/metrics/variations/chrome_variations_service_client.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
+#include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/variations/pref_names.h"
 #include "components/variations/seed_response.h"
+#include "components/variations/service/google_groups_updater_service.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -120,4 +128,31 @@ ChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
 #else
   return nullptr;
 #endif
+}
+
+// Remove any profiles from variations prefs that no longer exist in the
+// ProfileAttributesStorage source-of-truth.
+void ChromeVariationsServiceClient::
+    RemoveGoogleGroupsFromPrefsForDeletedProfiles(PrefService* local_state) {
+  // Get the list of profiles in attribute storage.
+  base::flat_set<std::string> profile_keys =
+      ProfileAttributesStorage::GetAllProfilesKeys(local_state);
+
+  // Get the current value of the local state dict.
+  const base::Value::Dict& cached_profiles =
+      local_state->GetDict(variations::prefs::kVariationsGoogleGroups);
+  std::vector<std::string> variations_profiles_to_delete;
+  for (std::pair<const std::string&, const base::Value&> profile :
+       cached_profiles) {
+    if (!profile_keys.contains(profile.first)) {
+      variations_profiles_to_delete.push_back(profile.first);
+    }
+  }
+
+  ScopedDictPrefUpdate variations_prefs_update(
+      local_state, variations::prefs::kVariationsGoogleGroups);
+  base::Value::Dict& variations_prefs_dict = variations_prefs_update.Get();
+  for (const auto& profile : variations_profiles_to_delete) {
+    variations_prefs_dict.Remove(profile);
+  }
 }

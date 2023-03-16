@@ -22,6 +22,8 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
+class PrefService;
+
 namespace variations {
 
 // An abstraction of operations that depend on the embedder's (e.g. Chrome)
@@ -71,6 +73,13 @@ class VariationsServiceClient {
   // well. But this could be confusing and could prevent using UMA filters on a
   // non finch-filtered study to analyze the finch-filtered launch potential.
   virtual bool IsEnterprise() = 0;
+
+  // Removes stored Google Groups variations information for deleted profiles.
+  // Must be called at startup, prior to the variations Google Groups being
+  // read.
+  // This is a no-op on platforms that do not support multiple profiles.
+  virtual void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) = 0;
 
  private:
   // Gets the channel of the embedder. But all variations callers should use

@@ -43,4 +43,9 @@ bool AwVariationsServiceClient::IsEnterprise() {
   return false;
 }
 
+// WebView doesn't support Profiles (or user signin / sync) and therefore there
+// is nothing to do here.
+void AwVariationsServiceClient::RemoveGoogleGroupsFromPrefsForDeletedProfiles(
+    PrefService* local_state) {}
+
 }  // namespace android_webview

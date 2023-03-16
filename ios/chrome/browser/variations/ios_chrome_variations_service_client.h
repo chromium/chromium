@@ -12,6 +12,8 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+class PrefService;
+
 namespace variations {
 struct SeedResponse;
 }  // namespace variations
@@ -38,6 +40,8 @@ class IOSChromeVariationsServiceClient
   version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
+  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) override;
   std::unique_ptr<variations::SeedResponse>
   TakeSeedFromNativeVariationsSeedStore() override;
 };

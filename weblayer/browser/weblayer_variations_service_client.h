@@ -38,6 +38,8 @@ class WebLayerVariationsServiceClient
   version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
+  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) override;
 
   raw_ptr<SystemNetworkContextManager> network_context_manager_;
 };

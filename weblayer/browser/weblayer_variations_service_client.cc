@@ -58,4 +58,7 @@ bool WebLayerVariationsServiceClient::IsEnterprise() {
   return false;
 }
 
+void WebLayerVariationsServiceClient::
+    RemoveGoogleGroupsFromPrefsForDeletedProfiles(PrefService* local_state) {}
+
 }  // namespace weblayer

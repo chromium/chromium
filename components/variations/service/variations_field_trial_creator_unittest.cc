@@ -200,6 +200,8 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     return true;
   }
   bool IsEnterprise() override { return false; }
+  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) override {}
 
  private:
   // VariationsServiceClient:
@@ -212,7 +214,10 @@ class TestVariationsServiceClient : public VariationsServiceClient {
 
 class MockVariationsServiceClient : public TestVariationsServiceClient {
  public:
-  MOCK_METHOD(version_info::Channel, GetChannel, (), (override));
+  MOCK_METHOD(void,
+              RemoveGoogleGroupsFromPrefsForDeletedProfiles,
+              (PrefService*),
+              (override));
 };
 
 class TestVariationsSeedStore : public VariationsSeedStore {
@@ -1385,6 +1390,17 @@ TEST_F(FieldTrialCreatorTest,
 
   ASSERT_EQ(field_trial_creator.GetGoogleGroupsFromPrefs(),
             base::flat_set<uint64_t>());
+}
+
+TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsClearsDeletedProfiles) {
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager);
+
+  EXPECT_CALL(variations_service_client,
+              RemoveGoogleGroupsFromPrefsForDeletedProfiles(local_state()));
+  field_trial_creator.GetGoogleGroupsFromPrefs();
 }
 
 }  // namespace variations

@@ -35,6 +35,8 @@ class AwVariationsServiceClient : public variations::VariationsServiceClient {
   version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
+  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) override;
 };
 
 }  // namespace android_webview

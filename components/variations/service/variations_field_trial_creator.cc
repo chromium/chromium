@@ -587,6 +587,15 @@ bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(bool is_safe_seed) {
 
 base::flat_set<uint64_t>
 VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs() {
+  // Before using Google groups information, ensure that there any information
+  // for already-deleted profiles has been removed.
+  //
+  // TODO(b/264838828): move this call to be done in SetUpFieldTrials().  The
+  // reason it is currently done here is simply to allow a safer gradual
+  // rollout of the initial feature, as this code is only run if there is at
+  // least one study that filters by Google group membership.
+  client_->RemoveGoogleGroupsFromPrefsForDeletedProfiles(local_state());
+
   base::flat_set<uint64_t> groups = base::flat_set<uint64_t>();
 
   const base::Value::Dict& profiles_dict =
@@ -620,8 +629,9 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   const base::Version& current_version = version_info::GetVersion();
-  if (!current_version.IsValid())
+  if (!current_version.IsValid()) {
     return false;
+  }
 
   std::unique_ptr<ClientFilterableState> client_filterable_state =
       GetClientFilterableStateForVersion(current_version);

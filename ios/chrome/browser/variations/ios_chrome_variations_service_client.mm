@@ -52,6 +52,10 @@ bool IOSChromeVariationsServiceClient::IsEnterprise() {
   return false;
 }
 
+// Nothing to do, as iOS doesn't support multiple profiles.
+void IOSChromeVariationsServiceClient::
+    RemoveGoogleGroupsFromPrefsForDeletedProfiles(PrefService* local_state) {}
+
 std::unique_ptr<variations::SeedResponse>
 IOSChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return [IOSChromeVariationsSeedStore popSeed];
