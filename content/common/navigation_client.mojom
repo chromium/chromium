@@ -208,7 +208,23 @@ struct StorageInfo {
   pending_remote<blink.mojom.StorageArea>? session_storage_area;
 };
 
+// Implemented by the renderer and called by the browser. Used for two purposes:
+//
+// - When the renderer requests a navigation in a RenderFrame in the same
+//   process, the renderer binds a NavigationClient interface. Disconnecting
+//   this interface is used as a signal to potentially cancel the navigation
+//   (because it was replaced or cancelled).
+// - When committing a navigation: the browser asks the targeted RenderFrame to
+//   bind a NavigationClient and makes exactly one call to `CommitNavigation()`
+//   or `CommitFailedNavigation()`. Similar to requesting a navigation above,
+//   disconnecting this interface is used as a signal to cancel the navigation.
 interface NavigationClient {
+  // Explicit reset reason when the NavigationClient needs to be reset when
+  // swapping frames. In this case, it is often desirable to *not* cancel the
+  // navigation: otherwise, this may interfere with the navigation queueing
+  // logic (by unexpectedly cancelling the queued navigation).
+  const uint32 kResetForSwap = 1;
+
   // Tells the renderer that a navigation is ready to commit.
   //
   // The renderer should bind the |url_loader_client_endpoints| to an

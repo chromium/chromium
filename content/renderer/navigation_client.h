@@ -75,6 +75,8 @@ class NavigationClient : mojom::NavigationClient {
       mojo::PendingRemote<mojom::NavigationRendererCancellationListener>
           renderer_cancellation_listener_remote);
 
+  void ResetWithoutCancelling();
+
  private:
   // OnDroppedNavigation is bound from BeginNavigation till CommitNavigation.
   // During this period, it is called when the interface pipe is closed from the

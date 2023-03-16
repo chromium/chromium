@@ -31,7 +31,8 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/common/frame_messages.mojom-forward.h"
+#include "content/common/features.h"
+#include "content/common/frame_messages.mojom.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -89,6 +90,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -5452,6 +5454,49 @@ IN_PROC_BROWSER_TEST_F(
   VerifyImageSubresourceLoads(main_frame);
 }
 
+// Helper for BeginNavigationInCommitCallbackInterceptor. Declared separately
+// to make it easier to friend.
+//
+// Defers an attempt to commit a navigation A in a speculative RenderFrameHost.
+// This observer should be owned by a base::Closure that is used for a
+// subsequent navigation B's `resume_commit_closure_` field.
+//
+// Navigation B will eventually be queued when it reaches ready to commit; since
+// navigation A is still stuck in the pending commit state, navigation B will
+// not be able to successfully select a RenderFrameHost.
+//
+// Navigation B will then assign an actual navigation continuation closure to
+// its `resume_commit_closure_` field, which will destroy `this`. The destructor
+// then resumes committing navigation A.
+class ResumeCommitClosureSetObserver {
+ public:
+  explicit ResumeCommitClosureSetObserver(
+      base::SafeRef<NavigationHandle> original_navigation,
+      mojom::DidCommitProvisionalLoadParamsPtr original_params,
+      mojom::DidCommitProvisionalLoadInterfaceParamsPtr
+          original_interface_params)
+      : original_navigation_(std::move(original_navigation)),
+        original_params_(std::move(original_params)),
+        original_interface_params_(std::move(original_interface_params)) {}
+
+  ~ResumeCommitClosureSetObserver() {
+    NavigationRequest* original_request =
+        NavigationRequest::From(&*original_navigation_);
+    // Post a task just to avoid any potential weirdness with reentrancy.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(
+        FROM_HERE,
+        base::BindOnce(&RenderFrameHostImpl::DidCommitNavigation,
+                       base::Unretained(original_request->GetRenderFrameHost()),
+                       original_request, std::move(original_params_),
+                       std::move(original_interface_params_)));
+  }
+
+ private:
+  base::SafeRef<NavigationHandle> original_navigation_;
+  mojom::DidCommitProvisionalLoadParamsPtr original_params_;
+  mojom::DidCommitProvisionalLoadInterfaceParamsPtr original_interface_params_;
+};
+
 // Helper that ignores a request from the renderer to commit a navigation and
 // instead, begins another navigation to the specified `url` in
 // `frame_tree_node`.
@@ -5469,9 +5514,33 @@ class BeginNavigationInCommitCallbackInterceptor
       override {
     request->GetRenderFrameHost()->SetCommitCallbackInterceptorForTesting(
         nullptr);
+
+    absl::optional<ObserverInstaller> observer_installer;
+    if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+      // If navigation queueing is enabled, the navigation to `url_` will not
+      // commit until the commit suspended by this interceptor completes:
+      // instead, it will be queued/suspended and the navigation code will
+      // internally set a closure to resume committing the navigation when
+      // the suspended `request` completes.
+      //
+      // `BeginNavigateToURLFromRenderer()` waits for the new navigation from
+      // the renderer to start, so arm a hook to install an (indirect) observer
+      // that:
+      // - waits for the navigation code to install a resume commit closure
+      // - resumes the suspended `request` to test that the queued navigation
+      //   eventually completes.
+      observer_installer.emplace(
+          WebContents::FromRenderFrameHost(request->GetRenderFrameHost()),
+          request->GetSafeRef(), std::move(*params),
+          std::move(*interface_params));
+    }
+
     // At this point, the renderer has already committed the RenderFrame, but
     // on the browser side, the RenderFrameHost is still speculative. Begin
-    // another navigation, which should cause `this` to be discarded.
+    // another navigation.
+    //
+    // If navigation queueing is disabled, this should result in the speculative
+    // RFH being discarded with a pending commit in flight.
     EXPECT_TRUE(BeginNavigateToURLFromRenderer(frame_tree_node_.get(), url_));
 
     // Ignore the commit message.
@@ -5479,31 +5548,114 @@ class BeginNavigationInCommitCallbackInterceptor
   }
 
  private:
+  // Installs an observer that waits for `resume_commit_closure_` to be set on
+  // the next `NavigationRequest` seen by `DidStartNavigation()`.
+  class ObserverInstaller : public WebContentsObserver {
+   public:
+    explicit ObserverInstaller(
+        WebContents* web_contents,
+        base::SafeRef<NavigationHandle> original_navigation,
+        mojom::DidCommitProvisionalLoadParamsPtr original_params,
+        mojom::DidCommitProvisionalLoadInterfaceParamsPtr
+            original_interface_params)
+        : WebContentsObserver(web_contents),
+          original_navigation_(std::move(original_navigation)),
+          original_params_(std::move(original_params)),
+          original_interface_params_(std::move(original_interface_params)) {}
+
+    // WebContentsObserver overrides:
+    void DidStartNavigation(NavigationHandle* handle) override {
+      NavigationRequest::From(handle)->set_resume_commit_closure_for_test(
+          base::BindLambdaForTesting(
+              [observer = std::make_unique<ResumeCommitClosureSetObserver>(
+                   std::move(original_navigation_), std::move(original_params_),
+                   std::move(original_interface_params_)
+
+                       )] {}));
+    }
+
+    base::SafeRef<NavigationHandle> original_navigation_;
+    mojom::DidCommitProvisionalLoadParamsPtr original_params_;
+    mojom::DidCommitProvisionalLoadInterfaceParamsPtr
+        original_interface_params_;
+  };
+
   const raw_ptr<FrameTreeNode> frame_tree_node_;
   const GURL url_;
 };
 
-class NavigationBrowserTestWithPerformanceManager
-    : public NavigationBrowserTest {
+namespace {
+
+struct Result {
+  GURL url;
+  bool committed;
+};
+
+class NavigationLogger : public WebContentsObserver {
  public:
+  explicit NavigationLogger(WebContents* contents)
+      : WebContentsObserver(contents) {}
+
+  // WebContentsObserver overrides:
+  void DidFinishNavigation(NavigationHandle* handle) override {
+    results_.push_back(
+        {.url = handle->GetURL(), .committed = handle->HasCommitted()});
+  }
+
+  const std::vector<Result>& results() const { return results_; }
+
+ private:
+  std::vector<Result> results_;
+};
+
+}  // namespace
+
+class CommitNavigationRaceBrowserTest
+    : public NavigationBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  CommitNavigationRaceBrowserTest() {
+    std::map<std::string, std::string> parameters = {
+        {"level", GetParam() ? "full" : "none"},
+    };
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kQueueNavigationsWhileWaitingForCommit, parameters);
+  }
+
+  void SetUpOnMainThread() override {
+    // These navigation tests require full site isolation since they test races
+    // with committing a navigation in a speculative RenderFrameHost..
+    if (!AreAllSitesIsolatedForTesting()) {
+      GTEST_SKIP();
+    }
+
+    NavigationBrowserTest::SetUpOnMainThread();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     NavigationBrowserTest::SetUpCommandLine(command_line);
 
-    // The PerformanceManager maintains its own parallel frame tree. Make sure
-    // it doesn't get confused. By default, PerformanceManager uses the dummy
-    // implementation.
+    // PerformanceManager maintains its own parallel frame tree and has
+    // sometimes been confused by things like `UndoCommitNavigation()`.
+    // Force-enable it for test coverage; otherwise, by default,
+    // PerformanceManager uses the dummy implementation.
     //
     // TODO(https://crbug.com/1222647): Enable this by default in content_shell.
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "PerformanceManagerInstrumentation");
   }
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "UndoCommitNavigation" : "NavigationQueueing";
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
+IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
                        BeginNewNavigationAfterCommitNavigationInMainFrame) {
-  if (!AreAllSitesIsolatedForTesting())
-    return;
-
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
@@ -5520,11 +5672,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
   RenderProcessHost* const b_com_render_process_host =
       new_web_contents->GetPrimaryMainFrame()->GetProcess();
 
+  NavigationLogger logger(shell()->web_contents());
+
   // Start a navigation that will create a speculative RFH in the existing
   // render process for b.com.
-  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
-      shell(), embedded_test_server()->GetURL(
-                   "b.com", "/infinitely_loading_image.html")));
+  const GURL infinitely_loading_url =
+      embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), infinitely_loading_url));
 
   // Ensure the speculative RFH is in the expected process (i.e. the b.com
   // process that was created for the navigation in the new window earlier).
@@ -5539,10 +5693,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
   EXPECT_EQ(b_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Simulates a race where another navigation begins after the browser sends
-  // `CommitNavigation() to the b.com renderer, but a different navigation to
-  // c.com begins before `DidCommitNavigation()` has been received from the
-  // b.com renderer.
+  // Simulates a race where a new navigation to c.com begins after the browser
+  // sends `CommitNavigation() to the b.com renderer, but before
+  // `DidCommitNavigation()` has been received from the b.com renderer.
   const GURL final_url =
       embedded_test_server()->GetURL("c.com", "/title1.html");
   BeginNavigationInCommitCallbackInterceptor interceptor(
@@ -5552,13 +5705,25 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
 
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
+
+  auto results = logger.results();
+  ASSERT_EQ(2u, results.size());
+  EXPECT_EQ(infinitely_loading_url, results[0].url);
+  // If navigation queueing is enabled, the first navigation will complete the
+  // commit as the new navigation gets queued until the first navigation's
+  // commit finished. If navigation queueing is disabled, the pending commit
+  // navigation will be cancelled.
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    EXPECT_TRUE(results[0].committed);
+  } else {
+    EXPECT_FALSE(results[0].committed);
+  }
+  EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(final_url, results[1].url);
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
+IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
                        BeginNewNavigationAfterCommitNavigationInSubFrame) {
-  if (!AreAllSitesIsolatedForTesting())
-    return;
-
   // This test's process layout is structured a bit differently from the main
   // frame case. PerformanceManager reports when a remote frame is attached to
   // a local parent, and it was previously getting confused by the fact that
@@ -5581,11 +5746,14 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
           ->current_frame_host()
           ->GetProcess();
 
+  NavigationLogger logger(web_contents);
+
   // Start a navigation that will create a speculative RFH in the existing
   // render process for a.com.
-  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
-      first_subframe_node, embedded_test_server()->GetURL(
-                               "a.com", "/infinitely_loading_image.html")));
+  const GURL infinitely_loading_url =
+      embedded_test_server()->GetURL("a.com", "/infinitely_loading_image.html");
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node,
+                                             infinitely_loading_url));
 
   // Ensure the speculative RFH is in the expected process.
   RenderFrameHostImpl* speculative_render_frame_host =
@@ -5604,10 +5772,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
   EXPECT_TRUE(ExecJs(web_contents,
                      "document.querySelector('iframe').id = 'new-name';"));
 
-  // Simulates a race where another navigation begins after the browser sends
-  // `CommitNavigation() to the a.com renderer, but a different navigation to
-  // c.com begins before `DidCommitNavigation()` has been received from the
-  // a.com renderer.
+  // Simulates a race where a new navigation to c.com begins after the browser
+  // sends `CommitNavigation() to the a.com renderer, but before
+  // `DidCommitNavigation()` has been received from the a.com renderer.
   const GURL final_url =
       embedded_test_server()->GetURL("c.com", "/title1.html");
   BeginNavigationInCommitCallbackInterceptor interceptor(first_subframe_node,
@@ -5619,6 +5786,21 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
   EXPECT_EQ(final_url, first_subframe_node->render_manager()
                            ->current_frame_host()
                            ->GetLastCommittedURL());
+
+  auto results = logger.results();
+  ASSERT_EQ(2u, results.size());
+  // If navigation queueing is enabled, the first navigation will complete the
+  // commit as the new navigation gets queued until the first navigation's
+  // commit finished. If navigation queueing is disabled, the pending commit
+  // navigation will be cancelled.
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    EXPECT_TRUE(results[0].committed);
+  } else {
+    EXPECT_FALSE(results[0].committed);
+  }
+  EXPECT_EQ(infinitely_loading_url, results[0].url);
+  EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(final_url, results[1].url);
 }
 
 // Helper that ignores a request from the renderer to commit a navigation and
@@ -5670,10 +5852,13 @@ class DetachChildFrameInCommitCallbackInterceptor
 // was in the middle of committing a navigation to a provisional frame in render
 // process B while render process A simultaneously detaches that child frame,
 // the detach message would never be received by render process B.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
+IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
                        DetachAfterCommitNavigationInSubFrame) {
-  if (!AreAllSitesIsolatedForTesting())
-    return;
+  // This test checks an edge case that is only relevant when using
+  // `UndoCommitNavigation()`.
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    GTEST_SKIP();
+  }
 
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
@@ -5720,6 +5905,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
   // thought there were still two child frames.
   EXPECT_EQ(1, EvalJs(first_subframe_node, "top.length"));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CommitNavigationRaceBrowserTest,
+                         ::testing::Bool(),
+                         &CommitNavigationRaceBrowserTest::DescribeParams);
 
 // The following test checks what happens if a WebContentsDelegate navigates
 // away in response to the NavigationStateChanged event. Previously

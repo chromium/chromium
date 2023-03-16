@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/debug/crash_logging.h"
@@ -1135,6 +1136,10 @@ class CONTENT_EXPORT NavigationRequest
   // request and is instead pulled from the committed context on the main frame.
   bool GetIsThirdPartyCookiesUserBypassEnabled();
 
+  void set_resume_commit_closure_for_test(base::OnceClosure closure) {
+    resume_commit_closure_ = std::move(closure);
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -1253,6 +1258,20 @@ class CONTENT_EXPORT NavigationRequest
   absl::optional<NavigationEarlyHintsManagerParams>
   CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) override;
+
+  // Selecting a `RenderFrameHost` to commit a navigation may occasionally fail.
+  // When this happens, the navigation will bind a closure to continue the
+  // navigation and assign it to `resume_commit_closure_`. This closure may run
+  // even when it is still not possible to proceed; see the comment on the
+  // `resume_commit_closure_` field for the full details.
+
+  // Corresponds to navigations committing from `OnResponseStarted()`:
+  void SelectFrameHostForOnResponseStarted(
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+      bool is_download,
+      absl::optional<SubresourceLoaderParams> subresource_loader_params);
+  // TODO(https://crbug.com/1220337): Implement this logic for
+  // OnRequestFailedInternal() and BeginNavigationImpl() as well.
 
   // To be called whenever a navigation request fails. If |skip_throttles| is
   // true, the registered NavigationThrottle(s) won't get a chance to intercept
@@ -1422,15 +1441,17 @@ class CONTENT_EXPORT NavigationRequest
   // renderer process.
   void UpdateCommitNavigationParamsHistory();
 
-  // Called when the renderer requesting a navigation cancellation, or because
-  // the renderer crashed.
-  void OnRendererRequestedNavigationCancellation();
+  // The disconnect handler for the NavigationClient Mojo interface; used as a
+  // signal to potentially cancel navigations, e.g. when the renderer replaces
+  // an existing NavigationClient connection with a new one or when the renderer
+  // process crashes.
+  void OnNavigationClientDisconnected(uint32_t reason,
+                                      const std::string& description);
 
   // Binds the given error_handler to be called when an interface disconnection
   // happens on the renderer side.
   void HandleInterfaceDisconnection(
-      mojo::AssociatedRemote<mojom::NavigationClient>*,
-      base::OnceClosure error_handler);
+      mojo::AssociatedRemote<mojom::NavigationClient>&);
 
   // When called, this NavigationRequest will no longer interpret the interface
   // disconnection on the renderer side as an AbortNavigation.

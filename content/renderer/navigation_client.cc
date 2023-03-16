@@ -118,6 +118,11 @@ void NavigationClient::SetUpRendererInitiatedNavigation(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void NavigationClient::ResetWithoutCancelling() {
+  navigation_client_receiver_.ResetWithReason(
+      mojom::NavigationClient::kResetForSwap, "");
+}
+
 void NavigationClient::NotifyNavigationCancellationWindowEnded() {
   DCHECK(was_initiated_in_this_frame_);
   renderer_cancellation_listener_remote_->RendererCancellationWindowEnded();

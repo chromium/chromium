@@ -2218,7 +2218,7 @@ bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
   // Post a task to run the conditions in case BeginNavigation() is not expected
   // to run synchronously. OnPrerenderingActivationChecksComplete() will be
   // called after all the deferring conditions finish.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(
       FROM_HERE,
       base::BindOnce(&NavigationRequest::RunCommitDeferringConditions,
                      weak_factory_.GetWeakPtr()));
@@ -2869,11 +2869,7 @@ mojom::NavigationClient* NavigationRequest::GetCommitNavigationClient() {
   // Instantiate a new NavigationClient interface.
   commit_navigation_client_ =
       GetRenderFrameHost()->GetNavigationClientFromInterfaceProvider();
-  HandleInterfaceDisconnection(
-      &commit_navigation_client_,
-      base::BindOnce(
-          &NavigationRequest::OnRendererRequestedNavigationCancellation,
-          base::Unretained(this)));
+  HandleInterfaceDisconnection(commit_navigation_client_);
   return commit_navigation_client_.get();
 }
 
@@ -3888,6 +3884,11 @@ void NavigationRequest::OnResponseStarted(
   // The navigation may have encountered a header that requests isolation for
   // the url's origin. Before we pick the renderer, make sure we update the
   // origin-isolation opt-ins appropriately.
+  //
+  // TODO(https://crbug.com/1220337): With navigation queueing, the RFH may be
+  // asynchronously chosen later. Does the global OAC walk make any assumptions
+  // about nothing creating other BrowsingInstances and/or committing this
+  // origin elsewhere in between this point and picking the final RFH?
   CheckForIsolationOptIn(GetURL());
 
   // Check if the response should be sent to a renderer.
@@ -4031,6 +4032,15 @@ void NavigationRequest::OnResponseStarted(
     // OnRequestFailedInternal has destroyed the NavigationRequest.
   }
 
+  SelectFrameHostForOnResponseStarted(std::move(url_loader_client_endpoints),
+                                      is_download,
+                                      std::move(subresource_loader_params));
+}
+
+void NavigationRequest::SelectFrameHostForOnResponseStarted(
+    network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+    bool is_download,
+    absl::optional<SubresourceLoaderParams> subresource_loader_params) {
   // Select an appropriate renderer to commit the navigation.
   if (IsServedFromBackForwardCache()) {
     // If the current navigation is being restarted, it should not try to make
@@ -4070,12 +4080,19 @@ void NavigationRequest::OnResponseStarted(
           // future.
           break;
         case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
-          // TODO(https://crbug.com/1220337): Split OnResponseStarted() into
-          // two halves: the second half should start above this block of
-          // conditionals that picks a suitable RenderFrameHost.
-          break;
+          // This closure is posted to the event loop, so it must use WeakPtr.
+          resume_commit_closure_ = base::BindOnce(
+              &NavigationRequest::SelectFrameHostForOnResponseStarted,
+              weak_factory_.GetWeakPtr(),
+              std::move(url_loader_client_endpoints), is_download,
+              std::move(subresource_loader_params));
+          return;
       }
     }
+
+    // GetFrameHostForNavigation() should update associated_rfh_type_, so it
+    // should never be NONE here.
+    DCHECK_NE(AssociatedRenderFrameHostType::NONE, associated_rfh_type_);
 
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
             GetRenderFrameHost(), GetUrlInfo(),
@@ -6166,10 +6183,21 @@ void NavigationRequest::UpdateCommitNavigationParamsHistory() {
 }
 
 void NavigationRequest::RendererRequestedNavigationCancellationForTesting() {
-  OnRendererRequestedNavigationCancellation();
+  OnNavigationClientDisconnected(0, "");
 }
 
-void NavigationRequest::OnRendererRequestedNavigationCancellation() {
+void NavigationRequest::OnNavigationClientDisconnected(
+    uint32_t reason,
+    const std::string& description) {
+  if (reason == mojom::NavigationClient::kResetForSwap) {
+    // If the RenderFrame that initiated this navigation request is swapped out
+    // (disconnecting its NavigationClient for this request), do not treat it as
+    // a cancellation. Otherwise, if a previous navigation before `this` is slow
+    // to commit, it would unexpectedly cancel `this` subsequent attempt to
+    // navigate elsewhere.
+    return;
+  }
+
   // Renderer-initiated navigation cancellations can only happen before the
   // navigation gets into the READY_TO_COMMIT state, because
   // RendererCancellationThrottle will prevent renderer-initiated navigations
@@ -6205,9 +6233,12 @@ void NavigationRequest::OnRendererRequestedNavigationCancellation() {
 }
 
 void NavigationRequest::HandleInterfaceDisconnection(
-    mojo::AssociatedRemote<mojom::NavigationClient>* navigation_client,
-    base::OnceClosure error_handler) {
-  navigation_client->set_disconnect_handler(std::move(error_handler));
+    mojo::AssociatedRemote<mojom::NavigationClient>& navigation_client) {
+  // `Unretained()` is safe because the `mojo::AssociatedRemote` reference only
+  // refers to fields owned by `this`.
+  navigation_client.set_disconnect_with_reason_handler(
+      base::BindOnce(&NavigationRequest::OnNavigationClientDisconnected,
+                     base::Unretained(this)));
 }
 
 void NavigationRequest::IgnoreInterfaceDisconnection() {
@@ -6808,11 +6839,7 @@ void NavigationRequest::SetNavigationClient(
   request_navigation_client_.Bind(std::move(navigation_client));
 
   // Binds the OnAbort callback
-  HandleInterfaceDisconnection(
-      &request_navigation_client_,
-      base::BindOnce(
-          &NavigationRequest::OnRendererRequestedNavigationCancellation,
-          base::Unretained(this)));
+  HandleInterfaceDisconnection(request_navigation_client_);
 }
 
 bool NavigationRequest::NeedsUrlLoader() {
@@ -6889,7 +6916,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   // navigations do not, so we must look explicitly. We should not proceed and
   // claim "ReadyToCommitNavigation" to the delegate if the renderer is gone.
   if (!GetRenderFrameHost()->IsRenderFrameLive()) {
-    OnRendererRequestedNavigationCancellation();
+    OnNavigationClientDisconnected(0, "");
     // DO NOT ADD CODE AFTER THIS, as the NavigationHandle has been deleted
     // by the previous call.
     return;
@@ -8986,6 +9013,7 @@ void NavigationRequest::ResumeCommitIfNeeded() {
   DCHECK(ShouldQueueNavigationsWhenPendingCommitRFHExists());
   // TODO(crbug.com/1220337): Add some metrics for how often:
   // - this is run
+  // - how long navigations remain queued
   // - how often it ends up having to simply re-queue itself
   if (resume_commit_closure_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(

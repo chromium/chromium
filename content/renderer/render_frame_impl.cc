@@ -3527,6 +3527,13 @@ blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
                                                    name.Utf8());
 }
 
+void RenderFrameImpl::WillSwap() {
+  if (navigation_client_impl_ &&
+      ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    navigation_client_impl_->ResetWithoutCancelling();
+  }
+}
+
 void RenderFrameImpl::WillDetach() {
   for (auto& observer : observers_)
     observer.WillDetach();

@@ -271,8 +271,12 @@ class BLINK_EXPORT WebLocalFrameClient {
   // from outside of the browsing instance.
   virtual WebFrame* FindFrame(const WebString& name) { return nullptr; }
 
-  // Notifies observers that the frame is being detached and sends the current
-  // frame's navigation state to the browser.
+  // Notification that the frame will be swapped out and replaced by another
+  // frame.
+  virtual void WillSwap() {}
+
+  // Notification that the frame is being detached and sends the current frame's
+  // navigation state to the browser.
   virtual void WillDetach() {}
 
   // This frame has been detached. Embedders should release any resources
