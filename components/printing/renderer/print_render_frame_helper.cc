@@ -2523,6 +2523,7 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
   if (PrintMsgPrintParamsIsValid(*settings->params))
     return true;
 
+  // TODO(thestig): Make sure this is not reachable and delete this block.
   print_preview_context_.set_error(PREVIEW_ERROR_INVALID_PRINTER_SETTINGS);
   print_preview_context_.set_error_details(
       PrintMsgPrintParamsErrorDetails(*settings->params));

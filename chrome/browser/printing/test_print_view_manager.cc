@@ -34,10 +34,12 @@ void OnDidUpdatePrintSettings(
   auto params = mojom::PrintParams::New();
 
   // Copy over any relevant fields that we want to snoop.
-  params->dpi = settings->params->dpi;
-  params->page_size = settings->params->page_size;
-  params->content_size = settings->params->content_size;
-  params->printable_area = settings->params->printable_area;
+  if (settings) {
+    params->dpi = settings->params->dpi;
+    params->page_size = settings->params->page_size;
+    params->content_size = settings->params->content_size;
+    params->printable_area = settings->params->printable_area;
+  }
   snooped_params->params = std::move(params);
 
   std::move(callback).Run(std::move(settings));

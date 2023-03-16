@@ -559,14 +559,14 @@ void PrintViewManagerBase::UpdatePrintSettings(
     UpdatePrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!printing_enabled_.GetValue()) {
-    std::move(callback).Run(CreateEmptyPrintPagesParamsPtr());
+    std::move(callback).Run(nullptr);
     return;
   }
 
   absl::optional<int> printer_type_value =
       job_settings.FindInt(kSettingPrinterType);
   if (!printer_type_value) {
-    std::move(callback).Run(CreateEmptyPrintPagesParamsPtr());
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -575,7 +575,7 @@ void PrintViewManagerBase::UpdatePrintSettings(
   if (printer_type != mojom::PrinterType::kExtension &&
       printer_type != mojom::PrinterType::kPdf &&
       printer_type != mojom::PrinterType::kLocal) {
-    std::move(callback).Run(CreateEmptyPrintPagesParamsPtr());
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -595,7 +595,7 @@ void PrintViewManagerBase::UpdatePrintSettings(
   std::unique_ptr<PrintSettings> print_settings =
       PrintSettingsFromJobSettings(job_settings);
   if (!print_settings) {
-    std::move(callback).Run(CreateEmptyPrintPagesParamsPtr());
+    std::move(callback).Run(nullptr);
     return;
   }
 

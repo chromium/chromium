@@ -343,9 +343,6 @@ class TestPrintManagerHost
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override {
-    mojom::PrintPagesParamsPtr settings = mojom::PrintPagesParams::New();
-    settings->params = mojom::PrintParams::New();
-
     // Check and make sure the required settings are all there.
     absl::optional<int> margins_type =
         job_settings.FindInt(kSettingMarginsType);
@@ -360,18 +357,20 @@ class TestPrintManagerHost
         !job_settings.FindInt(kSettingCopies) ||
         !job_settings.FindInt(kPreviewUIID) ||
         !job_settings.FindInt(kPreviewRequestID)) {
-      std::move(callback).Run(std::move(settings));
+      std::move(callback).Run(nullptr);
       return;
     }
 
     std::unique_ptr<PrintSettings> print_settings =
         PrintSettingsFromJobSettings(job_settings);
     if (!print_settings) {
-      std::move(callback).Run(std::move(settings));
+      std::move(callback).Run(nullptr);
       return;
     }
 
+    mojom::PrintPagesParamsPtr settings = mojom::PrintPagesParams::New();
     settings->pages = GetPageRangesFromJobSettings(job_settings);
+    settings->params = mojom::PrintParams::New();
     RenderParamsFromPrintSettings(*print_settings, settings->params.get());
     settings->params->document_cookie = PrintSettings::NewCookie();
 
