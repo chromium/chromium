@@ -46,10 +46,6 @@ suite('PerDeviceKeyboard', function() {
     let subsections = perDeviceKeyboardPage.shadowRoot.querySelectorAll(
         'settings-per-device-keyboard-subsection');
     assertEquals(fakeKeyboards.length, subsections.length);
-    for (let i = 0; i < subsections.length; i++) {
-      const name = subsections[i].shadowRoot.querySelector('h2').textContent;
-      assertEquals(fakeKeyboards[i].name, name);
-    }
 
     const newFakeKeyboards = fakeKeyboards.slice(1);
     provider.setFakeKeyboards(newFakeKeyboards);
@@ -57,11 +53,24 @@ suite('PerDeviceKeyboard', function() {
     subsections = perDeviceKeyboardPage.shadowRoot.querySelectorAll(
         'settings-per-device-keyboard-subsection');
     assertEquals(newFakeKeyboards.length, subsections.length);
-    for (let i = 0; i < subsections.length; i++) {
-      const name = subsections[i].shadowRoot.querySelector('h2').textContent;
-      assertEquals(newFakeKeyboards[i].name, name);
-    }
   });
+
+  test(
+      'Display correct name used for internal/external keyboards', async () => {
+        await initializePerDeviceKeyboardPage();
+        const subsections = perDeviceKeyboardPage.shadowRoot.querySelectorAll(
+            'settings-per-device-keyboard-subsection');
+        for (let i = 0; i < subsections.length; i++) {
+          const name =
+              subsections[i].shadowRoot.querySelector('h2').textContent;
+          if (fakeKeyboards[i].isExternal) {
+            assertEquals(fakeKeyboards[i].name, name);
+          } else {
+            assertTrue(subsections[i].i18nExists('builtInKeyboardName'));
+            assertEquals('Built-in Keyboard', name);
+          }
+        }
+      });
 
   test('Open keyboard shortcut viewer', async () => {
     await initializePerDeviceKeyboardPage();

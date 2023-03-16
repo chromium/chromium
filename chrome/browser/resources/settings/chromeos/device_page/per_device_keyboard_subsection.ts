@@ -22,6 +22,7 @@ import '../os_settings_page/os_settings_subpage.js';
 import './per_device_keyboard_remap_keys.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -38,7 +39,7 @@ import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_set
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
 const SettingsPerDeviceKeyboardSubsectionElementBase =
-    DeepLinkingMixin(RouteOriginMixin(PolymerElement));
+    DeepLinkingMixin(I18nMixin(RouteOriginMixin(PolymerElement)));
 
 export class SettingsPerDeviceKeyboardSubsectionElement extends
     SettingsPerDeviceKeyboardSubsectionElementBase {
@@ -262,6 +263,11 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     Router.getInstance().navigateTo(
         routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
         /* dynamicParams= */ url, /* removeSearch= */ true);
+  }
+
+  private getKeyboardName(): string {
+    return this.keyboard.isExternal ? this.keyboard.name :
+                                      this.i18n('builtInKeyboardName');
   }
 }
 

@@ -760,6 +760,7 @@ bool IsListAllDisplayModesEnabled() {
 
 void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString keyboard_strings[] = {
+      {"builtInKeyboardName", IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME},
       {"keyboardBlockMetaFunctionKeyRewrites",
        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES},
       {"keyboardBlockMetaFunctionKeyRewritesDescription",

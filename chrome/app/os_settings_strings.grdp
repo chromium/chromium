@@ -4602,6 +4602,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_TITLE" translateable="false" desc="In Device Settings, the title of the new Per-device keyboard settings subpage.">
     Per-device Keyboard
   </message>
+  <message name="IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME" translateable="false" desc="In Device Settings, the name of the built-in/internal keyboard device within the settings app.">
+    Built-in Keyboard
+  </message>
   <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_LABEL" translateable="false" desc="In per-device keyboard Settings, the label of the Remap Keyboard Keys row.">
     Remap keyboard keys
   </message>
