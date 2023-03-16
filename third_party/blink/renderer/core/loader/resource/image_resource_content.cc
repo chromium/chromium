@@ -457,12 +457,11 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
       if (size_available_ == Image::kSizeUnavailable && !all_data_received)
         return UpdateImageResult::kNoDecodeError;
 
-      if (image_ && info_->GetUnsupportedImageMimeTypes()) {
-        // Filename extension is set by the image decoder based on the actual
-        // image content.
-        String file_extension = image_->FilenameExtension();
-        if (info_->GetUnsupportedImageMimeTypes()->Contains(
-                String("image/" + file_extension))) {
+      if (image_) {
+        const HashSet<String>* unsupported_mime_types =
+            info_->GetUnsupportedImageMimeTypes();
+        if (unsupported_mime_types &&
+            unsupported_mime_types->Contains(image_->MimeType())) {
           return UpdateImageResult::kShouldDecodeError;
         }
       }
