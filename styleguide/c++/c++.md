@@ -315,8 +315,9 @@ Use the `CHECK()` family of macros to both document and verify invariants.
     production, you may fall back to `DCHECK()`. Do not do this unless
     necessary.
   * Historically, Chromium code used `DCHECK()` in most cases, so a great deal
-    of existing code uses `DCHECK()` instead of `CHECK()`. You are welcome (and
-    encouraged) to migrate to `CHECK()` where the above exception is not true.
+    of existing code uses `DCHECK()` instead of `CHECK()`. You are encouraged
+    to migrate to `CHECK()` or add a comment explaining why DCHECK is
+    appropriate given the current guidance.
 
 Use `NOTREACHED_NORETURN()` to indicate a piece of code is unreachable. Control
 flow does not leave this call, so there should be no executable statements after
