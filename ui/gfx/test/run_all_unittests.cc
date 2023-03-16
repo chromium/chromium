@@ -18,7 +18,7 @@
 #include "base/test/mock_chrome_application_mac.h"
 #endif
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 #include "mojo/core/embedder/embedder.h"  // nogncheck
 #endif
 
@@ -77,7 +77,7 @@ class GfxTestSuite : public base::TestSuite {
 int main(int argc, char** argv) {
   GfxTestSuite test_suite(argc, argv);
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
   mojo::core::Init();
 #endif
 
