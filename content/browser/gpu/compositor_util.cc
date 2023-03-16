@@ -471,7 +471,7 @@ bool IsGpuMemoryBufferCompositorResourcesEnabled() {
     return false;
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return features::IsDelegatedCompositingEnabled();
