@@ -103,3 +103,13 @@ void ComboboxMenuModel::ActivatedAt(size_t index, int event_flags) {
 ui::MenuModel* ComboboxMenuModel::GetSubmenuModelAt(size_t index) const {
   return nullptr;
 }
+
+absl::optional<ui::ColorId> ComboboxMenuModel::GetForegroundColor(
+    size_t index) {
+  return model_->GetDropdownForegroundColorAt(index);
+}
+
+absl::optional<ui::ColorId> ComboboxMenuModel::GetSubmenuBackgroundColor(
+    size_t index) {
+  return model_->GetDropdownBackgroundColorAt(index);
+}

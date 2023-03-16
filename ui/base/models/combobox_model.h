@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 
 namespace ui {
 
@@ -58,6 +59,16 @@ class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
   // Adds/removes an observer.
   void AddObserver(ComboboxModelObserver* observer);
   void RemoveObserver(ComboboxModelObserver* observer);
+
+  // The foreground color of the dropdown. If not overridden, this returns
+  // absl::nullopt and the default color will be used.
+  virtual absl::optional<ui::ColorId> GetDropdownForegroundColorAt(
+      size_t index) const;
+
+  // The background color of the dropdown. If not overridden, this returns
+  // absl::nullopt and the default color will be used.
+  virtual absl::optional<ui::ColorId> GetDropdownBackgroundColorAt(
+      size_t index) const;
 
  protected:
   base::ObserverList<ui::ComboboxModelObserver>& observers() {
