@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -60,6 +61,8 @@ class MojoVideoFrameHandleReleaser
 
   void ReleaseVideoFrame(const base::UnguessableToken& release_token,
                          const gpu::SyncToken& release_sync_token) {
+    TRACE_EVENT1("media", "MojoVideoFrameHandleReleaser::ReleaseVideoFrame",
+                 "release_token", release_token.ToString());
     DVLOG(3) << __func__ << "(" << release_token << ")";
     video_frame_handle_releaser_->ReleaseVideoFrame(release_token,
                                                     release_sync_token);
@@ -260,7 +263,9 @@ void MojoVideoDecoder::OnVideoFrameDecoded(
     const absl::optional<base::UnguessableToken>& release_token) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  TRACE_EVENT2("media", "MojoVideoDecoder::OnVideoFrameDecoded", "frame",
+               frame->AsHumanReadableString(), "release_token",
+               release_token ? release_token->ToString() : "null");
   // TODO(sandersd): Prove that all paths read this value again after running
   // |output_cb_|. In practice this isn't very important, since all decoders
   // running via MojoVideoDecoder currently use a static value.

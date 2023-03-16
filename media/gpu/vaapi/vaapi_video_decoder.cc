@@ -371,6 +371,7 @@ void VaapiVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
 void VaapiVideoDecoder::ScheduleNextDecodeTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("media", "VaapiVideoDecoder::ScheduleNextDecodeTask");
   DCHECK_EQ(state_, State::kDecoding);
   DCHECK(!current_decode_task_);
   DCHECK(!decode_task_queue_.empty());
@@ -391,6 +392,7 @@ void VaapiVideoDecoder::ScheduleNextDecodeTask() {
 void VaapiVideoDecoder::HandleDecodeTask() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("media", "VaapiVideoDecoder::HandleDecodeTask");
 
   if (state_ != State::kDecoding)
     return;
@@ -999,6 +1001,7 @@ void VaapiVideoDecoder::ReleaseVideoFrame(VASurfaceID surface_id) {
 void VaapiVideoDecoder::NotifyFrameAvailable() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("media", "VaapiVideoDecoder::NotifyFrameAvailable");
 
   // If we were waiting for output buffers, retry the current decode task.
   if (state_ == State::kWaitingForOutput) {

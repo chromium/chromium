@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -300,6 +301,9 @@ void PlatformVideoFramePool::OnFrameReleasedThunk(
     absl::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<VideoFrame> origin_frame) {
+  TRACE_EVENT2("media", "PlatformVideoFramePool::OnFrameReleasedThunk",
+               "frame_id", origin_frame->unique_id(), "frame",
+               origin_frame->AsHumanReadableString());
   DCHECK(pool);
   DVLOGF(4);
 
@@ -310,6 +314,9 @@ void PlatformVideoFramePool::OnFrameReleasedThunk(
 
 void PlatformVideoFramePool::OnFrameReleased(
     scoped_refptr<VideoFrame> origin_frame) {
+  TRACE_EVENT2("media", "PlatformVideoFramePool::OnFrameReleased", "frame_id",
+               origin_frame->unique_id(), "frame",
+               origin_frame->AsHumanReadableString());
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
