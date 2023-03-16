@@ -2180,17 +2180,14 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
       return;
     }
 
+    CHECK(print_settings->params->document_cookie);
+    CHECK(!print_settings->params->dpi.IsEmpty());
+
     print_settings->params->print_scaling_option =
         print_settings->params->prefer_css_page_size
             ? mojom::PrintScalingOption::kSourceSize
             : scaling_option;
     SetPrintPagesParams(*print_settings);
-    if (print_settings->params->dpi.IsEmpty() ||
-        !print_settings->params->document_cookie) {
-      // TODO(thestig): Make sure this is not reachable and delete this block.
-      DidFinishPrinting(OK);  // Release resources and fail silently on failure.
-      return;
-    }
   }
 
   // Render Pages for printing.

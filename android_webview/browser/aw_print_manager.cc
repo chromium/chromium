@@ -110,6 +110,12 @@ void AwPrintManager::ScriptedPrint(
   printing::RenderParamsFromPrintSettings(*settings_, params->params.get());
   params->params->document_cookie = scripted_params->cookie;
   params->pages = settings_->ranges();
+
+  if (!params->params->document_cookie || params->params->dpi.IsEmpty()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   std::move(callback).Run(std::move(params));
 }
 

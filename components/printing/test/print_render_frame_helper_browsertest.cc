@@ -341,6 +341,11 @@ class TestPrintManagerHost
     settings->params = printing::mojom::PrintParams::New();
     printer_->ScriptedPrint(params->cookie, params->expected_pages_count,
                             params->has_selection, settings.get());
+    if (!settings->params->document_cookie || settings->params->dpi.IsEmpty()) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
     std::move(callback).Run(std::move(settings));
   }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
