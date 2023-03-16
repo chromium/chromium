@@ -97,6 +97,7 @@ export * as nearbyShareMojom from '/shared/mojo/nearby_share.mojom-webui.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '/shared/nearby_contact_manager.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '/shared/nearby_share_settings.js';
 export {NearbySettings, NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
+export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';

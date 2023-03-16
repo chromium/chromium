@@ -59,6 +59,12 @@ void CryptohomeMixin::AddGaiaPassword(const AccountId& user,
                                                  cryptohome_key);
 }
 
+void CryptohomeMixin::SetPinLocked(const AccountId& user, bool locked) {
+  return TestApi::SetPinLocked(
+      cryptohome::CreateAccountIdentifierFromAccountId(user),
+      kCryptohomePinLabel, locked);
+}
+
 bool CryptohomeMixin::HasPinFactor(const AccountId& user) {
   return TestApi::HasPinFactor(
       cryptohome::CreateAccountIdentifierFromAccountId(user));

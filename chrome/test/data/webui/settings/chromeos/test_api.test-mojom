@@ -53,16 +53,41 @@ interface LockScreenSettings {
   // If any of the expectations fail the function crashes.
   DisableRecoveryConfiguration(RecoveryDialogAction dialogAction) => ();
 
-  // Checks whether the user wants to use pin for login and unlock or not. This
-  // can be true even though there is no pin if the user has not set up a pin
-  // yet.
-  AssertIsUsingPin(bool is_using) => ();
-
   // Removes the PIN if there is a PIN.
   RemovePin() => ();
 
   // Sets the pin to a given value.
   SetPin(string pin) => ();
+
+  // Checks whether the user wants to use pin for login and unlock or not. This
+  // can be true even though there is no pin if the user has not set up a pin
+  // yet.
+  AssertIsUsingPin(bool is_using) => ();
+
+  // Selects the "PIN and password" method for authentication, but no more. This doesn't actually
+  // set a PIN.
+  SelectPinAndPassword() => ();
+
+  // Selects the "PIN and password" method for authentication and enters a new value for the PIN
+  // but cancels the setup when the dialog asks to enter the PIN again.
+  SetPinButCancelConfirmation(string pin) => ();
+
+  // Selects the "PIN and password" method for authentication, enters a new value for the PIN
+  // but cancels the setup when the dialog asks to enter the PIN again.
+  SetPinButFailConfirmation(string first_pin, string second_pin) => ();
+
+  // Tries to set the PIN to |short_pin|, but expects that the PIN cannot be submitted. Then enters
+  // |ok_pin| before entering |short_pin| again to check that an error message is displayed.
+  SetPinButTooShort(string short_pin, string ok_pin) => ();
+
+  // Verifies that |ok_pin| can be submitted as PIN, but that |long_pin| is rejected with an error message.
+  SetPinButTooLong(string long_pin, string ok_pin) => ();
+
+  // Verifies that PIN setup works with |weak_pin| but with a warning.
+  SetPinWithWarning(string weak) => ();
+
+  // Opens the PIN setup dialog and checks that the dialog handles key events appropriately.
+  CheckPinSetupDialogKeyInput() => ();
 
   // Checks that pin autosubmit is enabled or disabled.
   AssertPinAutosubmitEnabled(bool is_enabled) => ();
@@ -77,6 +102,14 @@ interface LockScreenSettings {
 
   // Try to enable pin autosubmit, but fail due to a wrong pin.
   EnablePinAutosubmitIncorrectly(string incorrect_pin) => ();
+
+  // Try to enable PIN autosubmit, but expect to fail due to the PIN being
+  // locked out. The locked-out PIN should make the user reauthenticate, so the
+  // function needs to know the user's password.
+  TryEnablePinAutosubmitWithLockedPin(string pin, string password) => ();
+
+  // Try to enable pin autosubmit, but fail because the provided PIN is too long.
+  EnablePinAutosubmitTooLong(string long_pin) => ();
 
   // Asserts that automatic screen lock is enabled or disabled.
   AssertAutoLockScreenEnabled(bool is_enabled) => ();

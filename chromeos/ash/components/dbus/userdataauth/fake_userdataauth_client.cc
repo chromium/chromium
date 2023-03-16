@@ -1230,6 +1230,12 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
                   ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
               return;
             }
+
+            if (pin_factor.locked) {
+              reply.set_error(
+                  ::user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+              return;
+            }
           },
           [&](const RecoveryFactor& recovery) {
             const auto& recovery_input = auth_input.cryptohome_recovery_input();
