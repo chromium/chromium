@@ -3748,10 +3748,10 @@
         <!-- End of Feedback Tool -->
 
         <!-- Shortcut Customization -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="Title of the app" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="Title of the app">
           Shortcuts
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEYBOARD_SETTINGS" desc="Label for link to open keyboard settings in the Settings app." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEYBOARD_SETTINGS" desc="Label for link to open keyboard settings in the Settings app.">
           Keyboard settings
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ADD_SHORTCUT" desc="Button label to add a new shortcut for a specific action" translateable="false">
@@ -3769,7 +3769,7 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_VIEW_STATUS_MESSAGE" desc="Instructions to user when they're inputting a new shortcut" translateable="false">
           Press 1-4 modifiers and 1 other key on your keyboard
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESET_ALL_SHORTCUTS" desc="Button label to reset all shortcuts in the app to their default values" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_RESET_ALL_SHORTCUTS" desc="Button label to reset all shortcuts in the app to their default values">
           Reset all shortcuts
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_ALL_SHORTCUTS_TITLE" desc="Title of the modal shown when user clicks button to reset all shortcuts" translateable="false">
@@ -3784,12 +3784,12 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator" translateable="false">
           Shortcut is used by <ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>. Press a new shortcut or press the same one again to use it for this action instead.
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_GENERAL" desc="Category named 'General' shown on the navigation sidebar" translateable="false">General</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVICE" desc="Category named 'Device' shown on the navigation sidebar" translateable="false">Device</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_BROWSER" desc="Category named 'Browser' shown on the navigation sidebar" translateable="false">Browser</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TEXT" desc="Category named 'Text' shown on the navigation sidebar" translateable="false">Text</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_WINDOWS_AND_DESKS" desc="Category named 'Windows and Desks' shown on the navigation sidebar" translateable="false">Windows &#38; Desks</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_ACCESSIBILITY" desc="Category named 'Accessibility' shown on the navigation sidebar" translateable="false">Accessibility</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_GENERAL" desc="Category named 'General' shown on the navigation sidebar">General</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVICE" desc="Category named 'Device' shown on the navigation sidebar">Device</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_BROWSER" desc="Category named 'Browser' shown on the navigation sidebar">Browser</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TEXT" desc="Category named 'Text' shown on the navigation sidebar">Text</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_WINDOWS_AND_DESKS" desc="Category named 'Windows and Desks' shown on the navigation sidebar">Windows and Desks</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_ACCESSIBILITY" desc="Category named 'Accessibility' shown on the navigation sidebar">Accessibility</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEBUG" desc="Category named 'Debug' shown on the navigation sidebar" translateable="false">Debug</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVELOPER" desc="Category named 'Developer' shown on the navigation sidebar" translateable="false">Developer</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL_CONTROLS" desc="Subcategory named 'GeneralControls' shown within main shortcuts section" translateable="false">General Controls</message>
