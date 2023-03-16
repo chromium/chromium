@@ -395,9 +395,9 @@ void FireRequestStorageAccessHistogram(RequestStorageResult result) {
                                 result);
 }
 
-void FireRequestStorageAccessForOriginHistogram(RequestStorageResult result) {
+void FireRequestStorageAccessForHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration(
-      "API.TopLevelStorageAccess.RequestStorageAccessForOrigin", result);
+      "API.TopLevelStorageAccess.RequestStorageAccessFor", result);
 }
 
 class IntrinsicSizeResizeObserverDelegate : public ResizeObserver::Delegate {
@@ -6157,19 +6157,17 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise Document::requestStorageAccessForOrigin(
-    ScriptState* script_state,
-    const AtomicString& origin) {
+ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
+                                                const AtomicString& origin) {
   if (!GetFrame()) {
-    FireRequestStorageAccessForOriginHistogram(
+    FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_NO_ORIGIN);
     // Note that in detached frames, resolvers are not able to return a promise.
     return ScriptPromise::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kInvalidStateError,
-            "requestStorageAccessForOrigin: Cannot be used unless "
-            "the document is fully active."));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "requestStorageAccessFor: Cannot be used unless "
+                          "the document is fully active."));
   }
 
   ScriptPromiseResolver* resolver =
@@ -6185,14 +6183,14 @@ ScriptPromise Document::requestStorageAccessForOrigin(
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForOrigin: Must be handling a user gesture to "
+        "requestStorageAccessFor: Must be handling a user gesture to "
         "use."));
 
-    FireRequestStorageAccessForOriginHistogram(
+    FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_NO_USER_GESTURE);
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessForOrigin not allowed"));
+        "requestStorageAccessFor not allowed"));
     return promise;
   }
 
@@ -6200,13 +6198,13 @@ ScriptPromise Document::requestStorageAccessForOrigin(
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForOrigin: Only supported in primary top-level "
+        "requestStorageAccessFor: Only supported in primary top-level "
         "browsing contexts."));
-    FireRequestStorageAccessForOriginHistogram(
+    FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_INCORRECT_FRAME);
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessForOrigin not allowed"));
+        "requestStorageAccessFor not allowed"));
     return promise;
   }
 
@@ -6214,13 +6212,13 @@ ScriptPromise Document::requestStorageAccessForOrigin(
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForOrigin: Cannot be used by opaque origins."));
+        "requestStorageAccessFor: Cannot be used by opaque origins."));
 
-    FireRequestStorageAccessForOriginHistogram(
+    FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessForOrigin not allowed"));
+        "requestStorageAccessFor not allowed"));
     return promise;
   }
 
@@ -6228,14 +6226,14 @@ ScriptPromise Document::requestStorageAccessForOrigin(
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForOrigin: May not be used in an insecure "
+        "requestStorageAccessFor: May not be used in an insecure "
         "context."));
-    FireRequestStorageAccessForOriginHistogram(
+    FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_INSECURE_CONTEXT);
 
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessForOrigin not allowed"));
+        "requestStorageAccessFor not allowed"));
     return promise;
   }
 
@@ -6246,19 +6244,19 @@ ScriptPromise Document::requestStorageAccessForOrigin(
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccessForOrigin: Invalid origin parameter."));
-    FireRequestStorageAccessForOriginHistogram(
+        "requestStorageAccessFor: Invalid origin parameter."));
+    FireRequestStorageAccessForHistogram(
         RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccessForOrigin not allowed"));
+        "requestStorageAccessFor not allowed"));
     return promise;
   }
 
   if (dom_window_->GetSecurityOrigin()->IsSameSiteWith(supplied_origin.get())) {
     // Access is not actually disabled, so accept the request.
     resolver->Resolve();
-    FireRequestStorageAccessForOriginHistogram(
+    FireRequestStorageAccessForHistogram(
         RequestStorageResult::APPROVED_EXISTING_ACCESS);
     return promise;
   }
@@ -6283,7 +6281,7 @@ ScriptPromise Document::requestStorageAccessForOrigin(
 
                 switch (status) {
                   case mojom::blink::PermissionStatus::GRANTED:
-                    FireRequestStorageAccessForOriginHistogram(
+                    FireRequestStorageAccessForHistogram(
                         RequestStorageResult::APPROVED_NEW_GRANT);
                     resolver->Resolve();
                     break;
@@ -6293,14 +6291,14 @@ ScriptPromise Document::requestStorageAccessForOrigin(
                     [[fallthrough]];
                   case mojom::blink::PermissionStatus::ASK:
                   default:
-                    FireRequestStorageAccessForOriginHistogram(
+                    FireRequestStorageAccessForHistogram(
                         RequestStorageResult::REJECTED_GRANT_DENIED);
                     ScriptState* state = resolver->GetScriptState();
                     DCHECK(state->ContextIsValid());
                     ScriptState::Scope scope(state);
                     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                         state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-                        "requestStorageAccessForOrigin not allowed"));
+                        "requestStorageAccessFor not allowed"));
                 }
               },
               WrapPersistent(resolver), WrapPersistent(this)));

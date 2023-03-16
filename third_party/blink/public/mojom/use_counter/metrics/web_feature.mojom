@@ -3662,7 +3662,7 @@ enum WebFeature {
 
   kFlexboxAbsPosJustifyContent = 4330,
   kMultipleFetchHandlersInServiceWorker = 4331,
-  kStorageAccessAPI_requestStorageAccessForOrigin_Method = 4332,
+  kStorageAccessAPI_requestStorageAccessFor_Method = 4332,
   kPrivateAggregationApiAll = 4333,
   kPrivateAggregationApiFledge = 4334,
   kPrivateAggregationApiSharedStorage = 4335,

@@ -384305,7 +384305,7 @@
       "a4331a212effab5d3e84c494025b4183a814d03a",
       []
      ],
-     "requestStorageAccessForOrigin.sub.https.window-expected.txt": [
+     "requestStorageAccessFor.sub.https.window-expected.txt": [
       "fbc4eb52e7b0464842231afcfb2704ff830cb95c",
       []
      ],
@@ -384322,11 +384322,11 @@
        "f4db5cf65ec6814036d40ab165b9705725df39fa",
        []
       ],
-      "requestStorageAccessForOrigin-iframe.html": [
+      "requestStorageAccessFor-iframe.html": [
        "43d16705c8515b48685420c8d14925af90afb62a",
        []
       ],
-      "requestStorageAccessForOrigin-iframe.https.html": [
+      "requestStorageAccessFor-iframe.https.html": [
        "db03b25e14d7883a89cac79746c11b280ec24dae",
        []
       ]
@@ -608035,10 +608035,10 @@
    },
    "top-level-storage-access-api": {
     "tentative": {
-     "requestStorageAccessForOrigin-insecure.sub.window.js": [
+     "requestStorageAccessFor-insecure.sub.window.js": [
       "8cf72b85fa81217fac5adb11a582d4ad641e34d7",
       [
-       "top-level-storage-access-api/tentative/requestStorageAccessForOrigin-insecure.sub.window.html",
+       "top-level-storage-access-api/tentative/requestStorageAccessFor-insecure.sub.window.html",
        {
         "script_metadata": [
          [
@@ -608057,10 +608057,10 @@
        }
       ]
      ],
-     "requestStorageAccessForOrigin.sub.https.window.js": [
+     "requestStorageAccessFor.sub.https.window.js": [
       "6fff9e9189e495af43ef0a4c9a087cbc05c7d14c",
       [
-       "top-level-storage-access-api/tentative/requestStorageAccessForOrigin.sub.https.window.html",
+       "top-level-storage-access-api/tentative/requestStorageAccessFor.sub.https.window.html",
        {
         "script_metadata": [
          [

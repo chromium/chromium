@@ -38,7 +38,7 @@ void ExpectCrossTabInfoForFrame(content::RenderFrameHost* frame, bool expected);
 // true; false otherwise.
 bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame);
 // Helper to request storage access with a site override for a frame using
-// document.requestStorageAccessForOrigin(origin). Returns true if the promise
+// document.requestStorageAccessFor(origin). Returns true if the promise
 // resolves; false if it rejects.
 bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
                                    const std::string& origin);

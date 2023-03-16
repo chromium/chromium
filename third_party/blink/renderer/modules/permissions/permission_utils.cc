@@ -314,7 +314,7 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     if (!RuntimeEnabledFeatures::StorageAccessAPIEnabled() ||
         !RuntimeEnabledFeatures::StorageAccessAPIForOriginExtensionEnabled()) {
       exception_state.ThrowTypeError(
-          "The requestStorageAccessForOrigin API is not enabled.");
+          "The requestStorageAccessFor API is not enabled.");
       return nullptr;
     }
     TopLevelStorageAccessPermissionDescriptor*

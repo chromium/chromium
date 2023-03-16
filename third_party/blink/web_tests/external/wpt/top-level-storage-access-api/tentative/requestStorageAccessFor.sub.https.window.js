@@ -30,29 +30,29 @@ queryParams.forEach((param) => {
 
 const requestedOrigin = 'https://foo.com';
 
-// TODO(crbug.com/1351540): when/if requestStorageAccessForOrigin is standardized,
+// TODO(crbug.com/1351540): when/if requestStorageAccessFor is standardized,
 // upstream with the Storage Access API helpers file.
-function RunRequestStorageAccessForOriginInDetachedFrame(site) {
+function RunRequestStorageAccessForInDetachedFrame(origin) {
   const nestedFrame = document.createElement('iframe');
   document.body.append(nestedFrame);
   const inner_doc = nestedFrame.contentDocument;
   nestedFrame.remove();
-  return inner_doc.requestStorageAccessForOrigin(site);
+  return inner_doc.requestStorageAccessFor(origin);
 }
 
-function RunRequestStorageAccessForOriginViaDomParser(site) {
+function RunRequestStorageAccessForViaDomParser(origin) {
   const parser = new DOMParser();
   const doc = parser.parseFromString('<html></html>', 'text/html');
-  return doc.requestStorageAccessForOrigin(site);
+  return doc.requestStorageAccessFor(origin);
 }
 
 // Common tests to run in all frames.
 test(
     () => {
-      assert_not_equals(document.requestStorageAccessForOrigin, undefined);
+      assert_not_equals(document.requestStorageAccessFor, undefined);
     },
     '[' + testPrefix +
-        '] document.requestStorageAccessForOrigin() should be supported on the document interface');
+        '] document.requestStorageAccessFor() should be supported on the document interface');
 
 // Promise tests should all start with the feature in "prompt" state.
 promise_setup(async () => {
@@ -64,52 +64,52 @@ promise_setup(async () => {
 promise_test(
   t => {
     return promise_rejects_js(t, TypeError,
-      document.requestStorageAccessForOrigin(),
-      'document.requestStorageAccessForOrigin() call without origin argument');
+      document.requestStorageAccessFor(),
+      'document.requestStorageAccessFor() call without origin argument');
   },
   '[' + testPrefix +
-      '] document.requestStorageAccessForOrigin() should be rejected when called with no argument');
+      '] document.requestStorageAccessFor() should be rejected when called with no argument');
 
 if (topLevelDocument) {
   promise_test(
       t => {
         return promise_rejects_dom(t, 'NotAllowedError',
-          document.requestStorageAccessForOrigin(requestedOrigin),
-         'document.requestStorageAccessForOrigin() call without user gesture');
+          document.requestStorageAccessFor(requestedOrigin),
+         'document.requestStorageAccessFor() call without user gesture');
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForOrigin() should be rejected by default with no user gesture');
+          '] document.requestStorageAccessFor() should be rejected by default with no user gesture');
 
   promise_test(async t => {
     const description =
-        'document.requestStorageAccessForOrigin() call in a detached frame';
+        'document.requestStorageAccessFor() call in a detached frame';
     // Can't use promise_rejects_dom here because the exception is from the wrong global.
-    return RunRequestStorageAccessForOriginInDetachedFrame(requestedOrigin)
+    return RunRequestStorageAccessForInDetachedFrame(requestedOrigin)
         .then(t.unreached_func('Should have rejected: ' + description))
         .catch((e) => {
           assert_equals(e.name, 'InvalidStateError', description);
         });
-  }, '[non-fully-active] document.requestStorageAccessForOrigin() should not resolve when run in a detached frame');
+  }, '[non-fully-active] document.requestStorageAccessFor() should not resolve when run in a detached frame');
 
   promise_test(async t => {
     const description =
-        'document.requestStorageAccessForOrigin() in a detached DOMParser result';
-    return RunRequestStorageAccessForOriginViaDomParser(requestedOrigin)
+        'document.requestStorageAccessFor() in a detached DOMParser result';
+    return RunRequestStorageAccessForViaDomParser(requestedOrigin)
         .then(t.unreached_func('Should have rejected: ' + description))
         .catch((e) => {
           assert_equals(e.name, 'InvalidStateError', description);
         });
-  }, '[non-fully-active] document.requestStorageAccessForOrigin() should not resolve when run in a detached DOMParser document');
+  }, '[non-fully-active] document.requestStorageAccessFor() should not resolve when run in a detached DOMParser document');
 
   promise_test(
     async t => {
       await test_driver.set_permission(
         { name: 'top-level-storage-access', requestedOrigin }, 'granted');
 
-      await document.requestStorageAccessForOrigin(requestedOrigin);
+      await document.requestStorageAccessFor(requestedOrigin);
     },
     '[' + testPrefix +
-    '] document.requestStorageAccessForOrigin() should be resolved without a user gesture with an existing permission');
+    '] document.requestStorageAccessFor() should be resolved without a user gesture with an existing permission');
 
   promise_test(
       async t => {
@@ -125,54 +125,54 @@ if (topLevelDocument) {
             'granted');
 
         await RunCallbackWithGesture(() => {
-          document.requestStorageAccessForOrigin(altOrigin).then(() => {
+          document.requestStorageAccessFor(altOrigin).then(() => {
             RunTestsInIFrame(
                 'https://{{hosts[alt][www]}}:{{ports[https][0]}}/top-level-storage-access-api/tentative/resources/requestStorageAccess-integration-iframe.https.html');
           });
         });
       },
       '[' + testPrefix +
-          '] document.requestStorageAccess() should be resolved without a user gesture after a successful requestStorageAccessForOrigin() call');
+          '] document.requestStorageAccess() should be resolved without a user gesture after a successful requestStorageAccessFor() call');
 
   // Create a test with a single-child same-origin iframe.
-  // This will validate that calls to requestStorageAccessForOrigin are rejected
+  // This will validate that calls to requestStorageAccessFor are rejected
   // in non-top-level contexts.
   RunTestsInIFrame(
-      './resources/requestStorageAccessForOrigin-iframe.https.html?testCase=same-origin-frame&rootdocument=false');
+      './resources/requestStorageAccessFor-iframe.https.html?testCase=same-origin-frame&rootdocument=false');
 
   promise_test(
       async t => {
         await RunCallbackWithGesture(
-          () => document.requestStorageAccessForOrigin(document.location.origin));
+          () => document.requestStorageAccessFor(document.location.origin));
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForOrigin() should be resolved when called properly with a user gesture and the same site');
+          '] document.requestStorageAccessFor() should be resolved when called properly with a user gesture and the same site');
 
   promise_test(
       async t => {
         await RunCallbackWithGesture(
-          () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessForOrigin('bogus-url'),
-            'document.requestStorageAccessForOrigin() call with bogus URL'));
+          () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessFor('bogus-url'),
+            'document.requestStorageAccessFor() call with bogus URL'));
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForOrigin() should be rejected when called with an invalid site');
+          '] document.requestStorageAccessFor() should be rejected when called with an invalid site');
 
   promise_test(
       async t => {
         await RunCallbackWithGesture(
-          () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessForOrigin('data:,Hello%2C%20World%21'),
-            'document.requestStorageAccessForOrigin() call with data URL'));
+          () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessFor('data:,Hello%2C%20World%21'),
+            'document.requestStorageAccessFor() call with data URL'));
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForOrigin() should be rejected when called with an opaque origin');
+          '] document.requestStorageAccessFor() should be rejected when called with an opaque origin');
 
 } else {
   promise_test(
       async t => {
         await RunCallbackWithGesture(
-          () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessForOrigin(document.location.origin),
-            'document.requestStorageAccessForOrigin() call in a non-top-level context'));
+          () => promise_rejects_dom(t, 'NotAllowedError', document.requestStorageAccessFor(document.location.origin),
+            'document.requestStorageAccessFor() call in a non-top-level context'));
       },
       '[' + testPrefix +
-          '] document.requestStorageAccessForOrigin() should be rejected when called in an iframe');
+          '] document.requestStorageAccessFor() should be rejected when called in an iframe');
 }

@@ -27,8 +27,8 @@ constexpr char kRequestStorageAccess[] =
     "  .then(() => document.hasStorageAccess())"
     "  .catch(() => false);";
 
-constexpr char kRequestStorageAccessForOrigin[] =
-    "document.requestStorageAccessForOrigin($1).then("
+constexpr char kRequestStorageAccessFor[] =
+    "document.requestStorageAccessFor($1).then("
     "  () => true,"
     "  () => false,"
     ");";
@@ -139,8 +139,8 @@ bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame) {
 
 bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
                                    const std::string& origin) {
-  return content::EvalJs(
-             frame, content::JsReplace(kRequestStorageAccessForOrigin, origin))
+  return content::EvalJs(frame,
+                         content::JsReplace(kRequestStorageAccessFor, origin))
       .ExtractBool();
 }
 

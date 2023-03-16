@@ -99,10 +99,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   return http_response;
 }
 
-class RequestStorageAccessForOriginBaseBrowserTest
-    : public InProcessBrowserTest {
+class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
  protected:
-  RequestStorageAccessForOriginBaseBrowserTest()
+  RequestStorageAccessForBaseBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUp() override {
@@ -253,11 +252,11 @@ class RequestStorageAccessForOriginBaseBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-class RequestStorageAccessForOriginBrowserTest
-    : public RequestStorageAccessForOriginBaseBrowserTest {};
+class RequestStorageAccessForBrowserTest
+    : public RequestStorageAccessForBaseBrowserTest {};
 
 // Validates that expiry data is transferred over IPC to the Network Service.
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginBrowserTest,
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
                        ThirdPartyGrantsExpireOverIPC) {
   SetBlockThirdPartyCookies(true);
 
@@ -327,31 +326,31 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginBrowserTest,
             "");
 }
 
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginBrowserTest,
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
                        RsaForOriginDisabledByDefault) {
   NavigateToPageWithFrame(kHostA);
   // Ensure that the proposed extension is not available unless explicitly
   // enabled.
   EXPECT_TRUE(EvalJs(GetPrimaryMainFrame(),
-                     "\"requestStorageAccessForOrigin\" in document === false")
+                     "\"requestStorageAccessFor\" in document === false")
                   .ExtractBool());
 }
 
-class RequestStorageAccessForOriginEnabledBrowserTest
-    : public RequestStorageAccessForOriginBaseBrowserTest,
+class RequestStorageAccessForEnabledBrowserTest
+    : public RequestStorageAccessForBaseBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     std::vector<base::test::FeatureRefAndParams> enabled =
-        RequestStorageAccessForOriginBaseBrowserTest::GetEnabledFeatures();
+        RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
     enabled.push_back(
         {blink::features::kStorageAccessAPIForOriginExtension, {}});
     return enabled;
   }
 };
 
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        SameOriginGrantedByDefault) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
@@ -368,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginEnabledBrowserTest,
       GetFrame(), GetURL(kHostA).spec()));
 }
 
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        TopLevelOpaqueOriginRejected) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL("data:,Hello%2C%20World%21")));
@@ -377,8 +376,8 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginEnabledBrowserTest,
       GetPrimaryMainFrame(), GetURL(kHostA).spec()));
 }
 
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginEnabledBrowserTest,
-                       RequestStorageAccessForOriginEmbeddedOriginScoping) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
+                       RequestStorageAccessForEmbeddedOriginScoping) {
   SetBlockThirdPartyCookies(true);
 
   // Set cross-site cookies on all hosts.
@@ -402,13 +401,12 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginEnabledBrowserTest,
             "");
 }
 
-// Tests to validate First-Party Set use with `requestStorageAccessForOrigin`.
-class RequestStorageAccessForOriginWithFirstPartySetsBrowserTest
-    : public RequestStorageAccessForOriginBaseBrowserTest {
+// Tests to validate First-Party Set use with `requestStorageAccessFor`.
+class RequestStorageAccessForWithFirstPartySetsBrowserTest
+    : public RequestStorageAccessForBaseBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    RequestStorageAccessForOriginBaseBrowserTest::SetUpCommandLine(
-        command_line);
+    RequestStorageAccessForBaseBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
         network::switches::kUseFirstPartySet,
         base::StrCat({R"({"primary": "https://)", kHostA,
@@ -423,16 +421,14 @@ class RequestStorageAccessForOriginWithFirstPartySetsBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
-    PermissionQueryDefault) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       PermissionQueryDefault) {
   NavigateToPageWithFrame(kHostA);
   EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostB), "prompt");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
-    PermissionQueryDoesNotShowDenied) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       PermissionQueryDoesNotShowDenied) {
   NavigateToPageWithFrame(kHostA);
 
   // First, get a rejection for `kHostD`, because it is not in the same
@@ -445,9 +441,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostD), "prompt");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
-    PermissionQueryCrossSiteFrame) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       PermissionQueryCrossSiteFrame) {
   NavigateToPageWithFrame(kHostA);
 
   // First, grant `kHostB` access.
@@ -468,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(
 // Validate that if a top-level document requests access that cookies become
 // unblocked for just that top-level/third-party combination.
 IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
+    RequestStorageAccessForWithFirstPartySetsBrowserTest,
     // TODO(crbug.com/1370096): Re-enable usage metric assertions.
     Permission_AutograntedWithinFirstPartySet) {
   SetBlockThirdPartyCookies(true);
@@ -538,9 +533,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Validate that the permission for rSAFor allows autogranting of rSA, including
 // without a user gesture.
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
-    Permission_AllowsRequestStorageAccessResolution) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       Permission_AllowsRequestStorageAccessResolution) {
   SetBlockThirdPartyCookies(true);
 
   SetCrossSiteCookieOnHost(kHostB);
@@ -552,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(content::EvalJs(GetFrame(), kRequestStorageAccess,
                                content::EXECUTE_SCRIPT_NO_USER_GESTURE)
                    .ExtractBool());
-  // Then invoke `requestStorageAccessForOrigin` at the top level on behalf of
+  // Then invoke `requestStorageAccessFor` at the top level on behalf of
   // the frame.
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostB).spec()));
@@ -575,9 +569,8 @@ IN_PROC_BROWSER_TEST_F(
                    .ExtractBool());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
-    Permission_AutodeniedForServiceDomain) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       Permission_AutodeniedForServiceDomain) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
 
@@ -612,9 +605,8 @@ IN_PROC_BROWSER_TEST_F(
               Gt(0));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
-    Permission_AutodeniedForServiceDomainInIframe) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       Permission_AutodeniedForServiceDomainInIframe) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
 
@@ -630,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "");
-  // `kHostB` cannot be granted access via `RequestStorageAccessForOrigin`,
+  // `kHostB` cannot be granted access via `RequestStorageAccessFor`,
   // because the call is not from the top-level page and because `kHostB` is a
   // service domain.
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
@@ -649,9 +641,8 @@ IN_PROC_BROWSER_TEST_F(
             "");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
-    Permission_AutodeniedOutsideFirstPartySet) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       Permission_AutodeniedOutsideFirstPartySet) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
 
@@ -664,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateFrameTo(kHostD, "/echoheader?cookie");
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
-  // `kHostD` cannot be granted access via `RequestStorageAccessForOrigin` in
+  // `kHostD` cannot be granted access via `RequestStorageAccessFor` in
   // this configuration, because the requesting site (`kHostA`) is not in the
   // same First-Party Set as the requested site (`kHostD`).
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
@@ -688,9 +679,8 @@ IN_PROC_BROWSER_TEST_F(
               Gt(0));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
-    RequestStorageAccessForOriginTopLevelScoping) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       RequestStorageAccessForTopLevelScoping) {
   SetBlockThirdPartyCookies(true);
 
   // Set cross-site cookies on all hosts.
@@ -741,8 +731,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
-    RequestStorageAccessForOriginTopLevelScopingWhenRequestedFromSubdomain) {
+    RequestStorageAccessForWithFirstPartySetsBrowserTest,
+    RequestStorageAccessForTopLevelScopingWhenRequestedFromSubdomain) {
   SetBlockThirdPartyCookies(true);
 
   // Set cross-site cookies on all hosts.
@@ -793,10 +783,10 @@ IN_PROC_BROWSER_TEST_F(
             "");
 }
 
-// Tests to validate `requestStorageAccessForOrigin` behavior with FPS disabled.
+// Tests to validate `requestStorageAccessFor` behavior with FPS disabled.
 // For now, that entails auto-denial of requests.
-class RequestStorageAccessForOriginWithFirstPartySetsDisabledBrowserTest
-    : public RequestStorageAccessForOriginBaseBrowserTest {
+class RequestStorageAccessForWithFirstPartySetsDisabledBrowserTest
+    : public RequestStorageAccessForBaseBrowserTest {
  public:
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
@@ -809,7 +799,7 @@ class RequestStorageAccessForOriginWithFirstPartySetsDisabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForOriginWithFirstPartySetsDisabledBrowserTest,
+    RequestStorageAccessForWithFirstPartySetsDisabledBrowserTest,
     PermissionAutodenied) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
@@ -823,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateFrameTo(kHostD, "/echoheader?cookie");
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
-  // `kHostD` cannot be granted access via `RequestStorageAccessForOrigin` in
+  // `kHostD` cannot be granted access via `RequestStorageAccessFor` in
   // this configuration, because the requesting site (`kHostA`) is not in the
   // same First-Party Set as the requested site (`kHostD`).
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
@@ -841,14 +831,14 @@ IN_PROC_BROWSER_TEST_F(
               Gt(0));
 }
 
-// Tests to validate that, when the `requestStorageAccessForOrigin` extension is
+// Tests to validate that, when the `requestStorageAccessFor` extension is
 // explicitly disabled, or if the larger Storage Access API is disabled, it does
 // not leak onto the document object.
-class RequestStorageAccessForOriginExplicitlyDisabledBrowserTest
-    : public RequestStorageAccessForOriginBaseBrowserTest,
+class RequestStorageAccessForExplicitlyDisabledBrowserTest
+    : public RequestStorageAccessForBaseBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  RequestStorageAccessForOriginExplicitlyDisabledBrowserTest()
+  RequestStorageAccessForExplicitlyDisabledBrowserTest()
       : enable_standard_storage_access_api_(GetParam()) {}
 
  protected:
@@ -866,7 +856,7 @@ class RequestStorageAccessForOriginExplicitlyDisabledBrowserTest
     // feature list. Otherwise, enable only the extension; this should not take
     // effect.
     if (enable_standard_storage_access_api_) {
-      return RequestStorageAccessForOriginBaseBrowserTest::GetEnabledFeatures();
+      return RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
     }
     return {{blink::features::kStorageAccessAPIForOriginExtension, {}}};
   }
@@ -875,28 +865,26 @@ class RequestStorageAccessForOriginExplicitlyDisabledBrowserTest
   bool enable_standard_storage_access_api_;
 };
 
-IN_PROC_BROWSER_TEST_P(
-    RequestStorageAccessForOriginExplicitlyDisabledBrowserTest,
-    RsaForOriginNotPresentOnDocumentWhenExplicitlyDisabled) {
+IN_PROC_BROWSER_TEST_P(RequestStorageAccessForExplicitlyDisabledBrowserTest,
+                       RsaForOriginNotPresentOnDocumentWhenExplicitlyDisabled) {
   NavigateToPageWithFrame(kHostA);
   // Ensure that the proposed extension is not available unless explicitly
   // enabled.
   EXPECT_TRUE(EvalJs(GetPrimaryMainFrame(),
-                     "\"requestStorageAccessForOrigin\" in document === false")
+                     "\"requestStorageAccessFor\" in document === false")
                   .ExtractBool());
 }
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    RequestStorageAccessForOriginExplicitlyDisabledBrowserTest,
+    RequestStorageAccessForExplicitlyDisabledBrowserTest,
     testing::Bool());
 
-class RequestStorageAccessForOriginWithCHIPSBrowserTest
-    : public RequestStorageAccessForOriginBaseBrowserTest {
+class RequestStorageAccessForWithCHIPSBrowserTest
+    : public RequestStorageAccessForBaseBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    RequestStorageAccessForOriginBaseBrowserTest::SetUpCommandLine(
-        command_line);
+    RequestStorageAccessForBaseBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
         network::switches::kUseFirstPartySet,
         base::StrCat({R"({"primary": "https://)", kHostA,
@@ -905,7 +893,7 @@ class RequestStorageAccessForOriginWithCHIPSBrowserTest
   }
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     std::vector<base::test::FeatureRefAndParams> enabled =
-        RequestStorageAccessForOriginBaseBrowserTest::GetEnabledFeatures();
+        RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
     enabled.push_back({net::features::kPartitionedCookies, {}});
     enabled.push_back(
         {blink::features::kStorageAccessAPIForOriginExtension, {}});
@@ -913,8 +901,8 @@ class RequestStorageAccessForOriginWithCHIPSBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginWithCHIPSBrowserTest,
-                       RequestStorageAccessForOrigin_CoexistsWithCHIPS) {
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithCHIPSBrowserTest,
+                       RequestStorageAccessFor_CoexistsWithCHIPS) {
   SetBlockThirdPartyCookies(true);
 
   SetCrossSiteCookieOnHost(kHostB);
