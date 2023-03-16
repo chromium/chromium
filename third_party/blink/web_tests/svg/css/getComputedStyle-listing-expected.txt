@@ -332,6 +332,7 @@ table-layout: auto
 text-align: start
 text-align-last: auto
 text-anchor: start
+text-box-trim: normal
 text-decoration: none solid rgb(0, 0, 0)
 text-decoration-color: rgb(0, 0, 0)
 text-decoration-line: none

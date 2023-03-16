@@ -365,6 +365,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-align
     text-align-last
     text-anchor
+    text-box-trim
     text-combine-upright
     text-decoration-color
     text-decoration-line

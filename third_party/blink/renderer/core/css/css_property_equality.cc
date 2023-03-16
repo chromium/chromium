@@ -646,6 +646,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.TextAlignLast() == b.TextAlignLast();
     case CSSPropertyID::kTextAnchor:
       return a.TextAnchor() == b.TextAnchor();
+    case blink::CSSPropertyID::kTextBoxTrim:
+      return a.TextBoxTrim() == b.TextBoxTrim();
     case CSSPropertyID::kTextDecorationColor:
       return a.TextDecorationColor() == b.TextDecorationColor() &&
              a.InternalVisitedTextDecorationColor() ==

@@ -7524,6 +7524,13 @@ const CSSValue* TextAnchor::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.TextAnchor());
 }
 
+const CSSValue* TextBoxTrim::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.TextBoxTrim());
+}
+
 const CSSValue* TextCombineUpright::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

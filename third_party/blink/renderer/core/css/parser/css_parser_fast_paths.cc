@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1389,6 +1390,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kContain || value_id == CSSValueID::kNone;
     case CSSPropertyID::kOriginTrialTestProperty:
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kNone;
+    case CSSPropertyID::kTextBoxTrim:
+      DCHECK(RuntimeEnabledFeatures::CSSTextBoxTrimEnabled());
+      return value_id == CSSValueID::kNormal ||
+             value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
+             value_id == CSSValueID::kBoth;
     default:
       NOTREACHED();
       return false;
@@ -1513,6 +1519,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kScrollSnapStop,
     CSSPropertyID::kOriginTrialTestProperty,
     CSSPropertyID::kTopLayer,
+    CSSPropertyID::kTextBoxTrim,
 }};
 
 bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {

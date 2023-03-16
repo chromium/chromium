@@ -797,6 +797,7 @@ enum CSSSampleId {
     kTopLayer = 744,
     kAnchorDefault = 745,
     kTextWrap = 746,
+    kTextBoxTrim = 747,
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script

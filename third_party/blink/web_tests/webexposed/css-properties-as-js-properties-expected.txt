@@ -423,6 +423,7 @@ tableLayout
 textAlign
 textAlignLast
 textAnchor
+textBoxTrim
 textCombineUpright
 textDecoration
 textDecorationColor
