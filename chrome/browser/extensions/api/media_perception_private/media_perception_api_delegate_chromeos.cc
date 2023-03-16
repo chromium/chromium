@@ -27,11 +27,11 @@ constexpr char kFullComponentName[] = "rtanalytics-full";
 std::string GetComponentNameForComponentType(
     const extensions::api::media_perception_private::ComponentType& type) {
   switch (type) {
-    case extensions::api::media_perception_private::COMPONENT_TYPE_LIGHT:
+    case extensions::api::media_perception_private::ComponentType::kLight:
       return kLightComponentName;
-    case extensions::api::media_perception_private::COMPONENT_TYPE_FULL:
+    case extensions::api::media_perception_private::ComponentType::kFull:
       return kFullComponentName;
-    case extensions::api::media_perception_private::COMPONENT_TYPE_NONE:
+    case extensions::api::media_perception_private::ComponentType::kNone:
       LOG(ERROR) << "No component type requested.";
       return "";
   }
@@ -45,27 +45,27 @@ GetComponentInstallationErrorForCrOSComponentManagerError(
   switch (error) {
     case component_updater::CrOSComponentManager::Error::ERROR_MAX:
     case component_updater::CrOSComponentManager::Error::NONE:
-      return api::media_perception_private::COMPONENT_INSTALLATION_ERROR_NONE;
+      return api::media_perception_private::ComponentInstallationError::kNone;
     case component_updater::CrOSComponentManager::Error::UNKNOWN_COMPONENT:
-      return api::media_perception_private::
-          COMPONENT_INSTALLATION_ERROR_UNKNOWN_COMPONENT;
+      return api::media_perception_private::ComponentInstallationError::
+          kUnknownComponent;
     case component_updater::CrOSComponentManager::Error::INSTALL_FAILURE:
     case component_updater::CrOSComponentManager::Error::UPDATE_IN_PROGRESS:
-      return api::media_perception_private::
-          COMPONENT_INSTALLATION_ERROR_INSTALL_FAILURE;
+      return api::media_perception_private::ComponentInstallationError::
+          kInstallFailure;
     case component_updater::CrOSComponentManager::Error::MOUNT_FAILURE:
-      return api::media_perception_private::
-          COMPONENT_INSTALLATION_ERROR_MOUNT_FAILURE;
+      return api::media_perception_private::ComponentInstallationError::
+          kMountFailure;
     case component_updater::CrOSComponentManager::Error::
         COMPATIBILITY_CHECK_FAILED:
-      return api::media_perception_private::
-          COMPONENT_INSTALLATION_ERROR_COMPATIBILITY_CHECK_FAILED;
+      return api::media_perception_private::ComponentInstallationError::
+          kCompatibilityCheckFailed;
     case component_updater::CrOSComponentManager::Error::NOT_FOUND:
-      return api::media_perception_private::
-          COMPONENT_INSTALLATION_ERROR_NOT_FOUND;
+      return api::media_perception_private::ComponentInstallationError::
+          kNotFound;
   }
   NOTREACHED() << "Reached component error type not in switch.";
-  return api::media_perception_private::COMPONENT_INSTALLATION_ERROR_NONE;
+  return api::media_perception_private::ComponentInstallationError::kNone;
 }
 
 void OnLoadComponent(

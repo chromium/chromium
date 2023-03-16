@@ -24,12 +24,12 @@ Metadata MetadataProtoToIdl(const mri::Metadata& metadata) {
 HotwordType HotwordTypeProtoToIdl(const mri::HotwordDetection::Type& type) {
   switch (type) {
     case mri::HotwordDetection::UNKNOWN_TYPE:
-      return HOTWORD_TYPE_UNKNOWN_TYPE;
+      return HotwordType::kUnknownType;
     case mri::HotwordDetection::OK_GOOGLE:
-      return HOTWORD_TYPE_OK_GOOGLE;
+      return HotwordType::kOkGoogle;
   }
   NOTREACHED() << "Unknown hotword type: " << type;
-  return HOTWORD_TYPE_UNKNOWN_TYPE;
+  return HotwordType::kUnknownType;
 }
 
 Hotword HotwordProtoToIdl(const mri::HotwordDetection::Hotword& hotword) {
@@ -145,22 +145,22 @@ LightCondition LightConditionProtoToIdl(
     const mri::VideoHumanPresenceDetection::LightCondition& condition) {
   switch (condition) {
     case mri::VideoHumanPresenceDetection::UNSPECIFIED:
-      return LIGHT_CONDITION_UNSPECIFIED;
+      return LightCondition::kUnspecified;
     case mri::VideoHumanPresenceDetection::NO_CHANGE:
-      return LIGHT_CONDITION_NO_CHANGE;
+      return LightCondition::kNoChange;
     case mri::VideoHumanPresenceDetection::TURNED_ON:
-      return LIGHT_CONDITION_TURNED_ON;
+      return LightCondition::kTurnedOn;
     case mri::VideoHumanPresenceDetection::TURNED_OFF:
-      return LIGHT_CONDITION_TURNED_OFF;
+      return LightCondition::kTurnedOff;
     case mri::VideoHumanPresenceDetection::DIMMER:
-      return LIGHT_CONDITION_DIMMER;
+      return LightCondition::kDimmer;
     case mri::VideoHumanPresenceDetection::BRIGHTER:
-      return LIGHT_CONDITION_BRIGHTER;
+      return LightCondition::kBrighter;
     case mri::VideoHumanPresenceDetection::BLACK_FRAME:
-      return LIGHT_CONDITION_BLACK_FRAME;
+      return LightCondition::kBlackFrame;
     default:
       NOTREACHED() << "Unknown light condition: " << condition;
-      return LIGHT_CONDITION_UNSPECIFIED;
+      return LightCondition::kUnspecified;
   }
 }
 
@@ -256,15 +256,15 @@ DistanceUnits DistanceUnitsProtoToIdl(const mri::Distance& distance) {
   if (distance.has_units()) {
     switch (distance.units()) {
       case mri::Distance::METERS:
-        return DISTANCE_UNITS_METERS;
+        return DistanceUnits::kMeters;
       case mri::Distance::PIXELS:
-        return DISTANCE_UNITS_PIXELS;
+        return DistanceUnits::kPixels;
       case mri::Distance::UNITS_UNSPECIFIED:
-        return DISTANCE_UNITS_UNSPECIFIED;
+        return DistanceUnits::kUnspecified;
     }
     NOTREACHED() << "Unknown distance units: " << distance.units();
   }
-  return DISTANCE_UNITS_UNSPECIFIED;
+  return DistanceUnits::kUnspecified;
 }
 
 Distance DistanceProtoToIdl(const mri::Distance& distance) {
@@ -280,35 +280,35 @@ Distance DistanceProtoToIdl(const mri::Distance& distance) {
 FramePerceptionType FramePerceptionTypeProtoToIdl(int type) {
   switch (type) {
     case mri::FramePerception::UNKNOWN_TYPE:
-      return FRAME_PERCEPTION_TYPE_UNKNOWN_TYPE;
+      return FramePerceptionType::kUnknownType;
     case mri::FramePerception::FACE_DETECTION:
-      return FRAME_PERCEPTION_TYPE_FACE_DETECTION;
+      return FramePerceptionType::kFaceDetection;
     case mri::FramePerception::PERSON_DETECTION:
-      return FRAME_PERCEPTION_TYPE_PERSON_DETECTION;
+      return FramePerceptionType::kPersonDetection;
     case mri::FramePerception::MOTION_DETECTION:
-      return FRAME_PERCEPTION_TYPE_MOTION_DETECTION;
+      return FramePerceptionType::kMotionDetection;
   }
   NOTREACHED() << "Unknown frame perception type: " << type;
-  return FRAME_PERCEPTION_TYPE_UNKNOWN_TYPE;
+  return FramePerceptionType::kUnknownType;
 }
 
 EntityType EntityTypeProtoToIdl(const mri::Entity& entity) {
   if (entity.has_type()) {
     switch (entity.type()) {
       case mri::Entity::FACE:
-        return ENTITY_TYPE_FACE;
+        return EntityType::kFace;
       case mri::Entity::PERSON:
-        return ENTITY_TYPE_PERSON;
+        return EntityType::kPerson;
       case mri::Entity::MOTION_REGION:
-        return ENTITY_TYPE_MOTION_REGION;
+        return EntityType::kMotionRegion;
       case mri::Entity::LABELED_REGION:
-        return ENTITY_TYPE_LABELED_REGION;
+        return EntityType::kLabeledRegion;
       case mri::Entity::UNSPECIFIED:
-        return ENTITY_TYPE_UNSPECIFIED;
+        return EntityType::kUnspecified;
     }
     NOTREACHED() << "Unknown entity type: " << entity.type();
   }
-  return ENTITY_TYPE_UNSPECIFIED;
+  return EntityType::kUnspecified;
 }
 
 Entity EntityProtoToIdl(const mri::Entity& entity) {
@@ -395,17 +395,17 @@ ImageFormat ImageFormatProtoToIdl(const mri::ImageFrame& image_frame) {
   if (image_frame.has_format()) {
     switch (image_frame.format()) {
       case mri::ImageFrame::RGB:
-        return IMAGE_FORMAT_RAW;
+        return ImageFormat::kRaw;
       case mri::ImageFrame::PNG:
-        return IMAGE_FORMAT_PNG;
+        return ImageFormat::kPng;
       case mri::ImageFrame::JPEG:
-        return IMAGE_FORMAT_JPEG;
+        return ImageFormat::kJpeg;
       case mri::ImageFrame::FORMAT_UNSPECIFIED:
-        return IMAGE_FORMAT_NONE;
+        return ImageFormat::kNone;
     }
     NOTREACHED() << "Unknown image format: " << image_frame.format();
   }
-  return IMAGE_FORMAT_NONE;
+  return ImageFormat::kNone;
 }
 
 ImageFrame ImageFrameProtoToIdl(const mri::ImageFrame& image_frame) {
@@ -459,40 +459,40 @@ PerceptionSample PerceptionSampleProtoToIdl(
 Status StateStatusProtoToIdl(const mri::State& state) {
   switch (state.status()) {
     case mri::State::UNINITIALIZED:
-      return STATUS_UNINITIALIZED;
+      return Status::kUninitialized;
     case mri::State::STARTED:
-      return STATUS_STARTED;
+      return Status::kStarted;
     case mri::State::RUNNING:
-      return STATUS_RUNNING;
+      return Status::kRunning;
     case mri::State::SUSPENDED:
-      return STATUS_SUSPENDED;
+      return Status::kSuspended;
     case mri::State::RESTARTING:
-      return STATUS_RESTARTING;
+      return Status::kRestarting;
     case mri::State::STOPPED:
-      return STATUS_STOPPED;
+      return Status::kStopped;
     case mri::State::STATUS_UNSPECIFIED:
-      return STATUS_NONE;
+      return Status::kNone;
   }
   NOTREACHED() << "Reached status not in switch.";
-  return STATUS_NONE;
+  return Status::kNone;
 }
 
 mri::State::Status StateStatusIdlToProto(const State& state) {
   switch (state.status) {
-    case STATUS_UNINITIALIZED:
+    case Status::kUninitialized:
       return mri::State::UNINITIALIZED;
-    case STATUS_STARTED:
+    case Status::kStarted:
       return mri::State::STARTED;
-    case STATUS_RUNNING:
+    case Status::kRunning:
       return mri::State::RUNNING;
-    case STATUS_SUSPENDED:
+    case Status::kSuspended:
       return mri::State::SUSPENDED;
-    case STATUS_RESTARTING:
+    case Status::kRestarting:
       return mri::State::RESTARTING;
-    case STATUS_STOPPED:  // Process is stopped by MPP.
+    case Status::kStopped:  // Process is stopped by MPP.
       return mri::State::STOPPED;
-    case STATUS_SERVICE_ERROR:
-    case STATUS_NONE:
+    case Status::kServiceError:
+    case Status::kNone:
       return mri::State::STATUS_UNSPECIFIED;
   }
   NOTREACHED() << "Reached status not in switch.";
@@ -502,35 +502,35 @@ mri::State::Status StateStatusIdlToProto(const State& state) {
 Feature FeatureProtoToIdl(int feature) {
   switch (feature) {
     case mri::State::FEATURE_AUTOZOOM:
-      return FEATURE_AUTOZOOM;
+      return Feature::kAutozoom;
     case mri::State::FEATURE_HOTWORD_DETECTION:
-      return FEATURE_HOTWORD_DETECTION;
+      return Feature::kHotwordDetection;
     case mri::State::FEATURE_OCCUPANCY_DETECTION:
-      return FEATURE_OCCUPANCY_DETECTION;
+      return Feature::kOccupancyDetection;
     case mri::State::FEATURE_EDGE_EMBEDDINGS:
-      return FEATURE_EDGE_EMBEDDINGS;
+      return Feature::kEdgeEmbeddings;
     case mri::State::FEATURE_SOFTWARE_CROPPING:
-      return FEATURE_SOFTWARE_CROPPING;
+      return Feature::kSoftwareCropping;
     case mri::State::FEATURE_UNSET:
-      return FEATURE_NONE;
+      return Feature::kNone;
   }
   NOTREACHED() << "Reached feature not in switch.";
-  return FEATURE_NONE;
+  return Feature::kNone;
 }
 
 mri::State::Feature FeatureIdlToProto(const Feature& feature) {
   switch (feature) {
-    case FEATURE_AUTOZOOM:
+    case Feature::kAutozoom:
       return mri::State::FEATURE_AUTOZOOM;
-    case FEATURE_HOTWORD_DETECTION:
+    case Feature::kHotwordDetection:
       return mri::State::FEATURE_HOTWORD_DETECTION;
-    case FEATURE_OCCUPANCY_DETECTION:
+    case Feature::kOccupancyDetection:
       return mri::State::FEATURE_OCCUPANCY_DETECTION;
-    case FEATURE_EDGE_EMBEDDINGS:
+    case Feature::kEdgeEmbeddings:
       return mri::State::FEATURE_EDGE_EMBEDDINGS;
-    case FEATURE_SOFTWARE_CROPPING:
+    case Feature::kSoftwareCropping:
       return mri::State::FEATURE_SOFTWARE_CROPPING;
-    case FEATURE_NONE:
+    case Feature::kNone:
       return mri::State::FEATURE_UNSET;
   }
   NOTREACHED() << "Reached feature not in switch.";
@@ -677,8 +677,9 @@ State StateProtoToIdl(const mri::State& state) {
     state_result.features.emplace();
     for (const auto& feature : state.features()) {
       const Feature feature_result = FeatureProtoToIdl(feature);
-      if (feature_result != FEATURE_NONE)
+      if (feature_result != Feature::kNone) {
         state_result.features->emplace_back(feature_result);
+      }
     }
   }
 

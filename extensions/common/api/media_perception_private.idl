@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Private API for receiving real-time media perception information.
-[platforms=("chromeos")]
+[platforms=("chromeos"), modernised_enums]
 namespace mediaPerceptionPrivate {
   enum Status {
     // The media analytics process is waiting to be launched.

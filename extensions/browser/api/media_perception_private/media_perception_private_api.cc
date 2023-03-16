@@ -41,13 +41,13 @@ MediaPerceptionPrivateSetStateFunction::Run() {
               args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (params->state.status !=
-          extensions::api::media_perception_private::STATUS_RUNNING &&
+          extensions::api::media_perception_private::Status::kRunning &&
       params->state.status !=
-          extensions::api::media_perception_private::STATUS_SUSPENDED &&
+          extensions::api::media_perception_private::Status::kSuspended &&
       params->state.status !=
-          extensions::api::media_perception_private::STATUS_RESTARTING &&
+          extensions::api::media_perception_private::Status::kRestarting &&
       params->state.status !=
-          extensions::api::media_perception_private::STATUS_STOPPED) {
+          extensions::api::media_perception_private::Status::kStopped) {
     return RespondNow(
         Error("Status can only be set to RUNNING, SUSPENDED, RESTARTING, or "
               "STOPPED."));
@@ -55,7 +55,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
 
   // Check that device context is only provided with SetState RUNNING.
   if (params->state.status !=
-          extensions::api::media_perception_private::STATUS_RUNNING &&
+          extensions::api::media_perception_private::Status::kRunning &&
       params->state.device_context) {
     return RespondNow(
         Error("Only provide deviceContext with SetState RUNNING."));
@@ -63,7 +63,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
 
   // Check that video stream parameters are only provided with SetState RUNNING.
   if (params->state.status !=
-          extensions::api::media_perception_private::STATUS_RUNNING &&
+          extensions::api::media_perception_private::Status::kRunning &&
       params->state.video_stream_param) {
     return RespondNow(
         Error("SetState: status must be RUNNING to set videoStreamParam."));
@@ -72,14 +72,14 @@ MediaPerceptionPrivateSetStateFunction::Run() {
   // Check that configuration is only provided with SetState RUNNING.
   if (params->state.configuration &&
       params->state.status !=
-          extensions::api::media_perception_private::STATUS_RUNNING) {
+          extensions::api::media_perception_private::Status::kRunning) {
     return RespondNow(Error("Status must be RUNNING to set configuration."));
   }
 
   // Check that whiteboard configuration is only provided with SetState RUNNING.
   if (params->state.whiteboard &&
       params->state.status !=
-          extensions::api::media_perception_private::STATUS_RUNNING) {
+          extensions::api::media_perception_private::Status::kRunning) {
     return RespondNow(Error(
         "Status must be RUNNING to set whiteboard configuration."));
   }
@@ -164,9 +164,9 @@ MediaPerceptionPrivateSetComponentProcessStateFunction::Run() {
           SetComponentProcessState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (params->process_state.status !=
-          extensions::api::media_perception_private::PROCESS_STATUS_STARTED &&
+          extensions::api::media_perception_private::ProcessStatus::kStarted &&
       params->process_state.status !=
-          extensions::api::media_perception_private::PROCESS_STATUS_STOPPED) {
+          extensions::api::media_perception_private::ProcessStatus::kStopped) {
     return RespondNow(
         Error("Cannot set process_state to something other than STARTED or "
               "STOPPED."));
