@@ -359,8 +359,10 @@ bool ShouldVulkanSyncCpuForSkiaSubmit(
     const absl::optional<uint32_t>& sync_cpu_memory_limit =
         context_provider->GetSyncCpuMemoryLimit();
     if (sync_cpu_memory_limit.has_value()) {
-      uint64_t total_allocated_bytes = gpu::vma::GetTotalAllocatedMemory(
-          context_provider->GetDeviceQueue()->vma_allocator());
+      uint64_t total_allocated_bytes =
+          gpu::vma::GetTotalAllocatedAndUsedMemory(
+              context_provider->GetDeviceQueue()->vma_allocator())
+              .first;
       if (total_allocated_bytes > sync_cpu_memory_limit.value()) {
         return true;
       }

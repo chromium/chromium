@@ -12,6 +12,9 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"  // nogncheck
 #include "gpu/config/vulkan_info.h"
@@ -31,6 +34,7 @@ VulkanDeviceQueue::VulkanDeviceQueue(VulkanInstance* instance)
     : vk_instance_(instance->vk_instance()), instance_(instance) {}
 
 VulkanDeviceQueue::~VulkanDeviceQueue() {
+  // Destroy() should have been called.
   DCHECK_EQ(static_cast<VkPhysicalDevice>(VK_NULL_HANDLE), vk_physical_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
   DCHECK_EQ(static_cast<VkQueue>(VK_NULL_HANDLE), vk_queue_);
@@ -337,6 +341,11 @@ bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
   }
 
   cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
+
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "vulkan", base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
   return true;
 }
 
@@ -424,6 +433,9 @@ bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
 }
 
 void VulkanDeviceQueue::Destroy() {
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+
   if (cleanup_helper_) {
     cleanup_helper_->Destroy();
     cleanup_helper_.reset();
@@ -460,6 +472,17 @@ std::unique_ptr<VulkanCommandPool> VulkanDeviceQueue::CreateCommandPool() {
     return nullptr;
 
   return command_pool;
+}
+
+bool VulkanDeviceQueue::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  auto* dump = pmd->CreateAllocatorDump(
+      base::StringPrintf("gpu/vulkan/vma_allocator_%p", pmd));
+  auto allocated_used = vma::GetTotalAllocatedAndUsedMemory(vma_allocator());
+  dump->AddScalar("allocated_size", "bytes", allocated_used.first);
+  dump->AddScalar("used_size", "bytes", allocated_used.second);
+  return true;
 }
 
 }  // namespace gpu
