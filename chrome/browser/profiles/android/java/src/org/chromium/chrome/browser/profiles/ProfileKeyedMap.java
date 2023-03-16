@@ -92,4 +92,9 @@ public class ProfileKeyedMap<T> {
         }
         mData.clear();
     }
+
+    /** @return The number of Profile -> obj mappings that exist. */
+    public int size() {
+        return mData.size();
+    }
 }

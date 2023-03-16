@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -87,18 +86,5 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
 
         Profile.setLastUsedProfileForTesting(mProfileTwo);
         Assert.assertEquals(regularProfileTwoService, factory.getForLastUsedProfile());
-    }
-
-    @Test
-    @SmallTest
-    public void testServiceDestroyedWhenProfileIsDestroyed() {
-        CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
-        Profile.setLastUsedProfileForTesting(mProfileOne);
-        CommerceSubscriptionsService service = factory.getForLastUsedProfile();
-        Assert.assertEquals(
-                1, CommerceSubscriptionsServiceFactory.sProfileToSubscriptionsService.size());
-        ProfileManager.onProfileDestroyed(mProfileOne);
-        Assert.assertTrue(
-                CommerceSubscriptionsServiceFactory.sProfileToSubscriptionsService.isEmpty());
     }
 }

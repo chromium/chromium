@@ -8,6 +8,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.nio.ByteBuffer;
@@ -18,7 +19,7 @@ import java.util.Locale;
  * {@link LevelDBPersistedTabDataStorage} provides a level db backed implementation
  * of {@link PersistedTabDataStorage}.
  */
-public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
+public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, Destroyable {
     // In a mock environment, the native code will not be running so we should not
     // make assertions about mNativePersistedStateDB
     // LevelDBPersistedTabDataStorage needs to have an empty namespace for backwards compatibility.
@@ -152,6 +153,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     /**
      * Destroy native instance of persisted_tab_state
      */
+    @Override
     public void destroy() {
         mPersistedDataStorage.destroy();
         mIsDestroyed = true;
@@ -161,5 +163,4 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     protected boolean isDestroyed() {
         return mIsDestroyed;
     }
-
 }

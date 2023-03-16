@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.optimization_guide;
 
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -15,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -24,7 +20,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 
@@ -88,22 +83,5 @@ public class OptimizationGuideBridgeFactoryUnitTest {
         // Mock profile 2 again
         Profile.setLastUsedProfileForTesting(mProfile2);
         Assert.assertEquals(bridgeRegularMockProfile2, bridgeFactory.create());
-    }
-
-    @UiThreadTest
-    @SmallTest
-    @Test
-    public void testBridgeDestroyedWhenProfileDestroyed() {
-        Profile.setLastUsedProfileForTesting(null);
-        Profile profile = Profile.getLastUsedRegularProfile();
-        OptimizationGuideBridgeFactory bridgeFactory = new OptimizationGuideBridgeFactory(
-                Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR));
-        OptimizationGuideBridge bridge = bridgeFactory.create();
-        Assert.assertEquals(1, bridgeFactory.mProfileToOptimizationGuideBridgeMap.size());
-        OptimizationGuideBridge spyBridge = spy(bridge);
-        bridgeFactory.mProfileToOptimizationGuideBridgeMap.put(profile, spyBridge);
-        ProfileManager.onProfileDestroyed(profile);
-        Mockito.verify(spyBridge, times(1)).destroy();
-        Assert.assertTrue(bridgeFactory.mProfileToOptimizationGuideBridgeMap.isEmpty());
     }
 }

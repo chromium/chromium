@@ -11,6 +11,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
@@ -27,7 +28,7 @@ import java.util.List;
  * An instance of this class must be created, used, and destroyed on the UI thread.
  */
 @JNINamespace("optimization_guide::android")
-public class OptimizationGuideBridge {
+public class OptimizationGuideBridge implements Destroyable {
     private long mNativeOptimizationGuideBridge;
 
     /**
@@ -57,6 +58,7 @@ public class OptimizationGuideBridge {
     /**
      * Deletes the C++ side of this class. This must be called when this object is no longer needed.
      */
+    @Override
     public void destroy() {
         ThreadUtils.assertOnUiThread();
 

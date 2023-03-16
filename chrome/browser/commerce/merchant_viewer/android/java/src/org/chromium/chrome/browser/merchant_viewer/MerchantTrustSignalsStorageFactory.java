@@ -6,26 +6,27 @@ package org.chromium.chrome.browser.merchant_viewer;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
 /** {@link Profile}-aware factory class for MerchantTrustSignalsStorage. */
 class MerchantTrustSignalsStorageFactory {
     @VisibleForTesting
-    protected static final Map<Profile, MerchantTrustSignalsEventStorage> sProfileToStorage =
-            new HashMap<>();
+    protected static ProfileKeyedMap<MerchantTrustSignalsEventStorage> sProfileToStorage;
 
     private final ObservableSupplier<Profile> mProfileSupplier;
-    private final CallbackController mCallbackController;
 
     MerchantTrustSignalsStorageFactory(ObservableSupplier<Profile> profileSupplier) {
+        if (sProfileToStorage == null) {
+            // TODO(1422789): MerchantTrustSignalsEventStorage has a native counterpart that is
+            //     never destroyed. So, this will leak native objects anytime a profile is
+            //     destroyed, which is infrequent given the single profile app behavior. To fix
+            //     this, add a cleanup/destroy method to MerchantTrustSignalsEventStorage and
+            //     switch to the ProfileKeyedMap variant that handles proper cleanup.
+            sProfileToStorage = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+        }
         mProfileSupplier = profileSupplier;
-        mCallbackController = new CallbackController();
-        mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::onProfileAvailable));
     }
 
     /**
@@ -34,11 +35,12 @@ class MerchantTrustSignalsStorageFactory {
      */
     MerchantTrustSignalsEventStorage getForLastUsedProfile() {
         Profile profile = mProfileSupplier.get();
-        if (profile == null) {
+        if (profile == null || profile.isOffTheRecord()) {
             return null;
         }
 
-        return sProfileToStorage.get(profile);
+        return sProfileToStorage.getForProfile(
+                profile, () -> new MerchantTrustSignalsEventStorage(profile));
     }
 
     /**
@@ -46,14 +48,6 @@ class MerchantTrustSignalsStorageFactory {
      * context {@link Profile} supplier.
      */
     void destroy() {
-        sProfileToStorage.clear();
-    }
-
-    private void onProfileAvailable(Profile profile) {
-        if (profile == null || profile.isOffTheRecord() || sProfileToStorage.get(profile) != null) {
-            return;
-        }
-
-        sProfileToStorage.put(profile, new MerchantTrustSignalsEventStorage(profile));
+        sProfileToStorage.destroy();
     }
 }
