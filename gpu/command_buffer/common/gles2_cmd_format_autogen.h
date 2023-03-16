@@ -16300,4 +16300,494 @@ static_assert(offsetof(ProvokingVertexANGLE, header) == 0,
 static_assert(offsetof(ProvokingVertexANGLE, provokeMode) == 4,
               "offset of ProvokingVertexANGLE provokeMode should be 4");
 
+struct FramebufferMemorylessPixelLocalStorageANGLE {
+  typedef FramebufferMemorylessPixelLocalStorageANGLE ValueType;
+  static const CommandId kCmdId = kFramebufferMemorylessPixelLocalStorageANGLE;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLint _plane, GLenum _internalformat) {
+    SetHeader();
+    plane = _plane;
+    internalformat = _internalformat;
+  }
+
+  void* Set(void* cmd, GLint _plane, GLenum _internalformat) {
+    static_cast<ValueType*>(cmd)->Init(_plane, _internalformat);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t plane;
+  uint32_t internalformat;
+};
+
+static_assert(
+    sizeof(FramebufferMemorylessPixelLocalStorageANGLE) == 12,
+    "size of FramebufferMemorylessPixelLocalStorageANGLE should be 12");
+static_assert(
+    offsetof(FramebufferMemorylessPixelLocalStorageANGLE, header) == 0,
+    "offset of FramebufferMemorylessPixelLocalStorageANGLE header should be 0");
+static_assert(
+    offsetof(FramebufferMemorylessPixelLocalStorageANGLE, plane) == 4,
+    "offset of FramebufferMemorylessPixelLocalStorageANGLE plane should be 4");
+static_assert(offsetof(FramebufferMemorylessPixelLocalStorageANGLE,
+                       internalformat) == 8,
+              "offset of FramebufferMemorylessPixelLocalStorageANGLE "
+              "internalformat should be 8");
+
+struct FramebufferTexturePixelLocalStorageANGLE {
+  typedef FramebufferTexturePixelLocalStorageANGLE ValueType;
+  static const CommandId kCmdId = kFramebufferTexturePixelLocalStorageANGLE;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLint _plane, GLuint _backingtexture, GLint _level, GLint _layer) {
+    SetHeader();
+    plane = _plane;
+    backingtexture = _backingtexture;
+    level = _level;
+    layer = _layer;
+  }
+
+  void* Set(void* cmd,
+            GLint _plane,
+            GLuint _backingtexture,
+            GLint _level,
+            GLint _layer) {
+    static_cast<ValueType*>(cmd)->Init(_plane, _backingtexture, _level, _layer);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t plane;
+  uint32_t backingtexture;
+  int32_t level;
+  int32_t layer;
+};
+
+static_assert(sizeof(FramebufferTexturePixelLocalStorageANGLE) == 20,
+              "size of FramebufferTexturePixelLocalStorageANGLE should be 20");
+static_assert(
+    offsetof(FramebufferTexturePixelLocalStorageANGLE, header) == 0,
+    "offset of FramebufferTexturePixelLocalStorageANGLE header should be 0");
+static_assert(
+    offsetof(FramebufferTexturePixelLocalStorageANGLE, plane) == 4,
+    "offset of FramebufferTexturePixelLocalStorageANGLE plane should be 4");
+static_assert(offsetof(FramebufferTexturePixelLocalStorageANGLE,
+                       backingtexture) == 8,
+              "offset of FramebufferTexturePixelLocalStorageANGLE "
+              "backingtexture should be 8");
+static_assert(
+    offsetof(FramebufferTexturePixelLocalStorageANGLE, level) == 12,
+    "offset of FramebufferTexturePixelLocalStorageANGLE level should be 12");
+static_assert(
+    offsetof(FramebufferTexturePixelLocalStorageANGLE, layer) == 16,
+    "offset of FramebufferTexturePixelLocalStorageANGLE layer should be 16");
+
+struct FramebufferPixelLocalClearValuefvANGLEImmediate {
+  typedef FramebufferPixelLocalClearValuefvANGLEImmediate ValueType;
+  static const CommandId kCmdId =
+      kFramebufferPixelLocalClearValuefvANGLEImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeDataSize() {
+    return static_cast<uint32_t>(sizeof(GLfloat) * 4);
+  }
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
+  }
+
+  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
+
+  void Init(GLint _plane, const GLfloat* _value) {
+    SetHeader();
+    plane = _plane;
+    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize());
+  }
+
+  void* Set(void* cmd, GLint _plane, const GLfloat* _value) {
+    static_cast<ValueType*>(cmd)->Init(_plane, _value);
+    const uint32_t size = ComputeSize();
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  int32_t plane;
+};
+
+static_assert(
+    sizeof(FramebufferPixelLocalClearValuefvANGLEImmediate) == 8,
+    "size of FramebufferPixelLocalClearValuefvANGLEImmediate should be 8");
+static_assert(offsetof(FramebufferPixelLocalClearValuefvANGLEImmediate,
+                       header) == 0,
+              "offset of FramebufferPixelLocalClearValuefvANGLEImmediate "
+              "header should be 0");
+static_assert(offsetof(FramebufferPixelLocalClearValuefvANGLEImmediate,
+                       plane) == 4,
+              "offset of FramebufferPixelLocalClearValuefvANGLEImmediate plane "
+              "should be 4");
+
+struct FramebufferPixelLocalClearValueivANGLEImmediate {
+  typedef FramebufferPixelLocalClearValueivANGLEImmediate ValueType;
+  static const CommandId kCmdId =
+      kFramebufferPixelLocalClearValueivANGLEImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeDataSize() {
+    return static_cast<uint32_t>(sizeof(GLint) * 4);
+  }
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
+  }
+
+  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
+
+  void Init(GLint _plane, const GLint* _value) {
+    SetHeader();
+    plane = _plane;
+    memcpy(ImmediateDataAddress(this), _value, ComputeDataSize());
+  }
+
+  void* Set(void* cmd, GLint _plane, const GLint* _value) {
+    static_cast<ValueType*>(cmd)->Init(_plane, _value);
+    const uint32_t size = ComputeSize();
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  int32_t plane;
+};
+
+static_assert(
+    sizeof(FramebufferPixelLocalClearValueivANGLEImmediate) == 8,
+    "size of FramebufferPixelLocalClearValueivANGLEImmediate should be 8");
+static_assert(offsetof(FramebufferPixelLocalClearValueivANGLEImmediate,
+                       header) == 0,
+              "offset of FramebufferPixelLocalClearValueivANGLEImmediate "
+              "header should be 0");
+static_assert(offsetof(FramebufferPixelLocalClearValueivANGLEImmediate,
+                       plane) == 4,
+              "offset of FramebufferPixelLocalClearValueivANGLEImmediate plane "
+              "should be 4");
+
+struct FramebufferPixelLocalClearValueuivANGLEImmediate {
+  typedef FramebufferPixelLocalClearValueuivANGLEImmediate ValueType;
+  static const CommandId kCmdId =
+      kFramebufferPixelLocalClearValueuivANGLEImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeDataSize() {
+    return static_cast<uint32_t>(sizeof(GLuint) * 4);
+  }
+
+  static uint32_t ComputeEffectiveDataSize(GLint plane) {
+    return static_cast<uint32_t>(
+        sizeof(GLuint) *
+        GLES2Util::CalcFramebufferPixelLocalClearValueuivANGLEDataCount(plane));
+  }
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
+  }
+
+  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
+
+  void Init(GLint _plane, const GLuint* _value) {
+    SetHeader();
+    plane = _plane;
+    memcpy(ImmediateDataAddress(this), _value, ComputeEffectiveDataSize(plane));
+    DCHECK_GE(ComputeDataSize(), ComputeEffectiveDataSize(plane));
+    char* pointer = reinterpret_cast<char*>(ImmediateDataAddress(this)) +
+                    ComputeEffectiveDataSize(plane);
+    memset(pointer, 0, ComputeDataSize() - ComputeEffectiveDataSize(plane));
+  }
+
+  void* Set(void* cmd, GLint _plane, const GLuint* _value) {
+    static_cast<ValueType*>(cmd)->Init(_plane, _value);
+    const uint32_t size = ComputeSize();
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  int32_t plane;
+};
+
+static_assert(
+    sizeof(FramebufferPixelLocalClearValueuivANGLEImmediate) == 8,
+    "size of FramebufferPixelLocalClearValueuivANGLEImmediate should be 8");
+static_assert(offsetof(FramebufferPixelLocalClearValueuivANGLEImmediate,
+                       header) == 0,
+              "offset of FramebufferPixelLocalClearValueuivANGLEImmediate "
+              "header should be 0");
+static_assert(offsetof(FramebufferPixelLocalClearValueuivANGLEImmediate,
+                       plane) == 4,
+              "offset of FramebufferPixelLocalClearValueuivANGLEImmediate "
+              "plane should be 4");
+
+struct BeginPixelLocalStorageANGLEImmediate {
+  typedef BeginPixelLocalStorageANGLEImmediate ValueType;
+  static const CommandId kCmdId = kBeginPixelLocalStorageANGLEImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeDataSize(GLsizei _n) {
+    return static_cast<uint32_t>(sizeof(GLenum) * 1 * _n);  // NOLINT
+  }
+
+  static uint32_t ComputeSize(GLsizei _n) {
+    return static_cast<uint32_t>(sizeof(ValueType) +
+                                 ComputeDataSize(_n));  // NOLINT
+  }
+
+  void SetHeader(GLsizei _n) {
+    header.SetCmdByTotalSize<ValueType>(ComputeSize(_n));
+  }
+
+  void Init(GLsizei _count, const GLenum* _loadops) {
+    SetHeader(_count);
+    count = _count;
+    memcpy(ImmediateDataAddress(this), _loadops, ComputeDataSize(_count));
+  }
+
+  void* Set(void* cmd, GLsizei _count, const GLenum* _loadops) {
+    static_cast<ValueType*>(cmd)->Init(_count, _loadops);
+    const uint32_t size = ComputeSize(_count);
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  int32_t count;
+};
+
+static_assert(sizeof(BeginPixelLocalStorageANGLEImmediate) == 8,
+              "size of BeginPixelLocalStorageANGLEImmediate should be 8");
+static_assert(
+    offsetof(BeginPixelLocalStorageANGLEImmediate, header) == 0,
+    "offset of BeginPixelLocalStorageANGLEImmediate header should be 0");
+static_assert(
+    offsetof(BeginPixelLocalStorageANGLEImmediate, count) == 4,
+    "offset of BeginPixelLocalStorageANGLEImmediate count should be 4");
+
+struct EndPixelLocalStorageANGLEImmediate {
+  typedef EndPixelLocalStorageANGLEImmediate ValueType;
+  static const CommandId kCmdId = kEndPixelLocalStorageANGLEImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeDataSize(GLsizei _n) {
+    return static_cast<uint32_t>(sizeof(GLenum) * 1 * _n);  // NOLINT
+  }
+
+  static uint32_t ComputeSize(GLsizei _n) {
+    return static_cast<uint32_t>(sizeof(ValueType) +
+                                 ComputeDataSize(_n));  // NOLINT
+  }
+
+  void SetHeader(GLsizei _n) {
+    header.SetCmdByTotalSize<ValueType>(ComputeSize(_n));
+  }
+
+  void Init(GLsizei _count, const GLenum* _storeops) {
+    SetHeader(_count);
+    count = _count;
+    memcpy(ImmediateDataAddress(this), _storeops, ComputeDataSize(_count));
+  }
+
+  void* Set(void* cmd, GLsizei _count, const GLenum* _storeops) {
+    static_cast<ValueType*>(cmd)->Init(_count, _storeops);
+    const uint32_t size = ComputeSize(_count);
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  int32_t count;
+};
+
+static_assert(sizeof(EndPixelLocalStorageANGLEImmediate) == 8,
+              "size of EndPixelLocalStorageANGLEImmediate should be 8");
+static_assert(
+    offsetof(EndPixelLocalStorageANGLEImmediate, header) == 0,
+    "offset of EndPixelLocalStorageANGLEImmediate header should be 0");
+static_assert(offsetof(EndPixelLocalStorageANGLEImmediate, count) == 4,
+              "offset of EndPixelLocalStorageANGLEImmediate count should be 4");
+
+struct PixelLocalStorageBarrierANGLE {
+  typedef PixelLocalStorageBarrierANGLE ValueType;
+  static const CommandId kCmdId = kPixelLocalStorageBarrierANGLE;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init() { SetHeader(); }
+
+  void* Set(void* cmd) {
+    static_cast<ValueType*>(cmd)->Init();
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+};
+
+static_assert(sizeof(PixelLocalStorageBarrierANGLE) == 4,
+              "size of PixelLocalStorageBarrierANGLE should be 4");
+static_assert(offsetof(PixelLocalStorageBarrierANGLE, header) == 0,
+              "offset of PixelLocalStorageBarrierANGLE header should be 0");
+
+struct GetFramebufferPixelLocalStorageParameterfvANGLE {
+  typedef GetFramebufferPixelLocalStorageParameterfvANGLE ValueType;
+  static const CommandId kCmdId =
+      kGetFramebufferPixelLocalStorageParameterfvANGLE;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  typedef SizedResult<GLfloat> Result;
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLint _plane,
+            GLenum _pname,
+            uint32_t _params_shm_id,
+            uint32_t _params_shm_offset) {
+    SetHeader();
+    plane = _plane;
+    pname = _pname;
+    params_shm_id = _params_shm_id;
+    params_shm_offset = _params_shm_offset;
+  }
+
+  void* Set(void* cmd,
+            GLint _plane,
+            GLenum _pname,
+            uint32_t _params_shm_id,
+            uint32_t _params_shm_offset) {
+    static_cast<ValueType*>(cmd)->Init(_plane, _pname, _params_shm_id,
+                                       _params_shm_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t plane;
+  uint32_t pname;
+  uint32_t params_shm_id;
+  uint32_t params_shm_offset;
+};
+
+static_assert(
+    sizeof(GetFramebufferPixelLocalStorageParameterfvANGLE) == 20,
+    "size of GetFramebufferPixelLocalStorageParameterfvANGLE should be 20");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterfvANGLE,
+                       header) == 0,
+              "offset of GetFramebufferPixelLocalStorageParameterfvANGLE "
+              "header should be 0");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterfvANGLE,
+                       plane) == 4,
+              "offset of GetFramebufferPixelLocalStorageParameterfvANGLE plane "
+              "should be 4");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterfvANGLE,
+                       pname) == 8,
+              "offset of GetFramebufferPixelLocalStorageParameterfvANGLE pname "
+              "should be 8");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterfvANGLE,
+                       params_shm_id) == 12,
+              "offset of GetFramebufferPixelLocalStorageParameterfvANGLE "
+              "params_shm_id should be 12");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterfvANGLE,
+                       params_shm_offset) == 16,
+              "offset of GetFramebufferPixelLocalStorageParameterfvANGLE "
+              "params_shm_offset should be 16");
+
+struct GetFramebufferPixelLocalStorageParameterivANGLE {
+  typedef GetFramebufferPixelLocalStorageParameterivANGLE ValueType;
+  static const CommandId kCmdId =
+      kGetFramebufferPixelLocalStorageParameterivANGLE;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  typedef SizedResult<GLint> Result;
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLint _plane,
+            GLenum _pname,
+            uint32_t _params_shm_id,
+            uint32_t _params_shm_offset) {
+    SetHeader();
+    plane = _plane;
+    pname = _pname;
+    params_shm_id = _params_shm_id;
+    params_shm_offset = _params_shm_offset;
+  }
+
+  void* Set(void* cmd,
+            GLint _plane,
+            GLenum _pname,
+            uint32_t _params_shm_id,
+            uint32_t _params_shm_offset) {
+    static_cast<ValueType*>(cmd)->Init(_plane, _pname, _params_shm_id,
+                                       _params_shm_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t plane;
+  uint32_t pname;
+  uint32_t params_shm_id;
+  uint32_t params_shm_offset;
+};
+
+static_assert(
+    sizeof(GetFramebufferPixelLocalStorageParameterivANGLE) == 20,
+    "size of GetFramebufferPixelLocalStorageParameterivANGLE should be 20");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterivANGLE,
+                       header) == 0,
+              "offset of GetFramebufferPixelLocalStorageParameterivANGLE "
+              "header should be 0");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterivANGLE,
+                       plane) == 4,
+              "offset of GetFramebufferPixelLocalStorageParameterivANGLE plane "
+              "should be 4");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterivANGLE,
+                       pname) == 8,
+              "offset of GetFramebufferPixelLocalStorageParameterivANGLE pname "
+              "should be 8");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterivANGLE,
+                       params_shm_id) == 12,
+              "offset of GetFramebufferPixelLocalStorageParameterivANGLE "
+              "params_shm_id should be 12");
+static_assert(offsetof(GetFramebufferPixelLocalStorageParameterivANGLE,
+                       params_shm_offset) == 16,
+              "offset of GetFramebufferPixelLocalStorageParameterivANGLE "
+              "params_shm_offset should be 16");
+
 #endif  // GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_AUTOGEN_H_

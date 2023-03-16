@@ -19,6 +19,8 @@ MOCK_METHOD3(AcquireTexturesANGLE,
 MOCK_METHOD2(ActiveShaderProgram, void(GLuint pipeline, GLuint program));
 MOCK_METHOD1(ActiveTexture, void(GLenum texture));
 MOCK_METHOD2(AttachShader, void(GLuint program, GLuint shader));
+MOCK_METHOD2(BeginPixelLocalStorageANGLE,
+             void(GLsizei n, const GLenum* loadops));
 MOCK_METHOD2(BeginQuery, void(GLenum target, GLuint id));
 MOCK_METHOD1(BeginTransformFeedback, void(GLenum primitiveMode));
 MOCK_METHOD3(BindAttribLocation,
@@ -366,6 +368,8 @@ MOCK_METHOD2(EGLImageTargetTexture2DOES,
 MOCK_METHOD1(Enable, void(GLenum cap));
 MOCK_METHOD2(EnableiOES, void(GLenum target, GLuint index));
 MOCK_METHOD1(EnableVertexAttribArray, void(GLuint index));
+MOCK_METHOD2(EndPixelLocalStorageANGLE,
+             void(GLsizei n, const GLenum* storeops));
 MOCK_METHOD1(EndQuery, void(GLenum target));
 MOCK_METHOD1(EndTilingQCOM, void(GLbitfield preserveMask));
 MOCK_METHOD0(EndTransformFeedback, void());
@@ -377,8 +381,16 @@ MOCK_METHOD1(FinishFenceNV, void(GLuint fence));
 MOCK_METHOD0(Flush, void());
 MOCK_METHOD3(FlushMappedBufferRange,
              void(GLenum target, GLintptr offset, GLsizeiptr length));
+MOCK_METHOD2(FramebufferMemorylessPixelLocalStorageANGLE,
+             void(GLint plane, GLenum internalformat));
 MOCK_METHOD3(FramebufferParameteri,
              void(GLenum target, GLenum pname, GLint param));
+MOCK_METHOD2(FramebufferPixelLocalClearValuefvANGLE,
+             void(GLint plane, const GLfloat* value));
+MOCK_METHOD2(FramebufferPixelLocalClearValueivANGLE,
+             void(GLint plane, const GLint* value));
+MOCK_METHOD2(FramebufferPixelLocalClearValueuivANGLE,
+             void(GLint plane, const GLuint* value));
 MOCK_METHOD4(FramebufferRenderbufferEXT,
              void(GLenum target,
                   GLenum attachment,
@@ -410,6 +422,9 @@ MOCK_METHOD6(FramebufferTextureMultiviewOVR,
                   GLint level,
                   GLint baseViewIndex,
                   GLsizei numViews));
+MOCK_METHOD4(
+    FramebufferTexturePixelLocalStorageANGLE,
+    void(GLint plane, GLuint backingtexture, GLint level, GLint layer));
 MOCK_METHOD1(FrontFace, void(GLenum mode));
 MOCK_METHOD2(GenBuffersARB, void(GLsizei n, GLuint* buffers));
 MOCK_METHOD1(GenerateMipmapEXT, void(GLenum target));
@@ -531,6 +546,22 @@ MOCK_METHOD3(GetFramebufferParameteriv,
              void(GLenum target, GLenum pname, GLint* params));
 MOCK_METHOD5(GetFramebufferParameterivRobustANGLE,
              void(GLenum target,
+                  GLenum pname,
+                  GLsizei bufSize,
+                  GLsizei* length,
+                  GLint* params));
+MOCK_METHOD3(GetFramebufferPixelLocalStorageParameterfvANGLE,
+             void(GLint plane, GLenum pname, GLfloat* params));
+MOCK_METHOD5(GetFramebufferPixelLocalStorageParameterfvRobustANGLE,
+             void(GLint plane,
+                  GLenum pname,
+                  GLsizei bufSize,
+                  GLsizei* length,
+                  GLfloat* params));
+MOCK_METHOD3(GetFramebufferPixelLocalStorageParameterivANGLE,
+             void(GLint plane, GLenum pname, GLint* params));
+MOCK_METHOD5(GetFramebufferPixelLocalStorageParameterivRobustANGLE,
+             void(GLint plane,
                   GLenum pname,
                   GLsizei bufSize,
                   GLsizei* length,
@@ -1010,6 +1041,7 @@ MOCK_METHOD3(PathParameterfNV, void(GLuint path, GLenum pname, GLfloat value));
 MOCK_METHOD3(PathParameteriNV, void(GLuint path, GLenum pname, GLint value));
 MOCK_METHOD3(PathStencilFuncNV, void(GLenum func, GLint ref, GLuint mask));
 MOCK_METHOD0(PauseTransformFeedback, void());
+MOCK_METHOD0(PixelLocalStorageBarrierANGLE, void());
 MOCK_METHOD2(PixelStorei, void(GLenum pname, GLint param));
 MOCK_METHOD2(PointParameteri, void(GLenum pname, GLint param));
 MOCK_METHOD2(PolygonMode, void(GLenum face, GLenum mode));

@@ -1222,4 +1222,36 @@ GLboolean IsEnablediOES(GLenum target, GLuint index) override;
 
 void ProvokingVertexANGLE(GLenum provokeMode) override;
 
+void FramebufferMemorylessPixelLocalStorageANGLE(
+    GLint plane,
+    GLenum internalformat) override;
+
+void FramebufferTexturePixelLocalStorageANGLE(GLint plane,
+                                              GLuint backingtexture,
+                                              GLint level,
+                                              GLint layer) override;
+
+void FramebufferPixelLocalClearValuefvANGLE(GLint plane,
+                                            const GLfloat* value) override;
+
+void FramebufferPixelLocalClearValueivANGLE(GLint plane,
+                                            const GLint* value) override;
+
+void FramebufferPixelLocalClearValueuivANGLE(GLint plane,
+                                             const GLuint* value) override;
+
+void BeginPixelLocalStorageANGLE(GLsizei count, const GLenum* loadops) override;
+
+void EndPixelLocalStorageANGLE(GLsizei count, const GLenum* storeops) override;
+
+void PixelLocalStorageBarrierANGLE() override;
+
+void GetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
+                                                     GLenum pname,
+                                                     GLfloat* params) override;
+
+void GetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
+                                                     GLenum pname,
+                                                     GLint* params) override;
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_AUTOGEN_H_

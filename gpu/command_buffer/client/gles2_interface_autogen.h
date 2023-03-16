@@ -908,4 +908,29 @@ virtual void ColorMaskiOES(GLuint buf,
                            GLboolean a) = 0;
 virtual GLboolean IsEnablediOES(GLenum target, GLuint index) = 0;
 virtual void ProvokingVertexANGLE(GLenum provokeMode) = 0;
+virtual void FramebufferMemorylessPixelLocalStorageANGLE(
+    GLint plane,
+    GLenum internalformat) = 0;
+virtual void FramebufferTexturePixelLocalStorageANGLE(GLint plane,
+                                                      GLuint backingtexture,
+                                                      GLint level,
+                                                      GLint layer) = 0;
+virtual void FramebufferPixelLocalClearValuefvANGLE(GLint plane,
+                                                    const GLfloat* value) = 0;
+virtual void FramebufferPixelLocalClearValueivANGLE(GLint plane,
+                                                    const GLint* value) = 0;
+virtual void FramebufferPixelLocalClearValueuivANGLE(GLint plane,
+                                                     const GLuint* value) = 0;
+virtual void BeginPixelLocalStorageANGLE(GLsizei count,
+                                         const GLenum* loadops) = 0;
+virtual void EndPixelLocalStorageANGLE(GLsizei count,
+                                       const GLenum* storeops) = 0;
+virtual void PixelLocalStorageBarrierANGLE() = 0;
+virtual void GetFramebufferPixelLocalStorageParameterfvANGLE(
+    GLint plane,
+    GLenum pname,
+    GLfloat* params) = 0;
+virtual void GetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
+                                                             GLenum pname,
+                                                             GLint* params) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

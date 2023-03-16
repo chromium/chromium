@@ -1188,4 +1188,36 @@ GLboolean GLES2InterfaceStub::IsEnablediOES(GLenum /* target */,
   return 0;
 }
 void GLES2InterfaceStub::ProvokingVertexANGLE(GLenum /* provokeMode */) {}
+void GLES2InterfaceStub::FramebufferMemorylessPixelLocalStorageANGLE(
+    GLint /* plane */,
+    GLenum /* internalformat */) {}
+void GLES2InterfaceStub::FramebufferTexturePixelLocalStorageANGLE(
+    GLint /* plane */,
+    GLuint /* backingtexture */,
+    GLint /* level */,
+    GLint /* layer */) {}
+void GLES2InterfaceStub::FramebufferPixelLocalClearValuefvANGLE(
+    GLint /* plane */,
+    const GLfloat* /* value */) {}
+void GLES2InterfaceStub::FramebufferPixelLocalClearValueivANGLE(
+    GLint /* plane */,
+    const GLint* /* value */) {}
+void GLES2InterfaceStub::FramebufferPixelLocalClearValueuivANGLE(
+    GLint /* plane */,
+    const GLuint* /* value */) {}
+void GLES2InterfaceStub::BeginPixelLocalStorageANGLE(
+    GLsizei /* count */,
+    const GLenum* /* loadops */) {}
+void GLES2InterfaceStub::EndPixelLocalStorageANGLE(
+    GLsizei /* count */,
+    const GLenum* /* storeops */) {}
+void GLES2InterfaceStub::PixelLocalStorageBarrierANGLE() {}
+void GLES2InterfaceStub::GetFramebufferPixelLocalStorageParameterfvANGLE(
+    GLint /* plane */,
+    GLenum /* pname */,
+    GLfloat* /* params */) {}
+void GLES2InterfaceStub::GetFramebufferPixelLocalStorageParameterivANGLE(
+    GLint /* plane */,
+    GLenum /* pname */,
+    GLint* /* params */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

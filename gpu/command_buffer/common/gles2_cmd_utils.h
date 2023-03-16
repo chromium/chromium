@@ -198,6 +198,19 @@ class GLES2_UTILS_EXPORT GLES2Util {
   static uint32_t CalcClearBufferfvDataCount(int buffer);
   static uint32_t CalcClearBufferuivDataCount(int buffer);
 
+  constexpr static uint32_t
+  CalcFramebufferPixelLocalClearValueufvANGLEDataCount(int plane) {
+    return 4;
+  }
+  constexpr static uint32_t
+  CalcFramebufferPixelLocalClearValueuivANGLEDataCount(int plane) {
+    return 4;
+  }
+  constexpr static uint32_t
+  CalcFramebufferPixelLocalClearValueuuivANGLEDataCount(int plane) {
+    return 4;
+  }
+
   static void MapUint64ToTwoUint32(
       uint64_t v64, uint32_t* v32_0, uint32_t* v32_1);
   static uint64_t MapTwoUint32ToUint64(uint32_t v32_0, uint32_t v32_1);

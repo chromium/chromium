@@ -18,6 +18,7 @@ void glAcquireTexturesANGLEFn(GLuint numTextures,
 void glActiveShaderProgramFn(GLuint pipeline, GLuint program) override;
 void glActiveTextureFn(GLenum texture) override;
 void glAttachShaderFn(GLuint program, GLuint shader) override;
+void glBeginPixelLocalStorageANGLEFn(GLsizei n, const GLenum* loadops) override;
 void glBeginQueryFn(GLenum target, GLuint id) override;
 void glBeginTransformFeedbackFn(GLenum primitiveMode) override;
 void glBindAttribLocationFn(GLuint program,
@@ -406,6 +407,7 @@ void glEGLImageTargetTexture2DOESFn(GLenum target,
 void glEnableFn(GLenum cap) override;
 void glEnableiOESFn(GLenum target, GLuint index) override;
 void glEnableVertexAttribArrayFn(GLuint index) override;
+void glEndPixelLocalStorageANGLEFn(GLsizei n, const GLenum* storeops) override;
 void glEndQueryFn(GLenum target) override;
 void glEndTilingQCOMFn(GLbitfield preserveMask) override;
 void glEndTransformFeedbackFn(void) override;
@@ -418,9 +420,18 @@ void glFlushFn(void) override;
 void glFlushMappedBufferRangeFn(GLenum target,
                                 GLintptr offset,
                                 GLsizeiptr length) override;
+void glFramebufferMemorylessPixelLocalStorageANGLEFn(
+    GLint plane,
+    GLenum internalformat) override;
 void glFramebufferParameteriFn(GLenum target,
                                GLenum pname,
                                GLint param) override;
+void glFramebufferPixelLocalClearValuefvANGLEFn(GLint plane,
+                                                const GLfloat* value) override;
+void glFramebufferPixelLocalClearValueivANGLEFn(GLint plane,
+                                                const GLint* value) override;
+void glFramebufferPixelLocalClearValueuivANGLEFn(GLint plane,
+                                                 const GLuint* value) override;
 void glFramebufferRenderbufferEXTFn(GLenum target,
                                     GLenum attachment,
                                     GLenum renderbuffertarget,
@@ -447,6 +458,10 @@ void glFramebufferTextureMultiviewOVRFn(GLenum target,
                                         GLint level,
                                         GLint baseViewIndex,
                                         GLsizei numViews) override;
+void glFramebufferTexturePixelLocalStorageANGLEFn(GLint plane,
+                                                  GLuint backingtexture,
+                                                  GLint level,
+                                                  GLint layer) override;
 void glFrontFaceFn(GLenum mode) override;
 void glGenBuffersARBFn(GLsizei n, GLuint* buffers) override;
 void glGenerateMipmapEXTFn(GLenum target) override;
@@ -565,6 +580,26 @@ void glGetFramebufferParameterivRobustANGLEFn(GLenum target,
                                               GLsizei bufSize,
                                               GLsizei* length,
                                               GLint* params) override;
+void glGetFramebufferPixelLocalStorageParameterfvANGLEFn(
+    GLint plane,
+    GLenum pname,
+    GLfloat* params) override;
+void glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
+    GLint plane,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLfloat* params) override;
+void glGetFramebufferPixelLocalStorageParameterivANGLEFn(
+    GLint plane,
+    GLenum pname,
+    GLint* params) override;
+void glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
+    GLint plane,
+    GLenum pname,
+    GLsizei bufSize,
+    GLsizei* length,
+    GLint* params) override;
 GLenum glGetGraphicsResetStatusARBFn(void) override;
 void glGetInteger64i_vFn(GLenum target, GLuint index, GLint64* data) override;
 void glGetInteger64i_vRobustANGLEFn(GLenum target,
@@ -1015,6 +1050,7 @@ void glPathParameterfNVFn(GLuint path, GLenum pname, GLfloat value) override;
 void glPathParameteriNVFn(GLuint path, GLenum pname, GLint value) override;
 void glPathStencilFuncNVFn(GLenum func, GLint ref, GLuint mask) override;
 void glPauseTransformFeedbackFn(void) override;
+void glPixelLocalStorageBarrierANGLEFn() override;
 void glPixelStoreiFn(GLenum pname, GLint param) override;
 void glPointParameteriFn(GLenum pname, GLint param) override;
 void glPolygonModeFn(GLenum face, GLenum mode) override;

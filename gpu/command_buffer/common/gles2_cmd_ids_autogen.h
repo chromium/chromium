@@ -339,7 +339,17 @@
   OP(BlendFuncSeparateiOES)                                    /* 580 */ \
   OP(ColorMaskiOES)                                            /* 581 */ \
   OP(IsEnablediOES)                                            /* 582 */ \
-  OP(ProvokingVertexANGLE)                                     /* 583 */
+  OP(ProvokingVertexANGLE)                                     /* 583 */ \
+  OP(FramebufferMemorylessPixelLocalStorageANGLE)              /* 584 */ \
+  OP(FramebufferTexturePixelLocalStorageANGLE)                 /* 585 */ \
+  OP(FramebufferPixelLocalClearValuefvANGLEImmediate)          /* 586 */ \
+  OP(FramebufferPixelLocalClearValueivANGLEImmediate)          /* 587 */ \
+  OP(FramebufferPixelLocalClearValueuivANGLEImmediate)         /* 588 */ \
+  OP(BeginPixelLocalStorageANGLEImmediate)                     /* 589 */ \
+  OP(EndPixelLocalStorageANGLEImmediate)                       /* 590 */ \
+  OP(PixelLocalStorageBarrierANGLE)                            /* 591 */ \
+  OP(GetFramebufferPixelLocalStorageParameterfvANGLE)          /* 592 */ \
+  OP(GetFramebufferPixelLocalStorageParameterivANGLE)          /* 593 */
 
 enum CommandId {
   kOneBeforeStartPoint =

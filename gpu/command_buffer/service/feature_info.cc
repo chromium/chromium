@@ -1726,6 +1726,16 @@ void FeatureInfo::InitializeFeatures() {
     AddExtensionString("GL_AMD_framebuffer_multisample_advanced");
   }
 
+  if (gfx::HasExtension(extensions, "GL_ANGLE_shader_pixel_local_storage")) {
+    feature_flags_.angle_shader_pixel_local_storage = true;
+    AddExtensionString("GL_ANGLE_shader_pixel_local_storage");
+  }
+
+  if (gfx::HasExtension(extensions,
+                        "GL_ANGLE_shader_pixel_local_storage_coherent")) {
+    AddExtensionString("GL_ANGLE_shader_pixel_local_storage_coherent");
+  }
+
   if (gfx::HasExtension(extensions, "GL_ANGLE_rgbx_internal_format")) {
     feature_flags_.angle_rgbx_internal_format = true;
     AddExtensionString("GL_ANGLE_rgbx_internal_format");

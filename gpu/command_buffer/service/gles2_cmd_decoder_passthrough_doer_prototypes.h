@@ -1076,5 +1076,36 @@ error::Error DoColorMaskiOES(GLuint buf,
                              GLboolean blue,
                              GLboolean alpha);
 error::Error DoIsEnablediOES(GLenum target, GLuint index, uint32_t* result);
+error::Error DoFramebufferMemorylessPixelLocalStorageANGLE(
+    GLint plane,
+    GLenum internalformat);
+error::Error DoFramebufferTexturePixelLocalStorageANGLE(GLint plane,
+                                                        GLuint backingtexture,
+                                                        GLint level,
+                                                        GLint layer);
+error::Error DoFramebufferPixelLocalClearValuefvANGLE(
+    GLint plane,
+    const volatile GLfloat* value);
+error::Error DoFramebufferPixelLocalClearValueivANGLE(
+    GLint plane,
+    const volatile GLint* value);
+error::Error DoFramebufferPixelLocalClearValueuivANGLE(
+    GLint plane,
+    const volatile GLuint* value);
+error::Error DoBeginPixelLocalStorageANGLE(GLsizei n,
+                                           const volatile GLenum* loadops);
+error::Error DoEndPixelLocalStorageANGLE(GLsizei n,
+                                         const volatile GLenum* storeops);
+error::Error DoPixelLocalStorageBarrierANGLE();
+error::Error DoGetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
+                                                               GLenum pname,
+                                                               GLsizei bufsize,
+                                                               GLsizei* length,
+                                                               GLfloat* params);
+error::Error DoGetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
+                                                               GLenum pname,
+                                                               GLsizei bufsize,
+                                                               GLsizei* length,
+                                                               GLint* params);
 error::Error DoProvokingVertexANGLE(GLenum provokeMode);
 #endif  // GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_PASSTHROUGH_DOER_PROTOTYPES_H_

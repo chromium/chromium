@@ -2512,6 +2512,7 @@ error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
       return error::kNoError;
     }
   }
+  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(this);
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
@@ -3982,8 +3983,7 @@ error::Error GLES2DecoderPassthroughImpl::DoSwapBuffers(uint64_t swap_id,
         emulated_front_buffer_ = std::move(available_color_textures_.back());
         available_color_textures_.pop_back();
       } else {
-        emulated_front_buffer_ = std::make_unique<EmulatedColorBuffer>(
-            api(), emulated_default_framebuffer_format_);
+        emulated_front_buffer_ = std::make_unique<EmulatedColorBuffer>(this);
         emulated_front_buffer_->Resize(emulated_back_buffer_->size);
       }
     }
@@ -5059,8 +5059,7 @@ GLES2DecoderPassthroughImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(
   resources_->texture_object_map.RemoveClientID(texture_client_id);
   resources_->texture_object_map.SetIDMapping(texture_client_id, texture);
   resources_->texture_shared_image_map[texture_client_id] =
-      PassthroughResources::SharedImageData(std::move(shared_image), api(),
-                                            feature_info_.get());
+      PassthroughResources::SharedImageData(this, std::move(shared_image));
 
   return error::kNoError;
 }
@@ -5120,6 +5119,7 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
       return error::kNoError;
     }
   }
+  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(this);
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
   CopySharedImageHelper helper(group_->shared_image_representation_factory(),
@@ -5143,6 +5143,7 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
       return error::kNoError;
     }
   }
+  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(this);
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
   CopySharedImageHelper helper(group_->shared_image_representation_factory(),
@@ -5170,6 +5171,7 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageINTERNAL(
       return error::kNoError;
     }
   }
+  ScopedPixelLocalStorageDeactivate scoped_pls_deactivate(this);
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
   CopySharedImageHelper helper(group_->shared_image_representation_factory(),
@@ -5191,6 +5193,200 @@ error::Error GLES2DecoderPassthroughImpl::DoEnableiOES(GLenum target,
 error::Error GLES2DecoderPassthroughImpl::DoDisableiOES(GLenum target,
                                                         GLuint index) {
   api()->glDisableiOESFn(target, index);
+  return error::kNoError;
+}
+
+constexpr static char kPLSDefaultFramebufferBound[] =
+    "Default framebuffer object name 0 does not support pixel local storage.";
+
+error::Error
+GLES2DecoderPassthroughImpl::DoFramebufferMemorylessPixelLocalStorageANGLE(
+    GLint plane,
+    GLenum internalformat) {
+  // Memoryless pixel local storage planes cannot be saved and restored for a
+  // context switch, so we do not support them in the command buffer.
+  InsertError(GL_INVALID_OPERATION,
+              "glFramebufferMemorylessPixelLocalStorageANGLE is not supported");
+  NOTIMPLEMENTED();
+  return error::kUnknownCommand;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoFramebufferTexturePixelLocalStorageANGLE(
+    GLint plane,
+    GLuint backingtexture,
+    GLint level,
+    GLint layer) {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    return error::kNoError;
+  }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+  BindPendingImageForClientIDIfNeeded(backingtexture);
+#endif
+  api()->glFramebufferTexturePixelLocalStorageANGLEFn(
+      plane, GetTextureServiceID(api(), backingtexture, resources_, false),
+      level, layer);
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoFramebufferPixelLocalClearValuefvANGLE(
+    GLint plane,
+    const volatile GLfloat* value) {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    return error::kNoError;
+  }
+  api()->glFramebufferPixelLocalClearValuefvANGLEFn(
+      plane, const_cast<const GLfloat*>(value));
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoFramebufferPixelLocalClearValueivANGLE(
+    GLint plane,
+    const volatile GLint* value) {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    return error::kNoError;
+  }
+  api()->glFramebufferPixelLocalClearValueivANGLEFn(
+      plane, const_cast<const GLint*>(value));
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoFramebufferPixelLocalClearValueuivANGLE(
+    GLint plane,
+    const volatile GLuint* value) {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    return error::kNoError;
+  }
+  api()->glFramebufferPixelLocalClearValueuivANGLEFn(
+      plane, const_cast<const GLuint*>(value));
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoBeginPixelLocalStorageANGLE(
+    GLsizei n,
+    const volatile GLenum* loadops) {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    return error::kNoError;
+  }
+  // Copy the loadops to avoid a TOCTOU race condition.
+  if (n < 0) {
+    InsertError(GL_INVALID_VALUE, "<n> cannot be negative.");
+    return error::kNoError;
+  }
+  if (n > kPassthroughMaxPLSPlanes) {
+    InsertError(GL_INVALID_VALUE,
+                "<n> must be <= GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE.");
+    return error::kNoError;
+  }
+  GLenum loadops_copy[kPassthroughMaxPLSPlanes];
+  std::copy(loadops, loadops + n, loadops_copy);
+  api()->glBeginPixelLocalStorageANGLEFn(n, loadops_copy);
+  // Query GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE in case there was an error
+  // and the number of active planes isn't actually <n>.
+  api()->glGetIntegervFn(GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE,
+                         &active_pls_plane_count_);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoEndPixelLocalStorageANGLE(
+    GLsizei n,
+    const volatile GLenum* storeops) {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    return error::kNoError;
+  }
+  // Copy the storeops to avoid a TOCTOU race condition.
+  if (n < 0) {
+    InsertError(GL_INVALID_VALUE, "<n> cannot be negative.");
+    return error::kNoError;
+  }
+  if (n > kPassthroughMaxPLSPlanes) {
+    InsertError(GL_INVALID_VALUE,
+                "<n> must be <= GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE.");
+    return error::kNoError;
+  }
+  GLenum storeops_copy[kPassthroughMaxPLSPlanes];
+  std::copy(storeops, storeops + n, storeops_copy);
+  api()->glEndPixelLocalStorageANGLEFn(n, storeops_copy);
+  // Query GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE in case there was an error
+  // and the number of active planes isn't actually zero.
+  api()->glGetIntegervFn(GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE,
+                         &active_pls_plane_count_);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoPixelLocalStorageBarrierANGLE() {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    return error::kNoError;
+  }
+  api()->glPixelLocalStorageBarrierANGLEFn();
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoGetFramebufferPixelLocalStorageParameterfvANGLE(
+    GLint plane,
+    GLenum pname,
+    GLsizei bufsize,
+    GLsizei* length,
+    GLfloat* params) {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    *length = 0;
+    return error::kNoError;
+  }
+
+  CheckErrorCallbackState();
+
+  api()->glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn(
+      plane, pname, bufsize, length, params);
+
+  if (CheckErrorCallbackState()) {
+    *length = 0;
+    return error::kNoError;
+  }
+
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoGetFramebufferPixelLocalStorageParameterivANGLE(
+    GLint plane,
+    GLenum pname,
+    GLsizei bufsize,
+    GLsizei* length,
+    GLint* params) {
+  if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
+    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    *length = 0;
+    return error::kNoError;
+  }
+
+  CheckErrorCallbackState();
+
+  api()->glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn(
+      plane, pname, bufsize, length, params);
+
+  if (CheckErrorCallbackState()) {
+    *length = 0;
+    return error::kNoError;
+  }
+
+  if (PatchGetFramebufferPixelLocalStorageParameterivANGLE(
+          plane, pname, *length, params) != error::kNoError) {
+    *length = 0;
+    return error::kInvalidArguments;
+  }
+
   return error::kNoError;
 }
 

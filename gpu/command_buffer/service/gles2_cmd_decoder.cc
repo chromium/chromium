@@ -1287,6 +1287,31 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DoFlushMappedBufferRange(
       GLenum target, GLintptr offset, GLsizeiptr size);
 
+  // Wrappers for ANGLE_shader_pixel_local_storage.
+  void DoFramebufferMemorylessPixelLocalStorageANGLE(GLint plane,
+                                                     GLenum internalformat);
+  void DoFramebufferTexturePixelLocalStorageANGLE(GLint plane,
+                                                  GLuint backingtexture,
+                                                  GLint level,
+                                                  GLint layer);
+  void DoFramebufferPixelLocalClearValuefvANGLE(GLint plane,
+                                                const volatile GLfloat* value);
+  void DoFramebufferPixelLocalClearValueivANGLE(GLint plane,
+                                                const volatile GLint* value);
+  void DoFramebufferPixelLocalClearValueuivANGLE(GLint plane,
+                                                 const volatile GLuint* value);
+  void DoBeginPixelLocalStorageANGLE(GLsizei n, const volatile GLenum* loadops);
+  void DoEndPixelLocalStorageANGLE(GLsizei n, const volatile GLenum* storeops);
+  void DoPixelLocalStorageBarrierANGLE();
+  void DoGetFramebufferPixelLocalStorageParameterfvANGLE(GLint plane,
+                                                         GLenum pname,
+                                                         GLfloat* params,
+                                                         GLsizei params_size);
+  void DoGetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
+                                                         GLenum pname,
+                                                         GLint* params,
+                                                         GLsizei params_size);
+
   // Creates a Program for the given program.
   Program* CreateProgram(GLuint client_id, GLuint service_id) {
     return program_manager()->CreateProgram(client_id, service_id);
@@ -19235,6 +19260,70 @@ void GLES2DecoderImpl::DoFlushMappedBufferRange(
     buffer->SetRange(mapped_range->offset + offset, size, client_data + offset);
   }
   api()->glFlushMappedBufferRangeFn(target, offset, size);
+}
+
+void GLES2DecoderImpl::DoFramebufferMemorylessPixelLocalStorageANGLE(
+    GLint plane,
+    GLenum internalformat) {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoFramebufferTexturePixelLocalStorageANGLE(
+    GLint plane,
+    GLuint client_texture_id,
+    GLint level,
+    GLint layer) {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoFramebufferPixelLocalClearValuefvANGLE(
+    GLint plane,
+    const volatile GLfloat* value) {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoFramebufferPixelLocalClearValueivANGLE(
+    GLint plane,
+    const volatile GLint* value) {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoFramebufferPixelLocalClearValueuivANGLE(
+    GLint plane,
+    const volatile GLuint* value) {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoBeginPixelLocalStorageANGLE(
+    GLsizei n,
+    const volatile GLenum* loadops) {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoEndPixelLocalStorageANGLE(
+    GLsizei n,
+    const volatile GLenum* storeops) {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoPixelLocalStorageBarrierANGLE() {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoGetFramebufferPixelLocalStorageParameterfvANGLE(
+    GLint plane,
+    GLenum pname,
+    GLfloat* params,
+    GLsizei params_size) {
+  NOTIMPLEMENTED();
+}
+
+void GLES2DecoderImpl::DoGetFramebufferPixelLocalStorageParameterivANGLE(
+    GLint plane,
+    GLenum pname,
+    GLint* params,
+    GLsizei params_size) {
+  NOTIMPLEMENTED();
 }
 
 // Note that GL_LOST_CONTEXT is specific to GLES.

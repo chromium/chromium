@@ -395,3 +395,15 @@ GL_APICALL GLboolean    GL_APIENTRY glIsEnablediOES (GLenum target, GLuint index
 
 // Extension ANGLE_provoking_vertex
 GL_APICALL void         GL_APIENTRY glProvokingVertexANGLE (GLenum provokeMode);
+
+// Extension ANGLE_shader_pixel_local_storage
+GL_APICALL void         GL_APIENTRY glFramebufferMemorylessPixelLocalStorageANGLE (GLint plane, GLenum internalformat);
+GL_APICALL void         GL_APIENTRY glFramebufferTexturePixelLocalStorageANGLE (GLint plane, GLuint backingtexture, GLint level, GLint layer);
+GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalClearValuefvANGLE (GLint plane, const GLfloat* value);
+GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalClearValueivANGLE (GLint plane, const GLint* value);
+GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalClearValueuivANGLE (GLint plane, const GLuint* value);
+GL_APICALL void         GL_APIENTRY glBeginPixelLocalStorageANGLE (GLsizei count, const GLenum* loadops);
+GL_APICALL void         GL_APIENTRY glEndPixelLocalStorageANGLE (GLsizei count, const GLenum* storeops);
+GL_APICALL void         GL_APIENTRY glPixelLocalStorageBarrierANGLE (void);
+GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterfvANGLE (GLint plane, GLenum pname, GLfloat* params);
+GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterivANGLE (GLint plane, GLenum pname, GLint* params);

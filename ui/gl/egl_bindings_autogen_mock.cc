@@ -1009,10 +1009,9 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglWaitSync);
   if (strcmp(name, "eglWaitSyncKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglWaitSyncKHR);
-  if (strcmp(name, "eglWaitUntilWorkScheduledANGLE") == 0) {
+  if (strcmp(name, "eglWaitUntilWorkScheduledANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglWaitUntilWorkScheduledANGLE);
-  }
   return reinterpret_cast<GLFunctionPointerType>(&MockEglInvalidFunction);
 }
 

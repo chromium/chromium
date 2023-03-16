@@ -5541,6 +5541,314 @@ error::Error GLES2DecoderImpl::HandleProvokingVertexANGLE(
   return error::kNoError;
 }
 
+error::Error
+GLES2DecoderImpl::HandleFramebufferMemorylessPixelLocalStorageANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::FramebufferMemorylessPixelLocalStorageANGLE& c =
+      *static_cast<const volatile gles2::cmds::
+                       FramebufferMemorylessPixelLocalStorageANGLE*>(cmd_data);
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  GLint plane = static_cast<GLint>(c.plane);
+  GLenum internalformat = static_cast<GLenum>(c.internalformat);
+  DoFramebufferMemorylessPixelLocalStorageANGLE(plane, internalformat);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleFramebufferTexturePixelLocalStorageANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::FramebufferTexturePixelLocalStorageANGLE& c =
+      *static_cast<const volatile gles2::cmds::
+                       FramebufferTexturePixelLocalStorageANGLE*>(cmd_data);
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  GLint plane = static_cast<GLint>(c.plane);
+  GLuint backingtexture = static_cast<GLuint>(c.backingtexture);
+  GLint level = static_cast<GLint>(c.level);
+  GLint layer = static_cast<GLint>(c.layer);
+  DoFramebufferTexturePixelLocalStorageANGLE(plane, backingtexture, level,
+                                             layer);
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderImpl::HandleFramebufferPixelLocalClearValuefvANGLEImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::FramebufferPixelLocalClearValuefvANGLEImmediate&
+      c = *static_cast<const volatile gles2::cmds::
+                           FramebufferPixelLocalClearValuefvANGLEImmediate*>(
+          cmd_data);
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  GLint plane = static_cast<GLint>(c.plane);
+  uint32_t value_size;
+  if (!GLES2Util::ComputeDataSize<GLfloat, 4>(1, &value_size)) {
+    return error::kOutOfBounds;
+  }
+  if (value_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLfloat* value = GetImmediateDataAs<volatile const GLfloat*>(
+      c, value_size, immediate_data_size);
+  if (value == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoFramebufferPixelLocalClearValuefvANGLE(plane, value);
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderImpl::HandleFramebufferPixelLocalClearValueivANGLEImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::FramebufferPixelLocalClearValueivANGLEImmediate&
+      c = *static_cast<const volatile gles2::cmds::
+                           FramebufferPixelLocalClearValueivANGLEImmediate*>(
+          cmd_data);
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  GLint plane = static_cast<GLint>(c.plane);
+  uint32_t value_size;
+  if (!GLES2Util::ComputeDataSize<GLint, 4>(1, &value_size)) {
+    return error::kOutOfBounds;
+  }
+  if (value_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLint* value = GetImmediateDataAs<volatile const GLint*>(
+      c, value_size, immediate_data_size);
+  if (value == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoFramebufferPixelLocalClearValueivANGLE(plane, value);
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderImpl::HandleFramebufferPixelLocalClearValueuivANGLEImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::FramebufferPixelLocalClearValueuivANGLEImmediate&
+      c = *static_cast<const volatile gles2::cmds::
+                           FramebufferPixelLocalClearValueuivANGLEImmediate*>(
+          cmd_data);
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  GLint plane = static_cast<GLint>(c.plane);
+  uint32_t value_size;
+  if (!GLES2Util::ComputeDataSize<GLuint, 4>(1, &value_size)) {
+    return error::kOutOfBounds;
+  }
+  if (value_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLuint* value = GetImmediateDataAs<volatile const GLuint*>(
+      c, value_size, immediate_data_size);
+  if (value == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoFramebufferPixelLocalClearValueuivANGLE(plane, value);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleBeginPixelLocalStorageANGLEImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::BeginPixelLocalStorageANGLEImmediate& c =
+      *static_cast<
+          const volatile gles2::cmds::BeginPixelLocalStorageANGLEImmediate*>(
+          cmd_data);
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  GLsizei count = static_cast<GLsizei>(c.count);
+  uint32_t loadops_size = 0;
+  if (count >= 0 &&
+      !GLES2Util::ComputeDataSize<GLenum, 1>(count, &loadops_size)) {
+    return error::kOutOfBounds;
+  }
+  if (loadops_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLenum* loadops = GetImmediateDataAs<volatile const GLenum*>(
+      c, loadops_size, immediate_data_size);
+  if (count < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glBeginPixelLocalStorageANGLE",
+                       "count < 0");
+    return error::kNoError;
+  }
+  if (loadops == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoBeginPixelLocalStorageANGLE(count, loadops);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleEndPixelLocalStorageANGLEImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::EndPixelLocalStorageANGLEImmediate& c =
+      *static_cast<
+          const volatile gles2::cmds::EndPixelLocalStorageANGLEImmediate*>(
+          cmd_data);
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  GLsizei count = static_cast<GLsizei>(c.count);
+  uint32_t storeops_size = 0;
+  if (count >= 0 &&
+      !GLES2Util::ComputeDataSize<GLenum, 1>(count, &storeops_size)) {
+    return error::kOutOfBounds;
+  }
+  if (storeops_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLenum* storeops = GetImmediateDataAs<volatile const GLenum*>(
+      c, storeops_size, immediate_data_size);
+  if (count < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glEndPixelLocalStorageANGLE",
+                       "count < 0");
+    return error::kNoError;
+  }
+  if (storeops == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoBeginPixelLocalStorageANGLE(count, storeops);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandlePixelLocalStorageBarrierANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  DoPixelLocalStorageBarrierANGLE();
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderImpl::HandleGetFramebufferPixelLocalStorageParameterfvANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::GetFramebufferPixelLocalStorageParameterfvANGLE&
+      c = *static_cast<const volatile gles2::cmds::
+                           GetFramebufferPixelLocalStorageParameterfvANGLE*>(
+          cmd_data);
+  GLint plane = static_cast<GLint>(c.plane);
+  GLenum pname = static_cast<GLenum>(c.pname);
+  typedef cmds::GetFramebufferPixelLocalStorageParameterfvANGLE::Result Result;
+  GLsizei num_values = 0;
+  if (!GetNumValuesReturnedForGLGet(pname, &num_values)) {
+    LOCAL_SET_GL_ERROR_INVALID_ENUM(
+        ":GetFramebufferPixelLocalStorageParameterfvANGLE", pname, "pname");
+    return error::kNoError;
+  }
+  uint32_t checked_size = 0;
+  if (!Result::ComputeSize(num_values).AssignIfValid(&checked_size)) {
+    return error::kOutOfBounds;
+  }
+  Result* result = GetSharedMemoryAs<Result*>(
+      c.params_shm_id, c.params_shm_offset, checked_size);
+  GLfloat* params = result ? result->GetData() : nullptr;
+  if (params == nullptr) {
+    return error::kOutOfBounds;
+  }
+  LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(
+      "GetFramebufferPixelLocalStorageParameterfvANGLE");
+  // Check that the client initialized the result.
+  if (result->size != 0) {
+    return error::kInvalidArguments;
+  }
+  DoGetFramebufferPixelLocalStorageParameterfvANGLE(plane, pname, params,
+                                                    num_values);
+  GLenum error =
+      LOCAL_PEEK_GL_ERROR("GetFramebufferPixelLocalStorageParameterfvANGLE");
+  if (error == GL_NO_ERROR) {
+    result->SetNumResults(num_values);
+  }
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderImpl::HandleGetFramebufferPixelLocalStorageParameterivANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::GetFramebufferPixelLocalStorageParameterivANGLE&
+      c = *static_cast<const volatile gles2::cmds::
+                           GetFramebufferPixelLocalStorageParameterivANGLE*>(
+          cmd_data);
+  GLint plane = static_cast<GLint>(c.plane);
+  GLenum pname = static_cast<GLenum>(c.pname);
+  typedef cmds::GetFramebufferPixelLocalStorageParameterivANGLE::Result Result;
+  GLsizei num_values = 0;
+  if (!GetNumValuesReturnedForGLGet(pname, &num_values)) {
+    LOCAL_SET_GL_ERROR_INVALID_ENUM(
+        ":GetFramebufferPixelLocalStorageParameterivANGLE", pname, "pname");
+    return error::kNoError;
+  }
+  uint32_t checked_size = 0;
+  if (!Result::ComputeSize(num_values).AssignIfValid(&checked_size)) {
+    return error::kOutOfBounds;
+  }
+  Result* result = GetSharedMemoryAs<Result*>(
+      c.params_shm_id, c.params_shm_offset, checked_size);
+  GLint* params = result ? result->GetData() : nullptr;
+  if (params == nullptr) {
+    return error::kOutOfBounds;
+  }
+  LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(
+      "GetFramebufferPixelLocalStorageParameterivANGLE");
+  // Check that the client initialized the result.
+  if (result->size != 0) {
+    return error::kInvalidArguments;
+  }
+  DoGetFramebufferPixelLocalStorageParameterivANGLE(plane, pname, params,
+                                                    num_values);
+  GLenum error =
+      LOCAL_PEEK_GL_ERROR("GetFramebufferPixelLocalStorageParameterivANGLE");
+  if (error == GL_NO_ERROR) {
+    result->SetNumResults(num_values);
+  }
+  return error::kNoError;
+}
+
 bool GLES2DecoderImpl::SetCapabilityState(GLenum cap, bool enabled) {
   switch (cap) {
     case GL_BLEND:

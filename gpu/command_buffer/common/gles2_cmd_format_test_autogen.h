@@ -5646,4 +5646,182 @@ TEST_F(GLES2FormatTest, ProvokingVertexANGLE) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(GLES2FormatTest, FramebufferMemorylessPixelLocalStorageANGLE) {
+  cmds::FramebufferMemorylessPixelLocalStorageANGLE& cmd =
+      *GetBufferAs<cmds::FramebufferMemorylessPixelLocalStorageANGLE>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLenum>(12));
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::FramebufferMemorylessPixelLocalStorageANGLE::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.plane);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.internalformat);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, FramebufferTexturePixelLocalStorageANGLE) {
+  cmds::FramebufferTexturePixelLocalStorageANGLE& cmd =
+      *GetBufferAs<cmds::FramebufferTexturePixelLocalStorageANGLE>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLuint>(12),
+              static_cast<GLint>(13), static_cast<GLint>(14));
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::FramebufferTexturePixelLocalStorageANGLE::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.plane);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.backingtexture);
+  EXPECT_EQ(static_cast<GLint>(13), cmd.level);
+  EXPECT_EQ(static_cast<GLint>(14), cmd.layer);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, FramebufferPixelLocalClearValuefvANGLEImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLfloat data[] = {
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 0),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 1),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 2),
+      static_cast<GLfloat>(kSomeBaseValueToTestWith + 3),
+  };
+  cmds::FramebufferPixelLocalClearValuefvANGLEImmediate& cmd =
+      *GetBufferAs<cmds::FramebufferPixelLocalClearValuefvANGLEImmediate>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), data);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::FramebufferPixelLocalClearValuefvANGLEImmediate::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
+            cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.plane);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
+TEST_F(GLES2FormatTest, FramebufferPixelLocalClearValueivANGLEImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLint data[] = {
+      static_cast<GLint>(kSomeBaseValueToTestWith + 0),
+      static_cast<GLint>(kSomeBaseValueToTestWith + 1),
+      static_cast<GLint>(kSomeBaseValueToTestWith + 2),
+      static_cast<GLint>(kSomeBaseValueToTestWith + 3),
+  };
+  cmds::FramebufferPixelLocalClearValueivANGLEImmediate& cmd =
+      *GetBufferAs<cmds::FramebufferPixelLocalClearValueivANGLEImmediate>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), data);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::FramebufferPixelLocalClearValueivANGLEImmediate::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
+            cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.plane);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
+TEST_F(GLES2FormatTest, FramebufferPixelLocalClearValueuivANGLEImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLuint data[] = {
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 0),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 1),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 2),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 3),
+  };
+  cmds::FramebufferPixelLocalClearValueuivANGLEImmediate& cmd =
+      *GetBufferAs<cmds::FramebufferPixelLocalClearValueuivANGLEImmediate>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), data);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::FramebufferPixelLocalClearValueuivANGLEImmediate::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
+            cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.plane);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
+TEST_F(GLES2FormatTest, BeginPixelLocalStorageANGLEImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLenum data[] = {
+      static_cast<GLenum>(kSomeBaseValueToTestWith + 0),
+  };
+  cmds::BeginPixelLocalStorageANGLEImmediate& cmd =
+      *GetBufferAs<cmds::BeginPixelLocalStorageANGLEImmediate>();
+  const GLsizei kNumElements = 1;
+  const size_t kExpectedCmdSize =
+      sizeof(cmd) + kNumElements * sizeof(GLenum) * 1;
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLsizei>(1), data);
+  EXPECT_EQ(
+      static_cast<uint32_t>(cmds::BeginPixelLocalStorageANGLEImmediate::kCmdId),
+      cmd.header.command);
+  EXPECT_EQ(kExpectedCmdSize, cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLsizei>(1), cmd.count);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
+TEST_F(GLES2FormatTest, EndPixelLocalStorageANGLEImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLenum data[] = {
+      static_cast<GLenum>(kSomeBaseValueToTestWith + 0),
+  };
+  cmds::EndPixelLocalStorageANGLEImmediate& cmd =
+      *GetBufferAs<cmds::EndPixelLocalStorageANGLEImmediate>();
+  const GLsizei kNumElements = 1;
+  const size_t kExpectedCmdSize =
+      sizeof(cmd) + kNumElements * sizeof(GLenum) * 1;
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLsizei>(1), data);
+  EXPECT_EQ(
+      static_cast<uint32_t>(cmds::EndPixelLocalStorageANGLEImmediate::kCmdId),
+      cmd.header.command);
+  EXPECT_EQ(kExpectedCmdSize, cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLsizei>(1), cmd.count);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
+TEST_F(GLES2FormatTest, PixelLocalStorageBarrierANGLE) {
+  cmds::PixelLocalStorageBarrierANGLE& cmd =
+      *GetBufferAs<cmds::PixelLocalStorageBarrierANGLE>();
+  void* next_cmd = cmd.Set(&cmd);
+  EXPECT_EQ(static_cast<uint32_t>(cmds::PixelLocalStorageBarrierANGLE::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, GetFramebufferPixelLocalStorageParameterfvANGLE) {
+  cmds::GetFramebufferPixelLocalStorageParameterfvANGLE& cmd =
+      *GetBufferAs<cmds::GetFramebufferPixelLocalStorageParameterfvANGLE>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLenum>(12),
+              static_cast<uint32_t>(13), static_cast<uint32_t>(14));
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::GetFramebufferPixelLocalStorageParameterfvANGLE::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.plane);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.pname);
+  EXPECT_EQ(static_cast<uint32_t>(13), cmd.params_shm_id);
+  EXPECT_EQ(static_cast<uint32_t>(14), cmd.params_shm_offset);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
+TEST_F(GLES2FormatTest, GetFramebufferPixelLocalStorageParameterivANGLE) {
+  cmds::GetFramebufferPixelLocalStorageParameterivANGLE& cmd =
+      *GetBufferAs<cmds::GetFramebufferPixelLocalStorageParameterivANGLE>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLenum>(12),
+              static_cast<uint32_t>(13), static_cast<uint32_t>(14));
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::GetFramebufferPixelLocalStorageParameterivANGLE::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.plane);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.pname);
+  EXPECT_EQ(static_cast<uint32_t>(13), cmd.params_shm_id);
+  EXPECT_EQ(static_cast<uint32_t>(14), cmd.params_shm_offset);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 #endif  // GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_TEST_AUTOGEN_H_
