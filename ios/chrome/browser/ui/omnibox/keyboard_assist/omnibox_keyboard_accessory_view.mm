@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -161,13 +162,11 @@
           0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
       button.configuration = buttonConfiguration;
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    button.contentEdgeInsets =
+  } else {
+    UIEdgeInsets contentEdgeInsets =
         UIEdgeInsetsMake(0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
+    SetContentEdgeInsets(button, contentEdgeInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   button.clipsToBounds = YES;
   [button.titleLabel setFont:[UIFont systemFontOfSize:kButtonTitleFontSize
                                                weight:UIFontWeightMedium]];

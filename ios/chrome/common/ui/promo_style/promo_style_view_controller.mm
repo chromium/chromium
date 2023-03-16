@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -587,10 +588,15 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
     _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
-    _primaryActionButton.contentEdgeInsets =
+
+    // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
+    // deployment target is iOS 15.
+    UIEdgeInsets contentInsets =
         UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-    _primaryActionButton.titleEdgeInsets =
+    SetContentEdgeInsets(_primaryActionButton, contentInsets);
+    UIEdgeInsets titleInsets =
         UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
+    SetTitleEdgeInsets(_primaryActionButton, titleInsets);
 
     [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
     UIColor* titleColor = [UIColor colorNamed:kSolidButtonTextColor];
@@ -916,8 +922,12 @@ constexpr CGFloat kFullAvatarImageSize = 100;
   [button setBackgroundColor:[UIColor clearColor]];
   UIColor* titleColor = [UIColor colorNamed:kBlueColor];
   [button setTitleColor:titleColor forState:UIControlStateNormal];
-  button.contentEdgeInsets =
+
+  // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
+  // deployment target is iOS 15.
+  UIEdgeInsets contentInsets =
       UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  SetContentEdgeInsets(button, contentInsets);
 
   button.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];

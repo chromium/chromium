@@ -35,6 +35,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/settings/cells:public",
+    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",

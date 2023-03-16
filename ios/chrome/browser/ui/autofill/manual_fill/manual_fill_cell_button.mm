@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -72,14 +73,12 @@ static const CGFloat kButtonVerticalMargin = 12;
           kButtonHorizontalMargin);
       self.configuration = buttonConfiguration;
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    self.contentEdgeInsets =
+  } else {
+    UIEdgeInsets contentEdgeInsets =
         UIEdgeInsetsMake(kButtonVerticalMargin, kButtonHorizontalMargin,
                          kButtonVerticalMargin, kButtonHorizontalMargin);
+    SetContentEdgeInsets(self, contentEdgeInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 }

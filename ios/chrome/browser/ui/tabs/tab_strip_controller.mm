@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_favicon_driver_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -562,16 +563,13 @@ const CGFloat kSymbolSize = 18;
         _buttonNewTab.tintColor = [UIColor colorNamed:kGrey500Color];
         _buttonNewTab.configuration = buttonConfiguration;
       }
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
+    } else {
       UIEdgeInsets imageInsets = UIEdgeInsetsMake(
           0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
-      _buttonNewTab.imageEdgeInsets = imageInsets;
+      SetImageEdgeInsets(_buttonNewTab, imageInsets);
       [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
       [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
     }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     SetA11yLabelAndUiAutomationName(
         _buttonNewTab,

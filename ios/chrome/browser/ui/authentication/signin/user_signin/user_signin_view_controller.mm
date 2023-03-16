@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -196,14 +197,10 @@ enum AuthenticationButtonType {
           self.primaryActionButton.configuration.contentInsets =
               NSDirectionalEdgeInsetsMake(0, -kImageInset, 0, 0);
         }
+      } else {
+        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsMake(0, -kImageInset, 0, 0);
+        SetImageEdgeInsets(self.primaryActionButton, imageEdgeInsets);
       }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      else {
-        self.primaryActionButton.imageEdgeInsets =
-            UIEdgeInsetsMake(0, -kImageInset, 0, 0);
-      }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-
     } else {
       // TODO(crbug.com/1418068): Simplify after minimum version required is >=
       // iOS 15.
@@ -213,13 +210,10 @@ enum AuthenticationButtonType {
           self.primaryActionButton.configuration.contentInsets =
               NSDirectionalEdgeInsetsMake(0, 0, 0, -kImageInset);
         }
+      } else {
+        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, -kImageInset);
+        SetImageEdgeInsets(self.primaryActionButton, imageEdgeInsets);
       }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      else {
-        self.primaryActionButton.imageEdgeInsets =
-            UIEdgeInsetsMake(0, 0, 0, -kImageInset);
-      }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     }
   } else {
     // By default display 'Yes I'm in' button.
@@ -620,14 +614,12 @@ enum AuthenticationButtonType {
           verticalContentInset, horizontalContentInset, verticalContentInset,
           horizontalContentInset);
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    button.contentEdgeInsets =
+  } else {
+    UIEdgeInsets contentEdgeInsets =
         UIEdgeInsetsMake(verticalContentInset, horizontalContentInset,
                          verticalContentInset, horizontalContentInset);
+    SetContentEdgeInsets(button, contentEdgeInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   button.titleLabel.font = [UIFont preferredFontForTextStyle:fontStyle];
   button.titleLabel.numberOfLines = 0;

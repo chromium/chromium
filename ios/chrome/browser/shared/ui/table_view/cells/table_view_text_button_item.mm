@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -158,14 +159,12 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
                                         kButtonTitleHorizontalContentInset);
         self.button.configuration = buttonConfiguration;
       }
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      self.button.contentEdgeInsets = UIEdgeInsetsMake(
+    } else {
+      UIEdgeInsets contentInsets = UIEdgeInsetsMake(
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+      SetContentEdgeInsets(self.button, contentInsets);
     }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     self.button.pointerInteractionEnabled = YES;
     // This button's background color is configured whenever the cell is

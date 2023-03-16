@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -245,13 +246,11 @@ const CGFloat kSymbolToolbarPointSize = 24;
           0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
       cancelButton.configuration = buttonConfiguration;
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    cancelButton.contentEdgeInsets = UIEdgeInsetsMake(
+  } else {
+    UIEdgeInsets contentInsets = UIEdgeInsetsMake(
         0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
+    SetContentEdgeInsets(cancelButton, contentInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   cancelButton.hidden = YES;
   [cancelButton addTarget:self.actionHandler

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"
@@ -381,13 +382,11 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
             NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
                                         kButtonHorizontalMargin);
       }
+    } else {
+      UIEdgeInsets titleInsets = UIEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
+                                                  kButtonHorizontalMargin);
+      SetTitleEdgeInsets(_primaryActionButton, titleInsets);
     }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      _primaryActionButton.titleEdgeInsets = UIEdgeInsetsMake(
-          0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
@@ -431,13 +430,11 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
             NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
                                         kButtonHorizontalMargin);
       }
+    } else {
+      UIEdgeInsets titleInsets = UIEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
+                                                  kButtonHorizontalMargin);
+      SetTitleEdgeInsets(_learnMoreActionButton, titleInsets);
     }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      _learnMoreActionButton.titleEdgeInsets = UIEdgeInsetsMake(
-          0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     [_learnMoreActionButton setBackgroundColor:[UIColor clearColor]];
     [_learnMoreActionButton setTitleColor:[UIColor colorNamed:kBlueColor]

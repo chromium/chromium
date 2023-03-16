@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_table_view_controller.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -179,13 +180,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
       _primaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
                                            primaryAction:nil];
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
+  } else {
     _primaryButton = [[UIButton alloc] init];
-    _primaryButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
+    UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
+    SetContentEdgeInsets(_primaryButton, contentEdgeInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   [_primaryButton addTarget:self
                      action:@selector(onPrimaryButtonPressed:)
@@ -214,13 +213,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
       _secondaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
                                              primaryAction:nil];
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
+  } else {
     _secondaryButton = [[UIButton alloc] init];
-    _secondaryButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
+    UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
+    SetContentEdgeInsets(_secondaryButton, contentEdgeInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   [_secondaryButton addTarget:self
                        action:@selector(onSecondaryButtonPressed:)

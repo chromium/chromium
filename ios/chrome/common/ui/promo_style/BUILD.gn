@@ -16,6 +16,7 @@ source_set("promo_style") {
     ":constants",
     "//base",
     "//base:i18n",
+    "//ios/chrome/common:button_config",
     "//ios/chrome/common:constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",

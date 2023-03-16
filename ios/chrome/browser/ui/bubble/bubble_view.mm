@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -180,21 +181,16 @@ UIButton* BubbleCloseButton() {
       button = [UIButton buttonWithConfiguration:buttonConfiguration
                                    primaryAction:nil];
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
+  } else {
     button = [UIButton buttonWithType:UIButtonTypeSystem];
     [button setImage:buttonImage forState:UIControlStateNormal];
     [button.imageView setBounds:CGRectZero];
     [button.imageView setContentMode:UIViewContentModeScaleAspectFit];
-    [button setImageEdgeInsets:UIEdgeInsetsMakeDirected(
-                                   kCloseButtonTopTrailingPadding,
-                                   closeButtonLeadingPadding,
-                                   closeButtonBottomPadding,
-                                   kCloseButtonTopTrailingPadding)];
+    UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMakeDirected(
+        kCloseButtonTopTrailingPadding, closeButtonLeadingPadding,
+        closeButtonBottomPadding, kCloseButtonTopTrailingPadding);
+    SetImageEdgeInsets(button, contentEdgeInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-
   [button setTintColor:[UIColor colorNamed:kSolidButtonTextColor]];
   [button setAccessibilityLabel:l10n_util::GetNSString(IDS_IOS_ICON_CLOSE)];
   [button setAccessibilityIdentifier:kBubbleViewCloseButtonIdentifier];

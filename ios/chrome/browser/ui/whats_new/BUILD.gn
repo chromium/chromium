@@ -37,6 +37,7 @@ source_set("whats_new") {
     "//ios/chrome/browser/ui/whats_new/data_source",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:url_loading",
+    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/table_view:cells_constants",

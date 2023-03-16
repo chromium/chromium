@@ -54,6 +54,7 @@ source_set("form_input_accessory") {
     "resources:mf_arrow_up",
     "//base",
     "//base:i18n",
+    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

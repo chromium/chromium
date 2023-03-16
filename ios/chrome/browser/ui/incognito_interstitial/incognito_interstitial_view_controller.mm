@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view.h"
 #import "ios/chrome/browser/ui/ntp/incognito/revamped_incognito_view.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -296,15 +297,12 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
             CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
         _expandURLButton.configuration = buttonConfiguration;
       }
+    } else {
+      UIEdgeInsets insets = UIEdgeInsetsMake(CGFLOAT_EPSILON, CGFLOAT_EPSILON,
+                                             CGFLOAT_EPSILON, CGFLOAT_EPSILON);
+      SetTitleEdgeInsets(_expandURLButton, insets);
+      SetContentEdgeInsets(_expandURLButton, insets);
     }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      _expandURLButton.titleEdgeInsets = UIEdgeInsetsMake(
-          CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
-      _expandURLButton.contentEdgeInsets = UIEdgeInsetsMake(
-          CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     _expandURLButton.backgroundColor = self.view.backgroundColor;
     _expandURLButton.translatesAutoresizingMaskIntoConstraints = NO;

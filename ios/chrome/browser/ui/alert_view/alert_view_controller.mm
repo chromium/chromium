@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"
 #import "ios/chrome/browser/ui/elements/gray_highlight_button.h"
 #import "ios/chrome/browser/ui/elements/text_field_configuration.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -139,15 +140,13 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
       button = [GrayHighlightButton buttonWithConfiguration:buttonConfiguration
                                               primaryAction:nil];
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
+  } else {
     button = [[GrayHighlightButton alloc] init];
-    button.contentEdgeInsets =
+    UIEdgeInsets contentEdgeInsets =
         UIEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
                          kButtonInsetBottom, kButtonInsetTrailing);
+    SetContentEdgeInsets(button, contentEdgeInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   UIFont* font = nil;
   UIColor* textColor = nil;

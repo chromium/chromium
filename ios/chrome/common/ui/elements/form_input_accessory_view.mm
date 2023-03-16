@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
@@ -245,8 +246,13 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
-  closeButton.contentEdgeInsets = UIEdgeInsetsMake(
+
+  // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
+  // deployment target is iOS 15.
+  UIEdgeInsets contentInsets = UIEdgeInsetsMake(
       0, ManualFillCloseButtonLeftInset, 0, ManualFillCloseButtonRightInset);
+  SetContentEdgeInsets(closeButton, contentInsets);
+
   [closeButton setAccessibilityLabel:textData.closeButtonAccessibilityLabel];
 
   self.nextButton = nextButton;

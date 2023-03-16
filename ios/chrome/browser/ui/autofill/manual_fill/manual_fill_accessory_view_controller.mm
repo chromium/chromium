@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -202,12 +203,10 @@ static NSTimeInterval MFAnimationDuration = 0.2;
           NSDirectionalEdgeInsetsMake(0, 2, 0, 2);
       self.passwordButton.configuration = buttonConfiguration;
     }
+  } else {
+    UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 2);
+    SetContentEdgeInsets(self.passwordButton, contentEdgeInsets);
   }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    self.passwordButton.contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 2);
-  }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   [icons addObject:self.passwordButton];
 

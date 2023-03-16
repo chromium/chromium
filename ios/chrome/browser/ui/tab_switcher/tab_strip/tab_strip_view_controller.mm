@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -87,14 +88,11 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
           0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
       self.buttonNewTab.configuration = buttonConfiguration;
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
+  } else {
     UIEdgeInsets imageInsets = UIEdgeInsetsMake(
         0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
-    self.buttonNewTab.imageEdgeInsets = imageInsets;
+    SetImageEdgeInsets(self.buttonNewTab, imageInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   [self.view addSubview:self.buttonNewTab];
   [NSLayoutConstraint activateConstraints:@[

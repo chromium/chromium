@@ -8,6 +8,7 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -133,14 +134,12 @@ const CGFloat kButtonCornerRadius = 8.0;
                                         kButtonTitleHorizontalContentInset);
         _button.configuration = buttonConfiguration;
       }
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      _button.contentEdgeInsets = UIEdgeInsetsMake(
+    } else {
+      UIEdgeInsets contentInsets = UIEdgeInsetsMake(
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+      SetContentEdgeInsets(_button, contentInsets);
     }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
       _illustratedImageView, _titleLabel, _subtitleLabel, _button

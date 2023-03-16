@@ -26,6 +26,15 @@ source_set("common") {
   public_deps = [ ":timing" ]
 }
 
+source_set("button_config") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "button_configuration_util.h",
+    "button_configuration_util.mm",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

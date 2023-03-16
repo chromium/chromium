@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
@@ -446,15 +447,14 @@ CGFloat const kContentOptimalWidth = 327;
             kButtonVerticalInsets, kButtonHorizontalMargin);
         _actionButton.configuration = buttonConfiguration;
       }
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      _actionButton.contentEdgeInsets =
+    } else {
+      UIEdgeInsets contentEdgeInsets =
           UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-      _actionButton.titleEdgeInsets = UIEdgeInsetsMake(
+      UIEdgeInsets titleEdgeInsets = UIEdgeInsetsMake(
           0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
+      SetContentEdgeInsets(_actionButton, contentEdgeInsets);
+      SetTitleEdgeInsets(_actionButton, titleEdgeInsets);
     }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     [_actionButton
         setBackgroundColor:[UIColor

@@ -24,6 +24,7 @@ source_set("util") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/common:button_config",
     "//ios/chrome/common:constants",
     "//ios/chrome/common/ui/colors",
     "//ui/gfx/ios:uikit_util",

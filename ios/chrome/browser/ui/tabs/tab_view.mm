@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -314,15 +315,12 @@ UIImage* DefaultFaviconImage() {
           kTabCloseRightInset);
       _closeButton.configuration = buttonConfiguration;
     }
+  } else {
+    UIEdgeInsets contentInsets =
+        UIEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
+                         kTabCloseBottomInset, kTabCloseRightInset);
+    SetContentEdgeInsets(_closeButton, contentInsets);
   }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    [_closeButton setContentEdgeInsets:UIEdgeInsetsMake(kTabCloseTopInset,
-                                                        kTabCloseLeftInset,
-                                                        kTabCloseBottomInset,
-                                                        kTabCloseRightInset)];
-  }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   UIImage* closeButton =
       UseSymbols()

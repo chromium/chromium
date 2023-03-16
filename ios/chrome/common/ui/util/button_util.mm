@@ -4,6 +4,7 @@
 
 #import "ios/chrome/common/ui/util/button_util.h"
 
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
@@ -16,8 +17,12 @@ const CGFloat kPrimaryButtonCornerRadius = 15;
 
 UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   UIButton* primary_blue_button = [UIButton buttonWithType:UIButtonTypeSystem];
-  primary_blue_button.contentEdgeInsets =
+
+  // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
+  // deployment target is iOS 15.
+  UIEdgeInsets contentInsets =
       UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  SetContentEdgeInsets(primary_blue_button, contentInsets);
 
   [primary_blue_button setBackgroundColor:[UIColor colorNamed:kBlueColor]];
   UIColor* titleColor = [UIColor colorNamed:kSolidButtonTextColor];

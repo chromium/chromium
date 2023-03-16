@@ -15,6 +15,7 @@ source_set("confirmation_alert") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/resources:help_icon",

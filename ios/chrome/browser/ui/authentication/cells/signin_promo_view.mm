@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -212,12 +213,9 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
         _primaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
                                              primaryAction:nil];
       }
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
+    } else {
       _primaryButton = [[UIButton alloc] init];
     }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     [_primaryButton.titleLabel
         setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
@@ -676,16 +674,14 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
                   kStandardPromoStyle.kButtonTitleVerticalContentInset,
                   kStandardPromoStyle.kButtonTitleHorizontalContentInset);
         }
-      }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      else {
-        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+      } else {
+        UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
             kStandardPromoStyle.kButtonTitleVerticalContentInset,
             kStandardPromoStyle.kButtonTitleHorizontalContentInset,
             kStandardPromoStyle.kButtonTitleVerticalContentInset,
             kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+        SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
       }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
       constraintsToActivate = self.standardLayoutConstraints;
       break;
@@ -735,16 +731,14 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
                   kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
                   kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
         }
-      }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      else {
-        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+      } else {
+        UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
             kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
             kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
             kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
             kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
+        SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
       }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
       constraintsToActivate = self.compactTitledLayoutConstraints;
       break;
@@ -850,16 +844,14 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
                   kCompactVerticalStyle.kButtonTitleVerticalContentInset,
                   kCompactVerticalStyle.kButtonTitleHorizontalContentInset);
         }
-      }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      else {
-        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+      } else {
+        UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
             kCompactVerticalStyle.kButtonTitleVerticalContentInset,
             kCompactVerticalStyle.kButtonTitleHorizontalContentInset,
             kCompactVerticalStyle.kButtonTitleVerticalContentInset,
             kCompactVerticalStyle.kButtonTitleHorizontalContentInset);
+        SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
       }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
       constraintsToActivate = self.compactVerticalLayoutConstraints;
       break;

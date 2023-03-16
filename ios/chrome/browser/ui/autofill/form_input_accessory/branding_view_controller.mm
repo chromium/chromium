@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/branding_view_controller_delegate.h"
+#import "ios/chrome/common/button_configuration_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -74,13 +75,11 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
       button = [UIButton buttonWithConfiguration:buttonConfiguration
                                    primaryAction:nil];
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
+  } else {
     button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.imageEdgeInsets = UIEdgeInsetsMake(0, kLeadingInset, 0, 0);
+    UIEdgeInsets imageEdgeInsets = UIEdgeInsetsMake(0, kLeadingInset, 0, 0);
+    SetImageEdgeInsets(button, imageEdgeInsets);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   button.accessibilityIdentifier = kBrandingButtonAXId;
   button.isAccessibilityElement = NO;  // Prevents VoiceOver users from tap.

@@ -27,6 +27,7 @@ source_set("signed_in_accounts") {
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
