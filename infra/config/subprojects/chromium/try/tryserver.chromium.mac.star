@@ -319,14 +319,14 @@ try_.builder(
     name = "mac_upload_clang",
     executable = "recipe:chromium_upload_clang",
     builderless = False,
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 8 * time.hour,
 )
 
 try_.builder(
     name = "mac_upload_clang_arm",
     executable = "recipe:chromium_upload_clang",
     builderless = False,
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 8 * time.hour,
 )
 
 try_.builder(
