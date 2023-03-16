@@ -47,7 +47,9 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/view_type_utils.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -62,6 +64,7 @@ using content::DevToolsAgentHost;
 const char ChromeDevToolsManagerDelegate::kTypeApp[] = "app";
 const char ChromeDevToolsManagerDelegate::kTypeBackgroundPage[] =
     "background_page";
+const char ChromeDevToolsManagerDelegate::kTypePage[] = "page";
 
 namespace {
 
@@ -90,7 +93,11 @@ bool GetExtensionInfo(content::WebContents* wc,
     *type = ChromeDevToolsManagerDelegate::kTypeApp;
     return true;
   }
-  return false;
+  // Note that we are intentionally not setting name here, so that we can
+  // construct a name based on the URL or page title in
+  // RenderFrameDevToolsAgentHost::GetTitle()
+  *type = ChromeDevToolsManagerDelegate::kTypePage;
+  return true;
 }
 
 ChromeDevToolsManagerDelegate* g_instance;
