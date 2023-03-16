@@ -162,7 +162,9 @@ config("default_sanitizer_ldflags") {
   ]
 
   if (is_posix || is_fuchsia) {
-    sanitizers = []
+    sanitizers = []  # sanitizers applicable to both clang and rustc
+    ldflags = []
+    rustflags = []
     if (is_asan) {
       sanitizers += [ "address" ]
     }
@@ -179,13 +181,11 @@ config("default_sanitizer_ldflags") {
       sanitizers += [ "memory" ]
     }
     if (is_ubsan || is_ubsan_security) {
-      sanitizers += [ "undefined" ]
+      ldflags += [ "-fsanitize=undefined" ]
     }
     if (is_ubsan_vptr) {
-      sanitizers += [ "vptr" ]
+      ldflags += [ "-fsanitize=vptr" ]
     }
-    ldflags = []
-    rustflags = []
     foreach(sanitizer, sanitizers) {
       ldflags += [ "-fsanitize=$sanitizer" ]
       rustflags += [ "-Zsanitizer=$sanitizer" ]
