@@ -12,6 +12,9 @@
   --oobe-oobe-dialog-width-base: 461px;
   --oobe-bg-color: var(--cros-bg-color);
 }
+:root.jelly-enabled {
+  --oobe-bg-color: var(--cros-sys-app_base_shaded);
+}
 
 html,
 body {

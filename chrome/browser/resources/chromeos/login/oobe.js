@@ -94,13 +94,6 @@ function initializeOobe() {
 
   const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
   if (isOobeJellyEnabled) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    // URL protocol prefix necessary, otherwise "new URL(href)"
-    // in colors_css_updater.ts will crash
-    link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-    document.head.appendChild(link);
-    document.body.classList.add('jelly-enabled');
     startColorChangeUpdater();
   }
 

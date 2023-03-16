@@ -1,5 +1,5 @@
 <!doctype html>
-<html build="$i18n{buildType}" cros>
+<html build="$i18n{buildType}" cros class="$i18n{oobeClasses}">
 <head>
   <meta charset="utf-8">
   <meta name="google" value="notranslate">
@@ -9,7 +9,11 @@
   <!-- Keeps track of when OOBE started. -->
   <script src="./oobe_trace_start.js"></script>
 
+  <!-- TODO(b/268463435) Remove after jelly token migration -->
   <link rel="stylesheet" href="//resources/chromeos/colors/cros_styles.css">
+  <!-- URL protocol prefix necessary, otherwise "new URL(href)"
+    in colors_css_updater.ts will crash -->
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=sys">
   <link rel="stylesheet" href="oobe.css">
   <link rel="stylesheet" href="oobe_popup_overlay.css">
   <link rel="stylesheet" href="oobe_screen.css">

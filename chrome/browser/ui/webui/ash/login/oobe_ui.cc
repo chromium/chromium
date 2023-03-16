@@ -651,6 +651,13 @@ base::Value::Dict OobeUI::GetLocalizedStrings() {
   localized_strings.Set("buildType", "chromium");
 #endif
 
+  std::string oobeClasses = "";
+  // TODO (b/268463435) Cleanup OobeJelly
+  if (features::IsOobeJellyEnabled()) {
+    oobeClasses += "jelly-enabled ";
+  }
+  localized_strings.Set("oobeClasses", oobeClasses);
+
   bool keyboard_driven_oobe = ash::system::InputDeviceSettings::Get()
                                   ->ForceKeyboardDrivenUINavigation();
   localized_strings.Set("highlightStrength",
