@@ -153,7 +153,8 @@
 <translation id="1923956950274750765">미디엄 오키드</translation>
 <translation id="1928932365747995741">이전 수정 가능한 텍스트 입력란이 없습니다</translation>
 <translation id="1964135212174907577">다음 객체</translation>
-<translation id="1966649499058910679">각 단어를 읽을 때 강조표시</translation>
+<translation id="1966649499058910679">각 단어를 읽을 때 강조 표시
+</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">ChromeVox 메뉴에 점자 명령어 표시</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{왼쪽 꺾음 괄호}other{왼쪽 꺾음 괄호 #개}}</translation>
@@ -815,7 +816,7 @@
 <translation id="6452403590345320472">목차</translation>
 <translation id="6468049171101508116">다음 버튼</translation>
 <translation id="646954774886932461">색인</translation>
-<translation id="6475604559827479857">단어 강조표시 색상:</translation>
+<translation id="6475604559827479857">단어 강조 표시 색상:</translation>
 <translation id="6493991254603208962">어둡게</translation>
 <translation id="6501595918865591267">터코이즈</translation>
 <translation id="6508059270146105198">점자 디스플레이를 페이지 하단으로 이동합니다.</translation>
@@ -1008,7 +1009,7 @@
 <translation id="7882421473871500483">갈색</translation>
 <translation id="78826985582142166">sldr</translation>
 <translation id="7913106023953875143">다음 수준 2 제목이 없습니다</translation>
-<translation id="7914870167134465181">강조표시</translation>
+<translation id="7914870167134465181">강조 표시</translation>
 <translation id="7927711904086083099">선택되지 않음</translation>
 <translation id="7935627501098484003">시간 컨트롤</translation>
 <translation id="7939428177581522200">선택에 추가됨</translation>
