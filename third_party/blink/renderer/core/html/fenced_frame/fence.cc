@@ -86,7 +86,11 @@ void Fence::reportEvent(ScriptState* script_state,
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame->GetDocument());
   bool has_fenced_frame_reporting =
-      frame->GetDocument()->Loader()->HasFencedFrameReporting();
+      frame->GetDocument()->Loader()->FencedFrameProperties().has_value() &&
+      frame->GetDocument()
+          ->Loader()
+          ->FencedFrameProperties()
+          ->has_fenced_frame_reporting();
   if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
@@ -124,7 +128,11 @@ void Fence::setReportEventDataForAutomaticBeacons(
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame->GetDocument());
   bool has_fenced_frame_reporting =
-      frame->GetDocument()->Loader()->HasFencedFrameReporting();
+      frame->GetDocument()->Loader()->FencedFrameProperties().has_value() &&
+      frame->GetDocument()
+          ->Loader()
+          ->FencedFrameProperties()
+          ->has_fenced_frame_reporting();
   if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
@@ -186,7 +194,11 @@ void Fence::reportPrivateAggregationEvent(ScriptState* script_state,
   DCHECK(frame->GetDocument());
 
   bool has_fenced_frame_reporting =
-      frame->GetDocument()->Loader()->HasFencedFrameReporting();
+      frame->GetDocument()->Loader()->FencedFrameProperties().has_value() &&
+      frame->GetDocument()
+          ->Loader()
+          ->FencedFrameProperties()
+          ->has_fenced_frame_reporting();
   if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;

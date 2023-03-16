@@ -2464,7 +2464,12 @@ Fence* LocalDOMWindow::fence() {
     // metadata (navigated by urn:uuids).
     // If we are in an iframe that doesn't qualify, return nullptr.
     if (!blink::features::IsAllowURNsInIframeEnabled() ||
-        !GetFrame()->GetDocument()->Loader()->HasFencedFrameReporting()) {
+        !GetFrame()->GetDocument()->Loader()->FencedFrameProperties() ||
+        !GetFrame()
+             ->GetDocument()
+             ->Loader()
+             ->FencedFrameProperties()
+             ->has_fenced_frame_reporting()) {
       return nullptr;
     }
   }

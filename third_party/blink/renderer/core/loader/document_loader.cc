@@ -305,7 +305,6 @@ struct SameSizeAsDocumentLoader
   std::unique_ptr<CodeCacheHost> code_cache_host;
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
-  bool has_fenced_frame_reporting_;
   std::unique_ptr<ExtraData> extra_data;
   AtomicString reduced_accept_language;
   network::mojom::NavigationDeliveryType navigation_delivery_type;
@@ -508,7 +507,6 @@ DocumentLoader::DocumentLoader(
           params_->is_cross_site_cross_browsing_context_group),
       navigation_api_back_entries_(params_->navigation_api_back_entries),
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
-      has_fenced_frame_reporting_(params_->has_fenced_frame_reporting),
       extra_data_(std::move(extra_data)),
       reduced_accept_language_(params_->reduced_accept_language),
       navigation_delivery_type_(params_->navigation_delivery_type),
@@ -649,7 +647,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       params->ad_auction_components->emplace_back(KURL(url));
     }
   }
-  params->has_fenced_frame_reporting = has_fenced_frame_reporting_;
   params->reduced_accept_language = reduced_accept_language_;
   params->navigation_delivery_type = navigation_delivery_type_;
   params->has_storage_access = has_storage_access_;

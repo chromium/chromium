@@ -487,11 +487,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // Null, otherwise.
   absl::optional<WebVector<WebURL>> ad_auction_components;
 
-  // This boolean flag indicates whether there is associated reporting metadata
-  // with the fenced frame.
-  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  bool has_fenced_frame_reporting = false;
-
   // Whether the current context would be allowed to create an opaque-ads
   //  frame (based on the browser-side calculations). See
   // NavigatorAuction::canLoadAdAuctionFencedFrame for usage and
