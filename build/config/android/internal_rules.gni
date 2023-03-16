@@ -2632,43 +2632,6 @@ if (enable_java_templates) {
     }
   }
 
-  template("create_binary_profile") {
-    _profgen_path = "$android_sdk_root/cmdline-tools/latest/bin/profgen"
-    _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
-    action_with_pydeps(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      forward_variables_from(invoker, [ "deps" ])
-      script = "//build/android/gyp/binary_baseline_profile.py"
-      depfile = "$target_gen_dir/$target_name.d"
-      outputs = [
-        invoker.binary_baseline_profile_path,
-        invoker.binary_baseline_profile_metadata_path,
-      ]
-      inputs = [
-        invoker.build_config,
-        invoker.proguard_mapping_path,
-        invoker.hrf_profile_path,
-        _profgen_path,
-      ]
-      args = [
-        "--profgen",
-        rebase_path(_profgen_path, root_build_dir),
-        "--output-profile",
-        rebase_path(invoker.binary_baseline_profile_path, root_build_dir),
-        "--output-metadata",
-        rebase_path(invoker.binary_baseline_profile_metadata_path,
-                    root_build_dir),
-        "--dex=@FileArg($_rebased_build_config:final_dex:path)",
-        "--proguard-mapping",
-        rebase_path(invoker.proguard_mapping_path, root_build_dir),
-        "--hrf-path",
-        rebase_path(invoker.hrf_profile_path, root_build_dir),
-        "--depfile",
-        rebase_path(depfile, root_build_dir),
-      ]
-    }
-  }
-
   # Creates a signed and aligned .apk.
   #
   # Variables
@@ -2741,9 +2704,6 @@ if (enable_java_templates) {
       if (!_is_robolectric_apk) {
         _args += [ "--java-resources=@FileArg($_rebased_build_config:java_resources_jars)" ]
       }
-    }
-    if (defined(invoker.extra_assets)) {
-      _args += [ "--assets=${invoker.extra_assets}" ]
     }
     if (!_is_robolectric_apk) {
       _apksigner = "$android_sdk_build_tools/lib/apksigner.jar"
@@ -4337,9 +4297,6 @@ template("create_android_app_bundle_module") {
   }
   if (defined(invoker.uncompress_dex) && invoker.uncompress_dex) {
     _args += [ "--uncompress-dex" ]
-  }
-  if (defined(invoker.extra_assets)) {
-    _args += [ "--assets=${invoker.extra_assets}" ]
   }
 
   # Use either provided dex path or build config path based on type of module.

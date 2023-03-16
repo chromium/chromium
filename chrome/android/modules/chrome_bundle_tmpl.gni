@@ -183,7 +183,6 @@ template("chrome_bundle") {
                            [
                              "add_view_trace_events",
                              "base_module_target",
-                             "baseline_profile_path",
                              "bundle_name",
                              "compress_shared_libraries",
                              "enable_lint",

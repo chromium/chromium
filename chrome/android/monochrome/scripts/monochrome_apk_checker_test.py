@@ -32,9 +32,6 @@ CHROME_SPECIFIC = BuildFileMatchRegex(
     r'res/.*-v1\d/.*\.xml',
     r'res/.*-v2[0-3]/.*\.xml',
     r'META-INF/.*',
-    # Profiles are weird re: Webview so monochrome doesnt use profiles.
-    r'assets/dexopt/baseline.prof',
-    r'assets/dexopt/baseline.profm',
     r'assets/metaresources.arsc',
     r'assets/AndroidManifest.xml')
 
