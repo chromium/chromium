@@ -1491,7 +1491,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     }
 
     // Success!
-    container_builder_.SetBreakToken(line_breaker.CreateBreakToken(line_info));
+    container_builder_.SetBreakToken(line_info.BreakToken());
     container_builder_.SetBaseDirection(line_info.BaseDirection());
 
     // Propagate any break tokens for floats that we fragmented before or inside

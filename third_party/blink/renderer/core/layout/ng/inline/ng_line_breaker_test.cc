@@ -81,7 +81,7 @@ class NGLineBreakerTest : public RenderingTest {
       if (line_info.Results().empty())
         break;
 
-      break_token = line_breaker.CreateBreakToken(line_info);
+      break_token = line_info.BreakToken();
       if (fill_first_space_ && lines.empty()) {
         first_should_hang_trailing_space_ =
             line_info.ShouldHangTrailingSpaces();

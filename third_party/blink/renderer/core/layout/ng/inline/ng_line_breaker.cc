@@ -697,6 +697,9 @@ void NGLineBreaker::NextLine(NGLineInfo* line_info) {
     line_info->SetHasTrailingSpaces();
 
   ComputeLineLocation(line_info);
+  if (mode_ == NGLineBreakerMode::kContent) {
+    line_info->SetBreakToken(CreateBreakToken(*line_info));
+  }
 }
 
 void NGLineBreaker::BreakLine(NGLineInfo* line_info) {
@@ -3052,20 +3055,29 @@ const NGInlineBreakToken* NGLineBreaker::CreateBreakToken(
 #endif
 
   DCHECK(current_style_);
-  const NGBreakToken* sub_break_token = line_info.BlockInInlineBreakToken();
   const HeapVector<NGInlineItem>& items = Items();
   DCHECK_LE(item_index_, items.size());
   // If we have reached the end, create no break token.
   if (item_index_ >= items.size())
     return nullptr;
+
   // If we've resumed a block-in-inline in a parallel flow, and didn't break
   // again, we're done. A break token will be created in the main flow (if
   // there's any left of it).
+  const NGBreakToken* sub_break_token = nullptr;
+  const NGLayoutResult* block_in_inline = line_info.BlockInInlineLayoutResult();
+  if (UNLIKELY(block_in_inline)) {
+    if (UNLIKELY(block_in_inline->Status() != NGLayoutResult::kSuccess)) {
+      return nullptr;
+    }
+    sub_break_token = block_in_inline->PhysicalFragment().BreakToken();
+  }
   if (UNLIKELY(break_token_ && break_token_->BlockInInlineBreakToken())) {
     if (break_token_->BlockInInlineBreakToken()->IsAtBlockEnd() &&
         !sub_break_token)
       return nullptr;
   }
+
   DCHECK_EQ(line_info.HasForcedBreak(), is_after_forced_break_);
   unsigned flags =
       (is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |

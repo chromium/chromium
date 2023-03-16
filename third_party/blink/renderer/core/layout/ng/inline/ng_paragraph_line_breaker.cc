@@ -70,7 +70,7 @@ struct LineBreakResults {
       if (line_info.HasOverflow()) {
         return Status::kNotApplicable;
       }
-      break_token_ = line_breaker.CreateBreakToken(line_info);
+      break_token_ = line_info.BreakToken();
       lines_.push_back(LineBreakResult{line_info.Width()});
       DCHECK_LE(lines_.size(), kMaxLinesToBalance);
       if (!break_token_ ||

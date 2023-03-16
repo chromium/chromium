@@ -60,10 +60,6 @@ class CORE_EXPORT NGLineBreaker {
 
   bool IsFinished() const { return item_index_ >= Items().size(); }
 
-  // Create an NGInlineBreakToken for the last line returned by NextLine().
-  // Only call once per instance.
-  const NGInlineBreakToken* CreateBreakToken(const NGLineInfo&);
-
   void PropagateBreakToken(const NGBlockBreakToken*);
   HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens() {
     return propagated_break_tokens_;
@@ -243,6 +239,10 @@ class CORE_EXPORT NGLineBreaker {
   LayoutUnit RemoveHyphen(NGInlineItemResults* item_results);
   void RestoreLastHyphen(NGInlineItemResults* item_results);
   void FinalizeHyphen(NGInlineItemResults* item_results);
+
+  // Create an NGInlineBreakToken for the last line returned by NextLine().
+  // Only call once per instance.
+  const NGInlineBreakToken* CreateBreakToken(const NGLineInfo&);
 
   // Represents the current offset of the input.
   LineBreakState state_;
