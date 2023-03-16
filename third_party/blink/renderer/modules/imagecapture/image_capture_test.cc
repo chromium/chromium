@@ -30,10 +30,10 @@ namespace blink {
 
 namespace {
 
-using ExpectHasPanTiltZoom =
-    base::StrongAlias<class ExpectHasPanTiltZoomTag, bool>;
 using ExpectHasExposureModeAndFocusMode =
     base::StrongAlias<class ExpectHasExposureModeAndFocusModeTag, bool>;
+using ExpectHasPanTiltZoom =
+    base::StrongAlias<class ExpectHasPanTiltZoomTag, bool>;
 using PopulatePanTiltZoom =
     base::StrongAlias<class PopulatePanTiltZoomZoomTag, bool>;
 
@@ -159,6 +159,14 @@ struct ConstrainWithBareValueCreator {
   }
 };
 
+// This creator creates constrain value dictionary constraints without members.
+struct ConstrainWithEmptyDictionaryCreator {
+  template <typename T>
+  static auto* Create(const T&) {
+    return ConstrainWithDictionaryType<T>::Create();
+  }
+};
+
 // This creator creates constrain value dictionary constraints with `exact`
 // members.
 struct ConstrainWithExactDictionaryCreator {
@@ -178,6 +186,56 @@ struct ConstrainWithIdealDictionaryCreator {
     auto* constrain_value = ConstrainWithDictionaryType<T>::Create();
     constrain_value->setIdeal(CreateDictionaryMemberValue(ideal));
     return constrain_value;
+  }
+};
+
+// This creator creates constrain value dictionary constraints with `max`
+// members.
+struct ConstrainWithMaxDictionaryCreator {
+  template <typename T>
+  static auto* Create(const T& max) {
+    auto* constrain_value = ConstrainWithDictionaryType<T>::Create();
+    constrain_value->setMax(max);
+    return constrain_value;
+  }
+};
+
+// This creator creates constrain value dictionary constraints with `max`
+// members for numeric (double) values and empty constrain value dictionary
+// constraints for non-numeric (bool, sequence, string) values.
+struct ConstrainWithMaxOrEmptyDictionaryCreator {
+  static auto* Create(double max) {
+    return ConstrainWithMaxDictionaryCreator::Create(max);
+  }
+
+  template <typename T>
+  static auto* Create(const T&) {
+    return ConstrainWithDictionaryType<T>::Create();
+  }
+};
+
+// This creator creates constrain value dictionary constraints with `min`
+// members.
+struct ConstrainWithMinDictionaryCreator {
+  template <typename T>
+  static auto* Create(const T& min) {
+    auto* constrain_value = ConstrainWithDictionaryType<T>::Create();
+    constrain_value->setMin(min);
+    return constrain_value;
+  }
+};
+
+// This creator creates constrain value dictionary constraints with `min`
+// members for numeric (double) values and empty constrain value dictionary
+// constraints for non-numeric (bool, sequence, string) values.
+struct ConstrainWithMinOrEmptyDictionaryCreator {
+  static auto* Create(double min) {
+    return ConstrainWithMinDictionaryCreator::Create(min);
+  }
+
+  template <typename T>
+  static auto* Create(const T&) {
+    return ConstrainWithDictionaryType<T>::Create();
   }
 };
 
@@ -280,11 +338,153 @@ void CheckExactValues(
             media::mojom::blink::BackgroundBlurMode::BLUR);
 }
 
-void CheckNoValues(const media::mojom::blink::PhotoSettingsPtr& settings) {
+void CheckMaxValues(const media::mojom::blink::PhotoSettingsPtr& settings,
+                    const MediaTrackCapabilities* all_capabilities,
+                    const MediaTrackSettings* default_settings,
+                    ExpectHasPanTiltZoom expect_has_pan_tilt_zoom =
+                        ExpectHasPanTiltZoom(true)) {
   EXPECT_FALSE(settings->has_white_balance_mode);
   EXPECT_FALSE(settings->has_exposure_mode);
   EXPECT_FALSE(settings->has_focus_mode);
   EXPECT_EQ(settings->points_of_interest.size(), 0u);
+  EXPECT_TRUE(settings->has_exposure_compensation);
+  EXPECT_EQ(settings->exposure_compensation,
+            std::min(all_capabilities->exposureCompensation()->min() +
+                         kExposureCompensationDelta,
+                     default_settings->exposureCompensation()));
+  EXPECT_TRUE(settings->has_exposure_time);
+  EXPECT_EQ(
+      settings->exposure_time,
+      std::min(all_capabilities->exposureTime()->min() + kExposureTimeDelta,
+               default_settings->exposureTime()));
+  EXPECT_TRUE(settings->has_color_temperature);
+  EXPECT_EQ(settings->color_temperature,
+            std::min(all_capabilities->colorTemperature()->min() +
+                         kColorTemperatureDelta,
+                     default_settings->colorTemperature()));
+  EXPECT_TRUE(settings->has_iso);
+  EXPECT_EQ(settings->iso, std::min(all_capabilities->iso()->min() + kIsoDelta,
+                                    default_settings->iso()));
+  EXPECT_TRUE(settings->has_brightness);
+  EXPECT_EQ(settings->brightness,
+            std::min(all_capabilities->brightness()->min() + kBrightnessDelta,
+                     default_settings->brightness()));
+  EXPECT_TRUE(settings->has_contrast);
+  EXPECT_EQ(settings->contrast,
+            std::min(all_capabilities->contrast()->min() + kContrastDelta,
+                     default_settings->contrast()));
+  EXPECT_TRUE(settings->has_saturation);
+  EXPECT_EQ(settings->saturation,
+            std::min(all_capabilities->saturation()->min() + kSaturationDelta,
+                     default_settings->saturation()));
+  EXPECT_TRUE(settings->has_sharpness);
+  EXPECT_EQ(settings->sharpness,
+            std::min(all_capabilities->sharpness()->min() + kSharpnessDelta,
+                     default_settings->sharpness()));
+  EXPECT_TRUE(settings->has_focus_distance);
+  EXPECT_EQ(
+      settings->focus_distance,
+      std::min(all_capabilities->focusDistance()->min() + kFocusDistanceDelta,
+               default_settings->focusDistance()));
+  if (expect_has_pan_tilt_zoom) {
+    EXPECT_TRUE(settings->has_pan);
+    EXPECT_EQ(settings->pan,
+              std::min(all_capabilities->pan()->min() + kPanDelta,
+                       default_settings->pan()));
+    EXPECT_TRUE(settings->has_tilt);
+    EXPECT_EQ(settings->tilt,
+              std::min(all_capabilities->tilt()->min() + kTiltDelta,
+                       default_settings->tilt()));
+    EXPECT_TRUE(settings->has_zoom);
+    EXPECT_EQ(settings->zoom,
+              std::min(all_capabilities->zoom()->min() + kZoomDelta,
+                       default_settings->zoom()));
+  } else {
+    EXPECT_FALSE(settings->has_pan);
+    EXPECT_FALSE(settings->has_tilt);
+    EXPECT_FALSE(settings->has_zoom);
+  }
+  EXPECT_FALSE(settings->has_torch);
+  EXPECT_FALSE(settings->has_background_blur_mode);
+}
+
+void CheckMinValues(const media::mojom::blink::PhotoSettingsPtr& settings,
+                    const MediaTrackCapabilities* all_capabilities,
+                    const MediaTrackSettings* default_settings,
+                    ExpectHasPanTiltZoom expect_has_pan_tilt_zoom =
+                        ExpectHasPanTiltZoom(true)) {
+  EXPECT_FALSE(settings->has_white_balance_mode);
+  EXPECT_FALSE(settings->has_exposure_mode);
+  EXPECT_FALSE(settings->has_focus_mode);
+  EXPECT_EQ(settings->points_of_interest.size(), 0u);
+  EXPECT_TRUE(settings->has_exposure_compensation);
+  EXPECT_EQ(settings->exposure_compensation,
+            std::max(all_capabilities->exposureCompensation()->min() +
+                         kExposureCompensationDelta,
+                     default_settings->exposureCompensation()));
+  EXPECT_TRUE(settings->has_exposure_time);
+  EXPECT_EQ(
+      settings->exposure_time,
+      std::max(all_capabilities->exposureTime()->min() + kExposureTimeDelta,
+               default_settings->exposureTime()));
+  EXPECT_TRUE(settings->has_color_temperature);
+  EXPECT_EQ(settings->color_temperature,
+            std::max(all_capabilities->colorTemperature()->min() +
+                         kColorTemperatureDelta,
+                     default_settings->colorTemperature()));
+  EXPECT_TRUE(settings->has_iso);
+  EXPECT_EQ(settings->iso, std::max(all_capabilities->iso()->min() + kIsoDelta,
+                                    default_settings->iso()));
+  EXPECT_TRUE(settings->has_brightness);
+  EXPECT_EQ(settings->brightness,
+            std::max(all_capabilities->brightness()->min() + kBrightnessDelta,
+                     default_settings->brightness()));
+  EXPECT_TRUE(settings->has_contrast);
+  EXPECT_EQ(settings->contrast,
+            std::max(all_capabilities->contrast()->min() + kContrastDelta,
+                     default_settings->contrast()));
+  EXPECT_TRUE(settings->has_saturation);
+  EXPECT_EQ(settings->saturation,
+            std::max(all_capabilities->saturation()->min() + kSaturationDelta,
+                     default_settings->saturation()));
+  EXPECT_TRUE(settings->has_sharpness);
+  EXPECT_EQ(settings->sharpness,
+            std::max(all_capabilities->sharpness()->min() + kSharpnessDelta,
+                     default_settings->sharpness()));
+  EXPECT_TRUE(settings->has_focus_distance);
+  EXPECT_EQ(
+      settings->focus_distance,
+      std::max(all_capabilities->focusDistance()->min() + kFocusDistanceDelta,
+               default_settings->focusDistance()));
+  if (expect_has_pan_tilt_zoom) {
+    EXPECT_TRUE(settings->has_pan);
+    EXPECT_EQ(settings->pan,
+              std::max(all_capabilities->pan()->min() + kPanDelta,
+                       default_settings->pan()));
+    EXPECT_TRUE(settings->has_tilt);
+    EXPECT_EQ(settings->tilt,
+              std::max(all_capabilities->tilt()->min() + kTiltDelta,
+                       default_settings->tilt()));
+    EXPECT_TRUE(settings->has_zoom);
+    EXPECT_EQ(settings->zoom,
+              std::max(all_capabilities->zoom()->min() + kZoomDelta,
+                       default_settings->zoom()));
+  } else {
+    EXPECT_FALSE(settings->has_pan);
+    EXPECT_FALSE(settings->has_tilt);
+    EXPECT_FALSE(settings->has_zoom);
+  }
+  EXPECT_FALSE(settings->has_torch);
+  EXPECT_FALSE(settings->has_background_blur_mode);
+}
+
+void CheckNoValues(const media::mojom::blink::PhotoSettingsPtr& settings,
+                   size_t expected_points_of_interest_size = 0u) {
+  EXPECT_FALSE(settings->has_white_balance_mode);
+  EXPECT_FALSE(settings->has_exposure_mode);
+  EXPECT_FALSE(settings->has_focus_mode);
+  EXPECT_EQ(settings->points_of_interest.size(),
+            expected_points_of_interest_size);
   EXPECT_FALSE(settings->has_exposure_compensation);
   EXPECT_FALSE(settings->has_exposure_time);
   EXPECT_FALSE(settings->has_color_temperature);
@@ -454,6 +654,7 @@ class ImageCaptureConstraintTest : public ImageCaptureTest {
     // the constraint set {exposureCompensation: {max: ...}} with
     // `all_capabilities_->exposureCompensation()->min() +
     //  kExposureCompensationDelta` is not satisfied by the default settings.
+    // Otherwise `CheckMaxValues` does not really check anything.
     DCHECK_LT(all_capabilities_->exposureCompensation()->min() +
                   kExposureCompensationDelta,
               default_settings_->exposureCompensation());
@@ -461,6 +662,7 @@ class ImageCaptureConstraintTest : public ImageCaptureTest {
     // the constraint set {focusDistance: {min: ...}} with
     // `all_capabilities_->focusDistance()->min() +
     //  kFocusDistanceDelta` is not satisfied by the default settings.
+    // Otherwise `CheckMinValues` does not really check anything.
     DCHECK_GT(all_capabilities_->focusDistance()->min() + kFocusDistanceDelta,
               default_settings_->focusDistance());
     image_capture_ = CreateImageCapture();
@@ -483,9 +685,343 @@ class ImageCaptureConstraintTest : public ImageCaptureTest {
   Persistent<ImageCapture> image_capture_;
 };
 
+TEST_F(ImageCaptureConstraintTest, ApplyBasicBareValueConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
+  // Create constraints:
+  //   {
+  //     whiteBalanceMode: "...",
+  //     exposureMode: ["...", ...],
+  //     focusMode: ["...", ...],
+  //     exposureCompensation: ...,
+  //     ...
+  //   }
+  auto* constraints = MediaTrackConstraints::Create();
+  PopulateConstraintSet<ConstrainWithBareValueCreator>(constraints,
+                                                       all_capabilities_);
+  auto settings = media::mojom::blink::PhotoSettings::New();
+  // Should apply the constraints to the settings as is and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckExactValues(settings, all_capabilities_);
+
+  // Create constraints: {exposureCompensation: ...}
+  constraints = MediaTrackConstraints::Create();
+  constraints->setExposureCompensation(
+      MakeGarbageCollected<V8UnionConstrainDoubleRangeOrDouble>(
+          all_capabilities_->exposureCompensation()->max() + 1));
+  settings = media::mojom::blink::PhotoSettings::New();
+  // Should apply the closest setting within the capability range and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  EXPECT_TRUE(settings->has_exposure_compensation);
+  EXPECT_EQ(settings->exposure_compensation,
+            all_capabilities_->exposureCompensation()->max());
+}
+
+TEST_F(ImageCaptureConstraintTest, ApplyBasicExactConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
+  // Create constraints:
+  //   {
+  //     whiteBalanceMode: {exact: "..."},
+  //     exposureMode: {exact: ["...", ...]},
+  //     focusMode: {exact: ["...", ...]},
+  //     exposureCompensation: {exact: ...},
+  //     ...
+  //   }
+  auto* constraints = MediaTrackConstraints::Create();
+  PopulateConstraintSet<ConstrainWithExactDictionaryCreator>(constraints,
+                                                             all_capabilities_);
+  auto settings = media::mojom::blink::PhotoSettings::New();
+  // Should apply the constraints to the settings as is and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckExactValues(settings, all_capabilities_);
+}
+
+TEST_F(ImageCaptureConstraintTest, ApplyBasicIdealConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
+  // Create constraints:
+  //   {
+  //     whiteBalanceMode: {ideal: "..."},
+  //     exposureMode: {ideal: ["...", ...]},
+  //     focusMode: {ideal: ["...", ...]},
+  //     exposureCompensation: {ideal: ...},
+  //     ...
+  //   }
+  auto* full_constraints = MediaTrackConstraints::Create();
+  PopulateConstraintSet<ConstrainWithIdealDictionaryCreator>(full_constraints,
+                                                             all_capabilities_);
+  auto settings = media::mojom::blink::PhotoSettings::New();
+  // Should apply the constraints to the settings as is and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, full_constraints, resolver));
+  CheckExactValues(settings, all_capabilities_);
+
+  // Create constraints: {exposureCompensation: {ideal: ...}}
+  auto* constraints = MediaTrackConstraints::Create();
+  constraints->setExposureCompensation(
+      MakeGarbageCollected<V8UnionConstrainDoubleRangeOrDouble>(
+          ConstrainWithIdealDictionaryCreator::Create(
+              all_capabilities_->exposureCompensation()->max() + 1)));
+  settings = media::mojom::blink::PhotoSettings::New();
+  // Should apply the closest setting within the capability range and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  EXPECT_TRUE(settings->has_exposure_compensation);
+  EXPECT_EQ(settings->exposure_compensation,
+            all_capabilities_->exposureCompensation()->max());
+
+  // Reuse `full_constraints` but remove capabilities.
+  image_capture_->SetCapabilitiesForTesting(
+      MakeGarbageCollected<MediaTrackCapabilities>());
+  settings = media::mojom::blink::PhotoSettings::New();
+  // Shuold ignore ideal constraints without capabilities and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, full_constraints, resolver));
+  CheckNoValues(settings, full_constraints->pointsOfInterest()
+                              ->GetAsConstrainPoint2DParameters()
+                              ->ideal()
+                              .size());
+}
+
+TEST_F(ImageCaptureConstraintTest, ApplyBasicMaxConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
+  // Create constraints:
+  //   {
+  //     whiteBalanceMode: {},
+  //     exposureMode: {},
+  //     focusMode: {},
+  //     exposureCompensation: {max: ...},
+  //     ...
+  //   }
+  auto* constraints = MediaTrackConstraints::Create();
+  PopulateConstraintSet<ConstrainWithMaxOrEmptyDictionaryCreator>(
+      constraints, all_capabilities_);
+  auto settings = media::mojom::blink::PhotoSettings::New();
+  // Should apply the max constraints to the current settings and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckMaxValues(settings, all_capabilities_, default_settings_);
+}
+
+TEST_F(ImageCaptureConstraintTest, ApplyBasicMinConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
+  // Create constraints:
+  //   {
+  //     whiteBalanceMode: {},
+  //     exposureMode: {},
+  //     focusMode: {},
+  //     exposureCompensation: {min: ...},
+  //     ...
+  //   }
+  auto* constraints = MediaTrackConstraints::Create();
+  PopulateConstraintSet<ConstrainWithMinOrEmptyDictionaryCreator>(
+      constraints, all_capabilities_);
+  auto settings = media::mojom::blink::PhotoSettings::New();
+  // Should apply the min constraints to the current settings and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckMinValues(settings, all_capabilities_, default_settings_);
+}
+
+// If an empty list has been given as the value for a constraint, it MUST be
+// interpreted as if the constraint were not specified (in other words,
+// an empty constraint == no constraint).
+// https://w3c.github.io/mediacapture-main/#dfn-selectsettings
+TEST_F(ImageCaptureConstraintTest, ApplyBasicNoConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
+  // Create constraints:
+  //   {
+  //     whiteBalanceMode: [],
+  //     exposureMode: {exact: []},
+  //     focusMode: {ideal: []},
+  //     pointsOfInterest: {exact: []}
+  //   }
+  auto* constraints = MediaTrackConstraints::Create();
+  constraints->setWhiteBalanceMode(
+      MakeGarbageCollected<
+          V8UnionConstrainDOMStringParametersOrStringOrStringSequence>(
+          Vector<String>()));
+  constraints->setExposureMode(
+      MakeGarbageCollected<
+          V8UnionConstrainDOMStringParametersOrStringOrStringSequence>(
+          ConstrainWithExactDictionaryCreator::Create(Vector<String>())));
+  constraints->setFocusMode(
+      MakeGarbageCollected<
+          V8UnionConstrainDOMStringParametersOrStringOrStringSequence>(
+          ConstrainWithIdealDictionaryCreator::Create(Vector<String>())));
+  constraints->setPointsOfInterest(
+      MakeGarbageCollected<V8UnionConstrainPoint2DParametersOrPoint2DSequence>(
+          ConstrainWithExactDictionaryCreator::Create(
+              HeapVector<Member<Point2D>>())));
+  auto settings = media::mojom::blink::PhotoSettings::New();
+  // Should ignore empty sequences and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckNoValues(settings);
+}
+
+TEST_F(ImageCaptureConstraintTest, ApplyBasicOverconstrainedConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto settings = media::mojom::blink::PhotoSettings::New();
+
+  // Create constraints: {whiteBalanceMode: {exact: "..."}}
+  auto* constraints = MediaTrackConstraints::Create();
+  constraints->setWhiteBalanceMode(
+      MakeGarbageCollected<
+          V8UnionConstrainDOMStringParametersOrStringOrStringSequence>(
+          ConstrainWithExactDictionaryCreator::Create(
+              all_non_capabilities_->whiteBalanceMode()[0])));
+  auto* capture_error = MakeGarbageCollected<CaptureErrorFunction>();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
+                                        scope.GetScriptState(), capture_error));
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
+  EXPECT_EQ(capture_error->Constraint(), "whiteBalanceMode");
+
+  // Create constraints: {whiteBalanceMode: {exact: ["..."]}}
+  constraints = MediaTrackConstraints::Create();
+  constraints->setWhiteBalanceMode(
+      MakeGarbageCollected<
+          V8UnionConstrainDOMStringParametersOrStringOrStringSequence>(
+          ConstrainWithExactDictionaryCreator::Create(
+              all_non_capabilities_->whiteBalanceMode())));
+  capture_error = MakeGarbageCollected<CaptureErrorFunction>();
+  resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
+                                        scope.GetScriptState(), capture_error));
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
+  EXPECT_EQ(capture_error->Constraint(), "whiteBalanceMode");
+
+  // Create constraints: {exposureCompensation: {exact: ...}}
+  constraints = MediaTrackConstraints::Create();
+  constraints->setExposureCompensation(
+      MakeGarbageCollected<V8UnionConstrainDoubleRangeOrDouble>(
+          ConstrainWithExactDictionaryCreator::Create(
+              all_capabilities_->exposureCompensation()->min() - 1)));
+  capture_error = MakeGarbageCollected<CaptureErrorFunction>();
+  resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
+                                        scope.GetScriptState(), capture_error));
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
+  EXPECT_EQ(capture_error->Constraint(), "exposureCompensation");
+
+  // Create constraints: {exposureCompensation: {max: ...}}
+  constraints = MediaTrackConstraints::Create();
+  constraints->setExposureCompensation(
+      MakeGarbageCollected<V8UnionConstrainDoubleRangeOrDouble>(
+          ConstrainWithMaxDictionaryCreator::Create(
+              all_capabilities_->exposureCompensation()->min() - 1)));
+  capture_error = MakeGarbageCollected<CaptureErrorFunction>();
+  resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
+                                        scope.GetScriptState(), capture_error));
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
+  EXPECT_EQ(capture_error->Constraint(), "exposureCompensation");
+
+  // Create constraints: {exposureCompensation: {min: ...}}
+  constraints = MediaTrackConstraints::Create();
+  constraints->setExposureCompensation(
+      MakeGarbageCollected<V8UnionConstrainDoubleRangeOrDouble>(
+          ConstrainWithMinDictionaryCreator::Create(
+              all_capabilities_->exposureCompensation()->max() + 1)));
+  capture_error = MakeGarbageCollected<CaptureErrorFunction>();
+  resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
+                                        scope.GetScriptState(), capture_error));
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
+  EXPECT_EQ(capture_error->Constraint(), "exposureCompensation");
+
+  // Create constraints: {backgroundBlur: {exact: ...}}
+  constraints = MediaTrackConstraints::Create();
+  constraints->setBackgroundBlur(
+      MakeGarbageCollected<V8UnionBooleanOrConstrainBooleanParameters>(
+          ConstrainWithExactDictionaryCreator::Create(
+              all_non_capabilities_->backgroundBlur()[0])));
+  capture_error = MakeGarbageCollected<CaptureErrorFunction>();
+  resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
+                                        scope.GetScriptState(), capture_error));
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
+  EXPECT_EQ(capture_error->Constraint(), "backgroundBlur");
+
+  // Reuse previous constraints but remove capabilities.
+  image_capture_->SetCapabilitiesForTesting(
+      MakeGarbageCollected<MediaTrackCapabilities>());
+  capture_error = MakeGarbageCollected<CaptureErrorFunction>();
+  resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
+                                        scope.GetScriptState(), capture_error));
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "OverconstrainedError");
+  EXPECT_EQ(capture_error->Message(), "Unsupported constraint");
+}
+
 TEST_F(ImageCaptureConstraintTest, ApplyFirstAdvancedBareValueConstraints) {
   V8TestingScope scope;
   image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
   // Create constraints:
   //   {advanced: [
   //     {
@@ -501,8 +1037,6 @@ TEST_F(ImageCaptureConstraintTest, ApplyFirstAdvancedBareValueConstraints) {
                                                        all_capabilities_);
   auto* constraints = MediaTrackConstraints::Create();
   constraints->setAdvanced({constraint_set});
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   auto settings = media::mojom::blink::PhotoSettings::New();
   // Should apply the constraints to the settings as is and succeed.
   EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
@@ -517,6 +1051,9 @@ TEST_F(ImageCaptureConstraintTest, ApplyFirstAdvancedBareValueConstraints) {
 TEST_F(ImageCaptureConstraintTest, ApplyFirstAdvancedExactConstraints) {
   V8TestingScope scope;
   image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
   // Create constraints:
   //   {advanced: [
   //     {
@@ -532,8 +1069,6 @@ TEST_F(ImageCaptureConstraintTest, ApplyFirstAdvancedExactConstraints) {
                                                              all_capabilities_);
   auto* constraints = MediaTrackConstraints::Create();
   constraints->setAdvanced({constraint_set});
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   auto settings = media::mojom::blink::PhotoSettings::New();
   // Should apply the constraints to the settings as is and succeed.
   EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
@@ -547,6 +1082,9 @@ TEST_F(ImageCaptureConstraintTest, ApplyFirstAdvancedExactConstraints) {
 TEST_F(ImageCaptureConstraintTest, ApplyFirstAdvancedIdealConstraints) {
   V8TestingScope scope;
   image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
   // Create constraints:
   //   {advanced: [
   //     {
@@ -562,8 +1100,6 @@ TEST_F(ImageCaptureConstraintTest, ApplyFirstAdvancedIdealConstraints) {
                                                              all_capabilities_);
   auto* constraints = MediaTrackConstraints::Create();
   constraints->setAdvanced({constraint_set});
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   auto settings = media::mojom::blink::PhotoSettings::New();
   // Shuold ignore ideal constraints in advanced constraint sets and succeed.
   EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
@@ -674,6 +1210,9 @@ TEST_F(ImageCaptureConstraintTest,
 TEST_F(ImageCaptureConstraintTest, ApplyAdvancedIdealConstraints) {
   V8TestingScope scope;
   image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
   // Create constraints:
   //   {advanced: [
   //     {},
@@ -690,8 +1229,6 @@ TEST_F(ImageCaptureConstraintTest, ApplyAdvancedIdealConstraints) {
                                                              all_capabilities_);
   auto* constraints = MediaTrackConstraints::Create();
   constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   auto settings = media::mojom::blink::PhotoSettings::New();
   // Shuold ignore ideal constraints in advanced constraint sets and succeed.
   EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
@@ -771,7 +1308,6 @@ TEST_F(ImageCaptureConstraintTest, ApplyAdvancedOverconstrainedConstraints) {
       CreatePoint2D(0.25, 0.75)};
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
-  auto settings = media::mojom::blink::PhotoSettings::New();
 
   // Create constraints: {advanced: [{}, {whiteBalanceMode: "..."}]}
   auto* constraint_set = MediaTrackConstraintSet::Create();
@@ -781,6 +1317,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyAdvancedOverconstrainedConstraints) {
           all_non_capabilities_->whiteBalanceMode()[0]));
   auto* constraints = MediaTrackConstraints::Create();
   constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
+  auto settings = media::mojom::blink::PhotoSettings::New();
   // Should discard the last advanced constraint set and succeed.
   EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
@@ -796,6 +1333,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyAdvancedOverconstrainedConstraints) {
           false));
   constraints = MediaTrackConstraints::Create();
   constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
+  settings = media::mojom::blink::PhotoSettings::New();
   // Should discard the last advanced constraint set and succeed.
   EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
@@ -813,6 +1351,7 @@ TEST_F(ImageCaptureConstraintTest, ApplyAdvancedOverconstrainedConstraints) {
       MakeGarbageCollected<V8UnionBooleanOrConstrainDoubleRangeOrDouble>(true));
   constraints = MediaTrackConstraints::Create();
   constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
+  settings = media::mojom::blink::PhotoSettings::New();
   // Should discard the last advanced constraint set and succeed.
   EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
@@ -842,10 +1381,11 @@ TEST_F(ImageCaptureConstraintTest, ApplySecurityErrorConstraints) {
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
                                         scope.GetScriptState(), capture_error));
-  // TODO(crbug.com/1408091): This is not spec compliant. This should fail with
-  // a `SecurityError`.
-  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "SecurityError");
 
   // Create constraints: {advanced: [{tilt: ...}]}
   auto* constraint_set = MediaTrackConstraintSet::Create();

@@ -134,23 +134,21 @@ class AllConstraintSets {
   Persistent<const MediaTrackConstraints> constraints_;
 };
 
-// This adapter simplifies iteration over supported advanced
+// This adapter simplifies iteration over supported basic and advanced
 // MediaTrackConstraintSets in a MediaTrackConstraints.
 // A MediaTrackConstraints is itself a (basic) MediaTrackConstraintSet and it
-// may contain advanced MediaTrackConstraintSets. So far, only the first
-// advanced MediaTrackConstraintSet is supported by this implementation.
-// TODO(crbug.com/1408091): Add support for the basic constraint set and for
-// advanced constraint sets beyond the first one and remove this helper class.
+// may contain advanced MediaTrackConstraintSets. So far, only the basic
+// MediaTrackConstraintSet and the first advanced MediaTrackConstraintSet are
+// supported by this implementation.
+// TODO(crbug.com/1408091): Add support for advanced constraint sets beyond
+// the first one and remove this helper class.
 class AllSupportedConstraintSets {
  public:
   using ForwardIterator = AllConstraintSets::ForwardIterator;
 
   explicit AllSupportedConstraintSets(const MediaTrackConstraints* constraints)
       : all_constraint_sets_(constraints) {}
-  ForwardIterator begin() const {
-    const auto* constraints = all_constraint_sets_.GetConstraints();
-    return ForwardIterator(constraints, 1u);
-  }
+  ForwardIterator begin() const { return all_constraint_sets_.begin(); }
   ForwardIterator end() const {
     const auto* constraints = all_constraint_sets_.GetConstraints();
     return ForwardIterator(constraints, constraints->hasAdvanced() &&
@@ -1706,14 +1704,6 @@ void ImageCapture::SetMediaTrackConstraints(
     ScriptPromiseResolver* resolver,
     const MediaTrackConstraints* constraints) {
   DCHECK(constraints);
-  if (!constraints->hasAdvanced() || constraints->advanced().empty()) {
-    // TODO(crbug.com/1408091): This is not spec compliant.
-    // If there are no advanced constraints (but only required and optional
-    // constraints), the required and optional constraints should be applied.
-    ClearMediaTrackConstraints();
-    resolver->Resolve();
-    return;
-  }
 
   ExecutionContext* context = GetExecutionContext();
   for (const MediaTrackConstraintSet* constraint_set :
