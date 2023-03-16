@@ -159,13 +159,15 @@ bool HasSingleUsernameVote(const FormPredictions& form) {
 bool HasNewPasswordVote(const FormPredictions& form) {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::
-              kEnablePasswordGenerationForClearTextFields))
+              kEnablePasswordGenerationForClearTextFields)) {
     return false;
-  for (const auto& field : form.fields) {
-    if (field.type == ACCOUNT_CREATION_PASSWORD || field.type == NEW_PASSWORD)
-      return true;
   }
-  return false;
+  auto is_creation_password_or_new_password = [](const auto& type) {
+    return type == ACCOUNT_CREATION_PASSWORD || type == NEW_PASSWORD;
+  };
+
+  return base::ranges::any_of(form.fields, is_creation_password_or_new_password,
+                              &PasswordFieldPrediction::type);
 }
 
 // Adds predictions to |predictions->fields| if |field_info_manager| has
