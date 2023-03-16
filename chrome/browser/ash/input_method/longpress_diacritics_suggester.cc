@@ -16,7 +16,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/grit/generated_resources.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -84,6 +88,15 @@ AssistiveWindowButton CreateButtonFor(size_t index,
 void RecordActionMetric(IMEPKLongpressDiacriticAction action) {
   base::UmaHistogramEnumeration(
       "InputMethod.PhysicalKeyboard.LongpressDiacritics.Action", action);
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context) {
+    return;
+  }
+
+  auto sourceId = input_context->GetClientSourceForMetrics();
+  ukm::builders::InputMethod_LongpressDiacritics(sourceId)
+      .SetActions(static_cast<long>(action))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void RecordAcceptanceCharCodeMetric(const std::u16string diacritic) {

@@ -10930,6 +10930,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="InputMethod.LongpressDiacritics">
+  <owner>jopalmer@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Recorded when a user uses the long press diacritics feature to insert
+    diacritics via long press with a physical keyboard.
+  </summary>
+  <metric name="Actions" enum="IMEPKLongpressDiacriticAction">
+    <summary>
+      Action taken by the user to interact with this feature.
+    </summary>
+  </metric>
+</event>
+
 <event name="InputMethod.NonCompliantApi">
   <owner>shend@chromium.org</owner>
   <summary>
