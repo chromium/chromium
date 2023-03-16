@@ -118,6 +118,29 @@ class FilterClusterProcessorTest : public ::testing::Test {
   }
 };
 
+TEST_F(FilterClusterProcessorTest,
+       ShouldShowOnProminentUiSurfacesIsSetIfFilterParamsConditionIsSet) {
+  QueryClustersFilterParams filter_params;
+  filter_params.is_shown_on_prominent_ui_surfaces = true;
+
+  auto cluster_processor = std::make_unique<FilterClusterProcessor>(
+      ClusteringRequestSource::kNewTabPage, filter_params,
+      /*engagement_score_provider_is_valid=*/true);
+
+  std::vector<history::Cluster> clusters = GetTestClusters();
+  base::ranges::for_each(clusters, [&](auto& cluster) {
+    cluster.should_show_on_prominent_ui_surfaces = false;
+  });
+  cluster_processor->ProcessClusters(&clusters);
+
+  // Some clusters are content visible - make sure there's at least one bit set
+  // properly after culling non-prominent.
+  base::EraseIf(clusters, [](const history::Cluster& cluster) {
+    return !cluster.should_show_on_prominent_ui_surfaces;
+  });
+  EXPECT_FALSE(clusters.empty());
+}
+
 TEST_F(FilterClusterProcessorTest, NoFunctionalFilter) {
   base::HistogramTester histogram_tester;
 

@@ -46,7 +46,7 @@ class FilterClusterProcessor : public ClusterProcessor {
  private:
   // Returns whether `cluster` matches the filter as specified by
   // `filter_params_`.
-  bool DoesClusterMatchFilter(const history::Cluster& cluster) const;
+  bool DoesClusterMatchFilter(history::Cluster& cluster) const;
 
   // The clustering request source that requires this filtering. Used for
   // metrics purposes.

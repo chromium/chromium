@@ -85,7 +85,7 @@ void FilterClusterProcessor::ProcessClusters(
 }
 
 bool FilterClusterProcessor::DoesClusterMatchFilter(
-    const history::Cluster& cluster) const {
+    history::Cluster& cluster) const {
   int num_visits_with_images = 0;
   size_t num_visits_in_allowed_categories = 0;
   bool has_visits_in_blocked_categories = false;
@@ -157,6 +157,8 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
     matches_filter = false;
   }
   if (filter_params_->is_shown_on_prominent_ui_surfaces) {
+    cluster.should_show_on_prominent_ui_surfaces = true;
+
     if (engagement_score_provider_is_valid_ &&
         num_interesting_visits <
             GetConfig().number_interesting_visits_filter_threshold) {
@@ -175,6 +177,8 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
           clustering_request_source_, ClusterFilterReason::kNotContentVisible);
       matches_filter = false;
     }
+
+    cluster.should_show_on_prominent_ui_surfaces = matches_filter;
   }
 
   if (matches_filter) {
