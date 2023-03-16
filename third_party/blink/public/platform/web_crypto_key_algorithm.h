@@ -79,6 +79,7 @@ class BLINK_PLATFORM_EXPORT WebCryptoKeyAlgorithm {
   static WebCryptoKeyAlgorithm CreateEc(WebCryptoAlgorithmId,
                                         WebCryptoNamedCurve);
   static WebCryptoKeyAlgorithm CreateEd25519(WebCryptoAlgorithmId);
+  static WebCryptoKeyAlgorithm CreateX25519(WebCryptoAlgorithmId);
   static WebCryptoKeyAlgorithm CreateWithoutParams(WebCryptoAlgorithmId);
 
   ~WebCryptoKeyAlgorithm() { Reset(); }

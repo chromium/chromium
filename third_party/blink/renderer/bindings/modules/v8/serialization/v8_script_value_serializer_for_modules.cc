@@ -394,6 +394,8 @@ uint32_t AlgorithmIdForWireFormat(WebCryptoAlgorithmId id) {
       return kPbkdf2Tag;
     case kWebCryptoAlgorithmIdEd25519:
       return kEd25519Tag;
+    case kWebCryptoAlgorithmIdX25519:
+      return kX25519Tag;
   }
   NOTREACHED() << "Unknown algorithm ID " << id;
   return 0;
@@ -509,10 +511,15 @@ bool V8ScriptValueSerializerForModules::WriteCryptoKey(
     case kWebCryptoKeyAlgorithmParamsTypeNone:
       switch (algorithm.Id()) {
         case kWebCryptoAlgorithmIdEd25519:
-          WriteOneByte(kEd25519KeyTag);
+        case kWebCryptoAlgorithmIdX25519: {
+          CryptoKeySubTag tag = algorithm.Id() == kWebCryptoAlgorithmIdEd25519
+                                    ? kEd25519KeyTag
+                                    : kX25519KeyTag;
+          WriteOneByte(tag);
           WriteUint32(AlgorithmIdForWireFormat(algorithm.Id()));
           WriteUint32(AsymmetricKeyTypeForWireFormat(key.GetType()));
           break;
+        }
         default:
           DCHECK(WebCryptoAlgorithm::IsKdf(algorithm.Id()));
           WriteOneByte(kNoParamsKeyTag);

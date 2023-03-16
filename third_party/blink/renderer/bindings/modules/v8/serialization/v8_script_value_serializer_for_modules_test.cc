@@ -792,6 +792,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEd25519) {
                                   signature, message));
 }
 
+// Ed25519 uses no params.
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEd25519) {
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
@@ -826,6 +827,96 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEd25519) {
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdEd25519, nullptr);
   EXPECT_TRUE(SyncVerifySignature(script_state, algorithm,
                                   new_public_key->Key(), signature, message));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyX25519) {
+  V8TestingScope scope(KURL("https://secure.context/"));
+  ScriptState* script_state = scope.GetScriptState();
+
+  // Generate an X25519 key pair.
+  WebCryptoAlgorithm generate_key_algorithm(kWebCryptoAlgorithmIdX25519,
+                                            nullptr);
+  auto [public_key, private_key] = SyncGenerateKeyPair(
+      script_state, generate_key_algorithm, true,
+      kWebCryptoKeyUsageDeriveKey | kWebCryptoKeyUsageDeriveBits);
+
+  // Round trip the private key and check the visible attributes.
+  v8::Local<v8::Value> wrapper = ToV8(private_key, scope.GetScriptState());
+  v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
+  ASSERT_TRUE(V8CryptoKey::HasInstance(result, scope.GetIsolate()));
+  CryptoKey* new_private_key = V8CryptoKey::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ("private", new_private_key->type());
+  EXPECT_TRUE(new_private_key->extractable());
+  EXPECT_EQ(kWebCryptoKeyUsageDeriveKey | kWebCryptoKeyUsageDeriveBits,
+            new_private_key->Key().Usages());
+
+  // Check that the keys have the same PKCS8 representation.
+  WebVector<uint8_t> key_raw =
+      SyncExportKey(script_state, kWebCryptoKeyFormatPkcs8, private_key->Key());
+  WebVector<uint8_t> new_key_raw = SyncExportKey(
+      script_state, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
+  EXPECT_THAT(new_key_raw, ElementsAreArray(key_raw));
+
+  // Check that the keys derive the same bits.
+  auto params =
+      std::make_unique<WebCryptoEcdhKeyDeriveParams>(public_key->Key());
+  WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdX25519, std::move(params));
+  WebVector<uint8_t> bits_raw =
+      SyncDeriveBits(script_state, algorithm, private_key->Key(), 32);
+  WebVector<uint8_t> new_bits_raw =
+      SyncDeriveBits(script_state, algorithm, new_private_key->Key(), 32);
+  EXPECT_EQ(4u, bits_raw.size());
+  EXPECT_THAT(new_bits_raw, ElementsAreArray(bits_raw));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyX25519) {
+  V8TestingScope scope(KURL("https://secure.context/"));
+  ScriptState* script_state = scope.GetScriptState();
+
+  // Decode an X25519 private key (non-extractable).
+  // TEST from https://www.rfc-editor.org/rfc/rfc7748#section-6.1
+  scoped_refptr<SerializedScriptValue> input = SerializedValue({
+      0xff, 0x14, 0xff, 0x0f, 0x5c, 0x4b, 0x08, 0x13, 0x02, 0x80, 0x02, 0x30,
+      0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x6e,
+      0x04, 0x22, 0x04, 0x20, 0x77, 0x07, 0x6d, 0x0a, 0x73, 0x18, 0xa5, 0x7d,
+      0x3c, 0x16, 0xc1, 0x72, 0x51, 0xb2, 0x66, 0x45, 0xdf, 0x4c, 0x2f, 0x87,
+      0xeb, 0xc0, 0x99, 0x2a, 0xb1, 0x77, 0xfb, 0xa5, 0x1d, 0xb9, 0x2c, 0x2a,
+  });
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
+  ASSERT_TRUE(V8CryptoKey::HasInstance(result, scope.GetIsolate()));
+  CryptoKey* private_key = V8CryptoKey::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ("private", private_key->type());
+  EXPECT_FALSE(private_key->extractable());
+  EXPECT_EQ(kWebCryptoKeyUsageDeriveBits, private_key->Key().Usages());
+
+  // Decode an X25519 public key (extractable).
+  // TEST from https://www.rfc-editor.org/rfc/rfc7748#section-6.1
+  input = SerializedValue({
+      0xff, 0x14, 0xff, 0x0f, 0x5c, 0x4b, 0x08, 0x13, 0x01, 0x01, 0x2c,
+      0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x6e, 0x03, 0x21,
+      0x00, 0xde, 0x9e, 0xdb, 0x7d, 0x7b, 0x7d, 0xc1, 0xb4, 0xd3, 0x5b,
+      0x61, 0xc2, 0xec, 0xe4, 0x35, 0x37, 0x3f, 0x83, 0x43, 0xc8, 0x5b,
+      0x78, 0x67, 0x4d, 0xad, 0xfc, 0x7e, 0x14, 0x6f, 0x88, 0x2b, 0x4f,
+  });
+  result =
+      V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
+  ASSERT_TRUE(V8CryptoKey::HasInstance(result, scope.GetIsolate()));
+  CryptoKey* public_key = V8CryptoKey::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ("public", public_key->type());
+  EXPECT_TRUE(public_key->extractable());
+  EXPECT_EQ(0, public_key->Key().Usages());
+
+  // Check that it derives the right bits.
+  auto params =
+      std::make_unique<WebCryptoEcdhKeyDeriveParams>(public_key->Key());
+  WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdX25519, std::move(params));
+  WebVector<uint8_t> bits_raw =
+      SyncDeriveBits(script_state, algorithm, private_key->Key(), 32);
+  // Shared secret key.
+  // TEST from https://www.rfc-editor.org/rfc/rfc7748#section-6.1
+  auto expected_bits = ElementsAre(0x4a, 0x5d, 0x9d, 0x5b);
+  EXPECT_THAT(bits_raw, expected_bits);
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyNoParams) {

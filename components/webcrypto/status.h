@@ -285,6 +285,22 @@ class Status {
   // Ed25519.
   static Status ErrorImportEd25519KeyLength();
 
+  // The algorithm given for X25519 key derivation was not X25519.
+  static Status ErrorX25519WrongAlgorithm();
+
+  // The public key given for X25519 key derivation was not a public key.
+  static Status ErrorX25519PublicKeyWrongType();
+
+  // The public key's algorithm was not X25519.
+  static Status ErrorX25519PublicKeyWrongAlgorithm();
+
+  // The requested length for X25519 was too large.
+  static Status ErrorX25519LengthTooLong();
+
+  // The key data buffer provided for importKey() is an incorrect length for
+  // X25519.
+  static Status ErrorImportX25519KeyLength();
+
  private:
   enum Type { TYPE_ERROR, TYPE_SUCCESS };
 

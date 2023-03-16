@@ -184,6 +184,9 @@ bool AlgorithmIdFromWireFormat(uint32_t raw_id, WebCryptoAlgorithmId* id) {
     case kEd25519Tag:
       *id = kWebCryptoAlgorithmIdEd25519;
       return true;
+    case kX25519Tag:
+      *id = kWebCryptoAlgorithmIdX25519;
+      return true;
   }
   return false;
 }
@@ -323,7 +326,8 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
       algorithm = WebCryptoKeyAlgorithm::CreateEc(id, named_curve);
       break;
     }
-    case kEd25519KeyTag: {
+    case kEd25519KeyTag:
+    case kX25519KeyTag: {
       if (!RuntimeEnabledFeatures::WebCryptoCurve25519Enabled())
         break;
       uint32_t raw_id;
@@ -333,7 +337,9 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
           !ReadUint32(&raw_key_type) ||
           !AsymmetricKeyTypeFromWireFormat(raw_key_type, &key_type))
         return nullptr;
-      algorithm = WebCryptoKeyAlgorithm::CreateEd25519(id);
+      algorithm = raw_key_byte == kEd25519KeyTag
+                      ? WebCryptoKeyAlgorithm::CreateEd25519(id)
+                      : WebCryptoKeyAlgorithm::CreateX25519(id);
       break;
     }
     case kNoParamsKeyTag: {

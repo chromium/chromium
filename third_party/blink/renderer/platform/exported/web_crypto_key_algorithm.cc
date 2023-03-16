@@ -117,6 +117,11 @@ WebCryptoKeyAlgorithm WebCryptoKeyAlgorithm::CreateEd25519(
   return WebCryptoKeyAlgorithm(id, nullptr);
 }
 
+WebCryptoKeyAlgorithm WebCryptoKeyAlgorithm::CreateX25519(
+    WebCryptoAlgorithmId id) {
+  return WebCryptoKeyAlgorithm(id, nullptr);
+}
+
 WebCryptoKeyAlgorithm WebCryptoKeyAlgorithm::CreateWithoutParams(
     WebCryptoAlgorithmId id) {
   if (!WebCryptoAlgorithm::IsKdf(id))

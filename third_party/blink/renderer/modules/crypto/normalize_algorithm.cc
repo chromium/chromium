@@ -73,6 +73,7 @@ const AlgorithmNameMapping kAlgorithmNameMappings[] = {
     {"SHA-1", 5, kWebCryptoAlgorithmIdSha1},
     {"ECDSA", 5, kWebCryptoAlgorithmIdEcdsa},
     {"PBKDF2", 6, kWebCryptoAlgorithmIdPbkdf2},
+    {"X25519", 6, kWebCryptoAlgorithmIdX25519},
     {"AES-KW", 6, kWebCryptoAlgorithmIdAesKw},
     {"SHA-512", 7, kWebCryptoAlgorithmIdSha512},
     {"SHA-384", 7, kWebCryptoAlgorithmIdSha384},
@@ -203,8 +204,9 @@ bool LookupAlgorithmIdByName(const String& algorithm_name,
 
   id = it->algorithm_id;
 
-  if (id == kWebCryptoAlgorithmIdEd25519)
+  if (id == kWebCryptoAlgorithmIdEd25519 || id == kWebCryptoAlgorithmIdX25519) {
     return RuntimeEnabledFeatures::WebCryptoCurve25519Enabled();
+  }
 
   return true;
 }

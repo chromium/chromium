@@ -43,6 +43,8 @@ static_library("webcrypto") {
     "algorithms/sha.cc",
     "algorithms/util.cc",
     "algorithms/util.h",
+    "algorithms/x25519.cc",
+    "algorithms/x25519.h",
     "blink_key_handle.cc",
     "blink_key_handle.h",
     "generate_key_result.cc",

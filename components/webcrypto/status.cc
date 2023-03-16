@@ -189,6 +189,28 @@ Status Status::ErrorImportEd25519KeyLength() {
                 "Ed25519 key data must be 256 bits");
 }
 
+Status Status::ErrorX25519WrongAlgorithm() {
+  return Status(blink::kWebCryptoErrorTypeInvalidAccess,
+                "The algorithm for X25519 key derivation must be X25519");
+}
+
+Status Status::ErrorX25519PublicKeyWrongType() {
+  return Status(
+      blink::kWebCryptoErrorTypeInvalidAccess,
+      "The public parameter for X25519 key derivation is not a public key");
+}
+
+Status Status::ErrorX25519PublicKeyWrongAlgorithm() {
+  return Status(
+      blink::kWebCryptoErrorTypeInvalidAccess,
+      "The public parameter for X25519 key derivation must be for X25519");
+}
+
+Status Status::ErrorImportX25519KeyLength() {
+  return Status(blink::kWebCryptoErrorTypeData,
+                "X25519 key data must be 256 bits");
+}
+
 Status Status::ErrorDataTooLarge() {
   return Status(blink::kWebCryptoErrorTypeOperation,
                 "The provided data is too large");
@@ -380,6 +402,11 @@ Status Status::ErrorPbkdf2Iterations0() {
 Status Status::ErrorImportExtractableKdfKey() {
   return Status(blink::kWebCryptoErrorTypeSyntax,
                 "KDF keys must set extractable=false");
+}
+
+Status Status::ErrorX25519LengthTooLong() {
+  return Status(blink::kWebCryptoErrorTypeOperation,
+                "The length provided for X25519 is too large.");
 }
 
 Status::Status(blink::WebCryptoErrorType error_type,
