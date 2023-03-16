@@ -277,11 +277,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   // Holds pending sources and triggers in the order they were received by the
   // browser. For the time being, they must be processed in this order in order
-  // to ensure that behavioral requirements are met and to ensure that
-  // `AttributionObserver`s are notified in the correct order, which
-  // the simulator currently depends on. We may be able to loosen this
-  // requirement in the future so that there are conceptually separate queues
-  // per <source origin, destination origin, reporting origin>.
+  // to ensure that behavioral requirements are met. We may be able to loosen
+  // this requirement in the future so that there are conceptually separate
+  // queues per <source origin, destination origin, reporting origin>.
   base::circular_deque<SourceOrTrigger> pending_events_;
 
   // Controls the maximum size of `pending_events_` to avoid unbounded memory

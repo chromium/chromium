@@ -47,8 +47,6 @@ AttributionCookieCheckerImpl::AttributionCookieCheckerImpl(
 
 AttributionCookieCheckerImpl::~AttributionCookieCheckerImpl() = default;
 
-// TODO(apaseltiner): Consider caching the results of this check to avoid
-// repeated lookups for the same origins in close temporal proximity.
 void AttributionCookieCheckerImpl::IsDebugCookieSet(
     const url::Origin& origin,
     base::OnceCallback<void(bool)> callback) {
