@@ -149,6 +149,15 @@ const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
 const base::FeatureParam<int> kGuestZramSwappiness{&kGuestZram, "swappiness",
                                                    0};
 
+// Controls whether to do per-process reclaim from the ARCVM guest.
+const base::FeatureParam<bool> kGuestReclaimEnabled{
+    &kGuestZram, "guest_reclaim_enabled", false};
+
+// Controls whether only anonymous pages are reclaimed from the ARCVM guest.
+// Ignored when the "guest_reclaim_enabled" param is false.
+const base::FeatureParam<bool> kGuestReclaimOnlyAnonymous{
+    &kGuestZram, "guest_reclaim_only_anonymous", false};
+
 // Enables/disables ghost when user launch ARC app from shelf/launcher when
 // App already ready for launch.
 BASE_FEATURE(kInstantResponseWindowOpen,

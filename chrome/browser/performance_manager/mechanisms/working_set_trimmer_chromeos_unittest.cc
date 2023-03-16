@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -196,6 +197,99 @@ TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetNoArcSessionManager) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(result);
   EXPECT_FALSE(*result);
+}
+
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSet_GuestReclaimEnabled_Success) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["guest_reclaim_enabled"] = "true";
+  feature_list.InitAndEnableFeatureWithParameters(arc::kGuestZram, params);
+  memory_instance()->set_reclaim_all_result(2, 0);
+  // Making arc session trim result to be false to be sure it's not being used.
+  FakeArcSessionHolder session_holder(arc_session_runner());
+  session_holder.session()->set_trim_result(false, "test_reason");
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSet(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(*result);
+}
+
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSet_GuestReclaimEnabled_Failure) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["guest_reclaim_enabled"] = "true";
+  feature_list.InitAndEnableFeatureWithParameters(arc::kGuestZram, params);
+  memory_instance()->set_reclaim_all_result(0, 0);
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSet(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(result);
+  ASSERT_FALSE(*result);
+}
+
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSet_GuestReclaimEnabled_AnonPagesOnly) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["guest_reclaim_enabled"] = "true";
+  params["guest_reclaim_only_anonymous"] = "true";
+  feature_list.InitAndEnableFeatureWithParameters(arc::kGuestZram, params);
+  memory_instance()->set_reclaim_all_result(0, 0);
+  memory_instance()->set_reclaim_anon_result(2, 0);
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSet(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(*result);
+}
+
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSet_GuestZramDisabled_ArcSessionIsUsed) {
+  FakeArcSessionHolder session_holder(arc_session_runner());
+  session_holder.session()->set_trim_result(true, "");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(arc::kGuestZram);
+  // If memory_instance is used then the trim operation should fail.
+  memory_instance()->set_reclaim_all_result(0, 0);
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSet(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(*result);
+}
+
+TEST_F(
+    TestWorkingSetTrimmerChromeOS,
+    TrimArcVmWorkingSet_GuestZramEnabledWithNoGuestReclaim_ArcSessionIsUsed) {
+  FakeArcSessionHolder session_holder(arc_session_runner());
+  session_holder.session()->set_trim_result(true, "");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(arc::kGuestZram);
+  // If memory_instance is used then the trim operation should fail.
+  memory_instance()->set_reclaim_all_result(0, 0);
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSet(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(*result);
 }
 
 // Tests that TrimArcVmWorkingSetDropPageCachesOnly runs the passed callback.

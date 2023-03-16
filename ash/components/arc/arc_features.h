@@ -38,6 +38,8 @@ BASE_DECLARE_FEATURE(kGmsCoreLowMemoryKillerProtection);
 BASE_DECLARE_FEATURE(kGuestZram);
 extern const base::FeatureParam<int> kGuestZramSize;
 extern const base::FeatureParam<int> kGuestZramSwappiness;
+extern const base::FeatureParam<bool> kGuestReclaimEnabled;
+extern const base::FeatureParam<bool> kGuestReclaimOnlyAnonymous;
 BASE_DECLARE_FEATURE(kInstantResponseWindowOpen);
 BASE_DECLARE_FEATURE(kLockGuestMemory);
 BASE_DECLARE_FEATURE(kLvmApplicationContainers);
