@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"

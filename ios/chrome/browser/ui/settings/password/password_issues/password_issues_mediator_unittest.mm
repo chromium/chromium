@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/password/password_issues_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"

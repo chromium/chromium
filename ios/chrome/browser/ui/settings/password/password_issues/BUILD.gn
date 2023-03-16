@@ -1,0 +1,104 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("password_issues") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_issues_coordinator.h",
+    "password_issues_coordinator.mm",
+    "password_issues_mediator.h",
+    "password_issues_mediator.mm",
+  ]
+  deps = [
+    ":password_issues_ui",
+    "//base",
+    "//components/google/core/common",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common:features",
+    "//components/sync/driver",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/settings/password:common",
+    "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_constants",
+    "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_utils",
+    "//ios/chrome/browser/ui/settings/password/password_details",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
+  ]
+}
+
+source_set("password_issues_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_issue.h",
+    "password_issue.mm",
+    "password_issue_content_item.h",
+    "password_issue_content_item.mm",
+    "password_issue_group.h",
+    "password_issue_group.mm",
+    "password_issues_consumer.h",
+    "password_issues_presenter.h",
+    "password_issues_table_view_controller.h",
+    "password_issues_table_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/common/ui/favicon",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "password_issues_mediator_unittest.mm",
+    "password_issues_table_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":password_issues",
+    ":password_issues_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/google/core/common",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:store_factory",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_constants",
+    "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_utils",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

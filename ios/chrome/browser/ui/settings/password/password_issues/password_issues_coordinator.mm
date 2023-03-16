@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
 
 #import "base/mac/foundation_util.h"
 #import "base/memory/raw_ptr.h"
@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/settings/password/password_issue.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_mediator.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_presenter.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_presenter.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_table_view_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ui/base/l10n/l10n_util.h"
 

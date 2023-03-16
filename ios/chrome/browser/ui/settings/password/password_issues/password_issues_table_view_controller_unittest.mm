@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/password/password_issues_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_table_view_controller.h"
 
 #import <memory>
 
@@ -10,9 +10,9 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/settings/password/password_issue.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_presenter.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_presenter.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"

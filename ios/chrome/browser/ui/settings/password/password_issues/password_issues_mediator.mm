@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/password/password_issues_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_mediator.h"
 
 #import <memory>
 #import <utility>
@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/passwords/password_manager_util_ios.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -195,8 +195,9 @@ NSArray<PasswordIssueGroup*>* GetPasswordIssueGroups(
 }
 
 - (void)setConsumer:(id<PasswordIssuesConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
 
   [self setConsumerHeader];
