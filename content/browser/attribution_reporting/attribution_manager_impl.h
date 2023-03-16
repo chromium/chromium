@@ -11,7 +11,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -66,8 +65,6 @@ struct SendResult;
 #if BUILDFLAG(IS_ANDROID)
 class AttributionOsLevelManager;
 #endif
-
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionVerboseDebugReporting);
 
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage

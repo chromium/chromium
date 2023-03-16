@@ -24,6 +24,7 @@
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -1672,7 +1673,8 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
   AttributionsFencedFrameBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kFencedFrames, {}},
-                              {features::kPrivacySandboxAdsAPIsOverride, {}}},
+                              {features::kPrivacySandboxAdsAPIsOverride, {}},
+                              {kAttributionFencedFrameReportingBeacon, {}}},
         /*disabled_features=*/{});
   }
 

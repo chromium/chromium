@@ -45,6 +45,7 @@
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
+#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -356,10 +357,6 @@ struct AttributionManagerImpl::SourceOrTriggerRFH {
   SourceOrTrigger source_or_trigger;
   GlobalRenderFrameHostId rfh_id;
 };
-
-BASE_FEATURE(kAttributionVerboseDebugReporting,
-             "AttributionVerboseDebugReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
   DCHECK_GT(failed_send_attempts, 0);

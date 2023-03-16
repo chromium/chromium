@@ -428,6 +428,8 @@ source_set("browser") {
     "attribution_reporting/attribution_data_host_manager_impl.h",
     "attribution_reporting/attribution_debug_report.cc",
     "attribution_reporting/attribution_debug_report.h",
+    "attribution_reporting/attribution_features.cc",
+    "attribution_reporting/attribution_features.h",
     "attribution_reporting/attribution_host.cc",
     "attribution_reporting/attribution_host.h",
     "attribution_reporting/attribution_info.cc",
