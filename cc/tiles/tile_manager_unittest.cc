@@ -1735,7 +1735,8 @@ class TestSoftwareBacking : public ResourcePool::SoftwareBacking {
 class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
  public:
   static constexpr bool kIsGpuCompositing = true;
-  static constexpr viz::ResourceFormat kResourceFormat = viz::RGBA_8888;
+  static constexpr viz::SharedImageFormat kSharedImageFormat =
+      viz::SinglePlaneFormat::kRGBA_8888;
 
   std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
@@ -1748,8 +1749,8 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       auto backing = std::make_unique<TestSoftwareBacking>();
       backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
       backing->pixels = std::make_unique<uint32_t[]>(
-          viz::ResourceSizes::CheckedSizeInBytes<size_t>(resource.size(),
-                                                         kResourceFormat));
+          viz::ResourceSizes::CheckedSizeInBytes<size_t>(
+              resource.size(), kSharedImageFormat.resource_format()));
       resource.set_software_backing(std::move(backing));
     }
     auto* backing =
@@ -1772,9 +1773,9 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
                   const RasterSource::PlaybackSettings& playback_settings,
                   const GURL& url) override {
       RasterBufferProvider::PlaybackToMemory(
-          pixels_, kResourceFormat, size_, /*stride=*/0, raster_source,
-          raster_full_rect, /*playback_rect=*/raster_full_rect, transform,
-          gfx::ColorSpace(), kIsGpuCompositing, playback_settings);
+          pixels_, kSharedImageFormat, size_, /*stride=*/0, raster_source,
+          raster_full_rect, /*canvas_playback_rect=*/raster_full_rect,
+          transform, gfx::ColorSpace(), kIsGpuCompositing, playback_settings);
     }
 
     bool SupportsBackgroundThreadPriority() const override { return true; }
@@ -2102,9 +2103,9 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     EXPECT_TRUE(tile->draw_info().IsReadyToDraw());
 
     gfx::Size resource_size = tile->draw_info().resource_size();
-    SkColorType ct = ResourceFormatToClosestSkColorType(
+    SkColorType ct = ToClosestSkColorType(
         TestSoftwareRasterBufferProvider::kIsGpuCompositing,
-        TestSoftwareRasterBufferProvider::kResourceFormat);
+        TestSoftwareRasterBufferProvider::kSharedImageFormat);
     auto info = SkImageInfo::Make(resource_size.width(), resource_size.height(),
                                   ct, kPremul_SkAlphaType);
     // CreateLayerTreeFrameSink() sets up a software compositing, so the

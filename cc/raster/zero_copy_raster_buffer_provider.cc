@@ -75,7 +75,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
         gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
         shutdown_event_(shutdown_event),
         resource_size_(in_use_resource.size()),
-        resource_format_(in_use_resource.format()),
+        format_(viz::SharedImageFormat::SinglePlane(in_use_resource.format())),
         resource_color_space_(in_use_resource.color_space()),
         gpu_memory_buffer_(std::move(backing_->gpu_memory_buffer)) {}
   ZeroCopyRasterBufferImpl(const ZeroCopyRasterBufferImpl&) = delete;
@@ -126,8 +126,8 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
     if (!gpu_memory_buffer_) {
       gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-          resource_size_, viz::BufferFormat(resource_format_), kBufferUsage,
-          gpu::kNullSurfaceHandle, shutdown_event_);
+          resource_size_, viz::BufferFormat(format_.resource_format()),
+          kBufferUsage, gpu::kNullSurfaceHandle, shutdown_event_);
       // Note that GpuMemoryBuffer allocation can fail.
       // https://crbug.com/554541
       if (!gpu_memory_buffer_)
@@ -144,7 +144,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
     // TODO(danakj): Implement partial raster with raster_dirty_rect.
     RasterBufferProvider::PlaybackToMemory(
-        gpu_memory_buffer_->memory(0), resource_format_, resource_size_,
+        gpu_memory_buffer_->memory(0), format_, resource_size_,
         gpu_memory_buffer_->stride(0), raster_source, raster_full_rect,
         raster_full_rect, transform, resource_color_space_,
         /*gpu_compositing=*/true, playback_settings);
@@ -161,7 +161,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
   raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   raw_ptr<base::WaitableEvent> shutdown_event_;
   gfx::Size resource_size_;
-  viz::ResourceFormat resource_format_;
+  viz::SharedImageFormat format_;
   gfx::ColorSpace resource_color_space_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
 };

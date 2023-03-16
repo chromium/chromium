@@ -76,8 +76,8 @@ class BitmapRasterBufferImpl : public RasterBuffer {
 
     size_t stride = 0u;
     RasterBufferProvider::PlaybackToMemory(
-        pixels_, viz::RGBA_8888, resource_size_, stride, raster_source,
-        raster_full_rect, playback_rect, transform, color_space_,
+        pixels_, viz::SinglePlaneFormat::kRGBA_8888, resource_size_, stride,
+        raster_source, raster_full_rect, playback_rect, transform, color_space_,
         /*gpu_compositing=*/false, playback_settings);
   }
 
