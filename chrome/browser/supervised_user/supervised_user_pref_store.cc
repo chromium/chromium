@@ -16,9 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -64,10 +62,6 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
     {
         supervised_user::kSigninAllowed,
         prefs::kSigninAllowed,
-    },
-    {
-        supervised_user::kUserName,
-        prefs::kProfileName,
     },
 };
 

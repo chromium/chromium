@@ -31,7 +31,6 @@ const char kForceSafeSearch[] = "ForceSafeSearch";
 const char kGeolocationDisabled[] = "GeolocationDisabled";
 const char kSafeSitesEnabled[] = "SafeSites";
 const char kSigninAllowed[] = "SigninAllowed";
-const char kUserName[] = "UserName";
 
 const char kChildAccountSUID[] = "ChildAccountSUID";
 
