@@ -7,6 +7,7 @@
 #include <atk/atk.h>
 #include <memory>
 
+#include "base/test/gtest_util.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
@@ -97,6 +98,17 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   EXPECT_EQ(text_remove_events[0].length, 7);
   EXPECT_EQ(text_remove_events[0].text, "Prefix ");
   text_insert_events.clear();
+}
+
+TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest,
+       ExpandedChangedNotFiredOnNonExpandableViews) {
+  UniqueWidgetPtr widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  widget->Init(std::move(init_params));
+
+  View* content = widget->SetContentsView(std::make_unique<View>());
+  EXPECT_DCHECK_DEATH(content->NotifyAccessibilityEvent(
+      ax::mojom::Event::kExpandedChanged, true));
 }
 
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, AuraChildWidgets) {

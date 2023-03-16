@@ -296,7 +296,7 @@ void TreeView::Collapse(ui::TreeModelNode* model_node) {
     DrawnNodesChanged();
     AXVirtualView* ax_view = node->accessibility_view();
     if (ax_view) {
-      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged);
+      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged);
       ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kRowCollapsed);
     }
     NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
@@ -311,7 +311,7 @@ void TreeView::Expand(TreeModelNode* node) {
     AXVirtualView* ax_view =
         internal_node ? internal_node->accessibility_view() : nullptr;
     if (ax_view) {
-      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged);
+      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged);
       ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kRowExpanded);
     }
     NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
@@ -336,7 +336,7 @@ void TreeView::ExpandAll(TreeModelNode* node) {
     AXVirtualView* ax_view =
         internal_node ? internal_node->accessibility_view() : nullptr;
     if (ax_view) {
-      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged);
+      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged);
       ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kRowExpanded);
     }
     NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);

@@ -1,0 +1,5 @@
+AutomationFocusChanged on role=option, name=Option 1
+ExpandCollapseExpandCollapseState changed on role=combobox, name=Combobox A
+=== Start Continuation ===
+AutomationFocusChanged on role=option, name=Option 4
+ExpandCollapseExpandCollapseState changed on role=combobox, name=Combobox B

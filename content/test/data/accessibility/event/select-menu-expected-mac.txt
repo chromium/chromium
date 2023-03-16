@@ -1,0 +1,5 @@
+AXExpandedChanged on AXComboBox AXDescription='Combobox A' AXValue='Option 1'
+AXFocusedUIElementChanged on AXStaticText AXValue='Option 1'
+=== Start Continuation ===
+AXExpandedChanged on AXComboBox AXDescription='Combobox B' AXValue='Option 4'
+AXFocusedUIElementChanged on AXStaticText AXValue='Option 4'

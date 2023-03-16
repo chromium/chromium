@@ -1006,6 +1006,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_selectMenu() {
+        performTest("select-menu.html", "select-menu-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_styleChanged() {
         performTest("style-changed.html", EMPTY_EXPECTATIONS_FILE);
     }

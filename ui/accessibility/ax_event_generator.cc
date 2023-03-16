@@ -390,8 +390,10 @@ void AXEventGenerator::OnStateChanged(AXTree* tree,
 
   switch (state) {
     case ax::mojom::State::kExpanded:
-      AddEvent(node, new_value ? Event::EXPANDED : Event::COLLAPSED);
-
+      if (node->data().HasState(ax::mojom::State::kCollapsed) ||
+          node->data().HasState(ax::mojom::State::kExpanded)) {
+        AddEvent(node, new_value ? Event::EXPANDED : Event::COLLAPSED);
+      }
       if (IsTableRow(node->GetRole()) ||
           node->GetRole() == ax::mojom::Role::kTreeItem) {
         AXNode* container = node;

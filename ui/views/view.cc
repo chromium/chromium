@@ -648,6 +648,9 @@ void View::SetEnabled(bool enabled) {
 
   enabled_ = enabled;
   AdvanceFocusIfNecessary();
+  // TODO(crbug.com/1421682): We need a specific enabled-changed event for this.
+  // Some platforms have specific state-changed events and this generic event
+  // does not suggest what changed.
   NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
   OnPropertyChanged(&enabled_, kPropertyEffectsPaint);
 }

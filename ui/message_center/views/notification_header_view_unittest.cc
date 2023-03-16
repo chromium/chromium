@@ -20,8 +20,10 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -270,6 +272,117 @@ TEST_F(NotificationHeaderViewTest, GroupChildNotificationVisibility) {
   EXPECT_TRUE(
       notification_header_view_->timestamp_view_for_testing()->GetVisible());
   EXPECT_TRUE(notification_header_view_->timestamp_divider_->GetVisible());
+}
+
+TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
+  notification_header_view_->SetExpandButtonEnabled(true);
+  notification_header_view_->SetExpanded(false);
+
+  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  ui::AXNodeData data;
+
+  // Initially the view is collapsed and there are no expanded-changed events.
+  notification_header_view_->GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
+                                notification_header_view_),
+            0);
+
+  ax_counter.ResetAllCounts();
+  data = ui::AXNodeData();
+
+  // Expanding the view should result the expanded state being present and an
+  // expanded-changed event being fired.
+  notification_header_view_->SetExpanded(true);
+  notification_header_view_->GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
+                                notification_header_view_),
+            1);
+
+  ax_counter.ResetAllCounts();
+  data = ui::AXNodeData();
+
+  // Calling `SetExpanded` without the changing the expanded state should not
+  // result in an expanded-changed event being fired.
+  notification_header_view_->SetExpanded(true);
+  notification_header_view_->GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
+                                notification_header_view_),
+            0);
+
+  ax_counter.ResetAllCounts();
+  data = ui::AXNodeData();
+
+  // Collapsing the view should result the collapsed state being present and an
+  // expanded-changed event being fired.
+  notification_header_view_->SetExpanded(false);
+  notification_header_view_->GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
+                                notification_header_view_),
+            1);
+
+  ax_counter.ResetAllCounts();
+  data = ui::AXNodeData();
+
+  // If the expand button is not enabled, the view cannot be expanded/collapsed.
+  // As a result, setting expanded to true should not fire an expanded-changed
+  // event, and neither the expanded nor the collapsed state should be present.
+  notification_header_view_->SetExpandButtonEnabled(false);
+  notification_header_view_->SetExpanded(true);
+  notification_header_view_->GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
+                                notification_header_view_),
+            0);
+
+  // Because `SetExpandButtonEnabled` calls `View::SetVisible`, the parent view
+  // may or may not fire a children-changed event on the parent. Whether or not
+  // it does is based on whether or not the button is "ignored" (not included in
+  // the accessibility tree). Because this can depend on a number of factors,
+  // including platform-specific differences, base test expectations on the
+  // "ignored" state to minimize test flakiness.
+  bool expand_button_is_ignored = notification_header_view_->expand_button()
+                                      ->GetViewAccessibility()
+                                      .IsIgnored();
+  EXPECT_EQ(
+      ax_counter.GetCount(ax::mojom::Event::kChildrenChanged,
+                          notification_header_view_->expand_button()->parent()),
+      expand_button_is_ignored ? 0 : 1);
+
+  ax_counter.ResetAllCounts();
+  data = ui::AXNodeData();
+
+  // If the expand button is re-enabled, the view is once again expandable.
+  // However, just re-enabling the button does not toggle the expanded state of
+  // the view. As a result, we should expect the previously-set expanded state
+  // to be present, but no expanded-changed event fired.
+  notification_header_view_->SetExpandButtonEnabled(true);
+  notification_header_view_->GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
+                                notification_header_view_),
+            0);
+
+  // A focusable, visible expand button should never be "ignored" on any
+  // platform. As a result, `View::SetVisible` should fire a children-changed
+  // event on the parent view.
+  expand_button_is_ignored = notification_header_view_->expand_button()
+                                 ->GetViewAccessibility()
+                                 .IsIgnored();
+  EXPECT_FALSE(expand_button_is_ignored);
+  EXPECT_EQ(
+      ax_counter.GetCount(ax::mojom::Event::kChildrenChanged,
+                          notification_header_view_->expand_button()->parent()),
+      1);
 }
 
 TEST_F(NotificationHeaderViewTest, MetadataTest) {

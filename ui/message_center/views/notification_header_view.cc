@@ -300,8 +300,11 @@ void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetDescription(summary_text_view_->GetText() + u" " +
                             timestamp_view_->GetText());
 
-  if (expand_button_ && is_expanded_)
-    node_data->AddState(ax::mojom::State::kExpanded);
+  // If the expand button is not shown to the user, this view is not expandable.
+  if (expand_button_ && expand_button_->GetVisible()) {
+    node_data->AddState(is_expanded_ ? ax::mojom::State::kExpanded
+                                     : ax::mojom::State::kCollapsed);
+  }
 }
 
 void NotificationHeaderView::OnThemeChanged() {
@@ -346,12 +349,18 @@ void NotificationHeaderView::SetExpandButtonEnabled(bool enabled) {
 void NotificationHeaderView::SetExpanded(bool expanded) {
   // We shouldn't execute this method if the expand button is not here.
   DCHECK(expand_button_);
+  bool was_expanded = is_expanded_;
   is_expanded_ = expanded;
   UpdateColors();
   expand_button_->SetTooltipText(l10n_util::GetStringUTF16(
       expanded ? IDS_MESSAGE_CENTER_COLLAPSE_NOTIFICATION
                : IDS_MESSAGE_CENTER_EXPAND_NOTIFICATION));
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+
+  // If the expand button is not shown to the user, this view is presumably not
+  // expandable.
+  if (expand_button_->GetVisible() && was_expanded != is_expanded_) {
+    NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  }
 }
 
 void NotificationHeaderView::SetColor(absl::optional<SkColor> color) {

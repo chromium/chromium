@@ -240,7 +240,8 @@ TEST(AXEventGeneratorTest, ExpandedAndRowCount) {
   ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[2].AddState(ax::mojom::State::kExpanded);
-  update.nodes[3].state = 0;
+  update.nodes[3].RemoveState(ax::mojom::State::kExpanded);
+  update.nodes[3].AddState(ax::mojom::State::kCollapsed);
 
   ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(

@@ -2688,6 +2688,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectExpandRebuildsPlatformNode) {
   root_data = AXNodeData();
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kListBox;
+  root_data.AddState(ax::mojom::State::kCollapsed);
   GetRoot()->SetData(root_data);
 
   ASSERT_EQ(original_atk_object, GetRootAtkObject());

@@ -3412,6 +3412,9 @@ void AXPlatformNodeAuraLinux::OnExpandedStateChanged(bool is_expanded) {
   // might imply a change in ATK interfaces implemented.
   EnsureAtkObjectIsValid();
 
+  DCHECK(HasState(ax::mojom::State::kCollapsed) ||
+         HasState(ax::mojom::State::kExpanded));
+
   AtkObject* obj = GetOrCreateAtkObject();
   if (!obj)
     return;
@@ -4044,7 +4047,6 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
       OnCheckedStateChanged();
       break;
     case ax::mojom::Event::kExpandedChanged:
-    case ax::mojom::Event::kStateChanged:
       OnExpandedStateChanged(HasState(ax::mojom::State::kExpanded));
       break;
     case ax::mojom::Event::kFocus:
@@ -4068,6 +4070,11 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
       break;
     case ax::mojom::Event::kSelectedChildrenChanged:
       OnSelectedChildrenChanged();
+      break;
+    case ax::mojom::Event::kStateChanged:
+      // We need to know what state changed and fire an event for that specific
+      // state. Because we don't know what state changed, we deliberately do
+      // nothing here.
       break;
     case ax::mojom::Event::kTextChanged:
       OnNameChanged();

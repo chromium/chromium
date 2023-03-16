@@ -1022,6 +1022,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsSelectMenu) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "HTMLSelectMenuElement");
+  RunEventTest(FILE_PATH_LITERAL("select-menu.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsSubtreeReparentedIgnoredChanged) {
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-ignored-changed.html"));
 }
