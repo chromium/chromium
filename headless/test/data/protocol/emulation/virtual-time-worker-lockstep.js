@@ -33,7 +33,7 @@
         policy: 'pauseIfNetworkFetchesPending',
     budget: 1000});
   });
-  await wp.Runtime.runIfWaitingForDebugger();
+  wp.Runtime.runIfWaitingForDebugger();
   await wp.Emulation.onceVirtualTimeBudgetExpired();
   wp.Emulation.setVirtualTimePolicy({
     policy: 'pauseIfNetworkFetchesPending',

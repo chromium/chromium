@@ -268,23 +268,11 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigation,
                        "emulation/virtual-time-history-navigation.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigationSameDoc,
                        "emulation/virtual-time-history-navigation-same-doc.js")
-// TODO(crbug.com/1419801): Test is flaky.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_VirtualTimeWorkerBasic DISABLED_VirtualTimeWorkerBasic
-#else
-#define MAYBE_VirtualTimeWorkerBasic VirtualTimeWorkerBasic
-#endif
-HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeWorkerBasic,
+HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerBasic,
                        "emulation/virtual-time-worker-basic.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerLockstep,
                        "emulation/virtual-time-worker-lockstep.js")
-// TODO(crbug.com/1419801): Test is flaky.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_VirtualTimeWorkerFetch DISABLED_VirtualTimeWorkerFetch
-#else
-#define MAYBE_VirtualTimeWorkerFetch VirtualTimeWorkerFetch
-#endif
-HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeWorkerFetch,
+HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerFetch,
                        "emulation/virtual-time-worker-fetch.js")
 
 // Flaky on Mac. TODO(crbug.com/1164173): Re-enable.

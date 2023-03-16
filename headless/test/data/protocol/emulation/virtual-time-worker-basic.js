@@ -25,7 +25,7 @@
   wp.Runtime.onConsoleAPICalled(({params}) => {
     testRunner.log(params.args[0].value);
   });
-  await wp.Runtime.runIfWaitingForDebugger();
+  wp.Runtime.runIfWaitingForDebugger();
   // From now on, VT runs in both page and the worker and one will
   // block another if VT expires, so make sure we drive the time in
   // page to avoid worker being blocked on the page.
