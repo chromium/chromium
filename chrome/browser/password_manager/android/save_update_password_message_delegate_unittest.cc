@@ -518,22 +518,43 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
     EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(
                   IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP),
               GetMessageWrapper()->GetIconResourceId());
-    EXPECT_EQ(
-        l10n_util::GetStringUTF16(IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM),
-        GetMessageWrapper()->GetSecondaryButtonMenuText());
   } else {
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
               GetMessageWrapper()->GetTitle());
     EXPECT_EQ(
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD),
         GetMessageWrapper()->GetIconResourceId());
-    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON),
-              GetMessageWrapper()->GetSecondaryButtonMenuText());
   }
 
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS),
             GetMessageWrapper()->GetSecondaryIconResourceId());
 
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that secondary button title is right.
+// kPasswordEditDialogWithDetails feature off.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       MessageSecondaryButtonProperty_SavePassword) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndDisableFeature(
+      password_manager::features::kPasswordEditDialogWithDetails);
+
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+
+  if (GetParam().with_unified_password_manager_android) {
+    // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM),
+        GetMessageWrapper()->GetSecondaryButtonMenuText());
+  } else {
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON),
+              GetMessageWrapper()->GetSecondaryButtonMenuText());
+  }
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
@@ -575,7 +596,6 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
 }
 
 // Tests that secondary menu icon is set for the save password message
-// with kPasswordEditDialogWithDetails feature on.
 TEST_P(SaveUpdatePasswordMessageDelegateTest,
        CogButton_SavePassword_PasswordEditDialogWithDetails) {
   base::test::ScopedFeatureList scoped_feature_state;
@@ -597,7 +617,6 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
 
 // Tests that secondary menu icon is set for the update password message
 // in case when user has only single credential stored for the web site
-// with kPasswordEditDialogWithDetails feature on.
 TEST_P(SaveUpdatePasswordMessageDelegateTest,
        CogButton_SingleCredUpdatePassword_PasswordEditDialogWithDetails) {
   base::test::ScopedFeatureList scoped_feature_state;
@@ -619,7 +638,6 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
 
 // Tests that secondary menu icon is not set for the update password message
 // in case when user has multiple credentials stored for the web site
-// with kPasswordEditDialogWithDetails feature on.
 TEST_P(SaveUpdatePasswordMessageDelegateTest,
        NoCogButton_MultipleCredUpdatePassword_PasswordEditDialogWithDetails) {
   base::test::ScopedFeatureList scoped_feature_state;
@@ -911,7 +929,14 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
-TEST_P(SaveUpdatePasswordMessageDelegateTest, DialogPropertiesSignedIn) {
+// Tests that the update dialog is shown after the message in case if multiple
+// password match the form.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       TriggeredEditDialogLegacy_TwoFormsMatching_UpdatePassword) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndDisableFeature(
+      password_manager::features::kPasswordEditDialogWithDetails);
+
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
@@ -927,25 +952,13 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest, DialogPropertiesSignedIn) {
   TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
 }
 
-TEST_P(SaveUpdatePasswordMessageDelegateTest, DialogPropertiesSignedOut) {
-  SetPendingCredentials(kUsername, kPassword);
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
-  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
-  // Verify parameters to Show() call.
-  EXPECT_CALL(*mock_dialog, ShowLegacyPasswordEditDialog(
-                                ElementsAre(std::u16string(kUsername),
-                                            std::u16string(kUsername2)),
-                                0, std::string()));
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/true);
-  TriggerActionClick();
-  TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
-}
-
 // Tests triggering password edit dialog and saving credentials after the
 // user accepts the dialog.
-TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialogLegacy_Accept) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndDisableFeature(
+      password_manager::features::kPasswordEditDialogWithDetails);
+
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -974,7 +987,11 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
 // Tests triggering password edit dialog and saving credentials with
 // empty username after the user accepts the dialog.
 TEST_P(SaveUpdatePasswordMessageDelegateTest,
-       TriggerEditDialog_WithEmptyUsername_Accept) {
+       TriggerEditDialogLegacy_WithEmptyUsername_Accept) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndDisableFeature(
+      password_manager::features::kPasswordEditDialogWithDetails);
+
   SetPendingCredentials(kUsername, kPassword);
   PasswordForm any_pasword_form = CreatePasswordForm(kUsername, kPassword);
   PasswordForm empty_username_password_form =
@@ -1001,7 +1018,11 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
 
 // Tests that credentials are not saved if the user cancels password edit
 // dialog.
-TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Cancel) {
+TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialogLegacy_Cancel) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndDisableFeature(
+      password_manager::features::kPasswordEditDialogWithDetails);
+
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 

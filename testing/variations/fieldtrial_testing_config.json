@@ -10838,22 +10838,6 @@
             ]
         }
     ],
-    "SaveUpdatePasswordEditDialogStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordEditDialogWithDetails",
-                        "UnifiedPasswordManagerAndroidBranding"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScaleScrollbarAnimationTiming": [
         {
             "platforms": [
