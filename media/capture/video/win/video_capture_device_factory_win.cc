@@ -594,7 +594,7 @@ void VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP(
   // lambda, it must be copyable, merely movable is insufficient.
   auto device_info_callback = base::BindRepeating(
       &VideoCaptureDeviceFactoryWin::FoundAllDevicesUWP,
-      base::Unretained(factory), base::Passed(&devices_info),
+      base::UnsafeDanglingUntriaged(factory), base::Passed(&devices_info),
       base::Passed(&result_callback));
   auto callback = Microsoft::WRL::Callback<
       ABI::Windows::Foundation::IAsyncOperationCompletedHandler<
