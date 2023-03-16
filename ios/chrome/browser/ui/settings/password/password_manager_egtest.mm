@@ -67,6 +67,11 @@ constexpr int kScrollAmount = 150;
 
 constexpr base::TimeDelta kSyncInitializedTimeout = base::Seconds(5);
 
+id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
+  return grey_allOf(grey_accessibilityID(id),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
 NSString* GetTextFieldForID(int category_id) {
   return [NSString
       stringWithFormat:@"%@_textField", l10n_util::GetNSString(category_id)];
@@ -100,17 +105,22 @@ GREYElementInteraction* GetInteractionForIssuesListItem(
 // the given `username`. It scrolls down if necessary to ensure that the matched
 // cell is interactable.
 GREYElementInteraction* GetInteractionForPasswordEntry(NSString* username) {
-  return GetInteractionForListItem(ButtonWithAccessibilityLabel(username),
+  // ID, not label because the latter might contain an extra label for the
+  // "local password icon" and most tests don't care about it.
+  return GetInteractionForListItem(ButtonWithAccessibilityID(username),
                                    kGREYDirectionDown);
 }
 
 // Returns the GREYElementInteraction* for the cell on the password list with
-// the given `username`. It scrolls down if necessary to ensure that the matched
-// cell is interactable.
+// the given `username` and `domain`. It scrolls down if necessary to ensure
+// that the matched cell is interactable.
 GREYElementInteraction* GetInteractionForPasswordIssueEntry(
+    NSString* domain,
     NSString* username) {
-  return GetInteractionForIssuesListItem(ButtonWithAccessibilityLabel(username),
-                                         kGREYDirectionDown);
+  return GetInteractionForIssuesListItem(
+      ButtonWithAccessibilityLabel(
+          [NSString stringWithFormat:@"%@, %@", domain, username]),
+      kGREYDirectionDown);
 }
 
 // Returns the GREYElementInteraction* for the item on the detail view
@@ -498,7 +508,9 @@ id<GREYMatcher> EditDoneButton() {
                                        username:(NSString*)username {
   // With grouping enabled, discard the username; it's only shown on the details
   // page.
-  return GetInteractionForListItem(ButtonWithAccessibilityLabel(domain),
+  // ID, not label because the latter might contain an extra label for the
+  // "local password icon" and most tests don't care about it.
+  return GetInteractionForListItem(ButtonWithAccessibilityID(domain),
                                    kGREYDirectionDown);
 }
 
@@ -2510,11 +2522,8 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
 
   // The newly created credential exists.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   ButtonWithAccessibilityLabel(
-                                       @"zexample.com, zconcrete username"),
-                                   grey_interactable(), nil)]
+  [[self interactionForSinglePasswordEntryWithDomain:@"zexample.com"
+                                            username:@"zconcrete username"]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -2757,10 +2766,12 @@ id<GREYMatcher> EditDoneButton() {
       base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
           IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 1));
 
-  [GetInteractionForPasswordEntry([NSString
-      stringWithFormat:@"%@, %@", text, detailText]) performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel([NSString
+                                          stringWithFormat:@"%@, %@", text,
+                                                           detailText])]
+      performAction:grey_tap()];
 
-  [GetInteractionForPasswordIssueEntry(@"example.com, concrete username")
+  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username")
       performAction:grey_tap()];
 
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
@@ -2792,7 +2803,7 @@ id<GREYMatcher> EditDoneButton() {
       selectElementWithMatcher:grey_accessibilityID(kPasswordIssuesTableViewId)]
       assertWithMatcher:grey_notNil()];
 
-  [GetInteractionForPasswordIssueEntry(@"example.com, concrete username")
+  [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username")
       assertWithMatcher:grey_nil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -2875,15 +2886,9 @@ id<GREYMatcher> EditDoneButton() {
   // Make sure the cell is loaded properly before tapping on it.
   ConditionBlock condition = ^{
     NSError* error = nil;
-    NSString* label =
-        [self groupingEnabled] ? @"example12.com" : @"example12.com, user2";
-    [[[EarlGrey
-        selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabel(label),
-                                            grey_sufficientlyVisible(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                    kScrollAmount)
-        onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
-        assertWithMatcher:grey_notNil()
+    [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"
+                                              username:@"user2"]
+        assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
   };
@@ -3200,8 +3205,8 @@ id<GREYMatcher> EditDoneButton() {
   // other invisible cells when password details is closed later.
   id<GREYMatcher> passwordMatcher =
       grey_allOf([self groupingEnabled]
-                     ? ButtonWithAccessibilityLabel(@"local.com")
-                     : ButtonWithAccessibilityLabel(@"local.com, username"),
+                     ? ButtonWithAccessibilityID(@"local.com")
+                     : ButtonWithAccessibilityID(@"local.com, username"),
                  grey_sufficientlyVisible(), nil);
   id<GREYMatcher> localIconMatcher =
       grey_allOf(grey_accessibilityID(kLocalOnlyPasswordIconId),
@@ -3254,7 +3259,9 @@ id<GREYMatcher> EditDoneButton() {
     interactionForSinglePasswordEntryWithDomain:(NSString*)domain
                                        username:(NSString*)username {
   NSString* label = [NSString stringWithFormat:@"%@, %@", domain, username];
-  return GetInteractionForListItem(ButtonWithAccessibilityLabel(label),
+  // ID, not label because the latter might contain an extra label for the
+  // "local password icon" and most tests don't care about it.
+  return GetInteractionForListItem(ButtonWithAccessibilityID(label),
                                    kGREYDirectionDown);
 }
 

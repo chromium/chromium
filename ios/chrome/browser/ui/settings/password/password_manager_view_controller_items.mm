@@ -173,8 +173,20 @@
 }
 
 - (NSString*)accessibilityLabel {
-  // TODO(crbug.com/1392705): Include a label for _localOnlyIcon. This will
-  // require finding a new way to select these elements in egtests.
+  NSString* label = _titleLabel.text;
+  if (_detailLabel.text.length) {
+    label = [NSString stringWithFormat:@"%@, %@", label, _detailLabel.text];
+  }
+  if (!_localOnlyIcon.hidden) {
+    label = [NSString
+        stringWithFormat:@"%@, %@", label,
+                         l10n_util::GetNSString(
+                             IDS_IOS_LOCAL_PASSWORD_ACCESSIBILITY_LABEL)];
+  }
+  return label;
+}
+
+- (NSString*)accessibilityIdentifier {
   return _detailLabel.text.length
              ? [NSString stringWithFormat:@"%@, %@", _titleLabel.text,
                                           _detailLabel.text]

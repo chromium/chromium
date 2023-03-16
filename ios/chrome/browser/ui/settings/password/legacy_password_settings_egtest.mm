@@ -433,6 +433,12 @@ id<GREYMatcher> EditDoneButton() {
   config.features_disabled.push_back(
       password_manager::features::kPasswordsGrouping);
 
+  // Enabling kEnablePasswordsAccountStorage in fieldtrial_testing_config.json
+  // would break these tests, but they will be deleted soon. Force disable the
+  // flag while they haven't been deleted yet.
+  config.features_disabled.push_back(
+      password_manager::features::kEnablePasswordsAccountStorage);
+
   return config;
 }
 
