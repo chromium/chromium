@@ -3886,10 +3886,6 @@ void HttpCache::Transaction::RecordHistograms() {
     return;
   }
 
-  bool validation_request =
-      cache_entry_status_ == CacheEntryStatus::ENTRY_VALIDATED ||
-      cache_entry_status_ == CacheEntryStatus::ENTRY_UPDATED;
-
   bool is_third_party = false;
 
   // Given that cache_entry_status_ is not ENTRY_UNDEFINED, the request must
@@ -3952,16 +3948,6 @@ void HttpCache::Transaction::RecordHistograms() {
 
   CACHE_STATUS_HISTOGRAMS("");
   IS_NO_STORE_HISTOGRAMS("", is_no_store);
-
-  if (validation_request) {
-    UMA_HISTOGRAM_ENUMERATION("HttpCache.ValidationCause", validation_cause_,
-                              VALIDATION_CAUSE_MAX);
-  }
-
-  if (cache_entry_status_ == CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE) {
-    UMA_HISTOGRAM_ENUMERATION("HttpCache.CantConditionalizeCause",
-                              validation_cause_, VALIDATION_CAUSE_MAX);
-  }
 
   if (cache_entry_status_ == CacheEntryStatus::ENTRY_OTHER)
     return;
