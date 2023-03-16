@@ -775,6 +775,17 @@ static void AdjustStyleForInert(ComputedStyleBuilder& builder,
     builder.SetIsInertIsInherited(false);
     return;
   }
+
+  if (auto& base_data = builder.BaseData()) {
+    if (RuntimeEnabledFeatures::InertDisplayTransitionEnabled() &&
+        base_data->GetBaseComputedStyle()->Display() == EDisplay::kNone) {
+      // Elements which are transitioning to display:none should become inert:
+      // https://github.com/w3c/csswg-drafts/issues/8389
+      builder.SetIsInert(true);
+      builder.SetIsInertIsInherited(false);
+      return;
+    }
+  }
 }
 
 void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder) {
