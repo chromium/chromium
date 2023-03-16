@@ -20,6 +20,10 @@
 
 namespace viz {
 
+// NOTE: The formats BGRX_8888, BGR_565 and BGRA_1010102 return a SkColorType
+// with R/G channels reversed. This is because from GPU perspective, GL format
+// is always RGBA and there is no difference between RGBA/BGRA. Also, these
+// formats should not be used for software SkImages/SkSurfaces.
 VIZ_RESOURCE_FORMAT_EXPORT SkColorType
 ResourceFormatToClosestSkColorType(bool gpu_compositing, ResourceFormat format);
 
