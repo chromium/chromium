@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   personal_data()->NotifyPersonalDataObserver();
 
   // Neither icon nor bubble should be visible.
-  NavigateToAndWaitForForm("https://www.example.com/first/");
+  NavigateTo("https://www.example.com/first/");
   EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   UpdateFreeListingCouponDisplayTime(
       CreateFreeListingCouponDataWithDomains({orgin}));
 
-  NavigateToAndWaitForForm("https://www.example.com/first/");
+  NavigateTo("https://www.example.com/first/");
 
   EXPECT_TRUE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());

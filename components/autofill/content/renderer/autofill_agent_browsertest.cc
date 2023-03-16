@@ -210,12 +210,12 @@ class AutofillAgentTestWithFeatures : public AutofillAgentTest {
 };
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_Empty) {
-  EXPECT_CALL(autofill_driver_, FormsSeen(SizeIs(0), SizeIs(0)));
+  EXPECT_CALL(autofill_driver_, FormsSeen).Times(0);
   LoadHTML(R"(<body> </body>)");
 }
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NoEmpty) {
-  EXPECT_CALL(autofill_driver_, FormsSeen(SizeIs(0), SizeIs(0)));
+  EXPECT_CALL(autofill_driver_, FormsSeen).Times(0);
   LoadHTML(R"(<body> <form></form> </body>)");
 }
 
@@ -281,11 +281,9 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedForm) {
 
 TEST_F(AutofillAgentTestWithFeatures, TriggerReparseWithResponse) {
   base::MockOnceCallback<void(bool)> mock_callback;
-  EXPECT_CALL(autofill_driver_, FormsSeen).Times(0);
   EXPECT_CALL(mock_callback, Run).Times(0);
   autofill_agent_->TriggerReparseWithResponse(mock_callback.Get());
   task_environment_.FastForwardBy(base::Milliseconds(50));
-  EXPECT_CALL(autofill_driver_, FormsSeen);
   EXPECT_CALL(mock_callback, Run(true));
   task_environment_.FastForwardBy(base::Milliseconds(50));
 }
