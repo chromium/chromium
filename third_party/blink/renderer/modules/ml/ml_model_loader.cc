@@ -181,7 +181,7 @@ ScriptPromise MLModelLoader::load(ScriptState* script_state,
           ml_context_->GetDevicePreference());
 
       ml_context_->GetML()->CreateModelLoader(
-          script_state, exception_state, std::move(options_mojo),
+          script_state, std::move(options_mojo),
           WTF::BindOnce(&MLModelLoader::OnRemoteLoaderCreated,
                         WrapPersistent(this), WrapPersistent(script_state),
                         WrapPersistent(resolver), WrapPersistent(buffer)));

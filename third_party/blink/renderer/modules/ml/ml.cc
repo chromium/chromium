@@ -24,14 +24,10 @@ ML::ML(ExecutionContext* execution_context)
       remote_service_(execution_context) {}
 
 void ML::CreateModelLoader(ScriptState* script_state,
-                           ExceptionState& exception_state,
                            CreateModelLoaderOptionsPtr options,
                            MLService::CreateModelLoaderCallback callback) {
-  if (!BootstrapMojoConnectionIfNeeded(script_state, exception_state)) {
-    // An exception has already been thrown in
-    // `BootstrapMojoConnectionIfNeeded()`.
-    return;
-  }
+  BootstrapMojoConnectionIfNeeded(script_state);
+
   remote_service_->CreateModelLoader(std::move(options), std::move(callback));
 }
 
@@ -82,15 +78,11 @@ MLContext* ML::createContextSync(ScriptState* script_state,
       options->modelFormat(), options->numThreads(), this);
 }
 
-bool ML::BootstrapMojoConnectionIfNeeded(ScriptState* script_state,
-                                         ExceptionState& exception_state) {
-  // We need to do the following check because the execution context of this
-  // navigator may be invalid (e.g. the frame is detached).
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is invalid");
-    return false;
-  }
+void ML::BootstrapMojoConnectionIfNeeded(ScriptState* script_state) {
+  // The execution context of this navigator is valid here because it has been
+  // verified at the beginning of `MLModelLoader::load()` function.
+  CHECK(script_state->ContextIsValid());
+
   // Note that we do not use `ExecutionContext::From(script_state)` because
   // the ScriptState passed in may not be guaranteed to match the execution
   // context associated with this navigator, especially with
@@ -100,7 +92,6 @@ bool ML::BootstrapMojoConnectionIfNeeded(ScriptState* script_state,
         remote_service_.BindNewPipeAndPassReceiver(
             GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)));
   }
-  return true;
 }
 
 }  // namespace blink
