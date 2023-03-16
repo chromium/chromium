@@ -23,12 +23,14 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {KeyboardSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
+import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard.html.js';
@@ -65,10 +67,11 @@ export class SettingsPerDeviceKeyboardElement extends
   }
 
   protected keyboards: Keyboard[];
-  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
-      getInputDeviceSettingsProvider();
   private browserProxy: DevicePageBrowserProxy =
       DevicePageBrowserProxyImpl.getInstance();
+  private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
+  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
 
   constructor() {
     super();
@@ -91,7 +94,17 @@ export class SettingsPerDeviceKeyboardElement extends
   }
 
   private observeKeyboardSettings(): void {
-    this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
+    if (this.inputDeviceSettingsProvider instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
+      return;
+    }
+
+    this.keyboardSettingsObserverReceiver =
+        new KeyboardSettingsObserverReceiver(this);
+
+    this.inputDeviceSettingsProvider.observeKeyboardSettings(
+        this.keyboardSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   private onShowKeyboardShortcutViewerTap(): void {

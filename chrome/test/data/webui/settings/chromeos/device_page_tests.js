@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
+import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -1544,6 +1544,13 @@ suite('SettingsDevicePage', function() {
 
   suite(assert(TestNames.PerDeviceMouse), function() {
     let perDeviceMousePage;
+    let inputDeviceSettingsProvider;
+
+    suiteSetup(() => {
+      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
+      inputDeviceSettingsProvider.setFakeMice(fakeMice);
+      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
+    });
 
     setup(async function() {
       await init();
@@ -1566,6 +1573,12 @@ suite('SettingsDevicePage', function() {
 
   suite(assert(TestNames.PerDeviceTouchpad), function() {
     let perDeviceTouchpadPage;
+    let inputDeviceSettingsProvider;
+    suiteSetup(() => {
+      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
+      inputDeviceSettingsProvider.setFakeTouchpads(fakeTouchpads);
+      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
+    });
 
     setup(async function() {
       await init();
@@ -1590,6 +1603,13 @@ suite('SettingsDevicePage', function() {
 
   suite(assert(TestNames.PerDevicePointingStick), function() {
     let perDevicePointingStickPage;
+    let inputDeviceSettingsProvider;
+
+    suiteSetup(() => {
+      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
+      inputDeviceSettingsProvider.setFakePointingSticks(fakePointingSticks);
+      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
+    });
 
     setup(async function() {
       await init();

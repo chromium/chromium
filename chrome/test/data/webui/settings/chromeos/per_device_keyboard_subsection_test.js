@@ -21,8 +21,10 @@ suite('PerDeviceKeyboardSubsection', function() {
    * @type {?FakeInputDeviceSettingsProvider}
    */
   let provider = null;
-
   setup(() => {
+    provider = new FakeInputDeviceSettingsProvider();
+    provider.setFakeKeyboards(fakeKeyboards);
+    setInputDeviceSettingsProviderForTesting(provider);
     PolymerTest.clearBody();
   });
 
@@ -36,13 +38,11 @@ suite('PerDeviceKeyboardSubsection', function() {
    * @return {!Promise}
    */
   function initializePerDeviceKeyboardSubsection() {
-    provider = new FakeInputDeviceSettingsProvider();
-    provider.setFakeKeyboards(fakeKeyboards);
-    setInputDeviceSettingsProviderForTesting(provider);
     subsection =
         document.createElement('settings-per-device-keyboard-subsection');
     assertTrue(subsection != null);
-    subsection.keyboard = {...fakeKeyboards[0]};
+    const keyboard = fakeKeyboards[0];
+    subsection.keyboard = {...keyboard};
     document.body.appendChild(subsection);
     return flushTasks();
   }
@@ -65,6 +65,11 @@ suite('PerDeviceKeyboardSubsection', function() {
     return flushTasks();
   }
 
+  async function getConnectedKeyboardSettings() {
+    const keyboards = await provider.getConnectedKeyboardSettings();
+    return keyboards;
+  }
+
   /**Test that API are updated when keyboard settings change.*/
   test('Update API when keyboard settings change', async () => {
     await initializePerDeviceKeyboardSubsection();
@@ -74,7 +79,7 @@ suite('PerDeviceKeyboardSubsection', function() {
             '#externalTopRowAreFunctionKeysButton');
     externalTopRowAreFunctionKeysButton.click();
     await flushTasks();
-    let updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    let updatedKeyboards = await getConnectedKeyboardSettings();
     assertEquals(
         updatedKeyboards[0].settings.topRowAreFkeys,
         externalTopRowAreFunctionKeysButton.pref.value);
@@ -84,7 +89,9 @@ suite('PerDeviceKeyboardSubsection', function() {
             '#blockMetaFunctionKeyRewritesButton');
     blockMetaFunctionKeyRewritesButton.click();
     await flushTasks();
-    updatedKeyboards = await provider.getConnectedKeyboardSettings();
+
+    updatedKeyboards = await getConnectedKeyboardSettings();
+
     assertEquals(
         updatedKeyboards[0].settings.suppressMetaFkeyRewrites,
         blockMetaFunctionKeyRewritesButton.pref.value);
@@ -93,7 +100,7 @@ suite('PerDeviceKeyboardSubsection', function() {
         subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
     enableAutoRepeatButton.click();
     await flushTasks();
-    updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    updatedKeyboards = await getConnectedKeyboardSettings();
     assertEquals(
         updatedKeyboards[0].settings.autoRepeatEnabled,
         enableAutoRepeatButton.pref.value);
@@ -104,7 +111,7 @@ suite('PerDeviceKeyboardSubsection', function() {
         delaySlider.shadowRoot.querySelector('cr-slider'), 39 /* right */, [],
         'ArrowRight');
     await flushTasks();
-    updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    updatedKeyboards = await getConnectedKeyboardSettings();
     assertEquals(
         Number(updatedKeyboards[0].settings.autoRepeatDelay.microseconds) /
             1000,
@@ -116,7 +123,7 @@ suite('PerDeviceKeyboardSubsection', function() {
         repeatRateSlider.shadowRoot.querySelector('cr-slider'), 39 /* right */,
         [], 'ArrowRight');
     await flushTasks();
-    updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    updatedKeyboards = await getConnectedKeyboardSettings();
     assertEquals(
         Number(updatedKeyboards[0].settings.autoRepeatInterval.microseconds) /
             1000,

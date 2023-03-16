@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as InputDeviceSettingsTypes from '../mojom-webui/input_device_settings.mojom-webui.js';
+import * as InputDeviceSettingsProviderTypes from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import * as ModifierKeyTypes from '../mojom-webui/modifier_key.mojom-webui.js';
 
 /**
@@ -16,11 +17,12 @@ export type ModifierKey = ModifierKeyTypes.ModifierKey;
 export const ModifierKey = ModifierKeyTypes.ModifierKey;
 
 export type Keyboard = InputDeviceSettingsTypes.Keyboard;
-export type Touchpad =
-    InputDeviceSettingsTypes.Touchpad&{isExternal: boolean, isHaptic: boolean};
-export type Mouse = InputDeviceSettingsTypes.Mouse&{isExternal: boolean};
+export type Touchpad = InputDeviceSettingsTypes.Touchpad&
+                       Partial<{isExternal: boolean, isHaptic: boolean}>;
+export type Mouse =
+    InputDeviceSettingsTypes.Mouse&Partial<{isExternal: boolean}>;
 export type PointingStick =
-    InputDeviceSettingsTypes.PointingStick&{isExternal: boolean};
+    InputDeviceSettingsTypes.PointingStick&Partial<{isExternal: boolean}>;
 
 export type KeyboardSettings = InputDeviceSettingsTypes.KeyboardSettings;
 export type TouchpadSettings = InputDeviceSettingsTypes.TouchpadSettings;
@@ -49,17 +51,15 @@ export interface PointingStickObserverInterface {
   onPointingStickListUpdated(pointingSticks: PointingStick[]): void;
 }
 
-export interface InputDeviceSettingsProviderInterface {
-  observeKeyboardSettings(observer: KeyboardObserverInterface): void;
-  getConnectedKeyboardSettings(): Promise<Keyboard[]>;
-  observeTouchpadSettings(observer: TouchpadObserverInterface): void;
-  getConnectedTouchpadSettings(): Promise<Touchpad[]>;
-  observeMouseSettings(observer: MouseObserverInterface): void;
-  getConnectedMouseSettings(): Promise<Mouse[]>;
-  observePointingStickSettings(observer: PointingStickObserverInterface): void;
-  getConnectedPointingStickSettings(): Promise<PointingStick[]>;
+interface FakeInputDeviceSettingsProviderInterface extends
+    InputDeviceSettingsProviderTypes.InputDeviceSettingsProviderInterface {
   setKeyboardSettings(id: number, settings: KeyboardSettings): void;
   setMouseSettings(id: number, settings: MouseSettings): void;
   setTouchpadSettings(id: number, settings: TouchpadSettings): void;
   setPointingStickSettings(id: number, settings: PointingStickSettings): void;
 }
+
+// Type alias to enable use of in-progress InputDeviceSettingsProvider api.
+export type InputDeviceSettingsProviderInterface = Required<
+    InputDeviceSettingsProviderTypes.InputDeviceSettingsProviderInterface>&
+    Partial<FakeInputDeviceSettingsProviderInterface>;

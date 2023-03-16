@@ -22,10 +22,12 @@ import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
+import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Touchpad} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_touchpad.html.js';
@@ -51,6 +53,7 @@ export class SettingsPerDeviceTouchpadElement extends
   }
 
   protected touchpads: Touchpad[];
+  private touchpadSettingsObserverReceiver: TouchpadSettingsObserverReceiver;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
 
@@ -67,7 +70,17 @@ export class SettingsPerDeviceTouchpadElement extends
   }
 
   private observeTouchpadSettings(): void {
-    this.inputDeviceSettingsProvider.observeTouchpadSettings(this);
+    if (this.inputDeviceSettingsProvider instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider.observeTouchpadSettings(this);
+      return;
+    }
+
+    this.touchpadSettingsObserverReceiver =
+        new TouchpadSettingsObserverReceiver(this);
+
+    this.inputDeviceSettingsProvider.observeTouchpadSettings(
+        this.touchpadSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   onTouchpadListUpdated(touchpads: Touchpad[]): void {

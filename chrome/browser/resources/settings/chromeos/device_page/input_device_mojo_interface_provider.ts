@@ -4,6 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
+import {InputDeviceSettingsProvider} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
+
 import {fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from './fake_input_device_data.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
@@ -16,12 +18,13 @@ import {InputDeviceSettingsProviderInterface} from './input_device_settings_type
 
 let inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface|null;
 
+const USE_FAKE_PROVIDER = false;
+
 /**
  * Create a FakeInputDeviceSettingsProvider with reasonable fake data.
  */
 export function setupFakeInputDeviceSettingsProvider(): void {
-  const provider: FakeInputDeviceSettingsProvider =
-      new FakeInputDeviceSettingsProvider();
+  const provider = new FakeInputDeviceSettingsProvider();
   provider.setFakeKeyboards(fakeKeyboards);
   provider.setFakeTouchpads(fakeTouchpads);
   provider.setFakeMice(fakeMice);
@@ -31,10 +34,11 @@ export function setupFakeInputDeviceSettingsProvider(): void {
 
 export function getInputDeviceSettingsProvider():
     InputDeviceSettingsProviderInterface {
-  // TODO(yyhyyh@): After mojo bindings implemented, update situations for
-  // getting the provider from remote and create a fake provider for testing.
-  if (!inputDeviceSettingsProvider) {
+  if (!inputDeviceSettingsProvider && USE_FAKE_PROVIDER) {
     setupFakeInputDeviceSettingsProvider();
+  }
+  if (!inputDeviceSettingsProvider) {
+    inputDeviceSettingsProvider = InputDeviceSettingsProvider.getRemote();
   }
 
   assert(!!inputDeviceSettingsProvider);

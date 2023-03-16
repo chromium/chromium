@@ -9,8 +9,7 @@ suite('InputDeviceMojoInterfaceProvider', function() {
   test('SettingGettingTestProvider', () => {
     // Test that if there was no provider, getInputDeviceSettingsProvider
     // method will create one.
-    const fakeProvider = getInputDeviceSettingsProvider();
-    assertTrue(!!fakeProvider);
-    assertEquals(fakeProvider, getInputDeviceSettingsProvider());
+    const provider = getInputDeviceSettingsProvider();
+    assertTrue(!!provider);
   });
 });

@@ -208,6 +208,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
       scrollSensitivity: this.scrollSensitivityPref.value,
       reverseScrolling: this.reverseScrollValue,
     };
+
     this.inputDeviceSettingsProvider.setMouseSettings(
         this.mouse.id, this.mouse.settings);
   }

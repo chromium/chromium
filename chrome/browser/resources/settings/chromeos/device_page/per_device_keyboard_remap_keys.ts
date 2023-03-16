@@ -19,10 +19,12 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {KeyboardSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
+import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_remap_keys.html.js';
@@ -178,6 +180,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
   protected keyboard: Keyboard;
   private keyboards: Keyboard[];
+  private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
   protected defaultRemappings: {[key: number]: ModifierKey} = {
     [ModifierKey.kMeta]: ModifierKey.kMeta,
     [ModifierKey.kControl]: ModifierKey.kControl,
@@ -267,7 +270,17 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   }
 
   private observeKeyboardSettings(): void {
-    this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
+    if (this.inputDeviceSettingsProvider instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
+      return;
+    }
+
+    this.keyboardSettingsObserverReceiver =
+        new KeyboardSettingsObserverReceiver(this);
+
+    this.inputDeviceSettingsProvider.observeKeyboardSettings(
+        this.keyboardSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   onKeyboardListUpdated(keyboards: Keyboard[]): void {
@@ -350,8 +363,11 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
       ...this.keyboard.settings,
       modifierRemappings: this.getUpdatedRemappings(),
     };
-    this.inputDeviceSettingsProvider.setKeyboardSettings(
-        this.keyboard.id, this.keyboard.settings);
+    if (this.inputDeviceSettingsProvider instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider.setKeyboardSettings(
+          this.keyboard.id, this.keyboard.settings);
+    }
   }
 
   /**

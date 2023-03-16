@@ -66,6 +66,11 @@ suite('PerDeviceTouchpadSubsection', function() {
     return flushTasks();
   }
 
+  async function getConnectedTouchpadSettings() {
+    const touchpads = await provider.getConnectedTouchpadSettings();
+    return touchpads;
+  }
+
   // Test that API are updated when touchpad settings change.
   test('Update API when touchpad settings change', async () => {
     await initializePerDeviceTouchpadSubsection();
@@ -73,7 +78,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         subsection.shadowRoot.querySelector('#enableTapToClick');
     enableTapToClickButton.click();
     await flushTasks();
-    let updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    let updatedTouchpads = await getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0].settings.tapToClickEnabled,
         enableTapToClickButton.pref.value);
@@ -82,7 +87,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         subsection.shadowRoot.querySelector('#enableTapDragging');
     enableTapDraggingButton.click();
     await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    updatedTouchpads = await getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0].settings.tapDraggingEnabled,
         enableTapDraggingButton.pref.value);
@@ -91,7 +96,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         subsection.shadowRoot.querySelector('#touchpadAcceleration');
     touchpadAccelerationButton.click();
     await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    updatedTouchpads = await getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0].settings.accelerationEnabled,
         touchpadAccelerationButton.pref.value);
@@ -100,7 +105,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         subsection.shadowRoot.querySelector('#touchpadScrollAcceleration');
     touchpadScrollAccelerationButton.click();
     await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    updatedTouchpads = await getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0].settings.scrollAcceleration,
         touchpadScrollAccelerationButton.pref.value);
@@ -111,7 +116,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         touchpadScrollSpeedSlider.shadowRoot.querySelector('cr-slider'),
         39 /* right */, [], 'ArrowRight');
     await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    updatedTouchpads = await getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0].settings.scrollSensitivity,
         touchpadScrollSpeedSlider.pref.value);
@@ -122,7 +127,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         touchpadSensitivitySlider.shadowRoot.querySelector('cr-slider'),
         39 /* right */, [], 'ArrowRight');
     await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    updatedTouchpads = await getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0].settings.sensitivity,
         touchpadSensitivitySlider.pref.value);
@@ -134,7 +139,7 @@ suite('PerDeviceTouchpadSubsection', function() {
             'cr-slider'),
         39 /* right */, [], 'ArrowRight');
     await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    updatedTouchpads = await getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0].settings.hapticSensitivity,
         touchpadHapticClickSensitivitySlider.pref.value);
@@ -143,7 +148,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         subsection.shadowRoot.querySelector('#touchpadHapticFeedbackToggle');
     touchpadHapticFeedbackToggleButton.click();
     await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    updatedTouchpads = await getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0].settings.hapticEnabled,
         touchpadHapticFeedbackToggleButton.checked);
@@ -152,7 +157,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         subsection.shadowRoot.querySelector('#enableReverseScrollingToggle');
     touchpadReverseScrollToggleButton.click();
     await flushTasks();
-    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    updatedTouchpads = await getConnectedTouchpadSettings();
     assertEquals(
         updatedTouchpads[0].settings.reverseScrolling,
         touchpadReverseScrollToggleButton.checked);

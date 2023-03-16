@@ -292,7 +292,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  [
    'InputDeviceMojoInterfaceProvider',
-   'input_device_mojo_interface_provider_test.js'
+   'input_device_mojo_interface_provider_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']},
  ],
  ['InputMethodOptionPage', 'input_method_options_page_test.js'],
  ['InputPage', 'input_page_test.js'],

@@ -52,6 +52,11 @@ suite('PerDevicePointingStickSubsection', function() {
     return flushTasks();
   }
 
+  async function getConnectedPointingStickSettings() {
+    const pointingSticks = await provider.getConnectedPointingStickSettings();
+    return pointingSticks;
+  }
+
   // Test that API are updated when pointing stick settings change.
   test('Update API when pointing stick settings change', async () => {
     await initializePerDevicePointingStickSubsection();
@@ -62,8 +67,7 @@ suite('PerDevicePointingStickSubsection', function() {
       value: true,
     };
     await flushTasks();
-    let updatedPointingSticks =
-        await provider.getConnectedPointingStickSettings();
+    let updatedPointingSticks = await getConnectedPointingStickSettings();
     assertEquals(
         updatedPointingSticks[0].settings.swapRight,
         pointingStickSwapButtonDropdown.pref.value);
@@ -72,7 +76,7 @@ suite('PerDevicePointingStickSubsection', function() {
         subsection.shadowRoot.querySelector('#pointingStickAcceleration');
     pointingStickAccelerationToggleButton.click();
     await flushTasks();
-    updatedPointingSticks = await provider.getConnectedPointingStickSettings();
+    updatedPointingSticks = await getConnectedPointingStickSettings();
     assertEquals(
         updatedPointingSticks[0].settings.accelerationEnabled,
         pointingStickAccelerationToggleButton.pref.value);
@@ -83,7 +87,7 @@ suite('PerDevicePointingStickSubsection', function() {
         pointingStickSpeedSlider.shadowRoot.querySelector('cr-slider'),
         39 /* right */, [], 'ArrowRight');
     await flushTasks();
-    updatedPointingSticks = await provider.getConnectedPointingStickSettings();
+    updatedPointingSticks = await getConnectedPointingStickSettings();
     assertEquals(
         updatedPointingSticks[0].settings.sensitivity,
         pointingStickSpeedSlider.pref.value);

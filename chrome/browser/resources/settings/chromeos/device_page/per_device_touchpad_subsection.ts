@@ -256,6 +256,7 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends PolymerElement {
       reverseScrolling: this.reverseScrollValue,
       hapticEnabled: this.hapticFeedbackValue,
     };
+
     this.inputDeviceSettingsProvider.setTouchpadSettings(
         this.touchpad.id, this.touchpad.settings);
   }
