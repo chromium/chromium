@@ -105,6 +105,10 @@ chromium-metrics-reviews@google.com.
   <variant name="DolbyVision"/>
   <variant name="H264"/>
   <variant name="HEVC"/>
+  <variant name="MPEG2"/>
+  <variant name="MPEG4"/>
+  <variant name="Theora"/>
+  <variant name="VC1"/>
   <variant name="VP8"/>
   <variant name="VP9"/>
 </variants>
@@ -5538,16 +5542,17 @@ chromium-metrics-reviews@google.com.
   <summary>Video codec used in HTML5 media.</summary>
 </histogram>
 
-<histogram name="Media.VideoDecoderFallback" enum="BooleanDidFallBack"
-    expires_after="never">
+<histogram name="Media.VideoDecoderFallback.{VideoCodec}"
+    enum="BooleanDidFallBack" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    Whether Chrome had to fall back to a secondary video decoder after the
-    primary decoder failed reinitialization.
+    Whether Chrome had to fall back to a secondary video decoder with
+    {VideoCodec} video codec after the primary decoder failed reinitialization.
   </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
 
 <histogram name="Media.VideoDecodeStatsDB.OpSuccess.{DbOperation}"

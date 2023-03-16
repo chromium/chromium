@@ -226,7 +226,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMA) {
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount("Media.PipelineStatus.AudioVideo.VP9.SW",
                                      PIPELINE_OK, 1);
-  histogram_tester.ExpectBucketCount("Media.VideoDecoderFallback", false, 1);
+  histogram_tester.ExpectBucketCount("Media.VideoDecoderFallback.VP9", false,
+                                     1);
   histogram_tester.ExpectBucketCount("Media.HasEverPlayed", true, 1);
 }
 
@@ -246,7 +247,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMAMediaStream) {
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount("Media.PipelineStatus.AudioVideo.VP9.SW",
                                      PIPELINE_OK, 0);
-  histogram_tester.ExpectBucketCount("Media.VideoDecoderFallback", false, 0);
+  histogram_tester.ExpectBucketCount("Media.VideoDecoderFallback.VP9", false,
+                                     0);
   histogram_tester.ExpectBucketCount("Media.HasEverPlayed", true, 0);
 }
 
@@ -263,7 +265,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMANoAudioWithEme) {
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount("Media.PipelineStatus.VideoOnly",
                                      PIPELINE_OK, 1);
-  histogram_tester.ExpectBucketCount("Media.VideoDecoderFallback", false, 1);
+  histogram_tester.ExpectBucketCount("Media.VideoDecoderFallback.AV1", false,
+                                     1);
   histogram_tester.ExpectBucketCount("Media.HasEverPlayed", true, 1);
   histogram_tester.ExpectBucketCount("Media.EME.IsIncognito", false, 1);
 }
@@ -285,7 +288,7 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMADecoderFallback) {
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount("Media.PipelineStatus.AudioVideo.VP9.HW",
                                      PIPELINE_OK, 1);
-  histogram_tester.ExpectBucketCount("Media.VideoDecoderFallback", true, 1);
+  histogram_tester.ExpectBucketCount("Media.VideoDecoderFallback.VP9", true, 1);
   histogram_tester.ExpectBucketCount("Media.HasEverPlayed", true, 1);
 }
 

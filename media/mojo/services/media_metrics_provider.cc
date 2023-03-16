@@ -160,11 +160,12 @@ void MediaMetricsProvider::ReportPipelineUMA() {
                                   PIPELINE_STATUS_MAX + 1);
   }
 
-  // Report whether video decoder fallback happened, but only if a video decoder
-  // was reported.
+  // Report whether video decoder fallback happened for each video codec, but
+  // only if a video decoder was reported.
   if (uma_info_.video_pipeline_info.decoder_type !=
       VideoDecoderType::kUnknown) {
-    base::UmaHistogramBoolean("Media.VideoDecoderFallback",
+    base::UmaHistogramBoolean("Media.VideoDecoderFallback." +
+                                  GetCodecNameForUMA(uma_info_.video_codec),
                               uma_info_.video_decoder_changed);
   }
 
