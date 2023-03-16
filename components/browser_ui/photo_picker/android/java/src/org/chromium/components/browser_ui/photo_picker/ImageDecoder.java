@@ -40,8 +40,7 @@ public class ImageDecoder extends IDecoderService.Stub {
     private boolean mSandboxInitialized;
 
     /**
-     * Initializes the seccomp-bpf sandbox when it's supported by the device. Records the
-     * sandbox status to the Android.SeccompStatus.PhotoPickerSandbox histogram.
+     * Initializes the seccomp-bpf sandbox when it's supported by the device.
      */
     public void initializeSandbox() {
         ImageDecoderJni.get().initializePhotoPickerSandbox();

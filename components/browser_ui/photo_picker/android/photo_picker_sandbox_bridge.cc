@@ -24,8 +24,4 @@ void JNI_ImageDecoder_InitializePhotoPickerSandbox(JNIEnv* env) {
       starter.GetDefaultBaselineOptions()));
 #endif
   starter.StartSandbox();
-
-  UMA_HISTOGRAM_ENUMERATION("Android.SeccompStatus.PhotoPickerSandbox",
-                            starter.status(),
-                            sandbox::SeccompSandboxStatus::STATUS_MAX);
 }
