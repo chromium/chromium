@@ -95,6 +95,7 @@ void AddRefColorMixer(ColorProvider* provider,
   mixer[kColorRefNeutral20] = {palette.neutral().get(20)};
   mixer[kColorRefNeutral22] = {palette.neutral().get(22)};
   mixer[kColorRefNeutral24] = {palette.neutral().get(24)};
+  mixer[kColorRefNeutral25] = {palette.neutral().get(25)};
   mixer[kColorRefNeutral30] = {palette.neutral().get(30)};
   mixer[kColorRefNeutral40] = {palette.neutral().get(40)};
   mixer[kColorRefNeutral50] = {palette.neutral().get(50)};

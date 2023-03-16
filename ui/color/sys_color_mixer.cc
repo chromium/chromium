@@ -28,10 +28,8 @@ void AddSysColorMixer(ColorProvider* provider,
                                        : kColorRefPrimary40};
   mixer[kColorSysOnPrimary] = {dark_mode ? kColorRefPrimary20
                                          : kColorRefPrimary100};
-  mixer[kColorSysPrimaryContainer] = {
-      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary30}, 0x14),
-                                         {kColorRefSecondary30})
-                : kColorRefPrimary90};
+  mixer[kColorSysPrimaryContainer] = {dark_mode ? kColorRefPrimary30
+                                                : kColorRefPrimary90};
   mixer[kColorSysOnPrimaryContainer] = {dark_mode ? kColorRefPrimary90
                                                   : kColorRefPrimary10};
   // Secondary.
@@ -114,9 +112,9 @@ void AddSysColorMixer(ColorProvider* provider,
   mixer[kColorSysOnSurfacePrimaryInactive] = {dark_mode ? kColorRefNeutral90
                                                         : kColorRefNeutral10};
 
-  mixer[kColorSysTonalContainer] = {dark_mode ? kColorRefPrimary30
+  mixer[kColorSysTonalContainer] = {dark_mode ? kColorRefSecondary30
                                               : kColorRefPrimary90};
-  mixer[kColorSysOnTonalContainer] = {dark_mode ? kColorRefPrimary90
+  mixer[kColorSysOnTonalContainer] = {dark_mode ? kColorRefSecondary90
                                                 : kColorRefPrimary10};
   mixer[kColorSysTonalOutline] = {dark_mode ? kColorRefSecondary50
                                             : kColorRefPrimary80};
@@ -124,39 +122,36 @@ void AddSysColorMixer(ColorProvider* provider,
                                               : kColorRefNeutral80};
   mixer[kColorSysNeutralContainer] = {dark_mode ? kColorRefNeutral15
                                                 : kColorRefNeutral95};
+  mixer[kColorSysDivider] = {dark_mode ? kColorRefNeutral30
+                                       : kColorRefPrimary90};
 
   // Chrome surfaces.
-  mixer[kColorSysBase] = {dark_mode ? kColorRefNeutral24 : kColorRefNeutral100};
-  mixer[kColorSysBaseContainer] = {dark_mode ? kColorRefNeutral17
+  mixer[kColorSysBase] = {dark_mode ? kColorRefNeutral25 : kColorRefNeutral100};
+  mixer[kColorSysBaseContainer] = {dark_mode ? kColorRefNeutral15
                                              : kColorSysSurface4};
-  mixer[kColorSysBaseContainerElevated] = {dark_mode ? kColorRefNeutral24
+  mixer[kColorSysBaseContainerElevated] = {dark_mode ? kColorRefNeutral25
                                                      : kColorRefNeutral100};
-  mixer[kColorSysOnBase] = {dark_mode ? kColorRefNeutral90
-                                      : kColorRefNeutral10};
   mixer[kColorSysOnBaseSecondary] = {dark_mode ? kColorRefNeutral80
                                                : kColorRefNeutral30};
   mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
                                              : kColorRefPrimary90};
 
-  mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral17
+  mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral15
                                       : kColorRefPrimary90};
   mixer[kColorSysHeaderInactive] = {dark_mode ? kColorSysSurface1
                                               : kColorSysSurface3};
-  mixer[kColorSysHeaderContainer] = {dark_mode ? kColorRefNeutral24
+  mixer[kColorSysHeaderContainer] = {dark_mode ? kColorRefNeutral25
                                                : kColorRefPrimary95};
-  mixer[kColorSysHeaderContainerInactive] = {dark_mode ? kColorRefNeutral24
+  mixer[kColorSysHeaderContainerInactive] = {dark_mode ? kColorRefNeutral25
                                                        : kColorRefNeutral100};
-  mixer[kColorSysOnHeaderDivider] = {dark_mode ? kColorRefNeutral24
+  mixer[kColorSysOnHeaderDivider] = {dark_mode ? kColorRefNeutral25
                                                : kColorRefPrimary80};
-  mixer[kColorSysOnHeaderDividerInactive] = {dark_mode ? kColorRefNeutral24
+  mixer[kColorSysOnHeaderDividerInactive] = {dark_mode ? kColorRefNeutral25
                                                        : kColorRefNeutral80};
   mixer[kColorSysOnHeaderPrimary] = {dark_mode ? kColorRefPrimary80
                                                : kColorRefPrimary40};
   mixer[kColorSysOnHeaderPrimaryInactive] = {dark_mode ? kColorRefNeutral80
                                                        : kColorRefNeutral40};
-
-  // Effects.
-  mixer[kColorSysShadow] = {kColorRefNeutral100};
 
   // States.
   mixer[kColorSysStateHoverOnProminent] = {
@@ -165,26 +160,26 @@ void AddSysColorMixer(ColorProvider* provider,
   mixer[kColorSysStateHoverOnSubtle] = {
       dark_mode ? SetAlpha({kColorRefNeutral99}, 0x1A)
                 : SetAlpha({kColorRefNeutral10}, 0x60)};
-  mixer[kColorSysStateRipplePrimary] = {
-      dark_mode ? SetAlpha({kColorRefPrimary60}, 0x52)
-                : SetAlpha({kColorRefPrimary70}, 0x52)};
   mixer[kColorSysStateRippleNeutralOnProminent] = {
       dark_mode ? SetAlpha({kColorRefNeutral10}, 0x1F)
                 : SetAlpha({kColorRefNeutral99}, 0x29)};
   mixer[kColorSysStateRippleNeutralOnSubtle] = {
       dark_mode ? SetAlpha({kColorRefNeutral99}, 0x29)
                 : SetAlpha({kColorRefNeutral10}, 0x14)};
+  mixer[kColorSysStateRipplePrimary] = {
+      dark_mode ? SetAlpha({kColorRefPrimary60}, 0x52)
+                : SetAlpha({kColorRefPrimary70}, 0x52)};
   mixer[kColorSysStateFocusRing] = {dark_mode ? kColorRefPrimary80
                                               : kColorRefPrimary40};
+  mixer[kColorSysStateFocusHighlight] = {
+      dark_mode ? SetAlpha({kColorRefNeutral99}, 0x1A)
+                : SetAlpha({kColorRefNeutral10}, 0x0F)};
   mixer[kColorSysStateDisabled] = dark_mode
                                       ? SetAlpha({kColorRefNeutral90}, 0x60)
                                       : SetAlpha({kColorRefNeutral10}, 0x60);
   mixer[kColorSysStateDisabledContainer] =
       dark_mode ? SetAlpha({kColorRefNeutral90}, 0x1E)
                 : SetAlpha({kColorRefNeutral10}, 0x1E);
-  mixer[kColorSysStateFocusHighlight] = {
-      dark_mode ? SetAlpha({kColorRefNeutral99}, 0x1A)
-                : SetAlpha({kColorRefNeutral10}, 0x0F)};
   mixer[kColorSysStateHoverCutout] = {
       dark_mode ? SetAlpha({kColorRefNeutral10}, 0x0F)
                 : SetAlpha({kColorRefNeutral20}, 0x1F)};
@@ -197,7 +192,12 @@ void AddSysColorMixer(ColorProvider* provider,
   mixer[kColorSysStateHeaderHover] = {dark_mode ? kColorRefSecondary30
                                                 : kColorRefPrimary80};
 
+  // Effects.
+  mixer[kColorSysShadow] = {kColorRefNeutral0};
+
   // Deprecated.
+  mixer[kColorSysOnBase] = {dark_mode ? kColorRefNeutral90
+                                      : kColorRefNeutral10};
   mixer[kColorSysOnBaseBorder] = {dark_mode ? kColorRefNeutral30
                                             : kColorRefPrimary90};
   mixer[kColorSysStateHover] = dark_mode ? SetAlpha({kColorRefNeutral90}, 0x14)
