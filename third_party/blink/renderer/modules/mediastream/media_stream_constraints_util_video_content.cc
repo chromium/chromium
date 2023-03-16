@@ -8,15 +8,18 @@
 #include <cmath>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/system/sys_info.h"
+#include "build/build_config.h"
 #include "media/base/limits.h"
 #include "media/base/video_types.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -191,6 +194,40 @@ double SelectFrameRateFromCandidates(
   return frame_rate;
 }
 
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+bool IsRK3399Board() {
+  const std::string board = base::SysInfo::GetLsbReleaseBoard();
+  const char* kRK3399Boards[] = {
+      "bob",
+      "kevin",
+      "rainier",
+      "scarlet",
+  };
+  for (const char* b : kRK3399Boards) {
+    if (board.find(b) == 0u) {  // if |board| starts with |b|.
+      return true;
+    }
+  }
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+
+bool IsZeroCopyTabCaptureEnabled() {
+  // If you change this function, please change the code of the same function
+  // in
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.cc.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+  // The GL driver used on RK3399 has a problem to enable zero copy tab capture.
+  // See b/267966835.
+  // TODO(b/239503724): Remove this code when RK3399 reaches EOL.
+  static bool kIsRK3399Board = IsRK3399Board();
+  if (kIsRK3399Board) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+  return base::FeatureList::IsEnabled(blink::features::kZeroCopyTabCapture);
+}
+
 media::VideoCaptureParams SelectVideoCaptureParamsFromCandidates(
     const VideoContentCaptureCandidates& candidates,
     const MediaTrackConstraintSetPlatform& basic_constraint_set,
@@ -208,9 +245,8 @@ media::VideoCaptureParams SelectVideoCaptureParamsFromCandidates(
   // the pixel format:
   params.requested_format = media::VideoCaptureFormat(
       ToGfxSize(requested_resolution), static_cast<float>(requested_frame_rate),
-      RuntimeEnabledFeatures::ZeroCopyTabCaptureEnabled()
-          ? media::PIXEL_FORMAT_UNKNOWN
-          : media::PIXEL_FORMAT_I420);
+      IsZeroCopyTabCaptureEnabled() ? media::PIXEL_FORMAT_UNKNOWN
+                                    : media::PIXEL_FORMAT_I420);
   params.resolution_change_policy = SelectResolutionPolicyFromCandidates(
       candidates.resolution_set(), default_resolution_policy);
   // Content capture always uses default power-line frequency.

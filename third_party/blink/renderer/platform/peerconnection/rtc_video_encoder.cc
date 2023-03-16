@@ -19,6 +19,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -59,6 +60,43 @@
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY)
+bool IsRK3399Board() {
+  const std::string board = base::SysInfo::GetLsbReleaseBoard();
+  const char* kRK3399Boards[] = {
+      "bob",
+      "kevin",
+      "rainier",
+      "scarlet",
+  };
+  for (const char* b : kRK3399Boards) {
+    if (board.find(b) == 0u) {  // if |board| starts with |b|.
+      return true;
+    }
+  }
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsZeroCopyTabCaptureEnabled() {
+  // If you change this function, please change the code of the same function
+  // in
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_content.cc.
+#if defined(ARCH_CPU_ARM_FAMILY)
+  // The GL driver used on RK3399 has a problem to enable zero copy tab capture.
+  // See b/267966835.
+  // TODO(b/239503724): Remove this code when RK3399 reaches EOL.
+  static bool kIsRK3399Board = IsRK3399Board();
+  if (kIsRK3399Board) {
+    return false;
+  }
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+  return base::FeatureList::IsEnabled(blink::features::kZeroCopyTabCapture);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class SignaledValue {
  public:
   SignaledValue() : event(nullptr), val(nullptr) {}
@@ -460,7 +498,7 @@ bool IsZeroCopyEnabled(webrtc::VideoContentType content_type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // The zero-copy capture is available for all sources in ChromeOS
     // Ash-chrome.
-    return base::FeatureList::IsEnabled(features::kZeroCopyTabCapture);
+    return IsZeroCopyTabCaptureEnabled();
 #else
     // Currently, zero copy capture screenshare is available only for tabs.
     // Since it is impossible to determine the content source, tab, window or
