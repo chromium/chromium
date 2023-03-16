@@ -46,7 +46,8 @@ class AuthenticatedConnection : public Connection {
       const std::string& challenge_b64url,
       RequestAccountTransferAssertionCallback callback);
 
-  void RequestWifiCredentials(RequestWifiCredentialsCallback callback);
+  void RequestWifiCredentials(int32_t session_id,
+                              RequestWifiCredentialsCallback callback);
 
   void NotifySourceOfUpdate();
 
@@ -66,7 +67,12 @@ class AuthenticatedConnection : public Connection {
   // it to the Android device.
   void RequestAssertion(ConnectionResponseCallback callback);
 
-  // Parses a raw AssertationResponse and converts it into a FidoAssertionInfo
+  // Parses a raw response and converts it to a WifiCredentialsResponse
+  void ParseWifiCredentialsResponse(
+      RequestWifiCredentialsCallback,
+      absl::optional<std::vector<uint8_t>> response_bytes);
+
+  // Parses a raw AssertionResponse and converts it into a FidoAssertionInfo
   void ParseAssertionResponse(
       RequestAccountTransferAssertionCallback callback,
       absl::optional<std::vector<uint8_t>> response_bytes);

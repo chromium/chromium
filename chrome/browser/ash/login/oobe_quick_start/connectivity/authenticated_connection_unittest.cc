@@ -12,6 +12,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_quick_start_decoder.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/wifi_credentials.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
@@ -52,7 +54,6 @@ constexpr std::array<uint8_t, 32> kSharedSecret = {
 // 6 random bytes to use as the RandomSessionId.
 constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
                                                      0x27, 0xbb, 0x28};
-
 }  // namespace
 
 class AuthenticatedConnectionTest : public testing::Test {
@@ -66,12 +67,11 @@ class AuthenticatedConnectionTest : public testing::Test {
     fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
-    RandomSessionId session_id(kRandomSessionId);
     authenticated_connection_ = std::make_unique<AuthenticatedConnection>(
         nearby_connection,
         mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
             fake_quick_start_decoder_->GetRemote()),
-        session_id, kSharedSecret);
+        session_id_, kSharedSecret);
   }
 
   std::string CreateFidoClientDataJson(url::Origin origin) {
@@ -96,7 +96,12 @@ class AuthenticatedConnectionTest : public testing::Test {
     assertion_info_ = assertion_info;
   }
 
+  void VerifyWifiCredentials(absl::optional<WifiCredentials> credentials) {
+    // TODO: Verify Wifi Credentials once parsed
+  }
+
  protected:
+  RandomSessionId session_id_ = RandomSessionId(kRandomSessionId);
   base::test::SingleThreadTaskEnvironment task_environment_;
   bool ran_assertion_response_callback_ = false;
   std::unique_ptr<AuthenticatedConnection> authenticated_connection_;
@@ -104,6 +109,53 @@ class AuthenticatedConnectionTest : public testing::Test {
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_;
   absl::optional<FidoAssertionInfo> assertion_info_;
 };
+
+TEST_F(AuthenticatedConnectionTest, RequestWifiCredentials) {
+  // Random Session ID for testing
+  int32_t session_id = 1;
+
+  authenticated_connection_->RequestWifiCredentials(
+      session_id,
+      base::BindOnce(&AuthenticatedConnectionTest::VerifyWifiCredentials,
+                     base::Unretained(this)));
+
+  fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
+  std::vector<uint8_t> wifi_request = fake_nearby_connection_->GetWrittenData();
+  std::string wifi_request_string(wifi_request.begin(), wifi_request.end());
+  absl::optional<base::Value> parsed_wifi_request_json =
+      base::JSONReader::Read(wifi_request_string);
+  ASSERT_TRUE(parsed_wifi_request_json);
+  ASSERT_TRUE(parsed_wifi_request_json->is_dict());
+  base::Value::Dict& written_wifi_credentials_request =
+      parsed_wifi_request_json.value().GetDict();
+
+  // Try to decode the payload written to Nearby Connections
+  std::string base64_encoded_payload =
+      *written_wifi_credentials_request.FindString("quickStartPayload");
+
+  absl::optional<std::vector<uint8_t>> parsed_payload =
+      base::Base64Decode(base64_encoded_payload);
+
+  EXPECT_TRUE(parsed_payload.has_value());
+  std::string parsed_payload_string(parsed_payload->begin(),
+                                    parsed_payload->end());
+
+  absl::optional<base::Value> parsed_wifi_request_payload_json =
+      base::JSONReader::Read(parsed_payload_string);
+  ASSERT_TRUE(parsed_wifi_request_payload_json);
+  ASSERT_TRUE(parsed_wifi_request_payload_json->is_dict());
+  base::Value::Dict& wifi_request_payload =
+      parsed_wifi_request_payload_json.value().GetDict();
+
+  EXPECT_TRUE(wifi_request_payload.FindBool("request_wifi"));
+  EXPECT_EQ(wifi_request_payload.FindInt("SESSION_ID"), session_id);
+
+  std::string shared_secret_str(kSharedSecret.begin(), kSharedSecret.end());
+  std::string shared_secret_base64;
+  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  EXPECT_EQ(*wifi_request_payload.FindString("shared_secret"),
+            shared_secret_base64);
+}
 
 TEST_F(AuthenticatedConnectionTest, RequestAccountTransferAssertion) {
   // Start the Quick Start account transfer flow by initially sending
