@@ -5,6 +5,7 @@
 #include "components/metrics/field_trials_provider.h"
 
 #include "base/metrics/field_trial.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -64,7 +65,8 @@ ActiveGroupId ToActiveGroupId(ActiveGroup active_group, std::string suffix) {
 
 class FieldTrialsProviderTest : public ::testing::Test {
  public:
-  FieldTrialsProviderTest() = default;
+  FieldTrialsProviderTest() { scope_.InitWithEmptyFeatureAndFieldTrialLists(); }
+
   ~FieldTrialsProviderTest() override = default;
 
  protected:
@@ -104,6 +106,7 @@ class FieldTrialsProviderTest : public ::testing::Test {
   }
 
   SyntheticTrialRegistry registry_;
+  base::test::ScopedFeatureList scope_;
 };
 
 TEST_F(FieldTrialsProviderTest, ProvideSyntheticTrials) {
