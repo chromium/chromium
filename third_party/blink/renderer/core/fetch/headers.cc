@@ -212,6 +212,10 @@ String Headers::get(const String& name, ExceptionState& exception_state) {
   return result;
 }
 
+Vector<String> Headers::getSetCookie() {
+  return header_list_->GetSetCookie();
+}
+
 bool Headers::has(const String& name, ExceptionState& exception_state) {
   // "The has(|name|) method, when invoked, must run these steps:"
   // "1. If |name| is not a name, throw a TypeError."

@@ -104,6 +104,21 @@ bool FetchHeaderList::Get(const String& name, String& result) const {
   return found;
 }
 
+Vector<String> FetchHeaderList::GetSetCookie() const {
+  // https://fetch.spec.whatwg.org/#dom-headers-getsetcookie
+  // "The getSetCookie() method steps are:
+  // 1. If this’s header list does not contain `Set-Cookie`, then return an
+  //    empty list.
+  // 2. Return the values of all headers in this’s header list whose name is a
+  //    byte-case-insensitive match for `Set-Cookie`, in order."
+  Vector<String> values;
+  auto range = header_list_.equal_range("Set-Cookie");
+  for (auto header = range.first; header != range.second; ++header) {
+    values.push_back(header->second);
+  }
+  return values;
+}
+
 String FetchHeaderList::GetAsRawString(int status_code,
                                        String status_message) const {
   StringBuilder builder;
@@ -135,22 +150,37 @@ void FetchHeaderList::ClearList() {
 Vector<FetchHeaderList::Header> FetchHeaderList::SortAndCombine() const {
   // https://fetch.spec.whatwg.org/#concept-header-list-sort-and-combine
   // "To sort and combine a header list (|list|), run these steps:
-  // 1. Let |headers| be an empty list of name-value pairs with the key being
-  //    the name and value the value.
-  // 2. Let |names| be all the names of the headers in |list|, byte-lowercased,
-  //    with duplicates removed, and finally sorted lexicographically.
-  // 3. For each |name| in |names|, run these substeps:
-  //    1. Let |value| be the combined value given |name| and |list|.
-  //    2. Append |name-value| to |headers|.
+  // 1. Let |headers| be an empty list of headers with the key being the name
+  //    and value the value.
+  // 2. Let |names| be the result of convert header names to a sorted-lowercase
+  //    set with all the names of the headers in |list|.
+  // 3. For each |name| in |names|:
+  //    1. If |name| is `set-cookie`, then:
+  //       1. Let |values| be a list of all values of headers in |list| whose
+  //          name is a byte-case-insensitive match for |name|, in order.
+  //       2. For each |value| in |values|:
+  //          1. Append (|name|, |value|) to |headers|.
+  //    2. Otherwise:
+  //       1. Let |value| be the result of getting |name| from |list|.
+  //       2. Assert: |value| is not null.
+  //       3. Append (|name|, |value|) to |headers|.
   // 4. Return |headers|."
   Vector<FetchHeaderList::Header> ret;
   for (auto it = header_list_.cbegin(); it != header_list_.cend();) {
-    const String& headerName = it->first.LowerASCII();
-    String combinedValue;
-    Get(headerName, combinedValue);
-    ret.emplace_back(std::make_pair(headerName, combinedValue));
-    // Skip to the next distinct key.
-    it = header_list_.upper_bound(headerName);
+    String header_name = it->first.LowerASCII();
+    if (header_name == "set-cookie") {
+      auto set_cookie_end = header_list_.upper_bound(header_name);
+      for (; it != set_cookie_end; it++) {
+        ret.emplace_back(header_name, it->second);
+      }
+      // At this point |it| is at the next distinct key.
+    } else {
+      String combined_value;
+      Get(header_name, combined_value);
+      ret.emplace_back(header_name, combined_value);
+      // Skip to the next distinct key.
+      it = header_list_.upper_bound(header_name);
+    }
   }
   return ret;
 }

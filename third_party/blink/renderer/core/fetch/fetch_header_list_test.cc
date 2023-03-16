@@ -6,9 +6,12 @@
 
 #include <utility>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+using ::testing::ElementsAreArray;
 
 namespace blink {
 namespace {
@@ -22,7 +25,8 @@ TEST(FetchHeaderListTest, Append) {
   const std::pair<String, String> expectedHeaders[] = {
       std::make_pair("ConTenT-TyPe", "text/plain"),
       std::make_pair("ConTenT-TyPe", "application/xml"),
-      std::make_pair("ConTenT-TyPe", "foo"), std::make_pair("X-Foo", "bar"),
+      std::make_pair("ConTenT-TyPe", "foo"),
+      std::make_pair("X-Foo", "bar"),
   };
   EXPECT_EQ(std::size(expectedHeaders), headerList->size());
   size_t i = 0;
@@ -91,6 +95,24 @@ TEST(FetchHeaderListTest, Combine) {
   EXPECT_EQ("text/plain, application/xml, foo", combinedValue);
 }
 
+TEST(FetchHeaderListTest, SetCookie) {
+  const String values[] = {"foo=bar", "bar=baz; Domain=example.com",
+                           "fizz=buzz; Expires=Thu, 01 Jan 1970 00:00:00 GMT"};
+
+  auto* header_list = MakeGarbageCollected<FetchHeaderList>();
+  header_list->Append("Set-cookie", values[0]);
+  header_list->Append("set-cookie", values[1]);
+  header_list->Append("sEt-cOoKiE", values[2]);
+
+  String combined_value;
+  EXPECT_TRUE(header_list->Get("Set-Cookie", combined_value));
+  EXPECT_EQ(
+      "foo=bar, bar=baz; Domain=example.com, "
+      "fizz=buzz; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+      combined_value);
+  EXPECT_THAT(header_list->GetSetCookie(), ElementsAreArray(values));
+}
+
 TEST(FetchHeaderListTest, Contains) {
   auto* headerList = MakeGarbageCollected<FetchHeaderList>();
   headerList->Append("ConTenT-TyPe", "text/plain");
@@ -104,14 +126,17 @@ TEST(FetchHeaderListTest, Contains) {
 TEST(FetchHeaderListTest, SortAndCombine) {
   auto* headerList = MakeGarbageCollected<FetchHeaderList>();
   EXPECT_TRUE(headerList->SortAndCombine().empty());
+  headerList->Append("Set-cookie", "foo=bar");
   headerList->Append("content-type", "multipart/form-data");
   headerList->Append("ConTenT-TyPe", "application/xml");
   headerList->Append("Accept", "XYZ");
   headerList->Append("X-Foo", "bar");
+  headerList->Append("sEt-CoOkIe", "bar=foo");
   const std::pair<String, String> expectedHeaders[] = {
       std::make_pair("accept", "XYZ"),
       std::make_pair("content-type", "multipart/form-data, application/xml"),
-      std::make_pair("x-foo", "bar")};
+      std::make_pair("set-cookie", "foo=bar"),
+      std::make_pair("set-cookie", "bar=foo"), std::make_pair("x-foo", "bar")};
   const Vector<FetchHeaderList::Header> sortedAndCombined =
       headerList->SortAndCombine();
   EXPECT_EQ(std::size(expectedHeaders), sortedAndCombined.size());

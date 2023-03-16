@@ -938,6 +938,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method entries
 [Worker]     method forEach
 [Worker]     method get
+[Worker]     method getSetCookie
 [Worker]     method has
 [Worker]     method keys
 [Worker]     method set

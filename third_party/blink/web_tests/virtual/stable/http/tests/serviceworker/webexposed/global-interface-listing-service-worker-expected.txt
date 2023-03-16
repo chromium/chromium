@@ -593,6 +593,7 @@ interface Headers
     method entries
     method forEach
     method get
+    method getSetCookie
     method has
     method keys
     method set

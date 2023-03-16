@@ -55,6 +55,7 @@ class CORE_EXPORT Headers final : public ScriptWrappable,
               ExceptionState&);
   void remove(ScriptState* script_state, const String& key, ExceptionState&);
   String get(const String& key, ExceptionState&);
+  Vector<String> getSetCookie();
   bool has(const String& key, ExceptionState&);
   void set(ScriptState* script_state,
            const String& key,
