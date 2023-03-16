@@ -101,6 +101,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     // UTF-8 encoded text data to scan, such as plain text, URLs, HTML, etc.
     std::vector<std::string> text;
 
+    // Binary image data to scan, such as png, svg, etc (here we assume the data
+    // struct holds one image only).
+    std::string image;
+
     // List of files to scan.
     std::vector<base::FilePath> paths;
 
@@ -123,6 +127,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     // complies with all checks and is safe to be used.  A false means the
     // text does not comply with all checks and the caller should not use it.
     std::vector<bool> text_results;
+
+    // Image data result. A value of true means the image complies with all
+    // checks and is safe to be used.  A false means the image does not comply
+    //  with all checks and the caller should not use it.
+    bool image_result;
 
     // File data result.  Each element in this array is the result for the
     // corresponding Data::paths element.  A value of true means the file
@@ -231,6 +240,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   void StringRequestCallback(
       safe_browsing::BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
+  void ImageRequestCallback(
+      safe_browsing::BinaryUploadService::Result result,
+      enterprise_connectors::ContentAnalysisResponse response);
   void PageRequestCallback(
       safe_browsing::BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
@@ -245,6 +257,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   FilesRequestHandler* GetFilesRequestHandlerForTesting();
 
   const Data& GetDataForTesting() { return data_; }
+
+  const std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>&
+  GetFinalActionsForTesting() {
+    return final_actions_;
+  }
 
   // Methods to either show the final result in the analysis dialog and to
   // cancel the dialog.  These methods are protected and virtual for testing.
@@ -262,6 +279,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // empty, this method does nothing.
   // TODO(crbug.com/1324892): Move to TextRequestHandler.
   void PrepareTextRequest();
+
+  // Prepares an upload request for the image in `data_`. If `data_.image` is
+  // empty, this method does nothing.
+  void PrepareImageRequest();
 
   // Prepares an upload request for the printed page bytes in `data_`. If there
   // aren't any, this method does nothing.
@@ -285,6 +306,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // TODO(crbug.com/1324892): Remove once TextRequestHandler and
   // PageRequestHandler are created.
   virtual void UploadTextForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
+  virtual void UploadImageForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
   virtual void UploadPageForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
@@ -336,6 +359,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   bool text_warning_ = false;
   enterprise_connectors::ContentAnalysisResponse text_response_;
 
+  // Set to true if the full image got a DLP warning verdict.
+  bool image_warning_ = false;
+  enterprise_connectors::ContentAnalysisResponse image_response_;
+
   // Indices of warned files.
   std::vector<size_t> warned_file_indices_;
 
@@ -347,9 +374,16 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // TODO(crbug.com/1324892): Move to PageRequestHandler.
   int64_t page_size_bytes_ = 0;
 
+  // Stores the total number of requests associated with one user action.
+  int64_t total_requests_count_ = 0;
+
   // Set to true once the scan of text has completed.  If the scan request has
   // no text requiring deep scanning, this is set to true immediately.
   bool text_request_complete_ = false;
+
+  // Set to true once the scan of image has completed.  If the scan request has
+  // no image requiring deep scanning, this is set to true immediately.
+  bool image_request_complete_ = false;
 
   // Set to true once all file scans have completed.  If the scan requests have
   // no files requiring deep scanning, this is set to true immediately.
@@ -391,6 +425,12 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Results returned from files_request_handler_.
   std::vector<RequestHandlerResult> files_request_results_;
+
+  // Result updated in StringRequestCallback().
+  RequestHandlerResult string_request_result_;
+
+  // Result updated in ImageRequestCallback().
+  RequestHandlerResult image_request_result_;
 
   base::TimeTicks upload_start_time_;
 

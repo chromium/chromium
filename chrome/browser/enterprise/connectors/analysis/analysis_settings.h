@@ -53,6 +53,9 @@ struct CloudAnalysisSettings {
   // The DM token to be used for scanning. May be empty, for example if this
   // scan is initiated by APP or for a local content analysis.
   std::string dm_token;
+
+  // The scanning limit for all data passed to cloud content analysis.
+  size_t max_file_size;
 };
 
 // Struct holding settings data specific to a local analysis.
@@ -67,7 +70,8 @@ struct LocalAnalysisSettings {
   std::string local_path;
   bool user_specific = false;
   base::span<const char* const> subject_names;
-
+  // The scanning limit for pasted text and image in local content analysis.
+  size_t max_file_size;
   // Arrays of base64 encoded signing key signatures.
   std::vector<std::string> verification_signatures;
 };
@@ -99,6 +103,9 @@ class CloudOrLocalAnalysisSettings
   const std::string local_path() const;
   bool user_specific() const;
   base::span<const char* const> subject_names() const;
+
+  // Field accessible by both CloudAnalysisSettings and LocalAnalysisSettings.
+  size_t max_file_size() const;
 };
 
 // Main struct holding settings data for the content analysis Connector.

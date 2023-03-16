@@ -193,6 +193,9 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
   if (is_cloud_analysis()) {
     CloudAnalysisSettings cloud_settings;
     cloud_settings.analysis_url = GURL(analysis_config_->url);
+    // We assume all support_tags structs have the same max file size.
+    cloud_settings.max_file_size =
+        analysis_config_->supported_tags[0].max_file_size;
     DCHECK(cloud_settings.analysis_url.is_valid());
     settings.cloud_or_local_settings =
         CloudOrLocalAnalysisSettings(std::move(cloud_settings));
@@ -202,6 +205,9 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
     local_settings.local_path = analysis_config_->local_path;
     local_settings.user_specific = analysis_config_->user_specific;
     local_settings.subject_names = analysis_config_->subject_names;
+    // We assume all support_tags structs have the same max file size.
+    local_settings.max_file_size =
+        analysis_config_->supported_tags[0].max_file_size;
     local_settings.verification_signatures = verification_signatures_;
 
     settings.cloud_or_local_settings =

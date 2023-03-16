@@ -91,6 +91,14 @@ base::span<const char* const> CloudOrLocalAnalysisSettings::subject_names()
   return absl::get<LocalAnalysisSettings>(*this).subject_names;
 }
 
+size_t CloudOrLocalAnalysisSettings::max_file_size() const {
+  if (is_local_analysis()) {
+    return absl::get<LocalAnalysisSettings>(*this).max_file_size;
+  } else {
+    return absl::get<CloudAnalysisSettings>(*this).max_file_size;
+  }
+}
+
 AnalysisSettings::AnalysisSettings() = default;
 AnalysisSettings::AnalysisSettings(AnalysisSettings&&) = default;
 AnalysisSettings& AnalysisSettings::operator=(AnalysisSettings&&) = default;

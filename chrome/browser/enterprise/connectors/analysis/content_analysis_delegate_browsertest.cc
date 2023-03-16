@@ -56,6 +56,10 @@ std::string text() {
   return std::string(100, 'a');
 }
 
+std::string image() {
+  return std::string(50, 'a');
+}
+
 class FakeBinaryUploadService : public CloudBinaryUploadService {
  public:
   FakeBinaryUploadService()
@@ -79,6 +83,14 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
                           const ContentAnalysisResponse& response) {
     prepared_text_result_ = result;
     prepared_text_response_ = response;
+  }
+
+  void SetResponseForImage(BinaryUploadService::Result result,
+                           const ContentAnalysisResponse& response,
+                           int image_size) {
+    prepared_image_result_ = result;
+    prepared_image_response_ = response;
+    prepared_image_data_size_ = image_size;
   }
 
   void SetResponseForFile(const std::string& path,
@@ -135,8 +147,18 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
                                  prepared_file_responses_[file]);
           break;
         case AnalysisConnector::BULK_DATA_ENTRY:
-          request->FinishRequest(prepared_text_result_,
-                                 prepared_text_response_);
+          request_raw->GetRequestData(base::BindLambdaForTesting(
+              [this, request = std::move(request)](
+                  BinaryUploadService::Result result,
+                  BinaryUploadService::Request::Data data) {
+                if (data.size == prepared_image_data_size_) {
+                  request->FinishRequest(prepared_image_result_,
+                                         prepared_image_response_);
+                } else {
+                  request->FinishRequest(prepared_text_result_,
+                                         prepared_text_response_);
+                }
+              }));
           break;
         case AnalysisConnector::PRINT:
           // Since this path is only used for prints that are too large, calling
@@ -163,6 +185,10 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
 
   BinaryUploadService::Result prepared_text_result_;
   ContentAnalysisResponse prepared_text_response_;
+
+  uint64_t prepared_image_data_size_;
+  BinaryUploadService::Result prepared_image_result_;
+  ContentAnalysisResponse prepared_image_response_;
 
   std::map<std::string, BinaryUploadService::Result> prepared_file_results_;
   std::map<std::string, ContentAnalysisResponse> prepared_file_responses_;
@@ -595,6 +621,230 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   // 1 for authentication of the scanning request.
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, AllowTextAndImage) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+
+  ContentAnalysisResponse text_response;
+  text_response.set_request_token(kScanId1);
+  auto* text_result = text_response.add_results();
+  text_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  text_result->set_tag("dlp");
+
+  FakeBinaryUploadServiceStorage()->SetResponseForText(
+      BinaryUploadService::Result::SUCCESS, text_response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId1, ContentAnalysisAcknowledgement::ALLOW);
+
+  ContentAnalysisResponse image_response;
+  image_response.set_request_token(kScanId2);
+  auto* image_result = image_response.add_results();
+  image_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  image_result->set_tag("dlp");
+
+  FakeBinaryUploadServiceStorage()->SetResponseForImage(
+      BinaryUploadService::Result::SUCCESS, image_response, image().size());
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId2, ContentAnalysisAcknowledgement::ALLOW);
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  ContentAnalysisDelegate::Data data;
+  data.image = image();
+  data.text.emplace_back(text());
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [&called](const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+            ASSERT_TRUE(result.paths_results.empty());
+            ASSERT_EQ(result.text_results.size(), 1u);
+            ASSERT_TRUE(result.text_results[0]);
+            ASSERT_TRUE(result.image_result);
+            called = true;
+          }),
+      safe_browsing::DeepScanAccessPoint::PASTE);
+
+  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  // There should have been 1 request for text, 1 request for image,
+  // 1 for authentication of the scanning request.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
+                       BlockTextAndAllowImage) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+
+  ContentAnalysisResponse text_response;
+  text_response.set_request_token(kScanId1);
+  auto* text_result = text_response.add_results();
+  text_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  text_result->set_tag("dlp");
+
+  // Block text.
+  auto* rule = text_result->add_triggered_rules();
+  rule->set_action(TriggeredRule::BLOCK);
+  rule->set_rule_id("1");
+  rule->set_rule_name("resource rule 1");
+  FakeBinaryUploadServiceStorage()->SetResponseForText(
+      BinaryUploadService::Result::SUCCESS, text_response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId1, ContentAnalysisAcknowledgement::BLOCK);
+
+  ContentAnalysisResponse image_response;
+  image_response.set_request_token(kScanId2);
+  auto* image_result = image_response.add_results();
+  image_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  image_result->set_tag("dlp");
+
+  FakeBinaryUploadServiceStorage()->SetResponseForImage(
+      BinaryUploadService::Result::SUCCESS, image_response, image().size());
+  // Final action for image ack should be blocked, even though we are only
+  // blocking text.
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId2, ContentAnalysisAcknowledgement::BLOCK);
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  ContentAnalysisDelegate::Data data;
+  data.image = image();
+  data.text.emplace_back(text());
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [&called](const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+            ASSERT_TRUE(result.paths_results.empty());
+            ASSERT_EQ(result.text_results.size(), 1u);
+            // Delegate does not handle result syncing across different types of
+            // requests, so image_result should be true.
+            ASSERT_TRUE(result.image_result);
+            ASSERT_FALSE(result.text_results[0]);
+            called = true;
+          }),
+      safe_browsing::DeepScanAccessPoint::PASTE);
+
+  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  // There should have been 1 request for text, 1 request for image,
+  // 1 for authentication of the scanning request.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
+                       AllowTextAndBlockImage) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+
+  ContentAnalysisResponse text_response;
+  text_response.set_request_token(kScanId1);
+  auto* text_result = text_response.add_results();
+  text_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  text_result->set_tag("dlp");
+
+  FakeBinaryUploadServiceStorage()->SetResponseForText(
+      BinaryUploadService::Result::SUCCESS, text_response);
+  // Final action for text ack should be blocked, even though we are only
+  // blocking image.
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId1, ContentAnalysisAcknowledgement::BLOCK);
+
+  ContentAnalysisResponse image_response;
+  image_response.set_request_token(kScanId2);
+  auto* image_result = image_response.add_results();
+  image_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+  image_result->set_tag("dlp");
+
+  // Block image.
+  auto* rule = image_result->add_triggered_rules();
+  rule->set_action(TriggeredRule::BLOCK);
+  rule->set_rule_id("1");
+  rule->set_rule_name("resource rule 1");
+  FakeBinaryUploadServiceStorage()->SetResponseForImage(
+      BinaryUploadService::Result::SUCCESS, image_response, image().size());
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId2, ContentAnalysisAcknowledgement::BLOCK);
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  ContentAnalysisDelegate::Data data;
+  data.image = image();
+  data.text.emplace_back(text());
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [&called](const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+            ASSERT_TRUE(result.paths_results.empty());
+            ASSERT_EQ(result.text_results.size(), 1u);
+            ASSERT_FALSE(result.image_result);
+            // Delegate does not handle result syncing across different types of
+            // requests, so text_result should be true.
+            ASSERT_TRUE(result.text_results[0]);
+            called = true;
+          }),
+      safe_browsing::DeepScanAccessPoint::PASTE);
+
+  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  // There should have been 1 request for text, 1 request for image,
+  // 1 for authentication of the scanning request.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
 }
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {

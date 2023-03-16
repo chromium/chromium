@@ -569,6 +569,7 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
             &ContentAnalysisDelegateAuditOnlyTest::ConnectorStatusCallback,
             base::Unretained(this)),
         kDmToken));
+    FakeContentAnalysisDelegate::ResetStaticDialogFlagsAndTotalRequestsCount();
   }
 
   ContentAnalysisResponse ConnectorStatusCallback(const std::string& contents,
@@ -629,6 +630,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, Empty) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(0, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -654,6 +656,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(1, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -681,6 +684,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData2) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(1, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -713,6 +717,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData3) {
                  },
                  &called));
   RunUntilDone();
+  // Text too small, no analysis request is created.
+  EXPECT_EQ(0, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -743,6 +749,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, PagePrintAllowed) {
           &called),
       safe_browsing::DeepScanAccessPoint::PRINT);
   RunUntilDone();
+  EXPECT_EQ(1, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -775,6 +782,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, PagePrintBlocked) {
           &called),
       safe_browsing::DeepScanAccessPoint::PRINT);
   RunUntilDone();
+  EXPECT_EQ(1, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -801,6 +809,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest,
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(1, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -829,6 +838,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest,
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(2, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -857,6 +867,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataPositiveMalwareVerdict) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(2, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -901,6 +912,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted) {
                  },
                  &called));
   RunUntilDone();
+  // "FILE_ATTACHED" is exempt from scanning.
+  EXPECT_EQ(0, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -945,6 +958,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted_PolicyAllows) {
                  },
                  &called));
   RunUntilDone();
+  // "FILE_ATTACHED" is exempt from scanning.
+  EXPECT_EQ(0, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -975,6 +990,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataNegativeMalwareVerdict) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(2, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1003,6 +1019,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataPositiveDlpVerdict) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(2, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1035,6 +1052,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataNegativeDlpVerdict) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(2, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1070,6 +1088,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest,
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(2, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1099,6 +1118,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileData) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(3, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1132,6 +1152,55 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataNoDLP) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(3, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+  EXPECT_TRUE(called);
+}
+
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, ImageData) {
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
+
+  data.image = large_text();
+
+  bool called = false;
+  ScanUpload(contents(), std::move(data),
+             base::BindOnce(
+                 [](bool* called, const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+                   EXPECT_EQ(0u, data.text.size());
+                   EXPECT_EQ(0u, result.text_results.size());
+                   EXPECT_TRUE(result.image_result);
+                   *called = true;
+                 },
+                 &called));
+  RunUntilDone();
+  EXPECT_EQ(1, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+  EXPECT_TRUE(called);
+}
+
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, TextAndImageData) {
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
+  data.text.emplace_back(large_text());
+  data.image = large_text();
+
+  bool called = false;
+  ScanUpload(contents(), std::move(data),
+             base::BindOnce(
+                 [](bool* called, const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+                   EXPECT_EQ(1u, result.text_results.size());
+                   EXPECT_TRUE(result.text_results[0]);
+                   EXPECT_TRUE(result.image_result);
+                   *called = true;
+                 },
+                 &called));
+  RunUntilDone();
+  EXPECT_EQ(2, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1163,6 +1232,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataFailedDLP) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(1, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1211,6 +1281,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataPartialSuccess) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(6, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1277,6 +1348,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, NoDelay) {
                  },
                  &called));
   RunUntilDone();
+  // Text too small, only file analysis requests are created.
+  EXPECT_EQ(5, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1299,6 +1372,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, EmptyWait) {
                  },
                  &called));
   RunUntilDone();
+  EXPECT_EQ(0, FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
@@ -1325,7 +1399,7 @@ class ContentAnalysisDelegateResultHandlingTest
             &ContentAnalysisDelegateResultHandlingTest::ConnectorStatusCallback,
             base::Unretained(this)),
         kDmToken));
-    FakeContentAnalysisDelegate::ResetDialogFlags();
+    FakeContentAnalysisDelegate::ResetStaticDialogFlagsAndTotalRequestsCount();
   }
 
   safe_browsing::BinaryUploadService::Result result() const {

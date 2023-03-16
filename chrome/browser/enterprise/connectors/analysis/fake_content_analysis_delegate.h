@@ -87,23 +87,28 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   static void SetResponseResult(
       safe_browsing::BinaryUploadService::Result result);
 
-  static void ResetDialogFlags();
+  static void ResetStaticDialogFlagsAndTotalRequestsCount();
   static bool WasDialogShown();
   static bool WasDialogCanceled();
+  static int GetTotalAnalysisRequestsCount();
 
  private:
-  // Simulates a response from the binary upload service.  the |path| argument
-  // is used to call |status_callback_| to determine if the path should succeed
-  // or fail.
+  // Simulates a response from the binary upload service.  the |path|
+  // argument is used to call |status_callback_| to determine if the path
+  // should succeed or fail.
   void Response(
       std::string contents,
       base::FilePath path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       absl::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
-          file_request_callback);
+          file_request_callback,
+      bool is_image_request);
 
   // ContentAnalysisDelegate overrides.
   void UploadTextForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override;
+  void UploadImageForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override;
   void UploadPageForDeepScanning(
@@ -124,6 +129,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   static safe_browsing::BinaryUploadService::Result result_;
   static bool dialog_shown_;
   static bool dialog_canceled_;
+  static int64_t total_analysis_requests_count_;
 
   base::RepeatingClosure delete_closure_;
   StatusCallback status_callback_;
