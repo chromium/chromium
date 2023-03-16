@@ -11,8 +11,6 @@ desc: |-
   Leaving this policy unset or setting to Disabled means Kiosk troubleshooting tools are disabled.
 
   Please remember not to keep this policy enabled at all times, especially in production deployments.
-future_on:
-- chrome_os
 features:
   dynamic_refresh: true
   per_profile: true
@@ -28,4 +26,6 @@ items:
   value: false
 default: false
 example_value: false
+supported_on:
+- chrome_os:113-
 tags: []
