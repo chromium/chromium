@@ -90,7 +90,6 @@
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -2532,12 +2531,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   web::WebState* currentWebState = self.currentWebState;
   if (currentWebState &&
       (transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
-    bool isExpectingVoiceSearch =
-        VoiceSearchNavigationTabHelper::FromWebState(currentWebState)
-            ->IsExpectingVoiceSearch();
-    new_tab_page_uma::RecordActionFromOmnibox(
-        self.browserState, currentWebState, URL, transitionType,
-        isExpectingVoiceSearch);
+    new_tab_page_uma::RecordActionFromOmnibox(_isOffTheRecord, currentWebState,
+                                              URL, transitionType);
   }
 }
 

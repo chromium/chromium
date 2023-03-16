@@ -132,6 +132,7 @@ source_set("metrics") {
   deps = [
     ":content_suggestions_constant",
     "//base",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/ui/content_suggestions:constants",
   ]

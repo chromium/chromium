@@ -1161,7 +1161,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return;
   }
 
-  new_tab_page_uma::RecordAction(self.browserState,
+  new_tab_page_uma::RecordAction(self.browserState->IsOffTheRecord(),
                                  self.webStateList->GetActiveWebState(),
                                  new_tab_page_uma::ACTION_OPENED_BOOKMARK);
   base::RecordAction(

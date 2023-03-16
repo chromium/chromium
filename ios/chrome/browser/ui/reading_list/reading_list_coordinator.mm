@@ -274,7 +274,7 @@
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   new_tab_page_uma::RecordAction(
-      self.browser->GetBrowserState(), activeWebState,
+      self.browser->GetBrowserState()->IsOffTheRecord(), activeWebState,
       new_tab_page_uma::ACTION_OPENED_READING_LIST_ENTRY);
 
   // Load the offline URL if available.

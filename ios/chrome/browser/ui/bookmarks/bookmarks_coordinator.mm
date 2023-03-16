@@ -488,7 +488,7 @@ enum class PresentedState {
 
       // TODO(crbug.com/695749): See if we need different metrics for 'Open
       // all', 'Open all in incognito' and 'Open in incognito'.
-      new_tab_page_uma::RecordAction(_browserState,
+      new_tab_page_uma::RecordAction(_browserState->IsOffTheRecord(),
                                      webStateList->GetActiveWebState(),
                                      new_tab_page_uma::ACTION_OPENED_BOOKMARK);
       base::RecordAction(

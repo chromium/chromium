@@ -34,15 +34,20 @@ enum ActionType {
   NUM_ACTION_TYPES,
 };
 
+void RecordAction(bool is_incognito,
+                  web::WebState* web_state,
+                  ActionType action);
+
+// TODO(crbug.com/1424397): This method is DEPRECATED, to be removed
+// once ios_internal has been updated.
 void RecordAction(ChromeBrowserState* browser_state,
                   web::WebState* web_state,
                   ActionType action);
 
-void RecordActionFromOmnibox(ChromeBrowserState* browser_state,
+void RecordActionFromOmnibox(bool is_incognito,
                              web::WebState* web_state,
                              const GURL& url,
-                             ui::PageTransition transition,
-                             bool is_expecting_voice_search);
+                             ui::PageTransition transition);
 
 }  // namespace new_tab_page_uma
 

@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -73,7 +74,8 @@ void RecordNTPImpression(IOSNTPImpression impression_type) {
 
 - (void)recordAction:(new_tab_page_uma::ActionType)action {
   DCHECK(self.webState);
-  new_tab_page_uma::RecordAction(self.browserState, self.webState, action);
+  new_tab_page_uma::RecordAction(self.browserState->IsOffTheRecord(),
+                                 self.webState, action);
 }
 
 - (void)recordContentSuggestionsActionForType:
