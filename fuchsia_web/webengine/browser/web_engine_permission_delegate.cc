@@ -115,6 +115,17 @@ WebEnginePermissionDelegate::GetPermissionStatusForWorker(
   return GetPermissionStatus(permission, worker_origin, worker_origin);
 }
 
+blink::mojom::PermissionStatus
+WebEnginePermissionDelegate::GetPermissionStatusForEmbeddedRequester(
+    blink::PermissionType permission,
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& overridden_origin) {
+  FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
+  DCHECK(frame);
+  return frame->permission_controller()->GetPermissionState(permission,
+                                                            overridden_origin);
+}
+
 WebEnginePermissionDelegate::SubscriptionId
 WebEnginePermissionDelegate::SubscribePermissionStatusChange(
     blink::PermissionType permission,

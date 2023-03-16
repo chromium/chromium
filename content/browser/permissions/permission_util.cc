@@ -46,7 +46,7 @@ bool PermissionUtil::IsDomainOverride(
          descriptor->extension->is_top_level_storage_access();
 }
 
-url::Origin PermissionUtil::ExtractDomainOverride(
+const url::Origin& PermissionUtil::ExtractDomainOverride(
     const PermissionDescriptorPtr& descriptor) {
   const blink::mojom::TopLevelStorageAccessPermissionDescriptorPtr&
       override_descriptor =
@@ -56,7 +56,8 @@ url::Origin PermissionUtil::ExtractDomainOverride(
 
 bool PermissionUtil::ValidateDomainOverride(
     const std::vector<blink::PermissionType>& types,
-    RenderFrameHost* rfh) {
+    RenderFrameHost* rfh,
+    const blink::mojom::PermissionDescriptorPtr& descriptor) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kStorageAccessAPIForOriginExtension)) {
     return false;
@@ -70,6 +71,17 @@ bool PermissionUtil::ValidateDomainOverride(
     // browsing context.
     return false;
   }
+
+  const url::Origin& overridden_origin =
+      PermissionUtil::ExtractDomainOverride(descriptor);
+
+  if (rfh->GetLastCommittedOrigin().IsSameOriginWith(overridden_origin)) {
+    // In case `overridden_origin` equals
+    // `render_frame_host->GetLastCommittedOrigin()` then you should use
+    // `GetPermissionStatusForCurrentDocument`.
+    return false;
+  }
+
   return true;
 }
 

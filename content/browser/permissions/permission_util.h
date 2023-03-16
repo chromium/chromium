@@ -32,7 +32,7 @@ class PermissionUtil {
   // For a descriptor that indicates a domain override is used, retrieve it as
   // an origin. The override mechanism is currently only used by one permission
   // type, specifically storage access requests on behalf of another domain.
-  CONTENT_EXPORT static url::Origin ExtractDomainOverride(
+  CONTENT_EXPORT static const url::Origin& ExtractDomainOverride(
       const blink::mojom::PermissionDescriptorPtr& descriptor);
 
   // Determine whether the domain override mechanism is enabled by features. The
@@ -45,7 +45,8 @@ class PermissionUtil {
   // storage access requests on behalf of another domain.
   CONTENT_EXPORT static bool ValidateDomainOverride(
       const std::vector<blink::PermissionType>& types,
-      RenderFrameHost* rfh);
+      RenderFrameHost* rfh,
+      const blink::mojom::PermissionDescriptorPtr& descriptor);
 };
 
 }  // namespace content

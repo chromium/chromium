@@ -152,6 +152,11 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void ResetPermission(blink::PermissionType permission,
                        const url::Origin& origin) override;
 
+  blink::mojom::PermissionStatus GetPermissionStatusForEmbeddedRequester(
+      blink::PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      const url::Origin& requesting_origin);
+
   struct Subscription;
   using SubscriptionsMap =
       base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;

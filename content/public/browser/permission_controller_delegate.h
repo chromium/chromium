@@ -105,6 +105,18 @@ class CONTENT_EXPORT PermissionControllerDelegate {
       RenderProcessHost* render_process_host,
       const GURL& worker_origin) = 0;
 
+  // Returns the permission status for `requesting_origin` in the given
+  // `RenderFrameHost`. Other APIs interpret `requesting_origin` as the last
+  // committed origin of the requesting frame. This API takes
+  // `requesting_origin` as a separate parameter because it does not equal the
+  // last committed origin of the requesting frame.  It is designed to be used
+  // only for `TOP_LEVEL_STORAGE_ACCESS`.
+  virtual blink::mojom::PermissionStatus
+  GetPermissionStatusForEmbeddedRequester(
+      blink::PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      const url::Origin& requesting_origin) = 0;
+
   // Sets the permission back to its default for the requesting_origin/
   // embedding_origin tuple.
   virtual void ResetPermission(blink::PermissionType permission,

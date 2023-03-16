@@ -103,6 +103,14 @@ HeadlessPermissionManager::GetPermissionStatusForWorker(
   return blink::mojom::PermissionStatus::ASK;
 }
 
+blink::mojom::PermissionStatus
+HeadlessPermissionManager::GetPermissionStatusForEmbeddedRequester(
+    blink::PermissionType permission,
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& overridden_origin) {
+  return blink::mojom::PermissionStatus::ASK;
+}
+
 HeadlessPermissionManager::SubscriptionId
 HeadlessPermissionManager::SubscribePermissionStatusChange(
     blink::PermissionType permission,

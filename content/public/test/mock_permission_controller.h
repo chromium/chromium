@@ -50,6 +50,11 @@ class MockPermissionController : public PermissionController {
       blink::mojom::PermissionStatus(blink::PermissionType permission,
                                      const url::Origin& requesting_origin,
                                      const url::Origin& embedding_origin));
+  MOCK_METHOD3(
+      GetPermissionStatusForEmbeddedRequester,
+      blink::mojom::PermissionStatus(blink::PermissionType permission,
+                                     RenderFrameHost* render_frame_host,
+                                     const url::Origin& requesting_origin));
   MOCK_METHOD2(IsSubscribedToPermissionChangeEvent,
                bool(blink::PermissionType permission,
                     RenderFrameHost* render_frame_host));

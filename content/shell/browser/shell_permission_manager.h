@@ -64,6 +64,10 @@ class ShellPermissionManager : public PermissionControllerDelegate {
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForEmbeddedRequester(
+      blink::PermissionType permission,
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& overridden_origin) override;
   SubscriptionId SubscribePermissionStatusChange(
       blink::PermissionType permission,
       RenderProcessHost* render_process_host,

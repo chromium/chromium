@@ -602,6 +602,40 @@ PermissionControllerImpl::GetPermissionStatusForOriginWithoutContext(
                                      embedding_origin.GetURL());
 }
 
+blink::mojom::PermissionStatus
+PermissionControllerImpl::GetPermissionStatusForEmbeddedRequester(
+    blink::PermissionType permission,
+    RenderFrameHost* render_frame_host,
+    const url::Origin& requesting_origin) {
+  // This API is suited only for `TOP_LEVEL_STORAGE_ACCESS`. Do not use it for
+  // other permissions unless discussed with `permissions-core@`.
+  DCHECK(permission == blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS);
+
+  if (permission != blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS) {
+    return blink::mojom::PermissionStatus::DENIED;
+  }
+
+  absl::optional<blink::mojom::PermissionStatus> status =
+      permission_overrides_.Get(requesting_origin, permission);
+  if (status) {
+    return *status;
+  }
+
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate) {
+    return blink::mojom::PermissionStatus::DENIED;
+  }
+
+  if (VerifyContextOfCurrentDocument(permission, render_frame_host).status ==
+      blink::mojom::PermissionStatus::DENIED) {
+    return blink::mojom::PermissionStatus::DENIED;
+  }
+
+  return delegate->GetPermissionStatusForEmbeddedRequester(
+      permission, render_frame_host, requesting_origin);
+}
+
 void PermissionControllerImpl::ResetPermission(PermissionType permission,
                                                const GURL& requesting_origin,
                                                const GURL& embedding_origin) {

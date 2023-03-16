@@ -44,6 +44,11 @@ class MockPermissionManager : public PermissionControllerDelegate {
                    blink::PermissionType permission,
                    content::RenderProcessHost* render_process_host,
                    const GURL& worker_origin));
+  MOCK_METHOD3(
+      GetPermissionStatusForEmbeddedRequester,
+      blink::mojom::PermissionStatus(blink::PermissionType permission,
+                                     RenderFrameHost* render_frame_host,
+                                     const url::Origin& overridden_origin));
   void RequestPermission(
       blink::PermissionType permission,
       RenderFrameHost* render_frame_host,

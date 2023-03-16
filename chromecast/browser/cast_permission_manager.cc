@@ -214,6 +214,15 @@ CastPermissionManager::GetPermissionStatusForWorker(
   return GetPermissionStatusInternal(permission, worker_origin);
 }
 
+blink::mojom::PermissionStatus
+CastPermissionManager::GetPermissionStatusForEmbeddedRequester(
+    blink::PermissionType permission,
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& requesting_origin) {
+  return GetPermissionStatusInternal(permission, render_frame_host,
+                                     requesting_origin.GetURL());
+}
+
 CastPermissionManager::SubscriptionId
 CastPermissionManager::SubscribePermissionStatusChange(
     blink::PermissionType permission,

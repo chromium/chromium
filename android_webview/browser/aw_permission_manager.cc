@@ -499,6 +499,16 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForWorker(
   return GetPermissionStatus(permission, worker_origin, worker_origin);
 }
 
+PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
+    blink::PermissionType permission,
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& requesting_origin) {
+  return GetPermissionStatus(
+      permission, requesting_origin.GetURL(),
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host->GetMainFrame()));
+}
+
 AwPermissionManager::SubscriptionId
 AwPermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,

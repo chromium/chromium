@@ -401,6 +401,26 @@ PermissionStatus PermissionManager::GetPermissionStatusForWorker(
       result.content_setting);
 }
 
+blink::mojom::PermissionStatus
+PermissionManager::GetPermissionStatusForEmbeddedRequester(
+    blink::PermissionType permission,
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& requesting_origin) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  ContentSettingsType type =
+      PermissionUtil::PermissionTypeToContentSettingType(permission);
+
+  const GURL embedding_origin =
+      GetEmbeddingOrigin(render_frame_host, requesting_origin.GetURL());
+
+  PermissionResult result = GetPermissionStatusInternal(
+      type,
+      /*render_process_host=*/nullptr, render_frame_host,
+      requesting_origin.GetURL(), embedding_origin);
+
+  return PermissionUtil::ToContentPermissionResult(result).status;
+}
+
 bool PermissionManager::IsPermissionOverridable(
     PermissionType permission,
     const absl::optional<url::Origin>& origin) {
