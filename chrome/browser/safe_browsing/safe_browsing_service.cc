@@ -91,7 +91,6 @@
 #endif
 
 using content::BrowserThread;
-using content::NonNestable;
 
 namespace safe_browsing {
 

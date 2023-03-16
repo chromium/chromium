@@ -18,9 +18,6 @@ public class UiThreadTaskTraitsImpl {
         // Corresponds to content::BrowserTaskTraitsExtension.
         private static final byte EXTENSION_ID = 1;
 
-        // Keep in sync with content::BrowserTaskTraitsExtension::Serialize.
-        private static final byte NESTING_INDEX = 2;
-
         @Override
         public int getId() {
             return EXTENSION_ID;
@@ -39,9 +36,6 @@ public class UiThreadTaskTraitsImpl {
             // initialized to zero.
 
             // Similarly we don't specify BrowserTaskType.Default its ID is also 0.
-
-            // TODO(crbug.com/876272) Remove this if possible.
-            extensionData[NESTING_INDEX] = 1; // Allow the task to run in a nested RunLoop.
             return extensionData;
         }
     }

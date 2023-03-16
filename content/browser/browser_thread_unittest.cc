@@ -198,11 +198,9 @@ class UIThreadDestructionObserver
 
 TEST_F(BrowserThreadTest, PostTask) {
   base::RunLoop run_loop;
-  EXPECT_TRUE(
-      GetIOThreadTaskRunner({NonNestable()})
-          ->PostTask(FROM_HERE, base::BindOnce(&BasicFunction,
-                                               run_loop.QuitWhenIdleClosure(),
-                                               BrowserThread::IO)));
+  EXPECT_TRUE(GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&BasicFunction, run_loop.QuitWhenIdleClosure(),
+                                BrowserThread::IO)));
   run_loop.Run();
 }
 
