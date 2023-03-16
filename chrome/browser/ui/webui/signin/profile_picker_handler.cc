@@ -69,6 +69,8 @@
 #include "chrome/browser/lacros/identity_manager_lacros.h"
 #include "chrome/browser/lacros/lacros_url_handling.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chromeos/crosapi/mojom/login.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
@@ -1240,8 +1242,25 @@ void ProfilePickerHandler::HandleOpenAshAccountSettingsPage(
 
 void ProfilePickerHandler::HandleOpenDeviceGuestLinkLacros(
     const base::Value::List& args) {
-  // TODO(https://crbug.com/1411310): Handle the user action.
-  NOTIMPLEMENTED();
+  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::Login>()) {
+    return;
+  }
+
+  if (lacros_service->GetInterfaceVersion<crosapi::mojom::Login>() <
+      int(crosapi::mojom::Login::
+              kShowGuestSessionConfirmationDialogMinVersion)) {
+    return;
+  }
+
+  crosapi::mojom::Login* login_api =
+      lacros_service->GetRemote<crosapi::mojom::Login>().get();
+  if (!login_api) {
+    return;
+  }
+
+  login_api->ShowGuestSessionConfirmationDialog();
 }
 
 void ProfilePickerHandler::HandleGetAvailableAccounts(

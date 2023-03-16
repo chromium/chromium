@@ -162,7 +162,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleOpenAshAccountSettingsPage(const base::Value::List& args);
 
   // Called when the user clicks the "use device guest" link in the account
-  // selection dialog.
+  // selection dialog. Opens a dialog in Ash (through mojo), offering a switch
+  // to device guest mode.
   void HandleOpenDeviceGuestLinkLacros(const base::Value::List& args);
 
   // List of available accounts used by the profile choice and the account

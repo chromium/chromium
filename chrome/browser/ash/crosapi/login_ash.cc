@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/login_ash.h"
 
+#include "ash/system/session/guest_session_confirmation_dialog.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -270,6 +271,10 @@ void LoginAsh::NotifyOnExternalLogoutDone() {
   for (auto& observer : external_logout_done_observers_) {
     observer.OnExternalLogoutDone();
   }
+}
+
+void LoginAsh::ShowGuestSessionConfirmationDialog() {
+  ash::GuestSessionConfirmationDialog::Show();
 }
 
 void LoginAsh::REMOVED_0(const absl::optional<std::string>& password,

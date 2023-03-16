@@ -35,7 +35,7 @@ interface ExternalLogoutRequestObserver {
 
 // This API allows Lacros to call the chrome.login extension API.
 //
-// Next MinVersion: 4
+// Next MinVersion: 5
 [Stable, Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
 interface Login {
   // Exits the current session. If |data_for_next_login_attempt| is provided,
@@ -82,6 +82,13 @@ interface Login {
   // lock screen (ash-chrome) listens for the dispatched event.
   [MinVersion=3]
   NotifyOnExternalLogoutDone@16();
+
+  // Shows the Guest session confirmation dialog. The dialog explains how to
+  // open a guest session from the login screen. If the user confirms, they
+  // will be logged out of their session, and sent back to the login screen
+  // where they can start a new guest session.
+  [MinVersion=4]
+  ShowGuestSessionConfirmationDialog@17();
 
   // Removed methods.
   REMOVED_0@0(string? password) => (string? error);

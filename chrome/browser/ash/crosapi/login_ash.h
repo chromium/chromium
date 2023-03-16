@@ -59,6 +59,7 @@ class LoginAsh : public mojom::Login {
       mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer)
       override;
   void NotifyOnExternalLogoutDone() override;
+  void ShowGuestSessionConfirmationDialog() override;
   // Methods that are removed from mojom::Login interface. The methods cannot be
   // completely removed, only renamed, because the interface is Stable and has
   // to preserve backward-compatibility.
