@@ -2796,6 +2796,7 @@
     'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_resource_allowlisting',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'enable_dangling_raw_ptr_checks'
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials': [
