@@ -130,4 +130,8 @@ BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncPollImmediatelyOnEveryStartup,
+             "SyncPollImmediatelyOnEveryStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

@@ -7,6 +7,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -202,6 +203,11 @@ base::Time SyncSchedulerImpl::ComputeLastPollOnStart(
     base::Time now) {
   if (base::FeatureList::IsEnabled(kSyncResetPollIntervalOnStart)) {
     return now;
+  }
+  if (base::FeatureList::IsEnabled(kSyncPollImmediatelyOnEveryStartup)) {
+    // Hack: Pretend the last poll happened sufficiently long ago to trigger a
+    // poll.
+    return now - (poll_interval + base::Seconds(1));
   }
   // Handle immediate polls on start-up separately.
   if (last_poll + poll_interval <= now) {

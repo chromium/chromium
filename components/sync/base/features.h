@@ -64,6 +64,7 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletUsageData);
 // likely to get combined into one commit message.
 BASE_DECLARE_FEATURE(kSyncExtensionTypesThrottling);
 
+// TODO(crbug.com/1425065): Remove this.
 BASE_DECLARE_FEATURE(kSyncResetPollIntervalOnStart);
 
 // If enabled, Segmentation data type will be synced.
@@ -171,6 +172,11 @@ BASE_DECLARE_FEATURE(kSyncEnforcePreferencesAllowlist);
 // (Note that opposed to other "account storage" features, this one does not
 // have any effect for signed-in non-syncing users!)
 BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
+
+// If enabled, Sync will send a poll GetUpdates request on every browser
+// startup. This is a temporary hack; see crbug.com/1425026.
+// TODO(crbug.com/1425071): Remove this.
+BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
 
 }  // namespace syncer
 
