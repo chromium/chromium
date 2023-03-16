@@ -7500,6 +7500,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -7552,6 +7553,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -7604,6 +7606,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -7656,6 +7659,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -7708,6 +7712,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -7760,6 +7765,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -7812,6 +7818,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -7864,6 +7871,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -7916,6 +7924,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -7968,6 +7977,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -8020,6 +8030,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -8072,6 +8083,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -8124,6 +8136,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -8176,6 +8189,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -8228,6 +8242,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -8280,6 +8295,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -8332,6 +8348,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -8384,6 +8401,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -8436,6 +8454,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -8488,6 +8507,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -8540,6 +8560,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -8592,6 +8613,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -8644,6 +8666,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -8696,6 +8719,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
@@ -8748,6 +8772,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -8800,6 +8825,7 @@
       },
       {
         "args": [
+          "--single-process-tests",
           "--platform",
           "iPhone X",
           "--version",
