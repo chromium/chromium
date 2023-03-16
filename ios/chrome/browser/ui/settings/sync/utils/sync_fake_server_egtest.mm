@@ -144,8 +144,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 }
 
 // Tests that the local cache guid does not change when sync is restarted.
-// TODO(crbug.com/1222348): Test is regularly failing.
-- (void)DISABLED_testSyncCheckSameCacheGuid_SyncRestarted {
+- (void)testSyncCheckSameCacheGuid_SyncRestarted {
   // Sign in the fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -167,8 +166,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 
 // Tests that the local cache guid changes when the user signs out and then
 // signs back in with the same account.
-// TODO(crbug.com/1420598): This test is regularly failing.
-- (void)DISABLED_testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
+- (void)testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
   // Sign in a fake identity, and store the initial sync guid.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -194,8 +192,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 // Tests that the local cache guid does not change when sync is restarted, if
 // a user previously signed out and back in.
 // Test for http://crbug.com/413611 .
-// TODO(crbug.com/1222348): Test is regularly failing.
-- (void)DISABLED_testSyncCheckSameCacheGuid_SyncRestartedAfterSignOutAndSignIn {
+- (void)testSyncCheckSameCacheGuid_SyncRestartedAfterSignOutAndSignIn {
   // Sign in a fake idenitty.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
