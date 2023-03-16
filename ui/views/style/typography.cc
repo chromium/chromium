@@ -6,10 +6,8 @@
 
 #include "base/check_op.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography_provider.h"
-#include "ui/views/view.h"
 
 namespace views::style {
 namespace {
@@ -31,13 +29,6 @@ ui::ResourceBundle::FontDetails GetFontDetails(int context, int style) {
 const gfx::FontList& GetFont(int context, int style) {
   ValidateContextAndStyle(context, style);
   return LayoutProvider::Get()->GetTypographyProvider().GetFont(context, style);
-}
-
-SkColor GetColor(const views::View& view, int context, int style) {
-  ValidateContextAndStyle(context, style);
-  return view.GetColorProvider()->GetColor(
-      LayoutProvider::Get()->GetTypographyProvider().GetColorId(context,
-                                                                style));
 }
 
 ui::ColorId GetColorId(int context, int style) {

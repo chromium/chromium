@@ -26,15 +26,8 @@ class LinkLabelButton : public views::LabelButton {
       : LabelButton(std::move(callback), text, views::style::CONTEXT_BUTTON) {
     SetBorder(views::CreateEmptyBorder(0));
     label()->SetTextStyle(views::style::STYLE_LINK);
-  }
-
-  // views::LabelButton:
-  void OnThemeChanged() override {
-    LabelButton::OnThemeChanged();
-    // LabelButton sets its own colours on the label and thus the colour from
-    // STYLE_LINK must be set explicitly at the LabelButton level too.
-    SetEnabledTextColors(views::style::GetColor(
-        *label(), label()->GetTextContext(), views::style::STYLE_LINK));
+    SetEnabledTextColorIds(views::style::GetColorId(label()->GetTextContext(),
+                                                    views::style::STYLE_LINK));
   }
 };
 

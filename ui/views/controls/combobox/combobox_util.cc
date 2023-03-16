@@ -76,8 +76,9 @@ void ConfigureComboboxButtonInkDrop(Button* host_view) {
   views::InkDrop::Get(host_view)->SetBaseColorCallback(base::BindRepeating(
       [](Button* host) {
         // Use the same foreground base color as a label button.
-        return color_utils::DeriveDefaultIconColor(views::style::GetColor(
-            *host, views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY));
+        return color_utils::DeriveDefaultIconColor(
+            host->GetColorProvider()->GetColor(views::style::GetColorId(
+                views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY)));
       },
       host_view));
   InkDrop::Get(host_view)->SetCreateRippleCallback(base::BindRepeating(
