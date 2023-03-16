@@ -10,9 +10,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/tabs/tab_close_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial.h"
@@ -118,4 +122,81 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
               ->bubble_view()
               ->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kKeyboard));
+}
+
+class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
+ public:
+  void SetUp() override {
+    set_open_about_blank_on_browser_launch(true);
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    GetTutorialService()->tutorial_registry()->AddTutorial(
+        kTestTutorialId, GetDefaultTutorialDescription());
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void TearDownOnMainThread() override {
+    auto* const service = GetTutorialService();
+    service->AbortTutorial(absl::nullopt);
+    service->tutorial_registry()->RemoveTutorialForTesting(kTestTutorialId);
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  TutorialService* GetTutorialService() {
+    return static_cast<FeaturePromoControllerCommon*>(
+               browser()->window()->GetFeaturePromoController())
+        ->tutorial_service_for_testing();
+  }
+
+  TutorialDescription GetDefaultTutorialDescription() {
+    TutorialDescription description;
+    TutorialDescription::Step step1(
+        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+        ui::InteractionSequence::StepType::kShown,
+        NewTabPageUI::kCustomizeChromeButtonElementId, std::string(),
+        HelpBubbleArrow::kTopRight);
+    step1.context_mode = TutorialDescription::ContextMode::kAny;
+    description.steps.emplace_back(step1);
+
+    TutorialDescription::Step step2(
+        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+        ui::InteractionSequence::StepType::kCustomEvent,
+        ui::ElementIdentifier(), std::string(), HelpBubbleArrow::kTopCenter,
+        kCustomEventType1);
+    description.steps.emplace_back(step2);
+
+    return description;
+  }
+};
+
+// Regression test for crbug.com/1425161.
+IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
+                       CloseTabWithTutorialBubble) {
+  constexpr char kTabCloseButtonId[] = "Tab Close Button";
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleShownEvent);
+  StateChange help_bubble_shown;
+  help_bubble_shown.where = {"ntp-app", "help-bubble"};
+  help_bubble_shown.type = StateChange::Type::kExists;
+  help_bubble_shown.event = kHelpBubbleShownEvent;
+  RunTestSequence(
+      AddInstrumentedTab(kNewTabPageId, GURL("chrome://new-tab-page")),
+      Do([this]() {
+        auto* const service = GetTutorialService();
+        service->StartTutorial(kTestTutorialId,
+                               browser()->window()->GetElementContext());
+      }),
+      WaitForStateChange(kNewTabPageId, std::move(help_bubble_shown)),
+      FlushEvents(),
+      NameViewRelative(kTabStripElementId, kTabCloseButtonId,
+                       [](TabStrip* tab_strip) {
+                         return tab_strip->tab_at(1)->close_button().get();
+                       }),
+      PressButton(kTabCloseButtonId), WaitForHide(kNewTabPageId));
 }

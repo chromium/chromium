@@ -4,7 +4,6 @@
 
 #include "components/user_education/common/help_bubble.h"
 
-#include "base/auto_reset.h"
 #include "base/notreached.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -27,18 +26,27 @@ HelpBubble::~HelpBubble() {
 bool HelpBubble::Close() {
   // This prevents us from re-entrancy during CloseBubbleImpl() or after the
   // bubble is closed.
-  if (is_closed() || closing_)
+  if (is_closed()) {
     return false;
-
-  {
-    // Prevent re-entrancy until is_closed() becomes true, which happens during
-    // NotifyBubbleClosed().
-    base::AutoReset<bool> closing_guard(&closing_, true);
-    CloseBubbleImpl();
   }
 
-  // This call could delete `this` so no code can come after it.
-  NotifyBubbleClosed();
+  // We can't destruct the callback list during callbacks, so ensure that it
+  // sticks around until the callbacks are all finished. This also has the side
+  // effect of making is_closed() true since it resets the value of
+  // `on_close_callbacks_`.
+  std::unique_ptr<CallbackList> callbacks = std::move(on_close_callbacks_);
+
+  // Note: any of the following could destroy `this`.
+
+  // Actually close the help bubble. For some implementations, this may trigger
+  // additional events.
+  CloseBubbleImpl();
+
+  // Call any on-close callbacks.
+  if (callbacks) {
+    callbacks->Notify(this);
+  }
+
   return true;
 }
 
@@ -56,16 +64,6 @@ base::CallbackListSubscription HelpBubble::AddOnCloseCallback(
   }
 
   return on_close_callbacks_->Add(std::move(callback));
-}
-
-void HelpBubble::NotifyBubbleClosed() {
-  // We can't destruct the callback list during callbacks, so ensure that it
-  // sticks around until the callbacks are all finished. This also has the side
-  // effect of making is_closed() true since it resets the value of
-  // `on_close_callbacks_`.
-  std::unique_ptr<CallbackList> temp = std::move(on_close_callbacks_);
-  if (temp)
-    temp->Notify(this);
 }
 
 }  // namespace user_education

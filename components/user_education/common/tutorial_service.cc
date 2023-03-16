@@ -183,7 +183,6 @@ void TutorialService::AbortTutorial(absl::optional<int> abort_step) {
 }
 
 void TutorialService::OnNonFinalBubbleClosed(HelpBubble* bubble) {
-  LOG(WARNING) << "On non final bubble closed.";
   if (bubble != currently_displayed_bubble_.get()) {
     return;
   }
