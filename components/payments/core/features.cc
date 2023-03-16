@@ -14,12 +14,6 @@ BASE_FEATURE(kWebPaymentsExperimentalFeatures,
              "WebPaymentsExperimentalFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kWebPaymentsNativeApps,
-             "WebPaymentsNativeApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // TODO(rouslan): Remove this.
 BASE_FEATURE(kWebPaymentsMethodSectionOrderV2,
              "WebPaymentsMethodSectionOrderV2",

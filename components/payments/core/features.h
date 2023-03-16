@@ -6,7 +6,6 @@
 #define COMPONENTS_PAYMENTS_CORE_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "build/build_config.h"
 
 namespace payments {
 namespace features {
@@ -14,11 +13,6 @@ namespace features {
 // Master toggle for all experimental features that will ship in the next
 // release.
 BASE_DECLARE_FEATURE(kWebPaymentsExperimentalFeatures);
-
-#if BUILDFLAG(IS_IOS)
-// Used to control the support for iOS third party apps as payment methods.
-BASE_DECLARE_FEATURE(kWebPaymentsNativeApps);
-#endif
 
 // Used to control payment method section order on payment request UI. Payment
 // method section should be put on top of the address section when this feature
