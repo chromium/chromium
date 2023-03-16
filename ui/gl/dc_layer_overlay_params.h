@@ -52,7 +52,7 @@ struct GL_EXPORT DCLayerOverlayParams {
 
   gfx::HDRMetadata hdr_metadata;
 
-  bool is_video_fullscreen_letterboxing = false;
+  bool maybe_video_fullscreen_letterboxing = false;
 };
 
 }  // namespace gl

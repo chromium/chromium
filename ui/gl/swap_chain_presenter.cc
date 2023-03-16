@@ -585,7 +585,7 @@ void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
   bool size_adjusted = AdjustTargetToFullScreenSizeIfNeeded(
       monitor_size, params, overlay_onscreen_rect, swap_chain_size,
       visual_transform, visual_clip_rect);
-  if (!size_adjusted && params.is_video_fullscreen_letterboxing) {
+  if (!size_adjusted && params.maybe_video_fullscreen_letterboxing) {
     AdjustTargetForFullScreenLetterboxing(
         monitor_size, params, overlay_onscreen_rect, swap_chain_size,
         visual_transform, visual_clip_rect);

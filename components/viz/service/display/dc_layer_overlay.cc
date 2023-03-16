@@ -335,10 +335,10 @@ bool HasOccludingDamageRect(
   return !occluding_damage_rect.IsEmpty();
 }
 
-bool IsFullScreenLetterboxing(const QuadList::Iterator& it,
-                              QuadList::ConstIterator quad_list_end,
-                              const gfx::RectF& display_rect) {
-  // Two cases are considered as fullscreen letterboxing:
+bool IsPossibleFullScreenLetterboxing(const QuadList::Iterator& it,
+                                      QuadList::ConstIterator quad_list_end,
+                                      const gfx::RectF& display_rect) {
+  // Two cases are considered as possible fullscreen letterboxing:
   // 1. If the quad beneath the overlay quad is DrawQuad::Material::kSolidColor
   // with black, and it touches two sides of the screen, while starting at
   // display origin (0, 0).
@@ -985,10 +985,10 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
   RecordDCLayerResult(DC_LAYER_SUCCESS, it);
 
   OverlayCandidate dc_layer;
-  dc_layer.is_video_fullscreen_letterboxing =
+  dc_layer.maybe_video_fullscreen_letterboxing =
       is_page_fullscreen_mode
-          ? IsFullScreenLetterboxing(it, render_pass->quad_list.end(),
-                                     display_rect)
+          ? IsPossibleFullScreenLetterboxing(it, render_pass->quad_list.end(),
+                                             display_rect)
           : false;
   switch (it->material) {
     case DrawQuad::Material::kYuvVideoContent:
