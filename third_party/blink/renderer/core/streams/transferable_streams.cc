@@ -819,6 +819,9 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         source_->has_finished_reading_stream1_ = true;
         ReadableStreamDefaultController* controller =
             source_->Controller()->GetOriginalController();
+        // TODO(ricea): Remove or demote to DCHECK once
+        // https://crbug.com/1418910 has been fixed.
+        CHECK(controller);
         return source_->source2_
             ->startWrapper(script_state,
                            ScriptValue::From(script_state, controller))
