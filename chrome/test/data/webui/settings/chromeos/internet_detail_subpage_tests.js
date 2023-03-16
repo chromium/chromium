@@ -615,7 +615,7 @@ suite('InternetDetailPage', function() {
 
       // Click the button and check the dialog is displayed.
       forgetButton.click();
-      await flushAsync();
+      await waitAfterNextRender(forgetButton);
       const dialog = getDialog('passpointRemovalDialog');
       assertTrue(dialog.open);
 
