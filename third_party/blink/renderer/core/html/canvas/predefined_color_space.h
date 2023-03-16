@@ -9,9 +9,11 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
+class CanvasHighDynamicRangeOptions;
 class V8PredefinedColorSpace;
 
 // Convert from a V8PredefinedColorSpace to a PredefinedColorSpace. Note that
@@ -27,6 +29,13 @@ ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
 // Convert from a PredefinedColorSpace to a V8PredefinedColorSpace.
 V8PredefinedColorSpace CORE_EXPORT
 PredefinedColorSpaceToV8(PredefinedColorSpace color_space);
+
+// Convert from CanvasHighDynamicRangeOptions to gfx::HDRMode and
+// gfx::HDRMetadata.
+void CORE_EXPORT ParseCanvasHighDynamicRangeOptions(
+    const CanvasHighDynamicRangeOptions* options,
+    gfx::HDRMode& hdr_mode,
+    absl::optional<gfx::HDRMetadata>& hdr_metadata);
 
 }  // namespace blink
 

@@ -16,4 +16,5 @@ dictionary GPUCanvasConfiguration {
     sequence<GPUTextureFormat> viewFormats = [];
     PredefinedColorSpace colorSpace = "srgb";
     GPUCanvasAlphaMode alphaMode = "opaque";
+    [RuntimeEnabled=CanvasHDR] CanvasHighDynamicRangeOptions hdrOptions;
 };

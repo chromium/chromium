@@ -54,8 +54,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_high_dynamic_range_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_smpte_st_2086_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -79,6 +77,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -452,30 +451,8 @@ void HTMLCanvasElement::configureHighDynamicRange(
     const CanvasHighDynamicRangeOptions* options,
     ExceptionState& exception_state) {
   gfx::HDRMode hdr_mode = gfx::HDRMode::kDefault;
-  if (options->hasMode()) {
-    switch (options->mode().AsEnum()) {
-      case V8CanvasHighDynamicRangeMode::Enum::kDefault:
-        hdr_mode = gfx::HDRMode::kDefault;
-        break;
-      case V8CanvasHighDynamicRangeMode::Enum::kExtended:
-        hdr_mode = gfx::HDRMode::kExtended;
-        break;
-    }
-  }
   absl::optional<gfx::HDRMetadata> hdr_metadata;
-  if (options->hasSmpteSt2086Metadata()) {
-    hdr_metadata = gfx::HDRMetadata();
-    auto& color_volume_metadata = hdr_metadata->color_volume_metadata;
-    const auto* v8_metadata = options->smpteSt2086Metadata();
-    color_volume_metadata.primaries = {
-        v8_metadata->redPrimaryX(),   v8_metadata->redPrimaryY(),
-        v8_metadata->greenPrimaryX(), v8_metadata->greenPrimaryY(),
-        v8_metadata->bluePrimaryX(),  v8_metadata->bluePrimaryY(),
-        v8_metadata->whitePointX(),   v8_metadata->whitePointY(),
-    };
-    color_volume_metadata.luminance_min = v8_metadata->minimumLuminance();
-    color_volume_metadata.luminance_max = v8_metadata->maximumLuminance();
-  }
+  ParseCanvasHighDynamicRangeOptions(options, hdr_mode, hdr_metadata);
 
   if (IsOffscreenCanvasRegistered()) {
     // TODO(https://crbug.com/1274220): Implement HDR support for offscreen

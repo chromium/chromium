@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_high_dynamic_range_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_smpte_st_2086_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -61,6 +63,40 @@ V8PredefinedColorSpace PredefinedColorSpaceToV8(
       return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kRec2100Pq);
     case PredefinedColorSpace::kSRGBLinear:
       return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGBLinear);
+  }
+}
+
+void ParseCanvasHighDynamicRangeOptions(
+    const CanvasHighDynamicRangeOptions* options,
+    gfx::HDRMode& hdr_mode,
+    absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+  hdr_mode = gfx::HDRMode::kDefault;
+  hdr_metadata = absl::nullopt;
+  if (!options) {
+    return;
+  }
+  if (options->hasMode()) {
+    switch (options->mode().AsEnum()) {
+      case V8CanvasHighDynamicRangeMode::Enum::kDefault:
+        hdr_mode = gfx::HDRMode::kDefault;
+        break;
+      case V8CanvasHighDynamicRangeMode::Enum::kExtended:
+        hdr_mode = gfx::HDRMode::kExtended;
+        break;
+    }
+  }
+  if (options->hasSmpteSt2086Metadata()) {
+    hdr_metadata = gfx::HDRMetadata();
+    auto& color_volume_metadata = hdr_metadata->color_volume_metadata;
+    const auto* v8_metadata = options->smpteSt2086Metadata();
+    color_volume_metadata.primaries = {
+        v8_metadata->redPrimaryX(),   v8_metadata->redPrimaryY(),
+        v8_metadata->greenPrimaryX(), v8_metadata->greenPrimaryY(),
+        v8_metadata->bluePrimaryX(),  v8_metadata->bluePrimaryY(),
+        v8_metadata->whitePointX(),   v8_metadata->whitePointY(),
+    };
+    color_volume_metadata.luminance_min = v8_metadata->minimumLuminance();
+    color_volume_metadata.luminance_max = v8_metadata->maximumLuminance();
   }
 }
 

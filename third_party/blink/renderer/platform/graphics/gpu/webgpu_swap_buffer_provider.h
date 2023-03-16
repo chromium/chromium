@@ -10,6 +10,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -42,7 +44,9 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       WGPUDevice device,
       WGPUTextureUsage usage,
       WGPUTextureFormat format,
-      PredefinedColorSpace color_space);
+      PredefinedColorSpace color_space,
+      gfx::HDRMode hdr_mode,
+      absl::optional<gfx::HDRMetadata> hdr_metadata);
   ~WebGPUSwapBufferProvider() override;
 
   viz::SharedImageFormat Format() const;

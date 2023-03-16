@@ -37,7 +37,9 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
     WGPUDevice device,
     WGPUTextureUsage usage,
     WGPUTextureFormat format,
-    PredefinedColorSpace color_space)
+    PredefinedColorSpace color_space,
+    gfx::HDRMode hdr_mode,
+    absl::optional<gfx::HDRMetadata> hdr_metadata)
     : dawn_control_client_(dawn_control_client),
       client_(client),
       device_(device),
@@ -57,6 +59,7 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
   // paths to keep the rendering correct in that cases.
   layer_->SetContentsOpaque(true);
   layer_->SetPremultipliedAlpha(true);
+  layer_->SetHDRConfiguration(hdr_mode, hdr_metadata);
 
   dawn_control_client_->GetProcs().deviceReference(device_);
 }
