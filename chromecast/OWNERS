@@ -3,6 +3,7 @@ halliwell@chromium.org
 seantopping@chromium.org
 servolk@chromium.org
 yucliu@chromium.org
+vigeni@google.com
 
 # Android
 per-file *android*=file://chromecast/android/OWNERS
