@@ -171,7 +171,7 @@ bool IsEntryInRemoteUserData(
   return false;
 }
 
-// Expected URL types for CreateUrlIdentity().
+// Expected URL types for `UrlIdentity::CreateFromUrl()`.
 constexpr UrlIdentity::TypeSet allowed_types = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
     UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
