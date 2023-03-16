@@ -326,8 +326,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
             mojom::TrustTokenOperationStatus::kInternalError);
 }
 
-// Check that the issuance helper sets the Sec-Trust-Token and
-// Sec-Trust-Token-Version headers on the outgoing request.
+// Check that the issuance helper sets the Sec-Private-State-Token and
+// Sec-Private-State-Token-Crypto-Version headers on the outgoing request.
 TEST_F(TrustTokenRequestIssuanceHelperTest, SetsRequestHeaders) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
 
@@ -335,7 +335,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, SetsRequestHeaders) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   // The result of providing blinded, unsigned tokens should be the exact value
-  // of the Sec-Trust-Token header attached to the request.
+  // of the Sec-Private-State-Token header attached to the request.
   auto cryptographer = std::make_unique<MockCryptographer>();
   EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
@@ -362,11 +362,11 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, SetsRequestHeaders) {
   std::string attached_version_header;
   EXPECT_TRUE(request->extra_request_headers().GetHeader(
       kTrustTokensSecTrustTokenVersionHeader, &attached_version_header));
-  EXPECT_EQ(attached_version_header, "TrustTokenV3PMB");
+  EXPECT_EQ(attached_version_header, "PrivateStateTokenV3PMB");
 }
 
-// Check that the issuance helper rejects responses lacking the Sec-Trust-Token
-// response header.
+// Check that the issuance helper rejects responses lacking the
+// Sec-Private-State-Token response header.
 TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfResponseOmitsHeader) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
 
@@ -399,7 +399,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfResponseOmitsHeader) {
 }
 
 // Check that the issuance helper correctly handles responses bearing empty
-// Sec-Trust-Token headers, which represent "success but no tokens issued".
+// Sec-Private-State-Token headers, which represent "success but no tokens
+// issued".
 TEST_F(TrustTokenRequestIssuanceHelperTest, TreatsEmptyHeaderAsSuccess) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
 
@@ -613,7 +614,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, StoresObtainedTokens) {
       ElementsAre(Property(&TrustToken::body, "a signed, unblinded token")));
 }
 
-// Check that the issuance helper ignores the Sec-Trust-Token-Clear-Data header.
+// Check that the issuance helper ignores the
+// Sec-Private-State-Token-Clear-Data header.
 TEST_F(TrustTokenRequestIssuanceHelperTest, ClearDataHeaderIgnored) {
   std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
 
@@ -622,7 +624,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, ClearDataHeaderIgnored) {
   SuitableTrustTokenOrigin issuer1 =
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
-  // Add tokens that will be discarded with Sec-Trust-Token-Clear-Data response.
+  // Add tokens that will be discarded with Sec-Private-State-Token-Clear-Data
+  // response.
   store->AddTokens(issuer1, std::vector<std::string>{"token1", "token2"},
                    "key");
 
@@ -660,7 +663,8 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, ClearDataHeaderIgnored) {
       "response from issuer (this value will be ignored, since "
       "Cryptographer::ConfirmResponse is mocked out)");
   // Add clear data response header.
-  response_head->headers->SetHeader("Sec-Trust-Token-Clear-Data", "all");
+  response_head->headers->SetHeader("Sec-Private-State-Token-Clear-Data",
+                                    "all");
 
   EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
             mojom::TrustTokenOperationStatus::kOk);
@@ -777,8 +781,9 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, CustomKeysStoresObtainedTokens) {
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
   const std::string basic_key = base::StringPrintf(
-      R"({ "TrustTokenV3PMB": {
-            "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5,
+      R"({ "PrivateStateTokenV3PMB": {
+            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+            "batchsize": 5,
             "keys": {"1": { "Y": "akey", "expiry": "%s" }}
          }})",
       base::NumberToString(one_minute_from_now_in_micros).c_str());
@@ -862,8 +867,9 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, CustomIssuerStoresObtainedTokens) {
       (one_minute_from_now - base::Time::UnixEpoch()).InMicroseconds();
 
   const std::string basic_key = base::StringPrintf(
-      R"({ "TrustTokenV3PMB": {
-            "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5,
+      R"({ "PrivateStateTokenV3PMB": {
+            "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+            "batchsize": 5,
             "keys": {"1": { "Y": "akey", "expiry": "%s" }}
          }})",
       base::NumberToString(one_minute_from_now_in_micros).c_str());

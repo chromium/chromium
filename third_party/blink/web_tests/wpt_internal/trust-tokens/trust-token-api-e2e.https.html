@@ -12,7 +12,7 @@
             privateToken: { type: 'private-state-token', version: 1, operation: 'token-request' }
         }).then(function (response) {
             assert_equals(response.status, 200);
-            assert_equals(response.headers.get('Sec-Trust-Token'), null);
+            assert_equals(response.headers.get('Sec-Private-State-Token'), null);
         })
     }, 'Token issuance succeeds.');
 
@@ -21,7 +21,7 @@
             privateToken: { type: 'private-state-token', version: 1, operation: 'token-redemption' }
         }).then(function (response) {
             assert_equals(response.status, 200);
-            assert_equals(response.headers.get('Sec-Trust-Token'), null);
+            assert_equals(response.headers.get('Sec-Private-State-Token'), null);
         })
     }, 'Token redemption succeeds.');
 

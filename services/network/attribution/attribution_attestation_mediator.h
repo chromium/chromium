@@ -135,8 +135,8 @@ class AttributionAttestationMediator {
   // 3. Returns two headers;
   //    * Sec-Attribution-Reporting-Private-State-Token: with the blinded
   //      message.
-  //    * Sec-Trust-Token-Version: with the protocol version configured in the
-  //      issuers' key commitments
+  //    * Sec-Private-State-Token-Crypto-Version: with the protocol version
+  //      configured in the issuers' key commitments
   //
   // `message` is a string representing the data that we want to attest to. The
   // `message` will be blinded before being sent to the issuer for signature.

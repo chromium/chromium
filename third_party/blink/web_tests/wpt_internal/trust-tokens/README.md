@@ -47,10 +47,10 @@ Please refer to the [trust token API explainer](https://github.com/WICG/trust-to
 - `resources/trust_token_issuance.py`
   - Python file handler for token issuance
   - Generates a valid response including a DLEQ proof, which is verified by Chromium
-  - The response is stripped from the `Sec-Trust-Token` header by the browser and is not accessible to JavaScript
+  - The response is stripped from the `Sec-Private-State-Token` header by the browser and is not accessible to JavaScript
 - `resources/trust_token_redemption.py`
   - Python file handler for token redemption
-  - The redemption record in the response is an arbitrary byte string, and it is also stripped from the `Sec-Trust-Token` header by the browser
+  - The redemption record in the response is an arbitrary byte string, and it is also stripped from the `Sec-Private-State-Token` header by the browser
 - `resources/trust_token_send_redemption_record.py`
   - Python file handler for `send-redemption-record` requests
   - Checks for the presence of the `Sec-Redemption-Record` header

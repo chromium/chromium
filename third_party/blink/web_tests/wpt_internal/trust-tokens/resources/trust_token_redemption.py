@@ -14,11 +14,13 @@ issuer = tt.create_trust_token_issuer()
 
 
 def main(request, response):
-    request_data = request.headers.get("Sec-Trust-Token").decode("utf-8")
+    request_data = request.headers.get("Sec-Private-State-Token").decode(
+        "utf-8")
     redemption_response = tt.redeem_trust_token(issuer=issuer,
                                                 request_data=request_data)
 
-    response.headers.set("Sec-Trust-Token", redemption_response.to_string())
+    response.headers.set("Sec-Private-State-Token",
+                         redemption_response.to_string())
     response.status = 200
     # Add a response body for the iframe E2E test to read
     response.content = "Trust token redemption succeeded."

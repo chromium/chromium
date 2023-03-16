@@ -57,8 +57,9 @@ BeginIssuanceOnPostedSequence(std::unique_ptr<Cryptographer> cryptographer,
 TrustTokenRequestIssuanceHelper::CryptographerAndUnblindedTokens
 ConfirmIssuanceOnPostedSequence(std::unique_ptr<Cryptographer> cryptographer,
                                 std::string response_header) {
-  // From the "spec" (design doc): "If the response has an empty Sec-Trust-Token
-  // header, return; this is a 'success' response bearing 0 tokens"
+  // From the "spec" (design doc): "If the response has an empty
+  // Sec-Private-State-Token header, return; this is a 'success' response
+  // bearing 0 tokens"
   if (response_header.empty()) {
     return {std::move(cryptographer),
             std::make_unique<Cryptographer::UnblindedTokens>()};

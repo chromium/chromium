@@ -145,8 +145,9 @@ TEST(TrustTokenKeyCommitments, MultipleOrigins) {
 TEST(TrustTokenKeyCommitments, ParseAndSet) {
   TrustTokenKeyCommitments commitments;
   commitments.ParseAndSet(
-      R"( { "https://issuer.example": { "TrustTokenV3PMB": {
-      "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5 } } } )");
+      R"( { "https://issuer.example": { "PrivateStateTokenV3PMB": {
+      "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      "batchsize": 5 } } } )");
 
   EXPECT_TRUE(GetCommitmentForOrigin(
       commitments,
@@ -157,8 +158,9 @@ TEST(TrustTokenKeyCommitments, KeysFromCommandLine) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kAdditionalTrustTokenKeyCommitments,
-      R"( { "https://issuer.example": { "TrustTokenV3PMB": {
-      "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 5 } }} )");
+      R"( { "https://issuer.example": { "PrivateStateTokenV3PMB": {
+      "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      "batchsize": 5 } }} )");
 
   TrustTokenKeyCommitments commitments;
 
@@ -167,8 +169,9 @@ TEST(TrustTokenKeyCommitments, KeysFromCommandLine) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.example"))));
 
   commitments.ParseAndSet(
-      R"( { "https://issuer.example": { "TrustTokenV3PMB": {
-      "protocol_version": "TrustTokenV3PMB", "id": 1, "batchsize": 10 } }} )");
+      R"( { "https://issuer.example": { "PrivateStateTokenV3PMB": {
+      "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+      "batchsize": 10 } }} )");
 
   auto result = GetCommitmentForOrigin(
       commitments,

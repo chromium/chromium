@@ -46,7 +46,7 @@ std::unique_ptr<net::test_server::HttpResponse> MakeTrustTokenResponse(
   }());
 
   auto ret = std::make_unique<net::test_server::BasicHttpResponse>();
-  ret->AddCustomHeader("Sec-Trust-Token", std::string(contents));
+  ret->AddCustomHeader("Sec-Private-State-Token", std::string(contents));
   ret->AddCustomHeader("Access-Control-Allow-Origin", "*");
   return ret;
 }
@@ -63,12 +63,14 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
         if (request.relative_url != kIssuanceRelativePath)
           return nullptr;
 
-        if (!base::Contains(request.headers, "Sec-Trust-Token") ||
-            !base::Contains(request.headers, "Sec-Trust-Token-Version"))
+        if (!base::Contains(request.headers, "Sec-Private-State-Token") ||
+            !base::Contains(request.headers,
+                            "Sec-Private-State-Token-Crypto-Version")) {
           return MakeTrustTokenFailureResponse();
+        }
 
         absl::optional<std::string> operation_result =
-            handler->Issue(request.headers.at("Sec-Trust-Token"));
+            handler->Issue(request.headers.at("Sec-Private-State-Token"));
 
         if (!operation_result)
           return MakeTrustTokenFailureResponse();
@@ -82,12 +84,14 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
         if (request.relative_url != kRedemptionRelativePath)
           return nullptr;
 
-        if (!base::Contains(request.headers, "Sec-Trust-Token") ||
-            !base::Contains(request.headers, "Sec-Trust-Token-Version"))
+        if (!base::Contains(request.headers, "Sec-Private-State-Token") ||
+            !base::Contains(request.headers,
+                            "Sec-Private-State-Token-Crypto-Version")) {
           return MakeTrustTokenFailureResponse();
+        }
 
         absl::optional<std::string> operation_result =
-            handler->Redeem(request.headers.at("Sec-Trust-Token"));
+            handler->Redeem(request.headers.at("Sec-Private-State-Token"));
 
         if (!operation_result)
           return MakeTrustTokenFailureResponse();

@@ -13,7 +13,7 @@ issuer = create_trust_token_issuer()
 issuance_response = issue_trust_token(issuer=issuer,
                                       request_data=request_data)
 ```
-where `request_data` is the contents of the `Sec-Trust-Token` header.
+where `request_data` is the contents of the `Sec-Private-State-Token` header.
 """
 
 from __future__ import annotations
@@ -748,7 +748,7 @@ def issue_trust_token(issuer: TrustTokenIssuer, request_data: str,
 
     Args:
         issuer: A trust token issuer.
-        request_data: The contents of the `Sec-Trust-Token` header in the
+        request_data: The contents of the `Sec-Private-State-Token` header in the
             request.
         key_id: The ID of the issuer key to use to sign tokens.
 
@@ -766,7 +766,7 @@ def redeem_trust_token(issuer: TrustTokenIssuer,
 
     Args:
         issuer: A trust token issuer.
-        request_data: The contents of the `Sec-Trust-Token` header in the
+        request_data: The contents of the `Sec-Private-State-Token` header in the
             request.
 
     Returns:

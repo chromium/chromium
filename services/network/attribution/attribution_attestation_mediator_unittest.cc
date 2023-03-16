@@ -115,7 +115,7 @@ TEST_F(AttributionAttestationMediatorTest,
   EXPECT_TRUE(FakeCryptographer::IsBlindMessage(attestation_header, "message"));
 
   std::string version_header;
-  headers.GetHeader("Sec-Trust-Token-Version", &version_header);
+  headers.GetHeader("Sec-Private-State-Token-Crypto-Version", &version_header);
   EXPECT_EQ(version_header,
             internal::ProtocolVersionToString(example_protocol_version_));
 

@@ -208,7 +208,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_REDEMPTION);
 
-  // 1. If the response has no Sec-Trust-Token header, return an error.
+  // 1. If the response has no Sec-Private-State-Token header, return an error.
   std::string header_value;
 
   // EnumerateHeader(|iter|=nullptr) asks for the first instance of the header,
@@ -222,8 +222,8 @@ void TrustTokenRequestRedemptionHelper::Finalize(
     return;
   }
 
-  // 2. Strip the Sec-Trust-Token header, from the response and pass the header,
-  // base64-decoded, to BoringSSL.
+  // 2. Strip the Sec-Private-State-Token header, from the response and pass the
+  // header, base64-decoded, to BoringSSL.
   response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
   absl::optional<std::string> maybe_redemption_record =

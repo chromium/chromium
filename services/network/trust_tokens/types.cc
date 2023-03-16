@@ -40,9 +40,9 @@ std::string ProtocolVersionToString(
     mojom::TrustTokenProtocolVersion my_version) {
   switch (my_version) {
     case mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb:
-      return "TrustTokenV3PMB";
+      return "PrivateStateTokenV3PMB";
     case mojom::TrustTokenProtocolVersion::kTrustTokenV3Voprf:
-      return "TrustTokenV3VOPRF";
+      return "PrivateStateTokenV3VOPRF";
   }
 }
 

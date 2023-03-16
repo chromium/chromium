@@ -94,10 +94,11 @@ static constexpr char kRedirectAttestationRequestPath[] =
 // Returns `nullptr` when the request relative url does not start with
 // `kAttestationHandlerPathPrefix`. When it does, it expects that the request
 // has a `Sec-Attribution-Reporting-Private-State-Token` header and a
-// 'Sec-Trust-Token-Version header set. It then returns a response containing an
-// attestation header with a value set to `kTestBlindToken`. If the request
-// relative url equals `kRedirectAttestationRequestPath`, it returns an
-// `HTTP_FOUND` otherwise, it returns an `HTTP_OK`.
+// 'Sec-Private-State-Token-Crypto-Version header set. It then returns a
+// response containing an attestation header with a value set to
+// `kTestBlindToken`. If the request relative url equals
+// `kRedirectAttestationRequestPath`, it returns an `HTTP_FOUND` otherwise,
+// it returns an `HTTP_OK`.
 std::unique_ptr<net::test_server::HttpResponse> HandleAttestationRequest(
     const net::test_server::HttpRequest& request);
 

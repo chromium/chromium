@@ -22,6 +22,7 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
+#include "services/network/trust_tokens/types.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
@@ -146,18 +147,20 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   JSONStringValueSerializer serializer(&ret);
 
   base::Value::Dict dict;
-  dict.SetByDottedPath("TrustTokenV3PMB.protocol_version",
+  const std::string protocol_string = internal::ProtocolVersionToString(
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
+  dict.SetByDottedPath(protocol_string + ".protocol_version",
                        rep_->protocol_version);
-  dict.SetByDottedPath("TrustTokenV3PMB.id", rep_->id);
-  dict.SetByDottedPath("TrustTokenV3PMB.batchsize", rep_->batch_size);
+  dict.SetByDottedPath(protocol_string + ".id", rep_->id);
+  dict.SetByDottedPath(protocol_string + ".batchsize", rep_->batch_size);
 
   for (size_t i = 0; i < rep_->issuance_keys.size(); ++i) {
     dict.SetByDottedPath(
-        "TrustTokenV3PMB.keys." + base::NumberToString(i) + ".Y",
+        protocol_string + ".keys." + base::NumberToString(i) + ".Y",
         base::Base64Encode(
             base::make_span(rep_->issuance_keys[i].verification)));
     dict.SetByDottedPath(
-        "TrustTokenV3PMB.keys." + base::NumberToString(i) + ".expiry",
+        protocol_string + ".keys." + base::NumberToString(i) + ".expiry",
         base::NumberToString(
             (rep_->issuance_keys[i].expiry - base::Time::UnixEpoch())
                 .InMicroseconds()));

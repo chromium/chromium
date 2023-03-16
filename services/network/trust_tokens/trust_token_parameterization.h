@@ -69,12 +69,12 @@ size_t TrustTokenMaxKeysForVersion(mojom::TrustTokenProtocolVersion version);
 // This is a representation of the current "major" version, a notion which is
 // not totally well-defined but roughly corresponds to each substantial
 // collection of backwards-incompatible functional changes. We send it along
-// with signed requests in the Sec-Trust-Token-Version header, because the
-// "minor" version (the specifics of the underlying issue and redemption crypto)
-// does not affect signed request processing. As of writing in June 2021, it's
-// not for sure that the "major" version will stay around as a concept for the
-// long haul.
-constexpr char kTrustTokensMajorVersion[] = "TrustTokenV3";
+// with signed requests in the Sec-Private-State-Token-Crypto-Version header,
+// because the "minor" version (the specifics of the underlying issue and
+// redemption crypto) does not affect signed request processing. As of writing
+// in June 2021, it's not for sure that the "major" version will stay around as
+// a concept for the long haul.
+constexpr char kTrustTokensMajorVersion[] = "PrivateStateTokenV3";
 
 // Time limit in redemption frequency in seconds. This is to prevent a
 // malicious site exhausting user tokens. The third consecutive token consuming
