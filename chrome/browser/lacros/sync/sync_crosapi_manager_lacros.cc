@@ -110,7 +110,7 @@ void SyncCrosapiManagerLacros::PostProfileInit(Profile* profile) {
 
   DCHECK(!crosapi_session_sync_notifier_);
   profile->AddObserver(this);
-  MaybeCreateCrosapiSessionSyncNotifier(lacros_service, profile);
+  MaybeCreateCrosapiSessionSyncNotifier(lacros_service, profile, sync_service);
 
   DCHECK(!sync_explicit_passphrase_client_);
   sync_explicit_passphrase_client_ =
@@ -135,7 +135,8 @@ void SyncCrosapiManagerLacros::OnSyncShutdown(
 
 void SyncCrosapiManagerLacros::MaybeCreateCrosapiSessionSyncNotifier(
     chromeos::LacrosService* lacros_service,
-    Profile* profile) {
+    Profile* profile,
+    syncer::SyncService* sync_service) {
   if (!base::FeatureList::IsEnabled(syncer::kChromeOSSyncedSessionSharing)) {
     return;
   }
@@ -154,14 +155,17 @@ void SyncCrosapiManagerLacros::MaybeCreateCrosapiSessionSyncNotifier(
   }
 
   lacros_service->GetRemote<crosapi::mojom::SyncService>()
-      ->CreateSyncedSessionClient(
-          base::BindOnce(&SyncCrosapiManagerLacros::OnCreateSyncedSessionClient,
-                         weak_ptr_factory_.GetWeakPtr(), session_sync_service));
+      ->CreateSyncedSessionClient(base::BindOnce(
+          &SyncCrosapiManagerLacros::OnCreateSyncedSessionClient,
+          weak_ptr_factory_.GetWeakPtr(), session_sync_service, sync_service));
 }
 
 void SyncCrosapiManagerLacros::OnCreateSyncedSessionClient(
     sync_sessions::SessionSyncService* session_sync_service,
+    syncer::SyncService* sync_service,
     mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> pending_remote) {
+  // TODO(b/260599791): Handle the potential case where the profile or these
+  // passed-in services may be invalid by the time we receive the remote.
   if (!pending_remote) {
     return;
   }
@@ -174,5 +178,5 @@ void SyncCrosapiManagerLacros::OnCreateSyncedSessionClient(
 
   DCHECK(!crosapi_session_sync_notifier_);
   crosapi_session_sync_notifier_ = std::make_unique<CrosapiSessionSyncNotifier>(
-      session_sync_service, std::move(pending_remote));
+      session_sync_service, std::move(pending_remote), sync_service);
 }

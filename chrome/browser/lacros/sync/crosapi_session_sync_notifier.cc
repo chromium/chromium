@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/sync_sessions_client.h"
@@ -86,13 +87,20 @@ std::vector<crosapi::mojom::SyncedSessionPtr> ConstructSyncedPhoneSessions(
   return crosapi_synced_phone_sessions;
 }
 
+bool IsTabSyncEnabled(syncer::SyncService* sync_service) {
+  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs);
+}
+
 }  // namespace
 
 CrosapiSessionSyncNotifier::CrosapiSessionSyncNotifier(
     sync_sessions::SessionSyncService* session_sync_service,
     mojo::PendingRemote<crosapi::mojom::SyncedSessionClient>
-        synced_session_client)
-    : session_sync_service_(std::move(session_sync_service)),
+        synced_session_client,
+    syncer::SyncService* sync_service)
+    : is_tab_sync_enabled_(IsTabSyncEnabled(sync_service)),
+      session_sync_service_(session_sync_service),
       synced_session_client_(std::move(synced_session_client)) {
   if (synced_session_client_.version() >=
       static_cast<int>(crosapi::mojom::SyncedSessionClient::
@@ -103,12 +111,33 @@ CrosapiSessionSyncNotifier::CrosapiSessionSyncNotifier(
                 &CrosapiSessionSyncNotifier::OnForeignSyncedSessionsUpdated,
                 base::Unretained(this)));
   }
+
+  sync_service_observation_.Observe(sync_service);
+
+  // Broadcast the initial value for |is_tab_sync_enabled_|.
+  NotifySyncEnabledChanged();
 }
 
 CrosapiSessionSyncNotifier::~CrosapiSessionSyncNotifier() = default;
 
+void CrosapiSessionSyncNotifier::OnStateChanged(
+    syncer::SyncService* sync_service) {
+  bool is_tab_sync_enabled = IsTabSyncEnabled(sync_service);
+  if (is_tab_sync_enabled == is_tab_sync_enabled_) {
+    return;
+  }
+
+  is_tab_sync_enabled_ = is_tab_sync_enabled;
+  NotifySyncEnabledChanged();
+}
+
+void CrosapiSessionSyncNotifier::NotifySyncEnabledChanged() {
+  synced_session_client_->OnSessionSyncEnabledChanged(is_tab_sync_enabled_);
+}
+
 void CrosapiSessionSyncNotifier::OnForeignSyncedSessionsUpdated() {
-  // Fetch sessions
+  // Fetch sessions. Ensure |open_tabs| is not null since
+  // GetOpenTabsUIDelegate() can return null if session sync is not running.
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       session_sync_service_->GetOpenTabsUIDelegate();
   if (!open_tabs) {

@@ -7,7 +7,10 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -17,24 +20,33 @@ class SessionSyncService;
 
 // This class is responsible for sending browser window data to Ash upon changes
 // to foreign browser sessions.
-class CrosapiSessionSyncNotifier {
+class CrosapiSessionSyncNotifier : public syncer::SyncServiceObserver {
  public:
   // `session_sync_service` should not be null and should outlive `this`.
+  // `sync_service` should not be null and should outlive `this`.
   CrosapiSessionSyncNotifier(
       sync_sessions::SessionSyncService* session_sync_service,
       mojo::PendingRemote<crosapi::mojom::SyncedSessionClient>
-          synced_session_client);
+          synced_session_client,
+      syncer::SyncService* sync_service);
   CrosapiSessionSyncNotifier(const CrosapiSessionSyncNotifier&) = delete;
   CrosapiSessionSyncNotifier& operator=(const CrosapiSessionSyncNotifier&) =
       delete;
-  ~CrosapiSessionSyncNotifier();
+  ~CrosapiSessionSyncNotifier() override;
 
  private:
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+
+  void NotifySyncEnabledChanged();
   void OnForeignSyncedSessionsUpdated();
 
+  bool is_tab_sync_enabled_ = false;
   base::raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
   mojo::Remote<crosapi::mojom::SyncedSessionClient> synced_session_client_;
   base::CallbackListSubscription session_updated_subscription_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_LACROS_SYNC_CROSAPI_SESSION_SYNC_NOTIFIER_H_

@@ -56,9 +56,11 @@ class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver,
   //  - session sync service for the user's profile cannot be found.
   void MaybeCreateCrosapiSessionSyncNotifier(
       chromeos::LacrosService* lacros_service,
-      Profile* profile);
+      Profile* profile,
+      syncer::SyncService* sync_service);
   void OnCreateSyncedSessionClient(
       sync_sessions::SessionSyncService* session_sync_service,
+      syncer::SyncService* sync_service,
       mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> pending_remote);
 
   // The objects below are created for main profile PostProfileInit() and

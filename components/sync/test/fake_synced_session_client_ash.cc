@@ -20,6 +20,16 @@ void FakeSyncedSessionClientAsh::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
+mojo::PendingRemote<crosapi::mojom::SyncedSessionClient>
+FakeSyncedSessionClientAsh::CreateRemote() {
+  mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> pending_receiver;
+  mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> pending_remote =
+      pending_receiver.InitWithNewPipeAndPassRemote();
+  receivers_.Add(this, std::move(pending_receiver));
+  return {pending_remote.PassPipe(),
+          crosapi::mojom::SyncedSessionClient::Version_};
+}
+
 void FakeSyncedSessionClientAsh::OnForeignSyncedPhoneSessionsUpdated(
     std::vector<crosapi::mojom::SyncedSessionPtr> sessions) {
   last_foreign_synced_phone_sessions_ = std::move(sessions);
@@ -41,7 +51,11 @@ FakeSyncedSessionClientAsh::LookupForeignSyncedPhoneSessions() {
 }
 
 void FakeSyncedSessionClientAsh::OnSessionSyncEnabledChanged(bool enabled) {
-  NOTIMPLEMENTED();
+  is_session_sync_enabled_ = enabled;
+}
+
+void FakeSyncedSessionClientAsh::FlushMojoForTesting() {
+  receivers_.FlushForTesting();
 }
 
 }  // namespace syncer

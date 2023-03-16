@@ -14,12 +14,12 @@
 #include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/test/fake_synced_session_client_ash.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/sync_sessions/synced_session_tracker.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,12 +121,16 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
     ON_CALL(mock_sync_sessions_client_, ShouldSyncURL(_))
         .WillByDefault(Return(true));
 
+    test_sync_service_ = std::make_unique<syncer::TestSyncService>();
+    test_sync_service_->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, /*types=*/{});
+
     // Create object under test.
     crosapi_session_sync_notifier_ =
         std::make_unique<CrosapiSessionSyncNotifier>(
             &mock_session_sync_service_,
-            synced_session_client_receiver_
-                .BindNewPipeAndPassRemoteWithVersion());
+            fake_synced_session_client_ash_.CreateRemote(),
+            test_sync_service_.get());
   }
 
   base::CallbackListSubscription SubscribeToForeignSessionsChanged(
@@ -206,6 +210,18 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   void SetPhoneSessionsUpdatedCallback(base::RepeatingClosure callback) {
     fake_synced_session_client_ash_
         .SetOnForeignSyncedPhoneSessionsUpdatedCallback(std::move(callback));
+  }
+
+  syncer::TestSyncService* test_sync_service() {
+    return test_sync_service_.get();
+  }
+
+  syncer::FakeSyncedSessionClientAsh* fake_synced_session_client_ash() {
+    return &fake_synced_session_client_ash_;
+  }
+
+  CrosapiSessionSyncNotifier* crosapi_session_sync_notifier() {
+    return crosapi_session_sync_notifier_.get();
   }
 
  private:
@@ -304,20 +320,15 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  std::unique_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<CrosapiSessionSyncNotifier> crosapi_session_sync_notifier_;
-
   syncer::FakeSyncedSessionClientAsh fake_synced_session_client_ash_;
-  mojo::Receiver<crosapi::mojom::SyncedSessionClient>
-      synced_session_client_receiver_{&fake_synced_session_client_ash_};
 
   sync_sessions::SyncedSessionTracker synced_session_tracker_;
-
   testing::NiceMock<MockSessionSyncService> mock_session_sync_service_;
   testing::NiceMock<MockOpenTabsUIDelegate> mock_open_tabs_ui_delegate_;
-
   testing::NiceMock<sync_sessions::MockSyncSessionsClient>
       mock_sync_sessions_client_;
-
   std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
   base::RepeatingClosure foreign_sessions_changed_callback_;
 };
@@ -388,4 +399,28 @@ TEST_F(CrosapiSessionSyncNotifierTest,
   NotifyForeignSessionsChanged();
   run_loop.Run();
   ValidateSentSessions();
+}
+
+TEST_F(CrosapiSessionSyncNotifierTest, SyncServiceObserverAdded) {
+  EXPECT_TRUE(
+      test_sync_service()->HasObserver(crosapi_session_sync_notifier()));
+}
+
+TEST_F(CrosapiSessionSyncNotifierTest, OnStateChanged_NoChangeToStartingValue) {
+  // OnStateChanged() is called from the CrosapiSessionSyncNotifier constructor.
+  // The "tab sync enabled" value should remain |false|
+  test_sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/{});
+  test_sync_service()->FireStateChanged();
+  EXPECT_FALSE(fake_synced_session_client_ash()->is_session_sync_enabled());
+}
+
+TEST_F(CrosapiSessionSyncNotifierTest,
+       OnStateChanged_TabSyncEnabledStateChanged) {
+  // OnStateChange() is called if the "tab sync enabled" value changes
+  test_sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true, /*types=*/{});
+  test_sync_service()->FireStateChanged();
+  fake_synced_session_client_ash()->FlushMojoForTesting();
+  EXPECT_TRUE(fake_synced_session_client_ash()->is_session_sync_enabled());
 }

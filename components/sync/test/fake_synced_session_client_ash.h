@@ -24,6 +24,7 @@ class FakeSyncedSessionClientAsh : public crosapi::mojom::SyncedSessionClient {
   // crosapi::mojom::SyncedSessionClient:
   void OnForeignSyncedPhoneSessionsUpdated(
       std::vector<crosapi::mojom::SyncedSessionPtr> sessions) override;
+  void OnSessionSyncEnabledChanged(bool enabled) override;
 
   void SetOnForeignSyncedPhoneSessionsUpdatedCallback(
       base::RepeatingClosure callback);
@@ -34,10 +35,13 @@ class FakeSyncedSessionClientAsh : public crosapi::mojom::SyncedSessionClient {
   const std::vector<crosapi::mojom::SyncedSessionPtr>&
   LookupForeignSyncedPhoneSessions();
 
-  void OnSessionSyncEnabledChanged(bool enabled) override;
-
   void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver);
+  mojo::PendingRemote<crosapi::mojom::SyncedSessionClient> CreateRemote();
+
+  bool is_session_sync_enabled() { return is_session_sync_enabled_; }
+
+  void FlushMojoForTesting();
 
  private:
   mojo::ReceiverSet<crosapi::mojom::SyncedSessionClient> receivers_;
@@ -45,6 +49,7 @@ class FakeSyncedSessionClientAsh : public crosapi::mojom::SyncedSessionClient {
       last_foreign_synced_phone_sessions_;
   base::RepeatingClosure
       on_foreign_synced_phone_sessions_updated_complete_callback_;
+  bool is_session_sync_enabled_ = false;
 };
 
 }  // namespace syncer
