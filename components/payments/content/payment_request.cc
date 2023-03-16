@@ -30,7 +30,6 @@
 #include "components/payments/core/payment_details_validation.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/payments/core/payment_request_delegate.h"
-#include "components/payments/core/payments_experimental_features.h"
 #include "components/payments/core/payments_validators.h"
 #include "components/payments/core/url_util.h"
 #include "components/prefs/pref_service.h"
@@ -55,10 +54,6 @@ using ::payments::mojom::HasEnrolledInstrumentQueryResult;
 mojom::PaymentAddressPtr RedactShippingAddress(
     mojom::PaymentAddressPtr address) {
   DCHECK(address);
-  if (!PaymentsExperimentalFeatures::IsEnabled(
-          features::kWebPaymentsRedactShippingAddress)) {
-    return address;
-  }
   address->organization.clear();
   address->phone.clear();
   address->recipient.clear();

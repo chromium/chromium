@@ -34,10 +34,6 @@ BASE_FEATURE(kWebPaymentsJustInTimePaymentApp,
              "WebPaymentsJustInTimePaymentApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebPaymentsRedactShippingAddress,
-             "WebPaymentsRedactShippingAddress",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAppStoreBilling,
              "AppStoreBilling",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)

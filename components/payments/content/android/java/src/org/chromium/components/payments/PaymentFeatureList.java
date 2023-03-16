@@ -36,8 +36,6 @@ public class PaymentFeatureList {
     public static final String WEB_PAYMENTS_METHOD_SECTION_ORDER_V2 =
             "WebPaymentsMethodSectionOrderV2";
     public static final String WEB_PAYMENTS_MODIFIERS = "WebPaymentsModifiers";
-    public static final String WEB_PAYMENTS_REDACT_SHIPPING_ADDRESS =
-            "WebPaymentsRedactShippingAddress";
     public static final String WEB_PAYMENTS_SINGLE_APP_UI_SKIP = "WebPaymentsSingleAppUiSkip";
 
     // Do not instantiate this class.

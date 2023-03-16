@@ -36,7 +36,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebPaymentsExperimentalFeatures,
     &features::kWebPaymentsMethodSectionOrderV2,
     &features::kWebPaymentsModifiers,
-    &features::kWebPaymentsRedactShippingAddress,
     &features::kWebPaymentsSingleAppUiSkip,
     &kAndroidAppPaymentUpdateEvents,
     &kOmitParametersInReadyToPay,

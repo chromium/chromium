@@ -37,10 +37,6 @@ BASE_DECLARE_FEATURE(kAppStoreBillingDebug);
 // Used to control whether allow crawling just-in-time installable payment app.
 BASE_DECLARE_FEATURE(kWebPaymentsJustInTimePaymentApp);
 
-// Used to control whether the shipping address returned for the
-// ShippingAddressChangeEvent is redacted of fine-grained details.
-BASE_DECLARE_FEATURE(kWebPaymentsRedactShippingAddress);
-
 // Desktop only, if enabled payment handler window size matches the pop up
 // window size.
 BASE_DECLARE_FEATURE(kPaymentHandlerPopUpSizeWindow);

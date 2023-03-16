@@ -1653,13 +1653,10 @@ public class PaymentRequestService
      * @param shippingAddress The shipping address to redact in place.
      */
     private static void redactShippingAddress(PaymentAddress shippingAddress) {
-        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                    PaymentFeatureList.WEB_PAYMENTS_REDACT_SHIPPING_ADDRESS)) {
-            shippingAddress.organization = "";
-            shippingAddress.phone = "";
-            shippingAddress.recipient = "";
-            shippingAddress.addressLine = new String[0];
-        }
+        shippingAddress.organization = "";
+        shippingAddress.phone = "";
+        shippingAddress.recipient = "";
+        shippingAddress.addressLine = new String[0];
     }
 
     // PaymentAppFactoryParams implementation.
