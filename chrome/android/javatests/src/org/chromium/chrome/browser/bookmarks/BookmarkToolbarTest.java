@@ -476,4 +476,18 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         Assert.assertTrue(
                 mBookmarkToolbar.getMenu().findItem(R.id.selection_mode_edit_menu_id).isEnabled());
     }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testShowNormalView() {
+        initializeNormal();
+
+        mBookmarkToolbar.showNormalView();
+        Assert.assertFalse(mBookmarkToolbar.getMenu().findItem(R.id.search_menu_id).isVisible());
+        Assert.assertFalse(mBookmarkToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
+
+        mBookmarkToolbar.setCurrentFolder(BOOKMARK_ID_FOLDER);
+        Assert.assertTrue(mBookmarkToolbar.getMenu().findItem(R.id.search_menu_id).isVisible());
+    }
 }

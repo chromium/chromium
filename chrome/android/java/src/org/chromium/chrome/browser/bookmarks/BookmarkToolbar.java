@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
 import org.chromium.base.Callback;
@@ -35,14 +36,13 @@ import java.util.List;
  */
 public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         implements OnMenuItemClickListener, OnClickListener {
-    // TODO(crbug.com/1413463): Remove BookmarkModel reference.
+    // TODO(crbug.com/1425201): Remove BookmarkModel reference.
     private BookmarkModel mBookmarkModel;
     private BookmarkOpener mBookmarkOpener;
     private SelectionDelegate mSelectionDelegate;
 
-    // TODO(crbug.com/1413463): Remove BookmarkId reference.
-    private BookmarkId mCurrentFolderId;
-    private BookmarkItem mCurrentFolder;
+    // The current folder can be null before being set by the mediator.
+    private @Nullable BookmarkItem mCurrentFolder;
     private @BookmarkUiMode int mBookmarkUiMode;
     private boolean mSoftKeyboardVisible;
     // Whether the selection ui is currently showing. This isn't captured by an explicit
@@ -265,8 +265,10 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     protected void showNormalView() {
         super.showNormalView();
 
-        getMenu().findItem(R.id.search_menu_id).setVisible(false);
-        getMenu().findItem(R.id.edit_menu_id).setVisible(false);
+        if (mCurrentFolder == null) {
+            getMenu().findItem(R.id.search_menu_id).setVisible(false);
+            getMenu().findItem(R.id.edit_menu_id).setVisible(false);
+        }
     }
 
     @Override

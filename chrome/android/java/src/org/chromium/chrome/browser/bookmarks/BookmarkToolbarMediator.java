@@ -44,6 +44,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver,
             mModel.set(
                     BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK, mBookmarkDelegate::openFolder);
             mBookmarkDelegate.addUiObserver(this);
+            mBookmarkDelegate.notifyStateChange(this);
         });
     }
 
