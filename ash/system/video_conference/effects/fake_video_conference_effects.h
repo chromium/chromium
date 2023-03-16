@@ -19,6 +19,7 @@ struct VectorIcon;
 namespace ash {
 
 class FakeVideoConferenceTrayController;
+enum class VcEffectId;
 
 namespace fake_video_conference {
 
@@ -40,8 +41,8 @@ class SimpleToggleEffect : public VcEffectsDelegate {
   ~SimpleToggleEffect() override;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(absl::optional<int> effect_id,
+  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  void OnEffectControlActivated(VcEffectId effect_id,
                                 absl::optional<int> state) override;
 
   int num_activations_for_testing() { return num_activations_for_testing_; }
@@ -145,8 +146,8 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
   ~ShaggyFurEffect() override;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(absl::optional<int> effect_id,
+  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  void OnEffectControlActivated(VcEffectId effect_id,
                                 absl::optional<int> state) override;
 
   // Returns the number of times the button for `state` has been activated.
@@ -182,8 +183,8 @@ class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
   ~SuperCutnessEffect() override;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(absl::optional<int> effect_id,
+  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  void OnEffectControlActivated(VcEffectId effect_id,
                                 absl::optional<int> state) override;
 
   // Returns the number of times the button for `state` has been activated.

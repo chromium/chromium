@@ -177,31 +177,29 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
   InitializeEffectControls();
 }
 
-absl::optional<int> CameraEffectsController::GetEffectState(int effect_id) {
-  switch (static_cast<cros::mojom::CameraEffect>(effect_id)) {
-    case cros::mojom::CameraEffect::kBackgroundBlur:
+absl::optional<int> CameraEffectsController::GetEffectState(
+    VcEffectId effect_id) {
+  switch (effect_id) {
+    case VcEffectId::kBackgroundBlur:
       return MapBackgroundBlurCameraHalStateToEffectState(
           current_effects_->blur_level, current_effects_->blur_enabled);
-    case cros::mojom::CameraEffect::kPortraitRelight:
+    case VcEffectId::kPortraitRelighting:
       return current_effects_->relight_enabled;
-    case cros::mojom::CameraEffect::kBackgroundReplace:
-    case cros::mojom::CameraEffect::kNone:
+    case VcEffectId::kNoiseCancellation:
+    case VcEffectId::kLiveCaption:
+    case VcEffectId::kTestEffect:
+      NOTREACHED();
       return absl::nullopt;
   }
-
-  NOTREACHED();
-  return absl::nullopt;
 }
 
 void CameraEffectsController::OnEffectControlActivated(
-    absl::optional<int> effect_id,
+    VcEffectId effect_id,
     absl::optional<int> state) {
-  DCHECK(effect_id.has_value());
-
   cros::mojom::EffectsConfigPtr new_effects = current_effects_.Clone();
 
-  switch (effect_id.value()) {
-    case static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur): {
+  switch (effect_id) {
+    case VcEffectId::kBackgroundBlur: {
       // UI should not pass in any invalid state.
       if (!state.has_value() || !IsValidBackgroundBlurState(state.value())) {
         state = static_cast<int>(
@@ -219,11 +217,16 @@ void CameraEffectsController::OnEffectControlActivated(
       }
       break;
     }
-    case static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight): {
+    case VcEffectId::kPortraitRelighting: {
       new_effects->relight_enabled =
           state.value_or(!new_effects->relight_enabled);
       break;
     }
+    case VcEffectId::kNoiseCancellation:
+    case VcEffectId::kLiveCaption:
+    case VcEffectId::kTestEffect:
+      NOTREACHED();
+      return;
   }
 
   SetCameraEffects(std::move(new_effects));
@@ -363,14 +366,14 @@ void CameraEffectsController::InitializeEffectControls() {
   // states.
   if (IsEffectControlAvailable(cros::mojom::CameraEffect::kBackgroundBlur)) {
     auto effect = std::make_unique<VcHostedEffect>(
-        VcEffectType::kSetValue,
-        base::BindRepeating(
-            &CameraEffectsController::GetEffectState, base::Unretained(this),
-            static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur)));
+        /*type=*/VcEffectType::kSetValue,
+        /*get_state_callback=*/
+        base::BindRepeating(&CameraEffectsController::GetEffectState,
+                            base::Unretained(this),
+                            VcEffectId::kBackgroundBlur),
+        /*effect_id=*/VcEffectId::kBackgroundBlur);
     effect->set_label_text(l10n_util::GetStringUTF16(
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_NAME));
-    effect->set_id(
-        static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur));
     AddBackgroundBlurStateToEffect(
         effect.get(), kVideoConferenceBackgroundBlurOffIcon,
         /*state_value=*/BackgroundBlurEffectState::kOff,
@@ -392,12 +395,12 @@ void CameraEffectsController::InitializeEffectControls() {
   // and its state.
   if (IsEffectControlAvailable(cros::mojom::CameraEffect::kPortraitRelight)) {
     std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
-        VcEffectType::kToggle,
-        base::BindRepeating(
-            &CameraEffectsController::GetEffectState, base::Unretained(this),
-            static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight)));
-    effect->set_id(
-        static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight));
+        /*type=*/VcEffectType::kToggle,
+        /*get_state_callback=*/
+        base::BindRepeating(&CameraEffectsController::GetEffectState,
+                            base::Unretained(this),
+                            VcEffectId::kPortraitRelighting),
+        /*effect_id=*/VcEffectId::kPortraitRelighting);
     effect->AddState(std::make_unique<VcEffectState>(
         /*icon=*/&kVideoConferencePortraitRelightOnIcon,
         /*label_text=*/
@@ -406,12 +409,10 @@ void CameraEffectsController::InitializeEffectControls() {
         /*accessible_name_id=*/
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME,
         /*button_callback=*/
-        base::BindRepeating(
-            &CameraEffectsController::OnEffectControlActivated,
-            base::Unretained(this),
-            /*effect_id=*/
-            static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
-            /*value=*/absl::nullopt)));
+        base::BindRepeating(&CameraEffectsController::OnEffectControlActivated,
+                            base::Unretained(this),
+                            /*effect_id=*/VcEffectId::kPortraitRelighting,
+                            /*value=*/absl::nullopt)));
     effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
     AddEffect(std::move(effect));
   }
@@ -435,12 +436,10 @@ void CameraEffectsController::AddBackgroundBlurStateToEffect(
       /*label_text=*/l10n_util::GetStringUTF16(string_id),
       /*accessible_name_id=*/string_id,
       /*button_callback=*/
-      base::BindRepeating(
-          &CameraEffectsController::OnEffectControlActivated,
-          weak_factory_.GetWeakPtr(),
-          /*effect_id=*/
-          static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur),
-          /*value=*/state_value),
+      base::BindRepeating(&CameraEffectsController::OnEffectControlActivated,
+                          weak_factory_.GetWeakPtr(),
+                          /*effect_id=*/VcEffectId::kBackgroundBlur,
+                          /*value=*/state_value),
       /*state=*/state_value));
 }
 

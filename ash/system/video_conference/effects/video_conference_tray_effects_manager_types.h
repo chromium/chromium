@@ -22,10 +22,6 @@ namespace ash {
 // conference effect UI control that's being hosted by a `VcEffectsDelegate`.
 class ASH_EXPORT VcEffectState {
  public:
-  // Use this in cases where an ID needs to be specified but isn't actually
-  // used.
-  static const int kUnusedId;
-
   // Arguments:
   //
   // `icon` - The icon displayed, used for all effect types (if non-nullptr).
@@ -88,6 +84,18 @@ enum class VcEffectType {
   kSetValue = 1,
 };
 
+// Represents all the available effects in the Video Conference panel. Each
+// effect must have its own id for the purpose of metrics collection, unless it
+// is for testing.
+enum class VcEffectId {
+  kTestEffect = -1,
+  kBackgroundBlur = 0,
+  kPortraitRelighting = 1,
+  kNoiseCancellation = 2,
+  kLiveCaption = 3,
+  kMaxValue = kLiveCaption,
+};
+
 // Represents a single video conference effect that's being "hosted" by an
 // implementer of the `VcEffectsDelegate` interface, used to construct the
 // effect's UI and perform any action that's needed to change the state of the
@@ -113,8 +121,9 @@ class ASH_EXPORT VcHostedEffect {
 
   // `type` is the type of value adjustment allowed.
   // `get_state_callback` is invoked to obtain the current state of the effect.
-  explicit VcHostedEffect(VcEffectType type,
-                          GetEffectStateCallback get_state_callback);
+  VcHostedEffect(VcEffectType type,
+                 GetEffectStateCallback get_state_callback,
+                 VcEffectId effect_id);
 
   VcHostedEffect(const VcHostedEffect&) = delete;
   VcHostedEffect& operator=(const VcHostedEffect&) = delete;
@@ -136,8 +145,7 @@ class ASH_EXPORT VcHostedEffect {
     return get_state_callback_;
   }
 
-  void set_id(int id) { id_ = id; }
-  int id() const { return id_; }
+  VcEffectId id() const { return id_; }
 
   void set_label_text(const std::u16string label_text) {
     label_text_ = label_text;
@@ -164,8 +172,8 @@ class ASH_EXPORT VcHostedEffect {
   // state of the effect.
   GetEffectStateCallback get_state_callback_;
 
-  // Unique ID of the effect, if desired.
-  int id_;
+  // Unique ID of the effect.
+  const VcEffectId id_;
 
   // Label text for the effect (that's separate from the label text of
   // individual child states).

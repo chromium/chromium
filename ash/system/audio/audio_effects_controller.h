@@ -15,15 +15,11 @@
 
 namespace ash {
 
+enum class VcEffectId;
+
 class ASH_EXPORT AudioEffectsController : public VcEffectsDelegate,
                                           public SessionObserver {
  public:
-  enum AudioEffectId {
-    kNone = 0,
-    kNoiseCancellation = 1,
-    kLiveCaption = 2,
-  };
-
   AudioEffectsController();
 
   AudioEffectsController(const AudioEffectsController&) = delete;
@@ -31,14 +27,12 @@ class ASH_EXPORT AudioEffectsController : public VcEffectsDelegate,
 
   ~AudioEffectsController() override;
 
-  // Returns whether `effect_id` is supported. If passed an `effect_id` of
-  // `AudioEffectId::kNone`, the function returns whether *any* effects are
-  // supported.
-  bool IsEffectSupported(AudioEffectId effect_id = AudioEffectId::kNone);
+  // Returns whether `effect_id` is supported.
+  bool IsEffectSupported(VcEffectId effect_id);
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(absl::optional<int> effect_id,
+  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  void OnEffectControlActivated(VcEffectId effect_id,
                                 absl::optional<int> state) override;
 
   // SessionObserver:

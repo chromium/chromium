@@ -12,6 +12,8 @@
 
 namespace ash {
 
+enum class VcEffectId;
+
 // An interface for hosting video conference effects, that are adjustable by the
 // user via the video conference bubble. Subclasses must register with
 // `VideoConferenceTrayEffectsManager`. At bubble construction time,
@@ -49,7 +51,7 @@ class ASH_EXPORT VcEffectsDelegate {
   // effect state. `effect_id` specifies the effect whose state is requested,
   // and can be ignored if only one effect is being hosted. If no state can be
   // determined for `effect_id`, this function should return `absl::nullopt`.
-  virtual absl::optional<int> GetEffectState(int effect_id) = 0;
+  virtual absl::optional<int> GetEffectState(VcEffectId effect_id) = 0;
 
   // Invoked anytime the user makes an adjustment to an effect state. For
   // delegates that host more than a single effect, `effect_id` is the unique ID
@@ -57,7 +59,7 @@ class ASH_EXPORT VcEffectsDelegate {
   // ignored and `absl::nullopt` should be passed. Similarly, `state` should be
   // `absl::nullopt` in cases (like toggle effects) where no specific state is
   // being set, an integer value otherwise.
-  virtual void OnEffectControlActivated(absl::optional<int> effect_id,
+  virtual void OnEffectControlActivated(VcEffectId effect_id,
                                         absl::optional<int> state) = 0;
 
  private:

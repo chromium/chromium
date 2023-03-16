@@ -33,53 +33,49 @@ AudioEffectsController::~AudioEffectsController() {
   }
 }
 
-bool AudioEffectsController::IsEffectSupported(
-    AudioEffectId effect_id /*=AudioEffectId::kNone*/) {
+bool AudioEffectsController::IsEffectSupported(VcEffectId effect_id) {
   switch (effect_id) {
-    case AudioEffectId::kNoiseCancellation:
+    case VcEffectId::kNoiseCancellation:
       return CrasAudioHandler::Get()->noise_cancellation_supported();
-    case AudioEffectId::kLiveCaption:
+    case VcEffectId::kLiveCaption:
       return captions::IsLiveCaptionFeatureSupported();
-    case AudioEffectId::kNone:
-      return IsEffectSupported(AudioEffectId::kNoiseCancellation) ||
-             IsEffectSupported(AudioEffectId::kLiveCaption);
+    case VcEffectId::kBackgroundBlur:
+    case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kTestEffect:
+      NOTREACHED();
+      return false;
   }
-
-  NOTREACHED();
-  return false;
 }
 
-absl::optional<int> AudioEffectsController::GetEffectState(int effect_id) {
+absl::optional<int> AudioEffectsController::GetEffectState(
+    VcEffectId effect_id) {
   switch (effect_id) {
-    case AudioEffectId::kNoiseCancellation: {
+    case VcEffectId::kNoiseCancellation:
       return CrasAudioHandler::Get()->GetNoiseCancellationState() ? 1 : 0;
-    }
-    case AudioEffectId::kLiveCaption: {
+    case VcEffectId::kLiveCaption:
       return Shell::Get()->accessibility_controller()->live_caption().enabled()
                  ? 1
                  : 0;
-    }
-    case AudioEffectId::kNone:
+    case VcEffectId::kBackgroundBlur:
+    case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kTestEffect:
+      NOTREACHED();
       return absl::nullopt;
   }
-
-  NOTREACHED();
-  return absl::nullopt;
 }
 
 void AudioEffectsController::OnEffectControlActivated(
-    absl::optional<int> effect_id,
+    VcEffectId effect_id,
     absl::optional<int> value) {
-  DCHECK(effect_id.has_value());
-  switch (effect_id.value()) {
-    case AudioEffectId::kNoiseCancellation: {
+  switch (effect_id) {
+    case VcEffectId::kNoiseCancellation: {
       // Toggle noise cancellation.
       CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
       bool new_state = !audio_handler->GetNoiseCancellationState();
       audio_handler->SetNoiseCancellationState(new_state);
       return;
     }
-    case AudioEffectId::kLiveCaption: {
+    case VcEffectId::kLiveCaption: {
       // Toggle live caption.
       AccessibilityControllerImpl* controller =
           Shell::Get()->accessibility_controller();
@@ -87,11 +83,12 @@ void AudioEffectsController::OnEffectControlActivated(
           !controller->live_caption().enabled());
       return;
     }
-    case AudioEffectId::kNone:
+    case VcEffectId::kBackgroundBlur:
+    case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kTestEffect:
+      NOTREACHED();
       return;
   }
-
-  NOTREACHED();
 }
 
 void AudioEffectsController::OnActiveUserPrefServiceChanged(
@@ -105,26 +102,32 @@ void AudioEffectsController::OnActiveUserPrefServiceChanged(
     return;
   }
 
-  if (IsEffectSupported(AudioEffectId::kNoiseCancellation)) {
+  const bool noise_cancellation_supported =
+      IsEffectSupported(VcEffectId::kNoiseCancellation);
+  const bool live_caption_supported =
+      IsEffectSupported(VcEffectId::kLiveCaption);
+
+  if (noise_cancellation_supported) {
     AddNoiseCancellationEffect();
   }
 
-  if (IsEffectSupported(AudioEffectId::kLiveCaption)) {
+  if (live_caption_supported) {
     AddLiveCaptionEffect();
   }
 
-  if (IsEffectSupported()) {
+  if (noise_cancellation_supported || live_caption_supported) {
     effects_manager.RegisterDelegate(this);
   }
 }
 
 void AudioEffectsController::AddNoiseCancellationEffect() {
   std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
-      VcEffectType::kToggle,
+      /*type=*/VcEffectType::kToggle,
+      /*get_state_callback=*/
       base::BindRepeating(&AudioEffectsController::GetEffectState,
                           base::Unretained(this),
-                          static_cast<int>(AudioEffectId::kNoiseCancellation)));
-  effect->set_id(static_cast<int>(AudioEffectId::kNoiseCancellation));
+                          VcEffectId::kNoiseCancellation),
+      /*effect_id=*/VcEffectId::kNoiseCancellation);
   effect->AddState(std::make_unique<VcEffectState>(
       /*icon=*/&kVideoConferenceNoiseCancellationOnIcon,
       /*label_text=*/
@@ -135,8 +138,7 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
       /*button_callback=*/
       base::BindRepeating(&AudioEffectsController::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
-                          /*effect_id=*/
-                          static_cast<int>(AudioEffectId::kNoiseCancellation),
+                          /*effect_id=*/VcEffectId::kNoiseCancellation,
                           /*value=*/0)));
   effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kMicrophone);
   AddEffect(std::move(effect));
@@ -144,11 +146,11 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
 
 void AudioEffectsController::AddLiveCaptionEffect() {
   std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
-      VcEffectType::kToggle,
+      /*type=*/VcEffectType::kToggle,
+      /*get_state_callback=*/
       base::BindRepeating(&AudioEffectsController::GetEffectState,
-                          base::Unretained(this),
-                          static_cast<int>(AudioEffectId::kLiveCaption)));
-  effect->set_id(static_cast<int>(AudioEffectId::kLiveCaption));
+                          base::Unretained(this), VcEffectId::kLiveCaption),
+      /*effect_id=*/VcEffectId::kLiveCaption);
   effect->AddState(std::make_unique<VcEffectState>(
       /*icon=*/&kVideoConferenceLiveCaptionOnIcon,
       /*label_text=*/
@@ -158,8 +160,7 @@ void AudioEffectsController::AddLiveCaptionEffect() {
       /*button_callback=*/
       base::BindRepeating(&AudioEffectsController::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
-                          /*effect_id=*/
-                          static_cast<int>(AudioEffectId::kLiveCaption),
+                          /*effect_id=*/VcEffectId::kLiveCaption,
                           /*value=*/0)));
   AddEffect(std::move(effect));
 }

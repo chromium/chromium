@@ -31,7 +31,8 @@ SimpleToggleEffect::SimpleToggleEffect(
       VcEffectType::kToggle,
       base::BindRepeating(&SimpleToggleEffect::GetEffectState,
                           base::Unretained(this),
-                          /*effect_id=*/VcEffectState::kUnusedId));
+                          /*effect_id=*/VcEffectId::kTestEffect),
+      VcEffectId::kTestEffect);
 
   // Use default `icon` and/or `accessible_name_id` if none was passed in.
   std::unique_ptr<VcEffectState> state = std::make_unique<VcEffectState>(
@@ -39,20 +40,20 @@ SimpleToggleEffect::SimpleToggleEffect(
       accessible_name_id.value_or(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
       base::BindRepeating(&SimpleToggleEffect::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
-                          /*effect_id=*/VcEffectState::kUnusedId,
+                          /*effect_id=*/VcEffectId::kTestEffect,
                           /*value=*/absl::nullopt));
   effect->AddState(std::move(state));
   AddEffect(std::move(effect));
 }
 
-absl::optional<int> SimpleToggleEffect::GetEffectState(int effect_id) {
+absl::optional<int> SimpleToggleEffect::GetEffectState(VcEffectId effect_id) {
   // Subclass `SimpleToggleEffect` if a specific integer or enum value (other
   // than 0) needs to be returned. Returning `absl::nullopt` is taken as "no
   // value could be obtained" and treated as an error condition.
   return 0;
 }
 
-void SimpleToggleEffect::OnEffectControlActivated(absl::optional<int> effect_id,
+void SimpleToggleEffect::OnEffectControlActivated(VcEffectId effect_id,
                                                   absl::optional<int> state) {
   ++num_activations_for_testing_;
 }
@@ -92,9 +93,9 @@ ShaggyFurEffect::ShaggyFurEffect() {
       VcEffectType::kSetValue,
       base::BindRepeating(&ShaggyFurEffect::GetEffectState,
                           base::Unretained(this),
-                          /*effect_id=*/0));
+                          /*effect_id=*/VcEffectId::kTestEffect),
+      VcEffectId::kTestEffect);
   effect->set_label_text(u"Shaggy Fur");
-  effect->set_id(100);
   AddStateToEffect(effect.get(),
                    /*state_value=*/static_cast<int>(FurShagginess::kBald),
                    /*label_text=*/u"Bald");
@@ -114,11 +115,11 @@ ShaggyFurEffect::ShaggyFurEffect() {
 
 ShaggyFurEffect::~ShaggyFurEffect() = default;
 
-absl::optional<int> ShaggyFurEffect::GetEffectState(int effect_id) {
+absl::optional<int> ShaggyFurEffect::GetEffectState(VcEffectId effect_id) {
   return static_cast<int>(FurShagginess::kBuzzcut);
 }
 
-void ShaggyFurEffect::OnEffectControlActivated(absl::optional<int> effect_id,
+void ShaggyFurEffect::OnEffectControlActivated(VcEffectId effect_id,
                                                absl::optional<int> state) {
   DCHECK(state.has_value());
   DCHECK(state.value() >= 0 &&
@@ -141,7 +142,8 @@ void ShaggyFurEffect::AddStateToEffect(VcHostedEffect* effect,
       /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
       /*button_callback=*/
       base::BindRepeating(&ShaggyFurEffect::OnEffectControlActivated,
-                          weak_factory_.GetWeakPtr(), /*effect_id=*/0,
+                          weak_factory_.GetWeakPtr(),
+                          /*effect_id=*/VcEffectId::kTestEffect,
                           /*value=*/state_value),
       /*state=*/state_value));
 }
@@ -151,9 +153,9 @@ SuperCutnessEffect::SuperCutnessEffect() {
       VcEffectType::kSetValue,
       base::BindRepeating(&SuperCutnessEffect::GetEffectState,
                           base::Unretained(this),
-                          /*effect_id=*/0));
+                          /*effect_id=*/VcEffectId::kTestEffect),
+      VcEffectId::kTestEffect);
   effect->set_label_text(u"Super Cuteness");
-  effect->set_id(200);
   AddStateToEffect(effect.get(),
                    /*state_value=*/static_cast<int>(HowCute::kUglyDog),
                    /*label_text=*/u"Ugly Dog");
@@ -173,7 +175,7 @@ SuperCutnessEffect::SuperCutnessEffect() {
 
 SuperCutnessEffect::~SuperCutnessEffect() = default;
 
-absl::optional<int> SuperCutnessEffect::GetEffectState(int effect_id) {
+absl::optional<int> SuperCutnessEffect::GetEffectState(VcEffectId effect_id) {
   if (has_invalid_effect_state_for_testing_) {
     return absl::nullopt;
   }
@@ -181,7 +183,7 @@ absl::optional<int> SuperCutnessEffect::GetEffectState(int effect_id) {
   return static_cast<int>(HowCute::kTeddyBear);
 }
 
-void SuperCutnessEffect::OnEffectControlActivated(absl::optional<int> effect_id,
+void SuperCutnessEffect::OnEffectControlActivated(VcEffectId effect_id,
                                                   absl::optional<int> state) {
   DCHECK(state.has_value());
   DCHECK(state.value() >= 0 &&
@@ -204,7 +206,8 @@ void SuperCutnessEffect::AddStateToEffect(VcHostedEffect* effect,
       /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
       /*button_callback=*/
       base::BindRepeating(&SuperCutnessEffect::OnEffectControlActivated,
-                          weak_factory_.GetWeakPtr(), /*effect_id=*/0,
+                          weak_factory_.GetWeakPtr(),
+                          /*effect_id=*/VcEffectId::kTestEffect,
                           /*value=*/state_value),
       /*state=*/state_value));
 }
