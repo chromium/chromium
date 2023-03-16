@@ -162,6 +162,10 @@ class CONTENT_EXPORT ClipboardHostImpl
                            PerformPasteIfContentAllowed_EmptyData);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest,
                            PerformPasteIfContentAllowed);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest,
+                           PerformPasteIfContentAllowed_SameHost_NotStarted);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest,
+                           PerformPasteIfContentAllowed_External_Started);
 
   // mojom::ClipboardHost
   void GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,

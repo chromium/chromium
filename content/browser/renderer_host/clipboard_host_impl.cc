@@ -49,6 +49,26 @@
 
 namespace content {
 
+namespace {
+
+// Used to skip content analysis checks when the source and destination of the
+// clipboard data are the same.
+struct LastWriterInfo {
+  // A pointer to the last ClipboardHostImpl that committed data to the
+  // clipboard.
+  ClipboardHostImpl* writer = nullptr;
+
+  // The sequence number of the last commit made by `writer`.
+  ui::ClipboardSequenceNumberToken seqno;
+};
+
+LastWriterInfo& GetLastWriterInfo() {
+  static LastWriterInfo info;
+  return info;
+}
+
+}  // namespace
+
 // The amount of time that the result of a content allow request is cached
 // and reused for the same clipboard `seqno`.
 constexpr base::TimeDelta
@@ -124,6 +144,7 @@ void ClipboardHostImpl::Create(
 }
 
 ClipboardHostImpl::~ClipboardHostImpl() {
+  GetLastWriterInfo() = {};
   clipboard_writer_->Reset();
 }
 
@@ -494,6 +515,13 @@ void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {
 void ClipboardHostImpl::CommitWrite() {
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
+
+  // Remember the ClipboardHostImpl and associated seqno of the last write
+  // made to the clipboard by any ClipboardHostImpl.
+  GetLastWriterInfo() = {
+      .writer = this,
+      .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste)};
 }
 
 bool ClipboardHostImpl::IsRendererPasteAllowed(
@@ -630,11 +658,20 @@ void ClipboardHostImpl::PerformPasteIfContentAllowed(
     std::string data,
     IsClipboardPasteContentAllowedCallback callback) {
   CleanupObsoleteRequests();
+
+  // Always allow if the source of the last clipboard commit was this host.
+  const LastWriterInfo& info = GetLastWriterInfo();
+  if (info.writer == this && info.seqno == seqno) {
+    std::move(callback).Run(data);
+    return;
+  }
+
   // Add |callback| to the callbacks associated to the sequence number, adding
   // an entry to the map if one does not exist.
   auto& request = is_allowed_requests_[seqno];
-  if (request.AddCallback(std::move(callback)))
+  if (request.AddCallback(std::move(callback))) {
     StartIsPasteContentAllowedRequest(seqno, data_type, std::move(data));
+  }
 }
 
 void ClipboardHostImpl::StartIsPasteContentAllowedRequest(

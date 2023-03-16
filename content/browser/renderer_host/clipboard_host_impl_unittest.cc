@@ -58,18 +58,26 @@ class FakeClipboardHostImpl : public ClipboardHostImpl {
   void StartIsPasteContentAllowedRequest(
       const ui::ClipboardSequenceNumberToken& seqno,
       const ui::ClipboardFormatType& data_type,
-      std::string data) override {}
+      std::string data) override {
+    ++start_count_;
+  }
 
   void CompleteRequest(const ui::ClipboardSequenceNumberToken& seqno,
                        const std::string& data) {
     FinishPasteIfContentAllowed(seqno, data);
   }
 
+  size_t start_count() const { return start_count_; }
+
   using ClipboardHostImpl::CleanupObsoleteRequests;
   using ClipboardHostImpl::is_paste_allowed_requests_for_testing;
   using ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld;
   using ClipboardHostImpl::PasteIfPolicyAllowed;
   using ClipboardHostImpl::PerformPasteIfContentAllowed;
+
+ private:
+  // number of times StartIsPasteContentAllowedRequest() is called.
+  size_t start_count_ = 0;
 };
 
 class PolicyControllerTest : public ui::DataTransferPolicyController {
@@ -304,6 +312,56 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
   // lifetime.
   raw_ptr<FakeClipboardHostImpl> fake_clipboard_host_impl_;
 };
+
+TEST_F(ClipboardHostImplScanTest,
+       PerformPasteIfContentAllowed_SameHost_NotStarted) {
+  const std::u16string kText = u"text";
+  clipboard_host_impl()->WriteText(kText);
+  clipboard_host_impl()->CommitWrite();
+
+  std::u16string read_text;
+  clipboard_host_impl()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste,
+      base::BindLambdaForTesting(
+          [&read_text](const std::u16string& value) { read_text = value; }));
+
+  // When the same document writes and then reads from the clipboard, content
+  // checks should be skipped.
+  EXPECT_EQ(0u, clipboard_host_impl()->start_count());
+  EXPECT_EQ(kText, read_text);
+}
+
+TEST_F(ClipboardHostImplScanTest,
+       PerformPasteIfContentAllowed_External_Started) {
+  const std::u16string kText = u"text";
+
+  // Write directly to clipboard.
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(kText);
+  }
+
+  std::u16string read_text;
+  clipboard_host_impl()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste,
+      base::BindLambdaForTesting(
+          [&read_text](const std::u16string& value) { read_text = value; }));
+
+  // Completing the request invokes the callback.  The request will
+  // remain pending until it is cleaned up.
+  clipboard_host_impl()->CompleteRequest(
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste),
+      base::UTF16ToUTF8(kText));
+  EXPECT_EQ(
+      1u,
+      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
+
+  // When a document reads from the clipboard, but the clipboard was written
+  // from an unknown source, content checks should not be skipped.
+  EXPECT_EQ(1u, clipboard_host_impl()->start_count());
+  EXPECT_EQ(kText, read_text);
+}
 
 TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed_EmptyData) {
   int count = 0;
