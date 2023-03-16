@@ -180,7 +180,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   bool ProduceGLTextureInternal(bool is_passthrough);
 
   bool UploadToVkImage(const SkPixmap& pixmap);
-  void UploadToGLTexture(const SkPixmap& pixmap);
+  bool UploadToGLTexture(const SkPixmap& pixmap);
   void CopyPixelsFromGLTextureToVkImage();
   void CopyPixelsFromVkImageToGLTexture();
 

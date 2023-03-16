@@ -177,21 +177,22 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   // Must request all available image usage flags if aliasing GL texture. This
   // is a spec requirement per EXT_memory_object. However, if
   // ANGLE_memory_object_flags is supported, usage flags can be arbitrary.
-  if (is_external && (usage & SHARED_IMAGE_USAGE_GLES2) &&
-      !UseMinimalUsageFlags(context_state.get())) {
+  bool request_all_flags = is_external && (usage & SHARED_IMAGE_USAGE_GLES2) &&
+                           !UseMinimalUsageFlags(context_state.get());
+  if (request_all_flags) {
     vk_usage |= vk_tiling_usage;
   }
 
-  VkImageCreateFlags vk_flags = 0;
+  VkImageCreateFlags vk_create = 0;
 
   std::unique_ptr<VulkanImage> image;
   if (is_external) {
     image = VulkanImage::CreateWithExternalMemory(device_queue, size, vk_format,
-                                                  vk_usage, vk_flags,
+                                                  vk_usage, vk_create,
                                                   VK_IMAGE_TILING_OPTIMAL);
   } else {
     image = VulkanImage::Create(device_queue, size, vk_format, vk_usage,
-                                vk_flags, VK_IMAGE_TILING_OPTIMAL);
+                                vk_create, VK_IMAGE_TILING_OPTIMAL);
   }
   if (!image)
     return nullptr;
@@ -204,8 +205,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
       std::move(image), command_pool, use_separate_gl_texture);
 
   if (!pixel_data.empty()) {
-    size_t stride = BitsPerPixel(format) / 8 * size.width();
-    SkPixmap pixmap(backing->AsSkImageInfo(), pixel_data.data(), stride);
+    auto image_info = backing->AsSkImageInfo();
+    DCHECK_EQ(pixel_data.size(), image_info.computeMinByteSize());
+    SkPixmap pixmap(image_info, pixel_data.data(), image_info.minRowBytes());
     backing->UploadToVkImage(pixmap);
 
     // Mark the backing as cleared.
@@ -472,15 +474,17 @@ bool ExternalVkImageBacking::UploadFromMemory(
   DCHECK_EQ(pixmaps.size(), 1u);
   auto& pixmap = pixmaps[0];
 
-  if (!UploadToVkImage(pixmap))
+  if (!UploadToVkImage(pixmap)) {
     return false;
+  }
 
-  SetCleared();
   latest_content_ = kInVkImage;
 
   // Also upload to GL texture if there is a separate one.
   if (use_separate_gl_texture() && gl_texture_) {
-    UploadToGLTexture(pixmap);
+    if (!UploadToGLTexture(pixmap)) {
+      return false;
+    }
     latest_content_ |= kInGLTexture;
   }
 
@@ -545,10 +549,6 @@ std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
     DLOG(ERROR) << "Format not supported for Dawn";
     return nullptr;
   }
-
-  GrVkImageInfo image_info;
-  bool result = backend_texture_.getVkImageInfo(&image_info);
-  DCHECK(result);
 
   auto memory_fd = image_->GetMemoryFd();
   if (!memory_fd.is_valid()) {
@@ -846,6 +846,10 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
     return;
   }
 
+  // Everything was successful so `stage_buffer` + `stage_allocation` ownership
+  // will be passed to EnqueueBufferCleanupForSubmittedWork().
+  std::move(destroy_buffer).Cancel();
+
   auto command_buffer = command_pool_->CreatePrimaryCommandBuffer();
   CHECK(command_buffer);
   {
@@ -863,12 +867,6 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
                                       size().width(), size().height(),
                                       size().width(), size().height());
   }
-
-  SetCleared();
-
-  // Everything was successful so `stage_buffer` + `stage_allocation` ownership
-  // will be passed to EnqueueBufferCleanupForSubmittedWork().
-  std::move(destroy_buffer).Cancel();
 
   if (!need_synchronization()) {
     DCHECK(external_semaphores.empty());
@@ -1002,15 +1000,17 @@ bool ExternalVkImageBacking::UploadToVkImage(const SkPixmap& pixmap) {
   auto* gr_context = context_state_->gr_context();
   WaitSemaphoresOnGrContext(gr_context, &external_semaphores);
 
-  if (!gr_context->updateBackendTexture(backend_texture_, &pixmap,
-                                        /*numLevels=*/1, nullptr, nullptr)) {
+  bool success =
+      gr_context->updateBackendTexture(backend_texture_, &pixmap,
+                                       /*numLevels=*/1, nullptr, nullptr);
+  if (!success) {
     DLOG(ERROR) << "updateBackendTexture() failed.";
   }
 
   if (!need_synchronization()) {
     DCHECK(external_semaphores.empty());
     EndAccessInternal(/*readonly=*/false, ExternalSemaphore());
-    return true;
+    return success;
   }
 
   gr_context->flush({});
@@ -1036,20 +1036,20 @@ bool ExternalVkImageBacking::UploadToVkImage(const SkPixmap& pixmap) {
   // |external_semaphores| have been waited on and can be reused when submitted
   // GPU work is done.
   ReturnPendingSemaphoresWithFenceHelper(std::move(external_semaphores));
-  return true;
+  return success;
 }
 
-void ExternalVkImageBacking::UploadToGLTexture(const SkPixmap& pixmap) {
+bool ExternalVkImageBacking::UploadToGLTexture(const SkPixmap& pixmap) {
   DCHECK(use_separate_gl_texture());
   DCHECK(gl_texture_);
 
   // Make sure a gl context is current, since textures are shared between all gl
   // contexts, we don't care which gl context is current.
   if (!MakeGLContextCurrent()) {
-    return;
+    return false;
   }
 
-  gl_texture_->UploadFromMemory(pixmap);
+  return gl_texture_->UploadFromMemory(pixmap);
 }
 
 bool ExternalVkImageBacking::BeginAccessInternal(
