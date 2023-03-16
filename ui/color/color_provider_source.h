@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
   // this source.
   virtual ColorProviderManager::Key GetColorProviderKey() const = 0;
 
+  // Gets the user color for this color source. This is used as an input to
+  // generate color palettes for the material design system.
+  virtual absl::optional<SkColor> GetUserColor() const;
+
  private:
   base::ObserverList<ColorProviderSourceObserver> observers_;
 };

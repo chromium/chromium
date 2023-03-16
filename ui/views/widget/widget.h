@@ -1175,6 +1175,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // ui::ColorProviderSource:
   ui::ColorProviderManager::Key GetColorProviderKey() const override;
+  absl::optional<SkColor> GetUserColor() const override;
 
  private:
   // Type of ways to ignore activation changes.

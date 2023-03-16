@@ -495,6 +495,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   void set_user_color(absl::optional<SkColor> user_color) {
     user_color_ = user_color;
   }
+  absl::optional<SkColor> user_color() const { return user_color_; }
 
   // Updates the state of dark mode, forced colors mode, and the map of system
   // colors. Returns true if NativeTheme was updated as a result, or false if

@@ -1957,7 +1957,14 @@ ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   key.elevation_mode = background_elevation_;
 #endif
+  key.user_color = GetUserColor();
   return key;
+}
+
+absl::optional<SkColor> Widget::GetUserColor() const {
+  // Fall back to the user color defined in the NativeTheme if a user color is
+  // not provided by any widgets in this UI hierarchy.
+  return parent_ ? parent_->GetUserColor() : GetNativeTheme()->user_color();
 }
 
 const ui::ColorProvider* Widget::GetColorProvider() const {

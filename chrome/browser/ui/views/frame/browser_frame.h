@@ -177,6 +177,7 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
  protected:
   // views::Widget:
   ui::ColorProviderManager::Key GetColorProviderKey() const override;
+  absl::optional<SkColor> GetUserColor() const override;
 
  private:
   void OnTouchUiChanged();
