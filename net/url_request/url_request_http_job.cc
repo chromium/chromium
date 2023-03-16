@@ -1655,14 +1655,9 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
         UMA_HISTOGRAM_COUNTS_1M("Net.Prefetch.PrefilterBytesReadFromNetwork",
                                 prefilter_bytes_read());
       }
-      if (is_https_google) {
-        if (used_quic) {
-          UMA_HISTOGRAM_MEDIUM_TIMES(
-              "Net.HttpJob.TotalTimeNotCached.Secure.Quic", total_time);
-        } else {
-          UMA_HISTOGRAM_MEDIUM_TIMES(
-              "Net.HttpJob.TotalTimeNotCached.Secure.NotQuic", total_time);
-        }
+      if (is_https_google && used_quic) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpJob.TotalTimeNotCached.Secure.Quic",
+                                   total_time);
       }
     }
   }
