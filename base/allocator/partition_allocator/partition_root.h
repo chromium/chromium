@@ -1052,7 +1052,6 @@ enum class PtrPosWithinAlloc {
 //
 // This isn't a general purpose function. The caller is responsible for ensuring
 // that the ref-count is in place for this allocation.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
                                        uintptr_t test_address,
                                        size_t type_size);
