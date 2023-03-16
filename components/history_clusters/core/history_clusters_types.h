@@ -41,9 +41,15 @@ struct QueryClustersFilterParams {
   // than `min_visits_with_images` are in a cluster, it will be filtered out.
   int min_visits_with_images = 0;
 
-  // The categories that a cluster must be a part of for it to included.
-  // If empty, the returned clusters will not be filtered.
-  base::flat_set<std::string> categories;
+  // The categories that a cluster must be a part of for it to be included.
+  // If both `categories_allowlist` and `categories_blocklist` are empty, the
+  // returned clusters will not be filtered.
+  base::flat_set<std::string> categories_allowlist;
+
+  // The categories that a cluster must not contain for it to be included.
+  // If both `categories_allowlist` and `categories_blocklist` are empty, the
+  // returned clusters will not be filtered.
+  base::flat_set<std::string> categories_blocklist;
 
   // Whether all clusters returned are search-initiated.
   bool is_search_initiated = false;

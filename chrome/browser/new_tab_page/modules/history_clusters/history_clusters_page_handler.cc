@@ -45,10 +45,12 @@ constexpr int kMinRequiredRelatedSearches = 3;
 // visit.
 constexpr int kMinRequiredVisits = 3;
 
-base::flat_set<std::string> GetCategories() {
+base::flat_set<std::string> GetCategories(bool allowlist) {
   std::string categories_string = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpHistoryClustersModuleCategories,
-      ntp_features::kNtpHistoryClustersModuleCategoriesParam);
+      allowlist
+          ? ntp_features::kNtpHistoryClustersModuleCategoriesAllowlistParam
+          : ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam);
   if (categories_string.empty()) {
     return {};
   }
@@ -72,7 +74,8 @@ int GetMinImagesToShow() {
 history_clusters::QueryClustersFilterParams GetFilterParamsFromFeatureFlags() {
   history_clusters::QueryClustersFilterParams filter_params;
   filter_params.min_visits_with_images = GetMinImagesToShow();
-  filter_params.categories = GetCategories();
+  filter_params.categories_allowlist = GetCategories(/*allowlist=*/true);
+  filter_params.categories_blocklist = GetCategories(/*allowlist=*/false);
   filter_params.is_search_initiated = true;
   filter_params.has_related_searches = true;
   filter_params.is_shown_on_prominent_ui_surfaces = true;

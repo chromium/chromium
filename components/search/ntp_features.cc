@@ -325,8 +325,10 @@ const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[] =
     "NtpHistoryClustersModuleBeginTimeDurationHoursParam";
 const char kNtpHistoryClustersModuleMinimumImagesRequiredParam[] =
     "NtpHistoryClustersModuleMinimumImagesRequiredParam";
-const char kNtpHistoryClustersModuleCategoriesParam[] =
+const char kNtpHistoryClustersModuleCategoriesAllowlistParam[] =
     "NtpHistoryClustersModuleCategoriesParam";
+const char kNtpHistoryClustersModuleCategoriesBlocklistParam[] =
+    "NtpHistoryClustersModuleCategoriesBlocklistParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

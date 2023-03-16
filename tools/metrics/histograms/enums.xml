@@ -17581,12 +17581,13 @@ In case of new special images, values 3 to 9 can be used. -->
 <enum name="ClusterFilterReason">
   <int value="0" label="Not filtered"/>
   <int value="1" label="Not enough visits with images"/>
-  <int value="2" label="Not a match for the chosen categories"/>
+  <int value="2" label="Not a match for the allowed categories"/>
   <int value="3" label="Not search initiated"/>
   <int value="4" label="No related searches"/>
   <int value="5" label="Too many noisy/mundane visits"/>
   <int value="6" label="Only contained a single visit"/>
   <int value="7" label="Contains content that should not be visible"/>
+  <int value="8" label="Contains blocked category"/>
 </enum>
 
 <enum name="CoalescePotentialPackets">

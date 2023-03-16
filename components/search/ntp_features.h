@@ -149,7 +149,10 @@ extern const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[];
 extern const char kNtpHistoryClustersModuleMinimumImagesRequiredParam[];
 // Parameter for determining the categories a history cluster must fall into to
 // be shown.
-extern const char kNtpHistoryClustersModuleCategoriesParam[];
+extern const char kNtpHistoryClustersModuleCategoriesAllowlistParam[];
+// Parameter for determining the categories a history cluster must not fall into
+// to be shown.
+extern const char kNtpHistoryClustersModuleCategoriesBlocklistParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
