@@ -451,6 +451,12 @@
       <message desc="Label for spoken feedback to read out for recording GIF type video." name="IDS_RECORD_GIF_VIDEO_OPTION">
         Record GIF video
       </message>
+      <message desc="Label for recording time-lapse video option." name="IDS_LABEL_RECORD_TIME_LAPSE_VIDEO_OPTION">
+        Time-lapse
+      </message>
+      <message desc="Label for spoken feedback to read out for recording time-lapse video." name="IDS_RECORD_TIME_LAPSE_VIDEO_OPTION">
+        Record time-lapse video
+      </message>
       <message desc="Label for the confirm button to confirm with the reviewed photo or video." name="IDS_CONFIRM_REVIEW_BUTTON">
         Confirm
       </message>
