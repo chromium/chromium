@@ -261,12 +261,8 @@ NotificationView::NotificationView(
             views::InkDrop::Get(host)->GetVisibleOpacity());
       },
       this));
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](NotificationViewBase* host) {
-        return host->GetColorProvider()->GetColor(
-            ui::kColorNotificationBackgroundActive);
-      },
-      this));
+  views::InkDrop::Get(this)->SetBaseColorId(
+      ui::kColorNotificationBackgroundActive);
 
   auto header_row = CreateHeaderRowBuilder().Build();
   // Font list for text views.

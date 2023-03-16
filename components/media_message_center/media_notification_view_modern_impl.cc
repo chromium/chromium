@@ -95,8 +95,6 @@ class MediaButton : public views::ImageButton {
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   button_size.height() / 2);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-        &MediaButton::GetForegroundColor, base::Unretained(this)));
     SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -112,6 +110,7 @@ class MediaButton : public views::ImageButton {
     views::SetImageFromVectorIconWithColor(
         this, *GetVectorIconForMediaAction(GetActionFromButtonTag(*this)),
         icon_size_, foreground_color_, foreground_disabled_color_);
+    views::InkDrop::Get(this)->SetBaseColor(foreground_color_);
 
     SchedulePaint();
   }
@@ -129,8 +128,6 @@ class MediaButton : public views::ImageButton {
   }
 
  private:
-  SkColor GetForegroundColor() { return foreground_color_; }
-
   SkColor foreground_color_ = gfx::kPlaceholderColor;
   SkColor foreground_disabled_color_ = gfx::kPlaceholderColor;
   int icon_size_;

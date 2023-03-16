@@ -184,12 +184,8 @@ views::InkDropContainerView* NotificationInputContainer::InstallInkDrop() {
   views::InkDrop::Get(this)->SetMode(
       views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   views::InkDrop::Get(this)->SetVisibleOpacity(1);
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](views::View* host) {
-        return host->GetColorProvider()->GetColor(
-            ui::kColorNotificationInputBackground);
-      },
-      this));
+  views::InkDrop::Get(this)->SetBaseColorId(
+      ui::kColorNotificationInputBackground);
 
   return AddChildView(std::make_unique<views::InkDropContainerView>());
 }

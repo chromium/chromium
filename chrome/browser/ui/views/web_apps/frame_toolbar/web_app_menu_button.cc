@@ -36,8 +36,6 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
   views::SetHitTestComponent(this, static_cast<int>(HTCLIENT));
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](WebAppMenuButton* host) { return host->GetColor(); }, this));
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
@@ -67,6 +65,7 @@ void WebAppMenuButton::SetColor(SkColor color) {
   color_ = color;
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(*icon_, color));
+  views::InkDrop::Get(this)->SetBaseColor(color_);
   OnPropertyChanged(&color_, views::kPropertyEffectsNone);
 }
 
