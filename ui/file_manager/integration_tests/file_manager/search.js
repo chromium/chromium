@@ -115,6 +115,9 @@ testcase.searchDownloadsClearSearch = async () => {
   // Click on the clear search button.
   await remoteCall.waitAndClickElement(appId, '#search-box .clear');
 
+  // Wait for the search box to fully collapse.
+  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
+
   // Wait for file list to display all files.
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET));
