@@ -238,7 +238,9 @@ enum {
   kProfileDefaultContentSettingValuesMouselock = 100192,
   kProfileDefaultContentSettingValuesPopups = 100193,
   kProfileDefaultContentSettingValuesWindowPlacement = 100194,
-  kWebauthnCablev2Pairings = 100195
+  kWebauthnCablev2Pairings = 100195,
+  kDynamicColorColorScheme = 100196,
+  kDynamicColorSeedColor = 100197,
 };
 }  // namespace syncable_prefs_ids
 
@@ -386,6 +388,10 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kAccessibilitySwitchAccessSelectDeviceKeyCodes}},
         {ash::prefs::kAppNotificationBadgingEnabled,
          {syncable_prefs_ids::kAppNotificationBadgingEnabled}},
+        {ash::prefs::kDynamicColorColorScheme,
+         {syncable_prefs_ids::kDynamicColorColorScheme}},
+        {ash::prefs::kDynamicColorSeedColor,
+         {syncable_prefs_ids::kDynamicColorSeedColor}},
         {ash::prefs::kEnableAutoScreenLock,
          {syncable_prefs_ids::kEnableAutoScreenLock}},
         {ash::prefs::kEnableStylusTools,

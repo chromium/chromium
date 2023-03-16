@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/color/color_provider_manager.h"
@@ -164,9 +165,13 @@ std::unique_ptr<ColorPaletteController> ColorPaletteController::Create() {
 
 // static
 void ColorPaletteController::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kDynamicColorColorScheme,
-                                static_cast<int>(ColorScheme::kTonalSpot));
-  registry->RegisterUint64Pref(prefs::kDynamicColorSeedColor, 0);
+  registry->RegisterIntegerPref(
+      prefs::kDynamicColorColorScheme,
+      static_cast<int>(ColorScheme::kTonalSpot),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterUint64Pref(
+      prefs::kDynamicColorSeedColor, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 }  // namespace ash
