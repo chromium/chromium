@@ -8881,21 +8881,6 @@
             ]
         }
     ],
-    "PageInfoAboutThisSitePFINGS": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_230303",
-                    "enable_features": [
-                        "PageInfoAboutThisSiteNonEn"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageInfoHistory": [
         {
             "platforms": [
