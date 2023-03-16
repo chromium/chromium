@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -36,8 +37,6 @@ constexpr char kNotificationId[] = "arc_vm_data_migration_notification";
 bool ShouldShowNotification(Profile* profile) {
   // Do not show a notification for managed users.
   if (policy_util::IsAccountManaged(profile)) {
-    // TODO(b/272151802): Report to UMA that the migration is skipped for a
-    // managed user.
     return false;
   }
 
@@ -77,6 +76,16 @@ void ArcVmDataMigrationNotifier::OnArcStarted() {
   // Show a notification only when the migration is enabled.
   if (!base::FeatureList::IsEnabled(kEnableArcVmDataMigration))
     return;
+
+  // Report the migration status at the beginning of each ARC session.
+  // The status might have been changed to kFinished by ArcSessionManager in its
+  // initialization step when there is no Android /data to migrate.
+  // The status might be changed to kNotified within this function call when the
+  // notification is shown.
+  base::UmaHistogramEnumeration(
+      GetHistogramNameByUserType(
+          kArcVmDataMigrationStatusOnArcStartedHistogramName, profile_),
+      GetArcVmDataMigrationStatus(profile_->GetPrefs()));
 
   // Do not show a notification if virtio-blk /data is forcibly enabled, in
   // which case the migration is not needed.

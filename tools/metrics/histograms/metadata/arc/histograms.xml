@@ -2354,6 +2354,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.MigrationFinishReason{ArcUserTypes}"
+    enum="ArcVmDataMigrationFinishReason" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The reason why ARCVM /data migration is marked as finished. {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.MigrationStatusOnArcStarted{ArcUserTypes}"
+    enum="ArcVmDataMigrationStatus" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The status of ARCVM /data migration at the beginning of each ARC session.
+    {ArcUserTypes}
+  </summary>
+  <token key="ArcUserTypes" variants="ArcUserTypes"/>
+</histogram>
+
 <histogram name="Arc.VmDataMigration.NoSpaceFailureFreeSpace" units="MB"
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>

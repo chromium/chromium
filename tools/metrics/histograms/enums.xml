@@ -4961,6 +4961,15 @@ Unknown properties are collapsed to zero. -->
   <int value="24" label="Under /data/user_de/0 (src or dest)"/>
 </enum>
 
+<enum name="ArcVmDataMigrationFinishReason">
+  <summary>
+    Defines the reason why ARCVM /data migration is marked as finished.
+  </summary>
+  <int value="0" label="No Android /data to migrate"/>
+  <int value="1" label="Migration finished successfully"/>
+  <int value="2" label="Migration failed"/>
+</enum>
+
 <enum name="ArcVmDataMigrationSetupResult">
   <summary>
     The types of the result of the setup of ARCVM /data migration.
@@ -4970,6 +4979,15 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Failed to attach loop device"/>
   <int value="3" label="Failed to mount migration destination"/>
   <int value="4" label="Failed to create thread for migration"/>
+</enum>
+
+<enum name="ArcVmDataMigrationStatus">
+  <summary>Defines the status of ARCVM /data migration.</summary>
+  <int value="0" label="The user has not been notified"/>
+  <int value="1" label="The user has been notified"/>
+  <int value="2" label="The user has confirmed the migration"/>
+  <int value="3" label="The migration has started"/>
+  <int value="4" label="The migration has finished"/>
 </enum>
 
 <enum name="ArmCpuPart">

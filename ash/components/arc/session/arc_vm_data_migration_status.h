@@ -9,6 +9,15 @@
 
 namespace arc {
 
+constexpr char kArcVmDataMigrationStatusOnArcStartedHistogramName[] =
+    "Arc.VmDataMigration.MigrationStatusOnArcStarted";
+
+constexpr char kArcVmDataMigrationFinishReasonHistogramName[] =
+    "Arc.VmDataMigration.MigrationFinishReason";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "ArcVmDataMigrationStatus" in tools/metrics/histograms/enums.xml.
 enum class ArcVmDataMigrationStatus {
   // The user has not been notified of the /data migration.
   kUnnotified = 0,
@@ -22,6 +31,20 @@ enum class ArcVmDataMigrationStatus {
   kStarted = 3,
   // The migration has been completed and not needed anymore.
   kFinished = 4,
+  kMaxValue = kFinished,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "ArcVmDataMigrationFinishReason" in tools/metrics/histograms/enums.xml.
+enum class ArcVmDataMigrationFinishReason {
+  // There is no /data to migrate, so virtio-blk can be just enabled.
+  kNoDataToMigrate = 0,
+  // Migration finishes successfully.
+  kMigrationSuccess = 1,
+  // Migration fails, resulting in enabling virtio-blk on wiped /data.
+  kMigrationFailure = 2,
+  kMaxValue = kMigrationFailure,
 };
 
 std::ostream& operator<<(std::ostream& os, ArcVmDataMigrationStatus status);

@@ -1533,6 +1533,10 @@ void ArcSessionManager::OnArcVmDataMigrationNecessityChecked(
   if (!result.value_or(true)) {
     VLOG(1) << "No need to perform ARCVM /data migration. Marking the migration"
             << " as finished";
+    base::UmaHistogramEnumeration(
+        GetHistogramNameByUserType(kArcVmDataMigrationFinishReasonHistogramName,
+                                   profile_),
+        ArcVmDataMigrationFinishReason::kNoDataToMigrate);
     SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                 ArcVmDataMigrationStatus::kFinished);
   }

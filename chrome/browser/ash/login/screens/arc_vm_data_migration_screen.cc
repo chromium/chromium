@@ -16,11 +16,13 @@
 #include "ash/shell.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -516,6 +518,10 @@ void ArcVmDataMigrationScreen::OnDataMigrationProgress(
       return;
     case arc::data_migrator::DATA_MIGRATION_SUCCESS:
       VLOG(1) << "ARCVM /data migration finished successfully";
+      base::UmaHistogramEnumeration(
+          arc::GetHistogramNameByUserType(
+              arc::kArcVmDataMigrationFinishReasonHistogramName, profile_),
+          arc::ArcVmDataMigrationFinishReason::kMigrationSuccess);
       migration_progress_observation_.Reset();
       SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                   arc::ArcVmDataMigrationStatus::kFinished);
@@ -599,6 +605,10 @@ void ArcVmDataMigrationScreen::OnArcDataRemoved(bool success) {
     // could not be removed.
     profile_->GetPrefs()->SetBoolean(arc::prefs::kArcDataRemoveRequested, true);
   }
+  base::UmaHistogramEnumeration(
+      arc::GetHistogramNameByUserType(
+          arc::kArcVmDataMigrationFinishReasonHistogramName, profile_),
+      arc::ArcVmDataMigrationFinishReason::kMigrationFailure);
   SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                               arc::ArcVmDataMigrationStatus::kFinished);
   UpdateUIState(ArcVmDataMigrationScreenView::UIState::kFailure);
