@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
 import {SettingsLockScreenElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
@@ -11,11 +13,11 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-suite('<settings-lock-screen>', function() {
+suite('<settings-lock-screen-subpage>', function() {
   let lockScreenPage: SettingsLockScreenElement|null = null;
 
   setup(function() {
-    lockScreenPage = document.createElement('settings-lock-screen');
+    lockScreenPage = document.createElement('settings-lock-screen-subpage');
     document.body.appendChild(lockScreenPage);
     flush();
   });

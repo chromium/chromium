@@ -135,38 +135,38 @@
   <template is="dom-if" if="[[!isGuestMode_]]" restamp>
     <template is="dom-if" route-path="/osPrivacy/lockScreen">
       <os-settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
-        <settings-lock-screen id="lockScreen" set-modes="[[setModes_]]"
+        <settings-lock-screen-subpage id="lockScreen" set-modes="[[setModes_]]"
             prefs="{{prefs}}" auth-token="[[authToken_]]"
             on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
             on-password-requested="onPasswordRequested_">
-        </settings-lock-screen>
+        </settings-lock-screen-subpage>
       </os-settings-subpage>
     </template>
     <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint">
       <os-settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
-        <settings-fingerprint-list id="fingerprint-list"
+        <settings-fingerprint-list-subpage id="fingerprint-list"
             auth-token="[[authToken_.token]]"
             set-modes="[[setModes_]]"
             on-password-requested="onPasswordRequested_">
-        </settings-fingerprint-list>
+        </settings-fingerprint-list-subpage>
       </os-settings-subpage>
     </template>
     <template is="dom-if" route-path="/osPrivacy/accounts">
       <os-settings-subpage page-title="$i18n{manageOtherPeople}">
-        <settings-manage-users-page prefs="{{prefs}}">
-        </settings-manage-users-page>
+        <settings-manage-users-subpage prefs="{{prefs}}">
+        </settings-manage-users-subpage>
       </os-settings-subpage>
     </template>
     <template is="dom-if" route-path="/osPrivacy/smartPrivacy">
       <os-settings-subpage page-title="$i18n{smartPrivacyTitle}">
-        <settings-smart-privacy-page prefs="{{prefs}}">
-        </settings-smart-privacy-page>
+        <settings-smart-privacy-subpage prefs="{{prefs}}">
+        </settings-smart-privacy-subpage>
       </os-settings-subpage>
     </template>
     <template is="dom-if" route-path="/osPrivacy/privacyHub">
       <os-settings-subpage page-title="$i18n{privacyHubTitle}">
-        <settings-privacy-hub-page prefs="{{prefs}}">
-        </settings-privacy-hub-page>
+        <settings-privacy-hub-subpage prefs="{{prefs}}">
+        </settings-privacy-hub-subpage>
       </os-settings-subpage>
     </template>
   </template>

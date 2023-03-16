@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'os-settings-privacy-hub-page' contains privacy hub configurations.
+ * 'os-settings-privacy-hub-subpage' contains privacy hub configurations.
  */
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
@@ -29,7 +29,7 @@ import {Route} from '../router.js';
 
 import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
-import {getTemplate} from './privacy_hub_page.html.js';
+import {getTemplate} from './privacy_hub_subpage.html.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -42,12 +42,12 @@ export const PrivacyHubNavigationOrigin = {
   NOTIFICATION: 1,
 };
 
-const SettingsPrivacyHubPageBase = PrefsMixin(DeepLinkingMixin(
+const SettingsPrivacyHubSubpageBase = PrefsMixin(DeepLinkingMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
+class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   static get is() {
-    return 'settings-privacy-hub-page' as const;
+    return 'settings-privacy-hub-subpage' as const;
   }
 
   static get template() {
@@ -221,8 +221,8 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsPrivacyHubPage.is]: SettingsPrivacyHubPage;
+    [SettingsPrivacyHubSubpage.is]: SettingsPrivacyHubSubpage;
   }
 }
 
-customElements.define(SettingsPrivacyHubPage.is, SettingsPrivacyHubPage);
+customElements.define(SettingsPrivacyHubSubpage.is, SettingsPrivacyHubSubpage);

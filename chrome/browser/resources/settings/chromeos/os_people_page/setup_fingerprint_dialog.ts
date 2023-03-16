@@ -80,7 +80,7 @@ class SettingsSetupFingerprintDialogElement extends
       },
 
       /**
-       * Authentication token provided by settings-fingerprint-list
+       * Authentication token provided by settings-fingerprint-list-subpage
        */
       authToken: {
         type: String,

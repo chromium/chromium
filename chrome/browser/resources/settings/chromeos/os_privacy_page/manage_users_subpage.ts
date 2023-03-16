@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * 'settings-manage-users-page' is the settings page for managing user accounts
- * on the device.
+ * 'settings-manage-users-subpage' is the settings page for managing user
+ * accounts on the device.
  */
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
@@ -28,20 +28,21 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
-import {getTemplate} from './manage_users_page.html.js';
+import {getTemplate} from './manage_users_subpage.html.js';
 
-const SettingsUsersPageElementBase =
+const SettingsManageUsersSubpageElementBase =
     DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
-interface SettingsUsersPageElement {
+interface SettingsManageUsersSubpageElement {
   $: {
     addUserDialog: SettingsUsersAddUserDialogElement,
   };
 }
 
-class SettingsUsersPageElement extends SettingsUsersPageElementBase {
+class SettingsManageUsersSubpageElement extends
+    SettingsManageUsersSubpageElementBase {
   static get is() {
-    return 'settings-manage-users-page' as const;
+    return 'settings-manage-users-subpage' as const;
   }
 
   static get template() {
@@ -175,8 +176,9 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsUsersPageElement.is]: SettingsUsersPageElement;
+    [SettingsManageUsersSubpageElement.is]: SettingsManageUsersSubpageElement;
   }
 }
 
-customElements.define(SettingsUsersPageElement.is, SettingsUsersPageElement);
+customElements.define(
+    SettingsManageUsersSubpageElement.is, SettingsManageUsersSubpageElement);

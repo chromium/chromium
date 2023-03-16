@@ -76,7 +76,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
     MediaDevicesProxy.setMediaDevicesForTesting(mediaDevices);
 
     PolymerTest.clearBody();
-    privacyHubSubpage = document.createElement('settings-privacy-hub-page');
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
     document.body.appendChild(privacyHubSubpage);
     await waitAfterNextRender(privacyHubSubpage);
     flush();
@@ -165,7 +165,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
   });
 
   test('Suggested content, pref disabled', async () => {
-    privacyHubSubpage = document.createElement('settings-privacy-hub-page');
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
     document.body.appendChild(privacyHubSubpage);
     flush();
 
@@ -388,7 +388,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
   });
 
   test('Toggle camera button', async () => {
-    privacyHubSubpage = document.createElement('settings-privacy-hub-page');
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
     privacyHubSubpage.prefs = {
       'ash': {
         'user': {
@@ -452,7 +452,7 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
   });
 
   test('Toggle microphone button', async () => {
-    privacyHubSubpage = document.createElement('settings-privacy-hub-page');
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
     privacyHubSubpage.prefs = {
       'ash': {
         'user': {
@@ -533,7 +533,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
   let settingsPage = null;
 
   // Which settings page to run the tests on.
-  const pageId = isPrivacyHubVisible ? 'settings-privacy-hub-page' :
+  const pageId = isPrivacyHubVisible ? 'settings-privacy-hub-subpage' :
                                        'os-settings-privacy-page';
 
   const prefs_ = {
@@ -608,10 +608,10 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
       });
 
   test(
-      'Send usage stats toggle visibility in settings-privacy-hub-page',
+      'Send usage stats toggle visibility in settings-privacy-hub-subpage',
       async () => {
         if (isPrivacyHubVisible) {
-          settingsPage = document.createElement('settings-privacy-hub-page');
+          settingsPage = document.createElement('settings-privacy-hub-subpage');
           document.body.appendChild(settingsPage);
           flush();
 

@@ -4,14 +4,14 @@
 
 /**
  * @fileoverview
- * 'settings-lock-screen' allows the user to change how they unlock their
- * device.
+ * 'settings-lock-screen-subpage' allows the user to change how they unlock
+ * their device.
  *
  * Example:
  *
- * <settings-lock-screen
+ * <settings-lock-screen-subpage
  *   prefs="{{prefs}}">
- * </settings-lock-screen>
+ * </settings-lock-screen-subpage>
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -47,14 +47,14 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
-import {getTemplate} from './lock_screen.html.js';
+import {getTemplate} from './lock_screen_subpage.html.js';
 
 const SettingsLockScreenElementBase =
     RouteObserverMixin(LockStateMixin(DeepLinkingMixin(PolymerElement)));
 
 export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   static get is() {
-    return 'settings-lock-screen' as const;
+    return 'settings-lock-screen-subpage' as const;
   }
 
   static get template() {

@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {LockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {LockScreenProgress} from 'chrome://resources/ash/common/quick_unlock/lock_screen_constants.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeSettingsPrivate} from 'chrome://webui-test/settings/chromeos/fake_settings_private.js';
-import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
-import {eventToPromise, isVisible as testUtilIsVisible} from 'chrome://webui-test/test_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/settings/chromeos/fake_settings_private.js';
+import {eventToPromise, isVisible as testUtilIsVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.js';
 import {FakeQuickUnlockUma} from './fake_quick_unlock_uma.js';
@@ -306,7 +307,8 @@ function registerLockScreenTests() {
             quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
 
             // Create choose-method element.
-            testElement = document.createElement('settings-lock-screen');
+            testElement =
+                document.createElement('settings-lock-screen-subpage');
             testElement.settingsPrivate_ = fakeSettings;
             testElement.quickUnlockPrivate = quickUnlockPrivateApi;
             testElement.prefs = prefElement.prefs;

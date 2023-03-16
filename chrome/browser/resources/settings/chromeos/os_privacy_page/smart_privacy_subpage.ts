@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'os-settings-smart-privacy-page' contains smart privacy settings.
+ * 'settings-smart-privacy-subpage' contains smart privacy settings.
  */
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
@@ -28,7 +28,7 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
-import {getTemplate} from './smart_privacy_page.html.js';
+import {getTemplate} from './smart_privacy_subpage.html.js';
 
 /**
  * The values that the quick lock slider can have, in ms.
@@ -48,12 +48,12 @@ const secondsFormatter = new Intl.NumberFormat(
     window.navigator.language,
     {style: 'unit', unit: 'second', unitDisplay: 'narrow'});
 
-const SettingsSmartPrivacyPageBase =
+const SettingsSmartPrivacySubpageBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(PolymerElement)));
 
-class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
+class SettingsSmartPrivacySubpage extends SettingsSmartPrivacySubpageBase {
   static get is() {
-    return 'settings-smart-privacy-page' as const;
+    return 'settings-smart-privacy-subpage' as const;
   }
 
   static get template() {
@@ -144,8 +144,9 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsSmartPrivacyPage.is]: SettingsSmartPrivacyPage;
+    [SettingsSmartPrivacySubpage.is]: SettingsSmartPrivacySubpage;
   }
 }
 
-customElements.define(SettingsSmartPrivacyPage.is, SettingsSmartPrivacyPage);
+customElements.define(
+    SettingsSmartPrivacySubpage.is, SettingsSmartPrivacySubpage);

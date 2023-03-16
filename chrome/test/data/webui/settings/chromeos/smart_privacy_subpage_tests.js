@@ -47,7 +47,8 @@ suite('SmartPrivacySubpageTests', function() {
     });
 
     PolymerTest.clearBody();
-    smartPrivacySubpage = document.createElement('settings-smart-privacy-page');
+    smartPrivacySubpage =
+        document.createElement('settings-smart-privacy-subpage');
     assertTrue(!!smartPrivacySubpage);
     smartPrivacySubpage.prefs = makePrefs(false, false);
     document.body.appendChild(smartPrivacySubpage);

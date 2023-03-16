@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintSetupStep, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintSetupStep} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -97,7 +98,7 @@ class TestFingerprintBrowserProxy extends TestBrowserProxy {
   }
 }
 
-suite('settings-fingerprint-list', function() {
+suite('settings-fingerprint-list-subpage', function() {
   /** @type {?SettingsFingerprintListElement} */
   let fingerprintList = null;
 
@@ -129,7 +130,8 @@ suite('settings-fingerprint-list', function() {
     FingerprintBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
-    fingerprintList = document.createElement('settings-fingerprint-list');
+    fingerprintList =
+        document.createElement('settings-fingerprint-list-subpage');
     document.body.appendChild(fingerprintList);
     flush();
     await browserProxy.whenCalled('getFingerprintsList');

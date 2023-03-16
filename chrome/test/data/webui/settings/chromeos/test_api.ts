@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
 import {SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -487,7 +490,7 @@ class OsSettingsDriver implements OSSettingsDriverInterface {
     const lockScreen: Lazy<HTMLElement> = () => {
       assertTrue(privacyPage.shadowRoot !== null);
       const lockScreen =
-          privacyPage.shadowRoot.querySelector('settings-lock-screen');
+          privacyPage.shadowRoot.querySelector('settings-lock-screen-subpage');
       assertTrue(lockScreen instanceof HTMLElement);
       return lockScreen;
     };

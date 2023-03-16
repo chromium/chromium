@@ -195,7 +195,7 @@ suite('PrivacyPageTests', function() {
     flush();
 
     const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-manage-users-page')
+        privacyPage.shadowRoot.querySelector('settings-manage-users-subpage')
             .shadowRoot.querySelector('#allowGuestBrowsing')
             .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
@@ -212,7 +212,7 @@ suite('PrivacyPageTests', function() {
     flush();
 
     const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-manage-users-page')
+        privacyPage.shadowRoot.querySelector('settings-manage-users-subpage')
             .shadowRoot.querySelector('#showUserNamesOnSignIn')
             .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
@@ -233,7 +233,7 @@ suite('PrivacyPageTests', function() {
     flush();
 
     const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-smart-privacy-page')
+        privacyPage.shadowRoot.querySelector('settings-smart-privacy-subpage')
             .shadowRoot.querySelector('#snoopingProtectionToggle')
             .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
@@ -254,7 +254,7 @@ suite('PrivacyPageTests', function() {
     flush();
 
     const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('settings-smart-privacy-page')
+        privacyPage.shadowRoot.querySelector('settings-smart-privacy-subpage')
             .shadowRoot.querySelector('#quickDimToggle')
             .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);

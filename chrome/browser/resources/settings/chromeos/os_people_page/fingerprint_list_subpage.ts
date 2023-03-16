@@ -29,15 +29,15 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo} from './fingerprint_browser_proxy.js';
-import {getTemplate} from './fingerprint_list.html.js';
+import {getTemplate} from './fingerprint_list_subpage.html.js';
 
-const SettingsFingerprintListElementBase = RouteObserverMixin(
+const SettingsFingerprintListSubpageElementBase = RouteObserverMixin(
     WebUiListenerMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-class SettingsFingerprintListElement extends
-    SettingsFingerprintListElementBase {
+class SettingsFingerprintListSubpageElement extends
+    SettingsFingerprintListSubpageElementBase {
   static get is() {
-    return 'settings-fingerprint-list' as const;
+    return 'settings-fingerprint-list-subpage' as const;
   }
 
   static get template() {
@@ -199,9 +199,11 @@ class SettingsFingerprintListElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsFingerprintListElement.is]: SettingsFingerprintListElement;
+    [SettingsFingerprintListSubpageElement.is]:
+        SettingsFingerprintListSubpageElement;
   }
 }
 
 customElements.define(
-    SettingsFingerprintListElement.is, SettingsFingerprintListElement);
+    SettingsFingerprintListSubpageElement.is,
+    SettingsFingerprintListSubpageElement);
