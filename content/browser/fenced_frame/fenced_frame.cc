@@ -102,8 +102,8 @@ void FencedFrame::Navigate(
 
   FrameTreeNode* inner_root = frame_tree_->root();
 
-  // TODO(crbug.com/1237552): Resolve the discussion around navigations being
-  // treated as downloads, and implement the correct thing.
+  // The download policy will be controlled and modified by `NavigationRequest`,
+  // depending on whether the sandbox flags permit downloads.
   blink::NavigationDownloadPolicy download_policy;
 
   // This method is only invoked in the context of the embedder navigating
