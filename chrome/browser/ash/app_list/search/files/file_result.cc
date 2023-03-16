@@ -137,7 +137,7 @@ FileResult::FileResult(const std::string& id,
       SetMetricsType(ash::DRIVE_SEARCH);
       break;
     case ResultType::kImageSearch:
-      // TODO(b/260646344): fix the metric type.
+      SetMetricsType(ash::IMAGE_SEARCH);
       break;
     default:
       NOTREACHED();

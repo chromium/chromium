@@ -3757,6 +3757,7 @@ Unknown properties are collapsed to zero. -->
   <int value="50" label="Personalization"/>
   <int value="51" label="Bruschetta app"/>
   <int value="52" label="System Info"/>
+  <int value="53" label="Local image search"/>
 </enum>
 
 <enum name="AppListShowSource">

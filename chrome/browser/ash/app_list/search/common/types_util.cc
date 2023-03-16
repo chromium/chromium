@@ -177,6 +177,8 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "SEARCH_RESULT_TYPE_BOUNDARY";
     case ash::SearchResultType::SYSTEM_INFO:
       return "SYSTEM_INFO";
+    case ash::SearchResultType::IMAGE_SEARCH:
+      return "IMAGE_SEARCH";
   }
   NOTREACHED();
 }

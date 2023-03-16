@@ -180,6 +180,8 @@ enum SearchResultType {
   BRUSCHETTA_APP,
   // A System Info Answer Card Result.
   SYSTEM_INFO,
+  // A local image search result.
+  IMAGE_SEARCH,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };
