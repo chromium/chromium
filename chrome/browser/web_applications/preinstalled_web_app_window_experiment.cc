@@ -24,6 +24,7 @@
 // TODO(crbug.com/1402146): Allow web apps to depend on app service.
 #include "chrome/browser/apps/app_service/app_service_proxy.h"  // nogncheck
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
+#include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"  // nogncheck
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -299,7 +300,7 @@ void PreinstalledWebAppWindowExperiment::OnWebAppUserDisplayModeChanged(
   }
 
   absl::optional<apps::DefaultAppName> app_name =
-      utils::PreinstalledWebAppIdToEnum(app_id);
+      apps::PreinstalledWebAppIdToName(app_id);
   if (!app_name.has_value()) {
     LOG(WARNING) << "Unknown preinstalled app " << app->untranslated_name()
                  << " ID " << app_id;
@@ -319,7 +320,7 @@ void PreinstalledWebAppWindowExperiment::OnPreferredAppChanged(
   }
 
   absl::optional<apps::DefaultAppName> app_name =
-      utils::PreinstalledWebAppIdToEnum(app_id);
+      apps::PreinstalledWebAppIdToName(app_id);
   if (!app_name.has_value()) {
     LOG(WARNING) << "Unknown default app " << app->untranslated_name() << " ID "
                  << app_id;

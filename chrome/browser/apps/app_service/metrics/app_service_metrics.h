@@ -100,6 +100,18 @@ void RecordBuiltInAppSearchResult(const std::string& app_id);
 
 void RecordAppsPerNotification(int count);
 
+// Converts a preinstalled web app ID to the corresponding `DefaultAppName`, or
+// nullopt if it doesn't match a known ID.
+const absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
+    const std::string& app_id);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Converts a system web app ID to the corresponding `DefaultAppName`, or
+// nullopt if it doesn't match a known ID.
+const absl::optional<apps::DefaultAppName> SystemWebAppIdToName(
+    const std::string& app_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_SERVICE_METRICS_H_

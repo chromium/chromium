@@ -30,55 +30,11 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "web_app_id_constants.h"
 
 namespace web_app::preinstalled_web_app_window_experiment_utils {
 
 using mojom::UserDisplayMode;
 using UserGroup = features::PreinstalledWebAppWindowExperimentUserGroup;
-
-absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToEnum(
-    const AppId& app_id) {
-  if (app_id == web_app::kCalculatorAppId) {
-    return apps::DefaultAppName::kCalculator;
-  } else if (app_id == web_app::kCanvasAppId) {
-    return apps::DefaultAppName::kChromeCanvas;
-  } else if (app_id == web_app::kCursiveAppId) {
-    return apps::DefaultAppName::kCursive;
-  } else if (app_id == web_app::kGmailAppId) {
-    return apps::DefaultAppName::kGmail;
-  } else if (app_id == web_app::kPlayBooksAppId) {
-    return apps::DefaultAppName::kPlayBooks;
-  } else if (app_id == web_app::kGoogleMoviesAppId) {
-    return apps::DefaultAppName::kPlayMovies;
-  } else if (app_id == web_app::kGoogleCalendarAppId) {
-    return apps::DefaultAppName::kGoogleCalendar;
-  } else if (app_id == web_app::kGoogleChatAppId) {
-    return apps::DefaultAppName::kGoogleChat;
-  } else if (app_id == web_app::kGoogleDocsAppId) {
-    return apps::DefaultAppName::kDocs;
-  } else if (app_id == web_app::kGoogleDriveAppId) {
-    return apps::DefaultAppName::kDrive;
-  } else if (app_id == web_app::kGoogleMeetAppId) {
-    return apps::DefaultAppName::kGoogleMeet;
-  } else if (app_id == web_app::kGoogleSheetsAppId) {
-    return apps::DefaultAppName::kSheets;
-  } else if (app_id == web_app::kGoogleSlidesAppId) {
-    return apps::DefaultAppName::kSlides;
-  } else if (app_id == web_app::kGoogleKeepAppId) {
-    return apps::DefaultAppName::kKeep;
-  } else if (app_id == web_app::kGoogleMapsAppId) {
-    return apps::DefaultAppName::kGoogleMaps;
-  } else if (app_id == web_app::kMessagesAppId) {
-    return apps::DefaultAppName::kGoogleMessages;
-  } else if (app_id == web_app::kYoutubeAppId) {
-    return apps::DefaultAppName::kYouTube;
-  } else if (app_id == web_app::kYoutubeMusicAppId) {
-    return apps::DefaultAppName::kYouTubeMusic;
-  } else {
-    return absl::nullopt;
-  }
-}
 
 // Note these strings must match those in
 // `kPreinstalledWebAppWindowExperimentVariations` in about_flags.cc.

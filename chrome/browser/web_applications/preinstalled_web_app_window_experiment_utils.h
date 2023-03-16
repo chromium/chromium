@@ -30,9 +30,6 @@ class WebAppRegistrar;
 // `PreinstalledWebAppWindowExperiment`.
 namespace preinstalled_web_app_window_experiment_utils {
 
-absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToEnum(
-    const AppId& app_id);
-
 const base::FeatureParam<features::PreinstalledWebAppWindowExperimentUserGroup>&
 GetFeatureParam();
 
