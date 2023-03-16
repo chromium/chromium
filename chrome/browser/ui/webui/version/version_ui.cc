@@ -40,6 +40,7 @@
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "chrome/browser/ui/android/android_about_app_info.h"
 #else
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -232,8 +233,18 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID)
-  html_source->AddString(version_ui::kOSVersion,
-                         AndroidAboutAppInfo::GetOsInfo());
+  std::string os_info = AndroidAboutAppInfo::GetOsInfo();
+  os_info += "; " + base::NumberToString(
+                        base::android::BuildInfo::GetInstance()->sdk_int());
+  std::string code_name(base::android::BuildInfo::GetInstance()->codename());
+  os_info += "; " + code_name;
+  html_source->AddString(version_ui::kOSVersion, os_info);
+  html_source->AddString(
+      version_ui::kTargetSdkVersion,
+      base::NumberToString(
+          base::android::BuildInfo::GetInstance()->target_sdk_version()));
+  html_source->AddString(version_ui::kTargetsU,
+                         AndroidAboutAppInfo::GetTargetsUInfo());
   html_source->AddString(version_ui::kGmsVersion,
                          AndroidAboutAppInfo::GetGmsInfo());
 #endif  // BUILDFLAG(IS_ANDROID)

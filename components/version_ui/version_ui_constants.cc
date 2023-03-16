@@ -65,6 +65,10 @@ const char kOSType[] = "os_type";
 #endif
 #if BUILDFLAG(IS_ANDROID)
 const char kOSVersion[] = "os_version";
+const char kTargetSdkVersionName[] = "target_sdk_version_name";
+const char kTargetSdkVersion[] = "target_sdk_version";
+const char kTargetsUName[] = "targets_u_name";
+const char kTargetsU[] = "targets_u";
 const char kGmsName[] = "gms_name";
 const char kGmsVersion[] = "gms_version";
 #endif

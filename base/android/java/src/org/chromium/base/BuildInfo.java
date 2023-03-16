@@ -75,8 +75,10 @@ public class BuildInfo {
 
     /** Returns a serialized string array of all properties of this class. */
     @VisibleForTesting
+    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     String[] getAllProperties() {
         String hostPackageName = ContextUtils.getApplicationContext().getPackageName();
+        // This implementation needs to be kept in sync with the native BuildInfo constructor.
         return new String[] {
                 Build.BRAND,
                 Build.DEVICE,
@@ -107,6 +109,9 @@ public class BuildInfo {
                 Build.HARDWARE,
                 isAtLeastT() ? "1" : "0",
                 isAutomotive ? "1" : "0",
+                BuildCompat.isAtLeastU() ? "1" : "0",
+                targetsAtLeastU() ? "1" : "0",
+                Build.VERSION.CODENAME,
         };
     }
 

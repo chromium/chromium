@@ -6,6 +6,7 @@
 
 #include <jni.h>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/system/sys_info.h"
@@ -23,4 +24,15 @@ std::string AndroidAboutAppInfo::GetOsInfo() {
   return base::SysInfo::OperatingSystemVersion() +
          content::GetAndroidOSInfo(content::IncludeAndroidBuildNumber::Include,
                                    content::IncludeAndroidModel::Include);
+}
+
+std::string AndroidAboutAppInfo::GetTargetsUInfo() {
+  std::string targets_u_info =
+      base::android::BuildInfo::GetInstance()->is_at_least_u() ? "true"
+                                                               : "false";
+  targets_u_info += "/";
+  targets_u_info +=
+      base::android::BuildInfo::GetInstance()->targets_at_least_u() ? "true"
+                                                                    : "false";
+  return targets_u_info;
 }

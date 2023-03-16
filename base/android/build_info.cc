@@ -82,7 +82,10 @@ BuildInfo::BuildInfo(const std::vector<std::string>& params)
       version_incremental_(StrDupParam(params, 24)),
       hardware_(StrDupParam(params, 25)),
       is_at_least_t_(GetIntParam(params, 26)),
-      is_automotive_(GetIntParam(params, 27)) {}
+      is_automotive_(GetIntParam(params, 27)),
+      is_at_least_u_(GetIntParam(params, 28)),
+      targets_at_least_u_(GetIntParam(params, 29)),
+      codename_(StrDupParam(params, 30)) {}
 
 // static
 BuildInfo* BuildInfo::GetInstance() {
