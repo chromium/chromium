@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "components/policy/core/common/policy_map.h"
@@ -57,6 +58,40 @@ std::set<std::string> CollectExtensionIds(
   return extension_ids;
 }
 
+const char* const kOncRecommendedFieldsWorkaroundActionHistogram =
+    "Network.Ethernet.Policy.OncRecommendedFieldsWorkaroundAction";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OncRecommendedFieldsWorkaroundAction {
+  kEnabledAndNotAffected = 0,
+  kEnabledAndAffected = 1,
+  kDisabledAndNotAffected = 2,
+  kDisabledAndAffected = 3,
+  kMaxValue = kDisabledAndAffected,
+};
+
+void ReportOncRecommendedFieldsWorkaroundAction(bool enabled_by_feature,
+                                                bool affected) {
+  OncRecommendedFieldsWorkaroundAction action;
+  if (enabled_by_feature) {
+    if (affected) {
+      action = OncRecommendedFieldsWorkaroundAction::kEnabledAndAffected;
+    } else {
+      action = OncRecommendedFieldsWorkaroundAction::kEnabledAndNotAffected;
+    }
+  } else {
+    if (affected) {
+      action = OncRecommendedFieldsWorkaroundAction::kDisabledAndAffected;
+    } else {
+      action = OncRecommendedFieldsWorkaroundAction::kDisabledAndNotAffected;
+    }
+  }
+
+  base::UmaHistogramEnumeration(kOncRecommendedFieldsWorkaroundActionHistogram,
+                                action);
+}
+
 // Sets the "Recommended" list of recommended field names in |onc_value|,
 // which must be a dictionary, to |recommended_field_names|. If a
 // "Recommended" list already existed in |onc_dict|, it's replaced.
@@ -72,10 +107,14 @@ void SetRecommended(
 
 void MarkFieldsAsRecommendedForBackwardsCompatibility(
     base::Value::Dict& network_config_onc_dict) {
+  const bool enabled_by_feature = !base::FeatureList::IsEnabled(
+      kDisablePolicyEthernetRecommendedWorkaround);
+
+  bool affected = true;
   // If anything has been recommended, trust the server and don't change
   // anything.
   if (network_config_onc_dict.contains(::onc::kRecommended)) {
-    return;
+    affected = false;
   }
 
   // Ensure kStaticIPConfig exists because a "Recommended" field will be added
@@ -83,6 +122,12 @@ void MarkFieldsAsRecommendedForBackwardsCompatibility(
   base::Value::Dict* static_ip_config = network_config_onc_dict.EnsureDict(
       ::onc::network_config::kStaticIPConfig);
   if (static_ip_config->contains(::onc::kRecommended)) {
+    affected = false;
+  }
+
+  ReportOncRecommendedFieldsWorkaroundAction(enabled_by_feature, affected);
+
+  if (!enabled_by_feature || !affected) {
     return;
   }
 
@@ -104,11 +149,6 @@ void MarkFieldsAsRecommendedForBackwardsCompatibility(
 // "Recommended".
 void MarkFieldsAsRecommendedForBackwardsCompatibility(
     base::Value::List& network_configs_onc) {
-  if (base::FeatureList::IsEnabled(
-          kDisablePolicyEthernetRecommendedWorkaround)) {
-    return;
-  }
-
   for (auto& network_config_onc : network_configs_onc) {
     DCHECK(network_config_onc.is_dict());
     base::Value::Dict& network_config_onc_dict = network_config_onc.GetDict();

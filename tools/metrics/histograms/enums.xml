@@ -76321,6 +76321,16 @@ Called by update_net_trust_anchors.py.-->
       label="The permission request is delivered to phone's Exo package"/>
 </enum>
 
+<enum name="OncRecommendedFieldsWorkaroundAction">
+  <int value="0"
+      label="Enabled by feature, ONC NetworkConfiguration not affected"/>
+  <int value="1" label="Enabled by feature, ONC NetworkConfiguration affected"/>
+  <int value="2"
+      label="Disabled by feature, ONC NetworkConfiguration not affected"/>
+  <int value="3"
+      label="Disabled by feature, ONC NetworkConfiguration affected"/>
+</enum>
+
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
   <int value="0" label="Device does not support SODA"/>
   <int value="1" label="User's language is not supported by SODA"/>
