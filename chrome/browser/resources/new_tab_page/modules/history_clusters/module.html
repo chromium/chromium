@@ -61,7 +61,8 @@
       icon-src="chrome://resources/images/icon_journeys.svg">
     [[i18n('modulesJourneysResumeJourney', title_)]]
     <button id="showAllButton" type="button" on-click="onShowAllClick_"
-        slot="title-actions">
+        slot="title-actions"
+        aria-label$="[[i18n('modulesJourneysShowAllAcc', title_)]]">
       [[i18n('modulesJourneysShowAll')]]
     </button>
   </ntp-module-header>

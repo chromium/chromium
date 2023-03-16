@@ -7301,6 +7301,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT" desc="A label to append to the disable text in the dropdown.">
         Journeys card
       </message>
+      <message name="IDS_ACCNAME_SHOW_ALL" desc="The accessible name for the show all button in the header of NTP Journeys Module.">
+        Show all searches for <ph name="QUERY_CLUSTER_NAME">$1<ex>Office Chairs</ex></ph>
+      </message>
+      <message name="IDS_ACCNAME_SEARCH_SUGG" desc="The accessible name for the search suggestion tile in the NTP Journeys Module.">
+        Search for <ph name="QUERY_CLUSTER_NAME">$1<ex>Office Chairs</ex></ph>
+      </message>
 
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">

@@ -58,7 +58,8 @@
 <div id="content">
   <template is="dom-repeat" items="[[relatedSearches]]"
             filter="[[filterRelatedSearches_]]">
-    <a class="related-search" href="[[computeSearchUrl_(item.query)]]">
+    <a class="related-search" href="[[computeSearchUrl_(item.query)]]"
+       aria-label$="[[i18n('modulesJourneysSearchSuggAcc', item.query)]]">
       <div class="icon"
            style="-webkit-mask-image:
            url(//resources/images/icon_search.svg);"></div>

@@ -20,6 +20,12 @@
     outline: none;
   }
 
+  #content {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+  }
+
   :host([medium-format]) #content {
     display: flex;
     flex-direction: row;
@@ -34,7 +40,7 @@
 
   :host([large-format]) #image {
     height: 152px;
-    margin: 16px auto;
+    margin: 16px 16px;
     width: 320px;
   }
 
@@ -131,7 +137,8 @@
     line-height: 16px;
   }
 </style>
-<a id="content" href="[[visit.normalizedUrl.url]]">
+<a id="content" href="[[visit.normalizedUrl.url]]"
+   aria-label$="[[visit.pageTitle]], [[label_]], [[visit.relativeDate]]">
   <div id="image">
     <template is="dom-if" if="[[hasImageUrl_(imageUrl_)]]" restamp>
       <img is="cr-auto-img" auto-src="[[imageUrl_.url]]"
