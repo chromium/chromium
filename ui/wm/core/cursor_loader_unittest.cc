@@ -72,41 +72,46 @@ TEST_F(CursorLoaderTest, GetCursorData) {
   CursorLoader cursor_loader(/*use_platform_cursors=*/false);
   aura::client::SetCursorShapeClient(&cursor_loader);
 
-  const ui::CursorSize kDefaultSize = ui::CursorSize::kNormal;
-  const float kDefaultScale = 1.0f;
-  const display::Display::Rotation kDefaultRotation =
-      display::Display::ROTATE_0;
+  for (const float scale : {1.0f, 2.0f}) {
+    const display::Display::Rotation kDefaultRotation =
+        display::Display::ROTATE_0;
+    cursor_loader.SetDisplayData(kDefaultRotation, scale);
+    for (const ui::CursorSize cursor_size :
+         {ui::CursorSize::kNormal, ui::CursorSize::kLarge}) {
+      cursor_loader.SetSize(cursor_size);
 
-  const ui::Cursor invisible_cursor = CursorType::kNone;
-  EXPECT_TRUE(GetCursorBitmaps(invisible_cursor)[0].isNull());
-  EXPECT_TRUE(GetCursorHotspot(invisible_cursor).IsOrigin());
+      const ui::Cursor invisible_cursor = CursorType::kNone;
+      EXPECT_TRUE(GetCursorBitmaps(invisible_cursor)[0].isNull());
+      EXPECT_TRUE(GetCursorHotspot(invisible_cursor).IsOrigin());
 
-  const ui::Cursor pointer_cursor = CursorType::kPointer;
-  EXPECT_EQ(GetCursorBitmaps(pointer_cursor).size(), 1u);
-  EXPECT_FALSE(GetCursorBitmaps(pointer_cursor)[0].isNull());
-  const auto pointer_cursor_data = GetCursorData(
-      CursorType::kPointer, kDefaultSize, kDefaultScale, kDefaultRotation);
-  ASSERT_TRUE(pointer_cursor_data);
-  ASSERT_EQ(pointer_cursor_data->bitmaps.size(), 1u);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(GetCursorBitmaps(pointer_cursor)[0],
-                                   pointer_cursor_data->bitmaps[0]));
-  EXPECT_FALSE(GetCursorHotspot(pointer_cursor).IsOrigin());
-  EXPECT_EQ(GetCursorHotspot(pointer_cursor), pointer_cursor_data->hotspot);
+      const ui::Cursor pointer_cursor = CursorType::kPointer;
+      EXPECT_EQ(GetCursorBitmaps(pointer_cursor).size(), 1u);
+      EXPECT_FALSE(GetCursorBitmaps(pointer_cursor)[0].isNull());
+      const auto pointer_cursor_data = GetCursorData(
+          CursorType::kPointer, cursor_size, scale, kDefaultRotation);
+      ASSERT_TRUE(pointer_cursor_data);
+      ASSERT_EQ(pointer_cursor_data->bitmaps.size(), 1u);
+      EXPECT_TRUE(gfx::BitmapsAreEqual(GetCursorBitmaps(pointer_cursor)[0],
+                                       pointer_cursor_data->bitmaps[0]));
+      EXPECT_FALSE(GetCursorHotspot(pointer_cursor).IsOrigin());
+      EXPECT_EQ(GetCursorHotspot(pointer_cursor), pointer_cursor_data->hotspot);
 
-  const ui::Cursor wait_cursor = CursorType::kWait;
-  EXPECT_FALSE(GetCursorBitmaps(wait_cursor)[0].isNull());
-  const auto wait_cursor_data = GetCursorData(CursorType::kWait, kDefaultSize,
-                                              kDefaultScale, kDefaultRotation);
-  ASSERT_TRUE(wait_cursor_data);
-  ASSERT_GT(wait_cursor_data->bitmaps.size(), 1u);
-  ASSERT_EQ(GetCursorBitmaps(wait_cursor).size(),
-            wait_cursor_data->bitmaps.size());
-  for (size_t i = 0; i < wait_cursor_data->bitmaps.size(); i++) {
-    EXPECT_TRUE(gfx::BitmapsAreEqual(GetCursorBitmaps(wait_cursor)[i],
-                                     wait_cursor_data->bitmaps[i]));
+      const ui::Cursor wait_cursor = CursorType::kWait;
+      EXPECT_FALSE(GetCursorBitmaps(wait_cursor)[0].isNull());
+      const auto wait_cursor_data = GetCursorData(
+          CursorType::kWait, cursor_size, scale, kDefaultRotation);
+      ASSERT_TRUE(wait_cursor_data);
+      ASSERT_GT(wait_cursor_data->bitmaps.size(), 1u);
+      ASSERT_EQ(GetCursorBitmaps(wait_cursor).size(),
+                wait_cursor_data->bitmaps.size());
+      for (size_t i = 0; i < wait_cursor_data->bitmaps.size(); i++) {
+        EXPECT_TRUE(gfx::BitmapsAreEqual(GetCursorBitmaps(wait_cursor)[i],
+                                         wait_cursor_data->bitmaps[i]));
+      }
+      EXPECT_FALSE(GetCursorHotspot(wait_cursor).IsOrigin());
+      EXPECT_EQ(GetCursorHotspot(wait_cursor), wait_cursor_data->hotspot);
+    }
   }
-  EXPECT_FALSE(GetCursorHotspot(wait_cursor).IsOrigin());
-  EXPECT_EQ(GetCursorHotspot(wait_cursor), wait_cursor_data->hotspot);
 
   const SkBitmap kBitmap = GetTestBitmap();
   constexpr gfx::Point kHotspot = gfx::Point(10, 10);
