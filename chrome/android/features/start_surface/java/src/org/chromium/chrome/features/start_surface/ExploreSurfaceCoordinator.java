@@ -85,7 +85,7 @@ public class ExploreSurfaceCoordinator {
                 /*overScrollDisabled=*/true, parentView,
                 new ExploreSurfaceActionDelegate(
                         snackbarManager, BookmarkModel.getForProfile(profile)),
-                HelpAndFeedbackLauncherImpl.getInstance(), tabModelSelector);
+                HelpAndFeedbackLauncherImpl.getForProfile(profile), tabModelSelector);
 
         mFeedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.

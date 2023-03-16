@@ -135,7 +135,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             mHelpAndFeedbackLauncher.show(mFragmentView.getActivity(),
                     mFragmentView.getActivity().getString(R.string.help_context_check_passwords),
-                    Profile.getLastUsedRegularProfile(), null);
+                    null);
             return true;
         }
         return false;

@@ -83,9 +83,12 @@ public class PassphraseCreationDialogFragment extends DialogFragment {
                 new SpanInfo("<learnmore>", "</learnmore>", new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        HelpAndFeedbackLauncherImpl.getInstance().show(activity,
-                                activity.getString(R.string.help_context_change_sync_passphrase),
-                                Profile.getLastUsedRegularProfile(), null);
+                        HelpAndFeedbackLauncherImpl
+                                .getForProfile(Profile.getLastUsedRegularProfile())
+                                .show(activity,
+                                        activity.getString(
+                                                R.string.help_context_change_sync_passphrase),
+                                        null);
                     }
                 }));
     }

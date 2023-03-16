@@ -114,7 +114,7 @@ public class CreatorActivity extends SnackbarActivity {
                 new CreatorActionDelegateImpl(this, mProfile, getSnackbarManager(), coordinator);
 
         coordinator.queryFeedStream(mCreatorActionDelegate,
-                HelpAndFeedbackLauncherImpl.getInstance(), mShareDelegateSupplier);
+                HelpAndFeedbackLauncherImpl.getForProfile(mProfile), mShareDelegateSupplier);
 
         setContentView(coordinator.getView());
         Toolbar actionBar = findViewById(R.id.action_bar);

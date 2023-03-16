@@ -179,9 +179,8 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(),
-                    getString(R.string.help_context_sync_and_services),
-                    Profile.getLastUsedRegularProfile(), null);
+            HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
+                    .show(getActivity(), getString(R.string.help_context_sync_and_services), null);
             return true;
         }
         return false;

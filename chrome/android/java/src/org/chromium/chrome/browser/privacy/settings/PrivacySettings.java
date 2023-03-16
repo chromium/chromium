@@ -303,9 +303,8 @@ public class PrivacySettings
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(),
-                    getString(R.string.help_context_privacy), Profile.getLastUsedRegularProfile(),
-                    null);
+            HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
+                    .show(getActivity(), getString(R.string.help_context_privacy), null);
             return true;
         }
         return false;

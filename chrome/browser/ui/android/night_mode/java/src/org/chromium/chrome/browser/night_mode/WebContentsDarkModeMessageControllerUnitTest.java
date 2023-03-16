@@ -406,8 +406,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
                 TEST_URL, mModalDialogManager, mMockSettingsLauncher, mMockFeedbackLauncher);
         mModalDialogManager.clickButton(ButtonType.POSITIVE);
         verify(mMockFeedbackLauncher, times(1))
-                .showFeedback(
-                        eq(mMockActivity), eq(mMockProfile), eq(TEST_URL), any(), anyInt(), any());
+                .showFeedback(eq(mMockActivity), eq(TEST_URL), any(), anyInt(), any());
 
         // Verify dismissal.
         Assert.assertNull("Shown dialog model should be null after clicking the positive button.",

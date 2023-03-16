@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -403,11 +402,6 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().reportOtherUserAction(
                     mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_SEND_FEEDBACK);
 
-            Profile profile = Profile.getLastUsedRegularProfile();
-            if (profile == null) {
-                return;
-            }
-
             String url = productSpecificDataMap.get(XSURFACE_CARD_URL);
 
             // We want to hide the bottom sheet before sending feedback so the snapshot doesn't show
@@ -420,8 +414,8 @@ public class FeedStream implements Stream {
             // matching an allow list rule.
             PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
                     ()
-                            -> mHelpAndFeedbackLauncher.showFeedback(mActivity, profile, url,
-                                    FEEDBACK_REPORT_TYPE, productSpecificDataMap),
+                            -> mHelpAndFeedbackLauncher.showFeedback(
+                                    mActivity, url, FEEDBACK_REPORT_TYPE, productSpecificDataMap),
                     MENU_DISMISS_TASK_DELAY);
         }
 

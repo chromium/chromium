@@ -170,9 +170,12 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                             /* suggestionAction= */ () -> {
                                 Activity activity = mTab.getWindowAndroid().getActivity().get();
                                 assert activity != null;
-                                HelpAndFeedbackLauncherImpl.getInstance().show(activity,
-                                        activity.getString(R.string.help_context_sad_tab),
-                                        Profile.fromWebContents(mTab.getWebContents()), null);
+                                HelpAndFeedbackLauncherImpl
+                                        .getForProfile(
+                                                Profile.fromWebContents(mTab.getWebContents()))
+                                        .show(activity,
+                                                activity.getString(R.string.help_context_sad_tab),
+                                                null);
                             },
 
                             /* buttonAction= */ () -> {

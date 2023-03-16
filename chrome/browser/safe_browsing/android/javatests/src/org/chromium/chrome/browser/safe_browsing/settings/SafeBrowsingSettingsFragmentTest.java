@@ -28,7 +28,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -418,7 +417,7 @@ public class SafeBrowsingSettingsFragmentTest {
                     .show(mSafeBrowsingSettingsFragment.getActivity(),
                             mSafeBrowsingSettingsFragment.getString(
                                     R.string.help_context_safe_browsing),
-                            Profile.getLastUsedRegularProfile(), null);
+                            null);
         });
     }
 

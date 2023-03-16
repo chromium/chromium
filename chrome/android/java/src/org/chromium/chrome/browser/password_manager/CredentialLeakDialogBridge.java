@@ -102,8 +102,8 @@ public class CredentialLeakDialogBridge {
         if (currentTab == null) return;
 
         Profile profile = Profile.fromWebContents(currentTab.getWebContents());
-        HelpAndFeedbackLauncherImpl.getInstance().show(activity,
-                activity.getString(R.string.help_context_password_leak_detection), profile, null);
+        HelpAndFeedbackLauncherImpl.getForProfile(profile).show(
+                activity, activity.getString(R.string.help_context_password_leak_detection), null);
     }
 
     @NativeMethods

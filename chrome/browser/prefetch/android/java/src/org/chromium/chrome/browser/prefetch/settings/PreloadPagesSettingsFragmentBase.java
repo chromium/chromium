@@ -13,7 +13,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
@@ -53,8 +52,8 @@ public abstract class PreloadPagesSettingsFragmentBase
         if (item.getItemId() != R.id.menu_id_targeted_help) {
             return false;
         }
-        mHelpAndFeedbackLauncher.show(getActivity(), getString(R.string.help_context_privacy),
-                Profile.getLastUsedRegularProfile(), null);
+        mHelpAndFeedbackLauncher.show(
+                getActivity(), getString(R.string.help_context_privacy), null);
         return true;
     }
 

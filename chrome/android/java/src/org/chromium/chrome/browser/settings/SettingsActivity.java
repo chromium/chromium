@@ -396,8 +396,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             finish();
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
-            HelpAndFeedbackLauncherImpl.getInstance().show(
-                    this, getString(R.string.help_context_settings), mProfile, null);
+            HelpAndFeedbackLauncherImpl.getForProfile(mProfile).show(
+                    this, getString(R.string.help_context_settings), null);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -431,7 +431,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             FragmentHelpAndFeedbackLauncher fragmentHelpAndFeedbackLauncher =
                     (FragmentHelpAndFeedbackLauncher) fragment;
             fragmentHelpAndFeedbackLauncher.setHelpAndFeedbackLauncher(
-                    HelpAndFeedbackLauncherImpl.getInstance());
+                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {
             SafetyCheckCoordinator.create((SafetyCheckSettingsFragment) fragment,
@@ -440,13 +440,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof PasswordCheckFragmentView) {
             PasswordCheckComponentUiFactory.create((PasswordCheckFragmentView) fragment,
-                    HelpAndFeedbackLauncherImpl.getInstance(), mSettingsLauncher,
+                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile), mSettingsLauncher,
                     LaunchIntentDispatcher::createCustomTabActivityIntent,
                     IntentUtils::addTrustedIntentExtras);
         }
         if (fragment instanceof CredentialEntryFragmentViewBase) {
             CredentialEditUiFactory.create((CredentialEntryFragmentViewBase) fragment,
-                    HelpAndFeedbackLauncherImpl.getInstance());
+                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
         }
         if (fragment instanceof SearchEngineSettings) {
             SearchEngineSettings settings = (SearchEngineSettings) fragment;

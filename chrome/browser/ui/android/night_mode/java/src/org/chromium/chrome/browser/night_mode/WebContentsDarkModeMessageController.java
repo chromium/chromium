@@ -268,7 +268,7 @@ public class WebContentsDarkModeMessageController {
                 if (buttonType == ButtonType.TITLE_ICON) return;
                 if (buttonType == ButtonType.POSITIVE) {
                     if (feedbackDialogEnabled) {
-                        showFeedback(feedbackLauncher, activity, profile, url);
+                        showFeedback(feedbackLauncher, activity, url);
                     } else {
                         openSettings(settingsLauncher, activity);
                     }
@@ -307,11 +307,10 @@ public class WebContentsDarkModeMessageController {
      * Show feedback.
      */
     private static void showFeedback(
-            HelpAndFeedbackLauncher launcher, Activity activity, Profile profile, String url) {
+            HelpAndFeedbackLauncher launcher, Activity activity, String url) {
         // TODO(crbug.com/1260152): Import ScreenshotMode instead of hardcoding value once new build
         //  target added.
-        launcher.showFeedback(activity, profile, url, null,
-                /* ScreenshotMode.DEFAULT */ 0, null);
+        launcher.showFeedback(activity, url, null, /* ScreenshotMode.DEFAULT */ 0, null);
     }
 
     /**

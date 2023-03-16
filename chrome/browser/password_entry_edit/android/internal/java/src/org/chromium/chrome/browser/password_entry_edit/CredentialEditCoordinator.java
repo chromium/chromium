@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase.ComponentStateDelegate;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -85,8 +84,7 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
 
     void handleHelp() {
         mHelpAndFeedbackLauncher.show(mFragmentView.getActivity(),
-                mFragmentView.getActivity().getString(R.string.help_context_passwords),
-                Profile.getLastUsedRegularProfile(), null);
+                mFragmentView.getActivity().getString(R.string.help_context_passwords), null);
     }
 
     @Override

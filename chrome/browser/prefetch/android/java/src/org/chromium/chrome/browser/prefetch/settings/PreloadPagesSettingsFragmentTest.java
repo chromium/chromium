@@ -23,7 +23,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
@@ -270,7 +269,7 @@ public class PreloadPagesSettingsFragmentTest {
             Mockito.verify(mHelpAndFeedbackLauncher)
                     .show(mPreloadPagesSettingsFragment.getActivity(),
                             mPreloadPagesSettingsFragment.getString(R.string.help_context_privacy),
-                            Profile.getLastUsedRegularProfile(), null);
+                            null);
         });
     }
 

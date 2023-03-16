@@ -189,16 +189,16 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void launchSettingsHelpAndFeedbackActivity(Activity currentActivity) {
-        HelpAndFeedbackLauncherImpl.getInstance().show(currentActivity,
-                currentActivity.getString(R.string.help_context_settings),
-                Profile.getLastUsedRegularProfile(), null);
+        HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
+                .show(currentActivity, currentActivity.getString(R.string.help_context_settings),
+                        null);
     }
 
     @Override
     public void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity) {
-        HelpAndFeedbackLauncherImpl.getInstance().show(currentActivity,
-                currentActivity.getString(R.string.help_context_protected_content),
-                Profile.getLastUsedRegularProfile(), null);
+        HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
+                .show(currentActivity,
+                        currentActivity.getString(R.string.help_context_protected_content), null);
     }
 
     @Override

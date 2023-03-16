@@ -238,8 +238,8 @@ public class EditorDialog
                         handleDelete();
                     }
                 } else if (item.getItemId() == R.id.help_menu_id) {
-                    HelpAndFeedbackLauncherImpl.getInstance().show(mActivity,
-                            mActivity.getString(R.string.help_context_autofill), mProfile, null);
+                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile).show(
+                            mActivity, mActivity.getString(R.string.help_context_autofill), null);
                 }
                 return true;
             }

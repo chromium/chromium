@@ -105,9 +105,9 @@ abstract class AutofillCreditCardEditor extends AutofillEditorBase {
             return true;
         }
         if (item.getItemId() == R.id.help_menu_id) {
-            HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(),
-                    getActivity().getString(R.string.help_context_autofill),
-                    Profile.getLastUsedRegularProfile(), null);
+            HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
+                    .show(getActivity(), getActivity().getString(R.string.help_context_autofill),
+                            null);
             return true;
         }
 

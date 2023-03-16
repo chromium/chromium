@@ -518,7 +518,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs,
                 FeedSwipeRefreshLayout.create(activity, R.id.toolbar_container),
                 /* overScrollDisabled= */ false, /* viewportView= */ null, actionDelegate,
-                HelpAndFeedbackLauncherImpl.getInstance(), mTabModelSelector);
+                HelpAndFeedbackLauncherImpl.getForProfile(profile), mTabModelSelector);
         mFeedSurfaceProvider = feedSurfaceCoordinator;
 
         // Record the timestamp at which the new tab page's construction started.

@@ -235,9 +235,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
             return true;
         }
         if (id == R.id.menu_id_targeted_help) {
-            HelpAndFeedbackLauncherImpl.getInstance().show(getActivity(),
-                    getString(R.string.help_context_passwords), Profile.getLastUsedRegularProfile(),
-                    null);
+            HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
+                    .show(getActivity(), getString(R.string.help_context_passwords), null);
             return true;
         }
         return super.onOptionsItemSelected(item);
