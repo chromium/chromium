@@ -3810,11 +3810,6 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_CHROMEVOX" desc="Subcategory named 'ChromeVox' shown within main shortcuts section" translateable="false">ChromeVox</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_VISIBILITY" desc="Subcategory named 'Visibility' shown within main shortcuts section" translateable="false">Visibility</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_ACCESSIBILITY_NAVIGATION" desc="Subcategory named 'AccessibilityNavigation' shown within main shortcuts section" translateable="false">Accessibility Navigation</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_SPACE" desc="Lowercase name of the keyboard key 'Space'" translateable="false">space</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_TAB" desc="Lowercase name of the keyboard key 'Tab'" translateable="false">tab</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_ESCAPE" desc="Lowercase name of the keyboard key 'Escape', abbreviated if possible" translateable="false">esc</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_RETURN" desc="Lowercase name of the keyboard key 'Enter'" translateable="false">enter</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_KEY_BACKSPACE" desc="Lowercase name of the keyboard key 'Backspace'" translateable="false">backspace</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_DOWN" desc="The text read aloud by the screen reader describing the keyboard icon 'arrow down'." translateable="false">
           arrow down
         </message>

@@ -47,18 +47,11 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
           {ui::KeyboardCode::VKEY_INSERT, u"insert"},
           {ui::KeyboardCode::VKEY_PRIOR, u"page up"},
           {ui::KeyboardCode::VKEY_NEXT, u"page down"},
-          // TODO(longbowei): Determine if these strings require localization.
-          // PM/UX input needed
-          {ui::KeyboardCode::VKEY_SPACE,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_SPACE)},
-          {ui::KeyboardCode::VKEY_TAB,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_TAB)},
-          {ui::KeyboardCode::VKEY_ESCAPE,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_ESCAPE)},
-          {ui::KeyboardCode::VKEY_RETURN,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_RETURN)},
-          {ui::KeyboardCode::VKEY_BACK,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_BACKSPACE)},
+          {ui::KeyboardCode::VKEY_SPACE, u"space"},
+          {ui::KeyboardCode::VKEY_TAB, u"tab"},
+          {ui::KeyboardCode::VKEY_ESCAPE, u"esc"},
+          {ui::KeyboardCode::VKEY_RETURN, u"enter"},
+          {ui::KeyboardCode::VKEY_BACK, u"backspace"},
       }));
   return *key_display_map;
 }
