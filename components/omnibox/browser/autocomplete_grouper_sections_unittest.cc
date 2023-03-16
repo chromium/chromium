@@ -666,10 +666,151 @@ TEST(AutocompleteGrouperSectionsTest, AndroidZpsSection) {
             CreateMatch(40, omnibox::GROUP_MOBILE_MOST_VISITED),
             CreateMatch(39, omnibox::GROUP_MOBILE_MOST_VISITED),
         },
-        // Observe that PERSONALIZED_ZERO_SUGGEST and VISITED_DOC suggestions are
-        // grouped together.
-        // VISITED_DOC_RELATED are prioritized over the PERSONALIZED_ZERO_SUGGEST
-        // because these are more context relevant.
+        // Observe that PERSONALIZED_ZERO_SUGGEST and VISITED_DOC suggestions
+        // are grouped together. VISITED_DOC_RELATED are prioritized over the
+        // PERSONALIZED_ZERO_SUGGEST because these are more context relevant.
         {2, 20, 40, 99, 97, 95, 93, 91, 89, 87, 85, 100, 98, 96, 94});
+  }
+  {
+    SCOPED_TRACE("No Inspire Me content shown in the core ZPS content");
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(99, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_RELATED_QUERIES),
+            CreateMatch(96, omnibox::GROUP_TRENDS),
+            CreateMatch(95, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(94, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(93, omnibox::GROUP_RELATED_QUERIES),
+            CreateMatch(92, omnibox::GROUP_TRENDS),
+            CreateMatch(91, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_RELATED_QUERIES),
+            CreateMatch(88, omnibox::GROUP_TRENDS),
+            CreateMatch(87, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(85, omnibox::GROUP_RELATED_QUERIES),
+            CreateMatch(84, omnibox::GROUP_TRENDS),
+            // Auxiliary suggestions.
+            CreateMatch(2, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+            CreateMatch(3, omnibox::GROUP_MOBILE_CLIPBOARD),
+            CreateMatch(4, omnibox::GROUP_MOBILE_MOST_VISITED),
+        },
+        {2, 3, 4, 99, 95, 91, 87, 100, 98, 94, 90, 86});
+  }
+}
+
+// Tests the groups, limits, and rules for the Android Inspire Me section.
+TEST(AutocompleteGrouperSectionsTest, AndroidInspireMeZpsSection) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    constexpr int MAX_PREVIOUS_SEARCH_RELATED = 3;
+    constexpr int MAX_TRENDING_QUERIES = 5;
+
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(std::make_unique<AndroidInspireMeZpsSection>(
+        MAX_PREVIOUS_SEARCH_RELATED, MAX_TRENDING_QUERIES, group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+
+  {
+    SCOPED_TRACE("Given no matches, should return no matches.");
+    test({}, {});
+  }
+  {
+    SCOPED_TRACE("Given no InspireMe matches, should return no matches.");
+    // Verify that the Clipboard suggestion is retained on top.
+    test(
+        {
+            CreateMatch(200, omnibox::GROUP_MOBILE_CLIPBOARD),
+            CreateMatch(199, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+            CreateMatch(198, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(95, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(94, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(93, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(92, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(91, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+        },
+        {});
+  }
+  {
+    SCOPED_TRACE("No Trending Queries Backfill");
+    // Verify that Trending queries don't backfill unoccupied Related queries
+    // slots.
+    // Must offer less PREVIOUS_SEARCH_RELATED than MAX_PREVIOUS_SEARCH_RELATED,
+    // and more TRENDS than MAX_TRENDING_QUERIES.
+    test(
+        {
+            CreateMatch(20, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(19, omnibox::GROUP_TRENDS),
+            CreateMatch(18, omnibox::GROUP_TRENDS),
+            CreateMatch(17, omnibox::GROUP_TRENDS),
+            CreateMatch(16, omnibox::GROUP_TRENDS),
+            CreateMatch(15, omnibox::GROUP_TRENDS),
+            CreateMatch(14, omnibox::GROUP_TRENDS),
+            CreateMatch(13, omnibox::GROUP_TRENDS),
+        },
+        {20, 19, 18, 17, 16, 15});
+  }
+  {
+    SCOPED_TRACE("No Related Queries Backfill");
+    // Verify that Related queries don't backfill unoccupied Trending queries
+    // slots.
+    // Must offer less TRENDS than MAX_TRENDING_QUERIES, and more
+    // PREVIOUS_SEARCH_RELATED than MAX_PREVIOUS_SEARCH_RELATED.
+    test(
+        {
+            CreateMatch(20, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(19, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(18, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(17, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(16, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(15, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(14, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(13, omnibox::GROUP_TRENDS),
+        },
+        {20, 19, 18, 13});
+  }
+  {
+    SCOPED_TRACE("Conform to Limits");
+    test(
+        {
+            CreateMatch(20, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(19, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(18, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(17, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(16, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+            CreateMatch(15, omnibox::GROUP_TRENDS),
+            CreateMatch(14, omnibox::GROUP_TRENDS),
+            CreateMatch(13, omnibox::GROUP_TRENDS),
+            CreateMatch(12, omnibox::GROUP_TRENDS),
+            CreateMatch(11, omnibox::GROUP_TRENDS),
+            CreateMatch(10, omnibox::GROUP_TRENDS),
+        },
+        // No more than MAX_PREVIOUS_SEARCH_RELATED + MAX_TRENDING_QUERIES.
+        {20, 19, 18, 15, 14, 13, 12, 11});
+  }
+  {
+    SCOPED_TRACE("Trends are ranked below Previous Search Related");
+    test(
+        {
+            CreateMatch(20, omnibox::GROUP_TRENDS),
+            CreateMatch(19, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+        },
+        {19, 20});
   }
 }

@@ -70,6 +70,16 @@ class AndroidZpsSection : public ZpsSection {
   explicit AndroidZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
+// Section expressing the Android Inspire Me NTP ZPS limits and grouping.
+// Appends additional trending and related queries at the bottom of the
+// suggestions list. Related queries are ranked above the trends.
+class AndroidInspireMeZpsSection : public ZpsSection {
+ public:
+  AndroidInspireMeZpsSection(size_t max_related_queries,
+                             size_t max_trending_queries,
+                             omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the Desktop zps limits and grouping. The rules are:
 // - Containing up to 8 related search suggestions, 8 personalized suggestions,
 //   and 8 trending search suggestions.

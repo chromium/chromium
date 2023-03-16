@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -277,30 +278,19 @@ void BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
 // static
 bool BaseSearchProvider::IsNTPPage(
     metrics::OmniboxEventProto::PageClassification classification) {
-  return (classification == OEP::NTP) ||
-         (classification == OEP::OBSOLETE_INSTANT_NTP) ||
-         (classification == OEP::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS) ||
-         (classification == OEP::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS) ||
-         (classification == OEP::NTP_REALBOX) ||
-         (classification == OEP::ANDROID_SHORTCUTS_WIDGET) ||
-         (classification == OEP::NTP_ZPS_PREFETCH);
+  return omnibox::IsNTPPage(classification);
 }
 
 // static
 bool BaseSearchProvider::IsSearchResultsPage(
     metrics::OmniboxEventProto::PageClassification classification) {
-  return (classification ==
-          OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT) ||
-         (classification ==
-          OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT) ||
-         (classification == OEP::SRP_ZPS_PREFETCH);
+  return omnibox::IsSearchResultsPage(classification);
 }
 
 // static
 bool BaseSearchProvider::IsOtherWebPage(
     metrics::OmniboxEventProto::PageClassification classification) {
-  return (classification == OEP::OTHER) ||
-         (classification == OEP::OTHER_ZPS_PREFETCH);
+  return omnibox::IsOtherWebPage(classification);
 }
 
 // static

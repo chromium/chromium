@@ -134,6 +134,9 @@ BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
 BASE_DECLARE_FEATURE(kMlRelevanceScoring);
 BASE_DECLARE_FEATURE(kUrlScoringModel);
 
+// Inspire Me - additional suggestions based on user's location and interests.
+BASE_DECLARE_FEATURE(kInspireMe);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

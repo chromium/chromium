@@ -1473,6 +1473,41 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_ANDROID)
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith5Trends[] = {
+    {"AdditionalTrendingQueries", "5"},
+    {"AdditionalRelatedQueries", "0"}};
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith5Related[] = {
+    {"AdditionalTrendingQueries", "0"},
+    {"AdditionalRelatedQueries", "5"}};
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith5Mixed[] = {
+    {"AdditionalTrendingQueries", "2"},
+    {"AdditionalRelatedQueries", "3"}};
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith10Trends[] = {
+    {"AdditionalTrendingQueries", "10"},
+    {"AdditionalRelatedQueries", "0"}};
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith10Related[] = {
+    {"AdditionalTrendingQueries", "0"},
+    {"AdditionalRelatedQueries", "10"}};
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith10Mixed[] = {
+    {"AdditionalTrendingQueries", "5"},
+    {"AdditionalRelatedQueries", "5"}};
+
+constexpr FeatureEntry::FeatureVariation kOmniboxInspireMeVariants[] = {
+    {"5 Trends", kOmniboxInspireMeWith5Trends,
+     std::size(kOmniboxInspireMeWith5Trends), nullptr},
+    {"5 Related", kOmniboxInspireMeWith5Related,
+     std::size(kOmniboxInspireMeWith5Related), nullptr},
+    {"3 Related + 2 Trends", kOmniboxInspireMeWith5Mixed,
+     std::size(kOmniboxInspireMeWith5Mixed), nullptr},
+    {"10 Trends", kOmniboxInspireMeWith10Trends,
+     std::size(kOmniboxInspireMeWith10Trends), nullptr},
+    {"10 Related", kOmniboxInspireMeWith10Related,
+     std::size(kOmniboxInspireMeWith10Related), nullptr},
+    {"5 Related + 5 Trends", kOmniboxInspireMeWith10Mixed,
+     std::size(kOmniboxInspireMeWith10Mixed), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceTitle[] = {
     {"OmniboxBookmarkPathsUiReplaceTitle", "true"}};
 const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceUrl[] = {
@@ -5448,6 +5483,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID)
+    {"omnibox-inspire-me", flag_descriptions::kOmniboxInspireMeName,
+     flag_descriptions::kOmniboxInspireMeDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kInspireMe,
+                                    kOmniboxInspireMeVariants,
+                                    "OmniboxBundledExperimentV1")},
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
     {"omnibox-on-device-head-suggestions",
      flag_descriptions::kOmniboxOnDeviceHeadSuggestionsName,
