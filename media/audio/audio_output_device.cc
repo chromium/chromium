@@ -445,11 +445,14 @@ void AudioOutputDevice::OnIPCClosed() {
 
 OutputDeviceInfo AudioOutputDevice::GetOutputDeviceInfo_Signaled() {
   DCHECK(did_receive_auth_.IsSignaled());
-  return OutputDeviceInfo(AudioDeviceDescription::UseSessionIdToSelectDevice(
-                              session_id_, device_id_)
-                              ? matched_device_id_
-                              : device_id_,
-                          device_status_, output_params_);
+  OutputDeviceInfo info(AudioDeviceDescription::UseSessionIdToSelectDevice(
+                            session_id_, device_id_)
+                            ? matched_device_id_
+                            : device_id_,
+                        device_status_, output_params_);
+  TRACE_EVENT1("audio", "AudioOutputDevice::GetOutputDeviceInfo_Signaled",
+               "info", info.AsHumanReadableString());
+  return info;
 }
 
 void AudioOutputDevice::OnAuthSignal() {
