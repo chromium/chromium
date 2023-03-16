@@ -184,6 +184,9 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
     return base::FeatureList::IsEnabled(
         features::kSystemJapanesePhysicalTyping);
   }
+  if (strcmp(feature_name, features::kImeDownloaderUpdate.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kImeDownloaderUpdate);
+  }
   if (strcmp(feature_name, features::kImeUsEnglishModelUpdate.name) == 0) {
     return base::FeatureList::IsEnabled(features::kImeUsEnglishModelUpdate);
   }
