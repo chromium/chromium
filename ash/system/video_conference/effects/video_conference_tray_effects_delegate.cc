@@ -20,16 +20,14 @@ bool DependenciesSatisfied(VcHostedEffect* effect) {
   VideoConferenceTrayController* controller =
       VideoConferenceTrayController::Get();
   if (dependency_flags & VcHostedEffect::ResourceDependency::kCamera &&
-      (controller->GetCameraMuted() || !controller->HasCameraPermission())) {
-    // `effect` has a camera dependency, but camera is muted or app(s) doesn't
-    // have permission.
+      !controller->HasCameraPermission()) {
+    // `effect` has a camera dependency, but the apps do not have permission.
     return false;
   }
   if (dependency_flags & VcHostedEffect::ResourceDependency::kMicrophone &&
-      (controller->GetMicrophoneMuted() ||
-       !controller->HasMicrophonePermission())) {
-    // `effect` has a microphone dependency, but microphone is muted or app(s)
-    // doesn't have permission.
+      !controller->HasMicrophonePermission()) {
+    // `effect` has a microphone dependency, but the apps do not have
+    // permission.
     return false;
   }
 

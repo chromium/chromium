@@ -581,11 +581,10 @@ TEST_P(ResourceDependencyTest, ResourceDependency) {
   // app(s) has been granted permission to use the resource.
   const bool camera_satisfied =
       !has_camera_dependency() ||
-      (has_camera_dependency() && camera_enabled() && has_camera_permission());
+      (has_camera_dependency() && has_camera_permission());
   const bool microphone_satisfied =
       !has_microphone_dependency() ||
-      (has_microphone_dependency() && microphone_enabled() &&
-       has_microphone_permission());
+      (has_microphone_dependency() && has_microphone_permission());
 
   if (camera_satisfied && microphone_satisfied) {
     EXPECT_TRUE(toggle_effect_container_view());
