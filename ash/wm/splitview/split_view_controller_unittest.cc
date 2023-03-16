@@ -3232,34 +3232,39 @@ TEST_F(SplitViewControllerTest, SnapBetweenDifferentRatios) {
   WMEvent snap_secondary_default(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_default);
 
-  // Test that the divider position and both window bounds are at half the
-  // work area width.
+  // Test that both window bounds are at half the work area width and that the
+  // divider is positioned at half of the work area width minus the
+  // `divider_delta`.
   const gfx::Rect work_area_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  gfx::Rect divider_bounds = split_view_divider()->GetDividerBoundsInScreen(
-      /*is_dragging=*/false);
-  ASSERT_NEAR(divider_bounds.x(), work_area_bounds.width() * 0.5f,
-              divider_bounds.width());
-  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window1->bounds().width(),
-              divider_bounds.width());
-  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window2->bounds().x(),
-              divider_bounds.width());
+  int divider_origin_x = split_view_divider()
+                             ->GetDividerBoundsInScreen(
+                                 /*is_dragging=*/false)
+                             .x();
+  const int divider_delta = kSplitviewDividerShortSideLength / 2;
+  EXPECT_EQ(divider_origin_x, work_area_bounds.width() * 0.5f - divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
+            window1->bounds().width() + divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
+            window2->bounds().width() + divider_delta);
 
   // Snap `window1`, still in primary position, but with two thirds snap ratio.
   WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
                                  chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
 
-  // Test that the divider position and both window bounds have updated to two
-  // thirds the work area width.
-  divider_bounds = split_view_divider()->GetDividerBoundsInScreen(
-      /*is_dragging=*/false);
-  ASSERT_NEAR(divider_bounds.x(), work_area_bounds.width() * 0.67f,
-              divider_bounds.width());
-  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window1->bounds().width(),
-              divider_bounds.width());
-  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window2->bounds().x(),
-              divider_bounds.width());
+  // Test that the window bounds have updated to two thirds and one third of the
+  // work area width respectively. The the divider is positioned at two thirds
+  // of the work area width minus the `divider_delta`.
+  divider_origin_x = split_view_divider()
+                         ->GetDividerBoundsInScreen(
+                             /*is_dragging=*/false)
+                         .x();
+  EXPECT_EQ(divider_origin_x, work_area_bounds.width() * 0.67f - divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.67f,
+            window1->bounds().width() + divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.33f,
+            window2->bounds().width() + divider_delta);
 }
 
 // Tests that swap partial windows keeps the window sizes.
@@ -3277,14 +3282,16 @@ TEST_F(SplitViewControllerTest, SwapPartialWindows) {
   WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_one_third);
   const gfx::Rect work_area_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  gfx::Rect divider_bounds = split_view_divider()->GetDividerBoundsInScreen(
-      /*is_dragging=*/false);
-  ASSERT_NEAR(divider_bounds.x(), work_area_bounds.width() * 0.67f,
-              divider_bounds.width());
-  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window1->bounds().width(),
-              divider_bounds.width());
-  ASSERT_NEAR(work_area_bounds.width() * 0.33f, window2->bounds().width(),
-              divider_bounds.width());
+  int divider_origin_x = split_view_divider()
+                             ->GetDividerBoundsInScreen(
+                                 /*is_dragging=*/false)
+                             .x();
+  const int divider_delta = kSplitviewDividerShortSideLength / 2;
+  EXPECT_EQ(divider_origin_x, work_area_bounds.width() * 0.67f - divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.67f,
+            window1->bounds().width() + divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.33f,
+            window2->bounds().width() + divider_delta);
 
   // Verify that after swapping windows, the window widths remain the same, and
   // the divider is now at 1/3 of the work area.
@@ -3293,14 +3300,15 @@ TEST_F(SplitViewControllerTest, SwapPartialWindows) {
             chromeos::WindowStateType::kSecondarySnapped);
   EXPECT_EQ(WindowState::Get(window2.get())->GetStateType(),
             chromeos::WindowStateType::kPrimarySnapped);
-  divider_bounds = split_view_divider()->GetDividerBoundsInScreen(
-      /*is_dragging=*/false);
-  ASSERT_NEAR(divider_bounds.x(), work_area_bounds.width() * 0.33f,
-              divider_bounds.width());
-  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window1->bounds().width(),
-              divider_bounds.width());
-  ASSERT_NEAR(work_area_bounds.width() * 0.33f, window2->bounds().width(),
-              divider_bounds.width());
+  divider_origin_x = split_view_divider()
+                         ->GetDividerBoundsInScreen(
+                             /*is_dragging=*/false)
+                         .x();
+  EXPECT_EQ(divider_origin_x, work_area_bounds.width() * 0.33f - divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.67f,
+            window1->bounds().width() + divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.33f,
+            window2->bounds().width() + divider_delta);
 }
 
 // Tests that, if two windows are snapped and one window has min size, trying to
@@ -3338,10 +3346,11 @@ TEST_F(SplitViewControllerTest, SnapWindowWithMinSizeOpensOverview) {
   wm::ActivateWindow(window2.get());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window1->bounds().width(),
-              kSplitviewDividerShortSideLength / 2);
-  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window2->bounds().width(),
-              kSplitviewDividerShortSideLength / 2);
+  const int divider_delta = kSplitviewDividerShortSideLength / 2;
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
+            window1->bounds().width() + divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
+            window2->bounds().width() + divider_delta);
 }
 
 // Tests that auto-snap for partial windows works correctly.
@@ -3361,10 +3370,11 @@ TEST_F(SplitViewControllerTest, AutoSnapPartialWindows) {
           window1.get());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window1->bounds().width(),
-              kSplitviewDividerShortSideLength / 2);
-  ASSERT_NEAR(work_area_bounds.width() * 0.33f, window2->bounds().width(),
-              kSplitviewDividerShortSideLength / 2);
+  const int divider_delta = kSplitviewDividerShortSideLength / 2;
+  EXPECT_EQ(work_area_bounds.width() * 0.67f,
+            window1->bounds().width() + divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.33f,
+            window2->bounds().width() + divider_delta);
   EndSplitView();
 
   // 2. Test with min size. Set `window2` min length so that it can't fit in 1/3
@@ -3379,10 +3389,10 @@ TEST_F(SplitViewControllerTest, AutoSnapPartialWindows) {
   wm::ActivateWindow(window2.get());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window1->bounds().width(),
-              kSplitviewDividerShortSideLength / 2);
-  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window2->bounds().width(),
-              kSplitviewDividerShortSideLength / 2);
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
+            window1->bounds().width() + divider_delta);
+  EXPECT_EQ(work_area_bounds.width() * 0.5f,
+            window2->bounds().width() + divider_delta);
 }
 
 TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {

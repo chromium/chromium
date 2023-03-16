@@ -262,6 +262,8 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
 
     // The split view divider will show on two windows snapped.
     EXPECT_TRUE(split_view_divider());
+    EXPECT_EQ(0.5f, *WindowState::Get(window1)->snap_ratio());
+    EXPECT_EQ(0.5f, *WindowState::Get(window2)->snap_ratio());
   }
 
  private:
@@ -317,13 +319,15 @@ TEST_F(SnapGroupEntryPointArm1Test,
 
   const gfx::Point hover_location =
       split_view_divider_bounds_in_screen().CenterPoint();
-  const int distance_delta = work_area_bounds.width() / 6;
+  const int distance_delta = work_area_bounds.width() / 4;
   event_generator->MoveMouseTo(hover_location);
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(hover_location.x() - distance_delta,
                                hover_location.y());
   event_generator->ReleaseLeftButton();
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_EQ(0.25f, WindowState::Get(w1.get())->snap_ratio());
+  EXPECT_EQ(0.75f, WindowState::Get(w2.get())->snap_ratio());
 }
 
 // Tests that when snapping a snapped window to the same snapped state, the
