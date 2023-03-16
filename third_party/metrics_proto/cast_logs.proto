@@ -11,7 +11,7 @@ option java_outer_classname = "CastLogsProtos";
 
 package metrics;  // Cast-enabled device specific log data included in ChromeUserMetricsExtension.
 
-// Next tag: 8
+// Next tag: 9
 message CastLogsProto {
   // Cast specific device information.
   // Next tag: 7
@@ -274,8 +274,8 @@ message CastLogsProto {
   }
   repeated CastEventProto cast_event = 3;
 
-  // Virtual release track for releases sent to partners, trusted beta testers,
-  // developers, etc.
+  // Virtual release track for releases sent to partners, trusted beta
+  // testers, developers, etc.
   optional fixed32 virtual_release_track = 4;
 
   // Cast specific device information which is expected to change over time.
@@ -368,4 +368,6 @@ message CastLogsProto {
   // This ID is only ever recorded for Google-internal users (dogfooders). It
   // is never recorded for external users."
   optional uint64 ephemeral_id = 7;
+
+  optional fixed32 source_virtual_release_track = 8;
 }

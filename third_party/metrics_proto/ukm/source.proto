@@ -146,11 +146,12 @@ message Source {
 
   // The URL of the source, as recorded in history. If this URL has not been
   // discovered by Google's crawler, it should not be recorded.
-  optional string url = 2;
+  // Replaced by |urls| field.
+  optional string deprecated_url = 2 [deprecated = true];
   reserved 5;
-  reserved "url_origin";
+  reserved "deprecated_url_origin";
   reserved 9;
-  reserved "url_scheme";
+  reserved "deprecated_url_scheme";
 
   // The initial URL of the source. Set in cases where the source URL changed
   // (e.g. it was redirected), otherwise unset. If this URL has not been

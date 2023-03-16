@@ -169,6 +169,7 @@ message SystemProfileProto {
     // - 'Linux' (includes ChromeOS prior to 07/2020)
     // - 'iOS' (iOS versions >= 9)
     // - 'iPhone OS' (iOS versions <= 8)
+    // - 'iPadOS'
     // - 'Mac OS X'
     optional string name = 1;
 
@@ -413,22 +414,23 @@ message SystemProfileProto {
     // Logged on ChromeOS only.
     optional bool internal_display_supports_touch = 14;
 
-    // Internal storage device information on ChromeOS.
-    // TODO(dlunev): Expand comment about which milestone this
-    // started to be logged on once the client code is submitted.
+    // Internal storage device information on ChromeOS. Added in M94.
     // Next tag: 9
     message InternalStorageDevice {
-      // Id of the storage device manufcaturer.
-      // Can be vendor_id(32bit), oemid(16bit) etc. depending on the device
-      // type.
+      // Id of the storage device manufacturer.
+      // Can be vendor_id (for NVMe, 32bit), manfid (for eMMC, 16bit, since
+      // M113), oemid (for eMMC, 16bit, before M113) etc. depending on the
+      // device type.
       optional uint32 vendor_id = 1;
 
       // Id of the storage device product.
-      // Can be product_id(32bit), PNM(48bit) etc. depending on the device type.
+      // Can be product_id (for NVMe, 32bit), PNM (for eMMC, 48bit) etc.
+      // depending on the device type.
       optional uint64 product_id = 2;
 
       // Revision of the storage device product.
-      // Can be PCIe rev(8bit), PRV(8bit) etc. depending on the device type.
+      // Can be PCIe rev (for NVMe, 8bit), PRV(for eMMC, 8bit) etc. depending on
+      // the device type.
       optional uint32 revision = 3;
 
       // Storage Device model. Comes from /sys/block/<device>/device/model.
