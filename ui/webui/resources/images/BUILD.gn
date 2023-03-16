@@ -11,6 +11,7 @@ generate_grd("build_grdp") {
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
     "add.svg",
+    "apps_home_empty_238x170.svg",
     "cancel_red.svg",
     "checkbox_black.png",
     "checkbox_white.png",

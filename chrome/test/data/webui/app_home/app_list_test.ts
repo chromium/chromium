@@ -8,6 +8,7 @@ import 'chrome://apps/app_item.js';
 import 'chrome://apps/deprecated_apps_link.js';
 
 import {AppInfo, PageRemote, RunOnOsLoginMode} from 'chrome://apps/app_home.mojom-webui.js';
+import {AppHomeEmptyPageElement} from 'chrome://apps/app_home_empty_page.js';
 import {AppHomeUserAction} from 'chrome://apps/app_home_utils.js';
 import {AppListElement} from 'chrome://apps/app_list.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
@@ -781,5 +782,31 @@ suite('AppListTest', () => {
     link.click();
 
     await testBrowserProxy.fakeHandler.whenCalled('launchDeprecatedAppDialog');
+  });
+
+  test('Empty app page', async () => {
+    const emptyPage: AppHomeEmptyPageElement =
+        document.createElement('app-home-empty-page');
+    document.body.appendChild(emptyPage);
+    await waitAfterNextRender(emptyPage);
+
+    callbackRouterRemote.removeApp(apps.appList[0]!);
+    callbackRouterRemote.removeApp(apps.appList[1]!);
+    callbackRouterRemote.removeApp(deprecatedAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+
+    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+    assertEquals(appItems.length, 0);
+
+    const text: HTMLParagraphElement =
+        emptyPage.shadowRoot!.querySelector<HTMLParagraphElement>('p')!;
+    assertEquals(text.innerText, 'Web apps that you install appear here');
+
+    const button: HTMLAnchorElement =
+        emptyPage.shadowRoot!.querySelector<HTMLAnchorElement>('a')!;
+    assertEquals(
+        button.href, 'https://support.google.com/chrome?p=install_web_apps');
+    assertEquals(button.innerText, 'Learn how to install web apps');
   });
 });

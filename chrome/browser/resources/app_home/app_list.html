@@ -41,12 +41,20 @@
     }
 </style>
 
-<div id="container">
-    <template is="dom-repeat" items="[[apps_]]">
-      <app-item class="item" id="[[item.id]]" app-info="[[item]]"
-        aria-label="[[item.name]][[notLocallyInstalledString_(
+<template is="dom-if" if="[[apps_.length]]">
+    <div id="container">
+        <template is="dom-repeat" items="[[apps_]]">
+          <app-item class="item" id="[[item.id]]" app-info="[[item]]"
+            aria-label="[[item.name]][[notLocallyInstalledString_(
             item.isLocallyInstalled, '$i18n{notInstalled}')]]"
-        role="button" tabindex="0">
-      </app-item>
-    </template>
-</div>
+            role="button" tabindex="0">
+          </app-item>
+        </template>
+    </div>
+
+</template>
+
+<template is="dom-if" if="[[!apps_.length]]">
+    <empty-page></empty-page>
+</template>
+

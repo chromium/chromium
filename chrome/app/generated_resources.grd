@@ -5963,6 +5963,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_APP_HOME_NOT_INSTALLED" desc="Accessability label that goes after an apps title that is not locally installed">
         not locally installed
       </message>
+
+      <message name="IDS_APP_HOME_APP_NO_APPS" desc="Text that displays when you have no web apps installed on App Home">
+        Web apps that you install appear here
+      </message>
+
+      <message name="IDS_APP_HOME_APP_LEARN_INSTALL" desc="Text with a link to learn how to install web apps when no apps are installed on App Home">
+        Learn how to install web apps
+      </message>
       <!-- End App Home WebUI strings. -->
 
       <message name="IDS_WEB_APP_SETTINGS_TITLE" desc="Title of web app settings page">

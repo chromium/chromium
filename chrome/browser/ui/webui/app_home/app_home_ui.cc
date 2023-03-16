@@ -33,7 +33,9 @@ void AddAppHomeLocalizedStrings(content::WebUIDataSource* ui_source) {
       {"removeAppLabel", IDS_APP_HOME_REMOVE_APP},
       {"appSettingsLabel", IDS_APP_HOME_APP_SETTINGS},
       {"viewInWebStore", IDS_NEW_TAB_APP_DETAILS},
-      {"notInstalled", IDS_ACCNAME_APP_HOME_NOT_INSTALLED}};
+      {"notInstalled", IDS_ACCNAME_APP_HOME_NOT_INSTALLED},
+      {"appAppearanceLabel", IDS_APP_HOME_APP_NO_APPS},
+      {"learnToInstall", IDS_APP_HOME_APP_LEARN_INSTALL}};
   ui_source->AddLocalizedStrings(kAppHomeLocalizedStrings);
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './app_item.js';
+import './app_home_empty_page.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
@@ -25,7 +26,6 @@ type MenuHandleEvent = CustomEvent<ActionMenuModel>;
 export interface AppListElement {
   $: {
     menu: CrActionMenuElement,
-    container: HTMLElement,
   };
 }
 
@@ -123,7 +123,7 @@ export class AppListElement extends PolymerElement {
     const numColumns: number =
         window
             .getComputedStyle(
-                this.$.container,
+                this.shadowRoot!.getElementById('container')!,
                 )!.getPropertyValue('grid-template-columns')!.split(' ')
             .length;
     const keyActions = {
@@ -139,8 +139,8 @@ export class AppListElement extends PolymerElement {
 
     const activeElementId = this.shadowRoot!.activeElement?.id;
     if (!activeElementId) {
-      (this.$.container.querySelector('#' + this.apps_[0].id) as
-       HTMLElement)!.focus();
+      (this.shadowRoot!.getElementById('container')
+           ?.querySelector('#' + this.apps_[0].id) as HTMLElement)!.focus();
       return;
     }
 
@@ -157,7 +157,8 @@ export class AppListElement extends PolymerElement {
       nextIndex = currIndex;
     }
 
-    (this.$.container.querySelector('#' + this.apps_[nextIndex].id) as
+    (this.shadowRoot!.getElementById('container')
+         ?.querySelector('#' + this.apps_[nextIndex].id) as
      HTMLElement)!.focus();
   }
 

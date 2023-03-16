@@ -1,0 +1,24 @@
+<style>
+.container {
+    font-size: 15px;
+    left: 50%;
+    /* to account for the extra pixels at the top of the image */
+    margin-top: -41px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+.container p {
+    margin-bottom: 25px;
+    margin-top: 0;
+}
+</style>
+
+<div class="container">
+    <img src="chrome://resources/images/apps_home_empty_238x170.svg">
+    <p>$i18n{appAppearanceLabel}</p>
+    <a href="https://support.google.com/chrome?p=install_web_apps" target="_blank">
+        <cr-button>$i18n{learnToInstall}</cr-button>
+    </a>
+</div>
