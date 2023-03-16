@@ -17,8 +17,10 @@ using common assumptions about how builders are configured.
 These builders must pass before a CL may land that affects files outside of
 //docs and //infra/config.
 
+### chrome
 * [linux-chromeos-compile-chrome](https://ci.chromium.org/p/chrome/builders/try/linux-chromeos-compile-chrome) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-chrome""))
 
+### chromium
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-rel""))
 
 * [android-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-rel""))
@@ -88,11 +90,13 @@ which touches `//gpu/BUILD.gn` would trigger the builder
 `android_optional_gpu_tests_rel`, due to the `location_filters` values for that
 builder.
 
+### chrome
 * [internal-cq-builder-verifier](https://ci.chromium.org/p/chrome/builders/try/internal-cq-builder-verifier) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""internal-cq-builder-verifier""))
 
   Location filters:
   * [`//infra/config/generated/cq-usage/full.cfg`](https://cs.chromium.org/search?q=+file:infra/config/generated/cq-usage/full.cfg)
 
+### chromium
 * [3pp-linux-amd64-packager](https://ci.chromium.org/p/chromium/builders/try/3pp-linux-amd64-packager) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""3pp-linux-amd64-packager""))
 
   Location filters:
@@ -498,6 +502,7 @@ These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
 
+### chrome
 * [chromeos-jacuzzi-nearby-chrome-fyi](https://ci.chromium.org/p/chrome/builders/try/chromeos-jacuzzi-nearby-chrome-fyi) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-jacuzzi-nearby-chrome-fyi""))
   * Experiment percentage: 100.0
 
@@ -507,6 +512,7 @@ as required builders.
 * [win-branded-compile-rel](https://ci.chromium.org/p/chrome/builders/try/win-branded-compile-rel) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""win-branded-compile-rel""))
   * Experiment percentage: 100.0
 
+### chromium
 * [gpu-fyi-cq-android-arm64](https://ci.chromium.org/p/chromium/builders/try/gpu-fyi-cq-android-arm64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""gpu-fyi-cq-android-arm64""))
   * Experiment percentage: 100.0
 

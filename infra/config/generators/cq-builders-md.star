@@ -156,10 +156,14 @@ def _generate_cq_builders_md(ctx):
         lines.append("## %s" % title)
         lines.append(header)
 
+        printed_projects = set()
         for b in builders:
             project, bucket, name = b.name.split("/")
             if project not in ("chrome", "chromium"):
                 fail("unexpected project added to the CQ: {}".format(project))
+            if project not in printed_projects:
+                lines.append("### %s" % project)
+                printed_projects = printed_projects.union([project])
             builder_url = _TRY_BUILDER_VIEW_URL.format(
                 project = project,
                 bucket = bucket,
