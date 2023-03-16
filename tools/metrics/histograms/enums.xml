@@ -95200,23 +95200,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="kAllowedNoIdleCheck"/>
 </enum>
 
-<enum name="SigninFlowConfirmations">
-  <int value="0" label="Shown"/>
-  <int value="1" label="OK"/>
-  <int value="2" label="Return"/>
-  <int value="3" label="Advanced"/>
-  <int value="4" label="Close"/>
-  <int value="5" label="Escape"/>
-  <int value="6" label="Undo"/>
-  <int value="7" label="Learn more"/>
-  <int value="8" label="Learn more ok"/>
-  <int value="9" label="Learn more return"/>
-  <int value="10" label="Learn more advanced"/>
-  <int value="11" label="Learn more close"/>
-  <int value="12" label="Learn more escape"/>
-  <int value="13" label="Learn more undo"/>
-</enum>
-
 <enum name="SigninGaiaCookieManagerLogout">
   <int value="0" label="Request started"/>
   <int value="1" label="Success"/>
@@ -95530,22 +95513,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="23" label="AccountReconcilor Reconcile">
     The reconcilor cleared the signin primary account during reconcilation.
   </int>
-</enum>
-
-<enum name="SigninSource">
-  <int value="0" label="Start page"/>
-  <int value="1" label="NTP Link"/>
-  <int value="2" label="Menu"/>
-  <int value="3" label="Settings"/>
-  <int value="4" label="Extension install bubble"/>
-  <int value="5" label="App launcher"/>
-  <int value="6" label="Apps page link"/>
-  <int value="7" label="Bookmark bubble"/>
-  <int value="8" label="Avatar bubble sign in"/>
-  <int value="9" label="Avatar bubble add account"/>
-  <int value="10" label="Devices page"/>
-  <int value="11" label="Reauth"/>
-  <int value="12" label="Unknown"/>
 </enum>
 
 <enum name="SigninSSOAuthGetIdentitiesErrorCode">

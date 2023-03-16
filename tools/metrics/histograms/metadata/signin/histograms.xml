@@ -871,15 +871,6 @@ should be kept to monitor/debug signin Multilogin issues-->
   <summary>Response status received from gaia Multilogin.</summary>
 </histogram>
 
-<histogram name="Signin.OneClickConfirmation" enum="SigninFlowConfirmations"
-    expires_after="M85">
-  <owner>noms@chromium.org</owner>
-  <summary>
-    Count of the ways users interact with the confirmation dialogs of the new
-    web based sign in to Chrome flow (accessed via the one click signin).
-  </summary>
-</histogram>
-
 <histogram name="Signin.Reconciler.AllExternalCcResultCompleted"
     enum="BooleanSuccess" expires_after="never">
 <!-- expires-never: used to detect and debug signin issues -->

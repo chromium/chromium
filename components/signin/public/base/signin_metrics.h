@@ -114,38 +114,6 @@ enum AccessPointAction {
   HISTOGRAM_MAX
 };
 
-// Enum values used with the "Signin.OneClickConfirmation" histogram, which
-// tracks the actions used in the OneClickConfirmation bubble.
-enum ConfirmationUsage {
-  HISTOGRAM_CONFIRM_SHOWN,
-  HISTOGRAM_CONFIRM_OK,
-  HISTOGRAM_CONFIRM_RETURN,
-  HISTOGRAM_CONFIRM_ADVANCED,
-  HISTOGRAM_CONFIRM_CLOSE,
-  HISTOGRAM_CONFIRM_ESCAPE,
-  HISTOGRAM_CONFIRM_UNDO,
-  HISTOGRAM_CONFIRM_LEARN_MORE,
-  HISTOGRAM_CONFIRM_LEARN_MORE_OK,
-  HISTOGRAM_CONFIRM_LEARN_MORE_RETURN,
-  HISTOGRAM_CONFIRM_LEARN_MORE_ADVANCED,
-  HISTOGRAM_CONFIRM_LEARN_MORE_CLOSE,
-  HISTOGRAM_CONFIRM_LEARN_MORE_ESCAPE,
-  HISTOGRAM_CONFIRM_LEARN_MORE_UNDO,
-  HISTOGRAM_CONFIRM_MAX
-};
-
-// TODO(gogerald): right now, gaia server needs to distinguish the source from
-// signin_metrics::SOURCE_START_PAGE, signin_metrics::SOURCE_SETTINGS and the
-// others to show advanced sync setting, remove them after switching to Minute
-// Maid sign in flow.
-// This was previously used in Signin.SigninSource UMA histogram, but no longer
-// used after having below AccessPoint and Reason related histograms.
-enum Source {
-  SOURCE_START_PAGE = 0,  // This must be first.
-  SOURCE_SETTINGS = 3,
-  SOURCE_OTHERS = 13,
-};
-
 // Enum values which enumerates all access points where sign in could be
 // initiated. Not all of them exist on all platforms. They are used with
 // "Signin.SigninStartedAccessPoint" and "Signin.SigninCompletedAccessPoint"
