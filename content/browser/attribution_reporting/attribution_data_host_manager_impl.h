@@ -92,9 +92,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id) override;
   void NotifyNavigationFailure(
-      const absl::optional<blink::AttributionSrcToken>& attribution_src_token,
-      int64_t navigation_id) override;
-  void NotifyNavigationSuccess(int64_t navigation_id) override;
+      const blink::AttributionSrcToken& attribution_src_token) override;
   void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
       attribution_reporting::SuitableOrigin source_origin,

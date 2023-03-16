@@ -5,13 +5,10 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_H_
 
-#include <stdint.h>
-
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
@@ -86,16 +83,10 @@ class AttributionDataHostManager
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id) = 0;
 
-  // Notifies the manager that a navigation failed and should no longer be
-  // tracked. The navigation was associated with a data host if
-  // `attribution_src_token` is not `absl::nullopt`.
+  // Notifies the manager that a navigation associated with a data host failed
+  // and should no longer be tracked.
   virtual void NotifyNavigationFailure(
-      const absl::optional<blink::AttributionSrcToken>& attribution_src_token,
-      int64_t navigation_id) = 0;
-
-  // Notifies the manager that a navigation finished. This may arrive before or
-  // after the beacon data.
-  virtual void NotifyNavigationSuccess(int64_t navigation_id) = 0;
+      const blink::AttributionSrcToken& attribution_src_token) = 0;
 
   // Notifies the manager that a fenced frame reporting beacon was initiated
   // for reportEvent or for an automatic beacon and should be tracked.

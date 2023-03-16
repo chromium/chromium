@@ -230,8 +230,8 @@ struct AttributionDataHostManagerImpl::SourceRegistrations {
   // Number of source data we are waiting to be decoded/received.
   size_t pending_source_data = 0;
 
-  // True if navigation has completed or if it's an event beacon.
-  bool navigation_complete;
+  // True if navigation or beacon has completed.
+  bool registrations_complete = false;
 
   // The time the first registration header was received. Will be null when the
   // beacon was started but no data was received yet.
@@ -253,28 +253,15 @@ struct AttributionDataHostManagerImpl::SourceRegistrations {
     AttributionNavigationType nav_type;
   };
 
-  struct Beacon {
-    BeaconId id;
-
-    // True if the beacon has completed. If true, no further calls will be made
-    // to `NotifyFencedFrameReportingBeaconData()`.
-    bool beacon_complete = false;
-  };
-
-  absl::variant<NavigationRedirect, Beacon> data;
+  absl::variant<NavigationRedirect, BeaconId> data;
 
   bool operator<(const SourceRegistrations& other) const {
     return Id() < other.Id();
   }
 
-  Beacon& GetBeacon() {
-    DCHECK(absl::holds_alternative<Beacon>(data));
-    return absl::get<Beacon>(data);
-  }
-
-  void CompleteNavigation() {
-    DCHECK(!navigation_complete);
-    navigation_complete = true;
+  void CompleteRegistrations() {
+    DCHECK(!registrations_complete);
+    registrations_complete = true;
   }
 
   friend bool operator<(const SourceRegistrations& a,
@@ -294,8 +281,8 @@ struct AttributionDataHostManagerImpl::SourceRegistrations {
             [](const NavigationRedirect& redirect) {
               return SourceRegistrationsId(redirect.attribution_src_token);
             },
-            [](const Beacon& beacon) {
-              return SourceRegistrationsId(beacon.id);
+            [](const BeaconId& beacon_id) {
+              return SourceRegistrationsId(beacon_id);
             },
         },
         data);
@@ -384,7 +371,6 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
 
   auto [it, inserted] = registrations_.insert(SourceRegistrations{
       .source_origin = source_origin,
-      .navigation_complete = false,
       .register_time = base::TimeTicks::Now(),
       .is_within_fenced_frame = is_within_fenced_frame,
       .input_event = std::move(input_event),
@@ -395,7 +381,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
               .nav_type = nav_type,
           },
   });
-  DCHECK(!it->navigation_complete);
+  DCHECK(!it->registrations_complete);
 
   // Treat ongoing redirect registrations within a chain as a data host for the
   // purpose of trigger queuing.
@@ -436,53 +422,28 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
 
   if (auto it = registrations_.find(attribution_src_token);
       it != registrations_.end()) {
-    it->CompleteNavigation();
+    it->CompleteRegistrations();
     MaybeOnRegistrationsFinished(it);
   }
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationFailure(
-    const absl::optional<blink::AttributionSrcToken>& attribution_src_token,
-    int64_t navigation_id) {
-  if (attribution_src_token) {
-    if (auto it = navigation_data_host_map_.find(*attribution_src_token);
-        it != navigation_data_host_map_.end()) {
-      base::TimeTicks register_time = it->second.register_time;
-      navigation_data_host_map_.erase(it);
-      OnSourceEligibleDataHostFinished(register_time);
-      RecordNavigationDataHostStatus(
-          NavigationDataHostStatus::kNavigationFailed);
-    }
-
-    // We are not guaranteed to be processing redirect registrations for a given
-    // navigation.
-    if (auto it = registrations_.find(*attribution_src_token);
-        it != registrations_.end()) {
-      it->CompleteNavigation();
-      MaybeOnRegistrationsFinished(it);
-    }
+    const blink::AttributionSrcToken& attribution_src_token) {
+  if (auto it = navigation_data_host_map_.find(attribution_src_token);
+      it != navigation_data_host_map_.end()) {
+    base::TimeTicks register_time = it->second.register_time;
+    navigation_data_host_map_.erase(it);
+    OnSourceEligibleDataHostFinished(register_time);
+    RecordNavigationDataHostStatus(NavigationDataHostStatus::kNavigationFailed);
   }
 
-  if (auto it =
-          registrations_.find(BeaconId(NavigationBeaconId(navigation_id)));
+  // We are not guaranteed to be processing redirect registrations for a given
+  // navigation.
+  if (auto it = registrations_.find(attribution_src_token);
       it != registrations_.end()) {
-    it->CompleteNavigation();
+    it->CompleteRegistrations();
     MaybeOnRegistrationsFinished(it);
   }
-}
-
-void AttributionDataHostManagerImpl::NotifyNavigationSuccess(
-    int64_t navigation_id) {
-  NavigationBeaconId beacon_id(navigation_id);
-
-  auto it = registrations_.find(BeaconId(beacon_id));
-  if (it == registrations_.end()) {
-    return;
-  }
-
-  it->CompleteNavigation();
-
-  MaybeOnRegistrationsFinished(it);
 }
 
 const AttributionDataHostManagerImpl::ReceiverContext*
@@ -745,19 +706,12 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
     bool is_within_fenced_frame,
     AttributionInputEvent input_event,
     GlobalRenderFrameHostId render_frame_id) {
-  const bool is_navigation =
-      absl::holds_alternative<NavigationBeaconId>(beacon_id);
-
   auto [it, inserted] = registrations_.insert(SourceRegistrations{
       .source_origin = std::move(source_origin),
-      .navigation_complete = !is_navigation,
       .is_within_fenced_frame = is_within_fenced_frame,
       .input_event = std::move(input_event),
       .render_frame_id = render_frame_id,
-      .data =
-          SourceRegistrations::Beacon{
-              .id = beacon_id,
-          },
+      .data = beacon_id,
   });
   DCHECK(inserted);
 }
@@ -796,9 +750,8 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     return;
   }
 
-  SourceRegistrations::Beacon& data = it->GetBeacon();
-  DCHECK(!data.beacon_complete);
-  data.beacon_complete = is_final_response;
+  DCHECK(!it->registrations_complete);
+  it->registrations_complete = is_final_response;
 
   absl::optional<SuitableOrigin> suitable_reporting_origin =
       SuitableOrigin::Create(std::move(reporting_origin));
@@ -851,9 +804,8 @@ void AttributionDataHostManagerImpl::OnSourceParsed(
   registrations.pending_source_data--;
 
   auto source_type = SourceType::kNavigation;
-  if (const auto* beacon =
-          absl::get_if<SourceRegistrations::Beacon>(&registrations.data);
-      beacon && absl::holds_alternative<EventBeaconId>(beacon->id)) {
+  if (const auto* beacon_id = absl::get_if<BeaconId>(&registrations.data);
+      beacon_id && absl::holds_alternative<EventBeaconId>(*beacon_id)) {
     source_type = SourceType::kEvent;
   }
 
@@ -901,12 +853,7 @@ void AttributionDataHostManagerImpl::MaybeOnRegistrationsFinished(
     base::flat_set<SourceRegistrations>::const_iterator it) {
   DCHECK(it != registrations_.end());
 
-  if (it->pending_source_data > 0u || !it->navigation_complete) {
-    return;
-  }
-
-  if (const auto* beacon = absl::get_if<SourceRegistrations::Beacon>(&it->data);
-      beacon && !beacon->beacon_complete) {
+  if (it->pending_source_data > 0u || !it->registrations_complete) {
     return;
   }
 

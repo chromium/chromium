@@ -251,12 +251,9 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  const absl::optional<blink::Impression>& impression =
-      navigation_handle->GetImpression();
-
   // If we were not able to access the impression origin, ignore the
   // navigation.
-  if (impression && !navigation_source_origin_it) {
+  if (!navigation_source_origin_it) {
     MaybeNotifyFailedSourceNavigation(navigation_handle);
     return;
   }
@@ -266,17 +263,12 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  data_host_manager->NotifyNavigationSuccess(
-      navigation_handle->GetNavigationId());
-
-  if (!navigation_source_origin_it) {
-    return;
-  }
-
   const NavigationInfo& navigation_info =
       (*navigation_source_origin_it.get())->second;
   const SuitableOrigin& source_origin = navigation_info.source_origin;
 
+  const absl::optional<blink::Impression>& impression =
+      navigation_handle->GetImpression();
   DCHECK(impression);
 
   data_host_manager->NotifyNavigationForDataHost(
@@ -298,14 +290,13 @@ void AttributionHost::MaybeNotifyFailedSourceNavigation(
     return;
   }
 
-  absl::optional<blink::AttributionSrcToken> attribution_src_token;
-  if (absl::optional<blink::Impression> impression =
-          navigation_handle->GetImpression()) {
-    attribution_src_token = impression->attribution_src_token;
+  absl::optional<blink::Impression> impression =
+      navigation_handle->GetImpression();
+  if (!impression) {
+    return;
   }
 
-  data_host_manager->NotifyNavigationFailure(
-      attribution_src_token, navigation_handle->GetNavigationId());
+  data_host_manager->NotifyNavigationFailure(impression->attribution_src_token);
 }
 
 absl::optional<SuitableOrigin>

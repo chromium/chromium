@@ -113,16 +113,9 @@ class MockDataHostManager : public AttributionDataHostManager {
                GlobalRenderFrameHostId),
               (override));
 
-  MOCK_METHOD(
-      void,
-      NotifyNavigationFailure,
-      (const absl::optional<blink::AttributionSrcToken>& attribution_src_token,
-       int64_t navigation_id),
-      (override));
-
   MOCK_METHOD(void,
-              NotifyNavigationSuccess,
-              (int64_t navigation_id),
+              NotifyNavigationFailure,
+              (const blink::AttributionSrcToken& attribution_src_token),
               (override));
 
   MOCK_METHOD(void,
@@ -304,9 +297,8 @@ TEST_F(AttributionHostTest,
        AttributionSrcNavigationCommitsToErrorPage_Ignored) {
   blink::Impression impression;
 
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      NotifyNavigationFailure(Optional(impression.attribution_src_token), _));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationFailure(impression.attribution_src_token));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -333,9 +325,8 @@ TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
 TEST_F(AttributionHostTest, AttributionSrcNavigationAborts_Ignored) {
   blink::Impression impression;
 
-  EXPECT_CALL(
-      *mock_data_host_manager(),
-      NotifyNavigationFailure(Optional(impression.attribution_src_token), _));
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationFailure(impression.attribution_src_token));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
