@@ -9276,9 +9276,17 @@ void TextEmphasisStyle::ApplyInherit(StyleResolverState& state) const {
 }
 
 void TextEmphasisStyle::ApplyValue(StyleResolverState& state,
-                                   const CSSValue& value,
+                                   const CSSValue& in_value,
                                    ValueMode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
+
+  const CSSValue* value = &in_value;
+  if (const auto* list = DynamicTo<CSSValueList>(value)) {
+    if (list->length() == 1) {
+      value = &list->First();
+    }
+  }
+
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2U);
     for (unsigned i = 0; i < 2; ++i) {
@@ -9301,7 +9309,7 @@ void TextEmphasisStyle::ApplyValue(StyleResolverState& state,
     return;
   }
 
-  const auto& identifier_value = To<CSSIdentifierValue>(value);
+  const CSSIdentifierValue& identifier_value = *To<CSSIdentifierValue>(value);
 
   builder.SetTextEmphasisCustomMark(g_null_atom);
 
