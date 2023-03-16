@@ -9,6 +9,8 @@
 
 @class BookmarksSpotlightManager;
 
+@class ReadingListSpotlightManager;
+
 @protocol SpotlightDebuggerViewControllerDelegate
 
 - (void)showAllItems;
@@ -28,6 +30,8 @@
 
 @property(nonatomic, weak) id<SpotlightDebuggerViewControllerDelegate> delegate;
 @property(nonatomic, strong) BookmarksSpotlightManager* bookmarksManager;
+@property(nonatomic, strong)
+    ReadingListSpotlightManager* readingListSpotlightManager;
 
 @end
 
