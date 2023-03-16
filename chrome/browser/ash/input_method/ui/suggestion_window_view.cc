@@ -110,7 +110,7 @@ void SuggestionWindowView::ShowMultipleCandidates(
       candidates,
       properties.type == ash::ime::AssistiveWindowType::kEmojiSuggestion);
   learn_more_button_->SetVisible(properties.show_setting_link);
-
+  type_ = properties.type;
   MakeVisible();
 }
 
@@ -209,12 +209,7 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
 
   learn_more_button_ =
       AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
-          &AssistiveDelegate::AssistiveWindowButtonClicked,
-          base::Unretained(delegate_),
-          AssistiveWindowButton{
-              .id = ui::ime::ButtonId::kLearnMore,
-              .window_type =
-                  ash::ime::AssistiveWindowType::kEmojiSuggestion})));
+          &SuggestionWindowView::LearnMoreClicked, base::Unretained(this))));
   learn_more_button_->SetImageHorizontalAlignment(
       views::ImageButton::ALIGN_CENTER);
   learn_more_button_->SetImageVerticalAlignment(
@@ -231,6 +226,11 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
 }
 
 SuggestionWindowView::~SuggestionWindowView() = default;
+
+void SuggestionWindowView::LearnMoreClicked() {
+  delegate_->AssistiveWindowButtonClicked(AssistiveWindowButton{
+      .id = ui::ime::ButtonId::kLearnMore, .window_type = type_});
+}
 
 void SuggestionWindowView::ResizeCandidateArea(
     const std::vector<std::u16string>& new_candidates,

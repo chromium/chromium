@@ -1101,6 +1101,14 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
                 chromeos::settings::mojom::kSmartInputsSubpagePath,
                 chromeos::settings::mojom::Setting::kShowEmojiSuggestions));
       }
+      if (button.window_type ==
+          ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion) {
+        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+            ProfileManager::GetActiveUserProfile(),
+            SettingToQueryString(
+                chromeos::settings::mojom::kInputMethodOptionsSubpagePath,
+                chromeos::settings::mojom::Setting::kShowDiacritic));
+      }
       if (button.window_type == ash::ime::AssistiveWindowType::kLearnMore) {
         autocorrect_manager_->HideUndoWindow();
         base::RecordAction(base::UserMetricsAction(

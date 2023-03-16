@@ -150,6 +150,7 @@ class SettingsInputMethodOptionsPageElement extends
   // Internal properties for mixins.
   // From DeepLinkingMixin.
   override supportedSettingIds = new Set<Setting>([
+    Setting.kShowDiacritic,
     Setting.kShowPKAutoCorrection,
     Setting.kShowVKAutoCorrection,
   ]);
@@ -321,6 +322,11 @@ class SettingsInputMethodOptionsPageElement extends
       const subtitle = subtitleStringName && this.i18n(subtitleStringName);
 
       let link = -1;
+
+      if (name ===
+          OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS) {
+        link = Setting.kShowDiacritic;
+      }
       if (name === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL) {
         link = Setting.kShowPKAutoCorrection;
       }

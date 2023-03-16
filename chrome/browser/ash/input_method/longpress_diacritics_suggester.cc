@@ -124,6 +124,7 @@ bool LongpressDiacriticsSuggester::TrySuggestOnLongpress(char key_character) {
     properties.candidates = diacritics_candidates;
     properties.announce_string =
         l10n_util::GetStringUTF16(IDS_SUGGESTION_DIACRITICS_OPEN);
+    properties.show_setting_link = true;
 
     std::string error;
     suggestion_handler_->SetAssistiveWindowProperties(

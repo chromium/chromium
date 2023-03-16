@@ -229,6 +229,7 @@ enum Setting {
   // TODO(crbug/1058552): Add [Deprecated] attribute once implemented.
   kShowPKAutoCorrection = 1209,
   kShowVKAutoCorrection = 1210,
+  kShowDiacritic = 1211,
 
   // Files section.
   kGoogleDriveConnection = 1300,
