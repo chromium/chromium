@@ -475,15 +475,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.RendererTermination.RecentlyReceivedMemoryWarning"
-    enum="BooleanWarningReceived" expires_after="M77">
-  <owner>pkl@chromium.org</owner>
-  <summary>
-    [iOS] Records whether a memory warning had recently been received before a
-    renderer termination.
-  </summary>
-</histogram>
-
 <histogram name="Tab.RendererTermination.TotalTabCount" units="tabs"
     expires_after="2023-07-16">
   <owner>ajuma@chromium.org</owner>
@@ -503,16 +494,6 @@ chromium-metrics-reviews@google.com.
     Set to true if the tab is restored from ClosedTabCache and false indicates
     the tab is restored normally. This accounts for all types of tab restores
     i.e., in a closed window, closed group also on startup tab restores.
-  </summary>
-</histogram>
-
-<histogram name="Tab.RestoreUserPersistence" enum="TabRestoreUserAction"
-    expires_after="M85">
-  <owner>dtrainor@chromium.org</owner>
-  <summary>
-    [Android] When the browser restores a tab, whether the user waits for
-    completion of the load or if the user gives up by switching to another tab
-    or leaving Chrome.
   </summary>
 </histogram>
 

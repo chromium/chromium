@@ -401,30 +401,6 @@ void SwitchToNormalMode() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Verify correct recording of metrics when the reloading of an evicted tab
-// succeeds.
-// TODO(crbug.com/934228) The test is flaky.
-- (void)DISABLED_testEvictedTabReloadSuccess {
-  [ChromeEarlGrey closeAllTabsInCurrentMode];
-  GURL URL = web::test::HttpServer::MakeUrl(kTestUrl1);
-  NewMainTabWithURL(URL, kURL1FirstWord);
-  [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherBrowserTabs];
-  SwitchToNormalMode();
-
-  [ChromeEarlGrey waitForWebStateContainingText:kURL1FirstWord];
-  [ChromeEarlGrey waitForMainTabCount:1];
-
-  NSError* error = [MetricsAppInterface
-      expectUniqueSampleWithCount:1
-                        forBucket:tab_usage_recorder::USER_WAITED
-                     forHistogram:@(tab_usage_recorder::
-                                        kDidUserWaitForEvictedTabReload)];
-  if (error) {
-    GREYFail([error description]);
-  }
-}
-
 // Test that USER_DID_NOT_WAIT is reported if the user does not wait for the
 // reload to be complete after eviction.
 - (void)testEvictedTabSlowReload {
@@ -473,14 +449,6 @@ void SwitchToNormalMode() {
           return [ChromeEarlGrey isLoading];
         });
     (void)unused;
-  }
-
-  NSError* error = [MetricsAppInterface
-       expectCount:1
-         forBucket:tab_usage_recorder::USER_DID_NOT_WAIT
-      forHistogram:@(tab_usage_recorder::kDidUserWaitForEvictedTabReload)];
-  if (error) {
-    GREYFail([error description]);
   }
 }
 
@@ -532,13 +500,6 @@ void SwitchToNormalMode() {
   }
 
   [ChromeEarlGrey openNewTab];
-  NSError* error = [MetricsAppInterface
-       expectCount:1
-         forBucket:tab_usage_recorder::USER_DID_NOT_WAIT
-      forHistogram:@(tab_usage_recorder::kDidUserWaitForEvictedTabReload)];
-  if (error) {
-    GREYFail([error description]);
-  }
 }
 
 // Test that the USER_DID_NOT_WAIT metric is not logged when the user opens
@@ -579,21 +540,6 @@ void SwitchToNormalMode() {
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:responses[slowURL]];
-
-  NSError* error = [MetricsAppInterface
-       expectCount:0
-         forBucket:tab_usage_recorder::USER_DID_NOT_WAIT
-      forHistogram:@(tab_usage_recorder::kDidUserWaitForEvictedTabReload)];
-  if (error) {
-    GREYFail([error description]);
-  }
-  error = [MetricsAppInterface
-       expectCount:1
-         forBucket:tab_usage_recorder::USER_WAITED
-      forHistogram:@(tab_usage_recorder::kDidUserWaitForEvictedTabReload)];
-  if (error) {
-    GREYFail([error description]);
-  }
 }
 
 // Tests that leaving Chrome while an evicted tab is reloading triggers the
@@ -654,46 +600,6 @@ void SwitchToNormalMode() {
     Wait(chrome_test_util::ToolsMenuButton(), @"Tool Menu");
 
     [ChromeEarlGrey simulateTabsBackgrounding];
-  }
-  NSError* error = [MetricsAppInterface
-       expectCount:1
-         forBucket:tab_usage_recorder::USER_LEFT_CHROME
-      forHistogram:@(tab_usage_recorder::kDidUserWaitForEvictedTabReload)];
-  if (error) {
-    GREYFail([error description]);
-  }
-}
-
-// Tests that backgrounding a tab that was not evicted while it is loading does
-// not record the USER_LEFT_CHROME metric.
-- (void)testLiveTabReloadBackgrounded {
-  std::map<GURL, std::string> responses;
-  const GURL slowURL = web::test::HttpServer::MakeUrl("http://slow");
-  responses[slowURL] = "Slow Page";
-
-  web::test::SetUpHttpServer(std::make_unique<web::DelayedResponseProvider>(
-      std::make_unique<HtmlResponseProvider>(responses), kSlowURLDelay));
-
-  // We need two tabs to be able to switch.
-  [ChromeEarlGrey openNewTab];
-
-  [ChromeEarlGrey loadURL:slowURL waitForCompletion:NO];
-  // Wait for the page starting to load. It is possible that the page finish
-  // loading before this test. In that case the wait will timeout. Ignore the
-  // result.
-  bool unused =
-      base::test::ios::WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-        return [ChromeEarlGrey isLoading];
-      });
-  (void)unused;
-  [ChromeEarlGrey selectTabAtIndex:0];
-
-  NSError* error = [MetricsAppInterface
-       expectCount:0
-         forBucket:tab_usage_recorder::USER_LEFT_CHROME
-      forHistogram:@(tab_usage_recorder::kDidUserWaitForEvictedTabReload)];
-  if (error) {
-    GREYFail([error description]);
   }
 }
 

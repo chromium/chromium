@@ -238,41 +238,6 @@ TEST_F(TabUsageRecorderBrowserAgentTest, TestSwitchedModeTabs) {
       tab_usage_recorder::EVICTED, 2);
 }
 
-TEST_F(TabUsageRecorderBrowserAgentTest, TestUserWaitedForEvictedTabLoad) {
-  web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
-  web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadStart(mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadDone(mock_tab_b);
-  tab_usage_recorder_->RecordTabSwitched(mock_tab_b, mock_tab_a);
-  histogram_tester_.ExpectUniqueSample(
-      tab_usage_recorder::kDidUserWaitForEvictedTabReload,
-      tab_usage_recorder::USER_WAITED, 1);
-}
-
-TEST_F(TabUsageRecorderBrowserAgentTest, TestUserDidNotWaitForEvictedTabLoad) {
-  web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
-  web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadStart(mock_tab_b);
-  tab_usage_recorder_->RecordTabSwitched(mock_tab_b, mock_tab_a);
-  histogram_tester_.ExpectUniqueSample(
-      tab_usage_recorder::kDidUserWaitForEvictedTabReload,
-      tab_usage_recorder::USER_DID_NOT_WAIT, 1);
-}
-
-TEST_F(TabUsageRecorderBrowserAgentTest,
-       TestUserBackgroundedDuringEvictedTabLoad) {
-  web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
-  web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadStart(mock_tab_b);
-  tab_usage_recorder_->AppDidEnterBackground();
-  histogram_tester_.ExpectUniqueSample(
-      tab_usage_recorder::kDidUserWaitForEvictedTabReload,
-      tab_usage_recorder::USER_LEFT_CHROME, 1);
-}
-
 TEST_F(TabUsageRecorderBrowserAgentTest, TestTimeBetweenRestores) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, NOT_IN_MEMORY);
   web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
@@ -328,13 +293,6 @@ TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
 
   mock_tab_a->OnRenderProcessGone();
 
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  BOOL saw_memory_warning =
-      [defaults boolForKey:previous_session_info_constants::
-                               kDidSeeMemoryWarningShortlyBeforeTerminating];
-  histogram_tester_.ExpectUniqueSample(
-      tab_usage_recorder::kRendererTerminationSawMemoryWarning,
-      saw_memory_warning, 1);
   histogram_tester_.ExpectUniqueSample(
       tab_usage_recorder::kRendererTerminationAliveRenderers,
       kAliveTabsCountAtRendererTermination, 1);

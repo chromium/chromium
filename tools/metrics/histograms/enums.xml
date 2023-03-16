@@ -13520,11 +13520,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Warned"/>
 </enum>
 
-<enum name="BooleanWarningReceived">
-  <int value="0" label="Warning Not Received"/>
-  <int value="1" label="Warning Received"/>
-</enum>
-
 <enum name="BooleanWasFast">
   <int value="0" label="Slow"/>
   <int value="1" label="Fast"/>

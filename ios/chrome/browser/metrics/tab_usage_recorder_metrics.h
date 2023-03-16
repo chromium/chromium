@@ -16,10 +16,6 @@ extern const char kSelectedTabHistogramName[];
 // evicted tab is selected.
 extern const char kPageLoadsBeforeEvictedTabSelected[];
 
-// The name of the histogram for whether or not the user switched tabs before an
-// evicted tab completed reloading.
-extern const char kDidUserWaitForEvictedTabReload[];
-
 // The name of the histogram that records time intervals between restores of
 // previously-evicted tabs.  The first restore seen in a session will record the
 // time since the session started.
@@ -28,10 +24,6 @@ extern const char kTimeBetweenRestores[];
 // The name of the histogram that records time intervals between the last
 // restore of a previously-evicted tab and the end of the session.
 extern const char kTimeAfterLastRestore[];
-
-// Name of histogram to record whether a memory warning had been recently
-// received when a renderer termination occurred.
-extern const char kRendererTerminationSawMemoryWarning[];
 
 // Name of histogram to record the number of alive renderers when a renderer
 // termination is received.

@@ -19,20 +19,11 @@ const char kSelectedTabHistogramName[] =
 const char kPageLoadsBeforeEvictedTabSelected[] =
     "Tab.PageLoadsSinceLastSwitchToEvictedTab";
 
-// Records whether or not the user switched tabs before an evicted tab finished
-// reloading.
-const char kDidUserWaitForEvictedTabReload[] = "Tab.RestoreUserPersistence";
-
 // The name of the histogram that records time intervals between tab restores.
 const char kTimeBetweenRestores[] = "Tabs.TimeBetweenRestores";
 
 // The name of the histogram that records time intervals since the last restore.
 const char kTimeAfterLastRestore[] = "Tabs.TimeAfterLastRestore";
-
-// Name of histogram to record whether a memory warning had been recently
-// received when a renderer termination occurred.
-const char kRendererTerminationSawMemoryWarning[] =
-    "Tab.RendererTermination.RecentlyReceivedMemoryWarning";
 
 // Name of histogram to record the number of alive renderers when a renderer
 // termination is received.
