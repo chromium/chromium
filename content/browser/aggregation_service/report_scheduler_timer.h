@@ -51,8 +51,8 @@ class CONTENT_EXPORT ReportSchedulerTimer
     // Called when the connection changes from online to offline. When this
     // happens the timer is paused which means `OnReportingTimeReached` will not
     // be called until it gets resumed. Before resuming the timer,
-    // `AdjustOfflinereportTimes` will be called.
-    virtual void OnReportingPaused(base::Time now) {}
+    // `AdjustOfflineReportTimes` will be called.
+    virtual void OnReportingPaused() {}
 
     // Called when the connection changes from offline to online. May also be
     // called on a connection change if there are no stored reports, see

@@ -82,7 +82,7 @@ void ReportSchedulerTimer::OnConnectionChanged(
   if (offline_) {
     reporting_time_reached_timer_.Stop();
     if (!was_offline) {
-      delegate_->OnReportingPaused(base::Time::Now());
+      delegate_->OnReportingPaused();
     }
 
   } else if (was_offline) {

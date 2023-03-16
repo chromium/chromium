@@ -21,7 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_util.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -121,6 +121,13 @@ constexpr AttributionStorageDelegate::OfflineReportDelayConfig
         .min = base::Minutes(0),
         .max = base::Minutes(1),
     };
+
+constexpr char kPendingAndBrowserWentOfflineTimeSinceCreation[] =
+    "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+    "TimeSinceCreation";
+constexpr char kPendingAndBrowserWentOfflineTimeUntilReportTime[] =
+    "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
+    "TimeUntilReportTime";
 
 auto InvokeReportSentCallback(SendResult::Status status) {
   return [=](AttributionReport report, bool is_debug_report,
@@ -331,11 +338,9 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
   void RegisterAggregatableSourceAndMatchingTrigger(
-      const std::string& origin_prefix) {
-    const auto origin = *SuitableOrigin::Create(GURL(base::JoinString(
-        {"https://", origin_prefix,
-         ".example/.well-known/attribution-reporting/report-event-attribution"},
-        "")));
+      base::StringPiece origin_prefix) {
+    const auto origin = *SuitableOrigin::Deserialize(
+        base::StrCat({"https://", origin_prefix, ".example"}));
 
     attribution_manager_->HandleSource(TestAggregatableSourceProvider()
                                            .GetBuilder()
@@ -2710,26 +2715,20 @@ TEST_F(AttributionManagerImplTest, PendingReportsMetrics) {
 
   ShutdownManager();
 
-  histograms.ExpectTotalCount(
-      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-      "TimeSinceCreation",
-      3);
+  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeSinceCreation,
+                              3);
   EXPECT_EQ(
-      histograms.GetTotalSum("Conversions.AggregatableReport."
-                             "PendingAndBrowserWentOffline.TimeSinceCreation"),
+      histograms.GetTotalSum(kPendingAndBrowserWentOfflineTimeSinceCreation),
       base::Seconds(70 + 60 + 40).InMilliseconds());
 
-  histograms.ExpectTotalCount(
-      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-      "TimeUntilReportTime",
-      3);
-  EXPECT_EQ(histograms.GetTotalSum(
-                "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-                "TimeUntilReportTime"),
-            ((kFirstReportingWindow - base::Seconds(70)) +
-             (kFirstReportingWindow - base::Seconds(60)) +
-             (kFirstReportingWindow - base::Seconds(40)))
-                .InMilliseconds());
+  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeUntilReportTime,
+                              3);
+  EXPECT_EQ(
+      histograms.GetTotalSum(kPendingAndBrowserWentOfflineTimeUntilReportTime),
+      ((kFirstReportingWindow - base::Seconds(70)) +
+       (kFirstReportingWindow - base::Seconds(60)) +
+       (kFirstReportingWindow - base::Seconds(40)))
+          .InMilliseconds());
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -2744,15 +2743,11 @@ TEST_F(AttributionManagerImplTest,
 
   ShutdownManager();
 
-  // Expect no histograms on shutdown as the report have already been sent.
-  histograms.ExpectTotalCount(
-      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-      "TimeSinceCreation",
-      0);
-  histograms.ExpectTotalCount(
-      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-      "TimeUntilReportTime",
-      0);
+  // Expect no histograms on shutdown as the reports have already been sent.
+  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeSinceCreation,
+                              0);
+  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeUntilReportTime,
+                              0);
 }
 
 TEST_F(AttributionManagerImplTest, PendingReportsMetrics_Offline) {
@@ -2778,14 +2773,10 @@ TEST_F(AttributionManagerImplTest, PendingReportsMetrics_Offline) {
 
   // Expect only one histogram as there was only one pending report when it
   // first went offline.
-  histograms.ExpectTotalCount(
-      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-      "TimeSinceCreation",
-      1);
-  histograms.ExpectTotalCount(
-      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-      "TimeUntilReportTime",
-      1);
+  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeSinceCreation,
+                              1);
+  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeUntilReportTime,
+                              1);
 }
 
 TEST_F(AttributionManagerImplTest, PendingReportsMetrics_OverLimits) {
@@ -2801,18 +2792,13 @@ TEST_F(AttributionManagerImplTest, PendingReportsMetrics_OverLimits) {
   ShutdownManager();
 
   // Expect that events registered past the limit should be dropped.
-  histograms.ExpectTotalCount(
-      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-      "TimeSinceCreation",
-      kMaxPendingReportsTimings);
-  histograms.ExpectTotalCount(
-      "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
-      "TimeUntilReportTime",
-      kMaxPendingReportsTimings);
+  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeSinceCreation,
+                              kMaxPendingReportsTimings);
+  histograms.ExpectTotalCount(kPendingAndBrowserWentOfflineTimeUntilReportTime,
+                              kMaxPendingReportsTimings);
 
   EXPECT_EQ(
-      histograms.GetTotalSum("Conversions.AggregatableReport."
-                             "PendingAndBrowserWentOffline.TimeSinceCreation"),
+      histograms.GetTotalSum(kPendingAndBrowserWentOfflineTimeSinceCreation),
       (base::Seconds(10) * kMaxPendingReportsTimings).InMilliseconds());
 }
 

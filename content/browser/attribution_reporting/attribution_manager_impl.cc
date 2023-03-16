@@ -53,7 +53,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
-#include "content/browser/attribution_reporting/attribution_reporting.mojom-shared.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
@@ -94,8 +93,6 @@ namespace {
 
 using ScopedUseInMemoryStorageForTesting =
     ::content::AttributionManagerImpl::ScopedUseInMemoryStorageForTesting;
-
-using ReportType = attribution_reporting::mojom::ReportType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -156,9 +153,7 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
         .Then(std::move(maybe_set_timer_cb));
   }
 
-  void OnReportingPaused(base::Time now) override {
-    on_reporting_paused_cb_.Run();
-  }
+  void OnReportingPaused() override { on_reporting_paused_cb_.Run(); }
 
   base::RepeatingClosure send_reports_;
   base::RepeatingClosure on_reporting_paused_cb_;
@@ -730,8 +725,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 }
 
 void AttributionManagerImpl::AddPendingAggregatableReportTiming(
-    const AttributionReport::Id& id,
-    const base::Time& report_time) {
+    const AttributionReport& report) {
   // The maximum number of pending reports that should be considered. Past this
   // value, events will be ignored.
   constexpr size_t kMaxPendingReportsTimings = 50;
@@ -739,8 +733,17 @@ void AttributionManagerImpl::AddPendingAggregatableReportTiming(
     return;
   }
 
-  pending_aggregatable_reports_[id] = {.creation_time = base::Time::Now(),
-                                       .report_time = report_time};
+  const auto* data =
+      absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &report.data());
+  DCHECK(data);
+
+  auto [it, inserted] = pending_aggregatable_reports_.try_emplace(
+      data->id, PendingReportTimings{
+                    .creation_time = base::Time::Now(),
+                    .report_time = report.report_time(),
+                });
+  DCHECK(inserted);
 }
 
 void AttributionManagerImpl::OnReportStored(
@@ -761,8 +764,7 @@ void AttributionManagerImpl::OnReportStored(
     min_new_report_time = AttributionReport::MinReportTime(
         min_new_report_time, report->report_time());
 
-    AddPendingAggregatableReportTiming(report->ReportId(),
-                                       report->report_time());
+    AddPendingAggregatableReportTiming(*report);
 
     MaybeSendDebugReport(std::move(*report));
   }
@@ -964,7 +966,13 @@ void AttributionManagerImpl::SendReports(
     }
 
     if (!web_ui_callback) {
-      pending_aggregatable_reports_.erase(report.ReportId());
+      if (auto id = report.ReportId();
+          const auto* aggregatable_id =
+              absl::get_if<AttributionReport::AggregatableAttributionData::Id>(
+                  &id)) {
+        pending_aggregatable_reports_.erase(*aggregatable_id);
+      }
+
       LogMetricsOnReportSend(report, now);
     }
 

@@ -45,7 +45,7 @@ class MockReportSchedulerTimerDelegate : public ReportSchedulerTimer::Delegate {
               (base::OnceCallback<void(absl::optional<base::Time>)>),
               (override));
 
-  MOCK_METHOD(void, OnReportingPaused, (base::Time), (override));
+  MOCK_METHOD(void, OnReportingPaused, (), (override));
 };
 
 class ReportSchedulerTimerTest : public testing::Test {

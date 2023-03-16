@@ -24,7 +24,6 @@
 #include "build/buildflag.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
-#include "content/browser/attribution_reporting/attribution_internals.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
@@ -258,8 +257,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                                    bool is_debug_cookie_set,
                                    const CreateReportResult& result);
 
-  void AddPendingAggregatableReportTiming(const AttributionReport::Id& id,
-                                          const base::Time& report_time);
+  void AddPendingAggregatableReportTiming(const AttributionReport&);
   void RecordPendingAggregatableReportsTimings();
 
   void OnClearDataComplete();
@@ -318,10 +316,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // is expected to be small, so a `flat_set` is used.
   base::flat_set<AttributionReport::Id> reports_being_sent_;
 
-  // We keep track of pending reports timings in memory to recordd metrics
+  // We keep track of pending reports timings in memory to record metrics
   // when the browser becomes unavailable to send reports due to becoming
   // offline or being shutdown.
-  base::flat_map<AttributionReport::Id, PendingReportTimings>
+  base::flat_map<AttributionReport::AggregatableAttributionData::Id,
+                 PendingReportTimings>
       pending_aggregatable_reports_;
 
   base::ObserverList<AttributionObserver> observers_;
