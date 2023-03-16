@@ -6,8 +6,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cstring>
-#include <iterator>
 
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
@@ -140,47 +138,6 @@ const std::array<uint8_t, kBlockByteSize> EncryptBytes(
   std::array<uint8_t, kBlockByteSize> encrypted_bytes;
   AES_encrypt(bytes_to_encrypt.data(), encrypted_bytes.data(), &aes_key);
   return encrypted_bytes;
-}
-
-const std::vector<uint8_t> EncryptAdditionalData(
-    const std::array<uint8_t, kSecretKeyByteSize>& secret_key,
-    std::array<uint8_t, kNonceByteSize> nonce,
-    const std::vector<uint8_t>& data) {
-  if (data.empty()) {
-    return {};
-  }
-
-  AES_KEY aes_key;
-  int aes_key_was_set =
-      AES_set_encrypt_key(secret_key.data(), secret_key.size() * 8, &aes_key);
-  DCHECK(aes_key_was_set == 0) << "Invalid AES key size.";
-
-  uint bytes_read = 0;
-  unsigned char ivec[AES_BLOCK_SIZE] = {};
-  unsigned char ecount[AES_BLOCK_SIZE] = {};
-
-  uint8_t encrypted_data[data.size()];
-  uint num_blocks = data.size() / AES_BLOCK_SIZE;
-
-  // The Fast Pair Spec AES-CTR version increments the first byte of the
-  // initialization vector; the typical AES-CTR algorithm increments the
-  // last byte. So, instead of calling AES_ctr128_encrypt() once on all of
-  // `data`, it is called on each 128-bit block of `data` and the counter is
-  // incremented manually.
-  for (uint i = 0; i <= num_blocks; i++) {
-    std::memset(ivec, 0, AES_BLOCK_SIZE);
-    std::memcpy(ivec + 8, nonce.data(), kNonceByteSize);
-    ivec[0] = i;
-    uint offset = i * AES_BLOCK_SIZE;
-    AES_ctr128_encrypt(/*in=*/data.data() + offset,
-                       /*out=*/encrypted_data + offset,
-                       /*len=*/AES_BLOCK_SIZE, &aes_key, /*ivec=*/ivec,
-                       /*ecount=*/ecount, &bytes_read);
-  }
-
-  return std::vector<uint8_t>(
-      encrypted_data,
-      encrypted_data + sizeof(encrypted_data) / sizeof(uint8_t));
 }
 
 }  // namespace fast_pair_encryption
