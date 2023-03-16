@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS LoAF script: Promise.resolve resolve-promise, fetch
-PASS LoAF script: Promise.resolve resolve-promise, Response.text
-FAIL LoAF script: Promise.resolve resolve-promise, import promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'length')"
-PASS LoAF script: Promise.reject reject-promise,
-Harness: the test ran to completion.
-

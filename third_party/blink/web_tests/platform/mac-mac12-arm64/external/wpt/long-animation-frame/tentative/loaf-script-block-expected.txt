@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS LoAF script: http://web-platform.test:8001/long-animation-frame/tentative/loaf-script-block.html classic-script,
-PASS LoAF script: http://web-platform.test:8001/long-animation-frame/tentative/loaf-script-block.html module-script,
-FAIL LoAF script: http://web-platform.test:8001/long-animation-frame/tentative/resources/busy.js classic-script, promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'length')"
-PASS LoAF script: http://web-platform.test:8001/long-animation-frame/tentative/resources/busy.js module-script,
-FAIL LoAF script: http://web-platform.test:8001/long-animation-frame/tentative/resources/busy.js?import execute-script, promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'length')"
-Harness: the test ran to completion.
-
