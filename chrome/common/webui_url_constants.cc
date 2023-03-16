@@ -421,6 +421,7 @@ const char kOsUIAppServiceInternalsURL[] = "os://app-service-internals";
 const char kOsUIBluetoothInternalsURL[] = "os://bluetooth-internals";
 const char kOsUICrashesURL[] = "os://crashes";
 const char kOsUICreditsURL[] = "os://credits";
+const char kOsUIDeviceEmulatorURL[] = "os://device-emulator";
 const char kOsUIDeviceLogURL[] = "os://device-log";
 const char kOsUIDriveInternalsURL[] = "os://drive-internals";
 const char kOsUIEmojiPickerURL[] = "os://emoji-picker";

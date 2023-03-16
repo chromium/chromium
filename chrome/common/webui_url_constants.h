@@ -389,6 +389,7 @@ extern const char kOsUIAppServiceInternalsURL[];
 extern const char kOsUIBluetoothInternalsURL[];
 extern const char kOsUICrashesURL[];
 extern const char kOsUICreditsURL[];
+extern const char kOsUIDeviceEmulatorURL[];
 extern const char kOsUIDeviceLogURL[];
 extern const char kOsUIDriveInternalsURL[];
 extern const char kOsUIEmojiPickerURL[];
