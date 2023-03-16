@@ -245,8 +245,8 @@ void Portal::Navigate(const GURL& url,
   FrameTreeNode* portal_root = portal_contents_->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* portal_frame = portal_root->current_frame_host();
 
-  // TODO(crbug.com/1237547): Change our implementation to disallow downloads for
-  // portals.
+  // Use a default download policy, since downloads are explicitly disabled in
+  // `CanDownload()`.
   blink::NavigationDownloadPolicy download_policy;
 
   // Navigations in portals do not affect the host's session history. Upon
