@@ -805,7 +805,9 @@ void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
     return;
   TRACE_EVENT0("omnibox",
                "AutocompleteController::GroupSuggestionsBySearchVsURL");
-  const size_t num_elements = result_.size();
+  AutocompleteResult& result =
+      DebouncingEnabled() ? published_result_ : result_;
+  const size_t num_elements = result.size();
   if (begin < 0 || end <= begin || end > num_elements) {
     DCHECK(false) << "Range [" << begin << "; " << end
                   << ") is not valid for grouping; accepted range: [0; "
@@ -814,7 +816,7 @@ void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
   }
 
   AutocompleteResult::GroupSuggestionsBySearchVsURL(
-      std::next(result_.begin(), begin), std::next(result_.begin(), end));
+      std::next(result.begin(), begin), std::next(result.begin(), end));
 }
 
 void AutocompleteController::InitializeAsyncProviders(int provider_types) {
