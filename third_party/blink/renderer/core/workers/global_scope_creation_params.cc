@@ -77,15 +77,10 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       begin_frame_provider_params(std::move(begin_frame_provider_params)),
       // At the moment, workers do not support their container policy being set,
       // so it will just be an empty ParsedPermissionsPolicy for now.
-      // Shared storage worklets have a null `parent_permissions_policy` and
-      // `starter_origin`.
-      // TODO(crbug.com/1419253): Pass non-null `parent_permissions_policy` and
-      // `starter_origin`. Also, we could ensure `starter_origin` is never null
-      // after that.
       worker_permissions_policy(PermissionsPolicy::CreateFromParentPolicy(
           parent_permissions_policy,
           ParsedPermissionsPolicy() /* container_policy */,
-          starter_origin ? starter_origin->ToUrlOrigin() : url::Origin())),
+          starter_origin->ToUrlOrigin())),
       agent_cluster_id(agent_cluster_id),
       ukm_source_id(ukm_source_id),
       parent_context_token(parent_context_token),

@@ -76,16 +76,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFullUserAgent);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPath2DPaintCache);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAdsAPIs);
 
-enum class SharedStorageWorkletImplementationType {
-  // The worklet thread is created via base::SequenceBound, and JS bindings are
-  // added with native v8 and/or Gin library.
-  kLegacy,
-
-  // Use the blink worklet pattern (i.e. blink::ThreadedWorkletMessagingProxy,
-  // blink::WorkerThread, IDL, etc.) to create the thread and add JS bindings.
-  kBlinkStyle,
-};
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPI);
 // Maximum number of URLs allowed to be included in the input parameter for
 // runURLSelectionOperation().
@@ -140,10 +130,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // main frame has fenced frame depth 1, etc).
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageMaxAllowedFencedFrameDepthForSelectURL;
-// The implementation type of the worklet.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<
-    SharedStorageWorkletImplementationType>
-    kSharedStorageWorkletImplementationType;
 
 // If enabled, limits the number of times per origin per pageload that
 // `sharedStorage.selectURL()` is allowed to be invoked.

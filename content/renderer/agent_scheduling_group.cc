@@ -23,13 +23,11 @@
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
-#include "third_party/blink/public/web/web_shared_storage_worklet_thread.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_view_client.h"
 
@@ -99,9 +97,9 @@ class SelfOwnedWebViewClient : public blink::WebViewClient {
 // A thread for running shared storage worklet operations. It hosts a worklet
 // environment belonging to one Document. The object owns itself, cleaning up
 // when the worklet has shut down.
-class LegacySelfOwnedSharedStorageWorkletThread {
+class SelfOwnedSharedStorageWorkletThread {
  public:
-  LegacySelfOwnedSharedStorageWorkletThread(
+  SelfOwnedSharedStorageWorkletThread(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
       mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver)
       : main_thread_runner_(std::move(main_thread_runner)) {
@@ -109,7 +107,7 @@ class LegacySelfOwnedSharedStorageWorkletThread {
 
     auto disconnect_handler = base::BindPostTask(
         main_thread_runner_,
-        base::BindOnce(&LegacySelfOwnedSharedStorageWorkletThread::
+        base::BindOnce(&SelfOwnedSharedStorageWorkletThread::
                            OnSharedStorageWorkletServiceDestroyed,
                        weak_factory_.GetWeakPtr()));
 
@@ -136,8 +134,7 @@ class LegacySelfOwnedSharedStorageWorkletThread {
   base::SequenceBound<shared_storage_worklet::SharedStorageWorkletServiceImpl>
       worklet_thread_;
 
-  base::WeakPtrFactory<LegacySelfOwnedSharedStorageWorkletThread> weak_factory_{
-      this};
+  base::WeakPtrFactory<SelfOwnedSharedStorageWorkletThread> weak_factory_{this};
 };
 
 }  // namespace
@@ -449,16 +446,8 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
 
 void AgentSchedulingGroup::CreateSharedStorageWorkletService(
     mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver) {
-  switch (blink::features::kSharedStorageWorkletImplementationType.Get()) {
-    case blink::features::SharedStorageWorkletImplementationType::kLegacy:
-      new LegacySelfOwnedSharedStorageWorkletThread(
-          agent_group_scheduler_->DefaultTaskRunner(), std::move(receiver));
-      break;
-    case blink::features::SharedStorageWorkletImplementationType::kBlinkStyle:
-      blink::WebSharedStorageWorkletThread::Start(
-          agent_group_scheduler_->DefaultTaskRunner(), std::move(receiver));
-      break;
-  }
+  new SelfOwnedSharedStorageWorkletThread(
+      agent_group_scheduler_->DefaultTaskRunner(), std::move(receiver));
 }
 
 void AgentSchedulingGroup::BindAssociatedInterfaces(

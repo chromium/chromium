@@ -78,9 +78,7 @@ class MODULES_EXPORT AudioWorkletMessagingProxy final
   // Implements ThreadedWorkletMessagingProxy.
   std::unique_ptr<ThreadedWorkletObjectProxy> CreateObjectProxy(
       ThreadedWorkletMessagingProxy*,
-      ParentExecutionContextTaskRunners*,
-      scoped_refptr<base::SingleThreadTaskRunner>
-          parent_agent_group_task_runner) override;
+      ParentExecutionContextTaskRunners*) override;
 
   std::unique_ptr<WorkerThread> CreateWorkerThread() override;
 

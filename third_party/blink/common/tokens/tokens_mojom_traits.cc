@@ -103,12 +103,6 @@ bool UnionTraits<blink::mojom::WorkletTokenDataView, blink::WorkletToken>::Read(
       *output = token;
       return ret;
     }
-    case DataView::Tag::kSharedStorageWorkletToken: {
-      blink::SharedStorageWorkletToken token;
-      bool ret = input.ReadSharedStorageWorkletToken(&token);
-      *output = token;
-      return ret;
-    }
   }
   return false;
 }
@@ -176,12 +170,6 @@ bool UnionTraits<
     case DataView::Tag::kPaintWorkletToken: {
       blink::PaintWorkletToken token;
       bool ret = input.ReadPaintWorkletToken(&token);
-      *output = token;
-      return ret;
-    }
-    case DataView::Tag::kSharedStorageWorkletToken: {
-      blink::SharedStorageWorkletToken token;
-      bool ret = input.ReadSharedStorageWorkletToken(&token);
       *output = token;
       return ret;
     }

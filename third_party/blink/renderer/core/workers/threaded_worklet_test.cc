@@ -37,9 +37,7 @@ class ThreadedWorkletObjectProxyForTest final
       ThreadedWorkletMessagingProxy* messaging_proxy,
       ParentExecutionContextTaskRunners* parent_execution_context_task_runners)
       : ThreadedWorkletObjectProxy(messaging_proxy,
-                                   parent_execution_context_task_runners,
-                                   /*parent_agent_group_task_runner=*/nullptr) {
-  }
+                                   parent_execution_context_task_runners) {}
 
  protected:
   void CountFeature(WebFeature feature) override {

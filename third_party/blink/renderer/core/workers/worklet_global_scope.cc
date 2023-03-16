@@ -102,12 +102,9 @@ WorkletGlobalScope::WorkletGlobalScope(
       thread_type_(thread_type),
       frame_(frame),
       worker_thread_(worker_thread),
-      // Worklets should often have a parent LocalFrameToken. Only shared
-      // storage worklet does not have it.
+      // Worklets should always have a parent LocalFrameToken.
       frame_token_(
-          creation_params->parent_context_token
-              ? creation_params->parent_context_token->GetAs<LocalFrameToken>()
-              : blink::LocalFrameToken()),
+          creation_params->parent_context_token->GetAs<LocalFrameToken>()),
       parent_cross_origin_isolated_capability_(
           creation_params->parent_cross_origin_isolated_capability),
       parent_is_isolated_context_(creation_params->parent_is_isolated_context) {
@@ -116,8 +113,7 @@ WorkletGlobalScope::WorkletGlobalScope(
 
   // Worklet should be in the owner's agent cluster.
   // https://html.spec.whatwg.org/C/#obtain-a-worklet-agent
-  DCHECK(creation_params->agent_cluster_id ||
-         !creation_params->parent_context_token);
+  DCHECK(creation_params->agent_cluster_id);
 
   // Step 2: "Let inheritedAPIBaseURL be outsideSettings's API base URL."
   // |url_| is the inheritedAPIBaseURL passed from the parent Document.

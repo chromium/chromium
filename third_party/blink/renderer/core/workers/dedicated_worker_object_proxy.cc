@@ -122,8 +122,7 @@ DedicatedWorkerObjectProxy::DedicatedWorkerObjectProxy(
     DedicatedWorkerMessagingProxy* messaging_proxy_weak_ptr,
     ParentExecutionContextTaskRunners* parent_execution_context_task_runners,
     const DedicatedWorkerToken& token)
-    : ThreadedObjectProxyBase(parent_execution_context_task_runners,
-                              /*parent_agent_group_task_runner=*/nullptr),
+    : ThreadedObjectProxyBase(parent_execution_context_task_runners),
       token_(token),
       messaging_proxy_weak_ptr_(messaging_proxy_weak_ptr) {}
 
