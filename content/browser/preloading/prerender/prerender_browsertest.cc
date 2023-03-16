@@ -3075,10 +3075,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
             "MBPA_BAD_INTERFACE: content.mojom.TestInterfaceForUnexpected");
 }
 
-// Regression test for https://crbug.com/1268714.
+// Regression test for https://crbug.com/1268714 and https://crbug.com/1424250.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
+
+  // Some Android bots run with the site isolation disabled and behave
+  // differently on cross-origin iframe creation in a prerendered page. More
+  // specifically, when the site isolation is disabled, cross-site iframe will
+  // not create a speculative RenderFrameHost, and it results in test failures.
+  // To avoid it, this test explicitly runs with the site isolation enabled.
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
   GURL initial_url = GetUrl("/empty.html");
   GURL prerendering_url =
       GetUrl("/cross_site_iframe_factory.html?a.test(a.test,a.test)");
@@ -3123,7 +3130,48 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   ASSERT_EQ(all_prerender_frames.size(), 4u);
   ASSERT_EQ(count_speculative, 1u);
 
-  // 5. Activate the prerendered page and listen to the DidFinishNavigation
+  // 5. Renderers attempt to build Mojo connections for kDefer and kGrant
+  // interfaces during prerendering. This part simulates them.
+
+  // A barrier closure to wait until a deferred interface is granted on all
+  // frames.
+  base::RunLoop run_loop;
+  auto barrier_closure =
+      base::BarrierClosure(all_prerender_frames.size(), run_loop.QuitClosure());
+
+  // Iterate all the frames to bind interfaces.
+  mojo::RemoteSet<mojom::TestInterfaceForDefer> defer_remote_set;
+  mojo::RemoteSet<mojom::TestInterfaceForGrant> grant_remote_set;
+  for (auto* rfhi : all_prerender_frames) {
+    mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
+        rfhi->browser_interface_broker_receiver_for_testing();
+    blink::mojom::BrowserInterfaceBroker* prerender_broker =
+        bib.internal_state()->impl();
+
+    // Try to bind a kDefer interface.
+    mojo::Remote<mojom::TestInterfaceForDefer> prerender_defer_remote;
+    prerender_broker->GetInterface(
+        prerender_defer_remote.BindNewPipeAndPassReceiver());
+    // The barrier closure will be called after the deferred interface is
+    // granted.
+    prerender_defer_remote->Ping(barrier_closure);
+    defer_remote_set.Add(std::move(prerender_defer_remote));
+
+    // Try to bind a kGrant interface.
+    mojo::Remote<mojom::TestInterfaceForGrant> prerender_grant_remote;
+    prerender_broker->GetInterface(
+        prerender_grant_remote.BindNewPipeAndPassReceiver());
+    grant_remote_set.Add(std::move(prerender_grant_remote));
+  }
+
+  // Verify that BrowserInterfaceBrokerImpl defers running binders whose
+  // policies are kDefer until the prerendered page is activated.
+  EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), 0U);
+  // Verify that BrowserInterfaceBrokerImpl executes kGrant binders immediately.
+  EXPECT_EQ(test_browser_client.GetGrantReceiverSetSize(),
+            all_prerender_frames.size());
+
+  // 6. Activate the prerendered page and listen to the DidFinishNavigation
   // event, to ensure the Activate IPC is sent.
   TestActivationManager prerendered_activation_navigation(web_contents(),
                                                           prerendering_url);
@@ -3132,7 +3180,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   prerendered_activation_navigation.WaitForNavigationFinished();
   EXPECT_TRUE(prerendered_activation_navigation.was_activated());
 
-  // 6. Renderers attempt to build Mojo connections for kCancel interfaces.
+  // Make sure all the deferred interfaces are granted after activation. This is
+  // a regression test for https://crbug.com/1424250.
+  run_loop.Run();
+  EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(),
+            all_prerender_frames.size());
+
+  // 7. Renderers attempt to build Mojo connections for kCancel interfaces.
   // This part simulates some subframe documents start sending kCancel
   // interfaces after they know about the activation. It tests the regression
   // situation caught by https://crbug.com/1268714. If some RenderFrameHostImpls
