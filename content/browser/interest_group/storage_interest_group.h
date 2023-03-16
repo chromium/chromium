@@ -61,7 +61,7 @@ struct CONTENT_EXPORT StorageInterestGroup {
 
   // Top level page origin from when the interest group was joined.
   url::Origin joining_origin;
-  // Most recent time the interset group was joined. Stored in database as
+  // Most recent time the interest group was joined. Stored in database as
   // `exact_join_time`.
   base::Time join_time;
   // The last time this interest group was updated.

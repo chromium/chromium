@@ -135,7 +135,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the prioritySignalsOverrides JSON field into
 // `priority_signals_overrides`, returns true if the JSON is valid and the copy
 // completed. Maps nulls to nullopt, which means a value should be deleted from
-// the stored interset group.
+// the stored interest group.
 [[nodiscard]] bool TryToCopyPrioritySignalsOverrides(
     const base::Value::Dict& dict,
     absl::optional<base::flat_map<std::string, absl::optional<double>>>&

@@ -624,7 +624,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsMultipleUrls) {
 TEST_F(TrustedSignalsTest, BiddingSignalsDuplicateKeys) {
   // Unlike most bidding signals tests, only test trusted bidding signals keys,
   // and not interest group names. Since the PriorityVector corresponding to
-  // only a single interset group can be requested at a time, unlike
+  // only a single interest group can be requested at a time, unlike
   // TrustedSignals::ExtractJson(), which takes a vector of keys, there's no
   // analogous case for interest group names.
   std::vector<std::string> bidder_signals_vector{"key1", "key2", "key2", "key1",
