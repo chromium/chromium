@@ -120,7 +120,7 @@ class BuildFile:
 
     def __init__(self,
                  build_gn_path: str,
-                 root_gn_path: str,
+                 root_gn_path: pathlib.Path,
                  *,
                  dryrun: bool = False):
         self._root = root_gn_path
@@ -139,6 +139,7 @@ class BuildFile:
     def __exit__(self, exc, value, tb):
         if not self._skip_write_content:
             self.write_content_to_file()
+
 
     # See: https://gist.github.com/sgraham/bd9ffee312f307d5f417019a9c0f0777
     def _find_all(self, match_fn):
@@ -195,7 +196,7 @@ class BuildFile:
         recursive_find(self._content)
         return results
 
-    def _normalize(self, name: str):
+    def _normalize(self, name: Optional[str], abs_path: bool = True):
         """Returns the absolute GN path to the target with |name|.
 
         This method normalizes target names, assuming that relative targets are
@@ -217,7 +218,7 @@ class BuildFile:
             return ''
         if name.startswith('"'):
             name = name[1:-1]
-        if not name.startswith('//'):
+        if not name.startswith('//') and abs_path:
             name = self._gn_rel_path + name
         if not ':' in name:
             name += ':' + os.path.basename(name)
@@ -260,6 +261,25 @@ class BuildFile:
                 yield DepList(target_name=target_name,
                               variable_name=var_name,
                               child_nodes=node_list)
+
+    def search_deps(self, name_query: Optional[str],
+                    path_query: Optional[str]) -> bool:
+        if path_query:
+            if not re.search(path_query, self._rel_path):
+                return False
+            elif not name_query:
+                print(self._rel_path)
+                return True
+        for dep_list in self._find_all_deps_lists():
+            for child in dep_list.child_nodes:
+                # Typically searches run on non-absolute dep paths.
+                dep_name = self._normalize(child.get(NODE_VALUE),
+                                           abs_path=False)
+                if name_query and re.search(name_query, dep_name):
+                    print(f'{self._rel_path}: {dep_name} in '
+                          f'{dep_list.target_name}.{dep_list.variable_name}')
+                    return True
+        return False
 
     def split_deps(self, original_dep_name: str,
                    new_dep_names: List[str]) -> bool:

@@ -20,7 +20,7 @@ _BAD_FILES = [
 ]
 
 
-def is_bad_gn_file(filepath: str, root: str) -> bool:
+def is_bad_gn_file(filepath: str, root: pathlib.Path) -> bool:
     relpath = os.path.relpath(filepath, root)
     for bad_filepath in _BAD_FILES:
         if relpath == bad_filepath:
