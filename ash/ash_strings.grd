@@ -3243,7 +3243,7 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PIP" desc="Label for accelerator action - Focus on the Picture-in-Picture window.">
         Focus on the Picture-in-Picture window
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE" translateable="false" desc="Label for accelerator action - Previous pane.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Label for accelerator action - Previous pane.">
         Previous pane
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_SHELF" desc="Label for accelerator action - Highlight launcher button on shelf.">
@@ -3312,11 +3312,11 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_INCOGNITO_WINDOW" translateable="false" desc="Label for accelerator action - Open new Incognito window.">
         Open new Incognito window
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_TAB" translateable="false" desc="Label for accelerator action - Open new tab.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_TAB" desc="Label for accelerator action - Open new tab.">
         Open new tab
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_WINDOW" translateable="false" desc="Label for accelerator action - Open new window.">
-        Open new window
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_WINDOW" desc="Label for accelerator action - Open new tab in new window.">
+        Open new tab in new window
       </message>
        <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CALCULATOR" desc="Label for accelerator action - Open Calculator app.">
         Open Calculator app
@@ -3597,20 +3597,20 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MESSAGE_CENTER_BUBBLE" desc="Label for accelerator action - Open notifications.">
         Open notifications
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_TAB" translateable="false" desc="Label for accelerator action - Close the current tab.">
-        Close the current tab
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_TAB" desc="Label for accelerator action - Close current tab.">
+        Close current tab
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_WINDOW" desc="Label for accelerator action - Close current window.">
         Close current window
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_LAST_TAB" translateable="false" desc="Label for accelerator action - Go to the last tab in the window.">
-        Go to the last tab in the window
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_LAST_TAB" desc="Label for accelerator action - Go to last tab in window.">
+        Go to last tab in window
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_OPEN_FILE" translateable="false" desc="Label for accelerator action - Open a file in the browser.">
-        Open a file in the browser
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_OPEN_FILE" desc="Label for accelerator action - Open file in Chrome broswer.">
+        Open file in Chrome broswer
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_INCOGNITO_WINDOW" translateable="false" desc="Label for accelerator action - Open a new window in Incognito mode.">
-        Open a new window in Incognito mode
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_INCOGNITO_WINDOW" desc="Label for accelerator action - Open new tab in new Incognito window.">
+        Open new tab in new Incognito window
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_TAB" translateable="false" desc="Label for accelerator action - Open new tab.">
         Open new tab
@@ -3618,95 +3618,95 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_WINDOW" translateable="false" desc="Label for accelerator action - Open new window.">
         Open new window
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RESTORE_TAB" translateable="false" desc="Label for accelerator action - Reopen the last tab or window you closed.">
-        Reopen the last tab or window you closed
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RESTORE_TAB" desc="Label for accelerator action - Reopen the last tab or window closed.">
+        Reopen the last tab or window closed
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_TAB_SEARCH" translateable="false" desc="Label for accelerator action - Search tabs.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_TAB_SEARCH" desc="Label for accelerator action - Search tabs.">
         Search tabs
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLEAR_BROWSING_DATA" translateable="false" desc="Label for accelerator action - Clear browsing data.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLEAR_BROWSING_DATA" desc="Label for accelerator action - Clear browsing data.">
         Clear browsing data
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_BOOKMARKS" translateable="false" desc="Label for accelerator action - Focus on or Highlight the bookmarks bar (if shown).">
-        Focus on or Highlight the bookmarks bar (if shown)
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_BOOKMARKS" desc="Label for accelerator action - Focus on or highlight bookmarks bar (if shown).">
+        Focus on or highlight bookmarks bar (if shown)
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BACK" translateable="false" desc="Label for accelerator action - Go back to previous page.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BACK" desc="Label for accelerator action - Go back to previous page.">
         Go back to previous page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FORWARD" translateable="false" desc="Label for accelerator action - Go forward to next page.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FORWARD" desc="Label for accelerator action - Go forward to next page.">
         Go forward to next page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FIND" translateable="false" desc="Label for accelerator action - Search the current page.">
-        Search the current page
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FIND" desc="Label for accelerator action - Search current page.">
+        Search current page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FIND_NEXT" translateable="false" desc="Label for accelerator action - Go to the next match for your search.">
-        Go to the next match for your search
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FIND_NEXT" desc="Label for accelerator action - When searching a page, go to next match for search.">
+        When searching a page, go to next match for search
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FIND_PREVIOUS" translateable="false" desc="Label for accelerator action - Go to the previous match for your search.">
-        Go to the previous match for your search
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FIND_PREVIOUS" desc="Label for accelerator action - When searching a page, go to previous match for search.">
+        When searching a page, go to previous match for search
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_HOME" translateable="false" desc="Label for accelerator action - Open home page.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_HOME" desc="Label for accelerator action - Open home page.">
         Open home page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_DOWNLOADS" translateable="false" desc="Label for accelerator action - Open the Downloads page.">
-        Open the Downloads page
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_DOWNLOADS" desc="Label for accelerator action - Open Downloads page.">
+        Open Downloads page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_HISTORY" translateable="false" desc="Label for accelerator action - Open the History page.">
-        Open the History page
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_HISTORY" desc="Label for accelerator action - Open History page.">
+        Open History page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_SEARCH" translateable="false" desc="Label for accelerator action - Place focus in search address bar.">
-        Place focus in search address bar
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_SEARCH" desc="Label for accelerator action - Search in address bar.">
+        Search in address bar
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_MENU_BAR" translateable="false" desc="Label for accelerator action - Place focus on menu bar.">
-        Place focus on menu bar
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_MENU_BAR" desc="Label for accelerator action - Place focus on menu icon.">
+        Place focus on menu icon
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_PRINT" translateable="false" desc="Label for accelerator action - Print your current page.">
-        Print your current page
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_PRINT" desc="Label for accelerator action - Print current page.">
+        Print current page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RELOAD" translateable="false" desc="Label for accelerator action - Reload your current page.">
-        Reload your current page
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RELOAD" desc="Label for accelerator action - Reload current page.">
+        Reload current page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RELOAD_BYPASSING_CACHE" translateable="false" desc="Label for accelerator action - Reload your current page without using cached content.">
-        Reload your current page without using cached content
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RELOAD_BYPASSING_CACHE" desc="Label for accelerator action - Reload current page without using cached content.">
+        Reload current page without using cached content
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_ZOOM_NORMAL" translateable="false" desc="Label for accelerator action - Reset zoom level on the page.">
-        Reset zoom level on the page
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_ZOOM_NORMAL" desc="Label for accelerator action - Reset zoom level on page.">
+        Reset zoom level on page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOOKMARK_ALL_TABS" translateable="false" desc="Label for accelerator action - Save all open pages in your current window as bookmarks in a new folder.">
-        Save all open pages in your current window as bookmarks in a new folder
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOOKMARK_ALL_TABS" desc="Label for accelerator action - Save all open pages in current window as bookmarks in a new folder.">
+        Save all open pages in current window as bookmarks in a new folder
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SAVE_PAGE" translateable="false" desc="Label for accelerator action - Save your current page.">
-        Save your current page
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SAVE_PAGE" desc="Label for accelerator action - Save current page.">
+        Save current page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOOKMARK_THIS_TAB" translateable="false" desc="Label for accelerator action - Save your current tab as a bookmark.">
-        Save your current tab as a bookmark
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOOKMARK_THIS_TAB" desc="Label for accelerator action - Save current tab as bookmark.">
+        Save current tab as bookmark
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_APP_MENU" translateable="false" desc="Label for accelerator action - Show Chrome menu.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_APP_MENU" desc="Label for accelerator action - Show Chrome menu.">
         Show Chrome menu
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_BOOKMARK_MANAGER" translateable="false" desc="Label for accelerator action - Show bookmark manager.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_BOOKMARK_MANAGER" desc="Label for accelerator action - Show bookmark manager.">
         Show bookmark manager
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_DEV_TOOLS_CONSOLE" translateable="false" desc="Label for accelerator action - Show or hide the Developer Tools console.">
-        Show or hide the Developer Tools console
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_DEV_TOOLS_CONSOLE" desc="Label for accelerator action - Show or hide Developer Tools console.">
+        Show or hide Developer Tools console
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_DEV_TOOLS_INSPECT" translateable="false" desc="Label for accelerator action - Show or hide the Developer Tools inspector.">
-        Show or hide the Developer Tools inspector
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_DEV_TOOLS_INSPECT" desc="Label for accelerator action - Show or hide Developer Tools inspector.">
+        Show or hide Developer Tools inspector
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_DEV_TOOLS" translateable="false" desc="Label for accelerator action - Show or hide the Developer Tools panel.">
-        Show or hide the Developer Tools panel
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_DEV_TOOLS" desc="Label for accelerator action - Show or hide Developer Tools panel.">
+        Show or hide Developer Tools panel
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_BOOKMARK_BAR" translateable="false" desc="Label for accelerator action - Show or hide the bookmarks bar.">
-        Show or hide the bookmarks bar
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_BOOKMARK_BAR" desc="Label for accelerator action - Show or hide bookmarks bar.">
+        Show or hide bookmarks bar
       </message>
-       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_VIEW_SOURCE" translateable="false" desc="Label for accelerator action - View page source.">
+       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_VIEW_SOURCE" desc="Label for accelerator action - View page source.">
         View page source
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_ZOOM_PLUS" translateable="false" desc="Label for accelerator action - Zoom in on the page.">
-        Zoom in on the page
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_ZOOM_PLUS" desc="Label for accelerator action - Zoom in on page.">
+        Zoom in on page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_ZOOM_MINUS" translateable="false" desc="Label for accelerator action - Zoom out on the page.">
-        Zoom out on the page
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_ZOOM_MINUS" desc="Label for accelerator action - Zoom out on page.">
+        Zoom out on page
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_LOCATION" translateable="false" desc="Label for accelerator action - Focus address bar.">
         Focus address bar
@@ -3717,59 +3717,59 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY" desc="Label for accelerator action - Move focus to popups and dialogs.">
         Move focus to popups and dialogs
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOTTOM_PAGE" translateable="false" desc="Label for accelerator action - Go to bottom of page.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOTTOM_PAGE" desc="Label for accelerator action - Go to bottom of page.">
         Go to bottom of page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_TOP_PAGE" translateable="false" desc="Label for accelerator action - Go to top of page.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_TOP_PAGE" desc="Label for accelerator action - Go to top of page.">
         Go to top of page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEXT_PANE" translateable="false" desc="Label for accelerator action - Next pane.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEXT_PANE" desc="Label for accelerator action - Next pane.">
         Next pane
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_UP" translateable="false" desc="Label for accelerator action - Page up.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_UP" desc="Label for accelerator action - Page up.">
         Page up
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_DOWN" translateable="false" desc="Label for accelerator action - Page down.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_DOWN" desc="Label for accelerator action - Page down.">
         Page down
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RIGHT_CLICK" desc="Label for accelerator action - Right click a link.">
         Right-click a link
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_AUTO_COMPLETE" translateable="false" desc="Label for accelerator action - Add www. and .com to the address bar, then open website.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_AUTO_COMPLETE" desc="Label for accelerator action - Add www. and .com to the address bar, then open website.">
         Add www. and .com to the address bar, then open website
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_STOP_DRAG_TAB" translateable="false" desc="Label for accelerator action - Return the tab to its original position.">
-        Return the tab to its original position
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_STOP_DRAG_TAB" desc="Label for accelerator action - Cancel tab dragging.">
+        Cancel tab dragging
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_NEXT_TAB" translateable="false" desc="Label for accelerator action - Go to next tab.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_NEXT_TAB" desc="Label for accelerator action - Go to next tab.">
         Go to next tab
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_PREVIOU_TAB" translateable="false" desc="Label for accelerator action - Go to previous tab.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_PREVIOU_TAB" desc="Label for accelerator action - Go to previous tab.">
         Go to previous tab
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE" translateable="false" desc="Label for accelerator action - Go to tabs 1 through 8.">
-        Go to tabs 1 through 8
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE" desc="Label for accelerator action - Go through tabs 1 to 8.">
+        Go through tabs 1 to 8
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" translateable="false" desc="Label for accelerator description - Switch quickly between windows.">
         Switch quickly between windows
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DRAG_LINK_IN_NEW_TAB" translateable="false" desc="Label for accelerator description - Open the link in a new tab.">
-        Open the link in a new tab
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DRAG_LINK_IN_NEW_TAB" desc="Label for accelerator description - Open link in new tab.">
+        Open link in new tab
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_LINK_IN_TAB" translateable="false" desc="Label for accelerator description - Open the link in a new tab and switch to the new tab.">
-        Open the link in a new tab and switch to the new tab
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_LINK_IN_TAB" desc="Label for accelerator description - Open link in new tab and switch to this new tab.">
+        Open link in new tab and switch to this new tab
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_LINK_IN_TAB_BACKGROUND" translateable="false" desc="Label for accelerator description - Open the link in a new tab in the background.">
-        Open the link in a new tab in the background
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_LINK_IN_TAB_BACKGROUND" desc="Label for accelerator description - Open link in new tab and stay in current tab.">
+        Open link in new tab and stay in current tab
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_LINK_IN_WINDOW" translateable="false" desc="Label for accelerator description - Open the link in a new window.">
-        Open the link in a new window
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_LINK_IN_WINDOW" desc="Label for accelerator description - Open link in new window.">
+        Open link in new window
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DRAG_LINK_IN_SAME_TAB" translateable="false" desc="Label for accelerator description - Open the link in the tab.">
-        Open the link in the tab
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DRAG_LINK_IN_SAME_TAB" desc="Label for accelerator description - Open link in tab.">
+        Open link in tab
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_PAGE_IN_NEW_TAB" translateable="false" desc="Label for accelerator description - Open the webpage in a new tab.">
-        Open the webpage in a new tab
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_PAGE_IN_NEW_TAB" desc="Label for accelerator description - Open the website in the address bar in a new tab.">
+        Open the website in the address bar in a new tab
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" translateable="false" desc="Label for accelerator description - Cycle backwards in the most recently used window list.">
         Cycle backwards in the most recently used window list
@@ -3777,8 +3777,8 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_RIGHT_CLICK" translateable="false" desc="Label for accelerator description - Right-click a link.">
         Right-click a link
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SAVE_LINK_AS_BOOKMARK" translateable="false" desc="Label for accelerator description - Save the link as a bookmark.">
-        Save the link as a bookmark
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SAVE_LINK_AS_BOOKMARK" desc="Label for accelerator description - Save link as bookmark.">
+        Save link as bookmark
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP" desc="Label for accelerator description - Click or tap shelf icons 1-8.">
         Click or tap shelf icons 1-8
