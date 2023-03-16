@@ -58,7 +58,11 @@ void TestWaylandClientThread::RunAndWait(base::OnceClosure closure) {
       base::BindOnce(&TestWaylandClientThread::DoRun, base::Unretained(this),
                      std::move(closure)),
       run_loop.QuitClosure());
-  run_loop.Run();
+  // TODO(crbug.com/1424930): Use busy loop to workaround RunLoop::Run()
+  // erroneously advancing mock time.
+  while (!run_loop.AnyQuitCalled()) {
+    run_loop.RunUntilIdle();
+  }
 }
 
 void TestWaylandClientThread::OnFileCanReadWithoutBlocking(int fd) {

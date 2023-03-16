@@ -22,12 +22,6 @@ void DoDelete(WaylandDisplayOutput* output, int retry_count) {
   // Retry if a client hasn't released the output yet, or if no client has
   // even made the initial binding yet.
   if (output->output_counts() > 0 || !output->had_registered_output()) {
-    // TODO(crbug.com/1420468): For flakes debugging.
-    DLOG(WARNING) << "WaylandDisplayOutput with id=" << output->id()
-                  << " still pending client release.";
-    DLOG(WARNING) << "  output_counts=" << output->output_counts();
-    DLOG(WARNING) << "  had_output=" << output->had_registered_output();
-    DLOG(WARNING) << "  retry_count=" << retry_count;
     if (retry_count > 0) {
       // If we can't post the task successfully, just delete the output
       // resource now, otherwise we would leak memory.
@@ -48,8 +42,6 @@ void DoDelete(WaylandDisplayOutput* output, int retry_count) {
           << " with remaining bound outputs=" << output->output_counts();
     }
   }
-  // TODO(crbug.com/1420468): For flakes debugging.
-  DLOG(WARNING) << "Deleting WaylandDisplayOutput with id=" << output->id();
   delete output;
 }
 
@@ -76,10 +68,6 @@ void WaylandDisplayOutput::OnDisplayRemoved() {
 
   is_destructing_ = true;
 
-  // TODO(crbug.com/1420468): For flakes debugging.
-  DLOG(WARNING) << "Posting initial delayed deletion task for "
-                   "WaylandDisplayOutput with id="
-                << id();
   if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, base::BindOnce(&DoDelete, this, kDeleteRetries),
           kDeleteTaskDelay)) {

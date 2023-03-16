@@ -6,7 +6,9 @@
 
 #include <cstdint>
 
+#include "base/location.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/exo/wayland/test/client_util.h"
 #include "components/exo/wayland/test/server_util.h"
@@ -28,9 +30,7 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
   ~WaylandDisplayOutputTest() override = default;
 
   void TearDown() override {
-    LOG(INFO) << "In TearDown, running task environment until idle.";
     task_environment()->RunUntilIdle();
-    LOG(INFO) << "Task environment is now idle.";
 
     test::WaylandServerTest::TearDown();
   }
@@ -38,13 +38,7 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
 
 }  // namespace
 
-// TODO(crbug.com/1421232): Re-enable this test
-#if defined(LEAK_SANITIZER)
-#define MAYBE_DelayedSelfDestruct DISABLED_DelayedSelfDestruct
-#else
-#define MAYBE_DelayedSelfDestruct DelayedSelfDestruct
-#endif
-TEST_F(WaylandDisplayOutputTest, MAYBE_DelayedSelfDestruct) {
+TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
    public:
     wl_output* output = nullptr;
@@ -79,32 +73,20 @@ TEST_F(WaylandDisplayOutputTest, MAYBE_DelayedSelfDestruct) {
   UpdateDisplay("800x600");
 
   // Fast forward until at least one delete has been attempted.
-  // TODO(crbug.com/1420468): For flakes debugging.
-  auto ff_delta = WaylandDisplayOutput::kDeleteTaskDelay * 1.5;
-  LOG(INFO) << "Want fastforward: " << ff_delta;
-  auto start_time = task_environment()->NowTicks();
-  task_environment()->FastForwardBy(ff_delta);
-  LOG(INFO) << "Actual fastforward: "
-            << task_environment()->NowTicks() - start_time;
-
-  LOG(INFO) << "Flushing client";
-  client_thread_->FlushForTesting();
-  LOG(INFO) << "Flushed client";
+  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
+                                    1.5);
 
   // Try releasing now and check for client error.
   PostToClientAndWait([&](test::TestClient* client) {
     auto* data = client->GetDataAs<ClientData>();
     EXPECT_EQ(data->output, client->globals().output.get());
-    // TODO(crbug.com/1420468): For flakes debugging.
-    LOG(INFO) << "Sending wl_output_release for output";
     wl_output_release(client->globals().output.release());
-    LOG(INFO) << "Calling client roundtrip";
     client->Roundtrip();
-    LOG(INFO) << "After client roundtrip";
     EXPECT_EQ(wl_display_get_error(client->display()), 0);
   });
 
-  LOG(INFO) << "End of test case";
+  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
+                                    WaylandDisplayOutput::kDeleteRetries);
 }
 
 // Verify that in the case where an output is added and removed quickly before
@@ -123,33 +105,26 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestructBeforeFirstBind) {
   UpdateDisplay("800x600");
 
   // Fast forward until at least one delete has been attempted.
-  // TODO(crbug.com/1420468): For flakes debugging.
-  auto ff_delta = WaylandDisplayOutput::kDeleteTaskDelay * 1.5;
-  LOG(INFO) << "Want fastforward: " << ff_delta;
-  auto start_time = task_environment()->NowTicks();
-  task_environment()->FastForwardBy(ff_delta);
-  LOG(INFO) << "Actual fastforward: "
-            << task_environment()->NowTicks() - start_time;
+  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
+                                    1.5);
 
   // Unblock client thread so the bind request happens now.
-  LOG(INFO) << "Signaling client";
   block_bind_event.Signal();
-  LOG(INFO) << "Flushing client";
   client_thread_->FlushForTesting();
-  LOG(INFO) << "Flushed client";
 
   // Check for client error.
   PostToClientAndWait([&](test::TestClient* client) {
-    LOG(INFO) << "Calling client roundtrip";
     client->Roundtrip();
-    LOG(INFO) << "After client roundtrip";
     EXPECT_EQ(wl_display_get_error(client->display()), 0);
   });
 
-  LOG(INFO) << "Fastforwarding for clean up";
+  // Clean up client output object.
+  PostToClientAndWait([&](test::TestClient* client) {
+    wl_output_release(client->globals().output.release());
+  });
+
   task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
                                     WaylandDisplayOutput::kDeleteRetries);
-  LOG(INFO) << "End of test case";
 }
 
 }  // namespace exo::wayland
