@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -48,7 +49,10 @@ namespace system {
 
 namespace {
 
-const int kMinRebootUptimeMs = 60 * 60 * 1000;     // 1 hour.
+constexpr base::TimeDelta kMinRebootUptime = base::Hours(1);  // 1 hour.
+constexpr char kMinRebootUptimeMsSwitch[] =
+    "min-reboot-uptime-ms";  // Switch to override |kMinRebootUptime| for
+                             // testing
 const int kLoginManagerIdleTimeoutMs = 60 * 1000;  // 60 seconds.
 const int kGracePeriodMs = 24 * 60 * 60 * 1000;    // 24 hours.
 const int kOneKilobyte = 1 << 10;                  // 1 kB in bytes.
@@ -338,12 +342,27 @@ void AutomaticRebootManager::Reschedule() {
 
   // Safeguard against reboot loops: Ensure that the uptime after which a reboot
   // is actually requested and the grace period begins is never less than
-  // |kMinRebootUptimeMs|.
+  // |kMinRebootUptime| or the value passed in |kMinRebootUptimeMsSwitch|.
+  base::TimeDelta minRebootUptime = kMinRebootUptime;
+
+  if (auto* command_line = base::CommandLine::ForCurrentProcess();
+      command_line && command_line->HasSwitch(kMinRebootUptimeMsSwitch)) {
+    int parsed_value = 0;
+    std::string switch_value =
+        command_line->GetSwitchValueASCII(kMinRebootUptimeMsSwitch);
+
+    if (base::StringToInt(switch_value, &parsed_value)) {
+      minRebootUptime = base::Milliseconds(parsed_value);
+    } else {
+      LOG(WARNING) << "Failed to parse kMinRebootUptimeMsSwitch's value "
+                   << switch_value;
+    }
+  }
+
   const base::TimeTicks now = tick_clock_->NowTicks();
   const base::Time wall_clock_now = clock_->Now();
   const base::TimeTicks grace_start_time =
-      std::max(reboot_request_time,
-               *boot_time_ + base::Milliseconds(kMinRebootUptimeMs));
+      std::max(reboot_request_time, *boot_time_ + minRebootUptime);
 
   // Set up a timer for the start of the grace period. If the grace period
   // started in the past, the timer is still used with its delay set to zero.

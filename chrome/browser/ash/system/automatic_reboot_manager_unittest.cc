@@ -1594,6 +1594,49 @@ TEST_P(AutomaticRebootManagerTest, UpdateBeforeMinimumUptime) {
 
 // Chrome is running. The current uptime is 10 minutes.
 // Verifies that when the policy to automatically reboot after an update is
+// enabled and the kMinRebootUptimeMs switch is set to 20 minutes, no reboot
+// occurs and a grace period is scheduled to begin after 20 minutes of uptime.
+// Further verifies that when an update is applied, the current uptime is
+// persisted as the time at which a reboot became necessary.
+TEST_P(AutomaticRebootManagerTest, UpdateBeforeMinimumUptimeWithSwitch) {
+  uptime_provider()->SetUptime(base::Minutes(10));
+  // Set --min-reboot-uptime-ms flag to 20*60*1000 ms == 20 mins.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--min-reboot-uptime-ms=1200000"});
+  SetRebootAfterUpdate(/*reboot_after_update*/ true, /*expect_reboot*/ false);
+
+  // Verify that no reboot is requested and the device does not reboot
+  // immediately.
+  ExpectNoRebootRequest();
+  CreateAutomaticRebootManager(/*expect_reboot*/ false);
+  VerifyNoRebootRequested();
+
+  // Verify that no grace period has started.
+  VerifyNoGracePeriod();
+
+  // Notify that an update has been applied and a reboot is necessary. Verify
+  // that no reboot is requested and the device does not reboot immediately.
+  NotifyUpdateRebootNeeded();
+
+  // Verify that the current uptime has been persisted as the time at which a
+  // reboot became necessary.
+  EXPECT_TRUE(
+      ReadUpdateRebootNeededUptimeFromFile(&update_reboot_needed_uptime_));
+  EXPECT_EQ(uptime_provider()->uptime(), update_reboot_needed_uptime_);
+
+  // Verify that a grace period has been scheduled to begin in the future.
+  VerifyGracePeriod(base::Minutes(20));
+
+  // Verify that a reboot is requested eventually and unless a non-kiosk-app
+  // session is in progress, the device eventually reboots.
+  ExpectRebootRequest(AutomaticRebootManagerObserver::REBOOT_REASON_OS_UPDATE);
+  auto* user_manager = GetFakeUserManager();
+  FastForwardUntilNoTasksRemain(!user_manager->IsUserLoggedIn() ||
+                                user_manager->IsLoggedInAsAnyKioskApp());
+}
+
+// Chrome is running. The current uptime is 10 minutes.
+// Verifies that when the policy to automatically reboot after an update is
 // enabled, device is suspended for 1 hour and resumes in grace period, it
 // immediately reboots if no session is active or shortly after if non-kiosk-app
 // session is in progress.
