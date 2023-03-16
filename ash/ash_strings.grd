@@ -3363,7 +3363,7 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SCALE_UI_UP" desc="Label for accelerator action - Zoom out of screen.">
         Zoom out of screen
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_EMOJI_PICKER" translateable="false" desc="Label for accelerator action - Open Emoji Picker.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_EMOJI_PICKER" desc="Label for accelerator action - Open Emoji Picker.">
         Open Emoji Picker
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_IME_MENU_BUBBLE" desc="Label for accelerator action - Show list of available input methods.">
@@ -3420,10 +3420,10 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CALENDAR" desc="Label for accelerator action - Open/close calendar.">
         Open/close calendar
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CAPS_LOCK" translateable="false" desc="Label for accelerator action - Turn Caps Lock on and off.">
-        Turn Caps Lock on and off
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CAPS_LOCK" desc="Label for accelerator action - Turn on/off Caps Lock.">
+        Turn on/off Caps Lock
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CLIPBOARD_HISTORY" translateable="false" desc="Label for accelerator action - Open Clipboard.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CLIPBOARD_HISTORY" desc="Label for accelerator action - Open Clipboard.">
         Open Clipboard
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DICTATION" desc="Label for accelerator action - Turn on/off dictation (type with your voice)">
@@ -3819,49 +3819,49 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS" desc="Label for accelerator description - Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
         Move between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_COPY" translateable="false" desc="Label for accelerator description - Copy selected content to clipboard.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_COPY" desc="Label for accelerator description - Copy selected content to clipboard.">
         Copy selected content to clipboard
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CUT" translateable="false" desc="Label for accelerator description - Cut.">
-        Cut
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CUT" desc="Label for accelerator description - Cut selected content to clipboard.">
+        Cut selected content to clipboard
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_PASTE" translateable="false" desc="Label for accelerator description - Paste content from clipboard.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_PASTE" desc="Label for accelerator description - Paste content from clipboard.">
         Paste content from clipboard
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_PASTE_PLAIN_TEXT" translateable="false" desc="Label for accelerator description - Paste content from clipboard as plain text.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_PASTE_PLAIN_TEXT" desc="Label for accelerator description - Paste content from clipboard as plain text.">
         Paste content from clipboard as plain text
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DELETE_PREVIOUS_WORD" translateable="false" desc="Label for accelerator description - Delete previous word.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DELETE_PREVIOUS_WORD" desc="Label for accelerator description - Delete previous word.">
         Delete previous word
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_UNDO" translateable="false" desc="Label for accelerator description - Undo last action.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_UNDO" desc="Label for accelerator description - Undo last action.">
         Undo last action
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_REDO" translateable="false" desc="Label for accelerator description - Redo last action.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_REDO" desc="Label for accelerator description - Redo last action.">
         Redo last action
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CONTENT_CONTEXT_SELECTALL" translateable="false" desc="Label for accelerator description - Select everything on page.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CONTENT_CONTEXT_SELECTALL" desc="Label for accelerator description - Select everything on page.">
         Select everything on page
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_TEXT_TO_BEGINNING" translateable="false" desc="Label for accelerator description - Select text from cursor to beginning of line.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_TEXT_TO_BEGINNING" desc="Label for accelerator description - Select text from cursor to beginning of line.">
         Select text from cursor to beginning of line
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_TEXT_TO_END_OF_LINE" translateable="false" desc="Label for accelerator description - Select text from cursor to end of line.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_TEXT_TO_END_OF_LINE" desc="Label for accelerator description - Select text from cursor to end of line.">
         Select text from cursor to end of line
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_PREVIOUS_WORD" translateable="false" desc="Label for accelerator description - Select previous word or letter.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_PREVIOUS_WORD" desc="Label for accelerator description - Select previous word or letter.">
         Select previous word or letter
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_NEXT_WORD" translateable="false" desc="Label for accelerator description - Select next word or letter.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_NEXT_WORD" desc="Label for accelerator description - Select next word or letter.">
         Select next word or letter
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DELETE_NEXT_WORD" translateable="false" desc="Label for accelerator description - Delete next letter.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DELETE_NEXT_WORD" desc="Label for accelerator description - Delete next letter.">
         Delete next letter
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_BEGINNING_OF_DOCUMENT" translateable="false" desc="Label for accelerator description - Go to beginning of document.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_BEGINNING_OF_DOCUMENT" desc="Label for accelerator description - Go to beginning of document.">
         Go to beginning of document
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_END_OF_DOCUMENT" translateable="false" desc="Label for accelerator description - Go to end of document.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_END_OF_DOCUMENT" desc="Label for accelerator description - Go to end of document.">
         Go to end of document
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_BEGINNING_OF_LINE" translateable="false" desc="Label for accelerator description - Move cursor to beginning of line.">
@@ -3870,10 +3870,10 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_END_OF_LINE" translateable="false" desc="Label for accelerator description - Move cursor to end of line.">
         Move cursor to end of line
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_TO_START_OF_PREVIOUS_WORD" translateable="false" desc="Label for accelerator description - Move to start of previous word.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_TO_START_OF_PREVIOUS_WORD" desc="Label for accelerator description - Move to start of previous word.">
         Move to start of previous word
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_TO_END_OF_WORD" translateable="false" desc="Label for accelerator description - Move to end of next word.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_TO_END_OF_WORD" desc="Label for accelerator description - Move to end of next word.">
         Move to end of next word
       </message>
       <!-- Ambient Accelerator Action -->
