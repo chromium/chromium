@@ -136,7 +136,7 @@ public class BookmarkModel extends BookmarkBridge {
      */
     public int getUnreadCount(@NonNull BookmarkId bookmarkId) {
         assert bookmarkId.getType() == BookmarkType.READING_LIST;
-        List<BookmarkId> children = getChildIds(bookmarkId);
+        List<BookmarkId> children = getChildIDs(bookmarkId);
         int unreadCount = 0;
         for (BookmarkId child : children) {
             BookmarkItem childItem = getBookmarkById(child);

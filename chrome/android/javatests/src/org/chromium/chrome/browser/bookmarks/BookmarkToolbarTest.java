@@ -124,7 +124,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                                        .findViewById(R.id.bookmark_toolbar);
 
             when(mBookmarkModel.getRootFolderId()).thenReturn(BOOKMARK_ID_ROOT);
-            when(mBookmarkModel.getTopLevelFolderParentIds())
+            when(mBookmarkModel.getTopLevelFolderParentIDs())
                     .thenReturn(Collections.singletonList(BOOKMARK_ID_ROOT));
 
             mockBookmarkItem(BOOKMARK_ID_FOLDER, "folder", null, true, BOOKMARK_ID_ROOT);

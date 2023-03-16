@@ -272,7 +272,7 @@ void BookmarkBridge::LoadFakePartnerBookmarkShimForTesting(
   DCHECK(partner_bookmarks_shim_->IsLoaded());
 }
 
-ScopedJavaLocalRef<jobject> BookmarkBridge::GetBookmarkById(
+ScopedJavaLocalRef<jobject> BookmarkBridge::GetBookmarkByID(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jlong id,
@@ -289,7 +289,7 @@ bool BookmarkBridge::IsDoingExtensiveChanges(JNIEnv* env,
   return bookmark_model_->IsDoingExtensiveChanges();
 }
 
-void BookmarkBridge::GetTopLevelFolderParentIds(
+void BookmarkBridge::GetTopLevelFolderParentIDs(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj) {
@@ -299,7 +299,7 @@ void BookmarkBridge::GetTopLevelFolderParentIds(
       GetBookmarkType(bookmark_model_->root_node()));
 }
 
-void BookmarkBridge::GetTopLevelFolderIds(
+void BookmarkBridge::GetTopLevelFolderIDs(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jboolean get_special,
@@ -488,7 +488,7 @@ jint BookmarkBridge::GetChildCount(JNIEnv* env,
   return static_cast<jint>(node->children().size());
 }
 
-void BookmarkBridge::GetChildIds(JNIEnv* env,
+void BookmarkBridge::GetChildIDs(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
                                  jlong id,
                                  jint type,

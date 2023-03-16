@@ -110,7 +110,7 @@ public class BookmarkManagerMediatorTest {
 
             // Setup BookmarkModel.
             doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
-            doReturn(Arrays.asList(mFolder2Id)).when(mBookmarkModel).getChildIds(mFolderId);
+            doReturn(Arrays.asList(mFolder2Id)).when(mBookmarkModel).getChildIDs(mFolderId);
             BookmarkItem bookmarkItem =
                     new BookmarkItem(mFolderId, "Folder", null, true, null, true, false, 0, false);
             doReturn(bookmarkItem).when(mBookmarkModel).getBookmarkById(any());

@@ -129,7 +129,7 @@ public class BookmarkModelTest {
         mBookmarkModel.moveBookmarks(new ArrayList<BookmarkId>(movedBookmarks), folderAA);
 
         // Order of the moved bookmarks is not tested.
-        verifyBookmarkListNoOrder(mBookmarkModel.getChildIds(folderAA), movedBookmarks);
+        verifyBookmarkListNoOrder(mBookmarkModel.getChildIDs(folderAA), movedBookmarks);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class BookmarkModelTest {
         mBookmarkModel.moveBookmarks(new ArrayList<BookmarkId>(movedBookmarks), folder);
 
         // Order of the moved bookmarks is not tested.
-        verifyBookmarkListNoOrder(mBookmarkModel.getChildIds(folder), movedBookmarks);
+        verifyBookmarkListNoOrder(mBookmarkModel.getChildIDs(folder), movedBookmarks);
     }
 
     @Test
@@ -212,7 +212,7 @@ public class BookmarkModelTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Bookmark"})
-    public void testGetChildIds() {
+    public void testGetChildIDs() {
         BookmarkId folderA = mBookmarkModel.addFolder(mMobileNode, 0, "fa");
         HashSet<BookmarkId> expectedChildren = new HashSet<>();
         expectedChildren.add(addBookmark(folderA, 0, "a", A_COM));
@@ -222,7 +222,7 @@ public class BookmarkModelTest {
         BookmarkId folderAA = mBookmarkModel.addFolder(folderA, 0, "faa");
         // folders and urls
         expectedChildren.add(folderAA);
-        verifyBookmarkListNoOrder(mBookmarkModel.getChildIds(folderA), expectedChildren);
+        verifyBookmarkListNoOrder(mBookmarkModel.getChildIDs(folderA), expectedChildren);
     }
 
     // Moved from BookmarkBridgeTest

@@ -79,18 +79,18 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
-  base::android::ScopedJavaLocalRef<jobject> GetBookmarkById(
+  base::android::ScopedJavaLocalRef<jobject> GetBookmarkByID(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jlong id,
       jint type);
 
-  void GetTopLevelFolderParentIds(
+  void GetTopLevelFolderParentIDs(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_result_obj);
 
-  void GetTopLevelFolderIds(
+  void GetTopLevelFolderIDs(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jboolean get_special,
@@ -133,7 +133,7 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       jlong id,
       jint type);
 
-  void GetChildIds(JNIEnv* env,
+  void GetChildIDs(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,
                    jlong id,
                    jint type,
