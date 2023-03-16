@@ -19,102 +19,129 @@
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/zlib/google/zip_reader.h"
 
 namespace safe_browsing {
-namespace zip_analyzer {
 
-namespace {
+ZipAnalyzer::~ZipAnalyzer() = default;
 
-// The maximum duration of ZIP analysis, in milliseconds.
-const int kZipAnalysisTimeoutMs = 10000;
+ZipAnalyzer::ZipAnalyzer() = default;
 
-}  // namespace
+void ZipAnalyzer::Init(base::File zip_file,
+                       base::FilePath root_zip_path,
+                       FinishedAnalysisCallback finished_analysis_callback,
+                       GetTempFileCallback get_temp_file_callback,
+                       ArchiveAnalyzerResults* results) {
+  results_ = results;
+  root_zip_path_ = root_zip_path;
+  finished_analysis_callback_ = std::move(finished_analysis_callback);
+  get_temp_file_callback_ = get_temp_file_callback;
+  zip_file_ = std::move(zip_file);
+  get_temp_file_callback_.Run(
+      base::BindOnce(&ZipAnalyzer::FilePreChecks, weak_factory_.GetWeakPtr()));
+}
 
-void AnalyzeZipFile(base::File zip_file,
-                    AnalyzerCallback callback,
-                    base::File temp_file) {
-  safe_browsing::ArchiveAnalyzerResults results;
-  base::Time start_time = base::Time::Now();
-  zip::ZipReader reader;
+void ZipAnalyzer::FilePreChecks(base::File temp_file) {
   if (!temp_file.IsValid()) {
-    DLOG(ERROR) << "Could not open temp file";
-    results.analysis_result = ArchiveAnalysisResult::kUnknown;
-    std::move(callback).Run(results);
+    results_->success = false;
+    results_->analysis_result = ArchiveAnalysisResult::kUnknown;
+    std::move(finished_analysis_callback_).Run();
     return;
   }
-  if (!reader.OpenFromPlatformFile(zip_file.GetPlatformFile())) {
-    DVLOG(1) << "Failed to open zip file";
-    results.analysis_result = ArchiveAnalysisResult::kUnknown;
-    std::move(callback).Run(results);
+  if (!reader_.OpenFromPlatformFile(zip_file_.GetPlatformFile())) {
+    results_->success = false;
+    results_->analysis_result = ArchiveAnalysisResult::kUnknown;
+    std::move(finished_analysis_callback_).Run();
     return;
   }
 
   bool too_big_to_unpack =
-      base::checked_cast<uint64_t>(zip_file.GetLength()) >
+      base::checked_cast<uint64_t>(zip_file_.GetLength()) >
       FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze("zip");
   if (too_big_to_unpack) {
-    results.success = false;
-    results.analysis_result = ArchiveAnalysisResult::kTooLarge;
-    std::move(callback).Run(results);
+    results_->success = false;
+    results_->analysis_result = ArchiveAnalysisResult::kTooLarge;
+    std::move(finished_analysis_callback_).Run();
     return;
   }
+  temp_file_ = std::move(temp_file);
+  AnalyzeZipFile();
+}
 
-  bool timeout = false;
-  results.file_count = 0;
-  results.directory_count = 0;
-
-  bool has_encrypted = false;
-  bool has_aes_encrypted = false;
-  while (const zip::ZipReader::Entry* const entry = reader.Next()) {
-    if (base::Time::Now() - start_time >
-        base::Milliseconds(kZipAnalysisTimeoutMs)) {
-      timeout = true;
-      break;
-    }
-
-    // Clear the |temp_file| between extractions.
-    if (temp_file.Seek(base::File::Whence::FROM_BEGIN, 0) != 0)
+void ZipAnalyzer::AnalyzeZipFile() {
+  while (const zip::ZipReader::Entry* const entry = reader_.Next()) {
+    // Clear the `temp_file` between extractions.
+    if (temp_file_.Seek(base::File::Whence::FROM_BEGIN, 0) != 0) {
       PLOG(WARNING) << "Failed seek";
+    }
 
     // Since this code is expected to run within a utility process, this call
     // will fail on some platforms. We handle this by passing the length
-    // into `UpdateArchiveAnalyzerResultsWithFile`, which will only consider the
-    // appropriate bytes. See crbug.com/1309879 and crbug.com/774762.
-    if (!temp_file.SetLength(0))
+    // into `UpdateArchiveAnalyzerResultsWithFile`, which will only consider
+    // the appropriate bytes. See crbug.com/1309879 and crbug.com/774762.
+    if (!temp_file_.SetLength(0)) {
       PLOG(WARNING) << "Failed truncate";
-    zip::FileWriterDelegate writer(&temp_file);
-    reader.ExtractCurrentEntry(&writer, std::numeric_limits<uint64_t>::max());
-    UpdateArchiveAnalyzerResultsWithFile(entry->path, &temp_file,
-                                         writer.file_length(),
-                                         entry->is_encrypted, &results);
-
+    }
+    zip::FileWriterDelegate writer(&temp_file_);
+    reader_.ExtractCurrentEntry(&writer, std::numeric_limits<uint64_t>::max());
     if (entry->is_directory)
-      results.directory_count++;
+      results_->directory_count++;
     else
-      results.file_count++;
-
-    has_encrypted |= entry->is_encrypted;
-    has_aes_encrypted |= entry->uses_aes_encryption;
+      results_->file_count++;
+    has_encrypted_ |= entry->is_encrypted;
+    has_aes_encrypted_ |= entry->uses_aes_encryption;
+    if (base::FeatureList::IsEnabled(kNestedArchives) &&
+        IsArchivePath(entry->path) && !entry->is_encrypted) {
+      FinishedAnalysisCallback nested_analysis_finished_callback =
+          base::BindOnce(&ZipAnalyzer::NestedAnalysisFinished,
+                         weak_factory_.GetWeakPtr(),
+                         root_zip_path_.Append(entry->path));
+      nested_zip_analyzer_ = std::make_unique<safe_browsing::ZipAnalyzer>();
+      nested_zip_analyzer_->Init(temp_file_.Duplicate(),
+                                 root_zip_path_.Append(entry->path),
+                                 std::move(nested_analysis_finished_callback),
+                                 get_temp_file_callback_, results_);
+      return;
+    } else {
+      UpdateArchiveAnalyzerResultsWithFile(root_zip_path_.Append(entry->path),
+                                           &temp_file_, writer.file_length(),
+                                           entry->is_encrypted, results_);
+    }
   }
 
-  if (has_encrypted) {
+  if (has_encrypted_) {
     base::UmaHistogramBoolean("SBClientDownload.EncryptedZipUsesAes",
-                              has_aes_encrypted);
+                              has_aes_encrypted_);
   }
 
-  if (timeout) {
-    results.analysis_result = ArchiveAnalysisResult::kTimeout;
-  } else if (reader.ok()) {
-    results.analysis_result = ArchiveAnalysisResult::kValid;
+  if (reader_.ok()) {
+    results_->analysis_result = ArchiveAnalysisResult::kValid;
   } else {
-    results.analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
+    results_->analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
   }
-
-  results.success = reader.ok() && !timeout;
-  std::move(callback).Run(results);
+  results_->success = reader_.ok();
+  std::move(finished_analysis_callback_).Run();
 }
 
-}  // namespace zip_analyzer
+void ZipAnalyzer::NestedAnalysisFinished(base::FilePath path) {
+  // `results_->success` will contain the latest analyzer's success
+  // status and can be used to determine if the nester archive unpacked
+  // successfully.
+  if (!results_->success) {
+    results_->has_archive = true;
+    results_->archived_archive_filenames.push_back(path.BaseName());
+    ClientDownloadRequest::ArchivedBinary* archived_archive =
+        results_->archived_binary.Add();
+    archived_archive->set_download_type(ClientDownloadRequest::ARCHIVE);
+    archived_archive->set_is_encrypted(false);
+    archived_archive->set_is_archive(true);
+    SetNameForContainedFile(path, archived_archive);
+    SetLengthAndDigestForContainedFile(&zip_file_, zip_file_.GetLength(),
+                                       archived_archive);
+  }
+  AnalyzeZipFile();
+}
+
 }  // namespace safe_browsing

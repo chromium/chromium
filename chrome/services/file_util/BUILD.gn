@@ -25,6 +25,7 @@ source_set("file_util") {
 
   public_deps = [
     "//chrome/services/file_util/public/mojom",
+    "//components/safe_browsing/core/common:common",
     "//mojo/public/cpp/bindings",
     "//mojo/public/mojom/base",
   ]

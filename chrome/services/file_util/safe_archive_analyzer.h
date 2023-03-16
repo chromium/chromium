@@ -13,6 +13,13 @@ namespace base {
 class File;
 }
 
+namespace safe_browsing {
+class AnalyzeZipFile;
+}
+
+using AnalysisFinishedCallback = base::OnceCallback<void()>;
+using GetTempFileCallback = base::OnceCallback<void(base::File)>;
+
 class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
  public:
   SafeArchiveAnalyzer();
@@ -38,7 +45,27 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
                            base::File temporary_file2,
                            AnalyzeSevenZipFileCallback callback) override;
 
+  // Uses `temp_file_getter_` to supply a temporary file to callback.
+  void RequestTemporaryFile(GetTempFileCallback callback);
+
+  // Evokes the main callback to tell the browser process that the
+  // archive is finished downloading. Takes a FilePath to match the nested
+  // analyzer functions.
+  void AnalysisFinished(base::FilePath path);
+
+  // A timeout to ensure the SafeArchiveAnalyzer does not take too much time.
+  void Timeout();
+
+  safe_browsing::ZipAnalyzer zip_analyzer_;
+
+  // A timer to ensure no archive takes too long to unpack.
+  base::OneShotTimer timeout_timer_;
+
+  base::OnceCallback<void(const safe_browsing::ArchiveAnalyzerResults&)>
+      callback_;
+  safe_browsing::ArchiveAnalyzerResults results_;
   mojo::Remote<chrome::mojom::TemporaryFileGetter> temp_file_getter_;
+  base::WeakPtrFactory<SafeArchiveAnalyzer> weak_factory_{this};
 };
 
 #endif  // CHROME_SERVICES_FILE_UTIL_SAFE_ARCHIVE_ANALYZER_H_

@@ -15,6 +15,11 @@
 #include "chrome/utility/safe_browsing/mac/dmg_analyzer.h"
 #endif
 
+namespace {
+// The maximum duration of analysis, in milliseconds.
+constexpr base::TimeDelta kArchiveAnalysisTimeout = base::Milliseconds(10000);
+}  // namespace
+
 SafeArchiveAnalyzer::SafeArchiveAnalyzer() = default;
 
 SafeArchiveAnalyzer::~SafeArchiveAnalyzer() = default;
@@ -25,10 +30,20 @@ void SafeArchiveAnalyzer::AnalyzeZipFile(
     AnalyzeZipFileCallback callback) {
   DCHECK(zip_file.IsValid());
   temp_file_getter_.Bind(std::move(temp_file_getter));
-  base::OnceCallback<void(base::File)> analyze_zip_file_callback =
-      base::BindOnce(&safe_browsing::zip_analyzer::AnalyzeZipFile,
-                     std::move(zip_file), std::move(callback));
-  temp_file_getter_->RequestTemporaryFile(std::move(analyze_zip_file_callback));
+  callback_ = std::move(callback);
+  AnalysisFinishedCallback analysis_finished_callback =
+      base::BindOnce(&SafeArchiveAnalyzer::AnalysisFinished,
+                     weak_factory_.GetWeakPtr(), base::FilePath());
+
+  base::RepeatingCallback<void(GetTempFileCallback callback)>
+      temp_file_getter_callback =
+          base::BindRepeating(&SafeArchiveAnalyzer::RequestTemporaryFile,
+                              weak_factory_.GetWeakPtr());
+  timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
+                       &SafeArchiveAnalyzer::Timeout);
+  zip_analyzer_.Init(std::move(zip_file), base::FilePath(),
+                     std::move(analysis_finished_callback),
+                     std::move(temp_file_getter_callback), &results_);
 }
 
 void SafeArchiveAnalyzer::AnalyzeDmgFile(base::File dmg_file,
@@ -66,4 +81,22 @@ void SafeArchiveAnalyzer::AnalyzeSevenZipFile(
       std::move(seven_zip_file), std::move(temporary_file),
       std::move(temporary_file2), &results);
   std::move(callback).Run(results);
+}
+
+void SafeArchiveAnalyzer::RequestTemporaryFile(GetTempFileCallback callback) {
+  temp_file_getter_->RequestTemporaryFile(std::move(callback));
+}
+
+void SafeArchiveAnalyzer::AnalysisFinished(base::FilePath path) {
+  if (callback_) {
+    std::move(callback_).Run(results_);
+  }
+}
+
+void SafeArchiveAnalyzer::Timeout() {
+  results_.success = false;
+  results_.analysis_result = safe_browsing::ArchiveAnalysisResult::kTimeout;
+  if (callback_) {
+    std::move(callback_).Run(results_);
+  }
 }

@@ -8,6 +8,7 @@
 #include "base/task/thread_pool.h"
 
 namespace {
+
 constexpr int kMaxNumberOfFilesAllowed = 10;
 
 base::File TemporaryFileGetterHelper(int num_files_requested) {

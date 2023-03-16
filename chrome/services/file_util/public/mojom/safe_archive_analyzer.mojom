@@ -53,7 +53,7 @@ interface TemporaryFileGetter {
   // Requests a temporary file. If the request is accepted, `temp_file`
   // will be returned with a valid file descriptor. If the request is
   // rejected, `temp_file` will be invalid.
-  RequestTemporaryFile() => (mojo_base.mojom.File temp_file);
+  RequestTemporaryFile() => (mojo_base.mojom.File? temp_file);
 };
 
 [Native]

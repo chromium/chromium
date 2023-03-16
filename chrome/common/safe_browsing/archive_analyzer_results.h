@@ -61,15 +61,30 @@ struct ArchiveAnalyzerResults {
   ~ArchiveAnalyzerResults();
 };
 
-// Updates |results| with the results of inspecting |file|, given that it will
-// be extracted to |path|. Due to complications with the utility process sandbox
+// Updates `results` with the results of inspecting `file`, given that it will
+// be extracted to `path`. Due to complications with the utility process sandbox
 // (see https://crbug.com/944633), the file inspection is limited to the first
-// |file_length| bytes of |file|.
+// `file_length` bytes of `file`.
 void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           base::File* file,
                                           int file_length,
                                           bool is_encrypted,
                                           ArchiveAnalyzerResults* results);
+
+// Returns true if the nested archive should be unpacked by an analyzer.
+bool IsArchivePath(base::FilePath path);
+
+// Update the `archived_binary` with the string value path name.
+void SetNameForContainedFile(
+    const base::FilePath& path,
+    ClientDownloadRequest::ArchivedBinary* archived_binary);
+
+// Update the `archived_binary` with the `file_length` and the
+// `mutable_digests` fields
+void SetLengthAndDigestForContainedFile(
+    base::File* temp_file,
+    int file_length,
+    ClientDownloadRequest::ArchivedBinary* archived_binary);
 
 }  // namespace safe_browsing
 
