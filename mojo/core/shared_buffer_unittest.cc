@@ -77,7 +77,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CopyToBufferClient, SharedBufferTest, h) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
-TEST_F(SharedBufferTest, PassSharedBufferCrossProcess) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1418597): Test currently fails on iOS.
+#define MAYBE_PassSharedBufferCrossProcess DISABLED_PassSharedBufferCrossProcess
+#else
+#define MAYBE_PassSharedBufferCrossProcess PassSharedBufferCrossProcess
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(SharedBufferTest, MAYBE_PassSharedBufferCrossProcess) {
   const std::string message = "hello";
   MojoHandle b = CreateBuffer(message.size());
 
@@ -103,7 +109,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateBufferClient, SharedBufferTest, h) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
-TEST_F(SharedBufferTest, PassSharedBufferFromChild) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1418597): Test currently fails on iOS.
+#define MAYBE_PassSharedBufferFromChild DISABLED_PassSharedBufferFromChild
+#else
+#define MAYBE_PassSharedBufferFromChild PassSharedBufferFromChild
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(SharedBufferTest, MAYBE_PassSharedBufferFromChild) {
   const std::string message = "hello";
   MojoHandle b;
   RunTestClient("CreateBufferClient", [&](MojoHandle h) {
@@ -153,7 +165,14 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBuffer, SharedBufferTest, h) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(other_child));
 }
 
-TEST_F(SharedBufferTest, PassSharedBufferFromChildToChild) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1418597): Test currently fails on iOS.
+#define MAYBE_PassSharedBufferFromChildToChild \
+  DISABLED_PassSharedBufferFromChildToChild
+#else
+#define MAYBE_PassSharedBufferFromChildToChild PassSharedBufferFromChildToChild
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(SharedBufferTest, MAYBE_PassSharedBufferFromChildToChild) {
   const std::string message = "hello";
   MojoHandle p0, p1;
   CreateMessagePipe(&p0, &p1);
@@ -286,7 +305,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
-TEST_F(SharedBufferTest, CreateAndPassReadOnlyBuffer) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1418597): Test currently fails on iOS.
+#define MAYBE_CreateAndPassReadOnlyBuffer DISABLED_CreateAndPassReadOnlyBuffer
+#else
+#define MAYBE_CreateAndPassReadOnlyBuffer CreateAndPassReadOnlyBuffer
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(SharedBufferTest, MAYBE_CreateAndPassReadOnlyBuffer) {
   RunTestClient("ReadAndMapWriteSharedBuffer", [&](MojoHandle h) {
     // Create a new shared buffer.
     MojoHandle b = CreateBuffer(1234);

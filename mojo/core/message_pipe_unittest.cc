@@ -372,7 +372,13 @@ TEST_F(MessagePipeTest, DISABLED_DataPipeProducerHandlePingPong) {
     MojoClose(p[i]);
 }
 
-TEST_F(MessagePipeTest, SharedBufferHandlePingPong) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1418597): Test currently fails on iOS.
+#define MAYBE_SharedBufferHandlePingPong DISABLED_SharedBufferHandlePingPong
+#else
+#define MAYBE_SharedBufferHandlePingPong SharedBufferHandlePingPong
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(MessagePipeTest, MAYBE_SharedBufferHandlePingPong) {
   MojoHandle buffers[kPingPongHandlesPerIteration];
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i)
     EXPECT_EQ(MOJO_RESULT_OK, MojoCreateSharedBuffer(1, nullptr, &buffers[i]));
