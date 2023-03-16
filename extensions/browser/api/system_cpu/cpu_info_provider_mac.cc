@@ -31,8 +31,7 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
   mach_msg_type_number_t type;
   processor_cpu_load_info_data_t* cpu_infos;
 
-  if (host_processor_info(host.get(),
-                          PROCESSOR_CPU_LOAD_INFO,
+  if (host_processor_info(host.get(), PROCESSOR_CPU_LOAD_INFO,
                           &num_of_processors,
                           reinterpret_cast<processor_info_array_t*>(&cpu_infos),
                           &type) == KERN_SUCCESS) {
@@ -53,8 +52,7 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
       infos->at(i).usage.total = sys + user + nice + idle;
     }
 
-    vm_deallocate(mach_task_self(),
-                  reinterpret_cast<vm_address_t>(cpu_infos),
+    vm_deallocate(mach_task_self(), reinterpret_cast<vm_address_t>(cpu_infos),
                   num_of_processors * sizeof(processor_cpu_load_info));
 
     return true;

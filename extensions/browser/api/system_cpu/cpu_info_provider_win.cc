@@ -45,18 +45,18 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
   ULONG returned_bytes = 0,
         bytes = sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) *
                 num_of_processors;
-  if (!NT_SUCCESS(
-          NtQuerySystemInformation(SystemProcessorPerformanceInformation,
-                                   processor_info.get(),
-                                   bytes,
-                                   &returned_bytes)))
+  if (!NT_SUCCESS(NtQuerySystemInformation(
+          SystemProcessorPerformanceInformation, processor_info.get(), bytes,
+          &returned_bytes))) {
     return false;
+  }
 
   int returned_num_of_processors =
       returned_bytes / sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION);
 
-  if (returned_num_of_processors != num_of_processors)
+  if (returned_num_of_processors != num_of_processors) {
     return false;
+  }
 
   DCHECK_EQ(num_of_processors, static_cast<int>(infos->size()));
   for (int i = 0; i < returned_num_of_processors; ++i) {

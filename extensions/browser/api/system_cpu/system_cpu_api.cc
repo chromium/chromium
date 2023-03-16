@@ -11,12 +11,6 @@ namespace extensions {
 
 using api::system_cpu::CpuInfo;
 
-SystemCpuGetInfoFunction::SystemCpuGetInfoFunction() {
-}
-
-SystemCpuGetInfoFunction::~SystemCpuGetInfoFunction() {
-}
-
 ExtensionFunction::ResponseAction SystemCpuGetInfoFunction::Run() {
   CpuInfoProvider::Get()->StartQueryInfo(
       base::BindOnce(&SystemCpuGetInfoFunction::OnGetCpuInfoCompleted, this));
