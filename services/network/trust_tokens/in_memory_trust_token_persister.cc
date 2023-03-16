@@ -59,6 +59,10 @@ void InMemoryTrustTokenPersister::SetIssuerToplevelPairConfig(
     const SuitableTrustTokenOrigin& issuer,
     const SuitableTrustTokenOrigin& toplevel,
     std::unique_ptr<TrustTokenIssuerToplevelPairConfig> config) {
+  // Both last_redemption and penultimate_redemption should be set. Serializing
+  // config will fail otherwise for SQLiteTrustTokenPersister.
+  CHECK(config->has_last_redemption());
+  CHECK(config->has_penultimate_redemption());
   issuer_toplevel_pair_configs_[std::make_pair(issuer, toplevel)] =
       std::move(config);
 }

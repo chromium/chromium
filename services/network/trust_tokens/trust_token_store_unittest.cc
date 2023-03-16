@@ -100,24 +100,6 @@ TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastIssuance) {
   EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), absl::nullopt);
 }
 
-TEST(TrustTokenStoreTest, DoesntReportMissingRedemptionTimestamps) {
-  auto my_persister = std::make_unique<InMemoryTrustTokenPersister>();
-  auto* raw_persister = my_persister.get();
-
-  auto my_store = TrustTokenStore::CreateForTesting(std::move(my_persister));
-  SuitableTrustTokenOrigin issuer =
-      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
-  SuitableTrustTokenOrigin toplevel =
-      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
-
-  auto config_with_no_time =
-      std::make_unique<TrustTokenIssuerToplevelPairConfig>();
-  raw_persister->SetIssuerToplevelPairConfig(issuer, toplevel,
-                                             std::move(config_with_no_time));
-
-  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), absl::nullopt);
-}
-
 TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastRedemption) {
   auto my_persister = std::make_unique<InMemoryTrustTokenPersister>();
   auto* raw_persister = my_persister.get();
@@ -136,6 +118,8 @@ TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastRedemption) {
       std::make_unique<TrustTokenIssuerToplevelPairConfig>();
   *config_with_future_time->mutable_last_redemption() =
       internal::TimeToTimestamp(later_than_now);
+  *config_with_future_time->mutable_penultimate_redemption() =
+      internal::TimeToTimestamp(base::Time::UnixEpoch());
 
   raw_persister->SetIssuerToplevelPairConfig(
       issuer, toplevel, std::move(config_with_future_time));
@@ -494,8 +478,13 @@ TEST(TrustTokenStore, RetrieveRedemptionRecordHandlesConfigWithNoRecord) {
   SuitableTrustTokenOrigin toplevel =
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
 
-  raw_persister->SetIssuerToplevelPairConfig(
-      issuer, toplevel, std::make_unique<TrustTokenIssuerToplevelPairConfig>());
+  auto config = std::make_unique<TrustTokenIssuerToplevelPairConfig>();
+  *config->mutable_last_redemption() =
+      internal::TimeToTimestamp(base::Time::UnixEpoch());
+  *config->mutable_penultimate_redemption() =
+      internal::TimeToTimestamp(base::Time::UnixEpoch());
+  raw_persister->SetIssuerToplevelPairConfig(issuer, toplevel,
+                                             std::move(config));
 
   EXPECT_EQ(my_store->RetrieveNonstaleRedemptionRecord(issuer, toplevel),
             absl::nullopt);
@@ -743,9 +732,7 @@ TEST(TrustTokenStore, RemovesTrustTokensByIssuerAndKeepsOthers) {
 }
 
 TEST(TrustTokenStore, RedemptionLimit) {
-  auto persister = std::make_unique<InMemoryTrustTokenPersister>();
-  auto* raw_persister = persister.get();
-  auto store = TrustTokenStore::CreateForTesting(std::move(persister));
+  auto store = TrustTokenStore::CreateForTesting();
 
   SuitableTrustTokenOrigin issuer =
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
@@ -755,54 +742,41 @@ TEST(TrustTokenStore, RedemptionLimit) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  // config pair is not set yet, limit not hit
+  // No redemptions yet, limit not hit.
   EXPECT_FALSE(store->IsRedemptionLimitHit(issuer, top_level));
 
-  // set config pair
-  auto pair_config = std::make_unique<TrustTokenIssuerToplevelPairConfig>();
-  raw_persister->SetIssuerToplevelPairConfig(issuer, top_level,
-                                             std::move(pair_config));
+  // Advance clock to some arbitrary time. Clock should be at least 2 days
+  // after unix epoch. Default time for penultimate redemption is
+  // unix epoch.
+  task_environment.AdvanceClock(base::Days(123));
 
-  // config pair is set, no redemptions yet, limit not hit
+  // Set first redemption.
+  store->SetRedemptionRecord(issuer, top_level,
+                             network::TrustTokenRedemptionRecord());
+
+  // Only one redemption so far, limit not hit.
   EXPECT_FALSE(store->IsRedemptionLimitHit(issuer, top_level));
 
-  // set first redemption
-  const auto first_redemption_time = base::Time::Now();
-  auto one_redemption_config =
-      std::make_unique<TrustTokenIssuerToplevelPairConfig>();
-  *one_redemption_config->mutable_last_redemption() =
-      internal::TimeToTimestamp(first_redemption_time);
-  raw_persister->SetIssuerToplevelPairConfig(issuer, top_level,
-                                             std::move(one_redemption_config));
-
-  // only one redemption, limit not hit
-  EXPECT_FALSE(store->IsRedemptionLimitHit(issuer, top_level));
-
-  // set second redemption
+  // Set second redemption after 321 seconds.
   const auto second_redemption_delta = base::Seconds(321);
   task_environment.AdvanceClock(second_redemption_delta);
-  const auto second_redemption_time = base::Time::Now();
-  auto two_redemptions_config =
-      std::make_unique<TrustTokenIssuerToplevelPairConfig>();
-  *two_redemptions_config->mutable_penultimate_redemption() =
-      internal::TimeToTimestamp(first_redemption_time);
-  *two_redemptions_config->mutable_last_redemption() =
-      internal::TimeToTimestamp(second_redemption_time);
-  raw_persister->SetIssuerToplevelPairConfig(issuer, top_level,
-                                             std::move(two_redemptions_config));
+  store->SetRedemptionRecord(issuer, top_level,
+                             network::TrustTokenRedemptionRecord());
 
+  // Pass some time but not enough to allow a third redemption.
   const auto not_enough_time =
       base::Seconds(
           kTrustTokenPerIssuerToplevelRedemptionFrequencyLimitInSeconds) -
       second_redemption_delta;
   task_environment.AdvanceClock(not_enough_time);
 
-  // already have two redemptions, not enough time passed yet for allowing the
-  // third
+  // Already have two redemptions, not enough time passed yet for allowing the
+  // third.
   EXPECT_TRUE(store->IsRedemptionLimitHit(issuer, top_level));
 
+  // Enough time is passed after 1 more second. Limit check should return
+  // correctly.
   task_environment.AdvanceClock(base::Seconds(1));
-  // enough time passed, third redemption should work
   EXPECT_FALSE(store->IsRedemptionLimitHit(issuer, top_level));
 }
 

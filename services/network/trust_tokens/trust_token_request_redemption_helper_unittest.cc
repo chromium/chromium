@@ -951,6 +951,9 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
       .WillOnce(Return("a successfully-extracted RR"));
 
+  const int some_arbitrary_time = 12345678;
+  env_.AdvanceClock(base::Seconds(some_arbitrary_time));
+
   TrustTokenRequestRedemptionHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
       mojom::TrustTokenRefreshPolicy::kRefresh, store.get(), &*getter,
@@ -1248,7 +1251,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, LimitThirdRedemptionAllowFourth) {
   request->set_initiator(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
 
-  const int some_arbitrary_time = 12345;
+  const int some_arbitrary_time = 12345678;
   env_.AdvanceClock(base::Seconds(some_arbitrary_time));
 
   // first redemption
@@ -1329,7 +1332,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   request->set_initiator(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
 
-  const int some_arbitrary_time = 12345;
+  const int some_arbitrary_time = 12345678;
   env_.AdvanceClock(base::Seconds(some_arbitrary_time));
 
   // first redemption
