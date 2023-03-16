@@ -148,11 +148,10 @@ PasswordFormManager* FindMatchedManagerByRendererId(
 #endif  // !BUILDFLAG(IS_IOS)
 
 bool HasSingleUsernameVote(const FormPredictions& form) {
-  for (const auto& field : form.fields) {
-    if (field.type == autofill::SINGLE_USERNAME)
-      return true;
-  }
-  return false;
+  return base::ranges::any_of(
+      form.fields,
+      [](const auto& type) { return type == autofill::SINGLE_USERNAME; },
+      &PasswordFieldPrediction::type);
 }
 
 // Returns true if at least one of the fields in |form| has a prediction to be a
