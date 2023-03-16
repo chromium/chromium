@@ -356,4 +356,8 @@ BASE_FEATURE(kPrerender2ContentSecurityPolicyExtensions,
              "Prerender2ContentSecurityPolicyExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLessChattyNetworkService,
+             "LessChattyNetworkService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

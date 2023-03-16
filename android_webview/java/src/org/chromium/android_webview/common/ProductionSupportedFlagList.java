@@ -393,7 +393,8 @@ public final class ProductionSupportedFlagList {
                             + " This has no effect if metrics reporting is disabled"),
             Flag.baseFeature("SafeBrowsingOnUIThread"),
             Flag.baseFeature(BlinkFeatures.ANDROID_EXTENDED_KEYBOARD_SHORTCUTS,
-                    "Enables WebView to use the extended keyboard shortcuts added for Android U")
+                    "Enables WebView to use the extended keyboard shortcuts added for Android U"),
+            Flag.baseFeature("LessChattyNetworkService"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

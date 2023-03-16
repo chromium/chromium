@@ -137,6 +137,9 @@ BASE_DECLARE_FEATURE(kPrerender2ContentSecurityPolicyExtensions);
 // interacts poorly with this metric that is recorded every 30s.
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kGetCookiesStringUma);
 
+// Decrease Mojo calls from network service to browser.
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kLessChattyNetworkService);
+
 }  // namespace features
 }  // namespace network
 
