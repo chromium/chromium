@@ -1302,6 +1302,7 @@ _CONFIG = [
             'std::data',
             # TODO(crbug.com/960665): Remove base::queue once it is replaced with a WTF equivalent.
             'base::queue',
+            'base::MakeFixedFlatMap',
             'base::SharedMemory',
             'base::StringPiece',
             'base::ThreadTaskRunnerHandle',
@@ -1490,6 +1491,14 @@ _CONFIG = [
         ],
         'allowed': [
             'ui::LatencyInfo',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/accessibility/',
+        ],
+        'allowed': [
+            'base::MakeFixedFlatSet',
         ],
     },
     {

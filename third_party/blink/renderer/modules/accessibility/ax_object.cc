@@ -565,9 +565,11 @@ int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
 }
 
 int32_t ToAXHighlightType(const AtomicString& highlight_type) {
-  static const AtomicString type_highlight = "highlight";
-  static const AtomicString type_spelling_error = "spelling-error";
-  static const AtomicString type_grammar_error = "grammar-error";
+  DEFINE_STATIC_LOCAL(const AtomicString, type_highlight, ("highlight"));
+  DEFINE_STATIC_LOCAL(const AtomicString, type_spelling_error,
+                      ("spelling-error"));
+  DEFINE_STATIC_LOCAL(const AtomicString, type_grammar_error,
+                      ("grammar-error"));
   ax::mojom::blink::HighlightType result =
       ax::mojom::blink::HighlightType::kNone;
   if (highlight_type == type_highlight)

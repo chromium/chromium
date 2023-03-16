@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/nfc/ndef_record.h"
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "services/device/public/mojom/nfc.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -89,8 +91,6 @@ bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
 // https://w3c.github.io/web-nfc/#dfn-validate-external-type
 // Validates |input| as an external type.
 bool IsValidExternalType(const String& input) {
-  static const String kOtherCharsForCustomType(":!()+,-=@;$_*'.");
-
   // Ensure |input| is an ASCII string.
   if (!input.ContainsOnlyASCIIOrEmpty())
     return false;
@@ -116,9 +116,12 @@ bool IsValidExternalType(const String& input) {
   String type = input.Substring(colon_index + 1);
   if (type.empty())
     return false;
+
+  static constexpr base::StringPiece kOtherCharsForCustomType(
+      ":!()+,-=@;$_*'.");
   for (wtf_size_t i = 0; i < type.length(); i++) {
     if (!IsASCIIAlphanumeric(type[i]) &&
-        !kOtherCharsForCustomType.Contains(type[i])) {
+        !base::Contains(kOtherCharsForCustomType, type[i])) {
       return false;
     }
   }

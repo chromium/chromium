@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/video_codecs.h"
@@ -28,45 +29,46 @@ namespace {
 
 absl::optional<EProfileIdc> ToOpenH264Profile(
     media::VideoCodecProfile profile) {
-  static const HashMap<media::VideoCodecProfile, EProfileIdc>
-      kProfileToEProfileIdc({
+  static constexpr auto kProfileToEProfileIdc =
+      base::MakeFixedFlatMap<media::VideoCodecProfile, EProfileIdc>({
           {media::H264PROFILE_BASELINE, PRO_BASELINE},
           {media::H264PROFILE_MAIN, PRO_MAIN},
           {media::H264PROFILE_EXTENDED, PRO_EXTENDED},
           {media::H264PROFILE_HIGH, PRO_HIGH},
       });
 
-  const auto& it = kProfileToEProfileIdc.find(profile);
+  const auto* it = kProfileToEProfileIdc.find(profile);
   if (it != kProfileToEProfileIdc.end()) {
-    return it->value;
+    return it->second;
   }
   return absl::nullopt;
 }
 
 absl::optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
-  static const HashMap<uint8_t, ELevelIdc> kLevelToELevelIdc({
-      {10, LEVEL_1_0},
-      {9, LEVEL_1_B},
-      {11, LEVEL_1_1},
-      {12, LEVEL_1_2},
-      {13, LEVEL_1_3},
-      {20, LEVEL_2_0},
-      {21, LEVEL_2_1},
-      {22, LEVEL_2_2},
-      {30, LEVEL_3_0},
-      {31, LEVEL_3_1},
-      {32, LEVEL_3_2},
-      {40, LEVEL_4_0},
-      {41, LEVEL_4_1},
-      {42, LEVEL_4_2},
-      {50, LEVEL_5_0},
-      {51, LEVEL_5_1},
-      {52, LEVEL_5_2},
-  });
+  static constexpr auto kLevelToELevelIdc =
+      base::MakeFixedFlatMap<uint8_t, ELevelIdc>({
+          {10, LEVEL_1_0},
+          {9, LEVEL_1_B},
+          {11, LEVEL_1_1},
+          {12, LEVEL_1_2},
+          {13, LEVEL_1_3},
+          {20, LEVEL_2_0},
+          {21, LEVEL_2_1},
+          {22, LEVEL_2_2},
+          {30, LEVEL_3_0},
+          {31, LEVEL_3_1},
+          {32, LEVEL_3_2},
+          {40, LEVEL_4_0},
+          {41, LEVEL_4_1},
+          {42, LEVEL_4_2},
+          {50, LEVEL_5_0},
+          {51, LEVEL_5_1},
+          {52, LEVEL_5_2},
+      });
 
-  const auto& it = kLevelToELevelIdc.find(level);
+  const auto* it = kLevelToELevelIdc.find(level);
   if (it != kLevelToELevelIdc.end())
-    return it->value;
+    return it->second;
   return absl::nullopt;
 }
 }  // namespace

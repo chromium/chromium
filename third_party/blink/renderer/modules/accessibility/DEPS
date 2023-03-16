@@ -1,5 +1,6 @@
 include_rules = [
     "-third_party/blink/renderer/modules",
+    "+base/containers/fixed_flat_set.h",
     "+base/strings/string_util.h",
     "+third_party/blink/renderer/modules/accessibility",
     "+third_party/blink/renderer/modules/media_controls",

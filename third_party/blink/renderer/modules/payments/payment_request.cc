@@ -269,18 +269,15 @@ void ValidateShippingOptionOrPaymentItem(const T* item,
   }
 }
 
-const WTF::HashSet<String> GetAppStoreBillingMethods() {
-  static const WTF::HashSet<String> app_store_billing_methods = {
-      kGooglePlayBillingMethod};
-  return app_store_billing_methods;
+bool IsAppStoreBillingMethod(const StringView& billing_method) {
+  return billing_method == kGooglePlayBillingMethod;
 }
 
 bool RequestingOnlyAppStoreBillingMethods(
     const Vector<payments::mojom::blink::PaymentMethodDataPtr>& method_data) {
   DCHECK(!method_data.empty());
-  const WTF::HashSet<String> billing_methods = GetAppStoreBillingMethods();
   for (const auto& method : method_data) {
-    if (!billing_methods.Contains(method->supported_method)) {
+    if (!IsAppStoreBillingMethod(method->supported_method)) {
       return false;
     }
   }
@@ -1326,9 +1323,8 @@ PaymentRequest::PaymentRequest(
     return;
   }
 
-  const WTF::HashSet<String> billing_methods = GetAppStoreBillingMethods();
   for (const PaymentMethodDataPtr& data : validated_method_data) {
-    if (billing_methods.Contains(data->supported_method) &&
+    if (IsAppStoreBillingMethod(data->supported_method) &&
         (options_->requestShipping() || options_->requestPayerName() ||
          options_->requestPayerEmail() || options_->requestPayerPhone())) {
       execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

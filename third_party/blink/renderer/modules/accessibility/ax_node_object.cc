@@ -35,6 +35,7 @@
 #include <queue>
 
 #include "base/auto_reset.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -606,8 +607,8 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (IsEditableRoot())
     return kIncludeObject;
 
-  static const HashSet<ax::mojom::blink::Role> always_included_computed_roles =
-      {
+  static constexpr auto always_included_computed_roles =
+      base::MakeFixedFlatSet<ax::mojom::blink::Role>({
           ax::mojom::blink::Role::kAbbr,
           ax::mojom::blink::Role::kApplication,
           ax::mojom::blink::Role::kArticle,
@@ -651,9 +652,9 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kMark,
           ax::mojom::blink::Role::kMath,
           ax::mojom::blink::Role::kMathMLMath,
-          // Don't ignore MathML nodes by default, since MathML relies on child
-          // positions to determine semantics (e.g. numerator is the first
-          // child of a fraction).
+          // Don't ignore MathML nodes by default, since MathML
+          // relies on child positions to determine semantics
+          // (e.g. numerator is the first child of a fraction).
           ax::mojom::blink::Role::kMathMLFraction,
           ax::mojom::blink::Role::kMathMLIdentifier,
           ax::mojom::blink::Role::kMathMLMultiscripts,
@@ -688,7 +689,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kSuperscript,
           ax::mojom::blink::Role::kTime,
           ax::mojom::blink::Role::kVideo,
-      };
+      });
 
   if (always_included_computed_roles.find(RoleValue()) !=
       always_included_computed_roles.end())
