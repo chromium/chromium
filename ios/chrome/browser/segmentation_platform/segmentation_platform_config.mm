@@ -113,7 +113,9 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   }
 
   configs.emplace_back(GetConfigForCrossDeviceSegments());
-  configs.emplace_back(DeviceSwitcherModel::GetConfig());
+  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformDeviceSwitcher)) {
+    configs.emplace_back(DeviceSwitcherModel::GetConfig());
+  }
 
   // Add new configs here.
 

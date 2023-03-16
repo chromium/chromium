@@ -32,6 +32,10 @@ BASE_FEATURE(kSegmentationPlatformSearchUser,
              "SegmentationPlatformSearchUser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSegmentationPlatformDeviceSwitcher,
+             "SegmentationPlatformDeviceSwitcher",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSegmentationPlatformFeedSegmentFeature,
              "SegmentationPlatformFeedSegmentFeature",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
