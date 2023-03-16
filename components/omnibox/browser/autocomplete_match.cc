@@ -1319,6 +1319,8 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     description_for_shortcuts = duplicate_match.description_for_shortcuts;
     description_class_for_shortcuts =
         duplicate_match.description_class_for_shortcuts;
+    swap_contents_and_description =
+        duplicate_match.swap_contents_and_description;
   }
 
   // Copy `rich_autocompletion_triggered` for counterfactual logging.
