@@ -50,7 +50,7 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
                     PriceTrackingUtils.isBookmarkPriceTracked(
                             mProfileSupplier.get(), bookmarkId.getId(), (isTracked) -> {
                                 // If the product is already tracked, don't make the icon available.
-                                signalAccumulator.setHasPriceTracking(!isTracked);
+                                signalAccumulator.setHasPriceTracking(canTrackPrice && !isTracked);
                                 signalAccumulator.notifySignalAvailable();
                             });
                 }
