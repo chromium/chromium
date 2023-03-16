@@ -124,9 +124,12 @@ void ExpectClean(UpdaterScope scope) {
   if (path && base::PathExists(*path)) {
     // If the path exists, then expect only the log file to be present.
     int count = CountDirectoryFiles(*path);
-    EXPECT_LT(count, 2);
-    if (count == 1) {
+    EXPECT_LE(count, 2);
+    if (count >= 1) {
       EXPECT_TRUE(base::PathExists(path->AppendASCII("updater.log")));
+    }
+    if (count == 2) {
+      EXPECT_TRUE(base::PathExists(path->AppendASCII("prefs.json")));
     }
   }
 
