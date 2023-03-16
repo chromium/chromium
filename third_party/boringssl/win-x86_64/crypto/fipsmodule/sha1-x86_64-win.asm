@@ -1323,6 +1323,7 @@ $L$oop_shaext:
 	lea	r8,[64+rsi]
 	paddd	xmm1,xmm4
 	cmovne	rsi,r8
+	prefetcht0	[512+rsi]
 	movdqa	xmm8,xmm0
 	DB	15,56,201,229
 	movdqa	xmm2,xmm0

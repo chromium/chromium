@@ -1299,6 +1299,7 @@ _shaext_shortcut:
 	leaq	64(%rsi),%r8
 	paddd	%xmm4,%xmm1
 	cmovneq	%r8,%rsi
+	prefetcht0	512(%rsi)
 	movdqa	%xmm0,%xmm8
 .byte	15,56,201,229
 	movdqa	%xmm0,%xmm2
