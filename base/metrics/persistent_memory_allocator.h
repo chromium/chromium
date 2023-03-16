@@ -859,9 +859,7 @@ class BASE_EXPORT DelayedPersistentAllocation {
   // offset into the segment; this allows combining allocations into a
   // single persistent segment to reduce overhead and means an "all or
   // nothing" request. Note that |size| is always the total memory size
-  // and |offset| is just indicating the start of a block within it.  If
-  // |make_iterable| was true, the allocation will made iterable when it
-  // is created; already existing allocations are not changed.
+  // and |offset| is just indicating the start of a block within it.
   //
   // Once allocated, a reference to the segment will be stored at |ref|.
   // This shared location must be initialized to zero (0); it is checked
@@ -872,13 +870,7 @@ class BASE_EXPORT DelayedPersistentAllocation {
                               std::atomic<Reference>* ref,
                               uint32_t type,
                               size_t size,
-                              bool make_iterable);
-  DelayedPersistentAllocation(PersistentMemoryAllocator* allocator,
-                              std::atomic<Reference>* ref,
-                              uint32_t type,
-                              size_t size,
-                              size_t offset,
-                              bool make_iterable);
+                              size_t offset = 0);
   ~DelayedPersistentAllocation();
 
   // Gets a pointer to the defined allocation. This will realize the request
@@ -910,9 +902,6 @@ class BASE_EXPORT DelayedPersistentAllocation {
   const uint32_t type_;
   const uint32_t size_;
   const uint32_t offset_;
-
-  // Flag indicating if allocation should be made iterable when done.
-  const bool make_iterable_;
 
   // The location at which a reference to the allocated segment is to be
   // stored once the allocation is complete. If multiple delayed allocations

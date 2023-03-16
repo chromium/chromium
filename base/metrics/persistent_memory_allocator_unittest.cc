@@ -494,9 +494,9 @@ TEST_F(PersistentMemoryAllocatorTest, DelayedAllocationTest) {
   std::atomic<Reference> ref1, ref2;
   ref1.store(0, std::memory_order_relaxed);
   ref2.store(0, std::memory_order_relaxed);
-  DelayedPersistentAllocation da1(allocator_.get(), &ref1, 1001, 100, true);
-  DelayedPersistentAllocation da2a(allocator_.get(), &ref2, 2002, 200, 0, true);
-  DelayedPersistentAllocation da2b(allocator_.get(), &ref2, 2002, 200, 5, true);
+  DelayedPersistentAllocation da1(allocator_.get(), &ref1, 1001, 100);
+  DelayedPersistentAllocation da2a(allocator_.get(), &ref2, 2002, 200, 0);
+  DelayedPersistentAllocation da2b(allocator_.get(), &ref2, 2002, 200, 5);
 
   // Nothing should yet have been allocated.
   uint32_t type;
@@ -510,6 +510,7 @@ TEST_F(PersistentMemoryAllocatorTest, DelayedAllocationTest) {
   EXPECT_NE(0U, da1.reference());
   EXPECT_EQ(allocator_->GetAsReference(mem1, 1001),
             ref1.load(std::memory_order_relaxed));
+  allocator_->MakeIterable(da1.reference());
   EXPECT_NE(0U, iter.GetNext(&type));
   EXPECT_EQ(1001U, type);
   EXPECT_EQ(0U, iter.GetNext(&type));
@@ -519,6 +520,7 @@ TEST_F(PersistentMemoryAllocatorTest, DelayedAllocationTest) {
   ASSERT_TRUE(mem2a);
   EXPECT_EQ(allocator_->GetAsReference(mem2a, 2002),
             ref2.load(std::memory_order_relaxed));
+  allocator_->MakeIterable(da2a.reference());
   EXPECT_NE(0U, iter.GetNext(&type));
   EXPECT_EQ(2002U, type);
   EXPECT_EQ(0U, iter.GetNext(&type));
@@ -526,6 +528,7 @@ TEST_F(PersistentMemoryAllocatorTest, DelayedAllocationTest) {
   // Third allocation should just return offset into second allocation.
   void* mem2b = da2b.Get();
   ASSERT_TRUE(mem2b);
+  allocator_->MakeIterable(da2b.reference());
   EXPECT_EQ(0U, iter.GetNext(&type));
   EXPECT_EQ(reinterpret_cast<uintptr_t>(mem2a) + 5,
             reinterpret_cast<uintptr_t>(mem2b));

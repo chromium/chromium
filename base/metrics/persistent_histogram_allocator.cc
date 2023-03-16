@@ -576,9 +576,9 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
   // it is needed, memory will be allocated from the persistent segment and
   // a reference to it stored at the passed address. Other threads can then
   // notice the valid reference and access the same data.
-  DelayedPersistentAllocation counts_data(
-      memory_allocator_.get(), &histogram_data_ptr->counts_ref,
-      kTypeIdCountsArray, counts_bytes, false);
+  DelayedPersistentAllocation counts_data(memory_allocator_.get(),
+                                          &histogram_data_ptr->counts_ref,
+                                          kTypeIdCountsArray, counts_bytes);
 
   // A second delayed allocations is defined using the same reference storage
   // location as the first so the allocation of one will automatically be found
@@ -586,8 +586,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
   // and the second half is for "logged counts".
   DelayedPersistentAllocation logged_data(
       memory_allocator_.get(), &histogram_data_ptr->counts_ref,
-      kTypeIdCountsArray, counts_bytes, counts_bytes / 2,
-      /*make_iterable=*/false);
+      kTypeIdCountsArray, counts_bytes, counts_bytes / 2);
 
   // Create the right type of histogram.
   const char* name = histogram_data_ptr->name;
