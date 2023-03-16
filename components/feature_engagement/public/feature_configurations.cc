@@ -1170,13 +1170,14 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->trigger = EventConfig("blue_dot_promo_eligibility_met",
                                   Comparator(EQUAL, 0), 360, 360);
     config->used = EventConfig("blue_dot_promo_criterion_met",
                                Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360);
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
-                                             Comparator(EQUAL, 0), 30, 360));
+                                             Comparator(EQUAL, 0), 14, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;
@@ -1194,6 +1195,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->used = EventConfig("blue_dot_promo_overflow_menu_dismissed",
                                Comparator(EQUAL, 0), 30, 360);
     config->trigger = EventConfig("blue_dot_promo_overflow_menu_shown",
@@ -1205,7 +1207,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("blue_dot_promo_eligibility_met",
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
-                                             Comparator(EQUAL, 0), 30, 360));
+                                             Comparator(EQUAL, 0), 14, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;
@@ -1224,6 +1226,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->used = EventConfig("blue_dot_promo_settings_dismissed",
                                Comparator(EQUAL, 0), 30, 360);
     config->trigger = EventConfig("blue_dot_promo_settings_shown",
@@ -1235,7 +1238,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("blue_dot_promo_eligibility_met",
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
-                                             Comparator(EQUAL, 0), 30, 360));
+                                             Comparator(EQUAL, 0), 14, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;
