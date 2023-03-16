@@ -52,6 +52,8 @@ absl::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
       return V8GPUFeatureName::Enum::kRg11B10UfloatRenderable;
     case WGPUFeatureName_BGRA8UnormStorage:
       return V8GPUFeatureName::Enum::kBgra8UnormStorage;
+    case WGPUFeatureName_ChromiumExperimentalDp4a:
+      return V8GPUFeatureName::Enum::kChromiumExperimentalDp4A;
     default:
       return absl::nullopt;
   }
