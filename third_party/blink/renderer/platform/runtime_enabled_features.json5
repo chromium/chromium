@@ -2894,6 +2894,11 @@
       status: "stable",
     },
     {
+      name: "SchedulerYield",
+      depends_on: ["AbortSignalComposition"],
+      status: "experimental",
+    },
+    {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
       name: "ScopedCustomElementRegistry",
       status: "test",

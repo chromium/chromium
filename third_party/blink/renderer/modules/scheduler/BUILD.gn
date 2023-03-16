@@ -10,6 +10,8 @@ blink_modules_sources("scheduler") {
     "dom_scheduler.h",
     "dom_task.cc",
     "dom_task.h",
+    "dom_task_continuation.cc",
+    "dom_task_continuation.h",
     "dom_task_controller.cc",
     "dom_task_controller.h",
     "dom_task_signal.cc",

@@ -963,6 +963,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_save_file_picker_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_yield_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_yield_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sensor_error_event_init.cc",
@@ -1504,6 +1506,10 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_stats_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_video_codec_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_video_codec_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_signal_inherit.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_signal_inherit.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_yield_priority.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_yield_priority.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_screen_idle_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_screen_idle_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_self_capture_preference_enum.cc",
@@ -2796,6 +2802,8 @@ generated_typedef_sources_in_modules = [
 ]
 
 generated_union_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_abortsignal_schedulersignalinherit.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_abortsignal_schedulersignalinherit.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.cc",

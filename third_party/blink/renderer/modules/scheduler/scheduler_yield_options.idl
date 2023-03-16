@@ -1,0 +1,20 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum SchedulerYieldPriority {
+    "user-blocking",
+    "user-visible",
+    "background",
+    "inherit"
+};
+
+enum SchedulerSignalInherit {
+    "inherit"
+};
+
+// https://github.com/WICG/scheduling-apis/blob/main/explainers/yield-and-continuation.md
+dictionary SchedulerYieldOptions {
+    (AbortSignal or SchedulerSignalInherit) signal;
+    SchedulerYieldPriority priority;
+};

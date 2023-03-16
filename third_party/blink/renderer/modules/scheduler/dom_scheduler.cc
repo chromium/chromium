@@ -10,12 +10,17 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_yield_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_abortsignal_schedulersignalinherit.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task.h"
+#include "third_party/blink/renderer/modules/scheduler/dom_task_continuation.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
+#include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -45,8 +50,14 @@ DOMScheduler::DOMScheduler(ExecutionContext* context)
   if (context->IsContextDestroyed()) {
     return;
   }
-  DCHECK(context->GetScheduler());
-  CreateFixedPriorityTaskQueues(context);
+  CHECK(context->GetScheduler());
+  CreateFixedPriorityTaskQueues(context, WebSchedulingQueueType::kTaskQueue,
+                                fixed_priority_task_queues_);
+  if (RuntimeEnabledFeatures::SchedulerYieldEnabled()) {
+    CreateFixedPriorityTaskQueues(context,
+                                  WebSchedulingQueueType::kContinuationQueue,
+                                  fixed_priority_continuation_queues_);
+  }
 }
 
 void DOMScheduler::ContextDestroyed() {
@@ -56,8 +67,10 @@ void DOMScheduler::ContextDestroyed() {
 
 void DOMScheduler::Trace(Visitor* visitor) const {
   visitor->Trace(fixed_priority_task_queues_);
+  visitor->Trace(fixed_priority_continuation_queues_);
   visitor->Trace(fixed_priority_task_signals_);
   visitor->Trace(signal_to_task_queue_map_);
+  visitor->Trace(signal_to_continuation_queue_map_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   Supplement<ExecutionContext>::Trace(visitor);
@@ -68,7 +81,7 @@ ScriptPromise DOMScheduler::postTask(
     V8SchedulerPostTaskCallback* callback_function,
     SchedulerPostTaskOptions* options,
     ExceptionState& exception_state) {
-  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
+  if (!GetExecutionContext()) {
     // The bindings layer implicitly converts thrown exceptions in
     // promise-returning functions to promise rejections.
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
@@ -87,12 +100,57 @@ ScriptPromise DOMScheduler::postTask(
   }
 
   CHECK(task_signal);
-  auto* task_queue = GetTaskQueue(task_signal);
+  auto* task_queue =
+      GetTaskQueue(task_signal, WebSchedulingQueueType::kTaskQueue);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
   MakeGarbageCollected<DOMTask>(resolver, callback_function, task_signal,
                                 task_queue,
                                 base::Milliseconds(options->delay()));
+  return resolver->Promise();
+}
+
+ScriptPromise DOMScheduler::yield(ScriptState* script_state,
+                                  SchedulerYieldOptions* options,
+                                  ExceptionState& exception_state) {
+  if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Current window is detached");
+    return ScriptPromise();
+  }
+
+  // TODO(crbug.com/979020): Remove once inheritance is implemented.
+  if ((options->hasSignal() && options->signal()->IsSchedulerSignalInherit()) ||
+      (options->hasPriority() && options->priority() == "inherit")) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Signal inheritance is not yet supported");
+    return ScriptPromise();
+  }
+
+  AbortSignal* signal_option = nullptr;
+  if (options->hasSignal()) {
+    signal_option = options->signal()->GetAsAbortSignal();
+  }
+
+  AtomicString priority_option = g_null_atom;
+  if (options->hasPriority()) {
+    priority_option = AtomicString(IDLEnumAsString(options->priority()));
+  }
+
+  auto* task_signal = GetTaskSignalFromOptions(script_state, exception_state,
+                                               signal_option, priority_option);
+  if (exception_state.HadException()) {
+    // The given signal was aborted.
+    return ScriptPromise();
+  }
+
+  CHECK(task_signal);
+  auto* task_queue =
+      GetTaskQueue(task_signal, WebSchedulingQueueType::kContinuationQueue);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+  MakeGarbageCollected<DOMTaskContinuation>(resolver, task_signal, task_queue);
   return resolver->Promise();
 }
 
@@ -134,27 +192,29 @@ AtomicString DOMScheduler::isAncestor(
   return "not reached";
 }
 
-void DOMScheduler::CreateFixedPriorityTaskQueues(ExecutionContext* context) {
+void DOMScheduler::CreateFixedPriorityTaskQueues(
+    ExecutionContext* context,
+    WebSchedulingQueueType queue_type,
+    FixedPriorityTaskQueueVector& task_queues) {
   FrameOrWorkerScheduler* scheduler = context->GetScheduler();
   for (size_t i = 0; i < kWebSchedulingPriorityCount; i++) {
     auto priority = static_cast<WebSchedulingPriority>(i);
     std::unique_ptr<WebSchedulingTaskQueue> task_queue =
-        scheduler->CreateWebSchedulingTaskQueue(
-            WebSchedulingQueueType::kTaskQueue, priority);
-    fixed_priority_task_queues_.push_back(
+        scheduler->CreateWebSchedulingTaskQueue(queue_type, priority);
+    task_queues.push_back(
         MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue), priority));
   }
 }
 
 DOMScheduler::DOMTaskQueue* DOMScheduler::CreateDynamicPriorityTaskQueue(
-    DOMTaskSignal* signal) {
+    DOMTaskSignal* signal,
+    WebSchedulingQueueType queue_type) {
   FrameOrWorkerScheduler* scheduler = GetExecutionContext()->GetScheduler();
   DCHECK(scheduler);
   WebSchedulingPriority priority =
       WebSchedulingPriorityFromString(signal->priority());
   std::unique_ptr<WebSchedulingTaskQueue> task_queue =
-      scheduler->CreateWebSchedulingTaskQueue(
-          WebSchedulingQueueType::kTaskQueue, priority);
+      scheduler->CreateWebSchedulingTaskQueue(queue_type, priority);
   auto* dom_task_queue =
       MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue), priority);
   auto* handle = signal->AddPriorityChangeAlgorithm(WTF::BindRepeating(
@@ -249,17 +309,28 @@ DOMTaskSignal* DOMScheduler::GetFixedPriorityTaskSignal(
 }
 
 DOMScheduler::DOMTaskQueue* DOMScheduler::GetTaskQueue(
-    DOMTaskSignal* task_signal) {
+    DOMTaskSignal* task_signal,
+    WebSchedulingQueueType queue_type) {
   if (task_signal->HasFixedPriority()) {
     auto priority = WebSchedulingPriorityFromString(task_signal->priority());
-    return fixed_priority_task_queues_[static_cast<wtf_size_t>(priority)];
-  } else if (signal_to_task_queue_map_.Contains(task_signal)) {
-    return signal_to_task_queue_map_.at(task_signal);
+    return queue_type == WebSchedulingQueueType::kTaskQueue
+               ? fixed_priority_task_queues_[static_cast<wtf_size_t>(priority)]
+               : fixed_priority_continuation_queues_[static_cast<wtf_size_t>(
+                     priority)];
+  } else {
+    SignalToTaskQueueMap& queue_map =
+        queue_type == WebSchedulingQueueType::kTaskQueue
+            ? signal_to_task_queue_map_
+            : signal_to_continuation_queue_map_;
+    if (queue_map.Contains(task_signal)) {
+      return queue_map.at(task_signal);
+    }
+    // We haven't seen this task signal before, so create a task queue for it.
+    auto* dom_task_queue =
+        CreateDynamicPriorityTaskQueue(task_signal, queue_type);
+    queue_map.insert(task_signal, dom_task_queue);
+    return dom_task_queue;
   }
-  // We haven't seen this task signal before, so create a task queue for it.
-  auto* dom_task_queue = CreateDynamicPriorityTaskQueue(task_signal);
-  signal_to_task_queue_map_.insert(task_signal, dom_task_queue);
-  return dom_task_queue;
 }
 
 void DOMScheduler::OnPriorityChange(DOMTaskSignal* signal,

@@ -8814,6 +8814,7 @@ interface Scheduler
     attribute @@toStringTag
     method constructor
     method postTask
+    method yield
 interface Scheduling
     attribute @@toStringTag
     method constructor

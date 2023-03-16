@@ -1327,6 +1327,7 @@ interface Scheduler
     attribute @@toStringTag
     method constructor
     method postTask
+    method yield
 interface SecurityPolicyViolationEvent : Event
     attribute @@toStringTag
     getter blockedURI
