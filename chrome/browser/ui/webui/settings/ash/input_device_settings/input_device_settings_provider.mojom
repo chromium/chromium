@@ -36,8 +36,6 @@ interface MouseSettingsObserver {
 
 // Interface for fetching and configuring input device settings in OSSettings.
 interface InputDeviceSettingsProvider {
-  // Returns the list of currently connected keyboards.
-  GetConnectedKeyboards() => (array<ash.mojom.Keyboard> keyboards);
   // Registers an observer which will be notified every time
   // a keyboard connects/disconnects or when settings change.
   // The observer which is registered is immediately informed

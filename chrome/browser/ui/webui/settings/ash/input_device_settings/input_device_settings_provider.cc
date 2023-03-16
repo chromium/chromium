@@ -102,14 +102,6 @@ void InputDeviceSettingsProvider::SetTouchpadSettings(
       device_id, std::move(settings));
 }
 
-void InputDeviceSettingsProvider::GetConnectedKeyboards(
-    GetConnectedKeyboardsCallback callback) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
-  DCHECK(InputDeviceSettingsController::Get());
-  std::move(callback).Run(SanitizeAndSortDeviceList(
-      InputDeviceSettingsController::Get()->GetConnectedKeyboards()));
-}
-
 void InputDeviceSettingsProvider::ObserveKeyboardSettings(
     mojo::PendingRemote<mojom::KeyboardSettingsObserver> observer) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());

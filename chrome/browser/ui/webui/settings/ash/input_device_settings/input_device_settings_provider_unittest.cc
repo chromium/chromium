@@ -105,12 +105,6 @@ void ExpectListsEqual(const std::vector<T>& expected_list,
   }
 }
 
-template <bool sorted = false, typename T>
-void ExpectListsEqualByValue(std::vector<T> expected_list,
-                             std::vector<T> actual_list) {
-  ExpectListsEqual<sorted, T>(expected_list, actual_list);
-}
-
 class FakeKeyboardSettingsObserver : public mojom::KeyboardSettingsObserver {
  public:
   void OnKeyboardListUpdated(
@@ -357,21 +351,6 @@ class InputDeviceSettingsProviderTest : public testing::Test {
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 };
-
-TEST_F(InputDeviceSettingsProviderTest, TestGetConnectedKeyboards) {
-  std::vector<::ash::mojom::KeyboardPtr> expected_keyboards;
-  expected_keyboards.push_back(kKeyboard1.Clone());
-  controller_->AddKeyboard(kKeyboard1.Clone());
-  provider_->GetConnectedKeyboards(base::BindOnce(
-      ExpectListsEqualByValue</*sorted=*/false, ::ash::mojom::KeyboardPtr>,
-      mojo::Clone(expected_keyboards)));
-
-  expected_keyboards.push_back(kKeyboard2.Clone());
-  controller_->AddKeyboard(kKeyboard2.Clone());
-  provider_->GetConnectedKeyboards(base::BindOnce(
-      ExpectListsEqualByValue</*sorted=*/false, ::ash::mojom::KeyboardPtr>,
-      mojo::Clone(expected_keyboards)));
-}
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetKeyboardSettings) {
   controller_->AddKeyboard(kKeyboard1.Clone());

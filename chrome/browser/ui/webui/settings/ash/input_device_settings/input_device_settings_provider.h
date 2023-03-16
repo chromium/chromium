@@ -28,7 +28,6 @@ class InputDeviceSettingsProvider
       mojo::PendingReceiver<mojom::InputDeviceSettingsProvider> receiver);
 
   // mojom::InputDeviceSettingsProvider:
-  void GetConnectedKeyboards(GetConnectedKeyboardsCallback callback) override;
   void ObserveKeyboardSettings(
       mojo::PendingRemote<mojom::KeyboardSettingsObserver> observer) override;
   void ObserveTouchpadSettings(
