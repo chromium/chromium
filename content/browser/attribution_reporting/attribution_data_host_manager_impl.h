@@ -101,6 +101,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       bool is_within_fenced_frame,
       AttributionInputEvent input_event,
       GlobalRenderFrameHostId render_frame_id) override;
+  void NotifyFencedFrameReportingBeaconSent(BeaconId beacon_id) override;
   void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
       url::Origin reporting_origin,
