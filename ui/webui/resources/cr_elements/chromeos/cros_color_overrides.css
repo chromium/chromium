@@ -100,6 +100,17 @@ To get Chrome OS System Colors, an element must:
   --cr-secondary-text-color: var(--cros-sys-secondary);
 }
 
+/* Checkbox */
+:host-context(body.jelly-enabled) cr-checkbox {
+  --cr-checkbox-checked-box-color: var(--cros-sys-primary);
+  --cr-checkbox-ripple-checked-color: var(--cros-sys-ripple_primary);
+  --cr-checkbox-checked-ripple-opacity: 1;
+  --cr-checkbox-mark-color: var(--cros-sys-inverse_on_surface);
+  --cr-checkbox-ripple-unchecked-color: var(--cros-sys-ripple_primary);
+  --cr-checkbox-unchecked-box-color: var(--cros-sys-on_surface);
+  --cr-checkbox-unchecked-ripple-opacity: 1;
+}
+
 /* Dialog */
 :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
   --cr-dialog-background-color: var(--cros-sys-app_base_elevated);
