@@ -30,6 +30,10 @@ namespace test {
 
 namespace {
 
+// Minimum number of bitstream buffers we need to make sure we don't risk a
+// deadlock. See crrev/c/2340653.
+static unsigned int kMinInFlightFrames = 10;
+
 // TODO(crbug.com/1045825): Support encoding parameter changes.
 
 // Callbacks can be called from any thread, but WeakPtrs are not thread-safe.
@@ -287,6 +291,8 @@ void VideoEncoderClient::RequireBitstreamBuffers(
   ASSERT_GT(input_count, 0UL);
   ASSERT_GT(output_buffer_size, 0UL);
   DVLOGF(4);
+
+  input_count = std::max(kMinInFlightFrames, input_count);
 
   gfx::Size coded_size = input_coded_size;
   if (video_->Resolution() != encoder_client_config_.output_resolution) {

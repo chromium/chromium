@@ -284,16 +284,6 @@ void BitstreamValidator::DecodeDone(int64_t timestamp, DecoderStatus status) {
     validator_cv_.Signal();
     return;
   }
-
-  // This validator and |decoder_| don't use bitstream any more. Release here,
-  // so that a caller can use the bitstream buffer and proceed.
-  auto it = decoding_buffers_.Peek(timestamp);
-  if (it == decoding_buffers_.end()) {
-    // This occurs when VerifyfOutputFrame() is called before DecodeDone() and
-    // the entry has been deleted.
-    return;
-  }
-  it->second.second.reset();
 }
 
 void BitstreamValidator::OutputFrameProcessed() {
