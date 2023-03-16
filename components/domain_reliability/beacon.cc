@@ -26,40 +26,43 @@ DomainReliabilityBeacon::~DomainReliabilityBeacon() {
   }
 }
 
-base::Value DomainReliabilityBeacon::ToValue(
+base::Value::Dict DomainReliabilityBeacon::ToValue(
     base::TimeTicks upload_time,
     base::TimeTicks last_network_change_time,
     const GURL& collector_url,
     const std::vector<std::unique_ptr<std::string>>& path_prefixes) const {
-  base::Value beacon_value(base::Value::Type::DICT);
+  base::Value::Dict beacon_value;
   DCHECK(url.is_valid());
   GURL sanitized_url = SanitizeURLForReport(url, collector_url, path_prefixes);
-  beacon_value.SetStringKey("url", sanitized_url.spec());
-  beacon_value.SetStringKey("status", status);
-  if (!quic_error.empty())
-    beacon_value.SetStringKey("quic_error", quic_error);
-  if (chrome_error != net::OK) {
-    base::Value failure_value(base::Value::Type::DICT);
-    failure_value.SetStringKey("custom_error",
-                               net::ErrorToString(chrome_error));
-    beacon_value.SetKey("failure_data", std::move(failure_value));
+  beacon_value.Set("url", sanitized_url.spec());
+  beacon_value.Set("status", status);
+  if (!quic_error.empty()) {
+    beacon_value.Set("quic_error", quic_error);
   }
-  beacon_value.SetStringKey("server_ip", server_ip);
-  beacon_value.SetBoolKey("was_proxied", was_proxied);
-  beacon_value.SetStringKey("protocol", protocol);
-  if (details.quic_broken)
-    beacon_value.SetBoolKey("quic_broken", details.quic_broken);
-  if (details.quic_port_migration_detected)
-    beacon_value.SetBoolKey("quic_port_migration_detected",
-                            details.quic_port_migration_detected);
-  if (http_response_code >= 0)
-    beacon_value.SetIntKey("http_response_code", http_response_code);
-  beacon_value.SetIntKey("request_elapsed_ms", elapsed.InMilliseconds());
+  if (chrome_error != net::OK) {
+    base::Value::Dict failure_value;
+    failure_value.Set("custom_error", net::ErrorToString(chrome_error));
+    beacon_value.Set("failure_data", std::move(failure_value));
+  }
+  beacon_value.Set("server_ip", server_ip);
+  beacon_value.Set("was_proxied", was_proxied);
+  beacon_value.Set("protocol", protocol);
+  if (details.quic_broken) {
+    beacon_value.Set("quic_broken", details.quic_broken);
+  }
+  if (details.quic_port_migration_detected) {
+    beacon_value.Set("quic_port_migration_detected",
+                     details.quic_port_migration_detected);
+  }
+  if (http_response_code >= 0) {
+    beacon_value.Set("http_response_code", http_response_code);
+  }
+  beacon_value.Set("request_elapsed_ms", static_cast<int>(elapsed.InMilliseconds()));
   base::TimeDelta request_age = upload_time - start_time;
-  beacon_value.SetIntKey("request_age_ms", request_age.InMilliseconds());
+  beacon_value.Set("request_age_ms", static_cast<int>(request_age.InMilliseconds()));
   bool network_changed = last_network_change_time > start_time;
-  beacon_value.SetBoolKey("network_changed", network_changed);
-  beacon_value.SetDoubleKey("sample_rate", sample_rate);
+  beacon_value.Set("network_changed", network_changed);
+  beacon_value.Set("sample_rate", sample_rate);
   return beacon_value;
 }
 
