@@ -2722,13 +2722,6 @@ const FeatureEntry::Choice kForceControlFaceAeChoices[] = {
     {"Enable", media::switches::kForceControlFaceAe, "enable"},
     {"Disable", media::switches::kForceControlFaceAe, "disable"}};
 
-const FeatureEntry::Choice kHdrNetOverrideChoices[] = {
-    {"Default", "", ""},
-    {"Force enabled", media::switches::kHdrNetOverride,
-     media::switches::kHdrNetForceEnabled},
-    {"Force disabled", media::switches::kHdrNetOverride,
-     media::switches::kHdrNetForceDisabled}};
-
 const FeatureEntry::Choice kAutoFramingOverrideChoices[] = {
     {"Default", "", ""},
     {"Force enabled", media::switches::kAutoFramingOverride,
@@ -5162,9 +5155,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"force-control-face-ae", flag_descriptions::kForceControlFaceAeName,
      flag_descriptions::kForceControlFaceAeDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kForceControlFaceAeChoices)},
-    {"hdrnet-override", flag_descriptions::kHdrNetOverrideName,
-     flag_descriptions::kHdrNetOverrideDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kHdrNetOverrideChoices)},
     {"auto-framing-override", flag_descriptions::kAutoFramingOverrideName,
      flag_descriptions::kAutoFramingOverrideDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kAutoFramingOverrideChoices)},

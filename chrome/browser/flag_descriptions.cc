@@ -5056,10 +5056,6 @@ const char kForceControlFaceAeName[] = "Force control face AE";
 const char kForceControlFaceAeDescription[] =
     "Control this flag to force enable or disable face AE for camera";
 
-const char kHdrNetOverrideName[] = "HDRnet control override";
-const char kHdrNetOverrideDescription[] =
-    "Overrides the default to forcibly enable or disable the HDRnet feature";
-
 const char kCellularBypassESimInstallationConnectivityCheckName[] =
     "Bypass eSIM installation connectivity check";
 const char kCellularBypassESimInstallationConnectivityCheckDescription[] =

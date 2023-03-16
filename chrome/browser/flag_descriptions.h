@@ -2905,9 +2905,6 @@ extern const char kMoreVideoCaptureBuffersDescription[];
 extern const char kForceControlFaceAeName[];
 extern const char kForceControlFaceAeDescription[];
 
-extern const char kHdrNetOverrideName[];
-extern const char kHdrNetOverrideDescription[];
-
 extern const char kCellularBypassESimInstallationConnectivityCheckName[];
 extern const char kCellularBypassESimInstallationConnectivityCheckDescription[];
 

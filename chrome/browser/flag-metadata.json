@@ -4167,11 +4167,6 @@
     "expiry_milestone": 113
   },
   {
-    "name": "hdrnet-override",
-    "owners": [ "jcliang", "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "heavy-ad-privacy-mitigations",
     "owners": [ "johnidel", "jkarlin" ],
     "expiry_milestone": 97
