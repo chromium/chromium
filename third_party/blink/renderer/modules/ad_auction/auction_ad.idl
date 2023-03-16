@@ -7,5 +7,6 @@
 
 dictionary AuctionAd {
   required USVString renderUrl;
+  USVString sizeGroup;
   any metadata;
 };

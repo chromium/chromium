@@ -93,6 +93,7 @@ size_t EstimateBlinkInterestGroupSize(
   if (group.ads) {
     for (const auto& ad : group.ads.value()) {
       size += ad->render_url.GetString().length();
+      size += ad->size_group.length();
       size += ad->metadata.length();
     }
   }
@@ -100,6 +101,7 @@ size_t EstimateBlinkInterestGroupSize(
   if (group.ad_components) {
     for (const auto& ad : group.ad_components.value()) {
       size += ad->render_url.GetString().length();
+      size += ad->size_group.length();
       size += ad->metadata.length();
     }
   }
@@ -228,6 +230,21 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "renderUrls must be HTTPS and have no embedded credentials.";
         return false;
       }
+      const WTF::String& ad_size_group = group.ads.value()[i]->size_group;
+      if (!ad_size_group.IsNull()) {
+        if (ad_size_group.empty()) {
+          error_field_name = String::Format("ads[%u].sizeGroup", i);
+          error_field_value = ad_size_group;
+          error = "Size group name cannot be empty.";
+          return false;
+        }
+        if (!group.size_groups || !group.size_groups->Contains(ad_size_group)) {
+          error_field_name = String::Format("ads[%u].sizeGroup", i);
+          error_field_value = ad_size_group;
+          error = "The assigned size group does not exist in sizeGroups map.";
+          return false;
+        }
+      }
     }
   }
 
@@ -240,8 +257,26 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "renderUrls must be HTTPS and have no embedded credentials.";
         return false;
       }
+      const WTF::String& ad_component_size_group =
+          group.ad_components.value()[i]->size_group;
+      if (!ad_component_size_group.IsNull()) {
+        if (ad_component_size_group.empty()) {
+          error_field_name = String::Format("adComponents[%u].sizeGroup", i);
+          error_field_value = ad_component_size_group;
+          error = "Size group name cannot be empty.";
+          return false;
+        }
+        if (!group.size_groups ||
+            !group.size_groups->Contains(ad_component_size_group)) {
+          error_field_name = String::Format("adComponents[%u].sizeGroup", i);
+          error_field_value = ad_component_size_group;
+          error = "The assigned size group does not exist in sizeGroups map.";
+          return false;
+        }
+      }
     }
   }
+
   if (group.ad_sizes) {
     for (auto const& it : group.ad_sizes.value()) {
       if (it.key == "") {

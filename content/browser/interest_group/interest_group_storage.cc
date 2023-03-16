@@ -131,6 +131,9 @@ base::Value ToValue(const blink::InterestGroup::Ad& ad) {
   base::Value value(base::Value::Type::DICT);
   base::Value::Dict& dict = value.GetDict();
   dict.Set("url", ad.render_url.spec());
+  if (ad.size_group) {
+    dict.Set("size_group", ad.size_group.value());
+  }
   if (ad.metadata)
     dict.Set("metadata", ad.metadata.value());
   return value;
@@ -141,6 +144,10 @@ blink::InterestGroup::Ad FromInterestGroupAdValue(
   const std::string* maybe_url = dict.FindString("url");
   if (maybe_url)
     result.render_url = GURL(*maybe_url);
+  const std::string* maybe_size_group = dict.FindString("size_group");
+  if (maybe_size_group) {
+    result.size_group = *maybe_size_group;
+  }
   const std::string* maybe_metadata = dict.FindString("metadata");
   if (maybe_metadata)
     result.metadata = *maybe_metadata;

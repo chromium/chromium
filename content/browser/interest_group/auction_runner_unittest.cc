@@ -7869,79 +7869,116 @@ TEST_F(AuctionRunnerTest, BadBid) {
   const struct TestCase {
     const char* expected_error_message;
     double bid;
-    GURL render_url;
-    absl::optional<std::vector<blink::AdDescriptor>> ad_component_urls;
+    blink::AdDescriptor ad_descriptor;
+    absl::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors;
     base::TimeDelta duration;
   } kTestCases[] = {
       // Bids that aren't positive integers.
       {
           "Invalid bid value",
           -10,
-          GURL("https://ad1.com"),
+          blink::AdDescriptor(GURL("https://ad1.com")),
           absl::nullopt,
           base::TimeDelta(),
       },
       {
           "Invalid bid value",
           0,
-          GURL("https://ad1.com"),
+          blink::AdDescriptor(GURL("https://ad1.com")),
           absl::nullopt,
           base::TimeDelta(),
       },
       {
           "Invalid bid value",
           std::numeric_limits<double>::infinity(),
-          GURL("https://ad1.com"),
+          blink::AdDescriptor(GURL("https://ad1.com")),
           absl::nullopt,
           base::TimeDelta(),
       },
       {
           "Invalid bid value",
           std::numeric_limits<double>::quiet_NaN(),
-          GURL("https://ad1.com"),
+          blink::AdDescriptor(GURL("https://ad1.com")),
           absl::nullopt,
           base::TimeDelta(),
       },
 
       // Invalid render URL.
       {
-          "Bid render URL must be a valid ad URL",
+          "Bid render ad must have a valid URL and size (if specified)",
           1,
-          GURL(":"),
+          blink::AdDescriptor(GURL(":")),
           absl::nullopt,
           base::TimeDelta(),
       },
 
       // Non-HTTPS render URLs.
       {
-          "Bid render URL must be a valid ad URL",
+          "Bid render ad must have a valid URL and size (if specified)",
           1,
-          GURL("data:,foo"),
+          blink::AdDescriptor(GURL("data:,foo")),
           absl::nullopt,
           base::TimeDelta(),
       },
       {
-          "Bid render URL must be a valid ad URL",
+          "Bid render ad must have a valid URL and size (if specified)",
           1,
-          GURL("http://ad1.com"),
+          blink::AdDescriptor(GURL("http://ad1.com")),
           absl::nullopt,
           base::TimeDelta(),
       },
 
       // HTTPS render URL that's not in the list of allowed renderUrls.
       {
-          "Bid render URL must be a valid ad URL",
+          "Bid render ad must have a valid URL and size (if specified)",
           1,
-          GURL("https://ad2.com"),
+          blink::AdDescriptor(GURL("https://ad2.com")),
+          absl::nullopt,
+          base::TimeDelta(),
+      },
+
+      // HTTPS render URL with an invalid size value.
+      {
+          "Bid render ad must have a valid URL and size (if specified)",
+          1,
+          blink::AdDescriptor(
+              GURL("https://ad1.com"),
+              blink::AdSize(0, blink::AdSize::LengthUnit::kPixels, 100,
+                            blink::AdSize::LengthUnit::kPixels)),
+          absl::nullopt,
+          base::TimeDelta(),
+      },
+
+      // HTTPS render URL with an invalid size unit.
+      {
+          "Bid render ad must have a valid URL and size (if specified)",
+          1,
+          blink::AdDescriptor(
+              GURL("https://ad1.com"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kInvalid, 100,
+                            blink::AdSize::LengthUnit::kPixels)),
+          absl::nullopt,
+          base::TimeDelta(),
+      },
+
+      // HTTPS render URL with a size specification that does not match any
+      // allowed ad descriptors.
+      {
+          "Bid render ad must have a valid URL and size (if specified)",
+          1,
+          blink::AdDescriptor(
+              GURL("https://ad1.com"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 100,
+                            blink::AdSize::LengthUnit::kPixels)),
           absl::nullopt,
           base::TimeDelta(),
       },
 
       // Invalid component URL.
       {
-          "Bid ad components URL must match a valid ad component URL",
+          "Bid ad component must have a valid URL and size (if specified)",
           1,
-          GURL("https://ad1.com"),
+          blink::AdDescriptor(GURL("https://ad1.com")),
           std::vector<blink::AdDescriptor>{blink::AdDescriptor(GURL(":"))},
           base::TimeDelta(),
       },
@@ -7949,20 +7986,55 @@ TEST_F(AuctionRunnerTest, BadBid) {
       // HTTPS component URL that's not in the list of allowed ad component
       // URLs.
       {
-          "Bid ad components URL must match a valid ad component URL",
+          "Bid ad component must have a valid URL and size (if specified)",
           1,
-          GURL("https://ad1.com"),
+          blink::AdDescriptor(GURL("https://ad1.com")),
           std::vector<blink::AdDescriptor>{
               blink::AdDescriptor(GURL("https://ad2.com-component1.com"))},
           base::TimeDelta(),
       },
       {
-          "Bid ad components URL must match a valid ad component URL",
+          "Bid ad component must have a valid URL and size (if specified)",
           1,
-          GURL("https://ad1.com"),
+          blink::AdDescriptor(GURL("https://ad1.com")),
           std::vector<blink::AdDescriptor>{
               blink::AdDescriptor(GURL("https://ad1.com-component1.com")),
               blink::AdDescriptor(GURL("https://ad2.com-component1.com"))},
+          base::TimeDelta(),
+      },
+
+      // HTTPS component URL with an invalid size value.
+      {
+          "Bid ad component must have a valid URL and size (if specified)",
+          1,
+          blink::AdDescriptor(GURL("https://ad1.com")),
+          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+              GURL("https://ad1.com-component1.com"),
+              blink::AdSize(0, blink::AdSize::LengthUnit::kPixels, 100,
+                            blink::AdSize::LengthUnit::kPixels))},
+          base::TimeDelta(),
+      },
+      // HTTPS component URL with an invalid size unit.
+      {
+          "Bid ad component must have a valid URL and size (if specified)",
+          1,
+          blink::AdDescriptor(GURL("https://ad1.com")),
+          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+              GURL("https://ad1.com-component1.com"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kInvalid, 100,
+                            blink::AdSize::LengthUnit::kPixels))},
+          base::TimeDelta(),
+      },
+      // HTTPS component URL with a size specification that does not match any
+      // allowed ad descriptors.
+      {
+          "Bid ad component must have a valid URL and size (if specified)",
+          1,
+          blink::AdDescriptor(GURL("https://ad1.com")),
+          std::vector<blink::AdDescriptor>{blink::AdDescriptor(
+              GURL("https://ad1.com-component1.com"),
+              blink::AdSize(100, blink::AdSize::LengthUnit::kPixels, 100,
+                            blink::AdSize::LengthUnit::kPixels))},
           base::TimeDelta(),
       },
 
@@ -7970,7 +8042,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
       {
           "Invalid bid duration",
           1,
-          GURL("https://ad2.com"),
+          blink::AdDescriptor(GURL("https://ad2.com")),
           absl::nullopt,
           base::Milliseconds(-1),
       },
@@ -7989,8 +8061,8 @@ TEST_F(AuctionRunnerTest, BadBid) {
     ASSERT_TRUE(bidder2_worklet);
 
     bidder1_worklet->InvokeGenerateBidCallback(
-        test_case.bid, blink::AdDescriptor(test_case.render_url),
-        /*mojo_kanon_bid=*/nullptr, test_case.ad_component_urls,
+        test_case.bid, test_case.ad_descriptor,
+        /*mojo_kanon_bid=*/nullptr, test_case.ad_component_descriptors,
         test_case.duration);
     // Bidder 2 doesn't bid.
     bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
@@ -13820,7 +13892,7 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
   const struct TestCase {
     std::set<auction_worklet::mojom::KAnonymityBidMode> run_in_modes;
     const char* expected_error_message;
-    GURL render_url;
+    blink::AdDescriptor ad_descriptor;
     auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_bid;
     bool expect_winner;
   } kTestCases[] = {
@@ -13829,7 +13901,7 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       {{auction_worklet::mojom::KAnonymityBidMode::kEnforce,
         auction_worklet::mojom::KAnonymityBidMode::kSimulate},
        "Received different k-anon bid when unenforced bid already k-anon",
-       GURL("https://ad1.com"),
+       blink::AdDescriptor(GURL("https://ad1.com")),
        auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::NewBid(
            auction_worklet::mojom::BidderWorkletBid::New(
                "ad", 5.0, /*ad_cost=*/absl::nullopt,
@@ -13839,8 +13911,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       // A non-k-anon bid as k-anon one. Enforced, so auction fails.
       {
           {auction_worklet::mojom::KAnonymityBidMode::kEnforce},
-          "Bid render URL must be a valid ad URL",
-          GURL("https://ad2.com"),
+          "Bid render ad must have a valid URL and size (if specified)",
+          blink::AdDescriptor(GURL("https://ad2.com")),
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::NewBid(
               auction_worklet::mojom::BidderWorkletBid::New(
                   "ad", 5.0, /*ad_cost=*/absl::nullopt,
@@ -13851,8 +13923,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       // A non-k-anon bid as k-anon one. Simulate, so auction succeeds.
       {
           {auction_worklet::mojom::KAnonymityBidMode::kSimulate},
-          "Bid render URL must be a valid ad URL",
-          GURL("https://ad2.com"),
+          "Bid render ad must have a valid URL and size (if specified)",
+          blink::AdDescriptor(GURL("https://ad2.com")),
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::NewBid(
               auction_worklet::mojom::BidderWorkletBid::New(
                   "ad", 5.0, /*ad_cost=*/absl::nullopt,
@@ -13864,7 +13936,7 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
       {
           {auction_worklet::mojom::KAnonymityBidMode::kNone},
           "Received k-anon bid data when not considering k-anon",
-          GURL("https://ad1.com"),
+          blink::AdDescriptor(GURL("https://ad1.com")),
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBid::
               NewSameAsNonEnforced(nullptr),
           /*expect_winner=*/true,
@@ -13894,9 +13966,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
     ASSERT_TRUE(seller_worklet);
     auto bidder1_worklet =
         mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-    bidder1_worklet->InvokeGenerateBidCallback(
-        1.0, blink::AdDescriptor(test_case.render_url),
-        test_case.mojo_bid.Clone());
+    bidder1_worklet->InvokeGenerateBidCallback(1.0, test_case.ad_descriptor,
+                                               test_case.mojo_bid.Clone());
 
     // All of these tests only get one scoreAd, since k-anon bid is invalid.
     auto score_ad_params = seller_worklet->WaitForScoreAd();

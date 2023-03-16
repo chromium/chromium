@@ -156,4 +156,17 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdComponents(
   return *this;
 }
 
+TestInterestGroupBuilder& TestInterestGroupBuilder::SetAdSizes(
+    absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes) {
+  interest_group_.ad_sizes = std::move(ad_sizes);
+  return *this;
+}
+
+TestInterestGroupBuilder& TestInterestGroupBuilder::SetSizeGroups(
+    absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+        size_groups) {
+  interest_group_.size_groups = std::move(size_groups);
+  return *this;
+}
+
 }  // namespace blink

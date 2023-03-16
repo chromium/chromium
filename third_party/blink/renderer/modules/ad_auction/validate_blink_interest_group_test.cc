@@ -392,7 +392,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
         CreateMinimalInterestGroup();
     blink_interest_group->ads.emplace();
     blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-        test_case_url, /*metadata=*/String()));
+        test_case_url, /*size_group=*/String(), /*metadata=*/String()));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
@@ -408,9 +408,9 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
     blink_interest_group->ads.emplace();
     blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
         KURL(String::FromUTF8("https://origin.test/")),
-        /*metadata=*/String()));
+        /*size_group=*/String(), /*metadata=*/String()));
     blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-        test_case_url, /*metadata=*/String()));
+        test_case_url, /*size_group=*/String(), /*metadata=*/String()));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
@@ -469,6 +469,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
     blink_interest_group->ad_components.emplace();
     blink_interest_group->ad_components->emplace_back(
         mojom::blink::InterestGroupAd::New(test_case_url,
+                                           /*size_group=*/String(),
                                            /*metadata=*/String()));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
@@ -487,9 +488,10 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
     blink_interest_group->ad_components->emplace_back(
         mojom::blink::InterestGroupAd::New(
             KURL(String::FromUTF8("https://origin.test/")),
-            /*metadata=*/String()));
+            /*size_group=*/String(), /*metadata=*/String()));
     blink_interest_group->ad_components->emplace_back(
         mojom::blink::InterestGroupAd::New(test_case_url,
+                                           /*size_group=*/String(),
                                            /*metadata=*/String()));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
@@ -522,7 +524,8 @@ TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
   blink_interest_group->name = kName;
   blink_interest_group->ads.emplace();
   blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-      KURL(kMalformedUrl), /*metadata=*/String()));
+      KURL(kMalformedUrl), /*size_group=*/String(),
+      /*metadata=*/String()));
   String error_field_name;
   String error_field_value;
   String error;
@@ -932,7 +935,82 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidSizeGroups) {
     blink_interest_group->size_groups->insert(
         test_case.size_group, WTF::Vector<WTF::String>(1, test_case.size_name));
     ExpectInterestGroupIsNotValid(
-        /*expected_error_field_name=*/blink_interest_group, "sizeGroups",
+        blink_interest_group, /*expected_error_field_name=*/"sizeGroups",
+        test_case.expected_error_field_value, test_case.expected_error);
+  }
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, AdSizeGroupEmptyNameOrNotInSizeGroups) {
+  constexpr char kSizeGroupError[] =
+      "The assigned size group does not exist in sizeGroups map.";
+  constexpr char kNameError[] = "Size group name cannot be empty.";
+  struct {
+    const char* ad_size_group;
+    const char* size_group;
+    const char* expected_error_field_value;
+    const char* expected_error;
+  } test_cases[] = {
+      {"", "group_name", "", kNameError},
+      {"group_name", "different_group_name", "group_name", kSizeGroupError},
+      {"group_name", "", "group_name", kSizeGroupError},
+  };
+  for (const auto& test_case : test_cases) {
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->ads.emplace();
+    blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
+        KURL("https://origin.test/foo?bar"),
+        /*size_group=*/test_case.ad_size_group,
+        /*metadata=*/String()));
+    blink_interest_group->ad_sizes.emplace();
+    blink_interest_group->ad_sizes->insert(
+        "size_name", blink::mojom::blink::AdSize::New(
+                         300, blink::AdSize::LengthUnit::kPixels, 150,
+                         blink::AdSize::LengthUnit::kPixels));
+    blink_interest_group->size_groups.emplace();
+    blink_interest_group->size_groups->insert(
+        test_case.size_group, WTF::Vector<WTF::String>(1, "size_name"));
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group, /*expected_error_field_name=*/"ads[0].sizeGroup",
+        test_case.expected_error_field_value, test_case.expected_error);
+  }
+}
+
+TEST_F(ValidateBlinkInterestGroupTest,
+       AdComponentSizeGroupEmptyNameOrNotInSizeGroups) {
+  constexpr char kSizeGroupError[] =
+      "The assigned size group does not exist in sizeGroups map.";
+  constexpr char kNameError[] = "Size group name cannot be empty.";
+  struct {
+    const char* ad_component_size_group;
+    const char* size_group;
+    const char* expected_error_field_value;
+    const char* expected_error;
+  } test_cases[] = {
+      {"", "group_name", "", kNameError},
+      {"group_name", "different_group_name", "group_name", kSizeGroupError},
+      {"group_name", "", "group_name", kSizeGroupError},
+  };
+  for (const auto& test_case : test_cases) {
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->ad_components.emplace();
+    blink_interest_group->ad_components->emplace_back(
+        mojom::blink::InterestGroupAd::New(
+            KURL("https://origin.test/foo?bar"),
+            /*size_group=*/test_case.ad_component_size_group,
+            /*metadata=*/String()));
+    blink_interest_group->ad_sizes.emplace();
+    blink_interest_group->ad_sizes->insert(
+        "size_name", blink::mojom::blink::AdSize::New(
+                         300, blink::AdSize::LengthUnit::kPixels, 150,
+                         blink::AdSize::LengthUnit::kPixels));
+    blink_interest_group->size_groups.emplace();
+    blink_interest_group->size_groups->insert(
+        test_case.size_group, WTF::Vector<WTF::String>(1, "size_name"));
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group,
+        /*expected_error_field_name=*/"adComponents[0].sizeGroup",
         test_case.expected_error_field_value, test_case.expected_error);
   }
 }

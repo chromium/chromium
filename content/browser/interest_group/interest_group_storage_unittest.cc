@@ -115,23 +115,29 @@ class InterestGroupStorageTest : public testing::Test {
         /*ads=*/
         std::vector<InterestGroup::Ad>{
             blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
-                                     "metadata1"),
+                                     "group_1", "metadata1"),
             blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
-                                     "metadata2")},
+                                     "group_2", "metadata2")},
         /*ad_components=*/
         std::vector<InterestGroup::Ad>{
             blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent1"), "metadata1c"),
+                GURL("https://full.example.com/adcomponent1"), "group_1",
+                "metadata1c"),
             blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent2"), "metadata2c")},
+                GURL("https://full.example.com/adcomponent2"), "group_2",
+                "metadata2c")},
         /*ad_sizes=*/
         {{{"size_1", blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
                                    blink::AdSize::LengthUnit::kPixels)},
           {"size_2", blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
-                                   blink::AdSize::LengthUnit::kPixels)}}},
+                                   blink::AdSize::LengthUnit::kPixels)},
+          {"size_3",
+           blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 100,
+                         blink::AdSize::LengthUnit::kScreenWidth)}}},
         /*size_groups=*/
         {{{"group_1", std::vector<std::string>{"size_1"}},
-          {"group_2", std::vector<std::string>{"size_1", "size_2"}}}});
+          {"group_2", std::vector<std::string>{"size_1", "size_2"}},
+          {"group_3", std::vector<std::string>{"size_3"}}}});
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
     storage->JoinInterestGroup(partial, partial_origin.GetURL());
@@ -164,10 +170,11 @@ class InterestGroupStorageTest : public testing::Test {
     update.trusted_bidding_signals_keys =
         std::vector<std::string>{"a", "b2", "c", "d"};
     update.ads = full.ads;
-    update.ads->emplace_back(GURL("https://full.example.com/ad3"), "metadata3");
+    update.ads->emplace_back(GURL("https://full.example.com/ad3"), "group_3",
+                             "metadata3");
     update.ad_components = full.ad_components;
     update.ad_components->emplace_back(
-        GURL("https://full.example.com/adcomponent3"), "metadata3c");
+        GURL("https://full.example.com/adcomponent3"), "group_3", "metadata3c");
     storage->UpdateInterestGroup(blink::InterestGroupKey(full.owner, full.name),
                                  update);
 

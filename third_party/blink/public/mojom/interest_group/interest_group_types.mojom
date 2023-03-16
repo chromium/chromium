@@ -16,6 +16,8 @@ import "url/mojom/url.mojom";
 struct InterestGroupAd {
   // Must use https.
   url.mojom.Url render_url;
+  // Optional size groups assigned to this Ad.
+  string? size_group;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? metadata;
 };

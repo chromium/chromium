@@ -38,6 +38,9 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   struct BLINK_COMMON_EXPORT Ad {
     Ad();
     Ad(GURL render_url, absl::optional<std::string> metadata);
+    Ad(GURL render_url,
+       absl::optional<std::string> size_group,
+       absl::optional<std::string> metadata);
     ~Ad();
 
     // Returns the approximate size of the contents of this InterestGroup::Ad,
@@ -46,6 +49,8 @@ struct BLINK_COMMON_EXPORT InterestGroup {
 
     // Must use https.
     GURL render_url;
+    // Optional size group assigned to this Ad.
+    absl::optional<std::string> size_group;
     // Opaque JSON data, passed as an object to auction worklet.
     absl::optional<std::string> metadata;
 
@@ -122,7 +127,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
 
-  static_assert(__LINE__ == 125, R"(
+  static_assert(__LINE__ == 130, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

@@ -14,6 +14,7 @@ bool StructTraits<
     blink::InterestGroup::Ad>::Read(blink::mojom::InterestGroupAdDataView data,
                                     blink::InterestGroup::Ad* out) {
   if (!data.ReadRenderUrl(&out->render_url) ||
+      !data.ReadSizeGroup(&out->size_group) ||
       !data.ReadMetadata(&out->metadata)) {
     return false;
   }

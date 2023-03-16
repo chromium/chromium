@@ -62,6 +62,11 @@ class TestInterestGroupBuilder {
       absl::optional<std::vector<InterestGroup::Ad>> ads);
   TestInterestGroupBuilder& SetAdComponents(
       absl::optional<std::vector<InterestGroup::Ad>> ad_components);
+  TestInterestGroupBuilder& SetAdSizes(
+      absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes);
+  TestInterestGroupBuilder& SetSizeGroups(
+      absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+          size_groups);
 
  private:
   InterestGroup interest_group_;

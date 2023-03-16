@@ -56,6 +56,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -113,32 +114,63 @@ base::flat_map<auction_worklet::mojom::KAnonKeyPtr, bool> KAnonKeysToMojom(
   return std::move(result);
 }
 
-// Finds InterestGroup::Ad in `ads` that matches `render_url`, if any. Returns
-// nullptr if `render_url` is invalid.
+// Finds InterestGroup::Ad in `ads` that matches `ad_descriptor`, if any.
+// Returns nullptr if `ad_descriptor` is invalid.
 const blink::InterestGroup::Ad* FindMatchingAd(
     const std::vector<blink::InterestGroup::Ad>& ads,
     const base::flat_map<std::string, bool>& kanon_keys,
     const blink::InterestGroup& interest_group,
     InterestGroupAuction::Bid::BidRole bid_role,
     bool is_component_ad,
-    const GURL& render_url) {
+    const blink::AdDescriptor& ad_descriptor) {
   // TODO(mmenke): Validate render URLs on load and make this a DCHECK just
   // before the return instead, since then `ads` will necessarily only contain
   // valid URLs at that point.
-  if (!IsUrlValid(render_url))
+  if (!IsUrlValid(ad_descriptor.url)) {
     return nullptr;
+  }
+
+  if (ad_descriptor.size && !IsValidAdSize(ad_descriptor.size.value())) {
+    return nullptr;
+  }
 
   if (bid_role != InterestGroupAuction::Bid::BidRole::kUnenforcedKAnon) {
     const std::string kanon_key =
-        is_component_ad ? blink::KAnonKeyForAdComponentBid(render_url)
-                        : blink::KAnonKeyForAdBid(interest_group, render_url);
+        is_component_ad
+            ? blink::KAnonKeyForAdComponentBid(ad_descriptor)
+            : blink::KAnonKeyForAdBid(interest_group, ad_descriptor);
     if (!IsKAnon(kanon_keys, kanon_key)) {
       return nullptr;
     }
   }
 
   for (const auto& ad : ads) {
-    if (ad.render_url == render_url) {
+    if (ad.render_url != ad_descriptor.url) {
+      continue;
+    }
+    if (!ad.size_group && !ad_descriptor.size) {
+      // Neither `blink::InterestGroup::Ad` nor the ad from the bid have any
+      // size specifications. They are considered as matching ad as long as
+      // they have the same url.
+      return &ad;
+    }
+    if (!ad.size_group || !ad_descriptor.size) {
+      // Since only one of the ads has a size specification, they are considered
+      // not matching.
+      continue;
+    }
+    // Both `blink::InterestGroup::Ad` and the ad from the bid have size
+    // specifications. They are considered as matching ad only if their
+    // size also matches.
+    auto has_matching_ad_size = [&interest_group,
+                                 &ad_descriptor](const std::string& ad_size) {
+      return interest_group.ad_sizes->at(ad_size) == *ad_descriptor.size;
+    };
+    if (base::ranges::any_of(interest_group.size_groups->at(ad.size_group),
+                             has_matching_ad_size)) {
+      // Each size group may also correspond to multiple ad sizes. If any of
+      // those ad sizes matches with the ad size from `ad_descriptor`, they are
+      // considered as matching ads.
       return &ad;
     }
   }
@@ -1325,10 +1357,10 @@ class InterestGroupAuction::BuyerHelper
         bid_state.bidder->interest_group;
     const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
         *interest_group.ads, bid_state.kanon_keys, interest_group, bid_role,
-        /*is_component_ad=*/false, mojo_bid->ad_descriptor.url);
+        /*is_component_ad=*/false, mojo_bid->ad_descriptor);
     if (!matching_ad) {
       generate_bid_client_receiver_set_.ReportBadMessage(
-          "Bid render URL must be a valid ad URL");
+          "Bid render ad must have a valid URL and size (if specified)");
       return nullptr;
     }
 
@@ -1356,9 +1388,9 @@ class InterestGroupAuction::BuyerHelper
            *mojo_bid->ad_component_descriptors) {
         if (!FindMatchingAd(*interest_group.ad_components, bid_state.kanon_keys,
                             interest_group, bid_role, /*is_component_ad=*/true,
-                            ad_component_descriptor.url)) {
+                            ad_component_descriptor)) {
           generate_bid_client_receiver_set_.ReportBadMessage(
-              "Bid ad components URL must match a valid ad component URL");
+              "Bid ad component must have a valid URL and size (if specified)");
           return nullptr;
         }
       }

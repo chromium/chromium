@@ -69,20 +69,31 @@ std::string ConvertAdSizeToString(const blink::AdSize& ad_size) {
 InterestGroup::Ad::Ad() = default;
 
 InterestGroup::Ad::Ad(GURL render_url, absl::optional<std::string> metadata)
-    : render_url(std::move(render_url)), metadata(std::move(metadata)) {}
+    : Ad(std::move(render_url), absl::nullopt, std::move(metadata)) {}
+
+InterestGroup::Ad::Ad(GURL render_url,
+                      absl::optional<std::string> size_group,
+                      absl::optional<std::string> metadata)
+    : render_url(std::move(render_url)),
+      size_group(std::move(size_group)),
+      metadata(std::move(metadata)) {}
 
 InterestGroup::Ad::~Ad() = default;
 
 size_t InterestGroup::Ad::EstimateSize() const {
   size_t size = 0u;
   size += render_url.spec().length();
+  if (size_group) {
+    size += size_group->size();
+  }
   if (metadata)
     size += metadata->size();
   return size;
 }
 
 bool InterestGroup::Ad::operator==(const Ad& other) const {
-  return render_url == other.render_url && metadata == other.metadata;
+  return std::tie(render_url, size_group, metadata) ==
+         std::tie(other.render_url, other.size_group, other.metadata);
 }
 
 InterestGroup::InterestGroup() = default;
@@ -183,15 +194,29 @@ bool InterestGroup::IsValid() const {
 
   if (ads) {
     for (const auto& ad : ads.value()) {
-      if (!IsUrlAllowedForRenderUrls(ad.render_url))
+      if (!IsUrlAllowedForRenderUrls(ad.render_url)) {
         return false;
+      }
+      if (ad.size_group) {
+        if (ad.size_group->empty() || !size_groups ||
+            !size_groups->contains(ad.size_group.value())) {
+          return false;
+        }
+      }
     }
   }
 
   if (ad_components) {
     for (const auto& ad : ad_components.value()) {
-      if (!IsUrlAllowedForRenderUrls(ad.render_url))
+      if (!IsUrlAllowedForRenderUrls(ad.render_url)) {
         return false;
+      }
+      if (ad.size_group) {
+        if (ad.size_group->empty() || !size_groups ||
+            !size_groups->contains(ad.size_group.value())) {
+          return false;
+        }
+      }
     }
   }
 

@@ -656,6 +656,9 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
       return false;
     }
     mojo_ad->render_url = render_url;
+    if (ad->hasSizeGroup()) {
+      mojo_ad->size_group = ad->sizeGroup();
+    }
     if (ad->hasMetadata()) {
       if (!Jsonify(script_state, ad->metadata().V8Value(), mojo_ad->metadata)) {
         exception_state.ThrowTypeError(
@@ -686,6 +689,9 @@ bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
       return false;
     }
     mojo_ad->render_url = render_url;
+    if (ad->hasSizeGroup()) {
+      mojo_ad->size_group = ad->sizeGroup();
+    }
     if (ad->hasMetadata()) {
       if (!Jsonify(script_state, ad->metadata().V8Value(), mojo_ad->metadata)) {
         exception_state.ThrowTypeError(

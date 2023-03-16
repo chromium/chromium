@@ -270,6 +270,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       return absl::nullopt;
     blink::InterestGroup::Ad ad;
     ad.render_url = GURL(*maybe_render_url);
+    const std::string* maybe_size_group = ads_dict->FindString("sizeGroup");
+    if (maybe_size_group) {
+      ad.size_group = *maybe_size_group;
+    }
     const base::Value* maybe_metadata = ads_dict->Find("metadata");
     if (maybe_metadata) {
       std::string metadata;
