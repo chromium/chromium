@@ -9,6 +9,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker_task_queue.h"
+#include "extensions/common/constants.h"
 
 namespace extensions {
 
@@ -53,6 +54,10 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
     int worker_thread_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
   DCHECK(registry);
   if (!registry->enabled_extensions().GetByID(extension_id)) {
@@ -63,8 +68,8 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
   }
 
   int render_process_id = render_process_host_->GetID();
-  if (!ProcessMap::Get(browser_context)
-           ->Contains(extension_id, render_process_id)) {
+  auto* process_map = ProcessMap::Get(browser_context);
+  if (!process_map || !process_map->Contains(extension_id, render_process_id)) {
     // We check the process in addition to the registry to guard against
     // situations in which an extension may still be enabled, but no longer
     // running in a given process.
@@ -75,6 +80,62 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
       ->DidInitializeServiceWorkerContext(render_process_id, extension_id,
                                           service_worker_version_id,
                                           worker_thread_id);
+}
+
+void ServiceWorkerHost::DidStartServiceWorkerContext(
+    const ExtensionId& extension_id,
+    const base::UnguessableToken& activation_token,
+    const GURL& service_worker_scope,
+    int64_t service_worker_version_id,
+    int worker_thread_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
+  DCHECK_NE(kMainThreadId, worker_thread_id);
+  int render_process_id = render_process_host_->GetID();
+  auto* process_map = ProcessMap::Get(browser_context);
+  if (!process_map || !process_map->Contains(extension_id, render_process_id)) {
+    // We can legitimately get here if the extension was already unloaded.
+    return;
+  }
+  CHECK(service_worker_scope.SchemeIs(kExtensionScheme) &&
+        extension_id == service_worker_scope.host_piece());
+
+  ServiceWorkerTaskQueue::Get(browser_context)
+      ->DidStartServiceWorkerContext(
+          render_process_id, extension_id, activation_token,
+          service_worker_scope, service_worker_version_id, worker_thread_id);
+}
+
+void ServiceWorkerHost::DidStopServiceWorkerContext(
+    const ExtensionId& extension_id,
+    const base::UnguessableToken& activation_token,
+    const GURL& service_worker_scope,
+    int64_t service_worker_version_id,
+    int worker_thread_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
+  DCHECK_NE(kMainThreadId, worker_thread_id);
+  int render_process_id = render_process_host_->GetID();
+  auto* process_map = ProcessMap::Get(browser_context);
+  if (!process_map || !process_map->Contains(extension_id, render_process_id)) {
+    // We can legitimately get here if the extension was already unloaded.
+    return;
+  }
+  CHECK(service_worker_scope.SchemeIs(kExtensionScheme) &&
+        extension_id == service_worker_scope.host_piece());
+
+  ServiceWorkerTaskQueue::Get(browser_context)
+      ->DidStopServiceWorkerContext(
+          render_process_id, extension_id, activation_token,
+          service_worker_scope, service_worker_version_id, worker_thread_id);
 }
 
 content::BrowserContext* ServiceWorkerHost::GetBrowserContext() {
