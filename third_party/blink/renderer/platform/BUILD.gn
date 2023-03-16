@@ -817,7 +817,6 @@ component("platform") {
     "graphics/color.h",
     "graphics/color_behavior.cc",
     "graphics/color_behavior.h",
-    "graphics/color_blend.h",
     "graphics/color_space_gamut.cc",
     "graphics/color_space_gamut.h",
     "graphics/color_space_profile_data.cc",

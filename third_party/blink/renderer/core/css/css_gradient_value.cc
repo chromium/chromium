@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
-#include "third_party/blink/renderer/platform/graphics/color_blend.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/graphics/gradient_generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -218,7 +218,9 @@ struct CSSGradientValue::GradientDesc {
 
 static void ReplaceColorHintsWithColorStops(
     Vector<GradientStop>& stops,
-    const HeapVector<CSSGradientColorStop, 2>& css_gradient_stops) {
+    const HeapVector<CSSGradientColorStop, 2>& css_gradient_stops,
+    Color::ColorInterpolationSpace color_interpolation_space,
+    Color::HueInterpolationMethod hue_interpolation_method) {
   // This algorithm will replace each color interpolation hint with 9 regular
   // color stops. The color values for the new color stops will be calculated
   // using the color weighting formula defined in the spec. The new color
@@ -233,6 +235,12 @@ static void ReplaceColorHintsWithColorStops(
   // the gradient is large. If this becomes an issue, we can consider improving
   // the algorithm, or adding support for color interpolation hints to skia
   // shaders.
+
+  // Support legacy gradients with color hints when no interpolation space is
+  // specified.
+  if (color_interpolation_space == Color::ColorInterpolationSpace::kNone) {
+    color_interpolation_space = Color::ColorInterpolationSpace::kSRGBLegacy;
+  }
 
   int index_offset = 0;
 
@@ -310,12 +318,23 @@ static void ReplaceColorHintsWithColorStops(
     // The color weighting for the new color stops will be
     // pointRelativeOffset^(ln(0.5)/ln(hintRelativeOffset)).
     float hint_relative_offset = left_dist / total_dist;
-    for (size_t y = 0; y < 9; ++y) {
+    for (auto& new_stop : new_stops) {
       float point_relative_offset =
-          (new_stops[y].offset - offset_left) / total_dist;
+          (new_stop.offset - offset_left) / total_dist;
       float weighting =
           powf(point_relative_offset, logf(.5f) / logf(hint_relative_offset));
-      new_stops[y].color = Blend(left_color, right_color, weighting);
+      // Prevent crashes from huge gradient stops. See:
+      // wpt/css/css-images/radial-gradient-transition-hint-crash.html
+      if (std::isinf(weighting) || std::isnan(weighting)) {
+        continue;
+      }
+      // TODO(crbug.com/1416273): Testing that color hints are using the
+      // correct interpolation space is challenging in CSS. Once Canvas2D
+      // implements colorspaces for gradients we can use GetImageData() to
+      // test this.
+      new_stop.color = Color::InterpolateColors(
+          color_interpolation_space, hue_interpolation_method, left_color,
+          right_color, weighting);
     }
 
     // Replace the color hint with the new color stops.
@@ -463,7 +482,15 @@ bool NormalizeAndAddStops(const Vector<GradientStop>& stops,
 
 // Collapse all negative-offset stops to 0 and compute an interpolated color
 // value for that point.
-void ClampNegativeOffsets(Vector<GradientStop>& stops) {
+void ClampNegativeOffsets(
+    Vector<GradientStop>& stops,
+    Color::ColorInterpolationSpace color_interpolation_space,
+    Color::HueInterpolationMethod hue_interpolation_method) {
+  // Support legacy gradients with color hints when no interpolation space is
+  // specified.
+  if (color_interpolation_space == Color::ColorInterpolationSpace::kNone) {
+    color_interpolation_space = Color::ColorInterpolationSpace::kSRGBLegacy;
+  }
   float last_negative_offset = 0;
 
   for (wtf_size_t i = 0; i < stops.size(); ++i) {
@@ -475,8 +502,9 @@ void ClampNegativeOffsets(Vector<GradientStop>& stops) {
         DCHECK_LT(last_negative_offset, 0);
         float lerp_ratio =
             -last_negative_offset / (current_offset - last_negative_offset);
-        stops[i - 1].color =
-            Blend(stops[i - 1].color, stops[i].color, lerp_ratio);
+        stops[i - 1].color = Color::InterpolateColors(
+            color_interpolation_space, hue_interpolation_method,
+            stops[i - 1].color, stops[i].color, lerp_ratio);
       }
 
       break;
@@ -675,7 +703,8 @@ void CSSGradientValue::AddStops(
 
   DCHECK_EQ(stops.size(), stops_.size());
   if (has_hints) {
-    ReplaceColorHintsWithColorStops(stops, stops_);
+    ReplaceColorHintsWithColorStops(stops, stops_, color_interpolation_space_,
+                                    hue_interpolation_method_);
   }
 
   // At this point we have a fully resolved set of stops. Time to perform
@@ -701,7 +730,8 @@ void CSSGradientValue::AddStops(
       // repeating radial gradients we shift the radii into equivalent positive
       // values.
       if (!repeating_) {
-        ClampNegativeOffsets(stops);
+        ClampNegativeOffsets(stops, color_interpolation_space_,
+                             hue_interpolation_method_);
       }
 
       if (NormalizeAndAddStops(stops, desc)) {

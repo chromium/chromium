@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 
-#include "third_party/blink/renderer/platform/graphics/color_blend.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {

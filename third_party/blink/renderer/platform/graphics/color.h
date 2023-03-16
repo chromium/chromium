@@ -87,7 +87,7 @@ class PLATFORM_EXPORT Color {
     // The values of `params0_`, `params1_`, and `params2_` are red, green, and
     // blue sRGB values, and are guaranteed to be present and in the [0, 1]
     // interval.
-    kRGBLegacy,
+    kSRGBLegacy,
     // The values of `params0_`, `params1_`, and `params2_` are Hue, Saturation,
     // and Ligthness. These can be none. Hue is a namber in the range from 0.0
     // to 6.0, and the rest are in the rance from 0.0 to 1.0.
@@ -120,7 +120,7 @@ class PLATFORM_EXPORT Color {
            color_space == ColorSpace::kRec2020 ||
            color_space == ColorSpace::kXYZD50 ||
            color_space == ColorSpace::kXYZD65 ||
-           color_space == ColorSpace::kRGBLegacy;
+           color_space == ColorSpace::kSRGBLegacy;
   }
 
   static bool IsLightnessFirstComponent(ColorSpace color_space) {
@@ -204,11 +204,13 @@ class PLATFORM_EXPORT Color {
     // Maximizing chroma
     kLch,
     kOklch,
-    // Legacy fallback
+    // Standard RGB
     kSRGB,
     // Polar spaces
     kHSL,
     kHWB,
+    // Legacy RGB. Like kSRGB, but serialized differently.
+    kSRGBLegacy,
     // Not specified
     kNone,
   };
@@ -230,6 +232,17 @@ class PLATFORM_EXPORT Color {
                             float percentage,
                             float alpha_multiplier);
 
+  // Produce a color that is the result of mixing color1 and color2.
+  //
+  // interpolation_space: The space in which to perform the interpolation. Both
+  // input colors are converted to this space before interpolation and the
+  // resulting color will be in this space as well.
+  //
+  // hue_method: See https://www.w3.org/TR/css-color-4/#hue-interpolation.
+  //
+  // percentage: How far to interpolate between color1 and color2. 0.0 returns
+  // color1 and 1.0 returns color2. It is unbounded, so it is possible to
+  // interpolate beyond these bounds with percentages outside the range [0, 1].
   static Color InterpolateColors(
       ColorInterpolationSpace interpolation_space,
       absl::optional<HueInterpolationMethod> hue_method,
@@ -237,8 +250,8 @@ class PLATFORM_EXPORT Color {
       Color color2,
       float percentage);
 
-  // TODO(crbug.com/1308932): These three functions are just helpers for while
-  // we're converting platform/graphics to float color.
+  // TODO(crbug.com/1308932): These three functions are just helpers for
+  // while we're converting platform/graphics to float color.
   static Color FromSkColor4f(SkColor4f fc);
   static constexpr Color FromSkColor(SkColor color) { return Color(color); }
   static constexpr Color FromRGBA32(RGBA32 color) { return Color(color); }
@@ -403,7 +416,7 @@ class PLATFORM_EXPORT Color {
       Color color,
       ColorSpace prev_color_space);
 
-  ColorSpace color_space_ = ColorSpace::kRGBLegacy;
+  ColorSpace color_space_ = ColorSpace::kSRGBLegacy;
 
   // Whether or not color parameters were specified as none (this only affects
   // interpolation behavior, the parameter values area always valid).

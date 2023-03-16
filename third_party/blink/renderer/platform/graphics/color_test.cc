@@ -422,7 +422,7 @@ TEST(BlinkColor, toSkColor4fValidation) {
       {Color::ColorSpace::kOklab, 0.421f, 0.165f, -0.1f},
       {Color::ColorSpace::kLch, 29.69f, 56.11f, 327.1f},
       {Color::ColorSpace::kOklch, 0.628f, 0.225f, 0.126f},
-      {Color::ColorSpace::kRGBLegacy, 0.7f, 0.5f, 0.0f},
+      {Color::ColorSpace::kSRGBLegacy, 0.7f, 0.5f, 0.0f},
       {Color::ColorSpace::kHSL, 4.0f, 0.5f, 0.0f},
       {Color::ColorSpace::kHWB, 4.0f, 0.5f, 0.0f}};
 
@@ -435,6 +435,7 @@ TEST(BlinkColor, toSkColor4fValidation) {
       Color::ColorInterpolationSpace::kLch,
       Color::ColorInterpolationSpace::kOklch,
       Color::ColorInterpolationSpace::kSRGB,
+      Color::ColorInterpolationSpace::kSRGBLegacy,
       Color::ColorInterpolationSpace::kHSL,
       Color::ColorInterpolationSpace::kHWB,
       Color::ColorInterpolationSpace::kNone};

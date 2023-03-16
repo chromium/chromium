@@ -162,6 +162,7 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
       sk_interpolation.fColorSpace = sk_colorspace::kOKLCH;
       break;
     case Color::ColorInterpolationSpace::kSRGB:
+    case Color::ColorInterpolationSpace::kSRGBLegacy:
       sk_interpolation.fColorSpace = sk_colorspace::kSRGB;
       break;
     case Color::ColorInterpolationSpace::kHSL:

@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/svg/color_distance.h"
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/color_blend.h"
 
 #include <math.h>
 
