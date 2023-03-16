@@ -55,7 +55,7 @@
   self.imageHasFixedSize = YES;
   self.showDismissBarButton = NO;
   self.customSpacingAfterImage = 32;
-  self.customSpacingBeforeImageIfNoNavigationBar = 16;
+  self.customSpacingBeforeImageIfNoNavigationBar = 24;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
   self.titleString =
