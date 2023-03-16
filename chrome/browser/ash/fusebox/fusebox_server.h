@@ -114,6 +114,11 @@ class Server {
       base::OnceCallback<void(const Open2ResponseProto& response)>;
   void Open2(const Open2RequestProto& request, Open2Callback callback);
 
+  // Rename is analogous to "/usr/bin/mv".
+  using RenameCallback =
+      base::OnceCallback<void(const RenameResponseProto& response)>;
+  void Rename(const RenameRequestProto& request, RenameCallback callback);
+
   // Read2 reads from a virtual file opened by Open2.
   using Read2Callback =
       base::OnceCallback<void(const Read2ResponseProto& response)>;
