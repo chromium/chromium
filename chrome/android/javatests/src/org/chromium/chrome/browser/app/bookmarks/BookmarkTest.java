@@ -909,7 +909,7 @@ public class BookmarkTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals("Bookmarks were not added in the expected order.", initial,
-                    mBookmarkModel.getChildIDs(mBookmarkModel.getDefaultFolder()).subList(0, 3));
+                    mBookmarkModel.getChildIds(mBookmarkModel.getDefaultFolder()).subList(0, 3));
         });
 
         expected.add(fooId);
@@ -950,7 +950,7 @@ public class BookmarkTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<BookmarkId> observed =
-                    mBookmarkModel.getChildIDs(mBookmarkModel.getDefaultFolder());
+                    mBookmarkModel.getChildIds(mBookmarkModel.getDefaultFolder());
             // Exclude partner bookmarks folder
             Assert.assertEquals(expected, observed.subList(0, 3));
             Assert.assertTrue("The selected item should stay selected", foo.isItemSelected());
@@ -974,7 +974,7 @@ public class BookmarkTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals("Bookmarks were not added in the expected order.", initial,
-                    mBookmarkModel.getChildIDs(mBookmarkModel.getDefaultFolder()).subList(0, 4));
+                    mBookmarkModel.getChildIds(mBookmarkModel.getDefaultFolder()).subList(0, 4));
         });
 
         expected.add(cId);
@@ -1017,7 +1017,7 @@ public class BookmarkTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<BookmarkId> observed =
-                    mBookmarkModel.getChildIDs(mBookmarkModel.getDefaultFolder());
+                    mBookmarkModel.getChildIds(mBookmarkModel.getDefaultFolder());
             // Exclude partner bookmarks folder
             Assert.assertEquals(expected, observed.subList(0, 4));
             Assert.assertTrue("The selected item should stay selected", test.isItemSelected());
@@ -1039,7 +1039,7 @@ public class BookmarkTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals("Bookmarks were not added in the expected order.", initial,
-                    mBookmarkModel.getChildIDs(mBookmarkModel.getDefaultFolder()).subList(0, 3));
+                    mBookmarkModel.getChildIds(mBookmarkModel.getDefaultFolder()).subList(0, 3));
         });
 
         expected.add(bId);
@@ -1080,7 +1080,7 @@ public class BookmarkTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             List<BookmarkId> observed =
-                    mBookmarkModel.getChildIDs(mBookmarkModel.getDefaultFolder());
+                    mBookmarkModel.getChildIds(mBookmarkModel.getDefaultFolder());
             // Exclude partner bookmarks folder
             Assert.assertEquals(expected, observed.subList(0, 3));
             Assert.assertTrue("The selected item should stay selected", test.isItemSelected());

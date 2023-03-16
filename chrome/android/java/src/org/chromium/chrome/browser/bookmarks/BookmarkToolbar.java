@@ -145,7 +145,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
         if (folder.equals(BookmarkId.SHOPPING_FOLDER)) {
             setTitle(R.string.price_tracking_bookmarks_filter_title);
-        } else if (mBookmarkModel.getTopLevelFolderParentIDs().contains(
+        } else if (mBookmarkModel.getTopLevelFolderParentIds().contains(
                            mCurrentFolder.getParentId())
                 && TextUtils.isEmpty(mCurrentFolder.getTitle())) {
             setTitle(R.string.bookmarks);

@@ -572,7 +572,7 @@ public class BookmarkUtils {
         BookmarkId othersNodeId = bookmarkModel.getOtherFolderId();
 
         List<BookmarkId> specialFoldersIds =
-                bookmarkModel.getTopLevelFolderIDs(/*getSpecial=*/true, /*getNormal=*/false);
+                bookmarkModel.getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
         BookmarkId rootFolder = bookmarkModel.getRootFolderId();
 
         // managed and partner bookmark folders will be put to the bottom.
