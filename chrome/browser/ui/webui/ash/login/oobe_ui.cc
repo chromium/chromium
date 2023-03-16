@@ -270,6 +270,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeFlow", is_oobe_flow);
   // TODO (b/268463435) Cleanup OobeJelly
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
+  // TODO (b/269117729) Cleanup OobeSimon
+  source->AddBoolean("isOobeSimonEnabled", features::IsOobeSimonEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
   source->AddBoolean(
       "isArcVmDataMigrationEnabled",
@@ -655,6 +657,10 @@ base::Value::Dict OobeUI::GetLocalizedStrings() {
   // TODO (b/268463435) Cleanup OobeJelly
   if (features::IsOobeJellyEnabled()) {
     oobeClasses += "jelly-enabled ";
+  }
+  // TODO (b/269117729) Cleanup OobeSimon
+  if (features::IsOobeSimonEnabled()) {
+    oobeClasses += "simon-enabled ";
   }
   localized_strings.Set("oobeClasses", oobeClasses);
 

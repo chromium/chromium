@@ -7618,6 +7618,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"oobe-jelly", flag_descriptions::kOobeJellyName,
      flag_descriptions::kOobeJellyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kOobeJelly)},
+    {"oobe-simon", flag_descriptions::kOobeSimonName,
+     flag_descriptions::kOobeSimonDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOobeSimon)},
 
     {"search-result-inline-icon",
      flag_descriptions::kSearchResultInlineIconName,

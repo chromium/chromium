@@ -1483,6 +1483,9 @@ BASE_FEATURE(kOobeHidDetectionRevamp,
 // Enables OOBE Jelly features.
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables OOBE Simon features.
+BASE_FEATURE(kOobeSimon, "OobeSimon", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Oobe quick start flow.
 BASE_FEATURE(kOobeQuickStart,
              "OobeQuickStart",
@@ -2891,6 +2894,10 @@ bool IsKioskLoginScreenEnabled() {
 bool IsOobeJellyEnabled() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kOobeJelly);
+}
+
+bool IsOobeSimonEnabled() {
+  return base::FeatureList::IsEnabled(kOobeSimon);
 }
 
 bool IsOobeNetworkScreenSkipEnabled() {

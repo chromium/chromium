@@ -6207,6 +6207,10 @@ const char kOobeJellyName[] = "Jelly design for OOBE";
 const char kOobeJellyDescription[] =
     "Feature to enable the Jelly design in out of box experience.";
 
+const char kOobeSimonName[] = "Simon features for OOBE";
+const char kOobeSimonDescription[] =
+    "Feature to enable the Simon features in out of box experience.";
+
 const char kLibAssistantV2MigrationName[] = "LibAssistant V2 migration";
 const char kLibAssistantV2MigrationDescription[] =
     "Enables loading LibAssistant V2 for Assistant on ChromeOS.";

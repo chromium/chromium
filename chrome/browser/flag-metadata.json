@@ -5574,7 +5574,12 @@
   {
     "name": "oobe-jelly",
     "owners": [ "ziegltrum@google.com", "cros-oobe@google.com" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
+  },
+  {
+    "name": "oobe-simon",
+    "owners": [ "ziegltrum@google.com", "cros-oobe@google.com" ],
+    "expiry_milestone": 121
   },
   {
     "name": "optimization-guide-debug-logs",
