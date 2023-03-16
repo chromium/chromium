@@ -79,6 +79,14 @@ String GetMIMETypeFromURL(const KURL& url) {
   return String();
 }
 
+String ResolveMIMEType(const String& specified_type, const KURL& url) {
+  if (!specified_type.empty()) {
+    return specified_type;
+  }
+  // Try to guess the MIME type based off the extension.
+  return GetMIMETypeFromURL(url);
+}
+
 }  // anonymous namespace
 
 const Vector<String>& PluginParameters::Names() const {
@@ -534,13 +542,10 @@ bool HTMLPlugInElement::IsFocusableStyle() const {
 
 HTMLPlugInElement::ObjectContentType HTMLPlugInElement::GetObjectContentType()
     const {
-  String mime_type = service_type_;
   KURL url = GetDocument().CompleteURL(url_);
+  String mime_type = ResolveMIMEType(service_type_, url);
   if (mime_type.empty()) {
-    // Try to guess the MIME type based off the extension.
-    mime_type = GetMIMETypeFromURL(url);
-    if (mime_type.empty())
-      return ObjectContentType::kFrame;
+    return ObjectContentType::kFrame;
   }
 
   // If Chrome is started with the --disable-plugins switch, pluginData is 0.
@@ -579,10 +584,11 @@ LayoutEmbeddedObject* HTMLPlugInElement::GetLayoutEmbeddedObject() const {
 // We don't use url_, as it may not be the final URL that the object loads,
 // depending on <param> values.
 bool HTMLPlugInElement::AllowedToLoadFrameURL(const String& url) {
-  KURL complete_url = GetDocument().CompleteURL(url);
-  return !(ContentFrame() && complete_url.ProtocolIsJavaScript() &&
-           !GetExecutionContext()->GetSecurityOrigin()->CanAccess(
-               ContentFrame()->GetSecurityContext()->GetSecurityOrigin()));
+  if (ContentFrame() && ProtocolIsJavaScript(url)) {
+    return GetExecutionContext()->GetSecurityOrigin()->CanAccess(
+        ContentFrame()->GetSecurityContext()->GetSecurityOrigin());
+  }
+  return true;
 }
 
 bool HTMLPlugInElement::RequestObject(const PluginParameters& plugin_params) {
@@ -599,11 +605,9 @@ bool HTMLPlugInElement::RequestObject(const PluginParameters& plugin_params) {
   ObjectContentType object_type = GetObjectContentType();
   bool handled_externally =
       object_type == ObjectContentType::kExternalPlugin &&
-      AllowedToLoadPlugin(completed_url, service_type_) &&
+      AllowedToLoadPlugin(completed_url) &&
       GetDocument().GetFrame()->Client()->IsPluginHandledExternally(
-          *this, completed_url,
-          service_type_.empty() ? GetMIMETypeFromURL(completed_url)
-                                : service_type_);
+          *this, completed_url, ResolveMIMEType(service_type_, completed_url));
   if (handled_externally)
     ResetInstance();
   if (object_type == ObjectContentType::kFrame ||
@@ -649,8 +653,9 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
                                    const String& mime_type,
                                    const PluginParameters& plugin_params,
                                    bool use_fallback) {
-  if (!AllowedToLoadPlugin(url, mime_type))
+  if (!AllowedToLoadPlugin(url)) {
     return false;
+  }
 
   LocalFrame* frame = GetDocument().GetFrame();
   if (!frame->Loader().AllowPlugins())
@@ -730,7 +735,6 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
   if (MIMETypeRegistry::IsJavaAppletMIMEType(mime_type))
     return false;
 
-  AtomicString declared_mime_type = FastGetAttribute(html_names::kTypeAttr);
   auto* csp = GetExecutionContext()->GetContentSecurityPolicy();
   if (!csp->AllowObjectFromSource(url)) {
     if (auto* layout_object = GetLayoutEmbeddedObject()) {
@@ -751,8 +755,7 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
              GetDocument().Loader()->GetContentSecurityNotifier());
 }
 
-bool HTMLPlugInElement::AllowedToLoadPlugin(const KURL& url,
-                                            const String& mime_type) {
+bool HTMLPlugInElement::AllowedToLoadPlugin(const KURL& url) {
   if (GetExecutionContext()->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kPlugins)) {
     GetExecutionContext()->AddConsoleMessage(
