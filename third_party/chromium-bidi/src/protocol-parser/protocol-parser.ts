@@ -441,19 +441,10 @@ export namespace BrowsingContext {
 
   /** @see https://w3c.github.io/webdriver/#dfn-parse-a-page-range */
   const PrintPageRangesSchema = zod
-    .array(
-      zod.union([
-        zod.string().min(1),
-        zod
-          .number()
-          .int()
-          .min(0)
-          .transform((n) => String(n)),
-      ])
-    )
-    .refine((pageRanges: string[]) => {
-      return pageRanges.every((pageRange: string) => {
-        const match = pageRange.match(
+    .array(zod.union([zod.string().min(1), zod.number().int().nonnegative()]))
+    .refine((pageRanges: (string | number)[]) => {
+      return pageRanges.every((pageRange: string | number) => {
+        const match = String(pageRange).match(
           // matches: '2' | '2-' | '-2' | '2-4'
           /^(?:(?:\d+)|(?:\d+[-])|(?:[-]\d+)|(?:(?<start>\d+)[-](?<end>\d+)))$/
         );
