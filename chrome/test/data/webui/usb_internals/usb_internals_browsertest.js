@@ -39,6 +39,7 @@ TEST_F('UsbInternalsTest', 'WebUIValueRenderTest', async function() {
     mocha.run();
   };
   script.src =
-      module.getTrustedScriptURL`chrome://webui-test/usb_internals_test.js`;
+      module
+          .getTrustedScriptURL`chrome://webui-test/usb_internals/usb_internals_test.js`;
   document.body.appendChild(script);
 });

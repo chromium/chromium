@@ -259,7 +259,7 @@ if (include_js_tests) {
       "side_panel/customize_chrome/side_panel_customize_chrome_browsertest.js",
       "side_panel/side_panel_browsertest.js",
       "tab_search/tab_search_browsertest.js",
-      "usb_internals_browsertest.js",
+      "usb_internals/usb_internals_browsertest.js",
     ]
     if (is_chromeos_ash) {
       sources += [
@@ -404,7 +404,6 @@ ts_library("build_ts") {
     # from tsconfig_base.json.
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
-    "usb_internals_test.js",
   ]
 
   if (is_chromeos_ash) {
@@ -465,6 +464,7 @@ generate_grd("build_grd") {
     "side_panel/customize_chrome:build_grdp",
     "support_tool:build_grdp",
     "tab_search:build_grdp",
+    "usb_internals:build_grdp",
     "whats_new:build_grdp",
   ]
 
@@ -493,6 +493,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/support_tool/resources.grdp",
     "$target_gen_dir/tab_search/resources.grdp",
     "$target_gen_dir/web_ui_test_mojo_resources.grdp",
+    "$target_gen_dir/usb_internals/resources.grdp",
     "$target_gen_dir/whats_new/resources.grdp",
   ]
 

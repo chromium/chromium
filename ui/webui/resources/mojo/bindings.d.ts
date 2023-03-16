@@ -53,6 +53,17 @@ declare global {
   const Mojo: typeof MojoResult&{
     createSharedBuffer(numBytes: number): MojoCreateSharedBufferResult,
   };
+
+  interface MojoInterfaceRequestEvent {
+    handle: MojoHandle;
+  }
+
+  class MojoInterfaceInterceptor {
+    constructor(interfaceName: string);
+    start(): void;
+    stop(): void;
+    oninterfacerequest(e: MojoInterfaceRequestEvent): void;
+  }
 }
 
 export namespace mojo {

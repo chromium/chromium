@@ -7,6 +7,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
@@ -24,7 +25,7 @@ export function setSetupFn(newSetupFn: () => Promise<void>) {
   setupFn = newSetupFn;
 }
 
-class UsbInternalsAppElement extends HTMLElement {
+export class UsbInternalsAppElement extends HTMLElement {
   private usbManagerTest_: UsbDeviceManagerTestRemote|null = null;
 
   static get template() {
@@ -123,4 +124,11 @@ class UsbInternalsAppElement extends HTMLElement {
         response.success ? 'action-success' : 'action-failure';
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'usb-internals-app': UsbInternalsAppElement;
+  }
+}
+
 customElements.define('usb-internals-app', UsbInternalsAppElement);
