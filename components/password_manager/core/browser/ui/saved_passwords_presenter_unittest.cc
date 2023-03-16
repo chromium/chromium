@@ -1058,6 +1058,35 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   presenter().RemoveObserver(&observer);
 }
 
+TEST_F(SavedPasswordsPresenterWithTwoStoresTest, UpdatePasswordForms) {
+  PasswordForm account_store_form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
+  PasswordForm account_store_form_2 =
+      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/1);
+
+  std::vector<CredentialUIEntry> credentials_to_add = {
+      CredentialUIEntry(account_store_form_1),
+      CredentialUIEntry(account_store_form_2)};
+
+  presenter().AddCredentials(credentials_to_add,
+                             password_manager::PasswordForm::Type::kImported,
+                             base::DoNothing());
+
+  RunUntilIdle();
+  EXPECT_THAT(presenter().GetSavedCredentials(),
+              testing::UnorderedElementsAreArray(credentials_to_add));
+
+  account_store_form_1.password_value = u"new_password_1";
+  account_store_form_2.password_value = u"new_password_2";
+
+  presenter().UpdatePasswordForms({account_store_form_1, account_store_form_2});
+  RunUntilIdle();
+
+  ASSERT_THAT(presenter().GetSavedCredentials(),
+              UnorderedElementsAre(CredentialUIEntry(account_store_form_1),
+                                   CredentialUIEntry(account_store_form_2)));
+}
+
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
        AddPasswordUnblocklistsOriginInDifferentStore) {
   PasswordForm form_to_add =

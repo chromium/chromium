@@ -136,6 +136,14 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                       password_manager::PasswordForm::Type type,
                       AddCredentialsCallback completion);
 
+  // Updates all matching password forms in |password_forms|.
+  // |completion| will be run after the forms are updated.
+  //
+  // NOTE: Updates to different password stores is not supported and hence all
+  // forms in |password_forms| must belong to the same store.
+  void UpdatePasswordForms(const std::vector<PasswordForm>& password_forms,
+                           base::OnceClosure completion = base::DoNothing());
+
   // Modifies all the saved credentials matching |original_credential| to
   // |updated_credential|. Only username, password, notes and password issues
   // are modifiable.

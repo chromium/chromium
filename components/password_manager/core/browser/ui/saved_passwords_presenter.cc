@@ -248,12 +248,29 @@ void SavedPasswordsPresenter::AddCredentials(
                             return GenerateFormFromCredential(credential, type);
                           });
 
-  for (const PasswordForm& form : password_forms) {
-    CHECK(form.in_store == password_forms[0].in_store);
-  }
+  CHECK(base::ranges::all_of(password_forms, [&](const PasswordForm& form) {
+    return password_forms[0].in_store == form.in_store;
+  }));
 
   GetStoreFor(password_forms[0])
       .AddLogins(password_forms, std::move(completion));
+}
+
+void SavedPasswordsPresenter::UpdatePasswordForms(
+    const std::vector<PasswordForm>& password_forms,
+    base::OnceClosure completion) {
+  if (password_forms.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(completion));
+    return;
+  }
+
+  CHECK(base::ranges::all_of(password_forms, [&](const PasswordForm& form) {
+    return password_forms[0].in_store == form.in_store;
+  }));
+
+  GetStoreFor(password_forms[0])
+      .UpdateLogins(password_forms, std::move(completion));
 }
 
 SavedPasswordsPresenter::EditResult
