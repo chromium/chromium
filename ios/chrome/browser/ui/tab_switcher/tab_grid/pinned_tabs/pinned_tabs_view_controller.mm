@@ -523,9 +523,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)collectionView:(UICollectionView*)collectionView
      dropSessionDidEnd:(id<UIDropSession>)session {
   [self.delegate pinnedViewControllerDropAnimationDidEnd:self];
-
-  // Reset the background if the drop cames from another app.
-  [self resetViewBackgrounds];
+  [self dropAnimationDidEnd];
 }
 
 - (UICollectionViewDropProposal*)
