@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -76,7 +75,6 @@ BrowserContextImpl::~BrowserContextImpl() {
 
   if (!will_be_destroyed_soon_) {
     NOTREACHED();
-    base::debug::DumpWithoutCrashing();
   }
 
   // Verify that there are no outstanding RenderProcessHosts that reference
@@ -99,7 +97,6 @@ BrowserContextImpl::~BrowserContextImpl() {
     SCOPED_CRASH_KEY_STRING256("BrowserContext", "dangling_rph",
                                rph_crash_key_value);
     NOTREACHED() << "rph_with_bc_reference : " << rph_crash_key_value;
-    base::debug::DumpWithoutCrashing();
   }
 
   // Clean up any isolated origins and other security state associated with this
