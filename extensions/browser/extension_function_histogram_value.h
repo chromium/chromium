@@ -1832,6 +1832,7 @@ enum HistogramValue {
   SMARTCARDPROVIDERPRIVATE_REPORTDISCONNECTRESULT = 1769,
   WMDESKSPRIVATE_GETDESKBYID = 1770,
   AUTOFILLPRIVATE_ISVALIDIBAN = 1771,
+  ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY = 1772,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

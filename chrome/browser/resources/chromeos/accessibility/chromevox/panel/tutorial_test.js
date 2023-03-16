@@ -549,7 +549,9 @@ AX_TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', async function() {
       .call(doCmd('nextObject'))
       .expectSpeech('ChromeVox Command Reference', 'Link')
       .call(doCmd('forceClickOnCurrentItem'))
-      .expectSpeech('support.google.com');
+      // Expect the support page to be pulled up; it is read differently
+      // depending on if this browsertest's browser has network access.
+      .expectSpeech(/(support.google.com)|(Chromebook Help)/);
   await mockFeedback.replay();
 });
 

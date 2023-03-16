@@ -860,6 +860,23 @@
             }
           ]
         }
+      },
+      {
+        "name": "isLacrosPrimary",
+        "type": "function",
+        "description": "Gets whether new browser windows and tabs should be in Lacros browser.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "A callback that is run when the result is returned.",
+          "parameters": [
+            {
+              "type": "boolean",
+              "name": "useLacros",
+              "description": "True if new browser windows and tabs should be in Lacros."
+            }
+          ]
+        }
       }
     ],
     "events": [

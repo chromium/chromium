@@ -296,4 +296,11 @@ class AccessibilityPrivateUpdateSwitchAccessBubbleFunction
                              ACCESSIBILITY_PRIVATE_UPDATESWITCHACCESSBUBBLE)
 };
 
+class AccessibilityPrivateIsLacrosPrimaryFunction : public ExtensionFunction {
+  ~AccessibilityPrivateIsLacrosPrimaryFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.isLacrosPrimary",
+                             ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY)
+};
+
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_

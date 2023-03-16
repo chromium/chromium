@@ -6,6 +6,7 @@
  * @fileoverview The ChromeVox panel and menus.
  */
 import {AsyncUtil} from '../../common/async_util.js';
+import {BrowserUtil} from '../../common/browser_util.js';
 import {constants} from '../../common/constants.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
@@ -1037,7 +1038,7 @@ export class Panel extends PanelInterface {
       // Ensure UserActionMonitor is destroyed before closing tutorial.
       await BackgroundBridge.UserActionMonitor.destroy();
       this.onCloseTutorial_();
-      chrome.tabs.create({url});
+      BrowserUtil.openBrowserUrl(url);
     });
   }
 

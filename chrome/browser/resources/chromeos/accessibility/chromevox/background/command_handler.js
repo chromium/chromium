@@ -7,6 +7,7 @@
  */
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
+import {BrowserUtil} from '../../common/browser_util.js';
 import {constants} from '../../common/constants.js';
 import {Cursor, CursorUnit} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
@@ -1556,15 +1557,7 @@ export class CommandHandler extends CommandHandlerInterface {
     for (const key in description) {
       url += key + ':%20' + description[key] + '%0a';
     }
-    chrome.windows.getAll((windows) => {
-      if (windows.length > 0) {
-        // Open in existing window.
-        chrome.tabs.create({url});
-      } else {
-        // No window open, cannot use chrome.tabs API.
-        chrome.windows.create({url});
-      }
-    });
+    BrowserUtil.openBrowserUrl(url);
   }
 
   /** @private */
@@ -1573,14 +1566,14 @@ export class CommandHandler extends CommandHandlerInterface {
       url: 'chromevox/learn_mode/learn_mode.html',
       type: 'panel',
     };
+    // Use chrome.windows API to ensure page is opened in Ash-chrome.
     chrome.windows.create(explorerPage);
   }
 
   /** @private */
   showTalkBackKeyboardShortcuts_() {
-    chrome.tabs.create({
-      url: 'https://support.google.com/accessibility/android/answer/6110948',
-    });
+    BrowserUtil.openBrowserUrl(
+        'https://support.google.com/accessibility/android/answer/6110948');
   }
 
   /** @private */

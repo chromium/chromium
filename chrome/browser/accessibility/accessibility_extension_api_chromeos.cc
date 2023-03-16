@@ -34,12 +34,14 @@
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/common/color_parser.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -921,4 +923,11 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
   ash::AccessibilityController::Get()->ShowSwitchAccessMenu(anchor,
                                                             actions_to_show);
   return RespondNow(WithArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateIsLacrosPrimaryFunction::Run() {
+  const bool is_lacros_primary =
+      crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+  return RespondNow(WithArguments(is_lacros_primary));
 }

@@ -32,6 +32,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "async_util.js",
     "automation_predicate.js",
     "automation_util.js",
+    "browser_util.js",
     "chrome_event_handler.js",
     "closure_shim.js",
     "constants.js",
