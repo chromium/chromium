@@ -121,24 +121,6 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   }
 
  private:
-  class FontResourceHelper : public GarbageCollected<FontResourceHelper>,
-                             public FontResourceClient {
-   public:
-    FontResourceHelper(FontResource* resource,
-                       base::SingleThreadTaskRunner* task_runner) {
-      SetResource(resource, task_runner);
-    }
-
-    void Trace(Visitor* visitor) const override {
-      FontResourceClient::Trace(visitor);
-    }
-
-   private:
-    String DebugName() const override {
-      return "CSSFontFaceSrcValue::FontResourceHelper";
-    }
-  };
-
   void RestoreCachedResourceIfNeeded(ExecutionContext*) const;
 
   Vector<FontTechnology> technologies_;
@@ -147,7 +129,7 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   String format_;
   const Referrer referrer_;
   const scoped_refptr<const DOMWrapperWorld> world_;
-  mutable Member<FontResourceHelper> fetched_;
+  mutable Member<FontResource> fetched_;
   const bool is_local_;
   const OriginClean origin_clean_;
   bool is_ad_related_;

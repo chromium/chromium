@@ -130,12 +130,12 @@ String CSSFontFaceSrcValue::CustomCSSText() const {
 }
 
 bool CSSFontFaceSrcValue::HasFailedOrCanceledSubresources() const {
-  return fetched_ && fetched_->GetResource()->LoadFailedOrCanceled();
+  return fetched_ && fetched_->LoadFailedOrCanceled();
 }
 
 FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
                                          FontResourceClient* client) const {
-  if (!fetched_ || fetched_->GetResource()->Options().world_for_csp != world_) {
+  if (!fetched_ || fetched_->Options().world_for_csp != world_) {
     ResourceRequest resource_request(absolute_resource_);
     resource_request.SetReferrerPolicy(
         ReferrerUtils::MojoReferrerPolicyResolveDefault(
@@ -163,20 +163,18 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
       params.SetCrossOriginAccessControl(security_origin,
                                          kCrossOriginAttributeAnonymous);
     }
-    fetched_ = MakeGarbageCollected<FontResourceHelper>(
-        FontResource::Fetch(params, context->Fetcher(), client),
-        context->GetTaskRunner(TaskType::kInternalLoading).get());
+    fetched_ = FontResource::Fetch(params, context->Fetcher(), client);
   } else {
     // FIXME: CSSFontFaceSrcValue::Fetch is invoked when @font-face rule
     // is processed by StyleResolver / StyleEngine.
     RestoreCachedResourceIfNeeded(context);
     if (client) {
       client->SetResource(
-          fetched_->GetResource(),
+          fetched_.Get(),
           context->GetTaskRunner(TaskType::kInternalLoading).get());
     }
   }
-  return *To<FontResource>(fetched_->GetResource());
+  return *fetched_;
 }
 
 void CSSFontFaceSrcValue::RestoreCachedResourceIfNeeded(
@@ -187,7 +185,7 @@ void CSSFontFaceSrcValue::RestoreCachedResourceIfNeeded(
 
   const KURL url = context->CompleteURL(absolute_resource_);
   context->Fetcher()->EmulateLoadStartedForInspector(
-      fetched_->GetResource(), url, mojom::blink::RequestContextType::FONT,
+      fetched_, url, mojom::blink::RequestContextType::FONT,
       network::mojom::RequestDestination::kFont,
       fetch_initiator_type_names::kCSS);
 }
