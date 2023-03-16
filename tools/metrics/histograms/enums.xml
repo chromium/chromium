@@ -4930,6 +4930,37 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="INSUFFICIENT_RESOURCES"/>
 </enum>
 
+<enum name="ArcVmDataMigrationFailedPathType">
+  <int value="0" label="Unknown absolute path"/>
+  <int value="1" label="Other (src)"/>
+  <int value="2" label="Other (dest)"/>
+  <int value="3" label="Other (src or dest)"/>
+  <int value="4" label="Under /data/media/0/Android/data (src)"/>
+  <int value="5" label="Under /data/media/0/Android/data (dest)"/>
+  <int value="6" label="Under /data/media/0/Android/data (src or dest)"/>
+  <int value="7" label="Under /data/media/0/Android/obb (src)"/>
+  <int value="8" label="Under /data/media/0/Android/obb (dest)"/>
+  <int value="9" label="Under /data/media/0/Android/obb (src or dest)"/>
+  <int value="10"
+      label="Under /data/media/0 except for Android/{data,obb} (src)"/>
+  <int value="11"
+      label="Under /data/media/0 except for Android/{data,obb} (dest)"/>
+  <int value="12"
+      label="Under /data/media/0 except for Android/{data,obb} (src or dest)"/>
+  <int value="13" label="Under /data/app (src)"/>
+  <int value="14" label="Under /data/app (dest)"/>
+  <int value="15" label="Under /data/app (src or dest)"/>
+  <int value="16" label="Under /data/data (src)"/>
+  <int value="17" label="Under /data/data (dest)"/>
+  <int value="18" label="Under /data/data (src or dest)"/>
+  <int value="19" label="Under /data/user/0 (src)"/>
+  <int value="20" label="Under /data/user/0 (dest)"/>
+  <int value="21" label="Under /data/user/0 (src or dest)"/>
+  <int value="22" label="Under /data/user_de/0 (src)"/>
+  <int value="23" label="Under /data/user_de/0 (dest)"/>
+  <int value="24" label="Under /data/user_de/0 (src or dest)"/>
+</enum>
+
 <enum name="ArcVmDataMigrationSetupResult">
   <summary>
     The types of the result of the setup of ARCVM /data migration.

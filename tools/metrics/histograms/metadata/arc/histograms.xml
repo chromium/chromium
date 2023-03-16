@@ -2276,6 +2276,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     Duration of the ARCVM /data migration. This is reported once when a newly
     started migration is completed.
@@ -2286,6 +2287,7 @@ chromium-metrics-reviews@google.com.
     enum="CrOSFileSystemMigrationEndStatus" expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The status of ARCVM /data migration when it ends. This is reported when a
     migration finishes successfully, fails, or gets cancelled halfway.
@@ -2296,6 +2298,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The error code of a file operation failure that caused the ARCVM /data
     migration to fail. Reported when a migration thread encounters a file
@@ -2309,6 +2312,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The type of file operation at which the ARCVM /data migration failed.
     Reported when a migration thread encounters a file operation error. This can
@@ -2317,10 +2321,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.FailedPathType"
+    enum="ArcVmDataMigrationFailedPathType" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The location of files at which ARCVM /data migration failed. Reported when a
+    migration thread encounters a file operation error. This can be reported
+    multiple times for a migration when multiple threads fail at around the same
+    time.
+  </summary>
+</histogram>
+
 <histogram name="Arc.VmDataMigration.InitialFreeSpace" units="MB"
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The total amount of free disk space on the system when a new or resumed
     ARCVM /data migration is started. Reported when a migration failed with
@@ -2332,6 +2350,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The total amount of free disk space on the system when the user encounters
     ENOSPC (no space error) during ARCVM /data migration. Reported when a
@@ -2343,6 +2362,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The total number of bytes of xattr data that we are trying to store on a
     file when we encounter an ENOSPC (no space error) during ARCVM /data
@@ -2394,6 +2414,7 @@ chromium-metrics-reviews@google.com.
     enum="ArcVmDataMigrationSetupResult" expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The result of the setup of ARCVM /data migration. Reported before triggering
     the migration tool.
@@ -2404,6 +2425,7 @@ chromium-metrics-reviews@google.com.
     enum="CrOSFileSystemMigrationStartStatus" expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The status of ARCVM /data migration when it starts. This is reported when a
     new migration or a resumed migration is started.
@@ -2414,6 +2436,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     Total number of files to be migrated in ARCVM /data migration. Reported once
     at the beginning of a new migration.
@@ -2424,6 +2447,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     Total bytes to be migrated in ARCVM /data migration. Reported once at the
     beginning of a new migration.
