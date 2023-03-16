@@ -140,30 +140,30 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
   // without affecting the database.
   switch (action_type()) {
     case ACTION_API_CALL:
-      result.activity_type = activity_log::EXTENSION_ACTIVITY_TYPE_API_CALL;
+      result.activity_type = activity_log::ExtensionActivityType::kApiCall;
       break;
     case ACTION_API_EVENT:
-      result.activity_type = activity_log::EXTENSION_ACTIVITY_TYPE_API_EVENT;
+      result.activity_type = activity_log::ExtensionActivityType::kApiEvent;
       break;
     case ACTION_CONTENT_SCRIPT:
       result.activity_type =
-          activity_log::EXTENSION_ACTIVITY_TYPE_CONTENT_SCRIPT;
+          activity_log::ExtensionActivityType::kContentScript;
       break;
     case ACTION_DOM_ACCESS:
-      result.activity_type = activity_log::EXTENSION_ACTIVITY_TYPE_DOM_ACCESS;
+      result.activity_type = activity_log::ExtensionActivityType::kDomAccess;
       break;
     case ACTION_DOM_EVENT:
-      result.activity_type = activity_log::EXTENSION_ACTIVITY_TYPE_DOM_EVENT;
+      result.activity_type = activity_log::ExtensionActivityType::kDomEvent;
       break;
     case ACTION_WEB_REQUEST:
-      result.activity_type = activity_log::EXTENSION_ACTIVITY_TYPE_WEB_REQUEST;
+      result.activity_type = activity_log::ExtensionActivityType::kWebRequest;
       break;
     case UNUSED_ACTION_API_BLOCKED:
     case ACTION_ANY:
     default:
       // This shouldn't be reached, but some people might have old or otherwise
       // weird db entries. Treat it like an API call if that happens.
-      result.activity_type = activity_log::EXTENSION_ACTIVITY_TYPE_API_CALL;
+      result.activity_type = activity_log::ExtensionActivityType::kApiCall;
       break;
   }
 
@@ -201,38 +201,37 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
       switch (static_cast<DomActionType::Type>(dom_verb.value())) {
         case DomActionType::GETTER:
           result.other->dom_verb =
-              activity_log::EXTENSION_ACTIVITY_DOM_VERB_GETTER;
+              activity_log::ExtensionActivityDomVerb::kGetter;
           break;
         case DomActionType::SETTER:
           result.other->dom_verb =
-              activity_log::EXTENSION_ACTIVITY_DOM_VERB_SETTER;
+              activity_log::ExtensionActivityDomVerb::kSetter;
           break;
         case DomActionType::METHOD:
           result.other->dom_verb =
-              activity_log::EXTENSION_ACTIVITY_DOM_VERB_METHOD;
+              activity_log::ExtensionActivityDomVerb::kMethod;
           break;
         case DomActionType::INSERTED:
           result.other->dom_verb =
-              activity_log::EXTENSION_ACTIVITY_DOM_VERB_INSERTED;
+              activity_log::ExtensionActivityDomVerb::kInserted;
           break;
         case DomActionType::XHR:
-          result.other->dom_verb =
-              activity_log::EXTENSION_ACTIVITY_DOM_VERB_XHR;
+          result.other->dom_verb = activity_log::ExtensionActivityDomVerb::kXhr;
           break;
         case DomActionType::WEBREQUEST:
           result.other->dom_verb =
-              activity_log::EXTENSION_ACTIVITY_DOM_VERB_WEBREQUEST;
+              activity_log::ExtensionActivityDomVerb::kWebrequest;
           break;
         case DomActionType::MODIFIED:
           result.other->dom_verb =
-              activity_log::EXTENSION_ACTIVITY_DOM_VERB_MODIFIED;
+              activity_log::ExtensionActivityDomVerb::kModified;
           break;
         default:
           result.other->dom_verb =
-              activity_log::EXTENSION_ACTIVITY_DOM_VERB_NONE;
+              activity_log::ExtensionActivityDomVerb::kNone;
       }
     } else {
-      result.other->dom_verb = activity_log::EXTENSION_ACTIVITY_DOM_VERB_NONE;
+      result.other->dom_verb = activity_log::ExtensionActivityDomVerb::kNone;
     }
   }
 

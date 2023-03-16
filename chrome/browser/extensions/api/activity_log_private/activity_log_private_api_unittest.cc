@@ -37,7 +37,7 @@ TEST_F(ActivityLogApiUnitTest, ConvertChromeApiAction) {
                                           kApiCall));
   action->set_args(std::move(args));
   ExtensionActivity result = action->ConvertToExtensionActivity();
-  ASSERT_EQ(api::activity_log_private::EXTENSION_ACTIVITY_TYPE_API_CALL,
+  ASSERT_EQ(api::activity_log_private::ExtensionActivityType::kApiCall,
             result.activity_type);
   ASSERT_EQ(kExtensionId, *result.extension_id);
   ASSERT_EQ(kApiCall, *result.api_call);
@@ -67,7 +67,7 @@ TEST_F(ActivityLogApiUnitTest, ConvertDomAction) {
   ASSERT_EQ(kApiCall, *result.api_call);
   ASSERT_EQ(kArgs, *result.args);
   auto other = std::move(result.other);
-  ASSERT_EQ(api::activity_log_private::EXTENSION_ACTIVITY_DOM_VERB_INSERTED,
+  ASSERT_EQ(api::activity_log_private::ExtensionActivityDomVerb::kInserted,
             other->dom_verb);
   ASSERT_TRUE(other->prerender);
   ASSERT_EQ("12345", *result.activity_id);

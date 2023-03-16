@@ -108,25 +108,25 @@ ActivityLogPrivateGetExtensionActivitiesFunction::Run() {
   Filter filter = std::move(params->filter);
   Action::ActionType action_type = Action::ACTION_API_CALL;
   switch (filter.activity_type) {
-    case activity_log_private::EXTENSION_ACTIVITY_FILTER_API_CALL:
+    case activity_log_private::ExtensionActivityFilter::kApiCall:
       action_type = Action::ACTION_API_CALL;
       break;
-    case activity_log_private::EXTENSION_ACTIVITY_FILTER_API_EVENT:
+    case activity_log_private::ExtensionActivityFilter::kApiEvent:
       action_type = Action::ACTION_API_EVENT;
       break;
-    case activity_log_private::EXTENSION_ACTIVITY_FILTER_CONTENT_SCRIPT:
+    case activity_log_private::ExtensionActivityFilter::kContentScript:
       action_type = Action::ACTION_CONTENT_SCRIPT;
       break;
-    case activity_log_private::EXTENSION_ACTIVITY_FILTER_DOM_ACCESS:
+    case activity_log_private::ExtensionActivityFilter::kDomAccess:
       action_type = Action::ACTION_DOM_ACCESS;
       break;
-    case activity_log_private::EXTENSION_ACTIVITY_FILTER_DOM_EVENT:
+    case activity_log_private::ExtensionActivityFilter::kDomEvent:
       action_type = Action::ACTION_DOM_EVENT;
       break;
-    case activity_log_private::EXTENSION_ACTIVITY_FILTER_WEB_REQUEST:
+    case activity_log_private::ExtensionActivityFilter::kWebRequest:
       action_type = Action::ACTION_WEB_REQUEST;
       break;
-    case activity_log_private::EXTENSION_ACTIVITY_FILTER_ANY:
+    case activity_log_private::ExtensionActivityFilter::kAny:
     default:
       action_type = Action::ACTION_ANY;
   }

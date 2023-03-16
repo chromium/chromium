@@ -6,6 +6,9 @@
   {
     "namespace": "activityLogPrivate",
     "description": "none",
+    "compiler_options": {
+      "modernised_enums": true
+    },
     "types": [
       {
         "id": "ExtensionActivityType",
