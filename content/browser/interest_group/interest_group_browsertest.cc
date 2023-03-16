@@ -41,7 +41,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/private_aggregation_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -1353,19 +1352,19 @@ class InterestGroupFencedFrameBrowserTest
       feature_list_.InitWithFeaturesAndParameters(
           {{blink::features::kFencedFrames, {}},
            {features::kPrivacySandboxAdsAPIsOverride, {}},
-           {content::kPrivateAggregationApi, {}},
-           {blink::features::kPrivateAggregationApiFledgeExtensions, {}},
+           {blink::features::kPrivateAggregationApi,
+            {{"fledge_extensions_enabled", "true"}}},
            // This feature allows `runAdAuction()`'s promise to resolve to a
            // `FencedFrameConfig` object upon developer request.
            {blink::features::kFencedFramesAPIChanges, {}}},
-          {/* disabled_features */});
+          /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeaturesAndParameters(
           {{blink::features::kFencedFrames, {}},
            {features::kPrivacySandboxAdsAPIsOverride, {}},
-           {content::kPrivateAggregationApi, {}},
-           {blink::features::kPrivateAggregationApiFledgeExtensions, {}}},
-          {/* disabled_features */});
+           {blink::features::kPrivateAggregationApi,
+            {{"fledge_extensions_enabled", "true"}}}},
+          /*disabled_features=*/{});
     }
   }
 

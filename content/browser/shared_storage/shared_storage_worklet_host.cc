@@ -21,10 +21,10 @@
 #include "content/browser/shared_storage/shared_storage_url_loader_factory_proxy.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
-#include "content/common/private_aggregation_features.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -875,8 +875,8 @@ mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
 SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
   DCHECK(browser_context_);
 
-  if (!base::FeatureList::IsEnabled(content::kPrivateAggregationApi) ||
-      !content::kPrivateAggregationApiEnabledInSharedStorage.Get()) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
+      !blink::features::kPrivateAggregationApiEnabledInSharedStorage.Get()) {
     return mojo::PendingRemote<blink::mojom::PrivateAggregationHost>();
   }
 

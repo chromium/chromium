@@ -38,7 +38,6 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
-#include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -734,10 +733,9 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
       std::move(private_aggregation_requests_reserved_));
   private_aggregation_requests_reserved_.clear();
 
-  if (base::FeatureList::IsEnabled(content::kPrivateAggregationApi) &&
-      content::kPrivateAggregationApiEnabledInFledge.Get() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiFledgeExtensions)) {
+  if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
+      blink::features::kPrivateAggregationApiEnabledInFledge.Get() &&
+      blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
     fenced_frame_reporter_->OnForEventPrivateAggregationRequestsReceived(
         std::move(private_aggregation_requests_non_reserved_));
   }

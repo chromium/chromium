@@ -43,7 +43,6 @@
 #include "content/browser/interest_group/test_interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/common/private_aggregation_features.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -1163,17 +1162,13 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (should_enable_private_aggregation) {
-      if (should_enable_private_aggregation_fledge_extension) {
-        // Only makes sense to enable fledge extension when
-        // kPrivateAggregationApi is enabled.
-        enabled_features.push_back({content::kPrivateAggregationApi, {}});
-        enabled_features.push_back(
-            {blink::features::kPrivateAggregationApiFledgeExtensions, {}});
-      } else {
-        enabled_features.push_back({content::kPrivateAggregationApi, {}});
-      }
+      enabled_features.push_back(
+          {blink::features::kPrivateAggregationApi,
+           {{"fledge_extensions_enabled",
+             should_enable_private_aggregation_fledge_extension ? "true"
+                                                                : "false"}}});
     } else {
-      disabled_features.push_back(content::kPrivateAggregationApi);
+      disabled_features.push_back(blink::features::kPrivateAggregationApi);
     }
 
     switch (kanon_mode) {

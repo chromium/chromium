@@ -2664,12 +2664,6 @@
       origin_trial_allows_third_party: true,
     },
     {
-      name: "PrivateAggregationApiFledgeExtensions",
-      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
-      origin_trial_allows_third_party: true,
-      base_feature: "PrivateAggregationApiFledgeExtensions",
-    },
-    {
       name: "PrivateNetworkAccessNonSecureContextsAllowed",
       origin_trial_feature_name: "PrivateNetworkAccessNonSecureContextsAllowed",
       origin_trial_type: "deprecation",

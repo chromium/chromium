@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
@@ -1106,7 +1105,8 @@ class ContextRecyclerPrivateAggregationEnabledTest
     : public ContextRecyclerTest {
  public:
   ContextRecyclerPrivateAggregationEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(content::kPrivateAggregationApi);
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kPrivateAggregationApi);
   }
 
   // Wraps a debug_key into the appropriate dictionary. Templated to allow both
@@ -1778,10 +1778,9 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
     : public ContextRecyclerTest {
  public:
   ContextRecyclerPrivateAggregationExtensionsEnabledTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {content::kPrivateAggregationApi,
-         blink::features::kPrivateAggregationApiFledgeExtensions},
-        {});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kPrivateAggregationApi,
+        {{"fledge_extensions_enabled", "true"}});
   }
 
   // Creates a PrivateAggregationRequest with ForEvent contribution.
@@ -2620,7 +2619,8 @@ class ContextRecyclerPrivateAggregationDisabledTest
     : public ContextRecyclerTest {
  public:
   ContextRecyclerPrivateAggregationDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(content::kPrivateAggregationApi);
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kPrivateAggregationApi);
   }
 
  private:
@@ -2674,7 +2674,8 @@ class ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest
  public:
   ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::kPrivateAggregationApi, {{"enabled_in_fledge", "false"}});
+        blink::features::kPrivateAggregationApi,
+        {{"enabled_in_fledge", "false"}});
   }
 
  private:
@@ -2727,8 +2728,9 @@ class ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest
     : public ContextRecyclerTest {
  public:
   ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest() {
-    scoped_feature_list_.InitWithFeatures({content::kPrivateAggregationApi},
-                                          {});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kPrivateAggregationApi,
+        {{"fledge_extensions_enabled", "false"}});
   }
 
  private:

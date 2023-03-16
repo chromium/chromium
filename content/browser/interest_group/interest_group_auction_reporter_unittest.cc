@@ -31,7 +31,6 @@
 #include "content/browser/interest_group/test_interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/common/private_aggregation_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -41,6 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -93,10 +93,9 @@ class InterestGroupAuctionReporterTest
       public AuctionWorkletManager::Delegate {
  public:
   InterestGroupAuctionReporterTest() {
-    feature_list_.InitWithFeatures(
-        {content::kPrivateAggregationApi,
-         blink::features::kPrivateAggregationApiFledgeExtensions},
-        {});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kPrivateAggregationApi,
+        {{"fledge_extensions_enabled", "true"}});
 
     mojo::SetDefaultProcessErrorHandler(
         base::BindRepeating(&InterestGroupAuctionReporterTest::OnBadMessage,
@@ -1779,7 +1778,8 @@ class InterestGroupAuctionReporterPrivateAggregationDisabledTest
     : public InterestGroupAuctionReporterTest {
  public:
   InterestGroupAuctionReporterPrivateAggregationDisabledTest() {
-    feature_list_.InitAndDisableFeature(content::kPrivateAggregationApi);
+    feature_list_.InitAndDisableFeature(
+        blink::features::kPrivateAggregationApi);
   }
 
  protected:
@@ -1834,9 +1834,9 @@ class InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest
     : public InterestGroupAuctionReporterTest {
  public:
   InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest() {
-    feature_list_.InitWithFeatures(
-        {content::kPrivateAggregationApi},
-        {blink::features::kPrivateAggregationApiFledgeExtensions});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kPrivateAggregationApi,
+        {{"fledge_extensions_enabled", "false"}});
   }
 
  protected:
@@ -1849,8 +1849,8 @@ TEST_F(
   // This is possible currently because we're not checking the feature flags
   // when collecting PA requests and sending to InterestGroupAuctionReporter,
   // and a compromised worklet can send PA requests to browser process when
-  // feature `blink::features::kPrivateAggregationApiFledgeExtensions` is
-  // disabled.
+  // feature param
+  // `blink::features::kPrivateAggregationApiFledgeExtensionsEnabled` is false.
   private_aggregation_event_map_["event_type"].push_back(
       kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
   private_aggregation_event_map_["event_type2"].push_back(
@@ -1875,8 +1875,8 @@ TEST_F(
 
   // The non-reserved aggregation requests from the bidder's reportWin() method
   // should not be passed along neither. reportWin() could only return PA
-  // requests if the worklet is compromised when feature
-  // `blink::features::kPrivateAggregationApiFledgeExtensions` is disabled.
+  // requests if the worklet is compromised when feature param
+  // `blink::features::kPrivateAggregationApiFledgeExtensionsEnabled` is false.
   WaitForReportWinAndRunCallback(
       /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
       MakeRequestPtrVector(

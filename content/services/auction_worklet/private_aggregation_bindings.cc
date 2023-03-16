@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/worklet_utils/private_aggregation_utils.h"
@@ -307,8 +306,8 @@ PrivateAggregationBindings::~PrivateAggregationBindings() = default;
 
 void PrivateAggregationBindings::FillInGlobalTemplate(
     v8::Local<v8::ObjectTemplate> global_template) {
-  if (!base::FeatureList::IsEnabled(content::kPrivateAggregationApi) ||
-      !content::kPrivateAggregationApiEnabledInFledge.Get()) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
+      !blink::features::kPrivateAggregationApiEnabledInFledge.Get()) {
     return;
   }
 
@@ -327,8 +326,7 @@ void PrivateAggregationBindings::FillInGlobalTemplate(
       v8_helper_->CreateStringFromLiteral("sendHistogramReport"),
       send_histogram_report_template);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiFledgeExtensions)) {
+  if (blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
     v8::Local<v8::FunctionTemplate> report_contribution_for_event_template =
         v8::FunctionTemplate::New(
             v8_helper_->isolate(),

@@ -4,7 +4,6 @@
 
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 
-#include "content/common/private_aggregation_features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/features.h"
@@ -183,7 +182,8 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
     {switches::kEnablePrivacySandboxAdsApis,
      std::cref(blink::features::kSharedStorageAPI),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-    {switches::kEnablePrivacySandboxAdsApis, std::cref(kPrivateAggregationApi),
+    {switches::kEnablePrivacySandboxAdsApis,
+     std::cref(blink::features::kPrivateAggregationApi),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
 

@@ -265,6 +265,28 @@ BASE_FEATURE(kPortalsCrossOrigin,
 // trials.
 BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Private Aggregation API. Note that this API also requires the
+// `kPrivacySandboxAggregationService` to be enabled to successfully send
+// reports.
+BASE_FEATURE(kPrivateAggregationApi,
+             "PrivateAggregationApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Selectively allows the JavaScript API to be disabled in just one of the
+// contexts.
+constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInSharedStorage{
+    &kPrivateAggregationApi, "enabled_in_shared_storage",
+    /*default_value=*/true};
+constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInFledge{
+    &kPrivateAggregationApi, "enabled_in_fledge",
+    /*default_value=*/true};
+
+// Selectively allows the FLEDGE-specific extensions to be disabled.
+constexpr base::FeatureParam<bool>
+    kPrivateAggregationApiFledgeExtensionsEnabled{&kPrivateAggregationApi,
+                                                  "fledge_extensions_enabled",
+                                                  /*default_value=*/false};
+
 // Enable the shared storage API. Note that enabling this feature does not
 // automatically expose this API to the web, it only allows the element to be
 // enabled by the runtime enabled feature, for origin trials.

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/fenced_frame/fence.h"
 
+#include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -171,8 +172,8 @@ HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
 void Fence::reportPrivateAggregationEvent(ScriptState* script_state,
                                           const String& event,
                                           ExceptionState& exception_state) {
-  if (!RuntimeEnabledFeatures::PrivateAggregationApiFledgeExtensionsEnabled(
-          ExecutionContext::From(script_state))) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
+      !blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
     exception_state.ThrowSecurityError(
         "FLEDGE extensions must be enabled to use reportEvent() for private "
         "aggregation events.");
