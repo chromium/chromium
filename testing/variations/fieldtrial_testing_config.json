@@ -11058,21 +11058,6 @@
             ]
         }
     ],
-    "SecagentdDisableXdrReporting": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "CrOSLateBootSecagentdXDRReporting"
-                    ]
-                }
-            ]
-        }
-    ],
     "SecagentdEnableBatchEvents": [
         {
             "platforms": [
