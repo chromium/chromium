@@ -165,6 +165,10 @@ bool WrappedSkImageBackingFactory::IsSupported(
     }
   }
 
+  if (context_state_->context_lost()) {
+    return false;
+  }
+
   if (format.IsCompressed()) {
     if (pixel_data.empty()) {
       // ETC1 is only supported with initial pixel upload.
