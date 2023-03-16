@@ -281,7 +281,7 @@ class WPTAdapter:
         if not self.fs.isdir(output_dir):
             raise ValueError("'--target' must be a directory under //out")
         self.port.set_option_default('target', options.target)
-        if options.log_chromium == '':
+        if options.log_chromium == '' or options.show_results:
             options.log_chromium = self.fs.join(output_dir, 'results.json')
         if options.log_wptreport == '':
             if self._shard_index is None:
