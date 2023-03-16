@@ -266,19 +266,19 @@ export namespace Script {
   const TargetSchema = zod.union([RealmTargetSchema, ContextTargetSchema]);
 
   // ResultOwnership = "root" / "none"
-  const OwnershipModelSchema = zod.enum(['root', 'none']);
+  const ResultOwnershipSchema = zod.enum(['root', 'none']);
 
   // ScriptEvaluateParameters = {
   //   expression: text;
   //   target: Target;
   //   ?awaitPromise: bool;
-  //   ?resultOwnership: OwnershipModel;
+  //   ?resultOwnership: ResultOwnership;
   // }
   const EvaluateParametersSchema = zod.object({
     expression: zod.string(),
     awaitPromise: zod.boolean(),
     target: TargetSchema,
-    resultOwnership: OwnershipModelSchema.optional(),
+    resultOwnership: ResultOwnershipSchema.optional(),
   });
 
   export function parseEvaluateParams(
@@ -326,7 +326,7 @@ export namespace Script {
     arguments: zod.array(ArgumentValueSchema).optional(),
     this: ArgumentValueSchema.optional(),
     awaitPromise: zod.boolean(),
-    resultOwnership: OwnershipModelSchema.optional(),
+    resultOwnership: ResultOwnershipSchema.optional(),
   });
 
   export function parseCallFunctionParams(
@@ -334,6 +334,19 @@ export namespace Script {
   ): ScriptTypes.CallFunctionParameters {
     return parseObject(params, CallFunctionParametersSchema);
   }
+
+  const ChannelIdSchema = zod.string();
+
+  const ChannelPropertiesSchema = zod.object({
+    channel: ChannelIdSchema,
+    maxDepth: zod.number().int().nonnegative().max(MAX_INT).optional(),
+    ownership: ResultOwnershipSchema.optional(),
+  });
+
+  export const ChannelSchema = zod.object({
+    type: zod.literal('channel'),
+    value: ChannelPropertiesSchema,
+  });
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-browsingContext */
@@ -524,17 +537,15 @@ export namespace CDP {
 export namespace Session {
   const SubscriptionRequestParametersEventsSchema = zod.enum([
     BrowsingContextTypes.AllEvents,
-    BrowsingContextTypes.EventNames.ContextCreatedEvent,
-    BrowsingContextTypes.EventNames.ContextDestroyedEvent,
-    BrowsingContextTypes.EventNames.DomContentLoadedEvent,
-    BrowsingContextTypes.EventNames.LoadEvent,
+    ...Object.values(BrowsingContextTypes.EventNames),
     LogTypes.AllEvents,
-    LogTypes.EventNames.LogEntryAddedEvent,
+    ...Object.values(LogTypes.EventNames),
     CdpTypes.AllEvents,
-    CdpTypes.EventNames.EventReceivedEvent,
+    ...Object.values(CdpTypes.EventNames),
     NetworkTypes.AllEvents,
-    NetworkTypes.EventNames.BeforeRequestSentEvent,
-    NetworkTypes.EventNames.ResponseCompletedEvent,
+    ...Object.values(NetworkTypes.EventNames),
+    ScriptTypes.AllEvents,
+    ...Object.values(ScriptTypes.EventNames),
   ]);
 
   // SessionSubscribeParameters = {

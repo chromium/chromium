@@ -22,6 +22,7 @@ import {
   Log,
   Message,
   Network,
+  Script,
   Session,
 } from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
@@ -59,6 +60,9 @@ export function unrollEvents(
         break;
       case Network.AllEvents:
         allEvents.push(...Object.values(Network.EventNames));
+        break;
+      case Script.AllEvents:
+        allEvents.push(...Object.values(Script.EventNames));
         break;
       default:
         allEvents.push(event);
@@ -183,6 +187,12 @@ export class SubscriptionManager {
     }
     if (event === Network.AllEvents) {
       Object.values(Network.EventNames).map((specificEvent) =>
+        this.subscribe(specificEvent, contextId, channel)
+      );
+      return;
+    }
+    if (event === Script.AllEvents) {
+      Object.values(Script.EventNames).map((specificEvent) =>
         this.subscribe(specificEvent, contextId, channel)
       );
       return;

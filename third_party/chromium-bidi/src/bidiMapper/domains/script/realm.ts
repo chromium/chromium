@@ -94,7 +94,7 @@ export class Realm {
     cdpValue:
       | Protocol.Runtime.CallFunctionOnResponse
       | Protocol.Runtime.EvaluateResponse,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.ResultOwnership
   ): Promise<CommonDataTypes.RemoteValue> {
     const cdpWebDriverValue = cdpValue.result.webDriverValue!;
     const bidiValue = this.webDriverValueToBiDi(cdpWebDriverValue);
@@ -205,7 +205,7 @@ export class Realm {
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.ResultOwnership
   ): Promise<Script.CallFunctionResult> {
     const context = this.#browsingContextStorage.getKnownContext(
       this.browsingContextId
@@ -227,7 +227,7 @@ export class Realm {
   async scriptEvaluate(
     expression: string,
     awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.ResultOwnership
   ): Promise<Script.EvaluateResult> {
     const context = this.#browsingContextStorage.getKnownContext(
       this.browsingContextId
@@ -248,11 +248,11 @@ export class Realm {
    * Serializes a given CDP object into BiDi, keeping references in the
    * target's `globalThis`.
    * @param cdpObject CDP remote object to be serialized.
-   * @param resultOwnership indicates desired OwnershipModel.
+   * @param resultOwnership Indicates desired ResultOwnership.
    */
   async serializeCdpObject(
     cdpObject: Protocol.Runtime.RemoteObject,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.ResultOwnership
   ): Promise<CommonDataTypes.RemoteValue> {
     return scriptEvaluator.serializeCdpObject(cdpObject, resultOwnership, this);
   }

@@ -18,7 +18,13 @@
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 
-import {BrowsingContext, CDP, Log} from '../../../protocol/protocol.js';
+import {
+  BrowsingContext,
+  CDP,
+  Log,
+  Network,
+  Script,
+} from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
 import {
@@ -414,7 +420,7 @@ describe('cartesian product', () => {
 });
 
 describe('unroll events', () => {
-  it('all browser events', () => {
+  it('all Browsing Context events', () => {
     expect(unrollEvents([BrowsingContext.AllEvents])).to.deep.equal([
       BrowsingContext.EventNames.LoadEvent,
       BrowsingContext.EventNames.DomContentLoadedEvent,
@@ -429,9 +435,22 @@ describe('unroll events', () => {
     ]);
   });
 
-  it('all log events', () => {
+  it('all Log events', () => {
     expect(unrollEvents([Log.AllEvents])).to.deep.equal([
       Log.EventNames.LogEntryAddedEvent,
+    ]);
+  });
+
+  it('all Network events', () => {
+    expect(unrollEvents([Network.AllEvents])).to.deep.equal([
+      Network.EventNames.BeforeRequestSentEvent,
+      Network.EventNames.ResponseCompletedEvent,
+    ]);
+  });
+
+  it('all Script events', () => {
+    expect(unrollEvents([Script.AllEvents])).to.deep.equal([
+      Script.EventNames.MessageEvent,
     ]);
   });
 

@@ -268,12 +268,12 @@ export class ScriptEvaluator {
    * Serializes a given CDP object into BiDi, keeping references in the
    * target's `globalThis`.
    * @param cdpRemoteObject CDP remote object to be serialized.
-   * @param resultOwnership indicates desired OwnershipModel.
+   * @param resultOwnership Indicates desired ResultOwnership.
    * @param realm
    */
   async serializeCdpObject(
     cdpRemoteObject: Protocol.Runtime.RemoteObject,
-    resultOwnership: Script.OwnershipModel,
+    resultOwnership: Script.ResultOwnership,
     realm: Realm
   ): Promise<CommonDataTypes.RemoteValue> {
     const arg = cdpRemoteObjectToCallArgument(cdpRemoteObject);
@@ -293,7 +293,7 @@ export class ScriptEvaluator {
     realm: Realm,
     expression: string,
     awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.ResultOwnership
   ): Promise<Script.ScriptResult> {
     const cdpEvaluateResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
@@ -332,7 +332,7 @@ export class ScriptEvaluator {
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.ResultOwnership
   ): Promise<Script.ScriptResult> {
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
       function _callFunction(f, args) {
@@ -443,7 +443,7 @@ export class ScriptEvaluator {
   async #serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number,
-    resultOwnership: Script.OwnershipModel,
+    resultOwnership: Script.ResultOwnership,
     realm: Realm
   ): Promise<Script.ExceptionDetails> {
     const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(

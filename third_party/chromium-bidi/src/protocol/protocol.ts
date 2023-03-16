@@ -84,7 +84,8 @@ export namespace Message {
     | BrowsingContext.Event
     | Log.Event
     | CDP.Event
-    | Network.Event;
+    | Network.Event
+    | Script.Event;
 
   export type ErrorCode =
     | 'unknown error'
@@ -441,6 +442,7 @@ export namespace Script {
     | CallFunctionResult
     | GetRealmsResult
     | DisownResult;
+  export type Event = MessageEvent;
 
   export type Realm = string;
 
@@ -565,19 +567,20 @@ export namespace Script {
   // `RealmTargetSchema` has higher priority.
   export type Target = RealmTarget | ContextTarget;
 
-  export type OwnershipModel = 'root' | 'none';
+  // ResultOwnership = "root" / "none"
+  export type ResultOwnership = 'root' | 'none';
 
   // ScriptEvaluateParameters = {
   //   expression: text;
   //   target: Target;
   //   ?awaitPromise: bool;
-  //   ?resultOwnership: OwnershipModel;
+  //   ?resultOwnership: ResultOwnership;
   // }
   export type EvaluateParameters = {
     expression: string;
     awaitPromise: boolean;
     target: Target;
-    resultOwnership?: OwnershipModel;
+    resultOwnership?: ResultOwnership;
   };
 
   export type EvaluateResult = {
@@ -612,7 +615,7 @@ export namespace Script {
     target: Target;
     arguments?: ArgumentValue[];
     this?: ArgumentValue;
-    resultOwnership?: OwnershipModel;
+    resultOwnership?: ResultOwnership;
   };
 
   export type CallFunctionResult = {
@@ -634,6 +637,41 @@ export namespace Script {
     lineNumber: number;
     url: string;
   };
+
+  export type ChannelId = string;
+
+  export type ChannelProperties = {
+    channel: ChannelId;
+    maxDepth?: number;
+    ownership?: ResultOwnership;
+  };
+
+  export type Channel = {
+    type: 'channel';
+    value: ChannelProperties;
+  };
+
+  export type Message = {
+    method: 'script.message';
+    params: MessageParameters;
+  };
+
+  export type MessageParameters = {
+    channel: Channel;
+    data: CommonDataTypes.RemoteValue;
+    source: Source;
+  };
+
+  export type MessageEvent = EventResponse<
+    EventNames.MessageEvent,
+    Script.MessageParameters
+  >;
+
+  export enum EventNames {
+    MessageEvent = 'script.message',
+  }
+
+  export const AllEvents = 'script';
 }
 
 // https://w3c.github.io/webdriver-bidi/#module-browsingContext
@@ -1059,7 +1097,9 @@ export namespace Session {
     | CDP.EventNames
     | typeof CDP.AllEvents
     | Network.EventNames
-    | typeof Network.AllEvents;
+    | typeof Network.AllEvents
+    | Script.EventNames
+    | typeof Script.AllEvents;
 
   // SessionSubscribeParameters = {
   //   events: [*text],
