@@ -16,22 +16,22 @@ found in the LICENSE file.
       left: 400px;
     }
   </style>
-  <script type="text/javascript" src="../third_party/stats-js/stats.js"></script>
-  <script type="text/javascript" src="video_utils.js"></script>
-  <script type="text/javascript" src="webgpu_video.js"></script>
+  <script src="../third_party/stats-js/stats.js"></script>
+  <script src="video_utils.js"></script>
+  <script src="webgpu_video.js"></script>
   <script>
     const _defaultRows = 7;
     const _defaultColumns = 7;
     const _totalVideoWidth = 1600;
     const _totalVideoHeight = 900;
-    var hasUIOnTop = true;
-    var hasFPSOnTop = true;
-    var useImportTextureApi = true;
-    var capUIFPS = true;
-    var useLargeSizeVideo = false;
-    var enableBackPressureWorkaround = true;
-    var codec = 'vp9';
-    var useLocalCamera = false;
+    let hasUIOnTop = true;
+    let hasFPSOnTop = true;
+    let useImportTextureApi = true;
+    let capUIFPS = true;
+    let useLargeSizeVideo = false;
+    let enableBackPressureWorkaround = true;
+    let codec = 'vp9';
+    let useLocalCamera = false;
 
     async function startMxNVideos() {
       const container = document.getElementById('container');
@@ -49,56 +49,66 @@ found in the LICENSE file.
 
       // Get the UI rendering options from the string.
       const uiOption = parsedString['ui'];
-      if (uiOption == 'none')
+      if (uiOption === 'none') {
         hasUIOnTop = false;
+      }
 
       const fpsOption = parsedString['fps'];
-      if (fpsOption == 'none')
+      if (fpsOption === 'none') {
         hasFPSOnTop = false;
+      }
 
       const api = parsedString['import_texture_api']
-      if (api == '0')
+      if (api === '0') {
         useImportTextureApi = false;
-      else if (api == '1')
+      } else if (api === '1') {
         useImportTextureApi = true;
+      }
 
       codecString = parsedString['codec']
-      if (codecString == 'vp8')
+      if (codecString === 'vp8') {
         codec = 'vp8';
-      else if (codecString != 'vp9' && codecString != undefined)
+      } else if (codecString !== 'vp9' && codecString !== undefined) {
         console.warn('Unsupported video codec format! Switch to default VP9.');
+      }
 
       const capFPSOption = parsedString['cap_ui_fps']
-      if (capFPSOption == '0')
+      if (capFPSOption === '0') {
         capUIFPS = false;
-      else if (capFPSOption == '1')
+      } else if (capFPSOption === '1') {
         capUIFPS = true;
+      }
 
       const useLargeSizeVideoOption = parsedString['use_large_size_video']
-      if (useLargeSizeVideoOption == '0')
+      if (useLargeSizeVideoOption === '0') {
         useLargeSizeVideo = false;
-      else if (useLargeSizeVideoOption == '1')
+      } else if (useLargeSizeVideoOption === '1') {
         useLargeSizeVideo = true;
+      }
 
       const backPressureWorkaroundOption = parsedString['back_pressure_workaround']
-      if (backPressureWorkaroundOption == '0')
+      if (backPressureWorkaroundOption === '0') {
         enableBackPressureWorkaround = false;
-      else if (backPressureWorkaroundOption == '1')
+      } else if (backPressureWorkaroundOption === '1') {
         enableBackPressureWorkaround = true;
+      }
 
-      const useLocalCameraOption = parsedString['use_local_camera']
-      if (useLocalCameraOption == '0')
+      const useLocalCameraOption = parsedString['use_local_camera'];
+      if (useLocalCameraOption === '0') {
         useLocalCamera = false;
-      else if (useLocalCameraOption == '1')
+      } else if (useLocalCameraOption === '1') {
         useLocalCamera = true;
+      }
 
       // Get the number of video rows and columns from the string.
-      var videoRows = parsedString['rows'];
-      var videoColumns = parsedString['columns'];
-      if (videoRows == undefined)
+      let videoRows = parsedString['rows'];
+      let videoColumns = parsedString['columns'];
+      if (videoRows === undefined) {
         videoRows = _defaultRows;
-      if (videoColumns == undefined)
+      }
+      if (videoColumns === undefined) {
         videoColumns = _defaultColumns;
+      }
 
       // Limite the number of videos to 20x20.
       // The video will not load when the number is too big.
@@ -116,7 +126,7 @@ found in the LICENSE file.
       // Create MxN videos and a small video (size = 89x50) at the upper right
       // corner to similate the one from the local camera.
       p.innerHTML = "Uploading videos...";
-      var videos = [];
+      const videos = [];
       const videoCount = videoRows * videoColumns;
       for (let i = 0; i < videoCount + 1; i++) {
         const video = document.createElement('video');
@@ -136,7 +146,7 @@ found in the LICENSE file.
       videos[videoRows * videoColumns].height = videoHeight / 3;
       if (useLocalCamera) {
         const video = videos[videoRows * videoColumns];
-        video.src = null;
+        video.src = '';
         const constraints = {
           audio: false,
           video: { width: 640, height: 360 }
@@ -167,10 +177,11 @@ found in the LICENSE file.
   </script>
 </head>
 
-<body onload="startMxNVideos()">
+<body>
   <div id="container" style="position:absolute; top:0px; left:0px">
     <p id="message"></p>
   </div>
+  <script>startMxNVideos();</script>
 </body>
 
 </html>
