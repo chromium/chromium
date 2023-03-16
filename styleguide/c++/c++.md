@@ -266,6 +266,7 @@ long as it complies with the following requirements:
     [the Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html#thread_local).
   * It must not be constructed inside OOM handlers or any other code that cannot
     allocate memory, since on POSIX, construction may alloc.
+
 If you can't comply with these requirements, consider
 [`base::ThreadLocalOwnedPointer`](../../base/threading/thread_local.h) or
 another nearby low-level utility.

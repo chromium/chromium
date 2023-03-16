@@ -164,10 +164,6 @@ void ChromeClassTester::BuildBannedLists() {
   banned_directories_.emplace("/v8/");
   banned_directories_.emplace("/frameworks/");
 
-  // Used in really low level threading code that probably shouldn't be out of
-  // lined.
-  ignored_record_names_.emplace("ThreadLocalBoolean");
-
   // A complicated pickle derived struct that is all packed integers.
   ignored_record_names_.emplace("Header");
 
