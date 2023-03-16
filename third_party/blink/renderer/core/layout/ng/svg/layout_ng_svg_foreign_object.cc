@@ -162,6 +162,20 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
   DCHECK(!needs_transform_update_);
 }
 
+void LayoutNGSVGForeignObject::StyleDidChange(StyleDifference diff,
+                                              const ComputedStyle* old_style) {
+  NOT_DESTROYED();
+  LayoutNGBlockFlowMixin<LayoutSVGBlock>::StyleDidChange(diff, old_style);
+
+  float old_zoom = old_style ? old_style->EffectiveZoom()
+                             : ComputedStyleInitialValues::InitialZoom();
+  if (StyleRef().EffectiveZoom() != old_zoom) {
+    // `LocalToSVGParentTransform` has a dependency on zoom which is used for
+    // the transform paint property.
+    SetNeedsPaintPropertyUpdate();
+  }
+}
+
 bool LayoutNGSVGForeignObject::NodeAtPointFromSVG(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,

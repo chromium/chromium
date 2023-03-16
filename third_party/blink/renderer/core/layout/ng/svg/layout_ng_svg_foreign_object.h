@@ -51,6 +51,8 @@ class LayoutNGSVGForeignObject final
   // LayoutBlock override:
   void UpdateBlockLayout(bool relayout_children) override;
 
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+
   // The resolved viewport in the regular SVG coordinate space (after any
   // 'transform' has been applied but without zoom-adjustment).
   gfx::RectF viewport_;
