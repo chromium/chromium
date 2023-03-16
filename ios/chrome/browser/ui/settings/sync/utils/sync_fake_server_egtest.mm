@@ -155,8 +155,6 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   // Store the original guid, then restart sync.
   std::string original_guid = [ChromeEarlGrey syncCacheGUID];
   [ChromeEarlGrey stopSync];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey startSync];
 
   // Verify the guid did not change.
@@ -215,8 +213,6 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   // Record the initial guid, before restarting sync.
   std::string original_guid = [ChromeEarlGrey syncCacheGUID];
   [ChromeEarlGrey stopSync];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey startSync];
 
   // Verify the guid did not change after restarting sync.
