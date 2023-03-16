@@ -465,7 +465,7 @@
       "use_remoteexec": true
     }
   },
-  "mac-builder-next-rel": {
+  "mac-builder-next": {
     "gn_args": {
       "dcheck_always_on": false,
       "enable_nacl": false,

@@ -84,7 +84,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "mac-builder-next-rel",
+    name = "mac-builder-next",
     mirrors = ["ci/Mac Builder Next"],
     builderless = False,
     os = os.MAC_13,
