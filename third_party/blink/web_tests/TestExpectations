@@ -6867,6 +6867,11 @@ crbug.com/1239281 virtual/prerender/external/wpt/speculation-rules/prerender/mai
 # Deprecation Trial flag.
 crbug.com/822696 http/tests/inspector-protocol/issues/webrtc-stats-deprecation.js [ Skip Timeout ]
 crbug.com/822696 virtual/webrtc-legacy-stats-trial-disabled/http/tests/inspector-protocol/issues/webrtc-stats-deprecation.js [ Pass ]
+# These tests time out because they trigger the legacy SVC path.
+crbug.com/webrtc/14889 external/wpt/webrtc/simulcast/vp9.https.html [ Skip Timeout ]
+crbug.com/webrtc/14884 external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Skip Timeout ]
+# This test enables opting in to VP9 simulcast and thus passes (unlike the non-virtual test).
+crbug.com/webrtc/14884 virtual/webrtc-vp9-simulcast/external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Pass ]
 
 #Sheriff 2023-02-21
 crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeout ]

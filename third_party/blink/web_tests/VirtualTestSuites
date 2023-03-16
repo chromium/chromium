@@ -1881,6 +1881,17 @@
     "expires": "Dec 21, 2023"
   },
   {
+    "prefix": "webrtc-vp9-simulcast",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html"
+    ],
+    "args": [
+      "--force-fieldtrials=WebRTC-AllowDisablingLegacyScalability/Enabled"
+    ],
+    "expires": "Jun 16, 2023"
+  },
+  {
     "prefix": "allow-rtc-encoded-video-frame-set-metadata-csrcs",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
