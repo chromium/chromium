@@ -10,12 +10,15 @@ static_library("vr_android") {
     "web_xr_presentation_state.h",
     "xr_image_transport_base.cc",
     "xr_image_transport_base.h",
+    "xr_java_coordinator.h",
   ]
 
   deps = [
     "//components/viz/common",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/common:common",
+    "//ui/display",
+    "//ui/gfx",
     "//ui/gl:gl",
     "//ui/gl/init",
   ]

@@ -84,7 +84,7 @@ public class XrImmersiveOverlay
     private static final boolean DEFER_SURFACE_VIEW_DESTRUCTION =
             (Build.VERSION.SDK_INT < Build.VERSION_CODES.O);
 
-    private ArCoreJavaUtils mArCoreJavaUtils;
+    private XrSessionCoordinator mXrSessionCoordinator;
     private Delegate mOverlayDelegate;
     private Activity mActivity;
     private boolean mSurfaceReportedReady;
@@ -100,14 +100,14 @@ public class XrImmersiveOverlay
     private Integer mPrimaryPointerId;
 
     public void show(@NonNull Delegate overlayDelegate, @NonNull WebContents webContents,
-            @NonNull ArCoreJavaUtils caller) {
+            @NonNull XrSessionCoordinator caller) {
         if (DEBUG_LOGS) Log.i(TAG, "constructor");
-        mArCoreJavaUtils = caller;
+        mXrSessionCoordinator = caller;
 
         mWebContents = webContents;
         mOverlayDelegate = overlayDelegate;
 
-        mActivity = ArCoreJavaUtils.getActivity(webContents);
+        mActivity = XrSessionCoordinator.getActivity(webContents);
 
         mPointerIdToData = new HashMap<Integer, PointerData>();
         mPrimaryPointerId = null;
@@ -387,7 +387,7 @@ public class XrImmersiveOverlay
     // the entire collection will be cleared anyway.
     private void sendMotionEvents(boolean gestureEnded) {
         for (Map.Entry<Integer, PointerData> entry : mPointerIdToData.entrySet()) {
-            mArCoreJavaUtils.onDrawingSurfaceTouch(
+            mXrSessionCoordinator.onDrawingSurfaceTouch(
                     mPrimaryPointerId != null && mPrimaryPointerId.equals(entry.getKey()),
                     gestureEnded ? false : entry.getValue().touching, entry.getKey().intValue(),
                     entry.getValue().x, entry.getValue().y);
@@ -474,7 +474,7 @@ public class XrImmersiveOverlay
         if (DEBUG_LOGS) {
             Log.i(TAG, "surfaceChanged size=" + width + "x" + height + " rotation=" + rotation);
         }
-        mArCoreJavaUtils.onDrawingSurfaceReady(holder.getSurface(),
+        mXrSessionCoordinator.onDrawingSurfaceReady(holder.getSurface(),
                 mWebContents.getTopLevelNativeWindow(), rotation, width, height);
         mSurfaceReportedReady = true;
     }
@@ -488,7 +488,7 @@ public class XrImmersiveOverlay
     public void cleanupAndExit() {
         if (DEBUG_LOGS) Log.i(TAG, "cleanupAndExit");
 
-        // Avoid duplicate cleanup if we're exiting via ArCoreJavaUtils's endSession.
+        // Avoid duplicate cleanup if we're exiting via XrSessionCoordinator's endSession.
         // That triggers cleanupAndExit -> remove SurfaceView -> surfaceDestroyed -> cleanupAndExit.
         if (mCleanupInProgress) return;
         mCleanupInProgress = true;
@@ -499,7 +499,7 @@ public class XrImmersiveOverlay
         // but will be soon. We need to give the native code a chance to cleanup any state before
         // we start any other logic to ensure that the surface is destroyed. We also need to run
         // the destroy callbacks to ensure consistent state after non-exiting lifecycle events.
-        mArCoreJavaUtils.onDrawingSurfaceDestroyed();
+        mXrSessionCoordinator.onDrawingSurfaceDestroyed();
 
         mXrSurfaceView.destroy();
 

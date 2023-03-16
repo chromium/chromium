@@ -18,11 +18,11 @@ import org.chromium.build.annotations.UsedByReflection;
 
     @Override
     public boolean onBackPressed() {
-        return ArCoreJavaUtils.onBackPressed();
+        return XrSessionCoordinator.onBackPressed();
     }
 
     @Override
     public ObservableSupplier<Boolean> getHasActiveArSessionSupplier() {
-        return ArCoreJavaUtils.hasActiveArSessionSupplier();
+        return XrSessionCoordinator.hasActiveArSessionSupplier();
     }
 }

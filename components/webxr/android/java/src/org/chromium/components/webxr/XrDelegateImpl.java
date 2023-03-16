@@ -6,7 +6,6 @@ package org.chromium.components.webxr;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 
@@ -33,21 +32,6 @@ public class XrDelegateImpl implements XrDelegate {
         int VR = 2;
     }
 
-    static <T> T getDelegate(String className) {
-        T delegate = null;
-        try {
-            delegate = (T) Class.forName(className).newInstance();
-        } catch (ClassNotFoundException e) {
-        } catch (InstantiationException e) {
-        } catch (IllegalAccessException e) {
-        }
-
-        if (DEBUG_LOGS) {
-            Log.i(TAG,
-                    "getDelegate for class: " + className + " got delegate? " + (delegate == null));
-        }
-        return delegate;
-    }
     // The ArDelegate is either included in the build or not, so it's okay to
     // cache an instance of it.
     private ArDelegate mArDelegate;
@@ -58,7 +42,7 @@ public class XrDelegateImpl implements XrDelegate {
             new ObservableSupplierImpl<>();
 
     public XrDelegateImpl() {
-        mArDelegate = getDelegate("org.chromium.components.webxr.ArDelegateImpl");
+        mArDelegate = ArClassProvider.getArDelegate();
         if (mArDelegate != null) {
             mArDelegate.getHasActiveArSessionSupplier().addObserver(this::setHasActiveArSession);
         }

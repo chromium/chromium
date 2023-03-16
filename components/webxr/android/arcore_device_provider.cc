@@ -4,7 +4,7 @@
 
 #include "components/webxr/android/arcore_device_provider.h"
 
-#include "components/webxr/android/arcore_java_utils.h"
+#include "components/webxr/android/xr_session_coordinator.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/arcore/arcore_device.h"
@@ -27,7 +27,8 @@ void ArCoreDeviceProvider::Initialize(device::VRDeviceProviderClient* client) {
         std::make_unique<device::ArCoreImplFactory>(),
         std::make_unique<device::ArImageTransportFactory>(),
         std::make_unique<webxr::MailboxToSurfaceBridgeFactoryImpl>(),
-        std::make_unique<webxr::ArCoreJavaUtils>(compositor_delegate_provider_),
+        std::make_unique<webxr::XrSessionCoordinator>(
+            compositor_delegate_provider_),
         client->GetXrFrameSinkClientFactory());
 
     client->AddRuntime(arcore_device_->GetId(), arcore_device_->GetDeviceData(),

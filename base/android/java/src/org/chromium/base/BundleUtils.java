@@ -251,13 +251,6 @@ public class BundleUtils {
         }
     }
 
-    // TODO(crbug.com/1150459): Remove this once //clank callers have been converted to the new
-    // version.
-    @Nullable
-    public static String getNativeLibraryPath(String libraryName) {
-        return getNativeLibraryPath(libraryName, "");
-    }
-
     public static void checkContextClassLoader(Context baseContext, Activity activity) {
         ClassLoader activityClassLoader = activity.getClass().getClassLoader();
         ClassLoader contextClassLoader = baseContext.getClassLoader();

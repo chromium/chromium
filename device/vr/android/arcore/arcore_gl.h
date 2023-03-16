@@ -48,7 +48,7 @@ class WindowAndroid;
 namespace device {
 
 class ArCore;
-class ArCoreSessionUtils;
+class XrJavaCoordinator;
 class ArCoreFactory;
 class ArImageTransport;
 class WebXrPresentationState;
@@ -109,7 +109,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   ~ArCoreGl() override;
 
   void Initialize(
-      ArCoreSessionUtils* session_utils,
+      XrJavaCoordinator* session_utils,
       ArCoreFactory* arcore_factory,
       XrFrameSinkClient* xr_frame_sink_client,
       gfx::AcceleratedWidget drawing_widget,

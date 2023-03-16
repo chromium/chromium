@@ -185,6 +185,7 @@ test("vr_android_unittests") {
     "//components/translate/core/language_detection:language_detection",
     "//components/webxr:webxr",
     "//device/vr:vr_fakes",
+    "//device/vr/android:vr_android",
     "//device/vr/public/mojom:isolated_xr_service",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",

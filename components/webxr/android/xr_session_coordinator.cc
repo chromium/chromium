@@ -2,44 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webxr/android/arcore_java_utils.h"
+#include "components/webxr/android/xr_session_coordinator.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "components/webxr/android/ar_jni_headers/ArCoreJavaUtils_jni.h"
 #include "components/webxr/android/webxr_utils.h"
-#include "device/vr/android/arcore/arcore_shim.h"
+#include "components/webxr/android/xr_jni_headers/XrSessionCoordinator_jni.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "ui/android/window_android.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface.h"
+
+#if BUILDFLAG(ENABLE_ARCORE)
+#include "base/android/bundle_utils.h"
+#include "device/vr/android/arcore/arcore_shim.h"
+#endif
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 
 namespace webxr {
 
-ArCoreJavaUtils::ArCoreJavaUtils(
+XrSessionCoordinator::XrSessionCoordinator(
     webxr::ArCompositorDelegateProvider compositor_delegate_provider)
     : compositor_delegate_provider_(compositor_delegate_provider) {
   JNIEnv* env = AttachCurrentThread();
-  if (!env)
+  if (!env) {
     return;
-  ScopedJavaLocalRef<jobject> j_arcore_java_utils =
-      Java_ArCoreJavaUtils_create(env, (jlong)this);
-  if (j_arcore_java_utils.is_null())
+  }
+  ScopedJavaLocalRef<jobject> j_xr_session_coordinator =
+      Java_XrSessionCoordinator_create(env, (jlong)this);
+  if (j_xr_session_coordinator.is_null()) {
     return;
-  j_arcore_java_utils_.Reset(j_arcore_java_utils);
+  }
+  j_xr_session_coordinator_.Reset(j_xr_session_coordinator);
 }
 
-ArCoreJavaUtils::~ArCoreJavaUtils() {
+XrSessionCoordinator::~XrSessionCoordinator() {
   JNIEnv* env = AttachCurrentThread();
-  Java_ArCoreJavaUtils_onNativeDestroy(env, j_arcore_java_utils_);
+  Java_XrSessionCoordinator_onNativeDestroy(env, j_xr_session_coordinator_);
 }
 
-void ArCoreJavaUtils::RequestArSession(
+void XrSessionCoordinator::RequestArSession(
     int render_process_id,
     int render_frame_id,
     bool use_overlay,
@@ -54,20 +61,21 @@ void ArCoreJavaUtils::RequestArSession(
   surface_touch_callback_ = std::move(touch_callback);
   surface_destroyed_callback_ = std::move(destroyed_callback);
 
-  Java_ArCoreJavaUtils_startSession(
-      env, j_arcore_java_utils_, compositor_delegate_provider_.GetJavaObject(),
+  Java_XrSessionCoordinator_startSession(
+      env, j_xr_session_coordinator_,
+      compositor_delegate_provider_.GetJavaObject(),
       webxr::GetJavaWebContents(render_process_id, render_frame_id),
       use_overlay, can_render_dom_content);
 }
 
-void ArCoreJavaUtils::EndSession() {
+void XrSessionCoordinator::EndSession() {
   DVLOG(1) << __func__;
   JNIEnv* env = AttachCurrentThread();
 
-  Java_ArCoreJavaUtils_endSession(env, j_arcore_java_utils_);
+  Java_XrSessionCoordinator_endSession(env, j_xr_session_coordinator_);
 }
 
-void ArCoreJavaUtils::OnDrawingSurfaceReady(
+void XrSessionCoordinator::OnDrawingSurfaceReady(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& surface,
@@ -92,7 +100,7 @@ void ArCoreJavaUtils::OnDrawingSurfaceReady(
                               root_window, display_rotation, {width, height});
 }
 
-void ArCoreJavaUtils::OnDrawingSurfaceTouch(
+void XrSessionCoordinator::OnDrawingSurfaceTouch(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     bool primary,
@@ -105,7 +113,7 @@ void ArCoreJavaUtils::OnDrawingSurfaceTouch(
   surface_touch_callback_.Run(primary, touching, pointer_id, {x, y});
 }
 
-void ArCoreJavaUtils::OnDrawingSurfaceDestroyed(
+void XrSessionCoordinator::OnDrawingSurfaceDestroyed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   DVLOG(1) << __func__ << ":::";
@@ -114,37 +122,37 @@ void ArCoreJavaUtils::OnDrawingSurfaceDestroyed(
   }
 }
 
-bool ArCoreJavaUtils::EnsureLoaded() {
+bool XrSessionCoordinator::EnsureARCoreLoaded() {
+#if BUILDFLAG(ENABLE_ARCORE)
   DCHECK(device::IsArCoreSupported());
-
-  JNIEnv* env = AttachCurrentThread();
 
   // TODO(crbug.com/884780): Allow loading the ARCore shim by name instead of by
   // absolute path.
-  ScopedJavaLocalRef<jstring> java_path =
-      Java_ArCoreJavaUtils_getArCoreShimLibraryPath(env);
+  std::string path = base::android::BundleUtils::ResolveLibraryPath(
+      /*library_name=*/"arcore_sdk_c", /*split_name=*/"");
 
-  // Crash in debug builds if `java_path` is a null pointer but handle this
-  // situation in release builds. This is done by design - the `java_path` will
-  // be null only if there was a regression introduced to our gn/gni files w/o
-  // causing a build break. In release builds, this approach will result in the
-  // site not being able to request an AR session.
-  DCHECK(java_path)
-      << "Unable to find path to ARCore SDK library - please ensure that "
-         "loadable_modules and secondary_abi_loadable_modules are set "
-         "correctly when building";
-  if (!java_path) {
-    LOG(ERROR) << "Unable to find path to ARCore SDK library";
+  // Crash in debug builds if `path` is empty but handle this situation in
+  // release builds. This is done by design - the `path` will be empty only if
+  // there was a regression introduced to our gn/gni files w/o causing a build
+  // break. In release builds, this approach will result in the site not being
+  // able to request an AR session. We need to ensure that both loadable_modules
+  // and secondary_abi_loadable_modules are set correctly when building and that
+  // we're in the split we expect them to be (currently not passing a split
+  // name).
+  if (path.empty()) {
+    LOG(DFATAL) << "Unable to find path to ARCore SDK library";
     return false;
   }
 
-  return device::LoadArCoreSdk(
-      base::android::ConvertJavaStringToUTF8(env, java_path));
+  return device::LoadArCoreSdk(path);
+#else  // BUILDFLAG(ENABLE_ARCORE)
+  return false;
+#endif
 }
 
-ScopedJavaLocalRef<jobject> ArCoreJavaUtils::GetApplicationContext() {
+ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetApplicationContext() {
   JNIEnv* env = AttachCurrentThread();
-  return Java_ArCoreJavaUtils_getApplicationContext(env);
+  return Java_XrSessionCoordinator_getApplicationContext(env);
 }
 
 }  // namespace webxr

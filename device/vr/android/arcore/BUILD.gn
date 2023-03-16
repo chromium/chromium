@@ -34,7 +34,6 @@ component("arcore") {
     "arcore_plane_manager.cc",
     "arcore_plane_manager.h",
     "arcore_sdk.h",
-    "arcore_session_utils.h",
     "arcore_shim.cc",
     "arcore_shim.h",
     "scoped_arcore_objects.h",

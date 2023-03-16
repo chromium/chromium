@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_ANDROID_ARCORE_ARCORE_SESSION_UTILS_H_
-#define DEVICE_VR_ANDROID_ARCORE_ARCORE_SESSION_UTILS_H_
+#ifndef DEVICE_VR_ANDROID_XR_JAVA_COORDINATOR_H_
+#define DEVICE_VR_ANDROID_XR_JAVA_COORDINATOR_H_
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -40,10 +40,16 @@ using SurfaceTouchCallback =
                                  const gfx::PointF& location)>;
 using SurfaceDestroyedCallback = base::OnceClosure;
 
-class ArCoreSessionUtils {
+// The purpose of this interface is to allow for dependency injection of code
+// that needs to talk Java Code in the WebXR component, which otherwise cannot
+// be directly talked to in //device. Unfortunately, the implementation in
+// //components must have the same name as the java class for the jni headers
+// to build properly; so we're left to come up with a slightly different name
+// here.
+class XrJavaCoordinator {
  public:
-  virtual ~ArCoreSessionUtils() = default;
-  virtual bool EnsureLoaded() = 0;
+  virtual ~XrJavaCoordinator() = default;
+  virtual bool EnsureARCoreLoaded() = 0;
   virtual base::android::ScopedJavaLocalRef<jobject>
   GetApplicationContext() = 0;
   virtual void RequestArSession(
@@ -59,4 +65,4 @@ class ArCoreSessionUtils {
 
 }  // namespace device
 
-#endif  // DEVICE_VR_ANDROID_ARCORE_ARCORE_SESSION_UTILS_H_
+#endif  // DEVICE_VR_ANDROID_XR_JAVA_COORDINATOR_H_

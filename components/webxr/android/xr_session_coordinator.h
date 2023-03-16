@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WEBXR_ANDROID_ARCORE_JAVA_UTILS_H_
-#define COMPONENTS_WEBXR_ANDROID_ARCORE_JAVA_UTILS_H_
+#ifndef COMPONENTS_WEBXR_ANDROID_XR_SESSION_COORDINATOR_H_
+#define COMPONENTS_WEBXR_ANDROID_XR_SESSION_COORDINATOR_H_
 
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
-#include "device/vr/android/arcore/arcore_session_utils.h"
+#include "device/vr/android/xr_java_coordinator.h"
 
 namespace webxr {
 
-class ArCoreJavaUtils : public device::ArCoreSessionUtils {
+class XrSessionCoordinator : public device::XrJavaCoordinator {
  public:
-  explicit ArCoreJavaUtils(
+  explicit XrSessionCoordinator(
       webxr::ArCompositorDelegateProvider compositor_delegate_provider);
-  ~ArCoreJavaUtils() override;
+  ~XrSessionCoordinator() override;
 
-  // ArCoreSessionUtils:
+  // XrJavaCoordinator:
   void RequestArSession(
       int render_process_id,
       int render_frame_id,
@@ -30,7 +30,7 @@ class ArCoreJavaUtils : public device::ArCoreSessionUtils {
       device::SurfaceTouchCallback touch_callback,
       device::SurfaceDestroyedCallback destroyed_callback) override;
   void EndSession() override;
-  bool EnsureLoaded() override;
+  bool EnsureARCoreLoaded() override;
   base::android::ScopedJavaLocalRef<jobject> GetApplicationContext() override;
 
   // Methods called from the Java side.
@@ -54,7 +54,7 @@ class ArCoreJavaUtils : public device::ArCoreSessionUtils {
       const base::android::JavaParamRef<jobject>& obj);
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> j_arcore_java_utils_;
+  base::android::ScopedJavaGlobalRef<jobject> j_xr_session_coordinator_;
 
   webxr::ArCompositorDelegateProvider compositor_delegate_provider_;
 
@@ -65,4 +65,4 @@ class ArCoreJavaUtils : public device::ArCoreSessionUtils {
 
 }  // namespace webxr
 
-#endif  // COMPONENTS_WEBXR_ANDROID_ARCORE_JAVA_UTILS_H_
+#endif  // COMPONENTS_WEBXR_ANDROID_XR_SESSION_COORDINATOR_H_

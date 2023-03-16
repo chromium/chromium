@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.Surface;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -21,22 +20,24 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Provides ARCore classes access to java-related app functionality.
- *
- * <p>This class provides static methods called by ArDelegateImpl via ArDelegateProvider,
- * and provides JNI interfaces to/from the C++ AR code.</p>
+ * Provides static methods called by the XrDelegateImpl as well as JNI methods to the C/C++ code
+ * in order to interact with the various bits of the Java side of a session. This includes the
+ * responsibility to standup/create any needed overlays/SurfaceViews and forwarding events both
+ * from them and elsewhere within Chrome (forwarded/registered for via XrDelegate). This class is
+ * also responsible for ensuring that there is only one active session at a time and answering
+ * questions about that session; mainly via communication of its static members.
  */
 @JNINamespace("webxr")
-public class ArCoreJavaUtils {
-    private static final String TAG = "ArCoreJavaUtils";
+public class XrSessionCoordinator {
+    private static final String TAG = "XrSessionCoordinator";
     private static final boolean DEBUG_LOGS = false;
 
-    private long mNativeArCoreJavaUtils;
+    private long mNativeXrSessionCoordinator;
 
-    // The native ArCoreDevice runtime creates a ArCoreJavaUtils instance in its constructor,
+    // The native ArCoreDevice runtime creates a XrSessionCoordinator instance in its constructor,
     // and keeps a strong reference to it for the lifetime of the device. It creates and
     // owns an XrImmersiveOverlay for the duration of an immersive session, which in
-    // turn contains a reference to ArCoreJavaUtils for making JNI calls back to the device.
+    // turn contains a reference to XrSessionCoordinator for making JNI calls back to the device.
     private XrImmersiveOverlay mImmersiveOverlay;
 
     // ArDelegateImpl needs to know if there's an active immersive session so that it can handle
@@ -44,7 +45,7 @@ public class ArCoreJavaUtils {
     // in progress, and reset to null on session end. The XrImmersiveOverlay member has a strong
     // reference to the ChromeActivity, and that shouldn't be retained beyond the duration of a
     // session.
-    private static ArCoreJavaUtils sActiveSessionInstance;
+    private static XrSessionCoordinator sActiveSessionInstance;
 
     /** Whether there is a non-null valid {@link #sActiveSessionInstance}. */
     private static ObservableSupplierImpl<Boolean> sActiveSessionAvailableSupplier =
@@ -61,14 +62,9 @@ public class ArCoreJavaUtils {
     }
 
     @CalledByNative
-    private static ArCoreJavaUtils create(long nativeArCoreJavaUtils) {
+    private static XrSessionCoordinator create(long nativeXrSessionCoordinator) {
         ThreadUtils.assertOnUiThread();
-        return new ArCoreJavaUtils(nativeArCoreJavaUtils);
-    }
-
-    @CalledByNative
-    private static String getArCoreShimLibraryPath() {
-        return BundleUtils.getNativeLibraryPath("arcore_sdk_c");
+        return new XrSessionCoordinator(nativeXrSessionCoordinator);
     }
 
     /**
@@ -81,16 +77,18 @@ public class ArCoreJavaUtils {
         return ContextUtils.getApplicationContext();
     }
 
-    private ArCoreJavaUtils(long nativeArCoreJavaUtils) {
-        if (DEBUG_LOGS) Log.i(TAG, "constructor, nativeArCoreJavaUtils=" + nativeArCoreJavaUtils);
-        mNativeArCoreJavaUtils = nativeArCoreJavaUtils;
+    private XrSessionCoordinator(long nativeXrSessionCoordinator) {
+        if (DEBUG_LOGS) {
+            Log.i(TAG, "constructor, nativeXrSessionCoordinator=" + nativeXrSessionCoordinator);
+        }
+        mNativeXrSessionCoordinator = nativeXrSessionCoordinator;
     }
 
     @CalledByNative
     private void startSession(final ArCompositorDelegateProvider compositorDelegateProvider,
             final WebContents webContents, boolean useOverlay, boolean canRenderDomContent) {
         if (DEBUG_LOGS) Log.i(TAG, "startSession");
-        XrImmersiveOverlay.Delegate overlayDelegate = new ArOverlayDelegate(
+        XrImmersiveOverlay.Delegate overlayDelegate = ArClassProvider.getOverlayDelegate(
                 compositorDelegateProvider.create(webContents), useOverlay, canRenderDomContent);
         sActiveSessionInstance = this;
         sActiveSessionAvailableSupplier.set(true);
@@ -132,41 +130,42 @@ public class ArCoreJavaUtils {
     public void onDrawingSurfaceReady(
             Surface surface, WindowAndroid rootWindow, int rotation, int width, int height) {
         if (DEBUG_LOGS) Log.i(TAG, "onDrawingSurfaceReady");
-        if (mNativeArCoreJavaUtils == 0) return;
-        ArCoreJavaUtilsJni.get().onDrawingSurfaceReady(mNativeArCoreJavaUtils, ArCoreJavaUtils.this,
-                surface, rootWindow, rotation, width, height);
+        if (mNativeXrSessionCoordinator == 0) return;
+        XrSessionCoordinatorJni.get().onDrawingSurfaceReady(mNativeXrSessionCoordinator,
+                XrSessionCoordinator.this, surface, rootWindow, rotation, width, height);
     }
 
     public void onDrawingSurfaceTouch(
             boolean isPrimary, boolean isTouching, int pointerId, float x, float y) {
         if (DEBUG_LOGS) Log.i(TAG, "onDrawingSurfaceTouch");
-        if (mNativeArCoreJavaUtils == 0) return;
-        ArCoreJavaUtilsJni.get().onDrawingSurfaceTouch(mNativeArCoreJavaUtils, ArCoreJavaUtils.this,
-                isPrimary, isTouching, pointerId, x, y);
+        if (mNativeXrSessionCoordinator == 0) return;
+        XrSessionCoordinatorJni.get().onDrawingSurfaceTouch(mNativeXrSessionCoordinator,
+                XrSessionCoordinator.this, isPrimary, isTouching, pointerId, x, y);
     }
 
     public void onDrawingSurfaceDestroyed() {
         if (DEBUG_LOGS) Log.i(TAG, "onDrawingSurfaceDestroyed");
-        if (mNativeArCoreJavaUtils == 0) return;
-        ArCoreJavaUtilsJni.get().onDrawingSurfaceDestroyed(
-                mNativeArCoreJavaUtils, ArCoreJavaUtils.this);
+        if (mNativeXrSessionCoordinator == 0) return;
+        XrSessionCoordinatorJni.get().onDrawingSurfaceDestroyed(
+                mNativeXrSessionCoordinator, XrSessionCoordinator.this);
     }
 
     @CalledByNative
     private void onNativeDestroy() {
-        // ArCoreDevice's destructor ends sessions before destroying its native ArCoreSessionUtils
+        // ArCoreDevice's destructor ends sessions before destroying its native XrSessionCoordinator
         // object.
         assert sActiveSessionInstance == null : "unexpected active session in onNativeDestroy";
 
-        mNativeArCoreJavaUtils = 0;
+        mNativeXrSessionCoordinator = 0;
     }
 
     @NativeMethods
     interface Natives {
-        void onDrawingSurfaceReady(long nativeArCoreJavaUtils, ArCoreJavaUtils caller,
+        void onDrawingSurfaceReady(long nativeXrSessionCoordinator, XrSessionCoordinator caller,
                 Surface surface, WindowAndroid rootWindow, int rotation, int width, int height);
-        void onDrawingSurfaceTouch(long nativeArCoreJavaUtils, ArCoreJavaUtils caller,
+        void onDrawingSurfaceTouch(long nativeXrSessionCoordinator, XrSessionCoordinator caller,
                 boolean primary, boolean touching, int pointerId, float x, float y);
-        void onDrawingSurfaceDestroyed(long nativeArCoreJavaUtils, ArCoreJavaUtils caller);
+        void onDrawingSurfaceDestroyed(
+                long nativeXrSessionCoordinator, XrSessionCoordinator caller);
     }
 }

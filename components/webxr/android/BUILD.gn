@@ -21,6 +21,8 @@ source_set("android") {
   sources = [
     "ar_compositor_delegate_provider.cc",
     "ar_compositor_delegate_provider.h",
+    "xr_session_coordinator.cc",
+    "xr_session_coordinator.h",
   ]
 
   if (enable_arcore) {
@@ -29,28 +31,25 @@ source_set("android") {
       "arcore_device_provider.h",
       "arcore_install_helper.cc",
       "arcore_install_helper.h",
-      "arcore_java_utils.cc",
-      "arcore_java_utils.h",
     ]
   }
 
   deps = [
     ":android_utils",
+    ":xr_jni_headers",
     "//base",
     "//components/messages/android",
     "//components/resources:android_resources",
     "//components/strings",
     "//components/webxr:webxr",
     "//content/public/browser",
+    "//device/vr/android:vr_android",
+    "//ui/android",
     "//ui/base",
   ]
 
   if (enable_arcore) {
-    deps += [
-      ":ar_jni_headers",
-      "//device/vr/android/arcore:arcore",
-      "//ui/android",
-    ]
+    deps += [ "//device/vr/android/arcore" ]
   }
 
   libs = [ "android" ]
@@ -86,12 +85,20 @@ android_library("xr_java") {
   # leverages.
   if (enable_arcore || enable_cardboard) {
     sources += [
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegate.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegate.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateImpl.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrImmersiveOverlay.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionCoordinator.java",
     ]
 
-    deps += [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    deps += [
+      "//base:jni_java",
+      "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
   }
 
   # Contains the ARCore-specific implementations of the above interfaces and any
@@ -99,10 +106,8 @@ android_library("xr_java") {
   # runtime implementations.
   if (enable_arcore) {
     sources += [
-      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegate.java",
-      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArClassProvider.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
-      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreJavaUtils.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShim.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShimImpl.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegateImpl.java",
@@ -116,13 +121,13 @@ android_library("xr_java") {
     public_deps +=
         [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java" ]
 
-    deps += [
-      "//base:jni_java",  # needed by ARCoreJavaUtils
-      "//content/public/android:content_java",  # needed by ARCoreJavaUtils
-      "//ui/android:ui_no_recycler_view_java",  # needed by ARCoreJavaUtils
-    ]
-
     srcjar_deps = [ ":webxr_ar_android_enums" ]
+  } else if (enable_cardboard) {
+    # These stub classes are needed for the general Xr infrastructure code, but
+    # are not needed for the more broad always-available code. So we check that
+    # the non-arcore parts of the "general xr" sources are still true before
+    # we attempt to compile these bits in.
+    sources += [ "//components/webxr/android/stubs/java/src/org/chromium/components/webxr/ArClassProvider.java" ]
   }
 
   # Contains the cardboard specific implementations of the above interfaces and
@@ -138,14 +143,15 @@ android_library("xr_java") {
   resources_package = "org.chromium.components.webxr"
 }
 
-if (enable_arcore) {
-  generate_jni("ar_jni_headers") {
-    sources = [
-      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
-      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreJavaUtils.java",
-    ]
-  }
+generate_jni("xr_jni_headers") {
+  sources = [ "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionCoordinator.java" ]
 
+  if (enable_arcore) {
+    sources += [ "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java" ]
+  }
+}
+
+if (enable_arcore) {
   java_cpp_enum("webxr_ar_android_enums") {
     sources = [ "arcore_install_helper.h" ]
   }
