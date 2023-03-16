@@ -173,7 +173,7 @@ bool HasNewPasswordVote(const FormPredictions& form) {
 // Adds predictions to |predictions->fields| if |field_info_manager| has
 // predictions for corresponding fields. Predictions from |field_info_manager|
 // have priority over server predictions.
-void AddLocallySavedPredictions(FieldInfoManager* field_info_manager,
+void AddLocallySavedPredictions(const FieldInfoManager* field_info_manager,
                                 FormPredictions* predictions,
                                 BrowserSavePasswordProgressLogger* logger) {
   DCHECK(predictions);
