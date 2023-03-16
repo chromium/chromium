@@ -2545,6 +2545,18 @@ void NavigationRequest::BeginNavigationImpl() {
           /*is_renderer_initiated_check=*/false));
     }
 
+    // TODO(crbug.com/1400535, crbug.com/1220337): Ideally this shouldn't need
+    // a null check, but see the notes about GetFrameHostForNavigation's return
+    // value above. If this navigation is deferred due to navigation queueing,
+    // ensure that this code will still run after the final RFH is picked.
+    if (HasRenderFrameHost()) {
+      auto* site_instance = render_frame_host_.value()->GetSiteInstance();
+      if (!site_instance->HasSite() &&
+          SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url)) {
+        site_instance->ConvertToDefaultOrSetSite(GetUrlInfo());
+      }
+    }
+
     WillCommitWithoutUrlLoader();
     return;
   }
