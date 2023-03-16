@@ -82,6 +82,9 @@ class CONTENT_EXPORT AttributionOsLevelManagerAndroid
   base::flat_map<int, base::OnceClosure> pending_data_deletion_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  int next_pending_data_deletion_callback_id_
+      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
   base::android::ScopedJavaGlobalRef<jobject> jobj_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

@@ -14,7 +14,6 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/atomic_sequence_num.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
@@ -193,8 +192,7 @@ void AttributionOsLevelManagerAndroid::ClearData(
         return url::GURLAndroid::FromNativeGURL(env, origin.GetURL());
       });
 
-  static base::AtomicSequenceNumber g_request_id_counter;
-  int request_id = g_request_id_counter.GetNext();
+  int request_id = next_pending_data_deletion_callback_id_++;
   pending_data_deletion_callbacks_.emplace(request_id, std::move(done));
 
   Java_AttributionOsLevelManager_deleteRegistrations(
