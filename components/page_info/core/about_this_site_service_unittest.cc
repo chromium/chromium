@@ -140,12 +140,25 @@ TEST_P(AboutThisSiteServiceTest, ValidResponse) {
 
 // Tests the language specific feature check.
 TEST_P(AboutThisSiteServiceTest, FeatureCheck) {
-  EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled("en-US"));
-  EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled("en-GB"));
-  EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled("en"));
+  const char* enabled[]{"en-US", "en-UK", "en"};
+  const char* disabled[]{"da", "id", "zh-TW", "ja"};
+  const char* enabled_on_android[]{"pt", "pt-BR", "pt-PT", "fr", "fr-CA", "it",
+                                   "nl", "de",    "de-DE", "es", "es-419"};
 
-  EXPECT_FALSE(page_info::IsAboutThisSiteFeatureEnabled("de-DE"));
-  EXPECT_FALSE(page_info::IsAboutThisSiteFeatureEnabled("de"));
+  for (const char* lang : enabled) {
+    EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled(lang));
+  }
+  for (const char* lang : disabled) {
+    EXPECT_FALSE(page_info::IsAboutThisSiteFeatureEnabled(lang));
+  }
+
+  for (const char* lang : enabled_on_android) {
+#if BUILDFLAG(IS_ANDROID)
+    EXPECT_TRUE(page_info::IsAboutThisSiteFeatureEnabled(lang));
+#else
+    EXPECT_FALSE(page_info::IsAboutThisSiteFeatureEnabled(lang));
+#endif
+  }
 }
 
 // Tests that incorrect proto messages are discarded.
