@@ -381,26 +381,11 @@ size_t FormDataImporter::ExtractAddressProfiles(
       // And close the div of the section import log.
       LOG_AF(import_log_buffer) << CTag{"div"};
     }
-    // Run the extract on the union of the section if the import was not
-    // successful and if there is more than one section.
-    if (num_complete_profiles > 0) {
-      autofill_metrics::LogAddressFormImportStatusMetric(
-          autofill_metrics::AddressProfileImportStatusMetric::REGULAR_IMPORT);
-    } else if (sections.size() > 1) {
-      // Try to extract by combining all sections.
-      if (ExtractAddressProfileFromSection(form, absl::nullopt,
-                                           address_profile_import_candidates,
-                                           &import_log_buffer)) {
-        num_complete_profiles++;
-        autofill_metrics::LogAddressFormImportStatusMetric(
-            autofill_metrics::AddressProfileImportStatusMetric::
-                SECTION_UNION_IMPORT);
-      }
-    }
-    if (num_complete_profiles == 0) {
-      autofill_metrics::LogAddressFormImportStatusMetric(
-          autofill_metrics::AddressProfileImportStatusMetric::NO_IMPORT);
-    }
+    autofill_metrics::LogAddressFormImportStatusMetric(
+        num_complete_profiles == 0
+            ? autofill_metrics::AddressProfileImportStatusMetric::kNoImport
+            : autofill_metrics::AddressProfileImportStatusMetric::
+                  kRegularImport);
   }
   LOG_AF(import_log_buffer)
       << LogMessage::kImportAddressProfileFromFormNumberOfImports
@@ -414,7 +399,7 @@ size_t FormDataImporter::ExtractAddressProfiles(
 
 bool FormDataImporter::ExtractAddressProfileFromSection(
     const FormStructure& form,
-    const absl::optional<Section>& section,
+    const Section& section,
     std::vector<FormDataImporter::AddressProfileImportCandidate>*
         address_profile_import_candidates,
     LogBuffer* import_log_buffer) {
@@ -453,9 +438,9 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const auto& field : form) {
     // Reject fields that are not within the specified |section|.
-    // If no section is passed, use all fields.
-    if (section && field->section != *section)
+    if (field->section != section) {
       continue;
+    }
 
     std::u16string value;
     base::TrimWhitespace(field->value, base::TRIM_ALL, &value);

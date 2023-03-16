@@ -89,12 +89,15 @@ enum class AddressProfileImportCountrySpecificFieldRequirementsMetric {
   kMaxValue = LINE1_ZIP_STATE_CITY_REQUIREMENT_VIOLATED,
 };
 
-// Represent the overall status of a profile import.
+// These values are persisted to UMA logs. Entries should not be renumbered
+// and numeric values should never be reused. These values represent the overall
+// status of a profile import.
 enum class AddressProfileImportStatusMetric {
-  NO_IMPORT = 0,
-  REGULAR_IMPORT = 1,
-  SECTION_UNION_IMPORT = 2,
-  kMaxValue = SECTION_UNION_IMPORT,
+  kNoImport = 0,
+  kRegularImport = 1,
+  // This value was deprecated in M113.
+  kSectionUnionImport = 2,
+  kMaxValue = kSectionUnionImport,
 };
 
 // Logs the address profile import UKM after the form submission.

@@ -80,9 +80,9 @@ TEST_F(AutofillProfileImportMetricsTest, ProfileImportStatus_NoImport) {
   using Metric = AddressProfileImportStatusMetric;
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.AddressProfileImportStatus"),
-      BucketsAre(Bucket(Metric::REGULAR_IMPORT, 0),
-                 Bucket(Metric::NO_IMPORT, 1),
-                 Bucket(Metric::SECTION_UNION_IMPORT, 0)));
+      BucketsAre(Bucket(Metric::kRegularImport, 0),
+                 Bucket(Metric::kNoImport, 1),
+                 Bucket(Metric::kSectionUnionImport, 0)));
 }
 
 // Test that the ProfileImportStatus logs a regular import.
@@ -105,9 +105,9 @@ TEST_F(AutofillProfileImportMetricsTest, ProfileImportStatus_RegularImport) {
   using Metric = AddressProfileImportStatusMetric;
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.AddressProfileImportStatus"),
-      BucketsAre(Bucket(Metric::REGULAR_IMPORT, 1),
-                 Bucket(Metric::NO_IMPORT, 0),
-                 Bucket(Metric::SECTION_UNION_IMPORT, 0)));
+      BucketsAre(Bucket(Metric::kRegularImport, 1),
+                 Bucket(Metric::kNoImport, 0),
+                 Bucket(Metric::kSectionUnionImport, 0)));
 }
 
 // Test that the ProfileImportRequirements are all counted as fulfilled for a

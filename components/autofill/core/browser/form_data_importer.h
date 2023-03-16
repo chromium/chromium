@@ -220,7 +220,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // the union of all sections.
   bool ExtractAddressProfileFromSection(
       const FormStructure& form,
-      const absl::optional<Section>& section,
+      const Section& section,
       std::vector<AddressProfileImportCandidate>*
           address_profile_import_candidates,
       LogBuffer* import_log_buffer);
