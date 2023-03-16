@@ -142,50 +142,47 @@ source_set("perf_tests_hook") {
   deps = [ ":tests_hook" ]
 }
 
-if (!is_fat_secondary_toolchain) {
-  tweak_info_plist("info_plist") {
-    info_plists = [
-      "resources/Info.plist",
-      "resources/ChromeAddition+Info.plist",
-    ]
-    if (ios_enable_background_mode) {
-      info_plists += [ "resources/Background+Info.plist" ]
-    }
-    if (target_environment == "catalyst") {
-      info_plists += [ "resources/Environment+Catalyst.plist" ]
-    } else {
-      info_plists += [ "resources/Environment+Default.plist" ]
-    }
-    if (ios_chrome_info_plist_additions != []) {
-      info_plists += ios_chrome_info_plist_additions
-    }
-    if (ios_encryption_export_compliance_code != "") {
-      info_plists += [ "resources/EncryptionExportCompliance+Info.plist" ]
-    }
-    if (ios_chrome_info_plist_addition_targets != []) {
-      if (!defined(deps)) {
-        deps = []
-      }
-      deps += ios_chrome_info_plist_addition_targets
-    }
-    args = [
-      "--branding=$chromium_short_name",
-      "--add-gtm-metadata=1",
-    ]
+tweak_info_plist("info_plist") {
+  info_plists = [
+    "resources/Info.plist",
+    "resources/ChromeAddition+Info.plist",
+  ]
+  if (ios_enable_background_mode) {
+    info_plists += [ "resources/Background+Info.plist" ]
   }
+  if (target_environment == "catalyst") {
+    info_plists += [ "resources/Environment+Catalyst.plist" ]
+  } else {
+    info_plists += [ "resources/Environment+Default.plist" ]
+  }
+  if (ios_chrome_info_plist_additions != []) {
+    info_plists += ios_chrome_info_plist_additions
+  }
+  if (ios_encryption_export_compliance_code != "") {
+    info_plists += [ "resources/EncryptionExportCompliance+Info.plist" ]
+  }
+  if (ios_chrome_info_plist_addition_targets != []) {
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += ios_chrome_info_plist_addition_targets
+  }
+  args = [
+    "--branding=$chromium_short_name",
+    "--add-gtm-metadata=1",
+  ]
+}
 
-  compile_entitlements("entitlements") {
-    entitlements_templates = [ "resources/Chrome.entitlements" ]
-    if (ios_chrome_entitlements_additions != []) {
-      entitlements_templates += ios_chrome_entitlements_additions
-    }
-    if (target_environment == "catalyst") {
-      entitlements_templates +=
-          [ "resources/Environment+Catalyst.entitlements" ]
-    }
-    substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
-    output_name = "$target_gen_dir/$chromium_short_name.entitlements"
+compile_entitlements("entitlements") {
+  entitlements_templates = [ "resources/Chrome.entitlements" ]
+  if (ios_chrome_entitlements_additions != []) {
+    entitlements_templates += ios_chrome_entitlements_additions
   }
+  if (target_environment == "catalyst") {
+    entitlements_templates += [ "resources/Environment+Catalyst.entitlements" ]
+  }
+  substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+  output_name = "$target_gen_dir/$chromium_short_name.entitlements"
 }
 
 if (ios_enable_credential_provider_extension) {

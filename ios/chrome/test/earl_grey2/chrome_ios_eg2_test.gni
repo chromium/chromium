@@ -11,45 +11,43 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//ios/third_party/earl_grey2/ios_eg2_test.gni")
 
 template("chrome_ios_eg2_test_app_host") {
-  if (!is_fat_secondary_toolchain) {
-    if (!defined(entitlements_path) && !defined(entitlements_target)) {
-      _target_name = target_name
-      _tweak_entitlements = target_name + "_tweak_entitlements"
-      compile_entitlements(_tweak_entitlements) {
-        substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
-        output_name = "$target_gen_dir/$_target_name.entitlements"
-        entitlements_templates =
-            [ "//ios/chrome/test/earl_grey/resources/Chrome.entitlements" ]
-        if (ios_egtests_entitlements_additions != []) {
-          entitlements_templates += ios_egtests_entitlements_additions
-        }
+  if (!defined(entitlements_path) && !defined(entitlements_target)) {
+    _target_name = target_name
+    _tweak_entitlements = target_name + "_tweak_entitlements"
+    compile_entitlements(_tweak_entitlements) {
+      substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+      output_name = "$target_gen_dir/$_target_name.entitlements"
+      entitlements_templates =
+          [ "//ios/chrome/test/earl_grey/resources/Chrome.entitlements" ]
+      if (ios_egtests_entitlements_additions != []) {
+        entitlements_templates += ios_egtests_entitlements_additions
       }
     }
+  }
 
-    if (!defined(info_plist) && !defined(info_plist_target)) {
-      _tweak_info_plist = target_name + "_tweak_info_plist"
-      tweak_info_plist(_tweak_info_plist) {
-        info_plists = [
-          "//ios/chrome/app/resources/Info.plist",
-          "//ios/chrome/app/resources/EarlGreyAddition+Info.plist",
-        ]
-        if (ios_chrome_info_plist_additions != []) {
-          info_plists += ios_chrome_info_plist_additions
-        }
-        if (ios_chrome_info_plist_addition_targets != []) {
-          if (!defined(deps)) {
-            deps = []
-          }
-          deps += ios_chrome_info_plist_addition_targets
-        }
-        if (defined(invoker.extra_info_plists)) {
-          info_plists += invoker.extra_info_plists
-        }
-        args = [
-          "--branding=$chromium_short_name",
-          "--version-overrides=MINOR=9999",
-        ]
+  if (!defined(info_plist) && !defined(info_plist_target)) {
+    _tweak_info_plist = target_name + "_tweak_info_plist"
+    tweak_info_plist(_tweak_info_plist) {
+      info_plists = [
+        "//ios/chrome/app/resources/Info.plist",
+        "//ios/chrome/app/resources/EarlGreyAddition+Info.plist",
+      ]
+      if (ios_chrome_info_plist_additions != []) {
+        info_plists += ios_chrome_info_plist_additions
       }
+      if (ios_chrome_info_plist_addition_targets != []) {
+        if (!defined(deps)) {
+          deps = []
+        }
+        deps += ios_chrome_info_plist_addition_targets
+      }
+      if (defined(invoker.extra_info_plists)) {
+        info_plists += invoker.extra_info_plists
+      }
+      args = [
+        "--branding=$chromium_short_name",
+        "--version-overrides=MINOR=9999",
+      ]
     }
   }
 
