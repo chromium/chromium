@@ -40,6 +40,7 @@ export enum State {
   PLAYING_RESULT_VIDEO = 'playing-result-video',
   RECORD_TYPE_GIF = 'record-type-gif',
   RECORD_TYPE_NORMAL = 'record-type-normal',
+  RECORD_TYPE_TIME_LAPSE = 'record-type-time-lapse',
   // Starts/Ends when start/stop event of MediaRecorder is triggered.
   RECORDING = 'recording',
   // Binds with paused state of MediaRecorder.

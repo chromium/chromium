@@ -18,6 +18,7 @@ import {
   setAvc1Parameters,
   VideoResult,
 } from '../device/index.js';
+import {TimeLapseResult} from '../device/mode/video';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import * as expert from '../expert.js';
@@ -833,6 +834,14 @@ export class Camera extends View implements CameraViewUI {
       throw e;
     }
     ChromeHelper.getInstance().maybeTriggerSurvey();
+  }
+
+  async onTimeLapseCaptureDone({timeLapseSaver}: TimeLapseResult):
+      Promise<void> {
+    // TODO(b/236800499): Send perf metrics, trigger survey.
+    nav.open(ViewName.FLASH);
+    await this.resultSaver.finishSaveVideo(timeLapseSaver);
+    nav.close(ViewName.FLASH);
   }
 
   override layout(): void {

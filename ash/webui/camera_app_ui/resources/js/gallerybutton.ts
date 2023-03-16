@@ -13,7 +13,7 @@ import {
   FileAccessEntry,
 } from './models/file_system_access_entry.js';
 import {ResultSaver} from './models/result_saver.js';
-import {VideoSaver} from './models/video_saver.js';
+import {TimeLapseSaver, VideoSaver} from './models/video_saver.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {extractImageFromBlob} from './thumbnailer.js';
 import {
@@ -247,7 +247,7 @@ export class GalleryButton implements ResultSaver {
     return VideoSaver.create(videoRotation);
   }
 
-  async finishSaveVideo(video: VideoSaver): Promise<void> {
+  async finishSaveVideo(video: TimeLapseSaver|VideoSaver): Promise<void> {
     const file = await video.endWrite();
     assert(file !== null);
 
