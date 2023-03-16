@@ -283,7 +283,6 @@ ios_web_view_sources = [
 ]
 
 ios_web_view_deps = [
-  ":web_view_main_frame",
   ":web_view_resources",
   "//base",
   "//components/autofill/core/browser",
@@ -557,13 +556,6 @@ test("ios_web_view_inttests") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   assert_no_deps = ios_assert_no_deps
-}
-
-optimize_js("web_view_main_frame") {
-  primary_script =
-      "//components/translate/ios/browser/resources/language_detection.js"
-  sources =
-      [ "//components/translate/ios/browser/resources/language_detection.js" ]
 }
 
 repack_locales("repack_locales") {

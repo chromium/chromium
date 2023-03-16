@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -16,6 +18,7 @@ source_set("browser") {
   ]
 
   deps = [
+    ":language_detection_js",
     "//base",
     "//components/language/core/browser",
     "//components/prefs",
@@ -29,12 +32,24 @@ source_set("browser") {
   ]
 }
 
+optimize_ts("language_detection_js") {
+  visibility = [ ":browser" ]
+
+  sources = [ "resources/language_detection.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_language_detection_tab_helper_observer_bridge_unittest.mm",
     "ios_language_detection_tab_helper_unittest.mm",
+    "language_detection_javascript_unittest.mm",
     "string_clipping_util_unittest.cc",
   ]
   deps = [
@@ -45,6 +60,8 @@ source_set("unit_tests") {
     "//components/translate/core/browser:translate_pref_names",
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
+    "//ios/web/public/test:javascript_test",
+    "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]

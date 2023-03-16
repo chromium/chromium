@@ -76,7 +76,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "chrome_ios_translate_client_unittest.mm",
-    "language_detection_javascript_unittest.mm",
     "translate_service_ios_unittest.cc",
   ]
   deps = [
