@@ -274,7 +274,8 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
 
 std::unique_ptr<views::View> CreateEditNoteRow(
     const password_manager::PasswordForm& form,
-    raw_ptr<views::Textarea>* textarea) {
+    raw_ptr<views::Textarea>* textarea,
+    raw_ptr<views::Label>* error_label) {
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
   row->SetDefault(
@@ -284,8 +285,17 @@ std::unique_ptr<views::View> CreateEditNoteRow(
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
   row->AddChildView(CreateWrappedView(CreateIconView(kNotesIcon)));
+  auto* note_with_error_label_view =
+      row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  note_with_error_label_view->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  note_with_error_label_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
-  *textarea = row->AddChildView(std::make_unique<views::Textarea>());
+  *textarea = note_with_error_label_view->AddChildView(
+      std::make_unique<views::Textarea>());
   (*textarea)->SetText(form.GetNoteWithEmptyUniqueDisplayName());
   // TODO(crbug.com/1382017): use internationalized string.
   (*textarea)->SetAccessibleName(u"Password Note");
@@ -295,11 +305,11 @@ std::unique_ptr<views::View> CreateEditNoteRow(
       gfx::Size(0, kMaxLinesVisibleFromPasswordNote * line_height +
                        2 * ChromeLayoutProvider::Get()->GetDistanceMetric(
                                views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING)));
-  (*textarea)->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kUnbounded));
+
   (*textarea)->SetID(static_cast<int>(ManagePasswordsViewIDs::kNoteTextarea));
+  // TODO(crbug.com/1382017): use internationalized string.
+  *error_label = note_with_error_label_view->AddChildView(
+      CreateErrorLabel(u"Notes can save up to 1000 characters."));
   return row;
 }
 
@@ -413,8 +423,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       base::BindRepeating(&ManagePasswordsDetailsView::SwitchToEditNoteMode,
                           base::Unretained(this)),
       ManagePasswordsViewIDs::kEditNoteButton));
-  edit_note_row_ =
-      AddChildView(CreateEditNoteRow(password_form, &note_textarea_));
+  edit_note_row_ = AddChildView(
+      CreateEditNoteRow(password_form, &note_textarea_, &note_error_label_));
   text_changed_subscriptions_.push_back(note_textarea_->AddTextChangedCallback(
       base::BindRepeating(&ManagePasswordsDetailsView::OnUserInputChanged,
                           base::Unretained(this))));
@@ -485,17 +495,16 @@ void ManagePasswordsDetailsView::OnUserInputChanged() {
             : username_exists_callback_.Run(username_textfield_->GetText());
     username_error_label_->SetVisible(username_exists);
     is_username_invalid = username_empty || username_exists;
+    username_textfield_->SetInvalid(is_username_invalid);
   }
+
   bool is_note_invalid =
       note_textarea_->IsDrawn() &&
       note_textarea_->GetText().length() >
           password_manager::constants::kMaxPasswordNoteLength;
-
-  if (username_textfield_ && username_textfield_->IsDrawn()) {
-    username_textfield_->SetInvalid(is_username_invalid);
-  }
   if (note_textarea_->IsDrawn()) {
     note_textarea_->SetInvalid(is_note_invalid);
+    note_error_label_->SetVisible(is_note_invalid);
   }
 
   // During validation error label may have changed it's visibility status, and

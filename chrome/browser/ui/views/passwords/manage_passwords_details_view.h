@@ -95,6 +95,7 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
   raw_ptr<views::View> read_note_row_ = nullptr;
   raw_ptr<views::View> edit_note_row_ = nullptr;
   raw_ptr<views::Textarea> note_textarea_ = nullptr;
+  raw_ptr<views::Label> note_error_label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_DETAILS_VIEW_H_
