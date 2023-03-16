@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -1491,6 +1492,26 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
         base::CommandLine::FromString(L"C:\\temp\\temp.exe"),
         TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, false));
   }
+
+  // Set up a mock `GoogleUpdate.exe`, and the following mock directories:
+  // `Download`, `Install`, and a versioned `1.2.3.4` directory.
+  const absl::optional<base::FilePath> google_update_exe =
+      GetGoogleUpdateExePath(scope);
+  ASSERT_TRUE(google_update_exe.has_value());
+
+  const base::FilePath exe_dir(google_update_exe->DirName());
+
+  base::FilePath cmd_exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path));
+  cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
+
+  for (const base::FilePath& dir :
+       {exe_dir, exe_dir.Append(L"1.2.3.4"), exe_dir.Append(L"Download"),
+        exe_dir.Append(L"Install")}) {
+    ASSERT_TRUE(base::CreateDirectory(dir));
+    ASSERT_TRUE(base::CopyFile(cmd_exe_path, dir.Append(kLegacyExeName)));
+    ASSERT_TRUE(base::CopyFile(cmd_exe_path, dir.Append(L"mock.exe")));
+  }
 }
 
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
@@ -1555,6 +1576,30 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
           }));
 
   EXPECT_EQ(count_entries, 0);
+
+  // Expect only a single file `GoogleUpdate.exe` and nothing else under
+  // `\Google\Update`.
+  int count_google_update_exe = 0;
+  const absl::optional<base::FilePath> google_update_exe =
+      GetGoogleUpdateExePath(scope);
+  ASSERT_TRUE(google_update_exe.has_value());
+  ASSERT_TRUE(base::PathExists(*google_update_exe));
+
+  const base::FilePath exe_dir(google_update_exe->DirName());
+
+  base::FileEnumerator it(
+      exe_dir, false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
+    if (name == google_update_exe) {
+      ++count_google_update_exe;
+      continue;
+    }
+
+    ADD_FAILURE() << "Unexpected file/directory found: " << name;
+  }
+
+  EXPECT_EQ(count_google_update_exe, 1);
 }
 
 void InstallApp(UpdaterScope scope, const std::string& app_id) {

@@ -172,14 +172,16 @@ bool SwapGoogleUpdate(UpdaterScope scope,
 
 // Uninstall the GoogleUpdate services, run values, scheduled tasks, and files.
 bool UninstallGoogleUpdate(UpdaterScope scope,
-                           const base::FilePath& updater_path,
                            const base::FilePath& temp_path,
                            HKEY root) {
+  VLOG(2) << __func__;
+
   if (IsSystemInstall(scope)) {
     // Delete the GoogleUpdate services.
     ForEachServiceWithPrefix(
         kLegacyServiceNamePrefix, kLegacyServiceDisplayNamePrefix,
         base::BindRepeating([](const std::wstring& service_name) {
+          VLOG(2) << __func__ << ": Deleting legacy service: " << service_name;
           if (!DeleteService(service_name)) {
             VLOG(1) << __func__
                     << ": failed to delete service: " << service_name;
@@ -190,6 +192,7 @@ bool UninstallGoogleUpdate(UpdaterScope scope,
     ForEachRegistryRunValueWithPrefix(
         kLegacyRunValuePrefix,
         base::BindRepeating([](const std::wstring& run_name) {
+          VLOG(2) << __func__ << ": Deleting legacy run value: " << run_name;
           base::win::RegKey(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_WRITE)
               .DeleteValue(run_name.c_str());
         }));
@@ -204,21 +207,28 @@ bool UninstallGoogleUpdate(UpdaterScope scope,
       base::BindRepeating(
           [](scoped_refptr<TaskScheduler> task_scheduler,
              const std::wstring& task_name) {
+            VLOG(2) << __func__ << ": Deleting legacy task: " << task_name;
             task_scheduler->DeleteTask(task_name.c_str());
           },
           task_scheduler));
 
-  // Delete the GoogleUpdate subdirectories.
-  const absl::optional<base::FilePath> target_path =
+  // Keep only `GoogleUpdate.exe` and nothing else under `\Google\Update`.
+  const absl::optional<base::FilePath> google_update_exe =
       GetGoogleUpdateExePath(scope);
-  if (!target_path) {
+  if (!google_update_exe) {
     return false;
   }
 
-  base::FileEnumerator it(*target_path, false,
-                          base::FileEnumerator::DIRECTORIES);
+  base::FileEnumerator it(
+      google_update_exe->DirName(), false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
   std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
   for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
+    if (name == google_update_exe) {
+      continue;
+    }
+
+    VLOG(2) << __func__ << ": Deleting legacy path: " << name;
     list->AddDeleteTreeWorkItem(name, temp_path);
   }
 
@@ -339,9 +349,9 @@ bool ComServerApp::SwapInNewVersion() {
 
   const bool succeeded = list->Do();
   if (succeeded) {
-    LOG_IF(ERROR, UninstallGoogleUpdate(
-                      updater_scope(), updater_path, temp_dir->GetPath(),
-                      UpdaterScopeToHKeyRoot(updater_scope())));
+    LOG_IF(ERROR,
+           UninstallGoogleUpdate(updater_scope(), temp_dir->GetPath(),
+                                 UpdaterScopeToHKeyRoot(updater_scope())));
   }
 
   return succeeded;
