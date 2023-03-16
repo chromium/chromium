@@ -340,12 +340,11 @@ void BluetoothSocketFloss::CompleteAccept(
 void BluetoothSocketFloss::CompleteClose(
     base::OnceClosure callback,
     DBusResult<FlossDBusClient::BtifStatus> result) {
-  if (!result.has_value()) {
-    is_accepting_ = false;
+  if (result.has_value()) {
+    DVLOG(1) << "Result of closing socket = " << static_cast<uint32_t>(*result);
   }
 
-  DVLOG(1) << "Result of closing socket = " << static_cast<uint32_t>(*result);
-
+  is_accepting_ = false;
   std::move(callback).Run();
 }
 
