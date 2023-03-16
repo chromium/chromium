@@ -4808,6 +4808,17 @@
      ]
     }
    },
+   "encoding": {
+    "streams": {
+     "stringification-crash.html": [
+      "bbcbe3009661692f907c7a4d9efe18eb9d408a59",
+      [
+       null,
+       {}
+      ]
+     ]
+    }
+   },
    "fetch": {
     "api": {
      "crashtests": {
@@ -266029,11 +266040,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "e2b379f293f03e2d883232d486b9dede9cebb117",
+     "16fe3a02d45fb117d383db73c96fa3ae0e3d1cd2",
      []
     ],
     "mtime.json": [
-     "e5e170b237f002c898a0e2e3adda01f990ed3368",
+     "f5b2b9cb67d685107c999aab47e414484e60b24c",
      []
     ]
    },
@@ -364435,7 +364446,7 @@
      []
     ],
     "cross-origin-iframe.sub.html.ini": [
-     "004f0b64c9b047e6dcbba796907f0ca31bef0a7e",
+     "45ef588eda6c381c98422b28c701a1ba6b8a51f3",
      []
     ],
     "idlharness.window-expected.txt": [
@@ -365325,7 +365336,7 @@
        []
       ],
       "utils.js": [
-       "76c5055d44f71166744080f72dcca539456f31c1",
+       "394d81706cc8ec7f11e566b91d272e6edd3cc1fa",
        []
       ]
      }
@@ -379894,7 +379905,7 @@
       []
      ],
      "unregister-immediately-during-extendable-events.https.html.ini": [
-      "538577a805436568c7d1e056465b23abae9720c1",
+      "2159c971e7cafdbc3c8657e1cf7803a72bbad0f0",
       []
      ],
      "unregister-then-register-new-script.https-expected.txt": [
@@ -384297,20 +384308,20 @@
    },
    "top-level-storage-access-api": {
     "README.md": [
-     "31a32b8033e3e3d3b2c6f9a04230b76186fbc1c3",
+     "e3636a221ecd07caaea91a68e677f4bd5f0bc1ee",
      []
     ],
     "tentative": {
-     "requestStorageAccessForOrigin-insecure.sub.window.js.ini": [
-      "a4331a212effab5d3e84c494025b4183a814d03a",
+     "requestStorageAccessFor-insecure.sub.window.js.ini": [
+      "66c1f134a8f9fb7343c8f56416d83cc87d9229df",
       []
      ],
      "requestStorageAccessFor.sub.https.window-expected.txt": [
-      "fbc4eb52e7b0464842231afcfb2704ff830cb95c",
+      "3fbec3e2e5067b51d1c541fef7d2793d84aed6b6",
       []
      ],
-     "requestStorageAccessForOrigin.sub.https.window.js.ini": [
-      "acdb11a4df3e91bdf19b0793f2ea245366d4de8e",
+     "requestStorageAccessFor.sub.https.window.js.ini": [
+      "05b9275de1e523bd606ea834fd860c865491bd0e",
       []
      ],
      "resources": {
@@ -384323,11 +384334,11 @@
        []
       ],
       "requestStorageAccessFor-iframe.html": [
-       "43d16705c8515b48685420c8d14925af90afb62a",
+       "050196dfdb9e66d2309a8f2286cb0a67eb34121b",
        []
       ],
       "requestStorageAccessFor-iframe.https.html": [
-       "db03b25e14d7883a89cac79746c11b280ec24dae",
+       "14da63b033cbe3418af599939d3cf407485ccf8c",
        []
       ]
      }
@@ -559584,7 +559595,7 @@
       ]
      ],
      "loaf-desired-exec-time.html": [
-      "5fecb20fb40dad1313d8935b37835b40d43d43f9",
+      "d47ca28c303a72531d5bb0b3438980a9e269c1d7",
       [
        null,
        {
@@ -608036,7 +608047,7 @@
    "top-level-storage-access-api": {
     "tentative": {
      "requestStorageAccessFor-insecure.sub.window.js": [
-      "8cf72b85fa81217fac5adb11a582d4ad641e34d7",
+      "18d752f28ad35f6fdff55f0190ccea62d781fefb",
       [
        "top-level-storage-access-api/tentative/requestStorageAccessFor-insecure.sub.window.html",
        {
@@ -608058,7 +608069,7 @@
       ]
      ],
      "requestStorageAccessFor.sub.https.window.js": [
-      "6fff9e9189e495af43ef0a4c9a087cbc05c7d14c",
+      "9e16740cd2adfc8e04cac4504079fa2908013de1",
       [
        "top-level-storage-access-api/tentative/requestStorageAccessFor.sub.https.window.html",
        {
