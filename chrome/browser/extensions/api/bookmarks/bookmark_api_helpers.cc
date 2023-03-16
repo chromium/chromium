@@ -88,7 +88,7 @@ void PopulateBookmarkTreeNode(
 
   if (bookmarks::IsDescendantOf(node, managed->managed_node())) {
     out_bookmark_tree_node->unmodifiable =
-        api::bookmarks::BOOKMARK_TREE_NODE_UNMODIFIABLE_MANAGED;
+        api::bookmarks::BookmarkTreeNodeUnmodifiable::kManaged;
   }
 
   if (recurse && node->is_folder()) {

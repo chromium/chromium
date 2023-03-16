@@ -119,7 +119,7 @@ TEST_F(ExtensionBookmarksTest, GetModifiableNode) {
   EXPECT_EQ("Digg", tree.title);
   ASSERT_TRUE(tree.url);
   EXPECT_EQ("http://www.reddit.com/", *tree.url);
-  EXPECT_EQ(api::bookmarks::BOOKMARK_TREE_NODE_UNMODIFIABLE_NONE,
+  EXPECT_EQ(api::bookmarks::BookmarkTreeNodeUnmodifiable::kNone,
             tree.unmodifiable);
 }
 
@@ -132,7 +132,7 @@ TEST_F(ExtensionBookmarksTest, GetManagedNode) {
                                               false);  // Only folders.
   EXPECT_EQ("Chromium", tree.title);
   EXPECT_EQ("http://www.chromium.org/", *tree.url);
-  EXPECT_EQ(api::bookmarks::BOOKMARK_TREE_NODE_UNMODIFIABLE_MANAGED,
+  EXPECT_EQ(api::bookmarks::BookmarkTreeNodeUnmodifiable::kManaged,
             tree.unmodifiable);
 }
 

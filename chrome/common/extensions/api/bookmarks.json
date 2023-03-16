@@ -6,6 +6,9 @@
   {
     "namespace": "bookmarks",
     "description": "Use the <code>chrome.bookmarks</code> API to create, organize, and otherwise manipulate bookmarks. Also see <a href='override'>Override Pages</a>, which you can use to create a custom Bookmark Manager page.",
+    "compiler_options": {
+      "modernised_enums": true
+    },
     "properties": {
       "MAX_WRITE_OPERATIONS_PER_HOUR": {
         "value": 1000000,
