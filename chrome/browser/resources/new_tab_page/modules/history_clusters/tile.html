@@ -2,7 +2,7 @@
   :host {
     background:
         var(--color-new-tab-page-history-clusters-module-item-background);
-    border-radius: 25px;
+    border-radius: 12px;
     color: var(--color-new-tab-page-primary-foreground);
     height: 100%;
     width: 100%;
@@ -33,18 +33,19 @@
 
   #image {
     background: var(--color-new-tab-page-module-background);
-    border-radius: 25px;
     overflow: hidden;
     position: relative;
   }
 
   :host([large-format]) #image {
+    border-radius: 7px;
     height: 152px;
     margin: 16px 16px;
     width: 320px;
   }
 
   :host([medium-format]) #image {
+    border-radius: 6px;
     height: 128px;
     margin: 8px;
     width: 128px;
