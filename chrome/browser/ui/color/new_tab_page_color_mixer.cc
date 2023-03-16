@@ -446,8 +446,13 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
       kColorNewTabPageBackgroundOverride};
   mixer[kColorNewTabPageModuleItemBackground] = {
       kColorNewTabPageBackgroundOverride};
-  mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
-      dark_mode ? gfx::kGoogleGrey700 : gfx::kGoogleGrey100};
+  if (dark_mode) {
+    mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
+        kColorNewTabPageBackground};
+  } else {
+    mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
+        gfx::kGoogleGrey100};
+  }
   mixer[kColorNewTabPageModuleIconContainerBackground] =
       ui::SetAlpha(accent_color,
                    /* 24% opacity */ 0.24 * SK_AlphaOPAQUE);
