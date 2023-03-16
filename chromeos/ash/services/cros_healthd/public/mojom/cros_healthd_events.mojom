@@ -434,6 +434,56 @@ struct StylusGarageEventInfo {
   State state@0;
 };
 
+// Stylus touch point info.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct StylusTouchPointInfo {
+  // The x position.
+  uint32 x@0;
+  // The y position.
+  uint32 y@1;
+  // The pressure applied to the touch contact.
+  NullableUint32? pressure@2;
+};
+
+// Emitted when new touch point is updated.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct StylusTouchEvent {
+  // The info of the stylus touch point. A null touch point means the stylus
+  // leaves the contact.
+  StylusTouchPointInfo? touch_point@0;
+};
+
+// Emitted once the observer get connected to the stylus events. This will be
+// the first event from the stylus.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct StylusConnectedEvent {
+  // The maximum possible x position of touch points.
+  uint32 max_x@0;
+  // The maximum possible y position of touch points.
+  uint32 max_y@1;
+  // The maximum possible pressure of touch points, or 0 if pressure is not
+  // supported.
+  uint32 max_pressure@2;
+};
+
+// Union of stylus events.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable, Extensible]
+union StylusEventInfo {
+  // The default value for forward compatibility. All the unknown type will be
+  // mapped to this.
+  [Default] uint8 default_type@0;
+  StylusTouchEvent touch_event@1;
+  StylusConnectedEvent connected_event@2;
+};
+
 // Implemented by clients who desire events.
 //
 // NextMinVersion: 1, NextIndex: 1
@@ -445,7 +495,7 @@ interface EventObserver {
 
 // Union of event info.
 //
-// NextMinVersion: 8, NextIndex: 14
+// NextMinVersion: 9, NextIndex: 15
 [Stable, Extensible]
 union EventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -479,11 +529,13 @@ union EventInfo {
   [MinVersion=6] TouchscreenEventInfo touchscreen_event_info@12;
   // Stylus garagge event info.
   [MinVersion=7] StylusGarageEventInfo stylus_garage_event_info@13;
+  // Stylus event info.
+  [MinVersion=8] StylusEventInfo stylus_event_info@14;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 9, NextIndex: 15
+// NextMinVersion: 10, NextIndex: 16
 [Stable, Extensible]
 enum EventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -502,4 +554,5 @@ enum EventCategoryEnum {
   [MinVersion=6] kHdmi = 12,
   [MinVersion=7] kTouchscreen = 13,
   [MinVersion=8] kStylusGarage = 14,
+  [MinVersion=9] kStylus = 15,
 };
