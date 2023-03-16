@@ -245,6 +245,12 @@ class AudioDebugFileWriterTest
         params_, std::move(file), std::move(audio_bus_pool));
   }
 
+  void DestroyDebugWriter() {
+    // Drop unowned reference before deleting owner.
+    mock_audio_bus_pool_ = nullptr;
+    debug_writer_.reset();
+  }
+
  protected:
   // The test task environment.
   base::test::TaskEnvironment task_environment_;
@@ -284,10 +290,9 @@ TEST_P(AudioDebugFileWriterTest, WaveRecordingTest) {
   ASSERT_TRUE(file.IsValid());
 
   CreateDebugWriter(std::move(file));
-
   DoDebugRecording();
+  DestroyDebugWriter();
 
-  debug_writer_.reset();
   task_environment_.RunUntilIdle();
 
   VerifyRecording(file_path);
@@ -332,10 +337,9 @@ TEST_P(AudioDebugFileWriterSingleThreadTest,
   ASSERT_TRUE(file.IsValid());
 
   CreateDebugWriter(std::move(file));
-
   DoDebugRecording();
+  DestroyDebugWriter();
 
-  debug_writer_.reset();
   task_environment_.RunUntilIdle();
 
   VerifyRecording(file_path);
@@ -369,9 +373,12 @@ TEST_P(AudioDebugFileWriterBehavioralTest, StartStopStartStop) {
 
   CreateDebugWriter(std::move(file1));
   DoDebugRecording();
+  DestroyDebugWriter();
+
   CreateDebugWriter(std::move(file2));
   DoDebugRecording();
-  debug_writer_.reset();
+  DestroyDebugWriter();
+
   task_environment_.RunUntilIdle();
 
   VerifyRecording(file_path1);
@@ -393,8 +400,7 @@ TEST_P(AudioDebugFileWriterBehavioralTest, DestroyStarted) {
   base::File file = OpenFile(file_path);
   ASSERT_TRUE(file.IsValid());
   CreateDebugWriter(std::move(file));
-
-  debug_writer_.reset();
+  DestroyDebugWriter();
   task_environment_.RunUntilIdle();
 }
 
