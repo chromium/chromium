@@ -769,23 +769,6 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
     }
   } else {
     default_loader_used_ = true;
-
-    // NOTE: We only support embedders proxying network-service-bound requests
-    // not handled by NavigationLoaderInterceptors above (e.g. Service Worker)
-    // Hence this code is only reachable when one of the above
-    // interceptors isn't used and the URL is either a data URL or has a
-    // scheme which is handled by the network service.
-    if (proxied_factory_receiver_.is_valid()) {
-      DCHECK(proxied_factory_remote_.is_valid());
-      // We don't worry about reconnection since it's a single navigation.
-      network_loader_factory_->Clone(std::move(proxied_factory_receiver_));
-      // Replace the network factory with the proxied version since this may
-      // need to be used in redirects, and we've already consumed
-      // `proxied_factory_receiver_`.
-      network_loader_factory_ =
-          base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-              std::move(proxied_factory_remote_));
-    }
     factory = network_loader_factory_;
   }
   url_chain_.push_back(resource_request_->url);
@@ -1396,10 +1379,6 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
           /*factory_override=*/nullptr)) {
     use_proxy = true;
   }
-  if (use_proxy) {
-    proxied_factory_receiver_ = std::move(factory_receiver);
-    proxied_factory_remote_ = std::move(pending_factory);
-  }
 
   bool is_nav_allowed =
       base::FeatureList::IsEnabled(
@@ -1454,18 +1433,27 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   for (auto& iter : non_network_url_loader_factories_)
     known_schemes_.insert(iter.first);
 
+  scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory;
   if (header_client) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     CreateURLLoaderFactoryWithHeaderClient(
         std::move(header_client),
         factory_remote.InitWithNewPipeAndPassReceiver(), storage_partition_);
-    network_loader_factory_ =
+    network_loader_factory =
         base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
             std::move(factory_remote));
   } else {
-    network_loader_factory_ =
+    network_loader_factory =
         storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   }
+  DCHECK(network_loader_factory);
+  if (use_proxy) {
+    network_loader_factory->Clone(std::move(factory_receiver));
+    network_loader_factory =
+        base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+            std::move(pending_factory));
+  }
+  network_loader_factory_ = network_loader_factory;
 
   start_closure_ = base::BindOnce(
       &NavigationURLLoaderImpl::StartImpl, base::Unretained(this),

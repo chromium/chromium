@@ -276,19 +276,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // response body to download code.
   absl::optional<network::URLLoaderCompletionStatus> status_;
 
-  // Before creating this URLLoaderRequestController on UI thread, the
-  // embedder may have elected to proxy the URLLoaderFactory receiver, in
-  // which case these fields will contain input (remote) and output (receiver)
-  // endpoints for the proxy. If this controller is handling a receiver for
-  // which proxying is supported, receivers will be plumbed through these
-  // endpoints.
-  //
-  // Note that these are only used for receivers that go to the Network
-  // Service.
-  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-      proxied_factory_receiver_;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> proxied_factory_remote_;
-
   // The schemes that this loader can use. For anything else we'll try
   // external protocol handlers.
   std::set<std::string> known_schemes_;
