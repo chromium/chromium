@@ -83,7 +83,7 @@ BASE_FEATURE(kScrollViewProxyScrollEnabledWorkaround,
 
 BASE_FEATURE(kPreventNavigationWithoutUserInteraction,
              "PreventNavigationWithoutUserInteraction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableWebInspector,
              "EnableWebInspector",
