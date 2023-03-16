@@ -185,34 +185,6 @@ void StartupAppLauncher::ContinueWithNetworkReady() {
   KioskAppManager::Get()->UpdateExternalCache();
 }
 
-void StartupAppLauncher::RestartLauncher() {
-  SYSLOG(INFO) << "RestartLauncher";
-  // Do not allow restarts after the launcher finishes kiosk apps installation
-  // - notify the delegate that kiosk app is ready to launch, in case the
-  // launch was delayed, for example by network config dialog.
-  if (state_ == LaunchState::kReadyToLaunch) {
-    observers_.NotifyAppPrepared();
-    return;
-  }
-
-  // If the installer is still running in the background, we don't need to
-  // restart the launch process. We will just wait until it completes and
-  // launches the kiosk app.
-  if (installer_) {
-    SYSLOG(WARNING) << "Installer still running";
-    return;
-  }
-
-  if (launcher_) {
-    SYSLOG(WARNING) << "Launcher is running";
-    return;
-  }
-
-  kiosk_app_manager_observation_.Reset();
-
-  Initialize();
-}
-
 bool StartupAppLauncher::RetryWhenNetworkIsAvailable() {
   ++launch_attempt_;
   if (launch_attempt_ < kMaxLaunchAttempt) {

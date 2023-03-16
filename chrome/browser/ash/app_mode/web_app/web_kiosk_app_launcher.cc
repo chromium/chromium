@@ -195,13 +195,6 @@ void WebKioskAppLauncher::LaunchApp() {
   observers_.NotifyAppWindowCreated(browser_->app_name());
 }
 
-void WebKioskAppLauncher::RestartLauncher() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  install_task_.reset();
-
-  Initialize();
-}
-
 void WebKioskAppLauncher::OnStateChanged() {
   if (crosapi::BrowserManager::Get()->IsRunning()) {
     observation_.Reset();

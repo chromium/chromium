@@ -416,6 +416,7 @@ TEST_F(KioskLaunchControllerTest, ConfigureNetworkDuringInstallation) {
       HasViewState(
           AppLaunchSplashScreenView::AppLaunchState::kPreparingProfile));
   EXPECT_TRUE(launcher().IsInitialized());
+  EXPECT_EQ(num_launchers_created(), 2);
 }
 
 TEST_F(KioskLaunchControllerTest, KioskProfileLoadFailedObserverShouldBeFired) {
@@ -431,6 +432,7 @@ TEST_F(KioskLaunchControllerTest, KioskProfileLoadFailedObserverShouldBeFired) {
   profile_controls().OnProfileLoadFailed(
       KioskAppLaunchError::Error::kUnableToMount);
   VerifyLaunchStateCrashKey(KioskLaunchState::kLaunchFailed);
+  EXPECT_EQ(num_launchers_created(), 0);
 
   controller().RemoveKioskProfileLoadFailedObserver(
       &profile_load_failed_observer);

@@ -145,7 +145,6 @@ class ArcKioskAppServiceWrapper : public KioskAppLauncher {
   void ContinueWithNetworkReady() override {
     service_->ContinueWithNetworkReady();
   }
-  void RestartLauncher() override { service_->RestartLauncher(); }
   void LaunchApp() override { service_->LaunchApp(); }
 
  private:
@@ -352,10 +351,15 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   profile->InitChromeOSPreferences();
 
   InitializeKeyboard();
-  InitializeLauncher();
 
+  // We have loaded the profile, so we can create and start the
+  // `KioskAppLauncher`. However, if the user has requested to configure the
+  // network beforehand, we will show the dialog instead and create the launcher
+  // when that's done.
   if (network_ui_state_ == NetworkUIState::kNeedToShow) {
     ShowNetworkConfigureUI();
+  } else {
+    InitializeLauncher();
   }
 }
 
@@ -795,6 +799,11 @@ void KioskLaunchController::MaybeShowNetworkConfigureUI() {
 void KioskLaunchController::ShowNetworkConfigureUI() {
   DCHECK(profile_);
 
+  // We're about to show the network configure UI, so we destroy the
+  // app_launcher_ and effectively reset the installation state. A new launcher
+  // will be created in `OnNetworkConfigFinished`.
+  app_launcher_observation_.Reset();
+  app_launcher_.reset();
   // We should stop timers since they may fire during network
   // configure UI.
   splash_wait_timer_.Stop();
@@ -809,6 +818,7 @@ void KioskLaunchController::CloseNetworkConfigureScreenIfOnline() {
   if (network_ui_state_ == NetworkUIState::kShowing && network_wait_timedout_) {
     SYSLOG(INFO) << "We are back online, closing network configure screen.";
     splash_screen_view_->ToggleNetworkConfig(false);
+    splash_screen_view_->ContinueAppLaunch();
     network_ui_state_ = NetworkUIState::kNotShowing;
   }
 }
@@ -817,10 +827,6 @@ void KioskLaunchController::OnNetworkConfigRequested() {
   if (app_state_ == kLaunched) {
     // We do nothing since the splash screen is soon to be destroyed.
     return;
-  }
-
-  if (app_launcher_) {
-    app_launcher_->RestartLauncher();
   }
 
   MaybeShowNetworkConfigureUI();
@@ -835,11 +841,7 @@ void KioskLaunchController::OnNetworkConfigFinished() {
     splash_screen_view_->Show(GetAppData());
   }
 
-  app_state_ = AppState::kInitLauncher;
-
-  if (app_launcher_) {
-    app_launcher_->RestartLauncher();
-  }
+  InitializeLauncher();
 }
 
 void KioskLaunchController::OnNetworkStateChanged(bool online) {
@@ -865,7 +867,9 @@ void KioskLaunchController::OnNetworkOnline() {
   network_wait_timer_.Stop();
   CloseNetworkConfigureScreenIfOnline();
   network_ui_state_ = kNotShowing;
-  app_launcher_->ContinueWithNetworkReady();
+  if (app_launcher_) {
+    app_launcher_->ContinueWithNetworkReady();
+  }
 }
 
 void KioskLaunchController::OnNetworkOffline() {

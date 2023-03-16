@@ -278,7 +278,6 @@ void ArcKioskAppService::ResetAppLauncher() {
 // ArcKioskAppService manages his own state by itself.
 void ArcKioskAppService::Initialize() {}
 void ArcKioskAppService::ContinueWithNetworkReady() {}
-void ArcKioskAppService::RestartLauncher() {}
 void ArcKioskAppService::LaunchApp() {}
 
 }  // namespace ash

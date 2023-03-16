@@ -161,11 +161,4 @@ void WebKioskAppServiceLauncher::OnAppBecomesVisible() {
       web_app::GenerateApplicationNameFromAppId(app_id_));
 }
 
-void WebKioskAppServiceLauncher::RestartLauncher() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  app_service_launcher_.reset();
-
-  Initialize();
-}
-
 }  // namespace ash

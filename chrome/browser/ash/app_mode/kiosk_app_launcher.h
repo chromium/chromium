@@ -94,8 +94,6 @@ class KioskAppLauncher {
   virtual void Initialize() = 0;
   // This has to be called after launcher asked to configure network.
   virtual void ContinueWithNetworkReady() = 0;
-  // Restarts current installation.
-  virtual void RestartLauncher() = 0;
   // Launches the kiosk app.
   virtual void LaunchApp() = 0;
 

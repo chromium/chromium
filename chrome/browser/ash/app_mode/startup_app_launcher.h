@@ -57,7 +57,6 @@ class StartupAppLauncher : public KioskAppLauncher,
   void RemoveObserver(KioskAppLauncher::Observer* observer) override;
   void Initialize() override;
   void ContinueWithNetworkReady() override;
-  void RestartLauncher() override;
   void LaunchApp() override;
 
   void BeginInstall();

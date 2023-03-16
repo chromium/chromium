@@ -31,6 +31,4 @@ void FakeKioskAppLauncher::LaunchApp() {
   ++launch_app_called_;
 }
 
-void FakeKioskAppLauncher::RestartLauncher() {}
-
 }  // namespace ash

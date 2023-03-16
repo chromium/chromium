@@ -64,7 +64,6 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   void Initialize() override;
   void ContinueWithNetworkReady() override;
   void LaunchApp() override;
-  void RestartLauncher() override;
 
  private:
   // crosapi::BrowserManagerObserver:

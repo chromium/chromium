@@ -20,7 +20,6 @@ class FakeKioskAppLauncher : public KioskAppLauncher {
   void Initialize() override;
   void ContinueWithNetworkReady() override;
   void LaunchApp() override;
-  void RestartLauncher() override;
 
   void ResetAppLaunched();
 

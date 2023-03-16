@@ -270,45 +270,6 @@ TEST_F(WebKioskAppLauncherTest, NormalFlowBadLaunchUrl) {
   EXPECT_NE(app_data()->status(), WebKioskAppData::Status::kInstalled);
 }
 
-TEST_F(WebKioskAppLauncherTest, InstallationRestarted) {
-  SetupAppData(/*installed*/ false);
-  // Freezes url requests until they are manually processed.
-  url_loader_->SaveLoadUrlRequests();
-
-  EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), delegate(),
-                         InitializeNetwork());
-
-  SetupInstallData();
-
-  EXPECT_CALL(observer(), OnAppInstalling());
-  launcher()->ContinueWithNetworkReady();
-
-  EXPECT_CALL(delegate(), InitializeNetwork()).Times(1);
-  launcher()->RestartLauncher();
-
-  // App should not be installed yet.
-  EXPECT_NE(app_data()->status(), WebKioskAppData::Status::kInstalled);
-
-  // We should not receive any status updates now.
-  url_loader_->ProcessLoadUrlRequests();
-
-  SetupInstallData();
-
-  EXPECT_CALL(observer(), OnAppInstalling()).Times(1);
-  EXEC_AND_WAIT_FOR_CALL(
-      {
-        launcher()->ContinueWithNetworkReady();
-        url_loader_->ProcessLoadUrlRequests();
-      },
-      observer(), OnAppPrepared());
-
-  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
-
-  EXEC_AND_WAIT_FOR_CALL(launcher()->LaunchApp(), observer(), OnAppLaunched());
-
-  CloseAppWindow();
-}
-
 TEST_F(WebKioskAppLauncherTest, UrlNotLoaded) {
   base::HistogramTester histogram;
 

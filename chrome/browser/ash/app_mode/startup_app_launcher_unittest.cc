@@ -1540,15 +1540,6 @@ TEST_F(StartupAppLauncherTest, SecondaryExtensionStateOnSessionRestore) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kExtraSecondaryAppId));
 }
 
-TEST_F(StartupAppLauncherTest, RestartLauncherShouldNotCrash) {
-  InitializeLauncherWithNetworkReady();
-
-  startup_launch_delegate_.set_showing_network_config_screen(true);
-  startup_app_launcher_->RestartLauncher();
-
-  ASSERT_NO_FATAL_FAILURE(startup_app_launcher_->ContinueWithNetworkReady());
-}
-
 class FakeChromeKioskLaunchController : public ChromeKioskLaunchController {
  public:
   void SetInstallResult(ChromeKioskInstallResult result) {

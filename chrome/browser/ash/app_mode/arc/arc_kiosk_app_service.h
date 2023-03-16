@@ -93,7 +93,6 @@ class ArcKioskAppService : public KeyedService,
   void RemoveObserver(KioskAppLauncher::Observer* observer) override;
   void Initialize() override;
   void ContinueWithNetworkReady() override;
-  void RestartLauncher() override;
   void LaunchApp() override;
 
   ArcKioskAppLauncher* GetLauncherForTesting() { return app_launcher_.get(); }
