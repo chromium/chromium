@@ -160,7 +160,9 @@ internal::TPMSupport MeasureVirtualTpmOperations() {
                         key_creation_timer.Elapsed(), current_key != nullptr,
                         KeyType::kVirtualizedKey);
   if (!current_key) {
-    return supported_virtual_algo;
+    // Report no support if keys cannot be created, Windows appears to always
+    // mark the keys as available in SelectAlgorithm.
+    return internal::TPMSupport::kNone;
   }
 
   base::ElapsedTimer open_key_timer;
