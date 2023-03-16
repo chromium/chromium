@@ -44,6 +44,13 @@ bool XDGSurfaceWrapperImpl::Initialize() {
 }
 
 void XDGSurfaceWrapperImpl::AckConfigure(uint32_t serial) {
+  // We must not ack any serial more than once, so check for that here.
+  DCHECK_LE(last_acked_serial_, serial);
+  if (serial == last_acked_serial_) {
+    return;
+  }
+
+  last_acked_serial_ = serial;
   DCHECK(xdg_surface_);
   xdg_surface_ack_configure(xdg_surface_.get(), serial);
 

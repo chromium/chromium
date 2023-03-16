@@ -198,8 +198,15 @@ class WaylandWindowTest : public WaylandTest {
   void AdvanceFrameToCurrent(
       WaylandWindow* window,
       const MockWaylandPlatformWindowDelegate& delegate) {
+    AdvanceFrameToGivenVizSequenceId(window, delegate, delegate.viz_seq());
+  }
+
+  void AdvanceFrameToGivenVizSequenceId(
+      WaylandWindow* window,
+      const MockWaylandPlatformWindowDelegate& delegate,
+      int64_t viz_seq) {
     wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
-    window->OnSequencePoint(delegate.viz_seq());
+    window->OnSequencePoint(viz_seq);
     window->root_surface()->ApplyPendingState();
   }
 
@@ -1654,6 +1661,68 @@ TEST_P(WaylandWindowTest, ConfigureEventWithNulledSize) {
   // call back with desired sizes. In this case, that's the actual size of
   // the window.
   SendConfigureEvent(surface_id_, {0, 0}, states, 14u);
+}
+
+TEST_P(WaylandWindowTest, ConfigureEventIsNotAckedMultipleTimes) {
+  constexpr gfx::Rect kNormalBounds{500, 300};
+  constexpr gfx::Rect kSecondBounds{600, 600};
+
+  // Configure event makes Wayland update bounds, but does not change toplevel
+  // input region, opaque region or window geometry immediately. Such actions
+  // are postponed to OnSequencePoint();
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange)));
+
+  PostToServerAndWait([id = surface_id_, bounds = kNormalBounds](
+                          wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    auto* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(bounds.size())))
+        .Times(0);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
+    EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(0);
+    EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(0);
+  });
+
+  auto state = InitializeWlArrayWithActivatedState();
+  constexpr uint32_t kConfigureSerial = 2u;
+  SendConfigureEvent(surface_id_, kNormalBounds.size(), state,
+                     kConfigureSerial);
+
+  PostToServerAndWait([id = surface_id_, bounds = kNormalBounds](
+                          wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    auto* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(bounds));
+    EXPECT_CALL(*xdg_surface, AckConfigure(kConfigureSerial));
+    EXPECT_CALL(*mock_surface, SetOpaqueRegion(_));
+    EXPECT_CALL(*mock_surface, SetInputRegion(_));
+  });
+
+  // Get the viz sequence ID which will let us ack the configure event.
+  auto viz_seq = delegate_.viz_seq();
+
+  // Insert another change which will increase the viz sequence ID here.
+  // We want to make sure that when this viz sequence ID is reached, we
+  // don't send another ack for the configure.
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange)));
+  window_->SetBoundsInDIP(kSecondBounds);
+
+  AdvanceFrameToGivenVizSequenceId(window_.get(), delegate_, viz_seq);
+  VerifyAndClearExpectations();
+
+  PostToServerAndWait([id = surface_id_, bounds = kSecondBounds](
+                          wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    auto* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(bounds));
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
+    EXPECT_CALL(*mock_surface, SetOpaqueRegion(_));
+    EXPECT_CALL(*mock_surface, SetInputRegion(_));
+  });
+  AdvanceFrameToCurrent(window_.get(), delegate_);
 }
 
 TEST_P(WaylandWindowTest, OnActivationChanged) {

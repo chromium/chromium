@@ -50,6 +50,7 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   const raw_ptr<WaylandConnection> connection_;
 
   bool is_configured_ = false;
+  int64_t last_acked_serial_ = -1;
 
   wl::Object<struct xdg_surface> xdg_surface_;
 };
