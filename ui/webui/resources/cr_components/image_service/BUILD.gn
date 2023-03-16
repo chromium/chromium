@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("../../tools/build_cr_component.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(!is_android && !is_ios)
 
-build_cr_component("build") {
+build_webui("build") {
   grd_prefix = "cr_components_image_service"
 
   non_web_component_files = [ "browser_proxy.ts" ]
@@ -17,6 +17,10 @@ build_cr_component("build") {
     "$root_gen_dir/components/image_service/mojom/image_service.mojom-webui.ts",
   ]
 
-  tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/image_service"
+  ts_out_dir =
+      "$root_gen_dir/ui/webui/resources/tsc/cr_components/image_service"
   ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
+  ts_composite = true
+  generate_grdp = true
+  grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
 }

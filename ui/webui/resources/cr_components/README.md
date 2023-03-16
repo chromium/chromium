@@ -11,10 +11,10 @@ component is expected to handle these calls.
 
 For simpler components with no I18n or chrome dependencies, see cr_elements.
 
-See [build_cr_component()](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/webui_build_configuration.md#build_cr_component)
-for the recommended way of building individual cr_components/.
+See [build_webui()](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/webui_build_configuration.md#build_webui)
+as well as example from existing cr_components/ subfolders, for the recommended
+way of building individual cr_components/.
 
-cr_components/ that have a dedicated ts_library() or build_cr_component() target
-should not use relative paths to other files in ui/webui/resources/, and users
-of these components must add a dependency on the ts_library target to use the
-component.
+cr_components/ that have a dedicated ts_library() or build_webui() target should
+not use relative paths to other files in ui/webui/resources/, and users of these
+components must add a dependency on the ts_library target to use the component.

@@ -4,11 +4,10 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/include_polymer.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/webui_features.gni")
 
-import("../tools/build_cr_component.gni")
-
-build_cr_component("build") {
+build_webui("build") {
   grd_prefix = "webui_cr_elements"
 
   web_component_files = [
@@ -112,12 +111,14 @@ build_cr_component("build") {
 
   html_to_wrapper_template = "detect"
 
-  tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_elements"
+  ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_elements"
+  ts_composite = true
   ts_deps = [ "../js:build_ts" ]
   ts_definitions = [
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
-
+  generate_grdp = true
+  grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
   optimize = optimize_webui
 }

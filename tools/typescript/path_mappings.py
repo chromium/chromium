@@ -5,8 +5,9 @@
 
 def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
   # Calculate mappings for ui/webui/resources/ sub-folders that have a dedicated
-  # ts_library() target. The naming and output folder of the ts_library target
-  # is assumed to follow the defaults in the build_cr_component() rule.
+  # ts_library() target. The naming of the ts_library() target is expected to
+  # follow the default "build_ts" naming in the build_webui() rule. The output
+  # folder is expected to be at '$root_gen_dir/ui/webui/resources/tsc/'.
   shared_ts_folders = [
       "cr_elements",
       "js",

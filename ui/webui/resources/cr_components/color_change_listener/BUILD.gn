@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("../../tools/build_cr_component.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(!is_android && !is_ios)
 
@@ -14,7 +14,7 @@ mojom("mojom") {
   use_typescript_sources = true
 }
 
-build_cr_component("build") {
+build_webui("build") {
   grd_prefix = "cr_components_color_change_listener"
 
   non_web_component_files = [
@@ -25,7 +25,10 @@ build_cr_component("build") {
   mojo_files_deps = [ ":mojom_ts__generator" ]
   mojo_files = [ "$target_gen_dir/color_change_listener.mojom-webui.ts" ]
 
-  tsc_dir =
+  ts_out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/color_change_listener"
+  ts_composite = true
   ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
+  generate_grdp = true
+  grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
 }

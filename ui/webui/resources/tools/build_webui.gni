@@ -27,17 +27,31 @@ template("build_webui") {
   forward_variables_from(invoker, [ "grd_prefix" ])
 
   preprocess_dir = "${target_gen_dir}/preprocessed"
-  tsc_dir = "${target_gen_dir}/tsc"
+
+  ts_out_dir = "${target_gen_dir}/tsc"
+  if (defined(invoker.ts_out_dir)) {
+    ts_out_dir = invoker.ts_out_dir
+  }
 
   optimize = false
   if (defined(invoker.optimize)) {
     optimize = invoker.optimize
   }
 
+  optimize_ts = optimize && defined(invoker.optimize_webui_in_files)
+
   enable_source_maps = false
   if (defined(invoker.enable_source_maps)) {
     assert(!invoker.enable_source_maps || !optimize)
     enable_source_maps = invoker.enable_source_maps
+  }
+
+  # Determine whether a :build_grd or :build_grdp target should be defined.
+  generate_grdp = false
+  generate_grd_target_name = "build_grd"
+  if (defined(invoker.generate_grdp) && invoker.generate_grdp) {
+    generate_grdp = true
+    generate_grd_target_name = "build_grdp"
   }
 
   ### Compute the lists of files that are used across multiple targets.
@@ -122,7 +136,7 @@ template("build_webui") {
 
   if (defined(invoker.static_files)) {
     preprocess_if_expr("preprocess_static_files") {
-      visibility = [ ":build_grd" ]
+      visibility = [ ":$generate_grd_target_name" ]
 
       if (use_blink) {
         defines = chrome_grit_defines
@@ -246,7 +260,7 @@ template("build_webui") {
 
   ts_library("build_ts") {
     root_dir = preprocess_dir
-    out_dir = tsc_dir
+    out_dir = ts_out_dir
 
     composite = false
     if (defined(invoker.ts_composite)) {
@@ -255,8 +269,8 @@ template("build_webui") {
 
     if (!composite) {
       visibility = [
+        ":$generate_grd_target_name",
         ":build_bundle",
-        ":build_grd",
       ]
 
       if (enable_source_maps) {
@@ -340,18 +354,18 @@ template("build_webui") {
       out_dir = "$target_gen_dir/merge_source_maps"
       foreach(_js_file, js_files) {
         sources += [ _js_file ]
-        outputs += [ string_replace(_js_file, tsc_dir, out_dir) ]
+        outputs += [ string_replace(_js_file, ts_out_dir, out_dir) ]
       }
     }
   }
 
-  if (optimize) {
+  if (optimize_ts) {
     bundle_manifest = "bundle_manifest.json"
 
     optimize_webui("build_bundle") {
-      visibility = [ ":build_grd" ]
+      visibility = [ ":$generate_grd_target_name" ]
       host = invoker.optimize_webui_host
-      input = rebase_path(tsc_dir, root_build_dir)
+      input = rebase_path(ts_out_dir, root_build_dir)
       js_module_in_files = invoker.optimize_webui_in_files
       out_manifest = "$target_gen_dir/$bundle_manifest"
       if (defined(invoker.optimize_webui_excludes)) {
@@ -362,10 +376,16 @@ template("build_webui") {
     }
   }
 
-  generate_grd("build_grd") {
-    visibility = [ ":resources_grit" ]
+  generate_grd(generate_grd_target_name) {
+    if (!generate_grdp) {
+      visibility = [ ":resources_grit" ]
+    }
+
     grd_prefix = grd_prefix
     out_grd = "$target_gen_dir/resources.grd"
+    if (generate_grdp) {
+      out_grd = "$target_gen_dir/resources.grdp"
+    }
 
     deps = []
     manifest_files = []
@@ -379,7 +399,7 @@ template("build_webui") {
           [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
     }
 
-    if (optimize) {
+    if (optimize_ts) {
       deps += [ ":build_bundle" ]
       manifest_files += [ "$target_gen_dir/$bundle_manifest" ]
       resource_path_rewrites = []
@@ -411,28 +431,30 @@ template("build_webui") {
     }
   }
 
-  grit("resources") {
-    if (use_blink) {
-      defines = chrome_grit_defines
+  if (!generate_grdp) {
+    grit("resources") {
+      if (use_blink) {
+        defines = chrome_grit_defines
+      }
+
+      # These arguments are needed since the grd is generated at build time.
+      enable_input_discovery_for_gn_analyze = false
+      source = "$target_gen_dir/resources.grd"
+      deps = [ ":$generate_grd_target_name" ]
+
+      outputs = [
+        "grit/${grd_prefix}_resources.h",
+        "grit/${grd_prefix}_resources_map.cc",
+        "grit/${grd_prefix}_resources_map.h",
+        "${grd_prefix}_resources.pak",
+      ]
+
+      grit_output_dir = "$root_gen_dir/chrome"
+      if (defined(invoker.grit_output_dir)) {
+        grit_output_dir = invoker.grit_output_dir
+      }
+
+      output_dir = grit_output_dir
     }
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    source = "$target_gen_dir/resources.grd"
-    deps = [ ":build_grd" ]
-
-    outputs = [
-      "grit/${grd_prefix}_resources.h",
-      "grit/${grd_prefix}_resources_map.cc",
-      "grit/${grd_prefix}_resources_map.h",
-      "${grd_prefix}_resources.pak",
-    ]
-
-    grit_output_dir = "$root_gen_dir/chrome"
-    if (defined(invoker.grit_output_dir)) {
-      grit_output_dir = invoker.grit_output_dir
-    }
-
-    output_dir = grit_output_dir
   }
 }
