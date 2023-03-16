@@ -62,19 +62,6 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   // Updates the feed's theme to match the user's theme (light/dark).
   virtual void UpdateTheme() = 0;
 
-  // Performs a background refresh for the feed. `completion` is called
-  // after success, failure, or timeout. The BOOL argument indicates whether the
-  // refresh was successful or a failure.
-  virtual void PerformBackgroundRefreshes(void (^completion)(BOOL)) = 0;
-
-  // Stops the background refresh task and cleans up any temporary objects. This
-  // is called by the OS when the task is taking too long.
-  virtual void HandleBackgroundRefreshTaskExpiration() = 0;
-
-  // The earliest datetime at which the next background refresh should be
-  // scheduled.
-  virtual NSDate* GetEarliestBackgroundRefreshBeginDate() = 0;
-
   // Returns whether the Following feed model has unseen content.
   virtual BOOL GetFollowingFeedHasUnseenContent() = 0;
 

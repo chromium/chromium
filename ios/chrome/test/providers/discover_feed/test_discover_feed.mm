@@ -32,12 +32,14 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
   }
   void RemoveFeedViewController(UIViewController* feed_view_controller) final {}
   void UpdateTheme() final {}
+  BOOL GetFollowingFeedHasUnseenContent() final { return NO; }
+  void SetFollowingFeedContentSeen() final {}
+
+  // DiscoverFeedRefresher implementation:
   void RefreshFeed(FeedRefreshTrigger trigger) final {}
   void PerformBackgroundRefreshes(void (^completion)(BOOL)) final {}
   void HandleBackgroundRefreshTaskExpiration() final {}
   NSDate* GetEarliestBackgroundRefreshBeginDate() final { return nil; }
-  BOOL GetFollowingFeedHasUnseenContent() final { return NO; }
-  void SetFollowingFeedContentSeen() final {}
 };
 
 }  // anonymous namespace
