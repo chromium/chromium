@@ -51,8 +51,9 @@ class TrustTokenKeyCommitments
   // of keys allowed for the protocol version, none of which has yet expired.
   //
   // If commitments for |origin| were passed both through a prior call to |Set|
-  // and through the --additional-trust-token-key-commitments command-line
-  // switch, the commitments passed through the switch take precedence.
+  // and through the --additional-private-state-token-key-commitments
+  // command-line switch, the commitments passed through the switch take
+  // precedence.
   //
   // Implementation note: this is a thin wrapper around GetSync.
   void Get(const url::Origin& origin,

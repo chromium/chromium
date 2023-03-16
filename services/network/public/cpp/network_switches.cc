@@ -66,8 +66,8 @@ const char kSSLKeyLogFile[] = "ssl-key-log-file";
 const char kUnsafelyTreatInsecureOriginAsSecure[] =
     "unsafely-treat-insecure-origin-as-secure";
 
-// Manually sets additional Trust Tokens key commitments in the network service
-// to the given value, which should be a JSON dictionary satisfying the
+// Manually sets additional Private State Tokens key commitments in the network
+// service to the given value, which should be a JSON dictionary satisfying the
 // requirements of TrustTokenKeyCommitmentParser::ParseMultipleIssuers.
 //
 // These keys are available in addition to keys provided by the most recent call
@@ -81,7 +81,7 @@ const char kUnsafelyTreatInsecureOriginAsSecure[] =
 // keys were overwritten some time after startup when the component updater
 // runs.
 const char kAdditionalTrustTokenKeyCommitments[] =
-    "additional-trust-token-key-commitments";
+    "additional-private-state-token-key-commitments";
 
 // Allows the manual specification of a First-Party Set, as a comma-separated
 // list of origins. The first origin in the list is treated as the owner of the
