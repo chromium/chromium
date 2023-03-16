@@ -18,7 +18,6 @@
 #include "third_party/webrtc/api/video_codecs/video_decoder_software_fallback_wrapper.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_software_fallback_wrapper.h"
 #include "third_party/webrtc/media/base/codec.h"
-#include "third_party/webrtc/media/engine/encoder_simulcast_proxy.h"
 #include "third_party/webrtc/media/engine/internal_decoder_factory.h"
 #include "third_party/webrtc/media/engine/internal_encoder_factory.h"
 #include "third_party/webrtc/media/engine/simulcast_encoder_adapter.h"
@@ -31,10 +30,6 @@
 namespace blink {
 
 namespace {
-// Kill switch to disable WebRTC Media Capabilities stats collection.
-BASE_FEATURE(kWebrtcMediaCapabilitiesStatsCollection,
-             "WebrtcMediaCapabilitiesStatsCollection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 template <typename Factory>
 bool IsFormatSupported(const Factory* factory,
@@ -148,13 +143,8 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
           primary_factory, fallback_factory, format);
     }
 
-    if (encoder &&
-        base::FeatureList::IsEnabled(kWebrtcMediaCapabilitiesStatsCollection)) {
-      return std::make_unique<StatsCollectingEncoder>(
-          format, std::move(encoder), stats_callback_);
-    } else {
-      return encoder;
-    }
+    return std::make_unique<StatsCollectingEncoder>(format, std::move(encoder),
+                                                    stats_callback_);
   }
 
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override {
@@ -208,14 +198,9 @@ class DecoderAdapter : public webrtc::VideoDecoderFactory {
     if (!software_decoder && !hardware_decoder)
       return nullptr;
 
-    if (base::FeatureList::IsEnabled(kWebrtcMediaCapabilitiesStatsCollection)) {
-      return std::make_unique<StatsCollectingDecoder>(
-          format,
-          Wrap(std::move(software_decoder), std::move(hardware_decoder)),
-          stats_callback_);
-    } else {
-      return Wrap(std::move(software_decoder), std::move(hardware_decoder));
-    }
+    return std::make_unique<StatsCollectingDecoder>(
+        format, Wrap(std::move(software_decoder), std::move(hardware_decoder)),
+        stats_callback_);
   }
 
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override {
