@@ -379,13 +379,13 @@ telemetry_api::CpuArchitectureEnum Convert(
     telemetry_service::ProbeCpuArchitectureEnum input) {
   switch (input) {
     case telemetry_service::ProbeCpuArchitectureEnum::kUnknown:
-      return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_UNKNOWN;
+      return telemetry_api::CpuArchitectureEnum::kUnknown;
     case telemetry_service::ProbeCpuArchitectureEnum::kX86_64:
-      return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_X86_64;
+      return telemetry_api::CpuArchitectureEnum::kX8664;
     case telemetry_service::ProbeCpuArchitectureEnum::kAArch64:
-      return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_AARCH64;
+      return telemetry_api::CpuArchitectureEnum::kAarch64;
     case telemetry_service::ProbeCpuArchitectureEnum::kArmv7l:
-      return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_ARMV7L;
+      return telemetry_api::CpuArchitectureEnum::kArmv7l;
   }
   NOTREACHED();
 }
@@ -394,21 +394,21 @@ telemetry_api::NetworkState Convert(
     chromeos::network_health::mojom::NetworkState input) {
   switch (input) {
     case network_health::mojom::NetworkState::kUninitialized:
-      return telemetry_api::NetworkState::NETWORK_STATE_UNINITIALIZED;
+      return telemetry_api::NetworkState::kUninitialized;
     case network_health::mojom::NetworkState::kDisabled:
-      return telemetry_api::NetworkState::NETWORK_STATE_DISABLED;
+      return telemetry_api::NetworkState::kDisabled;
     case network_health::mojom::NetworkState::kProhibited:
-      return telemetry_api::NetworkState::NETWORK_STATE_PROHIBITED;
+      return telemetry_api::NetworkState::kProhibited;
     case network_health::mojom::NetworkState::kNotConnected:
-      return telemetry_api::NetworkState::NETWORK_STATE_NOT_CONNECTED;
+      return telemetry_api::NetworkState::kNotConnected;
     case network_health::mojom::NetworkState::kConnecting:
-      return telemetry_api::NetworkState::NETWORK_STATE_CONNECTING;
+      return telemetry_api::NetworkState::kConnecting;
     case network_health::mojom::NetworkState::kPortal:
-      return telemetry_api::NetworkState::NETWORK_STATE_PORTAL;
+      return telemetry_api::NetworkState::kPortal;
     case network_health::mojom::NetworkState::kConnected:
-      return telemetry_api::NetworkState::NETWORK_STATE_CONNECTED;
+      return telemetry_api::NetworkState::kConnected;
     case network_health::mojom::NetworkState::kOnline:
-      return telemetry_api::NetworkState::NETWORK_STATE_ONLINE;
+      return telemetry_api::NetworkState::kOnline;
   }
   NOTREACHED();
 }
@@ -421,21 +421,21 @@ telemetry_api::NetworkType Convert(
   // cases.
   switch (input) {
     case network_config::mojom::NetworkType::kAll:
-      return telemetry_api::NetworkType::NETWORK_TYPE_NONE;
+      return telemetry_api::NetworkType::kNone;
     case network_config::mojom::NetworkType::kCellular:
-      return telemetry_api::NetworkType::NETWORK_TYPE_CELLULAR;
+      return telemetry_api::NetworkType::kCellular;
     case network_config::mojom::NetworkType::kEthernet:
-      return telemetry_api::NetworkType::NETWORK_TYPE_ETHERNET;
+      return telemetry_api::NetworkType::kEthernet;
     case network_config::mojom::NetworkType::kMobile:
-      return telemetry_api::NetworkType::NETWORK_TYPE_NONE;
+      return telemetry_api::NetworkType::kNone;
     case network_config::mojom::NetworkType::kTether:
-      return telemetry_api::NetworkType::NETWORK_TYPE_TETHER;
+      return telemetry_api::NetworkType::kTether;
     case network_config::mojom::NetworkType::kVPN:
-      return telemetry_api::NetworkType::NETWORK_TYPE_VPN;
+      return telemetry_api::NetworkType::kVpn;
     case network_config::mojom::NetworkType::kWireless:
-      return telemetry_api::NetworkType::NETWORK_TYPE_NONE;
+      return telemetry_api::NetworkType::kNone;
     case network_config::mojom::NetworkType::kWiFi:
-      return telemetry_api::NetworkType::NETWORK_TYPE_WIFI;
+      return telemetry_api::NetworkType::kWifi;
   }
   NOTREACHED();
 }
@@ -444,11 +444,11 @@ chromeos::api::os_telemetry::TpmGSCVersion Convert(
     crosapi::mojom::ProbeTpmGSCVersion input) {
   switch (input) {
     case telemetry_service::ProbeTpmGSCVersion::kNotGSC:
-      return telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_NOT_GSC;
+      return telemetry_api::TpmGSCVersion::kNotGsc;
     case telemetry_service::ProbeTpmGSCVersion::kCr50:
-      return telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_CR50;
+      return telemetry_api::TpmGSCVersion::kCr50;
     case telemetry_service::ProbeTpmGSCVersion::kTi50:
-      return telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_TI50;
+      return telemetry_api::TpmGSCVersion::kTi50;
   }
   NOTREACHED();
 }
@@ -457,32 +457,31 @@ telemetry_api::FwupdVersionFormat Convert(
     telemetry_service::ProbeFwupdVersionFormat input) {
   switch (input) {
     case crosapi::mojom::ProbeFwupdVersionFormat::kUnknown:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PLAIN;
+      return telemetry_api::FwupdVersionFormat::kPlain;
     case crosapi::mojom::ProbeFwupdVersionFormat::kPlain:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PLAIN;
+      return telemetry_api::FwupdVersionFormat::kPlain;
     case crosapi::mojom::ProbeFwupdVersionFormat::kNumber:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_NUMBER;
+      return telemetry_api::FwupdVersionFormat::kNumber;
     case crosapi::mojom::ProbeFwupdVersionFormat::kPair:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PAIR;
+      return telemetry_api::FwupdVersionFormat::kPair;
     case crosapi::mojom::ProbeFwupdVersionFormat::kTriplet:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_TRIPLET;
+      return telemetry_api::FwupdVersionFormat::kTriplet;
     case crosapi::mojom::ProbeFwupdVersionFormat::kQuad:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_QUAD;
+      return telemetry_api::FwupdVersionFormat::kQuad;
     case crosapi::mojom::ProbeFwupdVersionFormat::kBcd:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_BCD;
+      return telemetry_api::FwupdVersionFormat::kBcd;
     case crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_INTELME;
+      return telemetry_api::FwupdVersionFormat::kIntelMe;
     case crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe2:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_INTELME2;
+      return telemetry_api::FwupdVersionFormat::kIntelMe2;
     case crosapi::mojom::ProbeFwupdVersionFormat::kSurfaceLegacy:
-      return telemetry_api::FwupdVersionFormat::
-          FWUPD_VERSION_FORMAT_SURFACELEGACY;
+      return telemetry_api::FwupdVersionFormat::kSurfaceLegacy;
     case crosapi::mojom::ProbeFwupdVersionFormat::kSurface:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_SURFACE;
+      return telemetry_api::FwupdVersionFormat::kSurface;
     case crosapi::mojom::ProbeFwupdVersionFormat::kDellBios:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_DELLBIOS;
+      return telemetry_api::FwupdVersionFormat::kDellBios;
     case crosapi::mojom::ProbeFwupdVersionFormat::kHex:
-      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_HEX;
+      return telemetry_api::FwupdVersionFormat::kHex;
   }
   NOTREACHED();
 }
@@ -490,13 +489,13 @@ telemetry_api::FwupdVersionFormat Convert(
 telemetry_api::UsbVersion Convert(telemetry_service::ProbeUsbVersion input) {
   switch (input) {
     case crosapi::mojom::ProbeUsbVersion::kUnknown:
-      return telemetry_api::UsbVersion::USB_VERSION_UNKNOWN;
+      return telemetry_api::UsbVersion::kUnknown;
     case crosapi::mojom::ProbeUsbVersion::kUsb1:
-      return telemetry_api::UsbVersion::USB_VERSION_USB1;
+      return telemetry_api::UsbVersion::kUsb1;
     case crosapi::mojom::ProbeUsbVersion::kUsb2:
-      return telemetry_api::UsbVersion::USB_VERSION_USB2;
+      return telemetry_api::UsbVersion::kUsb2;
     case crosapi::mojom::ProbeUsbVersion::kUsb3:
-      return telemetry_api::UsbVersion::USB_VERSION_USB3;
+      return telemetry_api::UsbVersion::kUsb3;
   }
   NOTREACHED();
 }
@@ -505,19 +504,19 @@ telemetry_api::UsbSpecSpeed Convert(
     telemetry_service::ProbeUsbSpecSpeed input) {
   switch (input) {
     case crosapi::mojom::ProbeUsbSpecSpeed::kUnknown:
-      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_UNKNOWN;
+      return telemetry_api::UsbSpecSpeed::kUnknown;
     case crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps:
-      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N1_5MBPS;
+      return telemetry_api::UsbSpecSpeed::kN15mbps;
     case crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps:
-      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N12MBPS;
+      return telemetry_api::UsbSpecSpeed::kN12Mbps;
     case crosapi::mojom::ProbeUsbSpecSpeed::k480Mbps:
-      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N480MBPS;
+      return telemetry_api::UsbSpecSpeed::kN480Mbps;
     case crosapi::mojom::ProbeUsbSpecSpeed::k5Gbps:
-      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N5GBPS;
+      return telemetry_api::UsbSpecSpeed::kN5Gbps;
     case crosapi::mojom::ProbeUsbSpecSpeed::k10Gbps:
-      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N10GBPS;
+      return telemetry_api::UsbSpecSpeed::kN10Gbps;
     case crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps:
-      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N20GBPS;
+      return telemetry_api::UsbSpecSpeed::kN20Gbps;
   }
   NOTREACHED();
 }

@@ -198,7 +198,7 @@ void OsTelemetryGetInternetConnectivityInfoFunction::OnResult(
     }
 
     // Don't include networks with an undefined type.
-    if (converted_network.type != telemetry::NetworkType::NETWORK_TYPE_NONE) {
+    if (converted_network.type != telemetry::NetworkType::kNone) {
       result.networks.push_back(std::move(converted_network));
     }
   }

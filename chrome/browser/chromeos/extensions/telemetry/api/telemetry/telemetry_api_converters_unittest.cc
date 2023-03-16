@@ -193,13 +193,13 @@ TEST(TelemetryApiConverters, AudioInfo) {
 }
 
 TEST(TelemetryApiConverters, CpuArchitectureEnum) {
-  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_UNKNOWN,
+  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kUnknown,
             Convert(telemetry_service::ProbeCpuArchitectureEnum::kUnknown));
-  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_X86_64,
+  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kX8664,
             Convert(telemetry_service::ProbeCpuArchitectureEnum::kX86_64));
-  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_AARCH64,
+  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kAarch64,
             Convert(telemetry_service::ProbeCpuArchitectureEnum::kAArch64));
-  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_ARMV7L,
+  EXPECT_EQ(telemetry_api::CpuArchitectureEnum::kArmv7l,
             Convert(telemetry_service::ProbeCpuArchitectureEnum::kArmv7l));
 }
 
@@ -499,43 +499,43 @@ TEST(TelemetryApiConverters, StatefulPartitionInfoNullFields) {
 
 TEST(TelemetryApiConverters, NetworkStateEnum) {
   EXPECT_EQ(
-      telemetry_api::NetworkState::NETWORK_STATE_UNINITIALIZED,
+      telemetry_api::NetworkState::kUninitialized,
       Convert(chromeos::network_health::mojom::NetworkState::kUninitialized));
-  EXPECT_EQ(telemetry_api::NetworkState::NETWORK_STATE_DISABLED,
+  EXPECT_EQ(telemetry_api::NetworkState::kDisabled,
             Convert(chromeos::network_health::mojom::NetworkState::kDisabled));
   EXPECT_EQ(
-      telemetry_api::NetworkState::NETWORK_STATE_PROHIBITED,
+      telemetry_api::NetworkState::kProhibited,
       Convert(chromeos::network_health::mojom::NetworkState::kProhibited));
   EXPECT_EQ(
-      telemetry_api::NetworkState::NETWORK_STATE_NOT_CONNECTED,
+      telemetry_api::NetworkState::kNotConnected,
       Convert(chromeos::network_health::mojom::NetworkState::kNotConnected));
   EXPECT_EQ(
-      telemetry_api::NetworkState::NETWORK_STATE_CONNECTING,
+      telemetry_api::NetworkState::kConnecting,
       Convert(chromeos::network_health::mojom::NetworkState::kConnecting));
-  EXPECT_EQ(telemetry_api::NetworkState::NETWORK_STATE_PORTAL,
+  EXPECT_EQ(telemetry_api::NetworkState::kPortal,
             Convert(chromeos::network_health::mojom::NetworkState::kPortal));
-  EXPECT_EQ(telemetry_api::NetworkState::NETWORK_STATE_CONNECTED,
+  EXPECT_EQ(telemetry_api::NetworkState::kConnected,
             Convert(chromeos::network_health::mojom::NetworkState::kConnected));
-  EXPECT_EQ(telemetry_api::NetworkState::NETWORK_STATE_ONLINE,
+  EXPECT_EQ(telemetry_api::NetworkState::kOnline,
             Convert(chromeos::network_health::mojom::NetworkState::kOnline));
 }
 
 TEST(TelemetryApiConverters, NetworkTypeEnum) {
-  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_NONE,
+  EXPECT_EQ(telemetry_api::NetworkType::kNone,
             Convert(chromeos::network_config::mojom::NetworkType::kAll));
-  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_CELLULAR,
+  EXPECT_EQ(telemetry_api::NetworkType::kCellular,
             Convert(chromeos::network_config::mojom::NetworkType::kCellular));
-  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_ETHERNET,
+  EXPECT_EQ(telemetry_api::NetworkType::kEthernet,
             Convert(chromeos::network_config::mojom::NetworkType::kEthernet));
-  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_NONE,
+  EXPECT_EQ(telemetry_api::NetworkType::kNone,
             Convert(chromeos::network_config::mojom::NetworkType::kMobile));
-  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_TETHER,
+  EXPECT_EQ(telemetry_api::NetworkType::kTether,
             Convert(chromeos::network_config::mojom::NetworkType::kTether));
-  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_VPN,
+  EXPECT_EQ(telemetry_api::NetworkType::kVpn,
             Convert(chromeos::network_config::mojom::NetworkType::kVPN));
-  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_NONE,
+  EXPECT_EQ(telemetry_api::NetworkType::kNone,
             Convert(chromeos::network_config::mojom::NetworkType::kWireless));
-  EXPECT_EQ(telemetry_api::NetworkType::NETWORK_TYPE_WIFI,
+  EXPECT_EQ(telemetry_api::NetworkType::kWifi,
             Convert(chromeos::network_config::mojom::NetworkType::kWiFi));
 }
 
@@ -555,8 +555,8 @@ TEST(TelemetryApiConverters, NetworkInfo) {
       chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
 
   auto result = ConvertPtr<telemetry_api::NetworkInfo>(std::move(input));
-  EXPECT_EQ(result.type, telemetry_api::NetworkType::NETWORK_TYPE_WIFI);
-  EXPECT_EQ(result.state, telemetry_api::NetworkState::NETWORK_STATE_ONLINE);
+  EXPECT_EQ(result.type, telemetry_api::NetworkType::kWifi);
+  EXPECT_EQ(result.state, telemetry_api::NetworkState::kOnline);
 
   ASSERT_TRUE(result.ipv4_address);
   EXPECT_EQ(*result.ipv4_address, kIpv4Address);
@@ -587,8 +587,7 @@ TEST(TelemetryApiConverters, TpmVersion) {
   input->vendor_specific = kVendorSpecific;
 
   auto result = ConvertPtr<telemetry_api::TpmVersion>(std::move(input));
-  EXPECT_EQ(telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_CR50,
-            result.gsc_version);
+  EXPECT_EQ(telemetry_api::TpmGSCVersion::kCr50, result.gsc_version);
   ASSERT_TRUE(result.family);
   EXPECT_EQ(kFamily, static_cast<uint32_t>(*result.family));
   ASSERT_TRUE(result.spec_level);
@@ -704,8 +703,7 @@ TEST(TelemetryApiConverters, TpmInfo) {
   auto result = ConvertPtr<telemetry_api::TpmInfo>(std::move(input));
 
   auto version_result = std::move(result.version);
-  EXPECT_EQ(telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_CR50,
-            version_result.gsc_version);
+  EXPECT_EQ(telemetry_api::TpmGSCVersion::kCr50, version_result.gsc_version);
   ASSERT_TRUE(version_result.family);
   EXPECT_EQ(kFamily, static_cast<uint32_t>(*version_result.family));
   ASSERT_TRUE(version_result.spec_level);
@@ -744,78 +742,77 @@ TEST(TelemetryApiConverters, TpmInfo) {
 
 TEST(TelemetryApiConverters, UsbVersion) {
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUnknown),
-            telemetry_api::UsbVersion::USB_VERSION_UNKNOWN);
+            telemetry_api::UsbVersion::kUnknown);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUsb1),
-            telemetry_api::UsbVersion::USB_VERSION_USB1);
+            telemetry_api::UsbVersion::kUsb1);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUsb2),
-            telemetry_api::UsbVersion::USB_VERSION_USB2);
+            telemetry_api::UsbVersion::kUsb2);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUsb3),
-            telemetry_api::UsbVersion::USB_VERSION_USB3);
+            telemetry_api::UsbVersion::kUsb3);
 }
 
 TEST(TelemetryApiConverters, UsbSpecSpeed) {
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::kUnknown),
-            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_UNKNOWN);
+            telemetry_api::UsbSpecSpeed::kUnknown);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps),
-            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N1_5MBPS);
+            telemetry_api::UsbSpecSpeed::kN15mbps);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps),
-            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N12MBPS);
+            telemetry_api::UsbSpecSpeed::kN12Mbps);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k480Mbps),
-            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N480MBPS);
+            telemetry_api::UsbSpecSpeed::kN480Mbps);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k5Gbps),
-            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N5GBPS);
+            telemetry_api::UsbSpecSpeed::kN5Gbps);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k10Gbps),
-            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N10GBPS);
+            telemetry_api::UsbSpecSpeed::kN10Gbps);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps),
-            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N20GBPS);
+            telemetry_api::UsbSpecSpeed::kN20Gbps);
 }
 
 TEST(TelemetryApiConverters, FwupdVersionFormat) {
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kUnknown),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PLAIN);
+            telemetry_api::FwupdVersionFormat::kPlain);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kPlain),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PLAIN);
+            telemetry_api::FwupdVersionFormat::kPlain);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kNumber),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_NUMBER);
+            telemetry_api::FwupdVersionFormat::kNumber);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kPair),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PAIR);
+            telemetry_api::FwupdVersionFormat::kPair);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kTriplet),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_TRIPLET);
+            telemetry_api::FwupdVersionFormat::kTriplet);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kBcd),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_BCD);
+            telemetry_api::FwupdVersionFormat::kBcd);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_INTELME);
+            telemetry_api::FwupdVersionFormat::kIntelMe);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe2),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_INTELME2);
+            telemetry_api::FwupdVersionFormat::kIntelMe2);
 
-  EXPECT_EQ(
-      Convert(crosapi::mojom::ProbeFwupdVersionFormat::kSurfaceLegacy),
-      telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_SURFACELEGACY);
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kSurfaceLegacy),
+            telemetry_api::FwupdVersionFormat::kSurfaceLegacy);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kSurface),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_SURFACE);
+            telemetry_api::FwupdVersionFormat::kSurface);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kDellBios),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_DELLBIOS);
+            telemetry_api::FwupdVersionFormat::kDellBios);
 
   EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kHex),
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_HEX);
+            telemetry_api::FwupdVersionFormat::kHex);
 }
 
 TEST(TelemetryApiConverters, FwupdFirmwareVersionInfo) {
@@ -828,8 +825,7 @@ TEST(TelemetryApiConverters, FwupdFirmwareVersionInfo) {
       ConvertPtr<telemetry_api::FwupdFirmwareVersionInfo>(std::move(input));
 
   EXPECT_EQ(result.version, kVersion);
-  EXPECT_EQ(result.version_format,
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_HEX);
+  EXPECT_EQ(result.version_format, telemetry_api::FwupdVersionFormat::kHex);
 }
 
 TEST(TelemetryApiConverters, UsbBusInterfaceInfo) {
@@ -928,11 +924,10 @@ TEST(TelemetryApiConverters, UsbBusInfo) {
   ASSERT_TRUE(result.fwupd_firmware_version_info);
   EXPECT_EQ(result.fwupd_firmware_version_info->version, kVersion);
   EXPECT_EQ(result.fwupd_firmware_version_info->version_format,
-            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PAIR);
+            telemetry_api::FwupdVersionFormat::kPair);
 
-  EXPECT_EQ(result.version, telemetry_api::UsbVersion::USB_VERSION_USB3);
-  EXPECT_EQ(result.spec_speed,
-            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N20GBPS);
+  EXPECT_EQ(result.version, telemetry_api::UsbVersion::kUsb3);
+  EXPECT_EQ(result.spec_speed, telemetry_api::UsbSpecSpeed::kN20Gbps);
 }
 
 }  // namespace converters
