@@ -65,9 +65,12 @@ source_set("ping_manager_unittest") {
   deps = [
     ":browser",
     "//base:base",
+    "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
     "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//components/safe_browsing/core/common",
     "//net:net",
     "//net:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 }

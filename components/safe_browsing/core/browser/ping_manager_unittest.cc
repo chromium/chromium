@@ -1,7 +1,6 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
 
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "base/base64.h"
@@ -9,41 +8,186 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/test_safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "google_apis/google_api_keys.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
+using network::GetUploadData;
 using safe_browsing::HitReport;
 using safe_browsing::ThreatSource;
+using ::testing::_;
 
 namespace safe_browsing {
 
-class PingManagerTest : public testing::Test {
+class MockWebUIDelegate : public PingManager::WebUIDelegate {
  public:
-  PingManagerTest() {}
-
- protected:
-  void SetUp() override {
-    std::string key = google_apis::GetAPIKey();
-    if (!key.empty()) {
-      key_param_ = base::StringPrintf(
-          "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
-    }
-
-    ping_manager_.reset(new PingManager(
-        safe_browsing::GetTestV4ProtocolConfig(), nullptr, nullptr,
-        base::BindRepeating([]() { return false; }), nullptr, nullptr,
-        base::NullCallback(), base::NullCallback()));
-  }
-
-  PingManager* ping_manager() { return ping_manager_.get(); }
-
-  std::string key_param_;
-  std::unique_ptr<PingManager> ping_manager_;
+  MOCK_METHOD1(AddToCSBRRsSent,
+               void(std::unique_ptr<ClientSafeBrowsingReportRequest> csbrr));
+  MOCK_METHOD1(AddToHitReportsSent,
+               void(std::unique_ptr<HitReport> hit_report));
 };
+class PingManagerTest : public testing::Test {
+ protected:
+  void SetUp() override;
+  void TearDown() override;
+  void RunReportThreatDetailsTest(
+      bool expect_access_token,
+      absl::optional<ChromeUserPopulation> expected_user_population,
+      absl::optional<std::string> expected_page_load_token_value,
+      bool expect_cookies_removed);
+  PingManager* ping_manager();
+  void SetNewPingManager(
+      absl::optional<base::RepeatingCallback<bool()>>
+          get_should_fetch_access_token,
+      absl::optional<base::RepeatingCallback<ChromeUserPopulation()>>
+          get_user_population_callback,
+      absl::optional<
+          base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>>
+          get_page_load_token_callback);
+  void SetUpFeatureList(bool should_enable_remove_cookies);
+
+  base::test::TaskEnvironment task_environment_;
+  std::string key_param_;
+  std::unique_ptr<MockWebUIDelegate> webui_delegate_ =
+      std::make_unique<MockWebUIDelegate>();
+
+ private:
+  TestSafeBrowsingTokenFetcher* SetUpTokenFetcher();
+
+  std::unique_ptr<PingManager> ping_manager_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+void PingManagerTest::SetUp() {
+  std::string key = google_apis::GetAPIKey();
+  if (!key.empty()) {
+    key_param_ = base::StringPrintf(
+        "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
+  }
+  SetNewPingManager(absl::nullopt, absl::nullopt, absl::nullopt);
+}
+
+void PingManagerTest::TearDown() {
+  base::RunLoop().RunUntilIdle();
+  feature_list_.Reset();
+}
+
+PingManager* PingManagerTest::ping_manager() {
+  return ping_manager_.get();
+}
+
+void PingManagerTest::SetNewPingManager(
+    absl::optional<base::RepeatingCallback<bool()>>
+        get_should_fetch_access_token,
+    absl::optional<base::RepeatingCallback<ChromeUserPopulation()>>
+        get_user_population_callback,
+    absl::optional<
+        base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>>
+        get_page_load_token_callback) {
+  ping_manager_.reset(new PingManager(
+      safe_browsing::GetTestV4ProtocolConfig(), nullptr, nullptr,
+      get_should_fetch_access_token.value_or(
+          base::BindRepeating([]() { return false; })),
+      webui_delegate_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
+      get_user_population_callback.value_or(base::NullCallback()),
+      get_page_load_token_callback.value_or(base::NullCallback())));
+}
+
+void PingManagerTest::SetUpFeatureList(bool should_enable_remove_cookies) {
+  if (should_enable_remove_cookies) {
+    feature_list_.InitAndEnableFeature(
+        kSafeBrowsingRemoveCookiesInAuthRequests);
+  } else {
+    feature_list_.InitAndDisableFeature(
+        kSafeBrowsingRemoveCookiesInAuthRequests);
+  }
+}
+
+TestSafeBrowsingTokenFetcher* PingManagerTest::SetUpTokenFetcher() {
+  auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
+  auto* raw_token_fetcher = token_fetcher.get();
+  ping_manager()->SetTokenFetcherForTesting(std::move(token_fetcher));
+  return raw_token_fetcher;
+}
+
+void PingManagerTest::RunReportThreatDetailsTest(
+    bool expect_access_token,
+    absl::optional<ChromeUserPopulation> expected_user_population,
+    absl::optional<std::string> expected_page_load_token_value,
+    bool expect_cookies_removed) {
+  base::HistogramTester histogram_tester;
+  TestSafeBrowsingTokenFetcher* raw_token_fetcher = SetUpTokenFetcher();
+
+  std::string input_report_content;
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  // The report must be non-empty. The selected property to set is arbitrary.
+  report->set_type(ClientSafeBrowsingReportRequest::URL_PHISHING);
+  EXPECT_TRUE(report->SerializeToString(&input_report_content));
+  ClientSafeBrowsingReportRequest expected_report;
+  expected_report.ParseFromString(input_report_content);
+  if (expected_user_population.has_value()) {
+    *expected_report.mutable_population() = expected_user_population.value();
+  }
+  if (expected_page_load_token_value.has_value()) {
+    ChromeUserPopulation::PageLoadToken token =
+        ChromeUserPopulation::PageLoadToken();
+    token.set_token_value(expected_page_load_token_value.value());
+    expected_report.mutable_population()
+        ->mutable_page_load_tokens()
+        ->Add()
+        ->Swap(&token);
+  }
+  std::string expected_report_content;
+  EXPECT_TRUE(expected_report.SerializeToString(&expected_report_content));
+
+  std::string access_token = "testing_access_token";
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_EQ(GetUploadData(request), expected_report_content);
+        std::string header_value;
+        bool found_header = request.headers.GetHeader(
+            net::HttpRequestHeaders::kAuthorization, &header_value);
+        EXPECT_EQ(found_header, expect_access_token);
+        if (expect_access_token) {
+          EXPECT_EQ(header_value, "Bearer " + access_token);
+        }
+        EXPECT_EQ(request.credentials_mode,
+                  expect_cookies_removed
+                      ? network::mojom::CredentialsMode::kOmit
+                      : network::mojom::CredentialsMode::kInclude);
+        histogram_tester.ExpectUniqueSample(
+            "SafeBrowsing.ClientSafeBrowsingReport.RequestHasToken",
+            /*sample=*/expect_access_token,
+            /*expected_bucket_count=*/1);
+      }));
+  ping_manager()->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+
+  EXPECT_CALL(*webui_delegate_.get(), AddToCSBRRsSent(_)).Times(1);
+  PingManager::ReportThreatDetailsResult result =
+      ping_manager()->ReportThreatDetails(std::move(report));
+  EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::SUCCESS);
+  EXPECT_EQ(raw_token_fetcher->WasStartCalled(), expect_access_token);
+  if (expect_access_token) {
+    raw_token_fetcher->RunAccessTokenCallback(access_token);
+  }
+}
 
 TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
   HitReport base_hp;
@@ -296,6 +440,85 @@ TEST_F(PingManagerTest, TestSanitizeHitReport) {
     EXPECT_EQ(hit_report->page_url.spec(), "http://page.url.com/");
     EXPECT_EQ(hit_report->referrer_url.spec(), "http://referrer.url.com/");
   }
+}
+
+TEST_F(PingManagerTest, ReportThreatDetailsWithAccessToken) {
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/base::BindRepeating(
+          []() { return true; }),
+      /*get_user_population_callback=*/absl::nullopt,
+      /*get_page_load_token_callback=*/absl::nullopt);
+  SetUpFeatureList(/*should_enable_remove_cookies=*/true);
+  RunReportThreatDetailsTest(/*expect_access_token=*/true,
+                             /*expected_user_population=*/absl::nullopt,
+                             /*expected_page_load_token_value=*/absl::nullopt,
+                             /*expect_cookies_removed=*/true);
+}
+TEST_F(PingManagerTest,
+       ReportThreatDetailsWithAccessToken_RemoveCookiesFeatureDisabled) {
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/base::BindRepeating(
+          []() { return true; }),
+      /*get_user_population_callback=*/absl::nullopt,
+      /*get_page_load_token_callback=*/absl::nullopt);
+  SetUpFeatureList(/*should_enable_remove_cookies=*/false);
+  RunReportThreatDetailsTest(/*expect_access_token=*/true,
+                             /*expected_user_population=*/absl::nullopt,
+                             /*expected_page_load_token_value=*/absl::nullopt,
+                             /*expect_cookies_removed=*/false);
+}
+TEST_F(PingManagerTest, ReportThreatDetailsWithUserPopulation) {
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/absl::nullopt,
+      /*get_user_population_callback=*/base::BindRepeating([]() {
+        auto population = ChromeUserPopulation();
+        population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
+        return population;
+      }),
+      /*get_page_load_token_callback=*/absl::nullopt);
+  auto population = ChromeUserPopulation();
+  population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
+  RunReportThreatDetailsTest(/*expect_access_token=*/false,
+                             /*expected_user_population=*/population,
+                             /*expected_page_load_token_value=*/absl::nullopt,
+                             /*expect_cookies_removed=*/false);
+}
+TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/absl::nullopt,
+      /*get_user_population_callback=*/absl::nullopt,
+      /*get_page_load_token_callback=*/base::BindRepeating([](GURL url) {
+        ChromeUserPopulation::PageLoadToken token;
+        token.set_token_value("testing_page_load_token");
+        return token;
+      }));
+  RunReportThreatDetailsTest(
+      /*expect_access_token=*/false,
+      /*expected_user_population=*/absl::nullopt,
+      /*expected_page_load_token_value=*/"testing_page_load_token",
+      /*expect_cookies_removed=*/false);
+}
+
+TEST_F(PingManagerTest, ReportSafeBrowsingHit) {
+  std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+  std::string post_data = "testing_hit_report_post_data";
+  hit_report->post_data = post_data;
+  // Threat type and source are arbitrary but specified so that determining the
+  // URL does not does throw an error due to input validation.
+  hit_report->threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  hit_report->threat_source = ThreatSource::LOCAL_PVER4;
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_EQ(GetUploadData(request), post_data);
+      }));
+  ping_manager()->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+
+  EXPECT_CALL(*webui_delegate_.get(), AddToHitReportsSent(_)).Times(1);
+  ping_manager()->ReportSafeBrowsingHit(std::move(hit_report));
 }
 
 }  // namespace safe_browsing

@@ -189,9 +189,7 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
   if (!get_user_population_callback_.is_null()) {
     *report->mutable_population() = get_user_population_callback_.Run();
   }
-  if (!get_page_load_token_callback_.is_null() &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kAddPageLoadTokenToClientSafeBrowsingReport)) {
+  if (!get_page_load_token_callback_.is_null()) {
     ChromeUserPopulation::PageLoadToken token =
         get_page_load_token_callback_.Run(GURL(report->page_url()));
     report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(

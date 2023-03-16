@@ -21,6 +21,7 @@ class ChromePingManagerFactory : public ProfileKeyedServiceFactory {
 
  private:
   friend class base::NoDestructor<ChromePingManagerFactory>;
+  friend class ChromePingManagerFactoryTest;
 
   ChromePingManagerFactory();
   ~ChromePingManagerFactory() override;
