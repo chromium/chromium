@@ -6,7 +6,6 @@ import("//build/apple/tweak_info_plist.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/ios/ios_sdk.gni")
-import("//build/config/ios/rules.gni")
 import("//build/util/lastchange.gni")
 import("//components/cronet/native/include/headers.gni")
 import("//components/grpc_support/include/headers.gni")
@@ -199,18 +198,16 @@ action("cronet_static_complete") {
     ":cronet_deps_complete",
     ":cronet_static",
   ]
-  outputs = [ "$target_out_dir/$current_cpu/cronet_static_complete.a" ]
+  outputs = [ "$target_out_dir/cronet_static_complete.a" ]
   args = [
     "--input_libs",
     rebase_path("$target_out_dir/libcronet_static.a", root_build_dir),
     "--deps_lib",
     rebase_path("$target_out_dir/libcronet_deps_complete.a", root_build_dir),
     "--output_obj",
-    rebase_path("$target_out_dir/$current_cpu/cronet_static_complete.o",
-                root_build_dir),
+    rebase_path("$target_out_dir/cronet_static_complete.o", root_build_dir),
     "--output_lib",
-    rebase_path("$target_out_dir/$current_cpu/cronet_static_complete.a",
-                root_build_dir),
+    rebase_path("$target_out_dir/cronet_static_complete.a", root_build_dir),
     "--current_cpu",
     current_cpu,
   ]
@@ -223,141 +220,127 @@ action("cronet_static_complete") {
 
 # A fat static library which exports cronet public symbols and hides all
 # dependendencies.
-if (!is_fat_secondary_toolchain) {
-  lipo_binary("libcronet") {
-    arch_binary_target = ":cronet_static_complete"
-    arch_binary_output = "cronet_static_complete.a"
-    output_name = "libcronet.a"
-    enable_stripping = false
-    enable_dsyms = false
+template("ios_static_framework") {
+  _target_name = target_name
+  _output_name = target_name
+  if (defined(invoker.output_name)) {
+    _output_name = invoker.output_name
+  }
+  _framework_name = target_name
+  if (defined(invoker.framework_name)) {
+    _framework_name = invoker.framework_name
   }
 
-  template("ios_static_framework") {
-    _target_name = target_name
-    _output_name = target_name
-    if (defined(invoker.output_name)) {
-      _output_name = invoker.output_name
-    }
-    _framework_name = target_name
-    if (defined(invoker.framework_name)) {
-      _framework_name = invoker.framework_name
-    }
-
-    _framework_headers_target = _target_name + "_framework_headers"
-    bundle_data(_framework_headers_target) {
-      visibility = [ ":$_target_name" ]
-      sources = invoker.public_headers
-      outputs = [ "{{bundle_contents_dir}}/Headers/{{source_file_part}}" ]
-    }
-
-    _framework_binary_target = _target_name + "_framework_binary"
-    _static_library_target = invoker.static_library_target
-
-    bundle_data(_framework_binary_target) {
-      visibility = [ ":$_target_name" ]
-      sources = get_target_outputs(_static_library_target)
-      outputs = [ "{{bundle_executable_dir}}/$_framework_name" ]
-      public_deps = [ _static_library_target ]
-    }
-
-    create_bundle(_target_name) {
-      product_type = "com.apple.product-type.framework"
-      bundle_root_dir = "$root_out_dir/Static/${_output_name}"
-      bundle_contents_dir = bundle_root_dir
-      bundle_executable_dir = bundle_contents_dir
-      bundle_resources_dir = bundle_contents_dir
-      deps = [
-        ":$_framework_binary_target",
-        ":$_framework_headers_target",
-      ]
-      public_configs = invoker.public_configs
-    }
+  _framework_headers_target = _target_name + "_framework_headers"
+  bundle_data(_framework_headers_target) {
+    visibility = [ ":$_target_name" ]
+    sources = invoker.public_headers
+    outputs = [ "{{bundle_contents_dir}}/Headers/{{source_file_part}}" ]
   }
 
-  ios_static_framework("cronet_static_framework") {
-    output_name = "Cronet.framework"
-    framework_name = "Cronet"
-    public_headers = _cronet_public_headers
-    static_library_target = ":libcronet"
-    public_configs = [ ":cronet_static_config" ]
+  _framework_binary_target = _target_name + "_framework_binary"
+  _static_library_target = invoker.static_library_target
+
+  bundle_data(_framework_binary_target) {
+    visibility = [ ":$_target_name" ]
+    sources = get_target_outputs(_static_library_target)
+    outputs = [ "{{bundle_executable_dir}}/$_framework_name" ]
+    public_deps = [ _static_library_target ]
   }
 
-  _package_dir = "$root_out_dir/cronet"
-
-  action("generate_license") {
-    _license_path = "$_package_dir/LICENSE"
-
-    script = "//tools/licenses/licenses.py"
-    inputs = [ lastchange_file ]
-    outputs = [ _license_path ]
-    args = [
-      "license_file",
-      rebase_path(_license_path, root_build_dir),
-      "--gn-target",
-      "//components/cronet/ios:cronet_framework",
-      "--gn-out-dir",
-      ".",
-      "--target-os",
-      "ios",
-    ]
-  }
-
-  copy("cronet_static_copy") {
-    sources = [ "$root_out_dir/Static/Cronet.framework" ]
-    outputs = [ "$_package_dir/Static/Cronet.framework" ]
-
-    deps = [ ":cronet_static_framework" ]
-  }
-
-  copy("cronet_package_copy") {
-    sources = [
-      "$root_out_dir/Cronet.framework",
-      "//AUTHORS",
-      "//chrome/VERSION",
-    ]
-    outputs = [ "$_package_dir/{{source_file_part}}" ]
-
+  create_bundle(_target_name) {
+    product_type = "com.apple.product-type.framework"
+    bundle_root_dir = "$root_out_dir/Static/${_output_name}"
+    bundle_contents_dir = bundle_root_dir
+    bundle_executable_dir = bundle_contents_dir
+    bundle_resources_dir = bundle_contents_dir
     deps = [
-      ":cronet_framework",
-      ":cronet_static_copy",
+      ":$_framework_binary_target",
+      ":$_framework_headers_target",
     ]
+    public_configs = invoker.public_configs
   }
+}
 
-  if (enable_dsyms) {
-    action("cronet_dsym_archive") {
-      script = "//chrome/tools/build/mac/archive_symbols.py"
+ios_static_framework("cronet_static_framework") {
+  output_name = "Cronet.framework"
+  framework_name = "Cronet"
+  public_headers = _cronet_public_headers
+  static_library_target = ":cronet_static_complete"
+  public_configs = [ ":cronet_static_config" ]
+}
 
-      # These are the dSYMs that will be archived. The sources list must be
-      # the target outputs that correspond to the dSYMs (since a dSYM is a
-      # directory it cannot be listed as a source file). The targets that
-      # generate both the dSYM and binary image are listed in deps.
-      _dsyms = [ "$root_out_dir/Cronet.dSYM" ]
+_package_dir = "$root_out_dir/cronet"
 
-      sources = [ "$root_out_dir/Cronet.framework" ]
+action("generate_license") {
+  _license_path = "$_package_dir/LICENSE"
 
-      _output = "$_package_dir/Cronet.dSYM.tar.bz2"
+  script = "//tools/licenses/licenses.py"
+  inputs = [ lastchange_file ]
+  outputs = [ _license_path ]
+  args = [
+    "license_file",
+    rebase_path(_license_path, root_build_dir),
+    "--gn-target",
+    "//components/cronet/ios:cronet_framework",
+    "--gn-out-dir",
+    ".",
+    "--target-os",
+    "ios",
+  ]
+}
 
-      outputs = [ _output ]
+copy("cronet_static_copy") {
+  sources = [ "$root_out_dir/Static/Cronet.framework" ]
+  outputs = [ "$_package_dir/Static/Cronet.framework" ]
 
-      args = [ rebase_path(_output, root_out_dir) ] +
-             rebase_path(_dsyms, root_out_dir)
+  deps = [ ":cronet_static_framework" ]
+}
 
-      deps = [ ":cronet_framework" ]
-    }
-  } else {
-    group("cronet_dsym_archive") {
-    }
-  }
+copy("cronet_package_copy") {
+  sources = [
+    "$root_out_dir/Cronet.framework",
+    "//AUTHORS",
+    "//chrome/VERSION",
+  ]
+  outputs = [ "$_package_dir/{{source_file_part}}" ]
 
-  group("cronet_package_ios") {
-    deps = [
-      ":cronet_dsym_archive",
-      ":cronet_package_copy",
-      ":generate_license",
-    ]
+  deps = [
+    ":cronet_framework",
+    ":cronet_static_copy",
+  ]
+}
+
+if (enable_dsyms) {
+  action("cronet_dsym_archive") {
+    script = "//chrome/tools/build/mac/archive_symbols.py"
+
+    # These are the dSYMs that will be archived. The sources list must be
+    # the target outputs that correspond to the dSYMs (since a dSYM is a
+    # directory it cannot be listed as a source file). The targets that
+    # generate both the dSYM and binary image are listed in deps.
+    _dsyms = [ "$root_out_dir/Cronet.dSYM" ]
+
+    sources = [ "$root_out_dir/Cronet.framework" ]
+
+    _output = "$_package_dir/Cronet.dSYM.tar.bz2"
+
+    outputs = [ _output ]
+
+    args = [ rebase_path(_output, root_out_dir) ] +
+           rebase_path(_dsyms, root_out_dir)
+
+    deps = [ ":cronet_framework" ]
   }
 } else {
-  group("cronet_package_ios") {
-    public_deps = [ ":cronet_package_ios($primary_fat_toolchain_name)" ]
+  group("cronet_dsym_archive") {
   }
+}
+
+group("cronet_package_ios") {
+  deps = [
+    ":cronet_dsym_archive",
+    ":cronet_package_copy",
+    ":generate_license",
+  ]
 }
