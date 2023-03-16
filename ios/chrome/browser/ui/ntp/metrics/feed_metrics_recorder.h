@@ -224,10 +224,6 @@ class Time;
 // term "engaged" is an implementation detail of this class.
 - (BOOL)hasEngagedWithLatestRefreshedContent;
 
-// Returns YES if user engagement criteria have been met to warrant a refresh.
-// Deprecated. Renamed to `hasEngagedWithLatestRefreshedContent`.
-- (BOOL)hasMetFeedRefreshUserEngagementCriteria;
-
 #pragma mark - Follow
 
 // Record metrics for when the user request to follow/unfollow a website,

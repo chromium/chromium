@@ -645,11 +645,6 @@ using feed::FeedUserActionType;
   }
 }
 
-// Deprecated. Renamed to `hasEngagedWithLatestRefreshedContent`.
-- (BOOL)hasMetFeedRefreshUserEngagementCriteria {
-  return [self hasEngagedWithLatestRefreshedContent];
-}
-
 #pragma mark - Follow
 
 - (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType {
