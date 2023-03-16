@@ -59,6 +59,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.components.autofill.AutofillHintsServiceTestHelper;
 import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.autofill.AutofillPopup;
@@ -2084,6 +2085,7 @@ public class AwAutofillTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("https://crbug.com/1422936")
     public void testUmaFunnelMetrics() throws Throwable {
         HistogramWatcher.Builder histogramWatcherBuilder = HistogramWatcher.newBuilder();
 
