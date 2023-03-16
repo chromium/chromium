@@ -101,17 +101,6 @@ void CameraPrivacySwitchController::OnActiveUserPrefServiceChanged(
     auto device_id_to_privacy_switch_state =
         media::CameraHalDispatcherImpl::GetInstance()
             ->AddCameraPrivacySwitchObserver(this);
-    // TODO(b/255248909): Handle multiple cameras with privacy controls
-    // properly.
-    for (const auto& it : device_id_to_privacy_switch_state) {
-      cros::mojom::CameraPrivacySwitchState state = it.second;
-      if (state == cros::mojom::CameraPrivacySwitchState::ON) {
-        camera_privacy_switch_state_ = state;
-        break;
-      } else if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
-        camera_privacy_switch_state_ = state;
-      }
-    }
     is_camera_observer_added_ = true;
   }
 
@@ -191,8 +180,6 @@ void CameraPrivacySwitchController::SetCameraPrivacySwitchAPIForTest(
 void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStateChanged(
     const std::string& device_id,
     cros::mojom::CameraPrivacySwitchState state) {
-  camera_privacy_switch_state_ = state;
-
   if (features::IsVideoConferenceEnabled()) {
     // The `VideoConferenceTrayController` shows this info as a toast.
     return;
@@ -200,8 +187,7 @@ void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStateChanged(
 
   if (features::IsPrivacyIndicatorsEnabled()) {
     // Always hide if the switch was turned off.
-    if (camera_privacy_switch_state_ ==
-        cros::mojom::CameraPrivacySwitchState::OFF) {
+    if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
       turn_sw_switch_on_notification_.Hide();
     }
     return;
@@ -230,11 +216,6 @@ void CameraPrivacySwitchController::OnCameraSWPrivacySwitchStateChanged(
   if (state != pref_state) {
     switch_api_->SetCameraSWPrivacySwitch(pref_val);
   }
-}
-
-cros::mojom::CameraPrivacySwitchState
-CameraPrivacySwitchController::HWSwitchState() const {
-  return camera_privacy_switch_state_;
 }
 
 void CameraPrivacySwitchController::ActiveApplicationsChanged(

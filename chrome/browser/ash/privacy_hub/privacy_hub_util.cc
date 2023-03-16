@@ -6,12 +6,9 @@
 
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
-#include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
-#include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
 namespace ash::privacy_hub_util {
 
@@ -35,20 +32,8 @@ void SetFrontend(PrivacyHubDelegate* ptr) {
   }
 }
 
-cros::mojom::CameraPrivacySwitchState CameraHWSwitchState() {
-  PrivacyHubController* const controller = ControllerIfAvailable();
-  if (controller == nullptr) {
-    return cros::mojom::CameraPrivacySwitchState::UNKNOWN;
-  }
-  return controller->camera_controller().HWSwitchState();
-}
-
 bool MicrophoneSwitchState() {
   return ui::MicrophoneMuteSwitchMonitor::Get()->microphone_mute_switch_on();
-}
-
-bool HasActiveInputDeviceForSimpleUsage() {
-  return CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage();
 }
 
 void SetUpCameraCountObserver() {

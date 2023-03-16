@@ -284,18 +284,12 @@ TEST_P(PrivacyHubCameraControllerTest,
   // Somebody switched the camera off by the hardware switch.
   controller.OnCameraHWPrivacySwitchStateChanged(
       std::string(), cros::mojom::CameraPrivacySwitchState::OFF);
-  // Controller must know about it.
-  EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::OFF,
-            controller.HWSwitchState());
   EXPECT_FALSE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 
   // Somebody switched the camera off by the hardware switch.
   controller.OnCameraHWPrivacySwitchStateChanged(
       std::string(), cros::mojom::CameraPrivacySwitchState::ON);
-  // Controller must know about it.
-  EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::ON,
-            controller.HWSwitchState());
 
   // The notifications don't show with Privacy Indicators or Video Conference
   // enabled.
@@ -355,9 +349,6 @@ TEST_P(PrivacyHubCameraControllerTest,
   // Somebody switched the camera off by the hardware switch.
   controller.OnCameraHWPrivacySwitchStateChanged(
       std::string(), cros::mojom::CameraPrivacySwitchState::OFF);
-  // Controller must know about it.
-  EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::OFF,
-            controller.HWSwitchState());
   // This particular notification should appear only if there are multiple
   // cameras.
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
@@ -366,9 +357,6 @@ TEST_P(PrivacyHubCameraControllerTest,
   // Switching the hardware switch back again.
   controller.OnCameraHWPrivacySwitchStateChanged(
       std::string(), cros::mojom::CameraPrivacySwitchState::ON);
-  // Controller is aware.
-  EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::ON,
-            controller.HWSwitchState());
   // This didn't cause any change in the setting toggle.
   EXPECT_TRUE(GetUserPref());
   // There were no changes to the histograms.
