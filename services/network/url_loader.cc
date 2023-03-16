@@ -1230,7 +1230,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
       // network, so resetting the checker.
       local_network_access_checker_.ResetForRetry();
       return net::
-          ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY;
+          ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY;
     }
     // Remember the CORS error so we can annotate the URLLoaderCompletionStatus
     // with it later, then fail the request with the same net error code as
