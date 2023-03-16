@@ -62,7 +62,7 @@ class TestDownloadAndUnpackFromCloudStorage(unittest.TestCase):
     # Verify cmd.
     cmd = ' '.join(mock_run.call_args[0][0])
     self.assertRegex(
-        cmd, r'.*python\s.*gsutil.py\s+cp\s+gs://some/url\s+' + image_tgz_path)
+        cmd, r'.*python3?\s.*gsutil.py\s+cp\s+gs://some/url\s+' + image_tgz_path)
 
   def testFailedTarOpen(self, mock_tarfile, mock_run, mock_tmp_dir):
     mock_run.return_value = _mock_task(stderr='some error')
