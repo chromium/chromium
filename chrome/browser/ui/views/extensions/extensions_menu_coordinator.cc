@@ -91,6 +91,7 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
 }
 
 void ExtensionsMenuCoordinator::OnViewIsDeleting(views::View* observed_view) {
+  bubble_tracker_.SetView(nullptr);
   // Reset the controller to keep 1:1 lifetime with the view.
   controller_.reset();
 }

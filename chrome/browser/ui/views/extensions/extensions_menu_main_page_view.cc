@@ -272,8 +272,15 @@ void ExtensionsMenuMainPageView::RemoveMenuItem(
 }
 
 void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
-  // TODO(crbug.com/1390952): Update user site setting and add test.
-  UpdateSiteSettingToggleText(site_settings_toggle_);
+  const url::Origin& origin =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  PermissionsManager::UserSiteSetting site_setting =
+      site_settings_toggle_->GetIsOn()
+          ? PermissionsManager::UserSiteSetting::kCustomizeByExtension
+          : PermissionsManager::UserSiteSetting::kBlockAllExtensions;
+
+  PermissionsManager::Get(browser_->profile())
+      ->UpdateUserSiteSetting(origin, site_setting);
 }
 
 void ExtensionsMenuMainPageView::Update(content::WebContents* web_contents) {

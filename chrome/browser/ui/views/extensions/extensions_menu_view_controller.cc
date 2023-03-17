@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 
 #include "base/i18n/case_conversion.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -13,12 +15,16 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/permissions_manager.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+using PermissionsManager = extensions::PermissionsManager;
+using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
 // Returns sorted extension ids based on their extensions name.
 std::vector<std::string> SortExtensionsByName(
@@ -75,6 +81,8 @@ ExtensionsMenuViewController::ExtensionsMenuViewController(
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
   browser_->tab_strip_model()->AddObserver(this);
   toolbar_model_observation_.Observe(toolbar_model_.get());
+  permissions_manager_observation_.Observe(
+      extensions::PermissionsManager::Get(browser_->profile()));
 }
 
 ExtensionsMenuViewController::~ExtensionsMenuViewController() {
@@ -225,6 +233,40 @@ void ExtensionsMenuViewController::OnToolbarPinnedActionsChanged() {
   main_page->UpdatePinButtons();
 }
 
+void ExtensionsMenuViewController::OnUserPermissionsSettingsChanged(
+    const PermissionsManager::UserPermissionsSettings& settings) {
+  DCHECK(current_page_);
+
+  if (GetSitePermissionsPage(current_page_)) {
+    // Site permissions page can only be opened when site setting is set to
+    // "customize by extension". Thus, when site settings changed, we have to
+    // return to main page.
+    DCHECK_NE(PermissionsManager::Get(browser_->profile())
+                  ->GetUserSiteSetting(GetActiveWebContents()
+                                           ->GetPrimaryMainFrame()
+                                           ->GetLastCommittedOrigin()),
+              PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+    OpenMainPage();
+    return;
+  }
+
+  auto* main_page = GetMainPage(current_page_);
+  DCHECK(main_page);
+  main_page->Update(GetActiveWebContents());
+
+  // TODO(crbug.com/1390952): Update the "highlighted section" based on the
+  // `site_setting` and whether a page refresh is needed.
+
+  // TODO(crbug.com/1390952): Run blocked actions for extensions that only have
+  // blocked actions that don't require a page refresh to run.
+}
+
+void ExtensionsMenuViewController::OnViewIsDeleting(
+    views::View* observed_view) {
+  DCHECK_EQ(observed_view, current_page_);
+  current_page_ = nullptr;
+}
+
 ExtensionsMenuMainPageView*
 ExtensionsMenuViewController::GetMainPageViewForTesting() {
   DCHECK(current_page_);
@@ -242,7 +284,9 @@ void ExtensionsMenuViewController::SwitchToPage(
   if (current_page_) {
     bubble_contents_->RemoveChildViewT(current_page_.get());
   }
+  DCHECK(!current_page_);
   current_page_ = bubble_contents_->AddChildView(std::move(page));
+  current_page_->AddObserver(this);
 
   // Only resize the menu if the bubble is created, since page could be added to
   // the menu beforehand and delegate wouldn't know the bubble bounds.

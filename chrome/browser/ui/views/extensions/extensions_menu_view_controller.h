@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 class BubbleDialogDelegate;
@@ -22,9 +23,12 @@ class ExtensionsMenuMainPageView;
 class ExtensionsMenuSitePermissionsPageView;
 class ToolbarActionsModel;
 
-class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
-                                     public TabStripModelObserver,
-                                     public ToolbarActionsModel::Observer {
+class ExtensionsMenuViewController
+    : public ExtensionsMenuNavigationHandler,
+      public TabStripModelObserver,
+      public ToolbarActionsModel::Observer,
+      public extensions::PermissionsManager::Observer,
+      public views::ViewObserver {
  public:
   ExtensionsMenuViewController(Browser* browser,
                                ExtensionsContainer* extensions_container,
@@ -62,6 +66,14 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 
+  // PermissionsManager::Observer:
+  void OnUserPermissionsSettingsChanged(
+      const extensions::PermissionsManager::UserPermissionsSettings& settings)
+      override;
+
+  // views::ViewObserver
+  void OnViewIsDeleting(views::View* observed_view) override;
+
   // Accessors used by tests:
   // Returns the main page iff it's the `current_page_` one.
   ExtensionsMenuMainPageView* GetMainPageViewForTesting();
@@ -84,11 +96,19 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsContainer> extensions_container_;
   const raw_ptr<views::View> bubble_contents_;
-  const raw_ptr<views::BubbleDialogDelegate> bubble_delegate_;
+  // TODO(crbug.com/1425522) There are no guarantee this pointer is safe
+  // to be used. In practice its lifetime is probably always shorter than
+  // `this`. This has to be fixed.
+  const raw_ptr<views::BubbleDialogDelegate, DisableDanglingPtrDetection>
+      bubble_delegate_;
 
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_model_observation_{this};
+
+  base::ScopedObservation<extensions::PermissionsManager,
+                          extensions::PermissionsManager::Observer>
+      permissions_manager_observation_{this};
 
   // The current page visible in `bubble_contents_`.
   raw_ptr<views::View> current_page_ = nullptr;

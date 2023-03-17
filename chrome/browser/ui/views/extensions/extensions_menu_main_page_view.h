@@ -60,6 +60,9 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
+  views::ToggleButton* GetSiteSettingsToggleForTesting() {
+    return site_settings_toggle_;
+  }
   std::vector<ExtensionMenuItemView*> GetMenuItemsForTesting() const;
 
  private:

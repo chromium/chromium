@@ -58,6 +58,9 @@ class SitePermissionsHelper {
 
   // Updates the user site settings pointed to by `web_contents` to
   // `site_setting` for `action_ids`.
+  // TODO(crbug.com/1390958): Remove after removing ExtensionsTabbedMenuView
+  // related code. New code should directly call
+  // PermissionsManager::UpdateUserSiteSetting.
   void UpdateUserSiteSettings(
       const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
       content::WebContents* web_contents,
