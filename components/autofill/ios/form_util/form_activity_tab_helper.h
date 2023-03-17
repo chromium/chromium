@@ -17,7 +17,6 @@ class WebState;
 
 namespace autofill {
 
-struct BaseFormActivityParams;
 class FormActivityObserver;
 
 // Processes user activity messages for web page forms and forwards the form
@@ -62,12 +61,6 @@ class FormActivityTabHelper
   // Handler for the submission of a form.
   void FormSubmissionHandler(web::WebState* web_state,
                              const web::ScriptMessage& message);
-
-  bool GetBaseFormActivityParams(web::WebState* web_state,
-                                 const web::ScriptMessage& message,
-                                 const base::Value::Dict** message_body,
-                                 BaseFormActivityParams* form_activity,
-                                 web::WebFrame** sender_frame);
 
   // The observers.
   base::ObserverList<FormActivityObserver>::Unchecked observers_;

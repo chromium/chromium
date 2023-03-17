@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #import "components/autofill/ios/browser/autofill_util.h"
@@ -23,8 +22,6 @@
 #error "This file requires ARC support."
 #endif
 
-using base::NumberToString;
-using base::StringToUint;
 using base::SysUTF8ToNSString;
 
 namespace autofill {
@@ -75,40 +72,15 @@ void FormActivityTabHelper::OnFormMessageReceived(
 void FormActivityTabHelper::HandleFormActivity(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  const base::Value::Dict* message_body = nullptr;
-  web::WebFrame* sender_frame = nullptr;
   FormActivityParams params;
-  if (!GetBaseFormActivityParams(web_state, message, &message_body, &params,
-                                 &sender_frame)) {
+  if (!FormActivityParams::FromMessage(message, &params)) {
     return;
   }
 
-  const std::string* field_identifier =
-      message_body->FindString("fieldIdentifier");
-  const std::string* unique_field_id =
-      message_body->FindString("uniqueFieldID");
-  const std::string* field_type = message_body->FindString("fieldType");
-  const std::string* type = message_body->FindString("type");
-  const std::string* value = message_body->FindString("value");
-  absl::optional<bool> has_user_gesture =
-      message_body->FindBool("hasUserGesture");
-  if (!field_identifier || !unique_field_id || !field_type || !type || !value ||
-      !has_user_gesture) {
-    params.input_missing = true;
+  web::WebFrame* sender_frame = GetWebFrameWithId(web_state, params.frame_id);
+  if (!sender_frame) {
+    return;
   }
-
-  if (field_identifier)
-    params.field_identifier = *field_identifier;
-  if (unique_field_id)
-    StringToUint(*unique_field_id, &params.unique_field_id.value());
-  if (field_type)
-    params.field_type = *field_type;
-  if (type)
-    params.type = *type;
-  if (value)
-    params.value = *value;
-  if (has_user_gesture)
-    params.has_user_gesture = *has_user_gesture;
 
   for (auto& observer : observers_)
     observer.FormActivityRegistered(web_state, sender_frame, params);
@@ -118,10 +90,13 @@ void FormActivityTabHelper::HandleFormRemoval(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
   const base::Value::Dict* message_body = nullptr;
-  web::WebFrame* sender_frame = nullptr;
   FormRemovalParams params;
-  if (!GetBaseFormActivityParams(web_state, message, &message_body, &params,
-                                 &sender_frame)) {
+  if (!BaseFormActivityParams::FromMessage(message, &message_body, &params)) {
+    return;
+  }
+
+  web::WebFrame* sender_frame = GetWebFrameWithId(web_state, params.frame_id);
+  if (!sender_frame) {
     return;
   }
 
@@ -185,52 +160,6 @@ void FormActivityTabHelper::FormSubmissionHandler(
     observer.DocumentSubmitted(web_state, sender_frame, form_name, form_data,
                                submitted_by_user);
   }
-}
-
-bool FormActivityTabHelper::GetBaseFormActivityParams(
-    web::WebState* web_state,
-    const web::ScriptMessage& message,
-    const base::Value::Dict** message_body,
-    BaseFormActivityParams* params,
-    web::WebFrame** sender_frame) {
-  if (!message.body() || !message.body()->is_dict()) {
-    // Ignore invalid message.
-    return false;
-  }
-
-  const auto& message_body_dict = message.body()->GetDict();
-  *message_body = &message_body_dict;
-  const std::string* frame_id = message_body_dict.FindString("frameID");
-  if (!frame_id) {
-    return false;
-  }
-
-  *sender_frame = GetWebFrameWithId(web_state, *frame_id);
-  if (!*sender_frame) {
-    return false;
-  }
-
-  params->frame_id = *frame_id;
-  const std::string* form_name = message_body_dict.FindString("formName");
-  const std::string* unique_form_id =
-      message_body_dict.FindString("uniqueFormID");
-  if (!form_name || !unique_form_id) {
-    params->input_missing = true;
-  }
-
-  if (form_name) {
-    params->form_name = *form_name;
-  }
-
-  std::string unique_id;
-  if (unique_form_id) {
-    unique_id = *unique_form_id;
-  }
-  StringToUint(unique_id, &params->unique_form_id.value());
-
-  params->is_main_frame = message.is_main_frame();
-
-  return true;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(FormActivityTabHelper)
