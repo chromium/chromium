@@ -24,7 +24,7 @@ class CORE_EXPORT SizesAttributeParser {
   float length();
 
  private:
-  bool Parse(CSSParserTokenRange);
+  bool Parse(CSSParserTokenRange, const CSSParserTokenOffsets&);
   float EffectiveSize();
   bool CalculateLengthInPixels(CSSParserTokenRange, float& result);
   bool MediaConditionMatches(const MediaQuerySet& media_condition);

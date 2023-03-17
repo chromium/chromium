@@ -22,8 +22,11 @@ SizesAttributeParser::SizesAttributeParser(
   DCHECK(media_values_);
   DCHECK(media_values_->Width().has_value());
   DCHECK(media_values_->Height().has_value());
+  CSSTokenizer tokenizer(attribute);
+  auto [tokens, offsets] = tokenizer.TokenizeToEOFWithOffsets();
   is_valid_ =
-      Parse(CSSParserTokenRange(CSSTokenizer(attribute).TokenizeToEOF()));
+      Parse(CSSParserTokenRange(tokens),
+            CSSParserTokenOffsets(tokens, std::move(offsets), attribute));
 }
 
 float SizesAttributeParser::length() {
@@ -70,7 +73,8 @@ bool SizesAttributeParser::MediaConditionMatches(
   return media_query_evaluator.Eval(media_condition);
 }
 
-bool SizesAttributeParser::Parse(CSSParserTokenRange range) {
+bool SizesAttributeParser::Parse(CSSParserTokenRange range,
+                                 const CSSParserTokenOffsets& offsets) {
   // Split on a comma token and parse the result tokens as (media-condition,
   // length) pairs
   while (!range.AtEnd()) {
@@ -93,7 +97,7 @@ bool SizesAttributeParser::Parse(CSSParserTokenRange range) {
       continue;
     }
     MediaQuerySet* media_condition = MediaQueryParser::ParseMediaCondition(
-        range.MakeSubRange(media_condition_start, length_token_start),
+        range.MakeSubRange(media_condition_start, length_token_start), offsets,
         execution_context_);
     if (!media_condition || !MediaConditionMatches(*media_condition)) {
       continue;

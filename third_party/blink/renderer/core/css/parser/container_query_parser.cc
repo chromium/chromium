@@ -113,15 +113,17 @@ ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
                           MediaQueryParser::SyntaxLevel::kLevel4) {}
 
 const MediaQueryExpNode* ContainerQueryParser::ParseCondition(String value) {
-  auto tokens = CSSTokenizer(value).TokenizeToEOF();
+  auto [tokens, raw_offsets] = CSSTokenizer(value).TokenizeToEOFWithOffsets();
   CSSParserTokenRange range(tokens);
-  return ParseCondition(range);
+  CSSParserTokenOffsets offsets(tokens, std::move(raw_offsets), value);
+  return ParseCondition(range, offsets);
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ParseCondition(
-    CSSParserTokenRange range) {
+    CSSParserTokenRange range,
+    const CSSParserTokenOffsets& offsets) {
   range.ConsumeWhitespace();
-  const MediaQueryExpNode* node = ConsumeContainerCondition(range);
+  const MediaQueryExpNode* node = ConsumeContainerCondition(range, offsets);
   if (!range.AtEnd()) {
     return nullptr;
   }
@@ -133,7 +135,8 @@ const MediaQueryExpNode* ContainerQueryParser::ParseCondition(
 //                   | style( <style-query> )
 //                   | <general-enclosed>
 const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
-    CSSParserTokenRange& range) {
+    CSSParserTokenRange& range,
+    const CSSParserTokenOffsets& offsets) {
   CSSParserTokenRange original_range = range;
 
   if (range.Peek().GetType() == kLeftParenthesisToken) {
@@ -144,14 +147,16 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
 
     CSSParserTokenRange original_block = block;
     // <size-feature>
-    const MediaQueryExpNode* query = ConsumeFeature(block, SizeFeatureSet());
+    const MediaQueryExpNode* query =
+        ConsumeFeature(block, offsets, SizeFeatureSet());
     if (query && block.AtEnd()) {
       return MediaQueryExpNode::Nested(query);
     }
     block = original_block;
 
     // <container-condition>
-    const MediaQueryExpNode* condition = ConsumeContainerCondition(block);
+    const MediaQueryExpNode* condition =
+        ConsumeContainerCondition(block, offsets);
     if (condition && block.AtEnd()) {
       return MediaQueryExpNode::Nested(condition);
     }
@@ -164,7 +169,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
     range.ConsumeWhitespace();
 
     if (const MediaQueryExpNode* query =
-            ConsumeFeatureQuery(block, StyleFeatureSet())) {
+            ConsumeFeatureQuery(block, offsets, StyleFeatureSet())) {
       return MediaQueryExpNode::Function(query, "style");
     }
   }
@@ -175,26 +180,29 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeContainerCondition(
-    CSSParserTokenRange& range) {
+    CSSParserTokenRange& range,
+    const CSSParserTokenOffsets& offsets) {
   return ConsumeNotAndOr(
-      [this](CSSParserTokenRange& range) {
-        return this->ConsumeQueryInParens(range);
+      [this, offsets](CSSParserTokenRange& range) {
+        return this->ConsumeQueryInParens(range, offsets);
       },
       range);
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQuery(
     CSSParserTokenRange& range,
+    const CSSParserTokenOffsets& offsets,
     const FeatureSet& feature_set) {
   CSSParserTokenRange original_range = range;
 
-  if (const MediaQueryExpNode* feature = ConsumeFeature(range, feature_set)) {
+  if (const MediaQueryExpNode* feature =
+          ConsumeFeature(range, offsets, feature_set)) {
     return feature;
   }
   range = original_range;
 
   if (const MediaQueryExpNode* node =
-          ConsumeFeatureCondition(range, feature_set)) {
+          ConsumeFeatureCondition(range, offsets, feature_set)) {
     return node;
   }
 
@@ -203,6 +211,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQuery(
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQueryInParens(
     CSSParserTokenRange& range,
+    const CSSParserTokenOffsets& offsets,
     const FeatureSet& feature_set) {
   CSSParserTokenRange original_range = range;
 
@@ -210,7 +219,8 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQueryInParens(
     auto block = range.ConsumeBlock();
     block.ConsumeWhitespace();
     range.ConsumeWhitespace();
-    const MediaQueryExpNode* query = ConsumeFeatureQuery(block, feature_set);
+    const MediaQueryExpNode* query =
+        ConsumeFeatureQuery(block, offsets, feature_set);
     if (query && block.AtEnd()) {
       return MediaQueryExpNode::Nested(query);
     }
@@ -222,18 +232,20 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQueryInParens(
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureCondition(
     CSSParserTokenRange& range,
+    const CSSParserTokenOffsets& offsets,
     const FeatureSet& feature_set) {
   return ConsumeNotAndOr(
-      [this, &feature_set](CSSParserTokenRange& range) {
-        return this->ConsumeFeatureQueryInParens(range, feature_set);
+      [this, &offsets, &feature_set](CSSParserTokenRange& range) {
+        return this->ConsumeFeatureQueryInParens(range, offsets, feature_set);
       },
       range);
 }
 
 const MediaQueryExpNode* ContainerQueryParser::ConsumeFeature(
     CSSParserTokenRange& range,
+    const CSSParserTokenOffsets& offsets,
     const FeatureSet& feature_set) {
-  return media_query_parser_.ConsumeFeature(range, feature_set);
+  return media_query_parser_.ConsumeFeature(range, offsets, feature_set);
 }
 
 }  // namespace blink

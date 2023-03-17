@@ -24,22 +24,34 @@ class CORE_EXPORT ContainerQueryParser {
 
   // https://drafts.csswg.org/css-contain-3/#typedef-container-condition
   const MediaQueryExpNode* ParseCondition(String);
-  const MediaQueryExpNode* ParseCondition(CSSParserTokenRange);
+  const MediaQueryExpNode* ParseCondition(CSSParserTokenRange,
+                                          const CSSParserTokenOffsets&);
 
  private:
   friend class ContainerQueryParserTest;
 
   using FeatureSet = MediaQueryParser::FeatureSet;
 
-  const MediaQueryExpNode* ConsumeQueryInParens(CSSParserTokenRange&);
-  const MediaQueryExpNode* ConsumeContainerCondition(CSSParserTokenRange&);
-  const MediaQueryExpNode* ConsumeFeatureQuery(CSSParserTokenRange&,
-                                               const FeatureSet&);
-  const MediaQueryExpNode* ConsumeFeatureQueryInParens(CSSParserTokenRange&,
-                                                       const FeatureSet&);
-  const MediaQueryExpNode* ConsumeFeatureCondition(CSSParserTokenRange&,
-                                                   const FeatureSet&);
+  const MediaQueryExpNode* ConsumeQueryInParens(
+      CSSParserTokenRange&,
+      const CSSParserTokenOffsets& offsets);
+  const MediaQueryExpNode* ConsumeContainerCondition(
+      CSSParserTokenRange&,
+      const CSSParserTokenOffsets&);
+  const MediaQueryExpNode* ConsumeFeatureQuery(
+      CSSParserTokenRange&,
+      const CSSParserTokenOffsets& offsets,
+      const FeatureSet&);
+  const MediaQueryExpNode* ConsumeFeatureQueryInParens(
+      CSSParserTokenRange&,
+      const CSSParserTokenOffsets&,
+      const FeatureSet&);
+  const MediaQueryExpNode* ConsumeFeatureCondition(
+      CSSParserTokenRange&,
+      const CSSParserTokenOffsets& offsets,
+      const FeatureSet&);
   const MediaQueryExpNode* ConsumeFeature(CSSParserTokenRange&,
+                                          const CSSParserTokenOffsets& offsets,
                                           const FeatureSet&);
 
   const CSSParserContext& context_;

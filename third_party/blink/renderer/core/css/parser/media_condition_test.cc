@@ -49,11 +49,13 @@ TEST(MediaConditionParserTest, Basic) {
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SCOPED_TRACE(test_cases[i].input);
-    CSSTokenizer tokenizer(StringView(test_cases[i].input));
-    const auto tokens = tokenizer.TokenizeToEOF();
+    StringView str(test_cases[i].input);
+    CSSTokenizer tokenizer(str);
+    const auto [tokens, offsets] = tokenizer.TokenizeToEOFWithOffsets();
     MediaQuerySet* media_condition_query_set =
-        MediaQueryParser::ParseMediaCondition(CSSParserTokenRange(tokens),
-                                              nullptr);
+        MediaQueryParser::ParseMediaCondition(
+            CSSParserTokenRange(tokens),
+            CSSParserTokenOffsets(tokens, std::move(offsets), str), nullptr);
     String query_text = media_condition_query_set->MediaText();
     const char* expected_text =
         test_cases[i].output ? test_cases[i].output : test_cases[i].input;

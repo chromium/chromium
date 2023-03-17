@@ -80,8 +80,9 @@ absl::optional<ForcedColors> ConvertForcedColors(
 void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
                                         const String& value_string) {
   CSSTokenizer tokenizer(value_string);
-  const auto tokens = tokenizer.TokenizeToEOF();
+  auto [tokens, raw_offsets] = tokenizer.TokenizeToEOFWithOffsets();
   CSSParserTokenRange range(tokens);
+  CSSParserTokenOffsets offsets(tokens, std::move(raw_offsets), value_string);
 
   // TODO(xiaochengh): This is a fake CSSParserContext that only passes
   // down the CSSParserMode. Plumb the real CSSParserContext through, so that
@@ -98,7 +99,7 @@ void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
   // Document to get the ExecutionContext so the extra parameter should be
   // removed.
   MediaQueryExpBounds bounds =
-      MediaQueryExp::Create(feature, range, *fake_context).Bounds();
+      MediaQueryExp::Create(feature, range, offsets, *fake_context).Bounds();
   DCHECK(!bounds.left.IsValid());
   MediaQueryExpValue value = bounds.right.value;
 

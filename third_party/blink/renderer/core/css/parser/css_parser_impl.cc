@@ -876,6 +876,15 @@ StyleRuleCharset* CSSParserImpl::ConsumeCharsetRule(
   return MakeGarbageCollected<StyleRuleCharset>();
 }
 
+// We need the token offsets for MediaQueryParser, so re-parse the prelude.
+static CSSParserTokenOffsets ReparseForOffsets(
+    const StringView prelude,
+    const CSSParserTokenRange range) {
+  Vector<wtf_size_t, 32> raw_offsets =
+      CSSTokenizer(prelude).TokenizeToEOFWithOffsets().second;
+  return {range.RemainingSpan(), std::move(raw_offsets), prelude};
+}
+
 StyleRuleImport* CSSParserImpl::ConsumeImportRule(
     const AtomicString& uri,
     CSSParserTokenStream& stream) {
@@ -889,6 +898,11 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
   if (uri.IsNull()) {
     return nullptr;  // Parse error, expected string or URI
   }
+
+  CSSParserTokenOffsets offsets = ReparseForOffsets(
+      stream.StringRangeAt(prelude_offset_start,
+                           prelude_offset_end - prelude_offset_start),
+      prelude);
 
   StyleRuleBase::LayerName layer;
   if (prelude.Peek().GetType() == kIdentToken &&
@@ -921,7 +935,7 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
 
   return MakeGarbageCollected<StyleRuleImport>(
       uri, std::move(layer),
-      MediaQueryParser::ParseMediaQuerySet(prelude,
+      MediaQueryParser::ParseMediaQuerySet(prelude, offsets,
                                            context_->GetExecutionContext()),
       context_->IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse);
 }
@@ -988,7 +1002,9 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
           .StringRangeAt(prelude_offset_start,
                          prelude_offset_end - prelude_offset_start)
           .ToString();
-  const MediaQuerySet* media = CachedMediaQuerySet(prelude_string, prelude);
+  CSSParserTokenOffsets offsets = ReparseForOffsets(prelude_string, prelude);
+  const MediaQuerySet* media =
+      CachedMediaQuerySet(prelude_string, prelude, offsets);
   DCHECK(media);
 
   if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
@@ -1601,6 +1617,11 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
 
   ContainerQueryParser query_parser(*context_);
 
+  CSSParserTokenOffsets offsets = ReparseForOffsets(
+      stream.StringRangeAt(prelude_offset_start,
+                           prelude_offset_end - prelude_offset_start),
+      prelude);
+
   // <container-name>
   AtomicString name;
   if (prelude.Peek().GetType() == kIdentToken) {
@@ -1611,7 +1632,8 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     }
   }
 
-  const MediaQueryExpNode* query = query_parser.ParseCondition(prelude);
+  const MediaQueryExpNode* query =
+      query_parser.ParseCondition(prelude, offsets);
   if (!query) {
     return nullptr;
   }
@@ -2313,12 +2335,13 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
 
 const MediaQuerySet* CSSParserImpl::CachedMediaQuerySet(
     String prelude_string,
-    CSSParserTokenRange prelude) {
+    CSSParserTokenRange prelude,
+    const CSSParserTokenOffsets& offsets) {
   Member<const MediaQuerySet>& media =
       media_query_cache_.insert(prelude_string, nullptr).stored_value->value;
   if (!media) {
     media = MediaQueryParser::ParseMediaQuerySet(
-        prelude, context_->GetExecutionContext());
+        prelude, offsets, context_->GetExecutionContext());
   }
   DCHECK(media);
   return media.Get();

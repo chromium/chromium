@@ -337,9 +337,11 @@ MediaQueryExp::MediaQueryExp(const String& media_feature,
 
 MediaQueryExp MediaQueryExp::Create(const String& media_feature,
                                     CSSParserTokenRange& range,
+                                    const CSSParserTokenOffsets& offsets,
                                     const CSSParserContext& context) {
   String feature = AttemptStaticStringCreation(media_feature);
-  if (auto value = MediaQueryExpValue::Consume(feature, range, context)) {
+  if (auto value =
+          MediaQueryExpValue::Consume(feature, range, offsets, context)) {
     return MediaQueryExp(feature, *value);
   }
   return Invalid();
@@ -348,17 +350,15 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
 absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     const String& media_feature,
     CSSParserTokenRange& range,
+    const CSSParserTokenOffsets& offsets,
     const CSSParserContext& context) {
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
 
   if (CSSVariableParser::IsValidVariableName(media_feature)) {
-    // CSSParserTokenRange doesn't store precise location information about
-    // where each token started or ended, so we don't have the actual original
-    // string. However, for media queries, it's not a huge issue if we get
-    // normalized whitespace etc., so we work around it by creating
-    // a fake “original text” by serializing the tokens back.
-    String serialized = range.Serialize();
-    CSSTokenizedValue tokenized_value{range, serialized};
+    base::span span = range.RemainingSpan();
+    StringView original_string =
+        offsets.StringForTokens(span.data(), span.data() + span.size());
+    CSSTokenizedValue tokenized_value{range, original_string};
     CSSParserImpl::RemoveImportantAnnotationIfPresent(tokenized_value);
     if (const CSSValue* value =
             CSSVariableParser::ParseDeclarationIncludingCSSWide(

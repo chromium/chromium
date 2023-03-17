@@ -27,10 +27,13 @@ class CORE_EXPORT MediaQueryParser {
   static MediaQuerySet* ParseMediaQuerySet(const String&,
                                            const ExecutionContext*);
   static MediaQuerySet* ParseMediaQuerySet(CSSParserTokenRange,
+                                           const CSSParserTokenOffsets&,
                                            const ExecutionContext*);
   static MediaQuerySet* ParseMediaCondition(CSSParserTokenRange,
+                                            const CSSParserTokenOffsets&,
                                             const ExecutionContext*);
   static MediaQuerySet* ParseMediaQuerySetInMode(CSSParserTokenRange,
+                                                 const CSSParserTokenOffsets&,
                                                  CSSParserMode,
                                                  const ExecutionContext*);
 
@@ -112,16 +115,19 @@ class CORE_EXPORT MediaQueryParser {
   // Note that this function accepts CSSParserTokenRanges by *value*, unlike
   // Consume* functions, and that nullptr is returned if either |lhs|
   // or |rhs| aren't fully consumed.
-  const MediaQueryExpNode* ParseNameValueComparison(CSSParserTokenRange lhs,
-                                                    MediaQueryOperator op,
-                                                    CSSParserTokenRange rhs,
-                                                    NameAffinity,
-                                                    const FeatureSet&);
+  const MediaQueryExpNode* ParseNameValueComparison(
+      CSSParserTokenRange lhs,
+      MediaQueryOperator op,
+      CSSParserTokenRange rhs,
+      const CSSParserTokenOffsets& offsets,
+      NameAffinity,
+      const FeatureSet&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
   //
   // Currently, only <mf-boolean> and <mf-plain> productions are supported.
   const MediaQueryExpNode* ConsumeFeature(CSSParserTokenRange&,
+                                          const CSSParserTokenOffsets& offsets,
                                           const FeatureSet&);
 
   enum class ConditionMode {
@@ -134,25 +140,28 @@ class CORE_EXPORT MediaQueryParser {
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
   const MediaQueryExpNode* ConsumeCondition(
       CSSParserTokenRange&,
+      const CSSParserTokenOffsets&,
       ConditionMode = ConditionMode::kNormal);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-in-parens
-  const MediaQueryExpNode* ConsumeInParens(CSSParserTokenRange&);
+  const MediaQueryExpNode* ConsumeInParens(CSSParserTokenRange&,
+                                           const CSSParserTokenOffsets&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-general-enclosed
   const MediaQueryExpNode* ConsumeGeneralEnclosed(CSSParserTokenRange&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-query
-  MediaQuery* ConsumeQuery(CSSParserTokenRange&);
+  MediaQuery* ConsumeQuery(CSSParserTokenRange&, const CSSParserTokenOffsets&);
 
   // Used for ParserType::kMediaConditionParser.
   //
   // Parsing a single condition is useful for the 'sizes' attribute.
   //
   // https://html.spec.whatwg.org/multipage/images.html#sizes-attribute
-  MediaQuerySet* ConsumeSingleCondition(CSSParserTokenRange);
+  MediaQuerySet* ConsumeSingleCondition(CSSParserTokenRange,
+                                        const CSSParserTokenOffsets&);
 
-  MediaQuerySet* ParseImpl(CSSParserTokenRange);
+  MediaQuerySet* ParseImpl(CSSParserTokenRange, const CSSParserTokenOffsets&);
 
   ParserType parser_type_;
   CSSParserMode mode_;

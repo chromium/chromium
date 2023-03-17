@@ -48,11 +48,13 @@ class ContainerQueryParserTest : public PageTestBase {
   // E.g. https://drafts.csswg.org/css-contain-3/#typedef-style-query
   String ParseFeatureQuery(String feature_query) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    Vector<CSSParserToken, 32> tokens =
-        CSSTokenizer(feature_query).TokenizeToEOF();
+    auto [tokens, raw_offsets] =
+        CSSTokenizer(feature_query).TokenizeToEOFWithOffsets();
     CSSParserTokenRange range(tokens);
+    CSSParserTokenOffsets offsets(tokens, std::move(raw_offsets),
+                                  feature_query);
     const MediaQueryExpNode* node =
-        ContainerQueryParser(*context).ConsumeFeatureQuery(range,
+        ContainerQueryParser(*context).ConsumeFeatureQuery(range, offsets,
                                                            TestFeatureSet());
     if (!node || !range.AtEnd()) {
       return g_null_atom;

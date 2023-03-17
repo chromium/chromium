@@ -34,6 +34,13 @@ class CORE_EXPORT CSSTokenizer {
   Vector<CSSParserToken, 32> TokenizeToEOF();
   wtf_size_t TokenCount();
 
+  // Like TokenizeToEOF(), but also returns the start byte for each token.
+  // There's an extra offset at the very end that returns the end byte
+  // of the last token, i.e., the length of the input string.
+  // This matches the convention CSSParserTokenOffsets expects.
+  std::pair<Vector<CSSParserToken, 32>, Vector<wtf_size_t, 32>>
+  TokenizeToEOFWithOffsets();
+
   wtf_size_t Offset() const { return input_.Offset(); }
   wtf_size_t PreviousOffset() const { return prev_offset_; }
   StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const;

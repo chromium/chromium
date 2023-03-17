@@ -407,10 +407,13 @@ void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
     if (String(test_cases[i].input).empty()) {
       query_set = MediaQuerySet::Create();
     } else {
+      StringView str(test_cases[i].input);
+      CSSTokenizer tokenizer(StringView(test_cases[i].input));
+      auto [tokens, offsets] = tokenizer.TokenizeToEOFWithOffsets();
       query_set = MediaQueryParser::ParseMediaQuerySetInMode(
-          CSSParserTokenRange(
-              CSSTokenizer(StringView(test_cases[i].input)).TokenizeToEOF()),
-          mode, nullptr);
+          CSSParserTokenRange(tokens),
+          CSSParserTokenOffsets(tokens, std::move(offsets), str), mode,
+          nullptr);
     }
     EXPECT_EQ(test_cases[i].output, media_query_evaluator.Eval(*query_set))
         << "Query: " << test_cases[i].input;
