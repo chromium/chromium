@@ -640,13 +640,13 @@ void FillWindowInfoFromJson(const base::Value::Dict& app,
 
 // Convert a desk template to `app_restore::RestoreData`.
 std::unique_ptr<app_restore::RestoreData> ConvertJsonToRestoreData(
-    const base::Value* desk) {
+    const base::Value::Dict* desk) {
   std::unique_ptr<app_restore::RestoreData> restore_data =
       std::make_unique<app_restore::RestoreData>();
 
-  const base::Value* apps = desk->FindListKey(kApps);
+  const base::Value::List* apps = desk->FindList(kApps);
   if (apps) {
-    for (const auto& app : apps->GetList()) {
+    for (const auto& app : *apps) {
       const base::Value::Dict& app_dict = app.GetDict();
       std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
           ConvertJsonToAppLaunchInfo(app_dict);
@@ -673,22 +673,22 @@ std::unique_ptr<app_restore::RestoreData> ConvertJsonToRestoreData(
 
 // Conversion to value methods.
 
-base::Value ConvertWindowBoundToValue(const gfx::Rect& rect) {
-  base::Value rectangle_value(base::Value::Type::DICT);
+base::Value::Dict ConvertWindowBoundToValue(const gfx::Rect& rect) {
+  base::Value::Dict rectangle_value;
 
-  rectangle_value.SetKey(kWindowBoundTop, base::Value(rect.y()));
-  rectangle_value.SetKey(kWindowBoundLeft, base::Value(rect.x()));
-  rectangle_value.SetKey(kWindowBoundHeight, base::Value(rect.height()));
-  rectangle_value.SetKey(kWindowBoundWidth, base::Value(rect.width()));
+  rectangle_value.Set(kWindowBoundTop, base::Value(rect.y()));
+  rectangle_value.Set(kWindowBoundLeft, base::Value(rect.x()));
+  rectangle_value.Set(kWindowBoundHeight, base::Value(rect.height()));
+  rectangle_value.Set(kWindowBoundWidth, base::Value(rect.width()));
 
   return rectangle_value;
 }
 
-base::Value ConvertSizeToValue(const gfx::Size& size) {
-  base::Value size_value(base::Value::Type::DICT);
+base::Value::Dict ConvertSizeToValue(const gfx::Size& size) {
+  base::Value::Dict size_value;
 
-  size_value.SetKey(kSizeWidth, base::Value(size.width()));
-  size_value.SetKey(kSizeHeight, base::Value(size.height()));
+  size_value.Set(kSizeWidth, base::Value(size.width()));
+  size_value.Set(kSizeHeight, base::Value(size.height()));
 
   return size_value;
 }
@@ -1941,7 +1941,7 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
   std::string updated_time_usec_str;
   int64_t created_time_usec;
   int64_t updated_time_usec;
-  const base::Value* desk = policy_json.FindDictKey(kDesk);
+  const base::Value::Dict* desk = policy_json_dict.FindDict(kDesk);
   if (!desk || !GetInt(policy_json_dict, kVersion, &version) ||
       !GetString(policy_json_dict, kUuid, &uuid_str) ||
       !GetString(policy_json_dict, kName, &name) ||
