@@ -70,6 +70,7 @@
 #include "printing/print_job_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -333,6 +334,10 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
                     l10n_util::GetStringFUTF16(
                         IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION, shortcut_text));
 #endif
+
+  source->AddString(
+      "chromeRefresh2023Attribute",
+      ::features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 
   // Register strings for the PDF viewer, so that $i18n{} replacements work.
   base::Value::Dict pdf_strings;
