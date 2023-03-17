@@ -35,7 +35,6 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
@@ -51,6 +50,7 @@
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/verbatim_match.h"
@@ -726,7 +726,7 @@ void OmniboxEditModel::StartPrefetch() {
     return;
   }
 
-  const bool is_ntp_page = BaseSearchProvider::IsNTPPage(page_classification);
+  const bool is_ntp_page = omnibox::IsNTPPage(page_classification);
   const bool interaction_clobber_focus_type = base::FeatureList::IsEnabled(
       omnibox::kOmniboxOnClobberFocusTypeOnContent);
 

@@ -104,16 +104,6 @@ class BaseSearchProvider : public AutocompleteProvider {
       metrics::OmniboxEventProto::PageClassification page_classification,
       TemplateURLRef::SearchTermsArgs* search_terms_args);
 
-  // Returns whether the provided classification indicates some sort of NTP.
-  static bool IsNTPPage(
-      metrics::OmniboxEventProto::PageClassification classification);
-  // Returns whether the provided classification indicates Search Results Page.
-  static bool IsSearchResultsPage(
-      metrics::OmniboxEventProto::PageClassification classification);
-  // Returns whether the provided classification indicates a non-NTP/non-SRP Web
-  // Page.
-  static bool IsOtherWebPage(
-      metrics::OmniboxEventProto::PageClassification classification);
   // Returns whether the URL of the current page is eligible to be sent in any
   // suggest request. Only valid URLs with an HTTP or HTTPS scheme are eligible.
   static bool CanSendPageURLInRequest(const GURL& page_url);

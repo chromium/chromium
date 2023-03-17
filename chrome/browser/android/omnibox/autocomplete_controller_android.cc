@@ -41,10 +41,10 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -170,7 +170,7 @@ void AutocompleteControllerAndroid::StartPrefetch(
     return;
   }
 
-  const bool is_ntp_page = BaseSearchProvider::IsNTPPage(page_classification);
+  const bool is_ntp_page = omnibox::IsNTPPage(page_classification);
   const bool interaction_clobber_focus_type =
       base::FeatureList::IsEnabled(
           omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
@@ -245,7 +245,7 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   const bool interaction_clobber_focus_type =
       base::FeatureList::IsEnabled(
           omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
-      !BaseSearchProvider::IsNTPPage(page_class);
+      !omnibox::IsNTPPage(page_class);
   if (interaction_clobber_focus_type)
     omnibox_text.clear();
 
@@ -258,7 +258,7 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   // probably get used anyways by a later navigation.
   if (!profile_->IsOffTheRecord() &&
       page_class != OmniboxEventProto::ANDROID_SEARCH_WIDGET &&
-      !BaseSearchProvider::IsNTPPage(page_class)) {
+      !omnibox::IsNTPPage(page_class)) {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutocompleteControllerAndroid::WarmUpRenderProcess,

@@ -276,24 +276,6 @@ void BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
 }
 
 // static
-bool BaseSearchProvider::IsNTPPage(
-    metrics::OmniboxEventProto::PageClassification classification) {
-  return omnibox::IsNTPPage(classification);
-}
-
-// static
-bool BaseSearchProvider::IsSearchResultsPage(
-    metrics::OmniboxEventProto::PageClassification classification) {
-  return omnibox::IsSearchResultsPage(classification);
-}
-
-// static
-bool BaseSearchProvider::IsOtherWebPage(
-    metrics::OmniboxEventProto::PageClassification classification) {
-  return omnibox::IsOtherWebPage(classification);
-}
-
-// static
 bool BaseSearchProvider::CanSendPageURLInRequest(const GURL& page_url) {
   return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS();
 }

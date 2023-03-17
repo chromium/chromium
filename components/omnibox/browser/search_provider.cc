@@ -36,6 +36,7 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/url_prefix.h"
@@ -210,7 +211,7 @@ bool SearchProvider::CanSendCurrentPageURLInRequest(
   // Don't bother sending the URL of an NTP page; it's not useful. The server
   // already gets equivalent information in the form of the current page
   // classification.
-  return !IsNTPPage(page_classification) &&
+  return !omnibox::IsNTPPage(page_classification) &&
          CanSendPageURLInRequest(current_page_url) &&
          CanSendSuggestRequestWithURL(current_page_url, template_url,
                                       search_terms_data, client);
