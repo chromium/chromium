@@ -27,7 +27,8 @@ import {OutgoingBidiMessage} from '../../OutgoingBidiMessage.js';
 
 import {SubscriptionManager} from './SubscriptionManager.js';
 
-class EventWrapper extends IdWrapper {
+class EventWrapper {
+  readonly #idWrapper: IdWrapper;
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
   readonly #event: Promise<Message.EventMessage>;
 
@@ -35,9 +36,13 @@ class EventWrapper extends IdWrapper {
     event: Promise<Message.EventMessage>,
     contextId: CommonDataTypes.BrowsingContext | null
   ) {
-    super();
+    this.#idWrapper = new IdWrapper();
     this.#contextId = contextId;
     this.#event = event;
+  }
+
+  get id(): number {
+    return this.#idWrapper.id;
   }
 
   get contextId(): CommonDataTypes.BrowsingContext | null {
