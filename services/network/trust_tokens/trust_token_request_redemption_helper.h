@@ -85,7 +85,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
         TrustToken token,
         const url::Origin& top_level_origin) = 0;
 
-    // Given a base64-encoded Sec-Private-State-Token redemption response
+    // Given a Sec-Private-State-Token redemption response
     // header, validates and extracts the redemption record (RR) contained in
     // the header. If successful, returns the RR. Otherwise, returns nullopt.
     //

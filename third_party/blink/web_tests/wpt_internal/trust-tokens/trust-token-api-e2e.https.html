@@ -19,9 +19,11 @@
     promise_test(function () {
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
             privateToken: { type: 'private-state-token', version: 1, operation: 'token-redemption' }
-        }).then(function (response) {
+        }).then(async function (response) {
             assert_equals(response.status, 200);
             assert_equals(response.headers.get('Sec-Private-State-Token'), null);
+            const redemptionResponse = await response.text()
+            assert_equals(redemptionResponse, 'dummy redemption record');
         })
     }, 'Token redemption succeeds.');
 
@@ -34,8 +36,10 @@
                 operation: 'send-redemption-record',
                 issuers: [host_info.ORIGIN]
             }
-        }).then(function (response) {
+        }).then(async function (response) {
             assert_equals(response.status, 200);
+            const redemptionRecord = await response.text();
+            assert_true(redemptionRecord.includes('redemption-record="dummy redemption record"'));
         })
     }, 'Send redemption record succeeds.');
 

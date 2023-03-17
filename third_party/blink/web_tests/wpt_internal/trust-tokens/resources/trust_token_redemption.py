@@ -22,5 +22,5 @@ def main(request, response):
     response.headers.set("Sec-Private-State-Token",
                          redemption_response.to_string())
     response.status = 200
-    # Add a response body for the iframe E2E test to read
-    response.content = "Trust token redemption succeeded."
+    # Return the redeption response to test the value
+    return redemption_response.to_string()

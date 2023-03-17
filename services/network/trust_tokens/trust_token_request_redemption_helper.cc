@@ -223,7 +223,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   }
 
   // 2. Strip the Sec-Private-State-Token header, from the response and pass the
-  // header, base64-decoded, to BoringSSL.
+  // header to BoringSSL.
   response_headers.RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
   absl::optional<std::string> maybe_redemption_record =

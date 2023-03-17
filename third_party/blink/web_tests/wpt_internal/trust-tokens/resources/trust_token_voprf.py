@@ -606,8 +606,8 @@ class RedeemResponse:
         return self.redemption_record
 
     def to_string(self) -> str:
-        """Returns the redemption response as Base64 encoded bytes."""
-        return bytes_to_base64_str(self.redemption_record)
+        """Returns the redemption response as a string."""
+        return self.redemption_record.decode("utf-8")
 
 
 class TrustTokenIssuer:

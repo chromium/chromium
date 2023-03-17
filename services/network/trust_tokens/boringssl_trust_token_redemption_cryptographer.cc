@@ -78,11 +78,7 @@ BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
     return absl::nullopt;
   }
 
-  std::string decoded_response;
-  if (!base::Base64Decode(response_header, &decoded_response))
-    return absl::nullopt;
-
-  return decoded_response;
+  return std::string(response_header);
 }
 
 }  // namespace network

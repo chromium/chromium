@@ -21,9 +21,11 @@
         promise_test(function () {
             return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
                 privateToken: { type: 'private-state-token', version: 1, operation: 'token-redemption' }
-            }).then(function (response) {
+            }).then(async function (response) {
                 assert_equals(response.status, 200);
                 assert_equals(response.headers.get('Sec-Private-State-Token'), null);
+                const redemptionResponse = await response.text()
+                assert_equals(redemptionResponse, 'dummy redemption record');
             })
         }, 'Token redemption succeeds.');
 
@@ -37,7 +39,8 @@
             return new Promise(resolve => {
                 frame.addEventListener("load", resolve);
             }).then(event => {
-                assert_equals(frame.contentWindow.document.body.innerText, 'Trust token RR succeeded.');
+                const redemptionRecord = frame.contentWindow.document.body.innerText;
+                assert_true(redemptionRecord.includes('redemption-record="dummy redemption record"'));
             });
         }, 'Trust token RR succeeds using iframes.');
     </script>

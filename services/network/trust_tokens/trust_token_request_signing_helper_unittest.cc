@@ -117,7 +117,7 @@ bool ExtractRedemptionRecordsFromHeader(
 
     const net::structured_headers::Item& redemption_record_item =
         params_for_issuer.front().second;
-    if (!redemption_record_item.is_byte_sequence()) {
+    if (!redemption_record_item.is_string()) {
       *error_out = "Unexpected parameter value type for RR header list item";
       return false;
     }

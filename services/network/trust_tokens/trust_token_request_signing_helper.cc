@@ -75,7 +75,7 @@ absl::optional<std::string> ConstructRedemptionRecordHeader(
         net::structured_headers::Item::ItemType::kStringType);
     net::structured_headers::Item redemption_record_item(
         issuer_and_record.second.body(),
-        net::structured_headers::Item::ItemType::kByteSequenceType);
+        net::structured_headers::Item::ItemType::kStringType);
     header_items.emplace_back(net::structured_headers::ParameterizedMember(
         std::move(issuer_item), {{kRedemptionRecordHeaderRedemptionRecordKey,
                                   std::move(redemption_record_item)}}));
