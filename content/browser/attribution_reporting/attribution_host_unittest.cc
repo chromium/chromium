@@ -690,5 +690,43 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
   }
 }
 
+TEST_F(AttributionHostTest, ImpressionNavigation_FeaturePolicyChecked) {
+  blink::Impression impression;
+  impression.nav_type = AttributionNavigationType::kWindowOpen;
+
+  static constexpr char kAllowedOriginUrl[] = "https://a.test";
+
+  const struct {
+    const char* url;
+    bool expected;
+  } kTestCases[] = {
+      {kAllowedOriginUrl, true},
+      {"https://b.test", false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost)
+        .Times(test_case.expected);
+
+    auto simulator1 = NavigationSimulatorImpl::CreateRendererInitiated(
+        GURL(test_case.url), main_rfh());
+    simulator1->SetPermissionsPolicyHeader(
+        {blink::ParsedPermissionsPolicyDeclaration(
+            blink::mojom::PermissionsPolicyFeature::kAttributionReporting,
+            /*allowed_origins=*/
+            {blink::OriginWithPossibleWildcards(
+                url::Origin::Create(GURL(kAllowedOriginUrl)),
+                /*has_subdomain_wildcard=*/false)},
+            /*matches_all_origins=*/false, /*matches_opaque_src=*/false)});
+    simulator1->Commit();
+
+    auto simulator2 = NavigationSimulatorImpl::CreateRendererInitiated(
+        GURL(kConversionUrl), main_rfh());
+    simulator2->SetInitiatorFrame(main_rfh());
+    simulator2->set_impression(impression);
+    simulator2->Commit();
+  }
+}
+
 }  // namespace
 }  // namespace content

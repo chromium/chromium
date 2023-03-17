@@ -139,6 +139,11 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
+  if (!initiator_frame_host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
+    return;
+  }
+
   RenderFrameHostImpl* initiator_root_frame =
       initiator_frame_host->GetOutermostMainFrame();
   DCHECK(initiator_root_frame);
