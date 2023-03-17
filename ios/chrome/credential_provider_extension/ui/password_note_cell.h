@@ -24,6 +24,10 @@
 // Label at the leading edge of the cell.
 @property(nonatomic, strong) UILabel* textLabel;
 
+// Displays error icon when the typed text view is not valid, it is nil
+// otherwise. Placed at the trailing edge of the cell, next to the label.
+@property(nonatomic, strong) UIImageView* iconView;
+
 // Text field below the label.
 @property(nonatomic, strong) UITextView* textView;
 
@@ -31,6 +35,10 @@
 @property(nonatomic, weak) id<PasswordNoteCellDelegate> delegate;
 
 - (void)configureCell;
+
+// Displays error icon and sets text color to red when state is not valid.
+// Otherwise, hides icon and sets normal text color.
+- (void)setValid:(BOOL)validState;
 
 @end
 

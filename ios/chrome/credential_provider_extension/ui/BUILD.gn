@@ -39,6 +39,8 @@ source_set("ui") {
     "new_password_view_controller.mm",
     "password_note_cell.h",
     "password_note_cell.mm",
+    "password_note_footer_view.h",
+    "password_note_footer_view.mm",
     "stale_credentials_view_controller.h",
     "stale_credentials_view_controller.mm",
     "ui_util.h",

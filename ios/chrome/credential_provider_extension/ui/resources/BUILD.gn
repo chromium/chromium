@@ -9,6 +9,7 @@ group("resources") {
   deps = [
     ":consent_view_controller",
     ":empty_credentials_illustration",
+    ":error_icon",
     ":info_icon",
     ":password_hide_icon",
     ":password_reveal_icon",
@@ -56,5 +57,13 @@ imageset("info_icon") {
     "info_icon.imageset/Contents.json",
     "info_icon.imageset/info_icon@2x.png",
     "info_icon.imageset/info_icon@3x.png",
+  ]
+}
+
+imageset("error_icon") {
+  sources = [
+    "error_icon.imageset/Contents.json",
+    "error_icon.imageset/error_icon@2x.png",
+    "error_icon.imageset/error_icon@3x.png",
   ]
 }
