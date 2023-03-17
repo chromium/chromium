@@ -776,6 +776,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // rather than token count.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTimedHTMLParserBudget);
 
+// If enabled, the HTMLDocumentParser will only check its budget after parsing a
+// commonly slow token or for one out of 10 fast tokens. Note that this feature
+// is a no-op if kTimedHTMLParserBudget is disabled.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCheckHTMLParserBudgetLessOften);
+
 // Allows reading/writing unsanitized content from/to the clipboard. Currently,
 // it is only applicable to HTML format. See crbug.com/1268679.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClipboardUnsanitizedContent);

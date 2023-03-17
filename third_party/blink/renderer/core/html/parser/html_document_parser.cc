@@ -116,6 +116,14 @@ bool TimedParserBudgetEnabled() {
   return kEnabled;
 }
 
+bool CheckParserBudgetLessOften() {
+  // Cache the feature value since checking for each parser regresses some micro
+  // benchmarks.
+  static const bool kEnabled =
+      base::FeatureList::IsEnabled(features::kCheckHTMLParserBudgetLessOften);
+  return kEnabled;
+}
+
 bool PrecompileInlineScriptsEnabled(
     FeatureResetMode reset_mode = FeatureResetMode::kUseCached) {
   // Cache the feature value since checking for each parser regresses some micro
@@ -642,7 +650,9 @@ bool HTMLDocumentParser::PumpTokenizer() {
   const bool should_process_preloading =
       task_runner_state_->ShouldProcessPreloads();
   base::ElapsedTimer chunk_parsing_timer;
+  base::TimeDelta elapsed_time;
   unsigned tokens_parsed = 0;
+  int characters_consumed_before_token = 0;
   base::TimeDelta time_executing_script;
   while (true) {
     if (should_process_preloading)
@@ -683,10 +693,28 @@ bool HTMLDocumentParser::PumpTokenizer() {
     ConstructTreeFromToken(atomic_html_token);
     if (!should_run_until_completion && !IsPaused()) {
       DCHECK_EQ(task_runner_state_->GetMode(), kAllowDeferredParsing);
-      if (TimedParserBudgetEnabled())
-        should_yield = chunk_parsing_timer.Elapsed() >= timed_budget;
-      else
+      if (TimedParserBudgetEnabled()) {
+        if (CheckParserBudgetLessOften()) {
+          int newly_consumed_characters =
+              input_.Current().NumberOfCharactersConsumed() -
+              characters_consumed_before_token;
+          characters_consumed_before_token =
+              input_.Current().NumberOfCharactersConsumed();
+          // On android calling chunk_parsing_timer.Elapsed seems fairly slow
+          // compared to the parsing time of small tokens. Only update the
+          // timer occasionally.
+          if (ShouldCheckTimeBudget(next_token_status,
+                                    atomic_html_token.GetHTMLTag(),
+                                    newly_consumed_characters, tokens_parsed)) {
+            elapsed_time = chunk_parsing_timer.Elapsed();
+          }
+        } else {
+          elapsed_time = chunk_parsing_timer.Elapsed();
+        }
+        should_yield = elapsed_time >= timed_budget;
+      } else {
         should_yield = budget <= 0;
+      }
       should_yield |= scheduler_->ShouldYieldForHighPriorityWork();
       should_yield &= task_runner_state_->HaveExitedHeader();
 
@@ -1483,6 +1511,34 @@ bool HTMLDocumentParser::ShouldPumpTokenizerNowForFinishAppend() const {
   return did_pump_tokenizer_
              ? features::kProcessHtmlDataImmediatelySubsequentChunks.Get()
              : features::kProcessHtmlDataImmediatelyFirstChunk.Get();
+}
+
+ALWAYS_INLINE bool HTMLDocumentParser::ShouldCheckTimeBudget(
+    NextTokenStatus next_token_status,
+    html_names::HTMLTag tag,
+    int newly_consumed_characters,
+    int tokens_parsed) const {
+  if (next_token_status == kHaveTokensAfterScript) {
+    // If we executed a script when parsing this token, then check the time
+    // budget again since script execution is slow.
+    return true;
+  }
+  if (newly_consumed_characters > 200) {
+    // Always update timer on tokens of more than 200 characters as they're
+    // often slow.
+    return true;
+  }
+
+  // <style>, <iframe> and <link> tags are slow to parse.
+  if (tag == html_names::HTMLTag::kStyle ||
+      tag == html_names::HTMLTag::kIFrame ||
+      tag == html_names::HTMLTag::kLink) {
+    return true;
+  }
+
+  // The token is probably fast to parse, only update the timer for 10% of
+  // those tokens.
+  return tokens_parsed % 10 == 0;
 }
 
 }  // namespace blink

@@ -248,6 +248,14 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // called when data is available.
   bool ShouldPumpTokenizerNowForFinishAppend() const;
 
+  // Returns true if we should check the clock after parsing a token.
+  // We check the clock after parsing a token that's likely slow, or
+  // for 1 out of 10 fast tokens.
+  bool ShouldCheckTimeBudget(NextTokenStatus next_token_status,
+                             html_names::HTMLTag tag,
+                             int newly_consumed_characters,
+                             int tokens_parsed) const;
+
   HTMLInputStream input_;
   const HTMLParserOptions options_;
   Member<HTMLParserReentryPermit> reentry_permit_ =

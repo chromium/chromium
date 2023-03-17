@@ -1490,6 +1490,10 @@ BASE_FEATURE(kTimedHTMLParserBudget,
              "TimedHTMLParserBudget",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCheckHTMLParserBudgetLessOften,
+             "CheckHTMLParserBudgetLessOften",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClipboardUnsanitizedContent,
              "ClipboardUnsanitizedContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
