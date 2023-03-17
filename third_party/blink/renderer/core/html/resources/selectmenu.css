@@ -88,25 +88,17 @@ selectmenu::-internal-selectmenu-listbox {
   /* Below the anchor, left-aligned, no vertical scrolling */
   @try {
     inset-block-start: anchor(self-end);
-    /* TODO(github.com/w3c/csswg-drafts/issues/8059): This is a workaround to
-     * enlarge the inset-modified containing block when the anchor is off the
-     * viewport. Ideally, we should just use 'auto'. Same below.
-     */
-    inset-block-end: calc(anchor(self-end) - 100vb);
     inset-inline-start: anchor(self-start);
-    inset-inline-end: calc(anchor(self-end) - 100vi);
   }
   /* Below the anchor, right-aligned, no vertical scrolling */
   @try {
     inset-block-start: anchor(self-end);
-    inset-block-end: calc(anchor(self-end) - 100vb);
     inset-inline-end: anchor(self-end);
   }
   /* Over the anchor, left-aligned, no vertical scrolling */
   @try {
     inset-block-end: anchor(self-start);
     inset-inline-start: anchor(self-start);
-    inset-inline-end: calc(anchor(self-end) - 100vi);
   }
   /* Over the anchor, right-aligned, no vertical scrolling */
   @try {
@@ -118,7 +110,6 @@ selectmenu::-internal-selectmenu-listbox {
     inset-block-start: anchor(self-end);
     block-size: -webkit-fill-available;
     inset-inline-start: anchor(self-start);
-    inset-inline-end: calc(anchor(self-end) - 100vi);
   }
   /* Below the anchor, right-aligned, fill up the available vertical space */
   @try {
@@ -131,7 +122,6 @@ selectmenu::-internal-selectmenu-listbox {
     inset-block-end: anchor(self-start);
     block-size: -webkit-fill-available;
     inset-inline-start: anchor(self-start);
-    inset-inline-end: calc(anchor(self-end) - 100vi);
   }
   /* Over the anchor, right-aligned, fill up the available vertical space */
   @try {

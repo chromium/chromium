@@ -97,8 +97,7 @@ std::pair<LayoutUnit, LayoutUnit> ComputeAvailableSpaceInOneAxis(
     const absl::optional<LayoutUnit>& inset_start,
     const absl::optional<LayoutUnit>& inset_end,
     const LayoutUnit static_position_offset,
-    StaticPositionEdge static_position_edge,
-    bool is_table) {
+    StaticPositionEdge static_position_edge) {
   DCHECK_NE(available_size, kIndefiniteSize);
   LayoutUnit computed_offset;
   LayoutUnit computed_available_size;
@@ -140,15 +139,7 @@ std::pair<LayoutUnit, LayoutUnit> ComputeAvailableSpaceInOneAxis(
     computed_offset = inset_start.value_or(LayoutUnit());
   }
 
-  // The available-size given to tables isn't allowed to exceed the
-  // available-size of the containing-block.
-  if (is_table) {
-    computed_available_size = std::min(computed_available_size, available_size);
-  }
-
-  // Ensure the computed available-size isn't negative.
-  return std::make_pair(computed_offset,
-                        computed_available_size.ClampNegativeToZero());
+  return std::make_pair(computed_offset, computed_available_size);
 }
 
 // Computes the insets, and margins if necessary.
@@ -334,17 +325,16 @@ LogicalRect ComputeOutOfFlowAvailableRect(
     const LogicalSize& available_size,
     const NGLogicalOutOfFlowInsets& insets,
     const NGLogicalStaticPosition& static_position) {
-  const bool is_table = node.IsTable();
   LayoutUnit inline_offset, inline_size;
   std::tie(inline_offset, inline_size) = ComputeAvailableSpaceInOneAxis(
       available_size.inline_size, insets.inline_start, insets.inline_end,
       static_position.offset.inline_offset,
-      GetStaticPositionEdge(static_position.inline_edge), is_table);
+      GetStaticPositionEdge(static_position.inline_edge));
   LayoutUnit block_offset, block_size;
   std::tie(block_offset, block_size) = ComputeAvailableSpaceInOneAxis(
       available_size.block_size, insets.block_start, insets.block_end,
       static_position.offset.block_offset,
-      GetStaticPositionEdge(static_position.block_edge), is_table);
+      GetStaticPositionEdge(static_position.block_edge));
   return LogicalRect(inline_offset, block_offset, inline_size, block_size);
 }
 
@@ -355,7 +345,7 @@ bool ComputeOutOfFlowInlineDimensions(
     const NGLogicalOutOfFlowInsets& insets,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition& static_position,
-    const LogicalSize computed_available_size,
+    LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,
@@ -366,6 +356,12 @@ bool ComputeOutOfFlowInlineDimensions(
   const bool is_table = node.IsTable();
   const bool can_compute_block_size_without_layout =
       CanComputeBlockSizeWithoutLayout(node);
+
+  if (is_table) {
+    computed_available_size.inline_size = std::min(
+        computed_available_size.inline_size, space.AvailableSize().inline_size);
+    DCHECK_GE(computed_available_size.inline_size, LayoutUnit());
+  }
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
@@ -478,7 +474,7 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGLogicalOutOfFlowInsets& insets,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition& static_position,
-    const LogicalSize computed_available_size,
+    LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,
@@ -488,6 +484,12 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
   const NGLayoutResult* result = nullptr;
 
   const bool is_table = node.IsTable();
+  if (is_table) {
+    computed_available_size.block_size = std::min(
+        computed_available_size.block_size, space.AvailableSize().block_size);
+    DCHECK_GE(computed_available_size.block_size, LayoutUnit());
+  }
+
   MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizes(
       space, style, border_padding, computed_available_size.block_size,
       anchor_evaluator);

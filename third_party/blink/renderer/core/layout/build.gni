@@ -89,6 +89,8 @@ blink_core_sources_layout = [
   "geometry/physical_rect.h",
   "geometry/physical_size.cc",
   "geometry/physical_size.h",
+  "geometry/scroll_offset_range.cc",
+  "geometry/scroll_offset_range.h",
   "geometry/transform_state.cc",
   "geometry/transform_state.h",
   "geometry/writing_mode_converter.cc",

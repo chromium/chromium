@@ -103,11 +103,6 @@ struct CORE_EXPORT PhysicalRect {
   bool Contains(const PhysicalOffset& point) const {
     return Contains(point.left, point.top);
   }
-  // Variant of Contains() that also returns true if |point| falls on the right
-  // or bottom edge.
-  bool ContainsInclusive(const PhysicalOffset& point) const {
-    return Contains(PhysicalRect(point, PhysicalSize()));
-  }
 
   [[nodiscard]] bool Intersects(const PhysicalRect&) const;
   [[nodiscard]] bool IntersectsInclusively(const PhysicalRect&) const;

@@ -7,10 +7,11 @@
 
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/scroll_offset_range.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -24,18 +25,19 @@ class Element;
 // The snapshot is updated once per frame update on top of animation frame to
 // avoid layout cycling.
 //
-// === Validation of fallback position ===
+// === Validation of fallback position on scrolling ===
 //
-// Each fallback position corresponds to a rectangular region such that when
-// the anchor-scroll translation offset is within the region, the element's
-// margin box translated by the offset doesn't overflow the containing block.
-// Let's call it the fallback position's non-overflowing rect.
+// Each fallback position corresponds to a 2D range such that when the
+// anchor-scroll translation offset is within the range, the element's
+// margin box translated by the offset doesn't overflow the scroll-adjusted
+// inset-modified containing block. This is called the non-overflowing scroll
+// range of the fallback position.
 //
 // Then the element should use the a fallback position if and only if:
 // 1. The current translation offset is not in any previous fallback
-//    position's non-overflowing rect, and
+//    position's non-overflowing scroll range, and
 // 2. This is the last fallback position or the current translation offset is
-//    in this fallback position's non-overflowing rect
+//    in this fallback position's non-overflowing scroll range
 //
 // Whenever taking a snapshot, we also check if the above still holds for the
 // current fallback position. If not, a layout invalidation is needed.
@@ -61,6 +63,9 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
 
   // Utility function that returns accumulated_scroll_offset_ rounded as a
   // PhysicalOffset.
+  // TODO(crbug.com/1309178): It's conceptually wrong to use
+  // Physical/LogicalOffset, which only represents the location of a box within
+  // a container, to represent a scroll offset. Stop using this function.
   PhysicalOffset TranslationAsPhysicalOffset() const {
     return -PhysicalOffset::FromVector2dFFloor(accumulated_scroll_offset_);
   }
@@ -70,8 +75,9 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   bool IsActive() const;
 
   // For fallback position validation.
-  void SetNonOverflowingRects(Vector<PhysicalRect>&& non_overflowing_rects) {
-    non_overflowing_rects_ = std::move(non_overflowing_rects);
+  void SetNonOverflowingScrollRanges(
+      Vector<PhysicalScrollRange>&& non_overflowing_scroll_ranges) {
+    non_overflowing_scroll_ranges_ = std::move(non_overflowing_scroll_ranges);
   }
 
   // ScrollSnapshotClient:
@@ -108,12 +114,12 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   // compositor to deal with writing modes.
   gfx::Vector2d accumulated_scroll_origin_;
 
-  // TODO(crbug.com/1371217): Pass these rects to compositor, so that compositor
-  // doesn't need to always trigger a main frame on every scroll, but only when
-  // the element overflows the container. See also crbug.com/1381276.
+  // TODO(crbug.com/1371217): Pass these ranges to compositor, so that
+  // compositor doesn't need to always trigger a main frame on every scroll, but
+  // only when the element overflows the container. See also crbug.com/1381276.
 
-  // See documentation of non-overflowing rects above.
-  Vector<PhysicalRect> non_overflowing_rects_;
+  // See documentation of non-overflowing ranges above.
+  Vector<PhysicalScrollRange> non_overflowing_scroll_ranges_;
 };
 
 }  // namespace blink

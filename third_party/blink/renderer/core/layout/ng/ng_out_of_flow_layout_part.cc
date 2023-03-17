@@ -65,20 +65,44 @@ bool MayHaveAnchorQuery(
   return false;
 }
 
-// Calculates the range of offsets such that the margin box rect (of the given
-// oof) translated by the offset does not overflow the container. Used by
-// calculating fallback position constraints for anchor positioning.
-// See anchor_scroll_data.h for more documentation.
-PhysicalRect CalculateNonOverflowingRect(
-    const NGLogicalOutOfFlowDimensions& oof_logical_dimensions,
-    WritingDirectionMode oof_writing_mode,
-    const PhysicalSize& container_size) {
-  LogicalRect logical_margin_box_rect = oof_logical_dimensions.MarginBoxRect();
-  PhysicalRect margin_box_rect =
-      WritingModeConverter(oof_writing_mode, container_size)
-          .ToPhysical(logical_margin_box_rect);
-  return PhysicalRect(-margin_box_rect.offset,
-                      container_size - margin_box_rect.size);
+bool CalculateNonOverflowingRangeInOneAxis(
+    const absl::optional<LayoutUnit>& inset_start,
+    const absl::optional<LayoutUnit>& inset_end,
+    const LayoutUnit& container_start,
+    const LayoutUnit& container_end,
+    const LayoutUnit& margin_box_start,
+    const LayoutUnit& margin_box_end,
+    absl::optional<LayoutUnit>* out_scroll_min,
+    absl::optional<LayoutUnit>* out_scroll_max) {
+  LayoutUnit start_available_space = margin_box_start - container_start;
+  if (inset_start) {
+    // If the start inset is non-auto, then the start edges of both the
+    // scroll-adjusted inset-modified containing block and the scroll-shifted
+    // margin box always move by the same amount on scrolling. Then it overflows
+    // if and only if it overflows at the initial scroll location.
+    if (start_available_space < 0) {
+      return false;
+    }
+  } else {
+    // Otherwise, the start edge of the SAIMCB is always at the same location,
+    // while that of the scroll-shifted margin box can move by at most
+    // |start_available_space| before overflowing.
+    *out_scroll_max = start_available_space;
+  }
+  // Calculation for the end edge is symmetric.
+  LayoutUnit end_available_space = container_end - margin_box_end;
+  if (inset_end) {
+    if (end_available_space < 0) {
+      return false;
+    }
+  } else {
+    *out_scroll_min = -end_available_space;
+  }
+  if (*out_scroll_min && *out_scroll_max &&
+      out_scroll_min->value() > out_scroll_max->value()) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -1691,23 +1715,22 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   const ComputedStyle* next_fallback_style = nullptr;
   const LayoutObject* implicit_anchor = nullptr;
   AnchorScrollData* anchor_scroll_data = nullptr;
-  PhysicalOffset anchor_scroll_translation;
+  gfx::Vector2dF anchor_scroll_offset;
   if (element) {
     if (UNLIKELY(style->PositionFallback())) {
       DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
       next_fallback_style = element->StyleForPositionFallback(0);
       anchor_scroll_data = element->GetAnchorScrollData();
       if (anchor_scroll_data) {
-        anchor_scroll_translation =
-            anchor_scroll_data->TranslationAsPhysicalOffset();
+        anchor_scroll_offset = anchor_scroll_data->AccumulatedScrollOffset();
       }
     }
     if (element->ImplicitAnchorElement())
       implicit_anchor = element->ImplicitAnchorElement()->GetLayoutObject();
   }
 
-  // See anchor_scroll_data.h for documentation of non-overflowing rects.
-  Vector<PhysicalRect> non_overflowing_rects;
+  // See anchor_scroll_data.h for documentation of non-overflowing ranges.
+  Vector<PhysicalScrollRange> non_overflowing_ranges;
   wtf_size_t fallback_index = 0;
   absl::optional<OffsetInfo> offset_info;
   while (!offset_info) {
@@ -1718,23 +1741,24 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     }
 
     const bool try_fit_available_space = next_fallback_style;
-    offset_info = TryCalculateOffset(node_info, *style, only_layout,
-                                     anchor_queries, implicit_anchor,
-                                     try_fit_available_space, is_first_run);
+    PhysicalScrollRange non_overflowing_range;
+    offset_info = TryCalculateOffset(
+        node_info, *style, only_layout, anchor_queries, implicit_anchor,
+        try_fit_available_space, is_first_run, &non_overflowing_range);
 
     // Also check if it fits the containing block after applying scroll offset.
     if (offset_info && next_fallback_style) {
-      PhysicalRect non_overflowing_rect = CalculateNonOverflowingRect(
-          offset_info->node_dimensions, style->GetWritingDirection(),
-          node_info.container_physical_content_size);
-      non_overflowing_rects.push_back(non_overflowing_rect);
-      if (!non_overflowing_rect.ContainsInclusive(anchor_scroll_translation))
+      non_overflowing_ranges.push_back(non_overflowing_range);
+      if (!non_overflowing_range.Contains(anchor_scroll_offset)) {
         offset_info = absl::nullopt;
+      }
     }
   }
   if (anchor_scroll_data) {
-    anchor_scroll_data->SetNonOverflowingRects(
-        std::move(non_overflowing_rects));
+    // TODO(crbug.com/1418725): This should be stored on LayoutResult. Keeping
+    // layout results outside LayoutResult can cause issues.
+    anchor_scroll_data->SetNonOverflowingScrollRanges(
+        std::move(non_overflowing_ranges));
   }
   return *offset_info;
 }
@@ -1747,7 +1771,8 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
     const NGLogicalAnchorQueryMap* anchor_queries,
     const LayoutObject* implicit_anchor,
     bool try_fit_available_space,
-    bool is_first_run) {
+    bool is_first_run,
+    PhysicalScrollRange* out_non_overflowing_range) {
   const WritingDirectionMode candidate_writing_direction =
       candidate_style.GetWritingDirection();
   const auto container_writing_direction =
@@ -1810,11 +1835,12 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
       candidate_style, node_info.constraint_space.AvailableSize(),
       anchor_evaluator);
 
-  const LogicalRect computed_available_rect =
+  const LogicalRect unclamped_available_rect =
       ComputeOutOfFlowAvailableRect(node_info.node, node_info.constraint_space,
                                     insets, node_info.static_position);
 
-  const LogicalSize computed_available_size = computed_available_rect.size;
+  const LogicalSize computed_available_size =
+      unclamped_available_rect.size.ClampNegativeToZero();
 
   const NGBoxStrut border_padding =
       ComputeBorders(node_info.constraint_space, node_info.node) +
@@ -1836,12 +1862,17 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
           replaced_size, container_writing_direction, anchor_evaluator,
           &node_dimensions);
 
-  // Check if the inline dimension fits.
+  // Calculate the inline scroll offset range where the inline dimension fits.
+  absl::optional<LayoutUnit> inline_scroll_min;
+  absl::optional<LayoutUnit> inline_scroll_max;
   if (try_fit_available_space) {
-    if (node_dimensions.MarginBoxInlineStart() <
-            computed_available_rect.offset.inline_offset ||
-        node_dimensions.MarginBoxInlineEnd() >
-            computed_available_rect.InlineEndOffset()) {
+    if (!CalculateNonOverflowingRangeInOneAxis(
+            insets.inline_start, insets.inline_end,
+            unclamped_available_rect.offset.inline_offset,
+            unclamped_available_rect.InlineEndOffset(),
+            node_dimensions.MarginBoxInlineStart(),
+            node_dimensions.MarginBoxInlineEnd(), &inline_scroll_min,
+            &inline_scroll_max)) {
       return absl::nullopt;
     }
   }
@@ -1856,12 +1887,17 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
         &node_dimensions);
   }
 
-  // Check if the block dimension fits.
+  // Calculate the block scroll offset range where the block dimension fits.
+  absl::optional<LayoutUnit> block_scroll_min;
+  absl::optional<LayoutUnit> block_scroll_max;
   if (try_fit_available_space) {
-    if (node_dimensions.MarginBoxBlockStart() <
-            computed_available_rect.offset.block_offset ||
-        node_dimensions.MarginBoxBlockEnd() >
-            computed_available_rect.BlockEndOffset()) {
+    if (!CalculateNonOverflowingRangeInOneAxis(
+            insets.block_start, insets.block_end,
+            unclamped_available_rect.offset.block_offset,
+            unclamped_available_rect.BlockEndOffset(),
+            node_dimensions.MarginBoxBlockStart(),
+            node_dimensions.MarginBoxBlockEnd(), &block_scroll_min,
+            &block_scroll_max)) {
       return absl::nullopt;
     }
   }
@@ -1891,6 +1927,13 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
     // fragments of the nearest fragmentainer.
     AdjustOffsetForSplitInline(node_info.node, container_builder_,
                                offset_info.offset);
+  }
+
+  if (try_fit_available_space) {
+    *out_non_overflowing_range =
+        LogicalScrollRange{inline_scroll_min, inline_scroll_max,
+                           block_scroll_min, block_scroll_max}
+            .ToPhysical(candidate_writing_direction);
   }
 
   return offset_info;

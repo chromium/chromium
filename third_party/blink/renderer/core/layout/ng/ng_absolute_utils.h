@@ -34,12 +34,6 @@ struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
   LayoutUnit MarginBoxBlockEnd() const {
     return inset.block_start + size.block_size + margins.block_end;
   }
-  LogicalRect MarginBoxRect() const {
-    return LogicalRect(
-        LogicalOffset(MarginBoxInlineStart(), MarginBoxBlockStart()),
-        LogicalSize(MarginBoxInlineEnd() - MarginBoxInlineStart(),
-                    MarginBoxBlockEnd() - MarginBoxBlockStart()));
-  }
 
   NGBoxStrut inset;
   LogicalSize size = {kIndefiniteSize, kIndefiniteSize};
@@ -58,6 +52,8 @@ ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
                        NGAnchorEvaluatorImpl* anchor_evaluator);
 
+// Computes the inset-modified containing block without the final step of
+// clamping negative sizes to zero.
 // https://www.w3.org/TR/css-position-3/#inset-modified-containing-block
 CORE_EXPORT LogicalRect
 ComputeOutOfFlowAvailableRect(const NGBlockNode&,
@@ -91,7 +87,7 @@ CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
     const NGLogicalOutOfFlowInsets&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
-    const LogicalSize computed_available_size,
+    LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,
@@ -106,7 +102,7 @@ CORE_EXPORT const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGLogicalOutOfFlowInsets&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
-    const LogicalSize computed_available_size,
+    LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,

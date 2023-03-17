@@ -33,6 +33,7 @@ struct NGLink;
 struct NGLogicalOutOfFlowPositionedNode;
 template <typename OffsetType>
 struct NGMulticolWithPendingOOFs;
+struct PhysicalScrollRange;
 
 // Helper class for positioning of out-of-flow blocks.
 // It should be used together with NGBoxFragmentBuilder.
@@ -339,7 +340,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const NGLogicalAnchorQueryMap* anchor_queries,
       const LayoutObject* implicit_anchor,
       bool try_fit_available_space,
-      bool is_first_run);
+      bool is_first_run,
+      PhysicalScrollRange* out_scroll_range);
 
   const NGLayoutResult* Layout(
       const NodeToLayout& oof_node_to_layout,

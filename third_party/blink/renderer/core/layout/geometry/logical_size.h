@@ -49,6 +49,11 @@ struct CORE_EXPORT LogicalSize {
   constexpr bool IsEmpty() const {
     return inline_size == LayoutUnit() || block_size == LayoutUnit();
   }
+
+  LogicalSize ClampNegativeToZero() const {
+    return LogicalSize(inline_size.ClampNegativeToZero(),
+                       block_size.ClampNegativeToZero());
+  }
 };
 
 inline LogicalSize& operator-=(LogicalSize& a, const NGBoxStrut& b) {

@@ -162,16 +162,14 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
 }
 
 bool AnchorScrollData::IsFallbackPositionValid(
-    const gfx::Vector2dF& accumulated_scroll_offset) const {
-  if (!non_overflowing_rects_.size())
+    const gfx::Vector2dF& new_accumulated_scroll_offset) const {
+  if (!non_overflowing_scroll_ranges_.size()) {
     return true;
+  }
 
-  PhysicalOffset old_translation = TranslationAsPhysicalOffset();
-  PhysicalOffset new_translation =
-      -PhysicalOffset::FromVector2dFFloor(accumulated_scroll_offset);
-  for (const PhysicalRect& rect : non_overflowing_rects_) {
-    if (rect.ContainsInclusive(old_translation) !=
-        rect.ContainsInclusive(new_translation)) {
+  for (const PhysicalScrollRange& range : non_overflowing_scroll_ranges_) {
+    if (range.Contains(accumulated_scroll_offset_) !=
+        range.Contains(new_accumulated_scroll_offset)) {
       return false;
     }
   }
