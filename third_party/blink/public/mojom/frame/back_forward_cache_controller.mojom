@@ -12,13 +12,21 @@ struct BlockingDetails {
   // The index of the blocking feature.
   // See blink::SchedulingPolicy::Feature for the meaning of the individual bits.
   uint32 feature;
-  // The URL of the JavaScript file where the feature is used.
-  string url;
-  // The function in the JavaScript file where the feature is used.
-  string function_name;
-  // The line number in JavaScript file where the feature is used.
+  // The URL of the JavaScript file where the feature is used. This will be empty when
+  // when a flag is disabled to send this information, and will be null when a feature
+  // is used from C++ in tests.
+  string? url;
+  // The function in the JavaScript file where the feature is used. This will be empty
+  // when a flag is disabled to send this information, and will be null when a feature
+  // is used from C++ in tests, or when a feature is used in anonymous functions.
+  string? function_name;
+  // The line number in JavaScript file where the feature is used. This will be zero
+  // when a flag is disabled to send this information, and when a feature is used from
+  // C++ in tests.
   uint64 line_number;
-  // The column number in JavaScript file where the feature is used.
+  // The column number in JavaScript file where the feature is used. This will be zero
+  // when a flag is disabled to send this information, and when a feature is used from
+  // C++ in tests.
   uint64 column_number;
 };
 
