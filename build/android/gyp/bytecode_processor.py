@@ -8,6 +8,8 @@
 import argparse
 import sys
 
+import javac_output_processor
+
 from util import build_utils
 from util import server_utils
 
@@ -68,7 +70,10 @@ def main(argv):
   cmd += [str(len(args.full_classpath_jars))]
   cmd += args.full_classpath_jars
   cmd += [str(len(args.full_classpath_gn_targets))]
-  cmd += args.full_classpath_gn_targets
+  cmd += [
+      javac_output_processor.ReplaceGmsPackageIfNeeded(t)
+      for t in args.full_classpath_gn_targets
+  ]
   try:
     build_utils.CheckOutput(cmd,
                             print_stdout=True,

@@ -34,10 +34,9 @@ _NO_COMPRESS_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif', '.wav', '.mp2',
 def _ParseArgs(args):
   parser = argparse.ArgumentParser()
   build_utils.AddDepfileOption(parser)
-  parser.add_argument(
-      '--assets',
-      help='GYP-list of files to add as assets in the form '
-      '"srcPath:zipPath", where ":zipPath" is optional.')
+  parser.add_argument('--assets',
+                      help='GYP-list of files to add as assets in the form '
+                      '"srcPath:zipPath", where ":zipPath" is optional.')
   parser.add_argument(
       '--java-resources', help='GYP-list of java_resources JARs to include.')
   parser.add_argument('--write-asset-list',

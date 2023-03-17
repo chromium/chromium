@@ -13,7 +13,7 @@ import os
 import pathlib
 import subprocess
 import sys
-from typing import Dict, List, Optional, Set, Tuple
+from typing import List, Optional, Set, Tuple
 
 import json_gn_editor
 import utils
@@ -63,10 +63,10 @@ def _split_deps(existing_dep: str, new_deps: List[str], root: pathlib.Path,
     return None
 
 
-def _remove_deps(*, deps: List[str], out_dir: str, root: pathlib.Path,
-                 path: str, dryrun: bool, targets: List[str],
-                 inline_mode: bool, target_name_filter: Optional[str]
-                 ) -> Tuple[Optional[OperationResult], str]:
+def _remove_deps(
+        *, deps: List[str], out_dir: str, root: pathlib.Path, path: str,
+        dryrun: bool, targets: List[str], inline_mode: bool,
+        target_name_filter: Optional[str]) -> Optional[OperationResult]:
     with json_gn_editor.BuildFile(path, root, dryrun=dryrun) as build_file:
         if build_file.remove_deps(deps, out_dir, targets, target_name_filter,
                                   inline_mode):
@@ -166,7 +166,7 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
         assert args.file, '--all-java-target requires passing --file.'
         logging.info(f'Finding java deps under {out_dir}.')
         all_java_deps = subprocess_utils.run_command([
-            _SRC_PATH / 'build' / 'android' / 'list_java_targets.py',
+            str(_SRC_PATH / 'build' / 'android' / 'list_java_targets.py'),
             '--gn-labels', '-C', out_dir
         ]).split('\n')
         logging.info(f'Found {len(all_java_deps)} java deps.')

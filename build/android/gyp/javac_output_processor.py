@@ -5,11 +5,13 @@
 # found in the LICENSE file.
 """Contains helper class for processing javac output."""
 
+import dataclasses
 import os
 import pathlib
 import re
 import sys
 import traceback
+from typing import List
 
 from util import build_utils
 
@@ -22,6 +24,43 @@ sys.path.insert(
     os.path.join(build_utils.DIR_SOURCE_ROOT, 'tools', 'android',
                  'modularization', 'convenience'))
 import lookup_dep
+
+
+def ReplaceGmsPackageIfNeeded(target_name: str) -> str:
+  if target_name.startswith(
+      ('//third_party/android_deps:google_play_services_',
+       '//clank/third_party/google3:google_play_services_')):
+    return f'$google_play_services_package:{target_name.split(":")[1]}'
+  return target_name
+
+
+def _DisambiguateDeps(class_entries: List[lookup_dep.ClassEntry]):
+  def filter_if_not_empty(entries, filter_func):
+    filtered_entries = [e for e in entries if filter_func(e)]
+    return filtered_entries or entries
+
+  # When some deps are preferred, ignore all other potential deps.
+  class_entries = filter_if_not_empty(class_entries, lambda e: e.preferred_dep)
+
+  # E.g. javax_annotation_jsr250_api_java.
+  class_entries = filter_if_not_empty(class_entries,
+                                      lambda e: 'jsr' in e.target)
+
+  # Avoid suggesting subtargets when regular targets exist.
+  class_entries = filter_if_not_empty(class_entries,
+                                      lambda e: '__' not in e.target)
+
+  # Swap out GMS package names if needed.
+  class_entries = [
+      dataclasses.replace(e, target=ReplaceGmsPackageIfNeeded(e.target))
+      for e in class_entries
+  ]
+
+  # Convert to dict and then use list to get the keys back to remove dups and
+  # keep order the same as before.
+  class_entries = list({e: True for e in class_entries})
+
+  return class_entries
 
 
 class JavacOutputProcessor:
@@ -153,27 +192,13 @@ class JavacOutputProcessor:
     if not suggested_deps:
       return
 
-    suggested_deps = self._DisambiguateDeps(suggested_deps)
+    suggested_deps = _DisambiguateDeps(suggested_deps)
     suggested_deps_str = ', '.join(s.target for s in suggested_deps)
 
     if len(suggested_deps) > 1:
       suggested_deps_str = 'one of: ' + suggested_deps_str
 
     self._suggested_deps.add(suggested_deps_str)
-
-  @staticmethod
-  def _DisambiguateDeps(class_entries):
-    if len(class_entries) == 1:
-      return class_entries
-
-    # When some deps are preferred, ignore all other potential deps.
-    preferred_entries = [x for x in class_entries if x.preferred_dep]
-    class_entries = preferred_entries or class_entries
-
-    # E.g. javax_annotation_jsr250_api_java.
-    jsr_entries = [x for x in class_entries if 'jsr' in x.target]
-    class_entries = jsr_entries or class_entries
-    return class_entries
 
   @staticmethod
   def _RemoveSuffixesIfPresent(suffixes, text):
