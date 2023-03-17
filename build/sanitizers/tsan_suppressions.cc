@@ -72,9 +72,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/927330
     "race:net::(anonymous namespace)::g_network_change_notifier\n"
 
-    // https://crbug.com/977085
-    "race:vp3_update_thread_context\n"
-
     // Harmless data races, see WTF::StringImpl::Release code comments.
     "race:scoped_refptr<WTF::StringImpl>::AddRef\n"
     "race:scoped_refptr<WTF::StringImpl>::Release\n"
