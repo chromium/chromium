@@ -51,7 +51,7 @@ namespace bookmark_utils_ios {
 namespace {
 
 // The size of the cloud.slash icon.
-constexpr CGFloat kCloudSlashPointSize = 24;
+constexpr CGFloat kCloudSlashPointSize = 18;
 
 }  // namespace
 
@@ -148,9 +148,13 @@ bool ShouldDisplayCloudSlashIcon(SyncSetupService* sync_setup_service) {
       sync_setup_service->IsDataTypePreferred(syncer::ModelType::BOOKMARKS));
 }
 
-UIImageView* CloudSlashIcon() {
-  UIImage* cloudSlashedImage = CustomSymbolWithPointSize(
-      kCloudSlashSymbol, bookmark_utils_ios::kCloudSlashPointSize);
+UIImage* CloudSlashImage() {
+  return CustomSymbolWithPointSize(kCloudSlashSymbol,
+                                   bookmark_utils_ios::kCloudSlashPointSize);
+}
+
+UIImageView* CloudSlashImageView() {
+  UIImage* cloudSlashedImage = CloudSlashImage();
   UIImageView* cloudSlashedView =
       [[UIImageView alloc] initWithImage:cloudSlashedImage];
   cloudSlashedView.tintColor = [UIColor colorNamed:kTextSecondaryColor];

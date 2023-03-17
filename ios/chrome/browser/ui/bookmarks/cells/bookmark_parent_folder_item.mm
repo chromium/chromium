@@ -97,7 +97,7 @@
 
   // Slashed cloud view
   // TODO(crbug.com/1422602) Check with EGTest the cloud appears when expected.
-  self.cloudSlashedView = bookmark_utils_ios::CloudSlashIcon();
+  self.cloudSlashedView = bookmark_utils_ios::CloudSlashImageView();
   self.cloudSlashedView.hidden = YES;
 
   // Container StackView.

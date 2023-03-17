@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/table_view_bookmarks_folder_item.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,8 +59,10 @@
             FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                 _bookmarkNode->url()));
     urlCell.accessibilityTraits |= UIAccessibilityTraitButton;
-    // TODO(crbug.com/1420242) Set the cloud icon when crrev.com/c/4291170 is
-    // landed.
+    urlCell.metadataImage.image = self.shouldDisplayCloudSlashIcon
+                                      ? bookmark_utils_ios::CloudSlashImage()
+                                      : nil;
+    urlCell.metadataImage.tintColor = [UIColor colorNamed:kTextSecondaryColor];
     [urlCell configureUILayout];
   }
 }

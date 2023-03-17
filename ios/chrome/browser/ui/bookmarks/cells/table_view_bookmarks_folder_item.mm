@@ -131,7 +131,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
                           forAxis:UILayoutConstraintAxisHorizontal];
 
     // Slashed cloud view.
-    self.cloudSlashedView = bookmark_utils_ios::CloudSlashIcon();
+    self.cloudSlashedView = bookmark_utils_ios::CloudSlashImageView();
     self.cloudSlashedView.hidden = YES;
 
     // Container StackView.
