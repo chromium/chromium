@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
@@ -100,7 +101,7 @@ views::Builder<views::Label> CreateSummaryLabel(
     const int& fixed_width) {
   return views::Builder<views::Label>(
              bubble_utils::CreateLabel(
-                 bubble_utils::TypographyStyle::kAnnotation1,
+                 TypographyToken::kCrosAnnotation1,
                  event_summary.empty()
                      ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
                      : base::UTF8ToUTF16(event_summary)))
@@ -121,9 +122,8 @@ views::Builder<views::Label> CreateTimeLabel(
     const std::u16string& title,
     const std::u16string& tooltip_text) {
   return views::Builder<views::Label>(
-             bubble_utils::CreateLabel(
-                 bubble_utils::TypographyStyle::kAnnotation2, title,
-                 cros_tokens::kColorSecondary))
+             bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation2, title,
+                                       cros_tokens::kColorSecondary))
       .SetID(kTimeLabelID)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false)

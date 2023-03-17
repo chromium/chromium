@@ -11,6 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/time/calendar_event_list_item_view_jelly.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_up_next_view_background_painter.h"
@@ -117,7 +118,7 @@ std::unique_ptr<views::Button> CreateTodaysEventsButton(
 std::unique_ptr<views::Label> CreateHeaderLabel() {
   return views::Builder<views::Label>(
              bubble_utils::CreateLabel(
-                 bubble_utils::TypographyStyle::kButton2,
+                 TypographyToken::kCrosButton2,
                  l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_UP_NEXT)))
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .Build();

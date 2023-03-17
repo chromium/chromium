@@ -19,6 +19,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/typography.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
@@ -120,7 +121,7 @@ class PaintCallbackLabel : public views::Label {
     layer()->SetFillsBoundsOpaquely(fills_bounds_opaquely);
   }
 
-  void SetStyle(bubble_utils::TypographyStyle style) {
+  void SetStyle(TypographyToken style) {
     bubble_utils::ApplyStyle(this, style);
   }
 
@@ -141,7 +142,7 @@ class PaintCallbackLabel : public views::Label {
 
 BEGIN_VIEW_BUILDER(/*no export*/, PaintCallbackLabel, views::Label)
 VIEW_BUILDER_PROPERTY(PaintCallbackLabel::Callback, Callback)
-VIEW_BUILDER_PROPERTY(bubble_utils::TypographyStyle, Style)
+VIEW_BUILDER_PROPERTY(TypographyToken, Style)
 VIEW_BUILDER_PROPERTY(bool, PaintToLayer)
 VIEW_BUILDER_PROPERTY(bool, ViewAccessibilityIsIgnored)
 END_VIEW_BUILDER
@@ -317,18 +318,17 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                       .SetMainAxisAlignment(MainAxisAlignment::kCenter)
                       .SetCrossAxisAlignment(CrossAxisAlignment::kStretch)
                       .SetInsideBorderInsets(kLabelMargins)
-                      .AddChild(
-                          CreateLabelBuilder()
-                              .CopyAddressTo(&primary_label_)
-                              .SetID(kHoldingSpaceItemPrimaryChipLabelId)
-                              .SetStyle(bubble_utils::TypographyStyle::kBody2)
-                              .SetElideBehavior(gfx::ELIDE_MIDDLE)
-                              .SetCallback(paint_label_mask_callback))
+                      .AddChild(CreateLabelBuilder()
+                                    .CopyAddressTo(&primary_label_)
+                                    .SetID(kHoldingSpaceItemPrimaryChipLabelId)
+                                    .SetStyle(TypographyToken::kCrosBody2)
+                                    .SetElideBehavior(gfx::ELIDE_MIDDLE)
+                                    .SetCallback(paint_label_mask_callback))
                       .AddChild(
                           CreateLabelBuilder()
                               .CopyAddressTo(&secondary_label_)
                               .SetID(kHoldingSpaceItemSecondaryChipLabelId)
-                              .SetStyle(bubble_utils::TypographyStyle::kLabel1)
+                              .SetStyle(TypographyToken::kCrosLabel1)
                               .SetElideBehavior(gfx::FADE_TAIL)
                               .SetCallback(paint_label_mask_callback)))
               .AddChild(views::Builder<views::BoxLayoutView>()

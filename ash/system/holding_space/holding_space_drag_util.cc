@@ -14,6 +14,7 @@
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/typography.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
@@ -230,7 +231,7 @@ class DragImageItemChipView : public DragImageItemView {
     // Label.
     ScopedLightModeAsDefault scoped_light_mode;
     auto* label = AddChildView(bubble_utils::CreateLabel(
-        bubble_utils::TypographyStyle::kBody2, item->GetText()));
+        TypographyToken::kCrosBody2, item->GetText()));
     // Label created via `bubble_utils::CreateLabel()` has an enabled color id,
     // which is resolved when the label is added to the views hierarchy. But
     // `this` is never added to widget, enabled color id will never be resolved.
@@ -328,8 +329,8 @@ class DragImageOverflowBadge : public views::View {
         views::BoxLayout::MainAxisAlignment::kCenter);
 
     // Label.
-    auto* label = AddChildView(
-        bubble_utils::CreateLabel(bubble_utils::TypographyStyle::kButton1));
+    auto* label =
+        AddChildView(bubble_utils::CreateLabel(TypographyToken::kCrosButton1));
     // `this` is never added to widget, enabled color id will never be resolved.
     // Thus we need to manually resolve it and set the color as the enabled
     // color for the label.

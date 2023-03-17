@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_ui.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
@@ -149,8 +150,8 @@ class FilesAppChip : public views::Button {
                                          gfx::kPlaceholderColor));
 
     // Label.
-    auto* label = AddChildView(
-        bubble_utils::CreateLabel(bubble_utils::TypographyStyle::kBody2));
+    auto* label =
+        AddChildView(bubble_utils::CreateLabel(TypographyToken::kCrosBody2));
     label->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT));
     layout->SetFlexForView(label, 1);

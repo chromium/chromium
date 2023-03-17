@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/typography.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -112,7 +113,7 @@ views::View* BluetoothDetailedViewImpl::AddDeviceListSubHeader(
   auto header = std::make_unique<views::BoxLayoutView>();
   header->SetInsideBorderInsets(kSubHeaderInsets);
   std::unique_ptr<views::Label> label = bubble_utils::CreateLabel(
-      bubble_utils::TypographyStyle::kBody2, l10n_util::GetStringUTF16(text_id),
+      TypographyToken::kCrosBody2, l10n_util::GetStringUTF16(text_id),
       cros_tokens::kColorSecondary);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetSubpixelRenderingEnabled(false);

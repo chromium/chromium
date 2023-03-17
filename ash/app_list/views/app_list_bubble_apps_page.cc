@@ -31,6 +31,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -677,8 +678,7 @@ void AppListBubbleAppsPage::InitContinueLabelContainer(
   continue_label_ =
       continue_label_container_->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL)));
-  bubble_utils::ApplyStyle(continue_label_,
-                           bubble_utils::TypographyStyle::kAnnotation1,
+  bubble_utils::ApplyStyle(continue_label_, TypographyToken::kCrosAnnotation1,
                            kColorAshTextColorSecondary);
   continue_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
