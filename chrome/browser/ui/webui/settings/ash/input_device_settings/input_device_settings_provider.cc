@@ -16,29 +16,32 @@ namespace ash::settings {
 namespace {
 
 template <typename T>
-struct CustomDeviceComparator {
+struct CustomDeviceKeyComparator {
   bool operator()(const T& device1, const T& device2) const {
-    // If two devices have the same device_key, this should always return false
-    // so they are removed as duplicates.
-    if (device1->device_key == device2->device_key) {
-      return false;
-    }
-
-    // Guarantees that external devices appear first in the list.
-    if (device1->is_external != device2->is_external) {
-      return device1->is_external;
-    }
-
-    // Otherwise sort by most recently connected device (aka id in descending
-    // order).
-    return device1->id > device2->id;
+    return device1->device_key < device2->device_key;
   }
 };
 
 template <typename T>
 std::vector<T> SanitizeAndSortDeviceList(std::vector<T> devices) {
-  base::flat_set<T, CustomDeviceComparator<T>> device_set(std::move(devices));
-  return std::move(device_set).extract();
+  // Remove devices with duplicate `device_key`.
+  base::flat_set<T, CustomDeviceKeyComparator<T>> devices_no_duplicates_set(
+      std::move(devices));
+  std::vector<T> devices_no_duplicates =
+      std::move(devices_no_duplicates_set).extract();
+  base::ranges::sort(devices_no_duplicates,
+                     [](const auto& device1, const auto& device2) {
+                       // Guarantees that external devices appear first in the
+                       // list.
+                       if (device1->is_external != device2->is_external) {
+                         return device1->is_external;
+                       }
+
+                       // Otherwise sort by most recently connected device (aka
+                       // id in descending order).
+                       return device1->id > device2->id;
+                     });
+  return devices_no_duplicates;
 }
 
 }  // namespace
