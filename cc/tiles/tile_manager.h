@@ -219,7 +219,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
       ResourcePool::InUsePoolResource resource =
           resource_pool_->AcquireResource(
               tiles[i]->desired_texture_size(),
-              raster_buffer_provider_->GetResourceFormat(),
+              raster_buffer_provider_->GetFormat().resource_format(),
               client_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB)
                   .color_space);
       raster_buffer_provider_->AcquireBufferForRaster(
@@ -337,7 +337,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
     MemoryUsage(size_t memory_bytes, size_t resource_count);
 
     static MemoryUsage FromConfig(const gfx::Size& size,
-                                  viz::ResourceFormat format);
+                                  viz::SharedImageFormat format);
     static MemoryUsage FromTile(const Tile* tile);
 
     MemoryUsage& operator+=(const MemoryUsage& other);
@@ -405,7 +405,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void MarkTilesOutOfMemory(
       std::unique_ptr<RasterTilePriorityQueue> queue) const;
 
-  viz::ResourceFormat DetermineResourceFormat(const Tile* tile) const;
+  viz::SharedImageFormat DetermineFormat(const Tile* tile) const;
 
   void DidFinishRunningTileTasksRequiredForActivation();
   void DidFinishRunningTileTasksRequiredForDraw();

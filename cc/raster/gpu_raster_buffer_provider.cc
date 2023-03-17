@@ -200,7 +200,7 @@ viz::SharedImageFormat GpuRasterBufferProvider::GetFormat() const {
 }
 
 bool GpuRasterBufferProvider::IsResourcePremultiplied() const {
-  return !ShouldUnpremultiplyAndDitherResource(GetResourceFormat());
+  return !ShouldUnpremultiplyAndDitherResource(GetFormat());
 }
 
 bool GpuRasterBufferProvider::IsResourceReadyToDraw(
@@ -420,7 +420,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
 }
 
 bool GpuRasterBufferProvider::ShouldUnpremultiplyAndDitherResource(
-    viz::ResourceFormat format) const {
+    viz::SharedImageFormat format) const {
   // TODO(crbug.com/1151490): Re-enable for OOPR.
   return false;
 }

@@ -118,8 +118,4 @@ void RasterBufferProvider::PlaybackToMemory(
   NOTREACHED();
 }
 
-viz::ResourceFormat RasterBufferProvider::GetResourceFormat() const {
-  return GetFormat().resource_format();
-}
-
 }  // namespace cc

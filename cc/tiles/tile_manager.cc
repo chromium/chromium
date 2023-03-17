@@ -806,7 +806,7 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
     MemoryUsage memory_required_by_tile_to_be_scheduled;
     if (!tile->raster_task_.get()) {
       memory_required_by_tile_to_be_scheduled = MemoryUsage::FromConfig(
-          tile->desired_texture_size(), DetermineResourceFormat(tile));
+          tile->desired_texture_size(), DetermineFormat(tile));
     }
 
     // This is the memory limit that will be used by this tile. Depending on
@@ -1205,11 +1205,11 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   //
   // TODO(crbug.com/1076568): Once we have access to the display's buffer format
   // via gfx::DisplayColorSpaces, we should also do this for HBD images.
-  auto format = DetermineResourceFormat(tile);
+  auto format = DetermineFormat(tile);
   if (target_color_params.color_space.IsHDR() &&
       GetContentColorUsageForPrioritizedTile(prioritized_tile) ==
           gfx::ContentColorUsage::kHDR) {
-    format = viz::ResourceFormat::RGBA_F16;
+    format = viz::SinglePlaneFormat::kRGBA_F16;
   }
 
   // Get the resource.
@@ -1227,14 +1227,14 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   bool partial_tile_decode = false;
   if (resource) {
     resource_content_id = tile->invalidated_id();
-    DCHECK_EQ(format, resource.format());
+    DCHECK_EQ(format.resource_format(), resource.format());
     partial_tile_decode = true;
   } else {
     const std::string& debug_name =
         prioritized_tile.source_tiling()->raster_source()->debug_name();
     resource = resource_pool_->AcquireResource(
-        tile->desired_texture_size(), format, target_color_params.color_space,
-        debug_name);
+        tile->desired_texture_size(), format.resource_format(),
+        target_color_params.color_space, debug_name);
     DCHECK(resource);
   }
 
@@ -1693,9 +1693,8 @@ void TileManager::NeedsInvalidationForCheckerImagedTiles() {
   client_->RequestImplSideInvalidationForCheckerImagedTiles();
 }
 
-viz::ResourceFormat TileManager::DetermineResourceFormat(
-    const Tile* tile) const {
-  return raster_buffer_provider_->GetResourceFormat();
+viz::SharedImageFormat TileManager::DetermineFormat(const Tile* tile) const {
+  return raster_buffer_provider_->GetFormat();
 }
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
@@ -1898,12 +1897,13 @@ TileManager::MemoryUsage::MemoryUsage(size_t memory_bytes,
 // static
 TileManager::MemoryUsage TileManager::MemoryUsage::FromConfig(
     const gfx::Size& size,
-    viz::ResourceFormat format) {
+    viz::SharedImageFormat format) {
   // We can use UncheckedSizeInBytes here since this is used with a tile
   // size which is determined by the compositor (it's at most max texture
   // size).
-  return MemoryUsage(
-      viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format), 1);
+  return MemoryUsage(viz::ResourceSizes::UncheckedSizeInBytes<size_t>(
+                         size, format.resource_format()),
+                     1);
 }
 
 // static
