@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Mostrar <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Silencia el sonido de un sitio específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
+<translation id="4478158430052450698">Facilita la personalización del zoom en diferentes sitios</translation>
 <translation id="4479647676395637221">Preguntar antes de permitir que los sitios utilicen la cámara (recomendado)</translation>
 <translation id="4505788138578415521">URL ampliada</translation>
 <translation id="4534723447064627427">Para que <ph name="APP_NAME" /> pueda acceder al micrófono, actívalo también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>

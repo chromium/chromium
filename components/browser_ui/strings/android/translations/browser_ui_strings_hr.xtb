@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Prošireno – kliknite za sažimanje.</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
 <translation id="2597457036804169544">Ne primjenjuj tamnu temu na web-lokacije</translation>
+<translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2621115761605608342">Dopuštanje JavaScripta za određenu web-lokaciju.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Napusti</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Kontakti koje odaberete podijelit će se s web-lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Posljednji posjet bio je danas</translation>
 <translation id="5225463052809312700">Uključi fotoaparat</translation>
+<translation id="5229337741799419985">Ta postavka funkcionira bez otkrivanja vašeg identiteta ili omogućavanja web-lokacijama da vide vašu povijest pregledavanja</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5264323282659631142">Ukloni '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Povucite od vrha zaslona i dodirnite gumb Natrag da biste zatvorili prikaz na cijelom zaslonu.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6689172468748959065">Fotografije profila</translation>
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
+<translation id="6701547804986694515">Web-lokacija koju posjetite može u Chromeu spremiti podatke koji potvrđuju da niste bot. Tijekom vašeg daljnjeg pregledavanja web-lokacije mogu provjeriti u Chromeu i od prethodne web-lokacije koju ste posjetili dobiti potvrdu da ste vjerojatno stvarna osoba</translation>
 <translation id="6722828510648505498">Blokiraj upite za prijavu usluga za identitet.</translation>
 <translation id="6746124502594467657">Pomakni dolje</translation>
 <translation id="6749077623962119521">Poništiti dopuštenja?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Odaberite sliku</translation>
 <translation id="8801436777607969138">Blokiranje JavaScripta za određenu web-lokaciju.</translation>
 <translation id="8803526663383843427">Kad je značajka uključena</translation>
+<translation id="8805385115381080995">Pregledavanje je brže jer je manja vjerojatnost da će web-lokacija tražiti da potvrdite da ste stvarna osoba</translation>
 <translation id="8816026460808729765">Blokiranje pristupa senzorima za web-lokacije</translation>
 <translation id="8823559166155093873">Blokiraj kolačiće</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Ova je stranica opasna</translation>
 <translation id="9201023452444595544">Izbrisat će se svi offline podaci</translation>
 <translation id="930525582205581608">Zaboraviti web-lokaciju?</translation>
+<translation id="947156494302904893">Web-lokacije koje posjećujete mogu potvrditi da ste stvarna osoba, a ne bot</translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>
 </translationbundle>

@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Brandvägg hittades</translation>
 <translation id="1075811647922107217">Sidstorlek</translation>
+<translation id="1082009148392559545">Laddar ned skärmsläckaren</translation>
 <translation id="1094693127011229778">IP-adress är inte tillgänglig</translation>
 <translation id="1113892970288677790">Välj handplockade konstverk och foton</translation>
 <translation id="1119447706177454957">Internt fel</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Hanteras av <ph name="FIRST_MANAGER" /> och <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Namnservrar</translation>
 <translation id="1731082422893354635">Bluetooth-styrplatta</translation>
+<translation id="1738949837603788263">Zon <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Det gick inte att läsa in bilder. Kontrollera nätverksanslutningen eller testa att läsa in bilderna igen.</translation>
 <translation id="1751249301761991853">Personligt</translation>
 <translation id="1753496554272155572">Stäng förhandsgranskning av bakgrund</translation>
@@ -140,6 +142,7 @@
 <translation id="2157959690810728433">I KÖ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Försök igen</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobb</translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Aktivera mörkt läge</translation>
 <translation id="2180197493692062006">Något gick fel. Testa att öppna appen igen.</translation>
 <translation id="2209788852729124853">Återställ trafikräknare</translation>
@@ -215,6 +218,7 @@
 <translation id="3008341117444806826">UPPDATERA</translation>
 <translation id="3009958530611748826">Välj vilken mapp du vill spara i</translation>
 <translation id="3017079585324758401">Bakgrund</translation>
+<translation id="3020183492814296499">Genvägar</translation>
 <translation id="3027578600144895987">Stäng kameran</translation>
 <translation id="3031560714565892478">Enheten är en videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -598,6 +602,7 @@
 <translation id="636850387210749493">Företagsregistrering</translation>
 <translation id="6379086450106841622">Pekskärm</translation>
 <translation id="6381741036071372448">Testa tangentbordet</translation>
+<translation id="6382182670717268353">Förhandsgranska skärmsläckare</translation>
 <translation id="6388847657025262518">Skannerns dokumentmatare är blockerad. Kontrollera mataren och försök igen.</translation>
 <translation id="6394634179843537518">Lägg till en fil</translation>
 <translation id="6410257289063177456">Bildfiler</translation>
@@ -660,7 +665,9 @@
 <translation id="6957231940976260713">Namn på tjänsten</translation>
 <translation id="6961170852793647506">Sätt dokumentet i skannern för att komma igång</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Enhet</translation>
 <translation id="6977381486153291903">Revision av firmware</translation>
+<translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="7005833343836210400">Enheten är offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hanterar den här enheten och har tillgång till all användaraktivitet, inklusive besökta webbsidor, lösenord och e-post.</translation>
 <translation id="7040230719604914234">Operatör</translation>
@@ -687,6 +694,7 @@
 <translation id="7177485034254901881">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />. Administratörer kan fjärrkonfigurera enheten.</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7180865173735832675">Anpassa</translation>
+<translation id="7184043045742675738">Klicka på valfri tangent för att anpassa knappen. Flytta tangenten med musen eller piltangenterna.</translation>
 <translation id="7212734716605298123">Firmware-uppdateringar för externa enheter</translation>
 <translation id="7216409898977639127">Mobiloperatör</translation>
 <translation id="725133483556299729">Välj e-postadress</translation>
@@ -728,6 +736,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-pekskärm</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> återstår</translation>
+<translation id="7613724632293948900">Flytta med musen eller piltangenterna.</translation>
 <translation id="7620771111601174153">Läs mer i hjälpcentret</translation>
 <translation id="763165478673169849">Återställdes senast</translation>
 <translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
@@ -768,6 +777,7 @@
 <translation id="7977800524392185497">Öppna inställningarna om du vill ansluta till ett <ph name="NETWORK_NAME" />-nätverk</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
 <translation id="7994702968232966508">EAP-metod</translation>
+<translation id="8004582292198964060">Webbläsare</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktivera automatiskt färgläge</translation>
@@ -850,6 +860,7 @@
 <translation id="8798441408945964110">Leverantörens namn</translation>
 <translation id="8814190375133053267">wifi</translation>
 <translation id="8818152010000655963">Bakgrund</translation>
+<translation id="8820457400746201697">Flytta den blå pekytan till en åtgärd. Välj den tangent som du vill anpassa.</translation>
 <translation id="8834539327799336565">Anslutna just nu</translation>
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8855781559874488009">Det gick inte att ansluta till HTTP-webbplatser genom brandvägg</translation>
@@ -879,6 +890,7 @@
 <translation id="8998289560386111590">Inte tillgängligt på din enhet</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9025198690966128418">Använd som personlig enhet</translation>
+<translation id="902638246363752736">Tangentbordsinställningar</translation>
 <translation id="9028832514430399253">Aktivera inställningen om du vill välja alternativ för skärmsläckaren</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +923,5 @@
 <translation id="952992212772159698">Inte aktiverat</translation>
 <translation id="960719561871045870">Operatörskod</translation>
 <translation id="982713511914535780">Kör urladdningstest</translation>
+<translation id="987264212798334818">Allmänt</translation>
 </translationbundle>

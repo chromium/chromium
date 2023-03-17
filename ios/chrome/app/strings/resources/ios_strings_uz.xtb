@@ -519,6 +519,7 @@ Ma’lumotlaringiz kodli ibora bilan shifrlangan. Sinxronlashuvni boshlash uchun
 <translation id="4737560986434232178">Oxirgi varaqlar ichidan qidirish</translation>
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="4747097190499141774">Kodli ibora yordamida shifrlaganda Google Pay manzillari va toʻlov usullari shifrlanmaydi. Shifrlangan maʼlumotlaringizni faqat kodli iborani biladiganlar koʻra oladi. Bu iborani Google bilmaydi va serverlarida saqlamaydi. Agar kodli iborani unutsangiz, sinxronlash sozlamalarini qayta tiklash kerak bo‘ladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Faqat shu qurilmada, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Yangi inkognito sahifa</translation>
 <translation id="4766112107778026136">Discover va kuzatuvdagi</translation>
 <translation id="4775879719735953715">Standart brauzer</translation>
@@ -943,6 +944,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> tili hech qachon tarjima qilinmasin</translation>
 <translation id="7603852183842204213">Qalqib chiquvchi oynalar bloklandi (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Parolni olib tashlash</translation>
+<translation id="7611459119367035420">Qadalgan varaqlarni shu yerda topish mumkin.</translation>
 <translation id="7638584964844754484">Noto‘g‘ri kodli ibora</translation>
 <translation id="7646263789464975852">Menyu → Sozlamalar → Xavfsizlik tekshiruvi</translation>
 <translation id="7646772052135772216">Parollar sinxronizatsiyasi ishlamadi</translation>
@@ -955,6 +957,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7720410380936703141">QAYTADAN</translation>
 <translation id="7726702057919861819">Menyu → Tarix → Brauzer tarixini tozalash</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Faqat shu qurilmada.</translation>
 <translation id="7738120385185846461">Muammo haqida xabar bering…</translation>
 <translation id="7741325291586284254">Yangi inkognito varagʻi sahifasi</translation>
 <translation id="7744394900930577716">Boshqa ilovalardagi parollar</translation>
@@ -1037,6 +1040,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8237382152611443140">Parollarni avtomatik kiritish sozlamalarini oching</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8264966119170358612">Saqlangan parollaringizdan ayrimlari Googledan boshqa tashqi xizmatlarning sizib chiqarilgan axborotlari ichidan topildi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Faqat shu qurilmada</translation>
 <translation id="8271720166617117963">Qabul qilish va kirish</translation>
 <translation id="8278938988428169257">Soʻz yoki iborani kiriting</translation>
 <translation id="8281781826761538115">Standart - <ph name="DEFAULT_LOCALE" /></translation>

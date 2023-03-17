@@ -188,6 +188,7 @@
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" />-г дэлгэнэ үү</translation>
 <translation id="4468959413250150279">Тодорхой сайтын дууг хаана уу.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# күүки}other{# күүки}}</translation>
+<translation id="4478158430052450698">Өөр өөр сайтад томруулалтыг өөрчлөхийг хялбар болгоно</translation>
 <translation id="4479647676395637221">Сайтууд камер ашиглах зөвшөөрөл авах (санал болгосон)</translation>
 <translation id="4505788138578415521">URL-г өргөтгөсөн</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />-д таны микрофонд хандахыг зөвшөөрөхийн тулд микрофоныг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>

@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">បានដាក់ជាជួរ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />៖ ព្យាយាម​ម្ដងទៀត</translation>
 <translation id="2161394479394250669">បោះបង់​ការងារ​បោះពុម្ព</translation>
+<translation id="2161656808144014275">អត្ថបទ</translation>
 <translation id="2163937499206714165">បើក​មុខងារ​ងងឹត</translation>
 <translation id="2180197493692062006">មានអ្វីមួយខុសប្រក្រតី។ សូមសាកល្បង​បើកកម្មវិធី​ឡើងវិញ។</translation>
 <translation id="2209788852729124853">កំណត់មុខងាររាប់ចំនួនចរាចរណ៍ឡើងវិញ</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">ផ្ទុក​ឡើង​វិញ</translation>
 <translation id="3009958530611748826">ជ្រើសរើសថត ដើម្បីរក្សាទុកឯកសារស្កេន</translation>
 <translation id="3017079585324758401">ផ្ទៃខាងក្រោយ</translation>
+<translation id="3020183492814296499">ផ្លូវកាត់</translation>
 <translation id="3027578600144895987">បិទ​កាមេរ៉ា</translation>
 <translation id="3031560714565892478">ឧបករណ៍គឺកាមេរ៉ាវីដេអូ។</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">ឈ្មោះ​សេវាកម្ម</translation>
 <translation id="6961170852793647506">ដើម្បីចាប់ផ្ដើម សូមដាក់​ឯកសារ​របស់អ្នកនៅ​លើម៉ាស៊ីនស្កេន</translation>
 <translation id="6965382102122355670">យល់ព្រម</translation>
+<translation id="6965978654500191972">ឧបករណ៍</translation>
 <translation id="6977381486153291903">ការកែប្រែកម្មវិធីបង្កប់</translation>
+<translation id="6981982820502123353">លទ្ធភាពប្រើប្រាស់</translation>
 <translation id="7005833343836210400">ឧបករណ៍គ្មានអ៊ីនធឺណិត​ទេ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> គ្រប់គ្រង​ឧបករណ៍​នេះ និង​មានសិទ្ធិ​ចូលមើល​សកម្មភាព​អ្នកប្រើប្រាស់​ទាំងអស់ រួមទាំង​ទំព័របណ្ដាញ​ដែលបាន​ចូលមើល ពាក្យសម្ងាត់ និង​អ៊ីមែល​ផងដែរ។</translation>
 <translation id="7040230719604914234">ប្រតិបត្តិករ</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">ដើម្បីចូលរួមបណ្ដាញ <ph name="NETWORK_NAME" /> សូមចូលទៅកាន់ការកំណត់</translation>
 <translation id="7978412674231730200">សោឯកជន</translation>
 <translation id="7994702968232966508">វិធីសាស្ត្រ EAP</translation>
+<translation id="8004582292198964060">កម្មវិធីរុករក</translation>
 <translation id="802154636333426148">បានបរាជ័យក្នុងការទាញយក</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">បើកមុខងារពណ៌ស្វ័យប្រវត្តិ</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">មិន​អាច​ប្រើ​​នៅ​លើ​ឧបករណ៍​របស់​អ្នក​បានទេ</translation>
 <translation id="9003704114456258138">ហ្វ្រេកង់</translation>
 <translation id="9025198690966128418">ប្រើប្រាស់ជាឧបករណ៍ផ្ទាល់ខ្លួន</translation>
+<translation id="902638246363752736">ការកំណត់ក្តារចុច</translation>
 <translation id="9028832514430399253">បើកប៊ូតុងបិទ/បើក ដើម្បីជ្រើសរើសជម្រើសធាតុរក្សាអេក្រង់</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">មិនត្រូវបានធ្វើសកម្មភាពទេ</translation>
 <translation id="960719561871045870">លេខកូដប្រតិបត្តិករ</translation>
 <translation id="982713511914535780">ដំណើរការតេស្តនៃការបញ្ចេញថាមពល</translation>
+<translation id="987264212798334818">ទូទៅ</translation>
 </translationbundle>

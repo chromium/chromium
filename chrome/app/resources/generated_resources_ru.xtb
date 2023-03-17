@@ -245,6 +245,7 @@
 <translation id="1201564082781748151">Если вы забудете пароль, локальные данные можно будет восстановить</translation>
 <translation id="1202116106683864634">Удалить этот ключ доступа?</translation>
 <translation id="1202596434010270079">Киоск-приложение обновлено. Извлеките USB-накопитель.</translation>
+<translation id="1202892408424955784">Отслеживаемые товары</translation>
 <translation id="120368089816228251">Ноты</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Ярлыки, выбранные вами</translation>
@@ -2012,6 +2013,7 @@
 <translation id="272741954544380994">Найти через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Больше не напоминать</translation>
 <translation id="2727712005121231835">Фактический размер</translation>
+<translation id="2727744317940422214">Произошла ошибка. Сообщите нам о ней, отправив отзыв с хештегом #bruschetta в описании. Код ошибки: <ph name="ERROR" />. Удалить данные не получилось, попробуйте сделать это вручную.</translation>
 <translation id="2729314457178420145">Также удалить данные о работе в браузере (<ph name="URL" />). Возможно, при этом вы выйдете из аккаунта на сайте google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Мы ищем новые способы ограничить отслеживание и сделать работу с браузером ещё безопаснее. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> и позволяет управлять ими. Сайты, которые вы посещаете, запрашивают у Chrome интересующие вас темы, чтобы показывать рекламу.</translation>
 <translation id="2730029791981212295">Резервное копирование приложений и файлов Linux…</translation>
@@ -2576,6 +2578,7 @@
 <translation id="3242289508736283383">Приложения, у которых в манифесте есть атрибут kiosk_only, можно устанавливать только в режиме киоска Chrome OS.</translation>
 <translation id="3242665648857227438">В этом профиле используются настройки прокси-сервера Chrome OS.</translation>
 <translation id="3243017971870859287">Чтение серийных номеров устройства с ChromeOS Flex и его компонентов</translation>
+<translation id="324366796737464147">Шумоподавление</translation>
 <translation id="3244294424315804309">Не включать звук</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: ошибка сети</translation>
 <translation id="3248902735035392926">Безопасность – это важно. <ph name="BEGIN_LINK" />Проверьте расширения<ph name="END_LINK" />, которые у вас установлены.</translation>
@@ -2992,6 +2995,7 @@
 <translation id="3618286417582819036">Ошибка</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геопозиционирование</translation>
+<translation id="3621202678540785336">Вход</translation>
 <translation id="3621807901162200696">Помогать повышать производительность и улучшать функции ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{приложение}one{# приложение}few{# приложения}many{# приложений}other{# приложения}}</translation>
 <translation id="362333465072914957">Ожидание выдачи сертификата центром сертификации</translation>
@@ -4236,7 +4240,6 @@
 <translation id="4726710355753484204">Чтобы увеличить масштаб, нажмите Ctrl + Alt + Увеличить яркость.
 Чтобы уменьшить масштаб, нажмите Ctrl + Alt + Уменьшить яркость.</translation>
 <translation id="4726710629007580002">При установке расширения возникли предупреждения:</translation>
-<translation id="472738079453283624">Товары</translation>
 <translation id="4727847987444062305">Управляемый гостевой сеанс</translation>
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4730492586225682674">Последняя заметка, созданная на заблокированном экране с помощью стилуса</translation>
@@ -7564,6 +7567,7 @@
 <translation id="7758450972308449809">Настройте границы экрана</translation>
 <translation id="7760004034676677601">Другая стартовая страница?</translation>
 <translation id="7762024824096060040">Не удается использовать этот аккаунт</translation>
+<translation id="7762243782113123335">Произошла ошибка. Сообщите нам о ней, отправив отзыв с хештегом #bruschetta в описании. Код ошибки: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Добавить адрес</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> с сайта <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Переместить</translation>
@@ -8663,6 +8667,7 @@
 <translation id="8740247629089392745">Когда настройка будет завершена, <ph name="SUPERVISED_USER_NAME" /> сможет пользоваться устройством Chromebook.</translation>
 <translation id="8740672167979365981">Обновите Chrome OS Flex</translation>
 <translation id="8741944563400125534">Мастер настройки Switch Access</translation>
+<translation id="8742395827132970586">Ошибка установки. Удаляем данные…</translation>
 <translation id="8742998548129056176">Мы будем получать общие сведения о работе устройства, например об уровне заряда батареи, ошибках и действиях в системе и приложениях. Они помогут нам усовершенствовать Android, а наши партнеры смогут использовать некоторые агрегированные данные, чтобы улучшать свои приложения и другие продукты.</translation>
 <translation id="8744641000906923997">Ромадзи</translation>
 <translation id="8745034592125932220">Запрещено сохранять данные на этом устройстве</translation>

@@ -283,6 +283,7 @@
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
 <translation id="2587052924345400782">최신 버전 사용 가능</translation>
 <translation id="2593272815202181319">고정 너비</translation>
+<translation id="2603212228005142861">환경설정을 관리하려면 로그인하세요</translation>
 <translation id="2604446170045642109">설정에서 사이트의 어두운 테마를 사용 중지할 수 있습니다.</translation>
 <translation id="2612676031748830579">카드번호</translation>
 <translation id="2625189173221582860">비밀번호 복사됨</translation>
@@ -1242,6 +1243,7 @@
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
 <translation id="7709094866268987903">삭제한 관심분야가 여기에 표시됩니다.</translation>
 <translation id="7709918231054955894">탭 모두 가져오기</translation>
+<translation id="772434085369393266">탐색을 HTTPS로 업그레이드하고 지원되지 않는 사이트를 로드하기 전에 경고를 표시합니다. 고급 보호가 사용 설정되어 있으므로 이 설정을 변경할 수 없습니다.</translation>
 <translation id="7725024127233776428">북마크한 페이지가 여기에 표시됩니다.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
 <translation id="7762668264895820836">SD 카드 <ph name="SD_CARD_NUMBER" /></translation>

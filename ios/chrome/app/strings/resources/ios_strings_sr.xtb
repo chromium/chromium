@@ -374,6 +374,7 @@
 <translation id="3595252146048399851">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="3603009562372709545">Копирај URL адресу линка</translation>
 <translation id="3607167657931203000">Подаци аутоматског попуњавања</translation>
+<translation id="3608008480985212611">Пријавите се да бисте управљали подешавањима.</translation>
 <translation id="3609785682760573515">Синхронизовање...</translation>
 <translation id="3631443864840848029">Уверите се да чувате актуелну лозинку за овај сајт.</translation>
 <translation id="3638472932233958418">Унап. учитај веб-странице</translation>
@@ -1042,6 +1043,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8237382152611443140">Отворите подешавања за аутоматско попуњавање лозинке</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8264966119170358612">Неке од ваших сачуваних лозинки су откривене током повреде података који нису Google подаци. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Само на овом уређају</translation>
 <translation id="8271720166617117963">Прихвати и пријави ме</translation>
 <translation id="8278938988428169257">Унесите реч или фразу</translation>
 <translation id="8281781826761538115">Подразумевано – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1135,6 +1137,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8952559610785099500">Додајте лозинку</translation>
 <translation id="8953046091948372197">Овде ћете пронаћи лозинке</translation>
 <translation id="895541991026785598">Пријавите проблем</translation>
+<translation id="8971545611707025079">Провери поново</translation>
 <translation id="8974714402877957201">1. Отворите подешавања iPad-а</translation>
 <translation id="8976382372951310360">Помоћ</translation>
 <translation id="8976414606286374109">Картице се чувају на Google налогу.</translation>

@@ -519,6 +519,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="4737560986434232178">Sök på de senaste flikarna</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4747097190499141774">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras. Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenfrasen skickas inte till och sparas inte av Google. Om du glömmer lösenfrasen måste du återställa synkroniseringen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, bara på den här enheten, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Ny inkognitoflik</translation>
 <translation id="4766112107778026136">Förslag och följer</translation>
 <translation id="4775879719735953715">Standardwebbläsare</translation>
@@ -943,6 +944,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7600965453749440009">Översätt aldrig från <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Popup blockeras (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Ta bort lösenord</translation>
+<translation id="7611459119367035420">Du hittar dina fästa flikar här.</translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
 <translation id="7646263789464975852">Meny → Inställningar → Säkerhetskontroll</translation>
 <translation id="7646772052135772216">Det går inte att synkronisera lösenord</translation>
@@ -955,6 +957,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7720410380936703141">FÖRSÖK IGEN</translation>
 <translation id="7726702057919861819">Menyn → Historik → Rensa webbinformation</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Bara på den här enheten.</translation>
 <translation id="7738120385185846461">Rapportera ett problem …</translation>
 <translation id="7741325291586284254">Ny fliksida i inkognitoläge</translation>
 <translation id="7744394900930577716">Lösenord i andra appar</translation>
@@ -1037,6 +1040,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8237382152611443140">Öppna inställningarna för autofyllning av lösenord</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8264966119170358612">Vissa av dina lösenord har läckts i samband med ett dataintrång utanför Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Bara på den här enheten</translation>
 <translation id="8271720166617117963">Godkänn och logga in</translation>
 <translation id="8278938988428169257">Ange ett ord eller en fras</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>

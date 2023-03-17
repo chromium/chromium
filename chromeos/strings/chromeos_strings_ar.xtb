@@ -140,6 +140,7 @@
 <translation id="2157959690810728433">تم وضع الاختبار في قائمة الانتظار.</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: إعادة المحاولة</translation>
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
+<translation id="2161656808144014275">نص</translation>
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
 <translation id="2180197493692062006">حدث خطأ. يُرجى إعادة فتح التطبيق.</translation>
 <translation id="2209788852729124853">إعادة ضبط عدّادات حركة بيانات الشبكة</translation>
@@ -215,6 +216,7 @@
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3017079585324758401">الخلفية</translation>
+<translation id="3020183492814296499">الاختصارات</translation>
 <translation id="3027578600144895987">إغلاق الكاميرا</translation>
 <translation id="3031560714565892478">الجهاز هو كاميرا فيديو.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
@@ -660,7 +662,9 @@
 <translation id="6957231940976260713">اسم الخدمة</translation>
 <translation id="6961170852793647506">للبدء، يُرجى وضع المستند على الماسح الضوئي.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
+<translation id="6965978654500191972">جهاز</translation>
 <translation id="6977381486153291903">مراجعة البرامج الثابتة</translation>
+<translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="7005833343836210400">الجهاز غير متصل بالإنترنت.</translation>
 <translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="7040230719604914234">مشغل شبكة الجوّال</translation>
@@ -768,6 +772,7 @@
 <translation id="7977800524392185497">للانضمام إلى شبكة <ph name="NETWORK_NAME" />، انتقِل إلى "الإعدادات".</translation>
 <translation id="7978412674231730200">مفتاح خاص</translation>
 <translation id="7994702968232966508">‏طريقة EAP</translation>
+<translation id="8004582292198964060">المتصفّح</translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">تفعيل وضع الألوان التلقائية</translation>
@@ -879,6 +884,7 @@
 <translation id="8998289560386111590">الوضع غير متاح على جهازك.</translation>
 <translation id="9003704114456258138">التردد</translation>
 <translation id="9025198690966128418">الاستخدام كجهاز شخصي</translation>
+<translation id="902638246363752736">إعدادات لوحة المفاتيح</translation>
 <translation id="9028832514430399253">فعِّل التبديل لتحديد خيارات شاشة الاستراحة.</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">‫IPv6</translation>
@@ -911,4 +917,5 @@
 <translation id="952992212772159698">غير نشطة</translation>
 <translation id="960719561871045870">رمز مشغل شبكة الجوال</translation>
 <translation id="982713511914535780">تشغيل اختبار تفريغ شحن البطارية</translation>
+<translation id="987264212798334818">عام</translation>
 </translationbundle>

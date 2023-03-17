@@ -10,6 +10,7 @@
 <translation id="110877069173485804">这是您的专属Chrome</translation>
 <translation id="1125124144982679672">谁在使用 Chrome？</translation>
 <translation id="1142745911746664600">无法更新 Chrome</translation>
+<translation id="1149651794389918149">登录 Chrome。如果您只想登录帐号一次，可考虑<ph name="GUEST_LINK_BEGIN" />以访客身份使用设备<ph name="GUEST_LINK_END" />。</translation>
 <translation id="1152920704813762236">关于 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中打开(&amp;O)</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
@@ -167,6 +168,7 @@
 <translation id="4147555960264124640">您目前登录的帐号是一个受管理帐号，该帐号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 帐号信息中心删除这些数据，但无法将这些数据与其他帐号相关联。<ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="4149882025268051530">安装程序无法解压缩存档文件。请重新下载 Google Chrome。</translation>
+<translation id="4153934450158521343">Chrome 即将关闭并删除数据</translation>
 <translation id="4191857738314598978">{0,plural, =1{请于 1 天内重新启动 Chrome}other{请于 # 天内重新启动 Chrome}}</translation>
 <translation id="4205939740494406371">Chrome 无法检查您的密码。请过 24 小时再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
 <translation id="4222932583846282852">正在取消…</translation>
@@ -212,6 +214,7 @@
 <translation id="4970880042055371251">Chrome 操作系统版本</translation>
 <translation id="4970947549776831107">Chrome 屏蔽了此文件，因为这类文件包含危险内容</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{您的管理员已将 Chrome 设置为，在闲置 1 分钟后自动关闭。浏览数据会被删除。其中可能包括历史记录、自动填充和下载内容。}other{您的管理员已将 Chrome 设置为，在闲置 # 分钟后自动关闭。浏览数据会被删除。其中可能包括历史记录、自动填充和下载内容。}}</translation>
 <translation id="5098668839038261629">若开启此选项，关闭所有窗口的同时您也会退出登录 Chrome 的帐号</translation>
 <translation id="5132929315877954718">查找适用于Google Chrome的精彩应用、游戏、扩展程序和主题背景。</translation>
 <translation id="5139423532931106058">自定义您的 Chrome 个人资料</translation>
@@ -260,12 +263,14 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome 测试版</translation>
 <translation id="6235018212288296708">Google Chrome的入站规则，允许mDNS流量。</translation>
+<translation id="624230925347970731">Chrome 即将关闭</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6273793429163604305">即将就绪…</translation>
 <translation id="6291089322031436445">Chrome 开发者版应用</translation>
 <translation id="6291549208091401781">已为您计算机上的所有用户安装 Google Chrome。</translation>
 <translation id="6326175484149238433">从Chrome中移除</translation>
 <translation id="6327105987658262776">没有可用的更新。</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{您的管理员已将 Chromium 设置为，在闲置 1 分钟后自动删除浏览数据。其中可能包括历史记录、自动填充和下载内容。现有标签页仍将保持打开状态。}other{您的管理员已将 Chromium 设置为，在闲置 # 分钟后自动删除浏览数据。其中可能包括历史记录、自动填充和下载内容。现有标签页仍将保持打开状态。}}</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="6418662306461808273">切换到现有的 Chrome 个人资料？</translation>
 <translation id="6493527311031785448">Google Chrome 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -295,6 +300,7 @@
 
 您已向网站和应用授予的权限可能会应用于此帐号。您可在<ph name="SETTINGS_LINK_BEGIN" />设置<ph name="SETTINGS_LINK_END" />部分中管理您的 Google 帐号。</translation>
 <translation id="7062128746136194023">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”。因此，您无法添加该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
+<translation id="7071827361006050863">Chrome 即将删除浏览数据</translation>
 <translation id="7085332316435785646">选择是否要包含 Chrome 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
 <translation id="7088681679121566888">Chrome 已是最新版本</translation>
 <translation id="7098166902387133879">Google Chrome 正在使用您的麦克风。</translation>
@@ -356,6 +362,7 @@
 <translation id="8290100596633877290">哎呀！Google Chrome 浏览器崩溃了。是否立即重新启动？</translation>
 <translation id="8342675569599923794">此文件存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chrome 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{您的管理员已将 Chrome 设置为，在闲置 1 分钟后自动关闭。}other{您的管理员已将 Chrome 设置为，在闲置 # 分钟后自动关闭。}}</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：Chrome 可以推测出您的兴趣。日后，您访问的网站可向 Chrome 请求查看您的兴趣以向您展示个性化广告。</translation>
 <translation id="8387459386171870978">继续使用 Chrome</translation>

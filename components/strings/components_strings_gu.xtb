@@ -683,6 +683,7 @@
 <translation id="259821504105826686">ફોટોગ્રાફિક અને ડિજિટલ આર્ટ</translation>
 <translation id="2601150049980261779">રોમાન્ટિક મૂવી</translation>
 <translation id="2604589665489080024">પૉપ મ્યુઝિક</translation>
+<translation id="2606760465469169465">ઑટોમૅટિક ચકાસણી</translation>
 <translation id="2610561535971892504">કૉપિ કરવા માટે ક્લિક</translation>
 <translation id="2617988307566202237">Chrome નીચે આપેલી માહિતી <ph name="BEGIN_EMPHASIS" />સાચવશે નહીં<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -1900,6 +1901,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />તમે તમારો ડેટા કેવી રીતે મેનેજ કરી શકો છો:<ph name="END_BOLD" /> 4 અઠવાડિયાથી જૂની સાઇટ Chrome ઑટોમૅટિક રીતે ડિલીટ કરે છે. તમે ફરીથી મુલાકાત લીધેલી કોઈ સાઇટ સૂચિમાં ફરીથી દેખાઈ શકે છે. Chrome સેટિંગમાં તમે કોઈપણ સમયે કોઈ સાઇટને તમારા માટે જાહેરાતો સૂચવવાથી બ્લૉક કરી શકો છો તેમજ સાઇટ દ્વારા જાહેરાતોનું સૂચન બંધ કરી શકો છો.</translation>
 <translation id="5610142619324316209">કનેક્શન તપાસીને</translation>
 <translation id="5610807607761827392">તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં કાર્ડ અને સરનામાં મેનેજ કરી શકો છો.</translation>
+<translation id="5611398002774823980">એકાઉન્ટમાં સાચવો</translation>
 <translation id="561165882404867731">Google Translate વડે આ પેજનો અનુવાદ કરો</translation>
 <translation id="5612720917913232150"><ph name="URL" /> તમારા કમ્પ્યુટરનાં સ્થાનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="561669346091975195">સાયન્સ ફિક્શન અને કાલ્પનિક ટીવી શો</translation>
@@ -3186,6 +3188,7 @@
 <translation id="8806285662264631610">સ્નાન અને શરીરની સંભાળ રાખતી પ્રોડક્ટ</translation>
 <translation id="8807160976559152894">પ્રત્યેક પેજ પછી ટ્રિમ કરો</translation>
 <translation id="8809203544698246977">બ્લૉક કરેલા વિષયો અહીં દેખાશે</translation>
+<translation id="8811470563853401328">એકાઉન્ટમાં ઍડ્રેસ સાચવીએ?</translation>
 <translation id="8813277370772331957">મને પછીથી યાદ કરાવો</translation>
 <translation id="8814707942599948500">એન્વલપ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા Chrome સેટિંગમાંથી Chrome અપડેટ કરવા માટે Tab પછી Enter દબાવો</translation>
@@ -3279,6 +3282,7 @@
 <translation id="9042617223719777575">વધુ ક્ષમતા</translation>
 <translation id="9044359186343685026">Touch IDનો ઉપયોગ કરો</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">આ ક્રિયાઓ માટે <ph name="POLICY_NAME" /> પૉલિસીને <ph name="POLICY_VALUE" /> પર સેટ કરવી આવશ્યક છે: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 ઇંચ</translation>
 <translation id="9049981332609050619">તમે <ph name="DOMAIN" /> સુધી પહોંચવાનો પ્રયાસ કર્યો, પરંતુ સર્વરે અમાન્ય પ્રમાણપત્ર પ્રસ્તુત કર્યું. </translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>

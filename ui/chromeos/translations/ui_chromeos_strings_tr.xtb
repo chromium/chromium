@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">Ev ağı kullanılamıyor. Bağlanmak için mobil veri dolaşımı etkinleştirilmelidir.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> öğe çıkarılıyor...</translation>
 <translation id="8502913769543567768">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cihaz kurulumundan sonra etkinleştir, Yöneticiniz tarafından yönetiliyor</translation>
+<translation id="8512483403832814140">Herhangi bir zaman</translation>
 <translation id="8521441079177373948">İngiltere</translation>
 <translation id="853494022971700746">Fransızca (Fransa)</translation>
 <translation id="8540608333167683902">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Ayrıntılar</translation>

@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">NAKA-QUEUE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Subukan ulit</translation>
 <translation id="2161394479394250669">Kanselahin ang pag-print</translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">I-on ang dark mode</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
 <translation id="2209788852729124853">I-reset ang Mga Traffic Counter</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3017079585324758401">Background</translation>
+<translation id="3020183492814296499">Mga Shortcut</translation>
 <translation id="3027578600144895987">Isara ang camera</translation>
 <translation id="3031560714565892478">Video camera ang device.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Pangalan ng serbisyo</translation>
 <translation id="6961170852793647506">Para magsimula, ilagay ang iyong dokumento sa scanner</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Device</translation>
 <translation id="6977381486153291903">Rebisyon ng firmware</translation>
+<translation id="6981982820502123353">Accessibility</translation>
 <translation id="7005833343836210400">Offline ang device</translation>
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
 <translation id="7040230719604914234">Operator</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">Para sumali sa isang <ph name="NETWORK_NAME" /> network, pumunta sa Mga Setting</translation>
 <translation id="7978412674231730200">Private na key</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
+<translation id="8004582292198964060">Browser</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">I-enable ang auto color mode</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Hindi available sa iyong device</translation>
 <translation id="9003704114456258138">Frequency</translation>
 <translation id="9025198690966128418">Gamitin bilang personal na device</translation>
+<translation id="902638246363752736">Mga setting ng keyboard</translation>
 <translation id="9028832514430399253">I-on ang toggle para piliin ang mga opsyon ng screen saver</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Hindi na-activate</translation>
 <translation id="960719561871045870">Operator code</translation>
 <translation id="982713511914535780">Patakbuhin ang pagsusuri sa Discharge</translation>
+<translation id="987264212798334818">Pangkalahatan</translation>
 </translationbundle>

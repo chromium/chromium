@@ -683,6 +683,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="259821504105826686">Fotografska i digitalna umjetnost</translation>
 <translation id="2601150049980261779">Romantični filmovi</translation>
 <translation id="2604589665489080024">Pop muzika</translation>
+<translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2610561535971892504">Kopiranje klikom</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />neće sačuvati<ph name="END_EMPHASIS" /> sljedeće informacije:
         <ph name="BEGIN_LIST" />
@@ -1900,6 +1901,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kako možete upravljati podacima:<ph name="END_BOLD" /> Chrome automatski briše web lokacije starije od 4 sedmice. Web lokacija koju ponovo posjetite može se ponovo pojaviti na listi. U postavkama Chromea u bilo kojem trenutku također možete blokirati da vam web lokacija predlaže oglase i isključiti oglase koje predlažu web lokacije.</translation>
 <translation id="5610142619324316209">Provjeriti vezu</translation>
 <translation id="5610807607761827392">Karticama i adresama možete upravljati u <ph name="BEGIN_LINK" />Postavkama<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Spremi na račun</translation>
 <translation id="561165882404867731">Prevedite ovu stranicu pomoću Google Prevodioca</translation>
 <translation id="5612720917913232150"><ph name="URL" /> želi koristiti lokaciju vašeg računara</translation>
 <translation id="561669346091975195">Naučno-fantastične i fantasy TV emisije</translation>
@@ -3186,6 +3188,7 @@ Dodatni detalji:
 <translation id="8806285662264631610">Proizvodi za kupanje i tijelo</translation>
 <translation id="8807160976559152894">Skraćivanje nakon svake stranice</translation>
 <translation id="8809203544698246977">Blokirane teme se prikazuju ovdje</translation>
+<translation id="8811470563853401328">Želite li spremiti adresu na račun?</translation>
 <translation id="8813277370772331957">Podsjeti me kasnije</translation>
 <translation id="8814707942599948500">Koverta C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pritisnite Tab, a zatim Enter da ažurirate Chrome iz postavki Chromea</translation>
@@ -3279,6 +3282,7 @@ Dodatni detalji:
 <translation id="9042617223719777575">Veliki kapacitet</translation>
 <translation id="9044359186343685026">Koristi Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Za ove radnje potrebno je postaviti pravilo <ph name="POLICY_NAME" /> na <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>
 <translation id="9049981332609050619">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je server prikazao nevažeću potvrdu.</translation>
 <translation id="9050666287014529139">Pristupni izraz</translation>

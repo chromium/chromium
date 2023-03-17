@@ -519,6 +519,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4737560986434232178">최근 탭 검색</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4747097190499141774">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다. 암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 동기화를 재설정해야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, 이 기기에서만, <ph name="URL" /></translation>
 <translation id="4751645464639803239">새 시크릿 탭</translation>
 <translation id="4766112107778026136">디스커버 및 팔로우</translation>
 <translation id="4775879719735953715">기본 브라우저</translation>
@@ -943,6 +944,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="7603852183842204213">팝업 차단(<ph name="NUMBER_OF_BLOCKED_POPUPS" />개)</translation>
 <translation id="7607521702806708809">비밀번호 삭제</translation>
+<translation id="7611459119367035420">여기에서 고정된 탭을 찾을 수 있습니다.</translation>
 <translation id="7638584964844754484">암호가 잘못되었습니다.</translation>
 <translation id="7646263789464975852">메뉴 → 설정 → 안전 확인</translation>
 <translation id="7646772052135772216">비밀번호 동기화가 작동하지 않음</translation>
@@ -955,6 +957,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7701040980221191251">없음</translation>
 <translation id="7720410380936703141">다시 시도</translation>
 <translation id="7726702057919861819">메뉴 → 방문 기록 → 인터넷 사용 기록 삭제</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. 이 기기에서만 표시.</translation>
 <translation id="7738120385185846461">문제 신고…</translation>
 <translation id="7741325291586284254">새 시크릿 탭 페이지</translation>
 <translation id="7744394900930577716">다른 앱의 비밀번호</translation>
@@ -1037,6 +1040,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8237382152611443140">AutoFill Passwords(비밀번호 자동 완성) 설정을 엽니다.</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8264966119170358612">저장된 비밀번호 중 일부가 서드 파티의 정보 유출로 인해 노출되었습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">이 기기에서만</translation>
 <translation id="8271720166617117963">수락 및 로그인</translation>
 <translation id="8278938988428169257">단어 또는 구문 입력</translation>
 <translation id="8281781826761538115">기본값 - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1130,6 +1134,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8952559610785099500">비밀번호 추가</translation>
 <translation id="8953046091948372197">여기에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="895541991026785598">문제 신고</translation>
+<translation id="8971545611707025079">다시 확인</translation>
 <translation id="8974714402877957201">1. iPad 설정을 엽니다.</translation>
 <translation id="8976382372951310360">도움말</translation>
 <translation id="8976414606286374109">카드가 Google 계정에 저장됩니다.</translation>

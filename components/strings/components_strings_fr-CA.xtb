@@ -152,6 +152,7 @@
 <translation id="132301787627749051">Rechercher une image du presse-papiers</translation>
 <translation id="1323433172918577554">Afficher plus</translation>
 <translation id="132390688737681464">Enregistrer et remplir les adresses</translation>
+<translation id="1329916999021038454">Envoyer un rapport</translation>
 <translation id="1330449323196174374">Pli du volet gauche</translation>
 <translation id="1333745675627230582">Jouer au jeu du dinosaure de Chrome</translation>
 <translation id="1333989956347591814">Votre activité <ph name="BEGIN_EMPHASIS" />peut encore être visible<ph name="END_EMPHASIS" /> pour :
@@ -527,6 +528,7 @@
 <translation id="219906046732893612">Rénovation domiciliaire</translation>
 <translation id="2202020181578195191">Entrez une année d'expiration valide</translation>
 <translation id="2202627062836089804">dos de votre carte</translation>
+<translation id="2204482073374652408">Mise à jour terminée!</translation>
 <translation id="22081806969704220">Bac 3</translation>
 <translation id="2210794033760923560">Téléverser le rapport</translation>
 <translation id="2212579473415663542">Cette adresse est enregistrée dans votre compte Google (<ph name="ACCOUNT" />). Vous pouvez l'utiliser dans tous les produits Google, sur n'importe quel appareil.</translation>
@@ -615,6 +617,7 @@
 <translation id="2441854154602066476">Les modes de paiement accessibles à remplir au toucher. Clavier masqué.</translation>
 <translation id="2448295565072560657">Périphériques branchés à cet appareil pendant que vous êtes connecté</translation>
 <translation id="2450021089947420533">Explorations</translation>
+<translation id="2456755709261364512">Votre pile doit être chargée à plus de <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2463739503403862330">Remplir</translation>
 <translation id="2465655957518002998">Choisir un mode de livraison</translation>
 <translation id="2465688316154986572">Agrafe</translation>
@@ -661,6 +664,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Utiliser le verrouillage d'écran pour confirmer les cartes à partir de maintenant</translation>
 <translation id="2553853292994445426">Vérifiez les paramètres de DNS sécurisé. L'échec de connexion est peut-être dû à un serveur DNS sécurisé que vous avez configuré.</translation>
+<translation id="255497580849974774">Veuillez garder votre appareil connecté à un chargeur pendant la mise à jour.</translation>
 <translation id="2556876185419854533">&amp;Annuler la modification</translation>
 <translation id="2557417190997681027">Voyage d'affaires</translation>
 <translation id="2562087035394240049">Contenu pour bricoleurs et professionnels</translation>
@@ -892,6 +896,7 @@
 <translation id="320323717674993345">Annuler le paiement</translation>
 <translation id="3203366800380907218">Du Web</translation>
 <translation id="3207960819495026254">Favori</translation>
+<translation id="3208701679386778924">Veuillez envoyer un rapport afin que nous puissions améliorer d'autres mises à jour de ChromeOS.</translation>
 <translation id="3209034400446768650">Cette page peut exiger des frais</translation>
 <translation id="3212581601480735796">Votre activité sur <ph name="HOSTNAME" /> est surveillée</translation>
 <translation id="3215092763954878852">Impossible d'utiliser WebAuthn</translation>
@@ -1117,6 +1122,7 @@
 <translation id="3715545959749027023">Lorsque Chrome signale des événements relatifs à la sécurité, les données pertinentes sur les événements sont envoyées à votre administrateur. Ces données pourraient comprendre les URL des pages que vous visitez dans Chrome, les noms de fichiers ou les métadonnées, les plantages du navigateur ou des onglets, et le nom d'utilisateur que vous utilisez pour vous connecter aux applications Web, à votre appareil et à Chrome.</translation>
 <translation id="3715597595485130451">Connexion au réseau Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />De vérifier la configuration du mandataire, du pare-feu et du DNS<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Durant la mise à jour, vous ne pourrez pas utiliser votre appareil pendant un maximum de 10 minutes.</translation>
 <translation id="372429172604983730">Voici des applications qui peuvent provoquer cette erreur : un logiciel antivirus, un logiciel de pare-feu, ou un logiciel de filtrage Web ou de mandataire.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une présentation Google dans Présentations</translation>
 <translation id="3733139489341305600">Véhicules autonomes</translation>
@@ -1154,6 +1160,7 @@
 <translation id="3807366285948165054">Décalage X de l'image</translation>
 <translation id="3807873520724684969">Contenu nuisible bloqué.</translation>
 <translation id="3810973564298564668">Gérer</translation>
+<translation id="3812398568375898177">Il s'agit d'une mise à jour essentielle qui améliore les performances des applications Android sur ChromeOS.</translation>
 <translation id="3815434930383843058">8 po x 12 po</translation>
 <translation id="3816482573645936981">Valeur (remplacée)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1258,6 +1265,7 @@
 <translation id="4110652170750985508">Examiner votre paiement</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
+<translation id="4113354056388982663">Mise à jour essentielle des performances Android</translation>
 <translation id="4114146879518089587">Continuer sur le site</translation>
 <translation id="4116663294526079822">Toujours autoriser pour ce site</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1438,6 +1446,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Entrée pour traduire cette page avec Google Traduction</translation>
 <translation id="4514308731478712184">Désactiver la fonctionnalité Explorations</translation>
 <translation id="4515275063822566619">Les cartes et les adresses proviennent de Chrome et de votre compte Google (<ph name="ACCOUNT_EMAIL" />). Vous pouvez les gérer dans <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">Votre appareil a été interrompu pendant le processus de mise à jour.</translation>
 <translation id="4520048001084013693">La politique de l'administrateur bloque le téléchargement de ce fichier</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Enveloppe Monarch</translation>
@@ -1527,6 +1536,7 @@
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4738601419177586157">Suggestion de recherche <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Gérer les mots de passe…</translation>
+<translation id="4743275772928623722">Votre système a été mis à jour, mais certains de vos fichiers et de vos applications n'ont pas pu être récupérés. Vos applications seront à nouveau téléchargées automatiquement.</translation>
 <translation id="4744514002166662487">Créer une présentation</translation>
 <translation id="4744603770635761495">Chemin d'accès exécutable</translation>
 <translation id="4749011317274908093">Vous êtes passé en mode de navigation privée</translation>
@@ -2228,6 +2238,7 @@
 <translation id="646793340882508547">Jeux d'aventure</translation>
 <translation id="6468485451923838994">Polices</translation>
 <translation id="647261751007945333">Règles relatives aux appareils</translation>
+<translation id="647330291963761005">Installation des mises à jour en cours…</translation>
 <translation id="6475672344094591109">Les sites que vous visitez peuvent demander à Chrome des renseignements qui les aident à mesurer la performance de leurs annonces. Chrome protège votre confidentialité en limitant les renseignements que les sites peuvent partager entre eux.</translation>
 <translation id="6476284679642588870">Gérer les modes de paiement</translation>
 <translation id="6486200200930923183">Documentaires</translation>
@@ -2301,6 +2312,7 @@
 <translation id="6688775486821967877">La carte virtuelle n'est pas accessible en ce moment, veuillez réessayer plus tard</translation>
 <translation id="6689249931105087298">Valeur relative avec compression des points noirs</translation>
 <translation id="6689271823431384964">Chrome vous propose d'enregistrer vos cartes dans votre compte Google parce que vous y êtes connecté. Vous pouvez modifier ce comportement dans les paramètres. Le nom du détenteur de la carte provient de votre compte.</translation>
+<translation id="6691397311652656001">Libérez plus de <ph name="REQUIRED_FREE_DISK_SPACE" /> d'espace</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour utiliser la fonctionnalité Localiser mon appareil dans le compte Google</translation>
 <translation id="6696588630955820014">Bouton Partager cet onglet, appuyez sur la touche Entrée pour partager cet onglet en partageant le lien, en créant un code QR, en diffusant du contenu et plus</translation>
 <translation id="6698381487523150993">Créé :</translation>
@@ -2364,6 +2376,7 @@
 <translation id="6864189428899665393">267 mm x 389 mm</translation>
 <translation id="686485648936420384">Ressources pour les consommateurs</translation>
 <translation id="6865412394715372076">Cette carte ne peut pas être vérifiée pour le moment</translation>
+<translation id="6868573634057275953">Reprendre la mise à jour</translation>
 <translation id="6869334554832814367">Prêts personnels</translation>
 <translation id="6873456682041376666">Plateau du haut</translation>
 <translation id="6874604403660855544">&amp;Rétablir l'ajout</translation>
@@ -2520,9 +2533,11 @@
 <translation id="722454870747268814">Nouvel onglet de navigation privée</translation>
 <translation id="7233592378249864828">Imprimer la feuille de confirmation</translation>
 <translation id="7234638337680728591">Prix de l'essence et ravitaillement des véhicules</translation>
+<translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % effectué | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Ne plus afficher ce message pour ce site</translation>
 <translation id="7238585580608191973">Empreintes digitales SHA-256</translation>
 <translation id="7240120331469437312">Autre nom de l'objet du certificat</translation>
+<translation id="7241863998525879494">À quoi vous attendre</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# correspondance}one{# correspondance}other{# correspondances}}</translation>
@@ -2743,6 +2758,7 @@ Détails supplémentaires :
 <translation id="7698864304447945242">Mettre à jour les services Google Play pour la RA?</translation>
 <translation id="7699293099605015246">Les articles ne sont pas disponibles pour le moment</translation>
 <translation id="7701040980221191251">Aucun</translation>
+<translation id="7701544340847569275">Mise à jour terminée avec des erreurs</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Continuer vers <ph name="SITE" /> (non recommandé)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Ski et planche à neige</translation>
 <translation id="7706689436519265630">Les fichiers que vous copiez ou déplacez sont envoyés à Google Cloud ou à des tiers pour analyse. Par exemple, ils peuvent être analysés à la recherche de données confidentielles ou de logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise.</translation>

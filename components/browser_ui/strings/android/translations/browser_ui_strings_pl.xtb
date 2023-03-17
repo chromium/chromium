@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Rozwinięty – kliknij, by zwinąć.</translation>
 <translation id="2586657967955657006">Schowek</translation>
 <translation id="2597457036804169544">Nie stosuj ciemnego motywu witryn</translation>
+<translation id="2606760465469169465">Automatyczna weryfikacja</translation>
 <translation id="2621115761605608342">Zezwól na użycie JavaScriptu w określonej witrynie.</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Wybrane kontakty zostaną udostępnione witrynie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Ostatnio używana dzisiaj</translation>
 <translation id="5225463052809312700">Włącz kamerę</translation>
+<translation id="5229337741799419985">To ustawienie działa bez ujawniania Twojej tożsamości i udzielania witrynom dostępu do Twojej historii przeglądania.</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5264323282659631142">Usuń: „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Przeciągnij od góry i kliknij przycisk Wstecz, by wyjść z trybu pełnoekranowego.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6689172468748959065">Zdjęcia profilowe</translation>
 <translation id="6697925417670533197">W trakcie pobierania</translation>
+<translation id="6701547804986694515">Strona, którą odwiedzasz, może zapisywać w Chrome informacje potwierdzające, że nie jesteś botem. Witryny, które przeglądasz, mogą sprawdzać te informacje w Chrome i uzyskiwać potwierdzenie z wcześniej odwiedzonej witryny, że prawdopodobnie jesteś prawdziwą osobą.</translation>
 <translation id="6722828510648505498">Blokuj prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
 <translation id="6746124502594467657">W dół</translation>
 <translation id="6749077623962119521">Zresetować uprawnienia?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Wybierz obraz</translation>
 <translation id="8801436777607969138">Zablokuj JavaScript w określonej witrynie.</translation>
 <translation id="8803526663383843427">Kiedy funkcja jest włączona</translation>
+<translation id="8805385115381080995">Przeglądanie działa szybciej, bo witryny rzadziej proszą o potwierdzenie, że jesteś prawdziwą osobą.</translation>
 <translation id="8816026460808729765">Blokuj stronom dostęp do czujników</translation>
 <translation id="8823559166155093873">Blokuj pliki cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
 <translation id="9201023452444595544">Wszystkie dane offline zostaną wyczyszczone</translation>
 <translation id="930525582205581608">Zapomnieć tę stronę?</translation>
+<translation id="947156494302904893">Witryny, które odwiedzasz, mogą sprawdzać, czy jesteś prawdziwą osobą, a nie botem</translation>
 <translation id="967624055006145463">Zapisane dane</translation>
 </translationbundle>

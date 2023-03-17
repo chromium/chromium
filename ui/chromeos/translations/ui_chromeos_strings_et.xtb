@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">Kodune võrk pole saadaval. Ühenduse loomiseks tuleb lubada mobiilse andmeside rändlus.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> üksuse ekstraktimine …</translation>
 <translation id="8502913769543567768">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiveerige pärast seadme seadistust, võrku haldab teie administraator</translation>
+<translation id="8512483403832814140">Mis tahes ajal</translation>
 <translation id="8521441079177373948">Ühendkuningriik</translation>
 <translation id="853494022971700746">prantsuse (Prantsusmaa)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>

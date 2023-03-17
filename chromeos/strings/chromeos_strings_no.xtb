@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">I KØ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
+<translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Slå på mørk modus</translation>
 <translation id="2180197493692062006">Noe gikk galt. Prøv å åpne appen på nytt.</translation>
 <translation id="2209788852729124853">Tilbakestill trafikktellere</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3017079585324758401">Bakgrunn</translation>
+<translation id="3020183492814296499">Snarveier</translation>
 <translation id="3027578600144895987">Lukk kameraet</translation>
 <translation id="3031560714565892478">Enheten er et videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Tjenestenavn</translation>
 <translation id="6961170852793647506">For å begynne, legg dokumentet på skanneren</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Enhet</translation>
 <translation id="6977381486153291903">Fastvareversjon</translation>
+<translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="7005833343836210400">Enheten er uten nett</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enheten og har tilgang til all brukeraktivitet, blant annet nettsteder som besøkes, passord og e-post.</translation>
 <translation id="7040230719604914234">Operatør</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">For å koble til et <ph name="NETWORK_NAME" />-nettverk, gå til Innstillinger</translation>
 <translation id="7978412674231730200">Privatnøkkel</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
+<translation id="8004582292198964060">Nettleser</translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Slå på automatisk fargemodus</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9025198690966128418">Bruk som personlig enhet</translation>
+<translation id="902638246363752736">Tastaturinnstillinger</translation>
 <translation id="9028832514430399253">Slå på av/på-knappen for å velge skjermspareralternativene</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Ikke aktivert</translation>
 <translation id="960719561871045870">Operatørkode</translation>
 <translation id="982713511914535780">Kjør utladingstest</translation>
+<translation id="987264212798334818">Generelt</translation>
 </translationbundle>

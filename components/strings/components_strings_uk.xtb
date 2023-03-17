@@ -152,6 +152,7 @@
 <translation id="132301787627749051">Пошук зображення з буфера обміну</translation>
 <translation id="1323433172918577554">Показати більше</translation>
 <translation id="132390688737681464">Зберігати й заповнювати адреси</translation>
+<translation id="1329916999021038454">Надіслати звіт</translation>
 <translation id="1330449323196174374">Зігнути за типом "ворота ліворуч"</translation>
 <translation id="1333745675627230582">Грати в гру Chrome Dino</translation>
 <translation id="1333989956347591814">Дані про ваші дії <ph name="BEGIN_EMPHASIS" />можуть бачити<ph name="END_EMPHASIS" />:
@@ -527,6 +528,7 @@
 <translation id="219906046732893612">Облаштування житла</translation>
 <translation id="2202020181578195191">Введіть дійсний рік закінчення терміну дії</translation>
 <translation id="2202627062836089804">зворотній стороні картки</translation>
+<translation id="2204482073374652408">Оновлення завершено.</translation>
 <translation id="22081806969704220">Лоток 3</translation>
 <translation id="2210794033760923560">Завантажити звіт</translation>
 <translation id="2212579473415663542">Цю адресу збережено у вашому обліковому записі Google (<ph name="ACCOUNT" />). Її можна використовувати в усіх продуктах Google на будь-якому пристрої.</translation>
@@ -615,6 +617,7 @@
 <translation id="2441854154602066476">Наявні способи оплати, дані яких заповнюються дотиком. Клавіатуру сховано.</translation>
 <translation id="2448295565072560657">Периферійні пристрої, які підключені до цього пристрою, коли ви ввійшли в обліковий запис</translation>
 <translation id="2450021089947420533">Сеанси</translation>
+<translation id="2456755709261364512">Заряд акумулятора має становити більше <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">Заповнити</translation>
 <translation id="2465655957518002998">Вибрати спосіб доставки</translation>
 <translation id="2465688316154986572">Скріпити</translation>
@@ -661,6 +664,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Використовувати блокування екрана, щоб підтверджувати картки</translation>
 <translation id="2553853292994445426">Перевірте налаштування безпеки DNS. Можливо, ви налаштували безпечний DNS-сервер, до якого не вдається підключитися.</translation>
+<translation id="255497580849974774">Під час оновлення не відключайте зарядний пристрій.</translation>
 <translation id="2556876185419854533">&amp;Відмінити редагування</translation>
 <translation id="2557417190997681027">Ділова поїздка</translation>
 <translation id="2562087035394240049">Інструкції, посібники "зроби сам" і поради спеціалістів</translation>
@@ -893,6 +897,7 @@
 <translation id="320323717674993345">Скасувати оплату</translation>
 <translation id="3203366800380907218">З Інтернету</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
+<translation id="3208701679386778924">Надішліть звіт, щоб ми могли покращити інші оновлення ChromeOS.</translation>
 <translation id="3209034400446768650">На сторінці може стягуватися плата</translation>
 <translation id="3212581601480735796">Ваші дії на сайті <ph name="HOSTNAME" /> відстежуються</translation>
 <translation id="3215092763954878852">Не вдалося скористатися веб-автентифікацією</translation>
@@ -1118,6 +1123,7 @@
 <translation id="3715545959749027023">Коли Chrome повідомляє про події системи безпеки, ваш адміністратор отримує відповідні дані про них, зокрема URL-адреси відвіданих у Chrome сторінок, назви або метадані файлів, інформацію про збої в роботі веб-переглядача чи вкладок, а також ім’я користувача, під яким ви входите у веб-додатки, систему пристрою або обліковий запис у Chrome.</translation>
 <translation id="3715597595485130451">Під’єднання до мережі Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />перевірити конфігурацію проксі-сервера, брандмауера та DNS-сервера<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Під час оновлення ви не зможете користуватися пристроєм до 10 хвилин.</translation>
 <translation id="372429172604983730">До додатків, що можуть спричиняти цю помилку, належать антивіруси, брандмауери та програми для веб-фільтрування доступу через проксі.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову презентацію в Google Презентаціях</translation>
 <translation id="3733139489341305600">Автономні транспортні засоби</translation>
@@ -1155,6 +1161,7 @@
 <translation id="3807366285948165054">Горизонтальне положення зображення</translation>
 <translation id="3807873520724684969">Заблоковано шкідливий вміст.</translation>
 <translation id="3810973564298564668">Керувати</translation>
+<translation id="3812398568375898177">Це важливе оновлення, яке покращує продуктивність додатків для Android у ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 дюйм.</translation>
 <translation id="3816482573645936981">Значення (замінено)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1259,6 +1266,7 @@
 <translation id="4110652170750985508">Переглянути платіж</translation>
 <translation id="4111546256784973544">Пейнтбол</translation>
 <translation id="4112140312785995938">Перейти назад</translation>
+<translation id="4113354056388982663">Важливе оновлення продуктивності додатків для Android</translation>
 <translation id="4114146879518089587">Перейти на сайт</translation>
 <translation id="4116663294526079822">Завжди дозволяти на цьому сайті</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1439,6 +1447,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб перекласти цю сторінку в Google Перекладачі</translation>
 <translation id="4514308731478712184">Вимкнути функцію "Сеанси"</translation>
 <translation id="4515275063822566619">Дані картки та список адрес містяться в Chrome і вашому обліковому записі Google (<ph name="ACCOUNT_EMAIL" />). Ними можна керувати в <ph name="BEGIN_LINK" />Налаштуваннях<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">Під час оновлення роботу пристрою було перервано.</translation>
 <translation id="4520048001084013693">Адміністратор заборонив завантажувати цей файл</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Конверт Monarch</translation>
@@ -1528,6 +1537,7 @@
 <translation id="473775607612524610">Оновити</translation>
 <translation id="4738601419177586157">Пропозиція пошуку за запитом "<ph name="TEXT" />"</translation>
 <translation id="4742407542027196863">Керувати паролями…</translation>
+<translation id="4743275772928623722">Систему оновлено, але деякі додатки й файли не вдалося відновити. Ваші додатки буде повторно завантажено автоматично.</translation>
 <translation id="4744514002166662487">Створити презентацію</translation>
 <translation id="4744603770635761495">Виконуваний шлях</translation>
 <translation id="4749011317274908093">Ви перейшли в анонімний режим</translation>
@@ -2230,6 +2240,7 @@
 <translation id="646793340882508547">Пригодницькі ігри</translation>
 <translation id="6468485451923838994">Шрифти</translation>
 <translation id="647261751007945333">Правила пристрою</translation>
+<translation id="647330291963761005">Встановлюються оновлення</translation>
 <translation id="6475672344094591109">Сайти, які ви відвідуєте, можуть запитувати в Chrome інформацію, що допоможе їм оцінити ефективність своїх оголошень. Chrome захищає вашу конфіденційність, обмежуючи інформацію, якою сайти можуть обмінюватися між собою.</translation>
 <translation id="6476284679642588870">Керувати способами оплати</translation>
 <translation id="6486200200930923183">Документальні фільми</translation>
@@ -2303,6 +2314,7 @@
 <translation id="6688775486821967877">Віртуальна картка недоступна. Повторіть спробу пізніше.</translation>
 <translation id="6689249931105087298">Відносно стиснення чорної точки</translation>
 <translation id="6689271823431384964">Chrome пропонує вам зберегти картки в обліковому записі Google, оскільки ви ввійшли в нього. Це можна змінити в налаштуваннях. Ім'я власника картки взято з вашого облікового запису.</translation>
+<translation id="6691397311652656001">На диску має бути більше <ph name="REQUIRED_FREE_DISK_SPACE" /> пам’яті</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відкрити розділ "Знайти пристрій" в обліковому записі Google.</translation>
 <translation id="6696588630955820014">Кнопка "Поділитися цією вкладкою"; натисніть Enter, щоб поділитися цією вкладкою (надіслати посилання, створити QR-код, транслювати її тощо)</translation>
 <translation id="6698381487523150993">Створено:</translation>
@@ -2366,6 +2378,7 @@
 <translation id="6864189428899665393">267 x 389 мм</translation>
 <translation id="686485648936420384">Ресурси для споживачів</translation>
 <translation id="6865412394715372076">Зараз цю картку не можна підтвердити</translation>
+<translation id="6868573634057275953">Відновити оновлення</translation>
 <translation id="6869334554832814367">Кредити фізичним особам</translation>
 <translation id="6873456682041376666">Верхній лоток</translation>
 <translation id="6874604403660855544">&amp;Повторити додавання</translation>
@@ -2522,9 +2535,11 @@
 <translation id="722454870747268814">Нова анонімна вкладка</translation>
 <translation id="7233592378249864828">Друкувати аркуш підтвердження</translation>
 <translation id="7234638337680728591">Ціни на бензин і заправка автомобілів</translation>
+<translation id="7236417832106250253">Виконано <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Більше не показувати це повідомлення для цього сайту</translation>
 <translation id="7238585580608191973">Відбиток SHA-256</translation>
 <translation id="7240120331469437312">Альтернативне ім'я суб'єкта сертифіката</translation>
+<translation id="7241863998525879494">Чого слід очікувати</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# збіг}one{# збіг}few{# збіги}many{# збігів}other{# збігу}}</translation>
@@ -2745,6 +2760,7 @@
 <translation id="7698864304447945242">Оновити Сервіси Google Play для AR?</translation>
 <translation id="7699293099605015246">Зараз статті недоступні</translation>
 <translation id="7701040980221191251">Немає</translation>
+<translation id="7701544340847569275">Оновлення завершено з помилками</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Перейти на сайт <ph name="SITE" /> (небезпечно)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Катання на лижах і сноубордах</translation>
 <translation id="7706689436519265630">Файли, які ви копіюєте або переносите, надсилаються на платформу Google Cloud чи стороннім сервісам на аналіз. Наприклад, їх можуть сканувати на наявність чутливих даних або зловмисного програмного забезпечення, а також зберігати відповідно до правил компанії.</translation>

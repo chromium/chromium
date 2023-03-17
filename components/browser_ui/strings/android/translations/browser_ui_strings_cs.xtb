@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Rozbalit <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Vypne zvuk na konkrétním webu.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# soubor cookie}few{# soubory cookie}many{# soubory cookie}other{# souborů cookie}}</translation>
+<translation id="4478158430052450698">Usnadnit přizpůsobení velikosti zobrazení pro různé weby</translation>
 <translation id="4479647676395637221">Pokud web bude chtít použít vaši kameru, zobrazit dotaz (doporučeno)</translation>
 <translation id="4505788138578415521">Rozbalená adresa URL</translation>
 <translation id="4534723447064627427">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k mikrofonu, zapněte mikrofon také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>

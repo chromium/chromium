@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Espanso. Fai clic per comprimere.</translation>
 <translation id="2586657967955657006">Appunti</translation>
 <translation id="2597457036804169544">Non applicare il tema scuro ai siti</translation>
+<translation id="2606760465469169465">Verifica automatica</translation>
 <translation id="2621115761605608342">Consenti JavaScript per un sito specifico.</translation>
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2677748264148917807">Esci</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">I contatti che selezioni verranno condivisi con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Ultima visita: oggi</translation>
 <translation id="5225463052809312700">Attiva fotocamera</translation>
+<translation id="5229337741799419985">Questa impostazione funziona senza identificarti e senza consentire ai siti di accedere alla tua cronologia di navigazione</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5264323282659631142">Rimuovi "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Trascina dall'alto e tocca il pulsante Indietro per uscire dalla modalità a schermo intero.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6689172468748959065">Foto del profilo</translation>
 <translation id="6697925417670533197">Download attivi</translation>
+<translation id="6701547804986694515">Un sito che visiti può salvare su Chrome informazioni che confermano che non sei un bot. Mentre continui a navigare, i siti possono controllare su Chrome e verificare con un sito che hai visitato in precedenza che potresti essere una persona reale</translation>
 <translation id="6722828510648505498">Blocca le richieste di accesso da servizi di identità.</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
 <translation id="6749077623962119521">Reimpostare le autorizzazioni?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Seleziona un'immagine</translation>
 <translation id="8801436777607969138">Blocca JavaScript per un sito specifico.</translation>
 <translation id="8803526663383843427">Quando attiva</translation>
+<translation id="8805385115381080995">La navigazione è più veloce perché è meno probabile che un sito ti chieda di verificare di essere una persona reale</translation>
 <translation id="8816026460808729765">Impedisci ai siti di accedere ai sensori</translation>
 <translation id="8823559166155093873">Blocca i cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Questa pagina è pericolosa</translation>
 <translation id="9201023452444595544">I dati offline verranno cancellati</translation>
 <translation id="930525582205581608">Vuoi eliminare questo sito?</translation>
+<translation id="947156494302904893">I siti che visiti possono verificare che sei una persona reale e non un bot</translation>
 <translation id="967624055006145463">Dati memorizzati</translation>
 </translationbundle>

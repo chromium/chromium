@@ -374,6 +374,7 @@
 <translation id="3595252146048399851">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="3603009562372709545">复制链接网址</translation>
 <translation id="3607167657931203000">自动填充数据</translation>
+<translation id="3608008480985212611">登录后即可管理您的偏好设置。</translation>
 <translation id="3609785682760573515">正在同步…</translation>
 <translation id="3631443864840848029">请务必保存您在此网站上使用的当前密码。</translation>
 <translation id="3638472932233958418">预先加载网页</translation>
@@ -541,6 +542,7 @@
 <translation id="48274138579728272">标记为已读</translation>
 <translation id="4833686396768033263">“最近打开的标签页”页面不可用</translation>
 <translation id="4833786495304741580">自动将使用情况统计信息和崩溃报告发送至 Google。</translation>
+<translation id="4834499902900503484">登录 Chrome 后，您保存的密码会保存到您的 Google 帐号中。如需关闭此设置，请<ph name="BEGIN_LINK" />前往“设置”<ph name="END_LINK" />。</translation>
 <translation id="4840495572919996524">您的书签、历史记录、密码和其他信息将不再同步到您的 Google 帐号中。</translation>
 <translation id="4844899002472726590">查看和修改您感兴趣的主题</translation>
 <translation id="4848999860252535517">删除用于登录 <ph name="WEBSITE" /> 的密码？</translation>
@@ -684,6 +686,7 @@
 <translation id="5899314093904173337">若要与附近的人分享，请让他们用相机或二维码扫描器应用扫描此二维码</translation>
 <translation id="5911030830365207728">Google 翻译</translation>
 <translation id="5913600720976431809">网页翻译选项</translation>
+<translation id="5922999516621365983">将标签页拖到此处即可固定。</translation>
 <translation id="5938160824633642847">您设备上的存储空间即将用尽，请释放空间并重试。</translation>
 <translation id="5948291296578561264">这样，您便可将照片保存到您的照片库中。</translation>
 <translation id="5951816930277761335">分享链接</translation>
@@ -1040,6 +1043,7 @@
 <translation id="8237382152611443140">打开用于自动填充密码的设置</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">仅在该设备上</translation>
 <translation id="8271720166617117963">接受并登录</translation>
 <translation id="8278938988428169257">输入字词或词组</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1133,6 +1137,7 @@
 <translation id="8952559610785099500">添加密码</translation>
 <translation id="8953046091948372197">您的密码会显示在此处</translation>
 <translation id="895541991026785598">报告问题</translation>
+<translation id="8971545611707025079">再次检查</translation>
 <translation id="8974714402877957201">1. 打开 iPad 设置</translation>
 <translation id="8976382372951310360">帮助</translation>
 <translation id="8976414606286374109">系统会将信用卡信息保存到您的 Google 帐号中。</translation>

@@ -519,6 +519,7 @@
 <translation id="4737560986434232178">Пребарајте ги „Неодамнешните картички“</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4747097190499141774">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay. Само некој што ја има вашата лозинка може да ги чита вашите шифрирани податоци. Лозинката не се испраќа, ниту зачувува во Google. Доколку ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ја ресетирате синхронизацијата. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Само на уредов, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Нова инкогнито картичка</translation>
 <translation id="4766112107778026136">Откриј и следи</translation>
 <translation id="4775879719735953715">Стандарден прелистувач</translation>
@@ -943,6 +944,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7600965453749440009">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Појавните прозорци се блокирани (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Избриши ја лозинката</translation>
+<translation id="7611459119367035420">Може да ги најдете вашите прикачени картички тука.</translation>
 <translation id="7638584964844754484">Погрешна лозинка-фраза</translation>
 <translation id="7646263789464975852">Мени → Поставки → Безбедносна проверка</translation>
 <translation id="7646772052135772216">Синхронизацијата на лозинките не работи</translation>
@@ -955,6 +957,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>
 <translation id="7726702057919861819">Мени → Историја → Избришете ги податоците од прелистување</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на уредов.</translation>
 <translation id="7738120385185846461">Пријавете проблем…</translation>
 <translation id="7741325291586284254">Нова страница во картичка „Инкогнито“</translation>
 <translation id="7744394900930577716">Лозинки во други апликации</translation>
@@ -1037,6 +1040,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8237382152611443140">Отворете ги поставките за автоматско пополнување лозинки</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8264966119170358612">При упад во податоците што не се случи кај Google беа откриени некои од вашите зачувани лозинки. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Само на уредов</translation>
 <translation id="8271720166617117963">Прифати и најави се</translation>
 <translation id="8278938988428169257">Внесете збор или фраза</translation>
 <translation id="8281781826761538115">Стандардно - <ph name="DEFAULT_LOCALE" /></translation>

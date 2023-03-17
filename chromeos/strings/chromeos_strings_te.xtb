@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">డాక్యుమెంట్ ఫీడర్ (ఒక వైపున)</translation>
 <translation id="1643449475550628585">ప్రతిరోజూ వాల్‌పేపర్ ఇమేజ్‌ను మార్చండి</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
+<translation id="1651925268237749928">మీరు షేర్ చేసిన ఆల్బమ్‌ను ఎంచుకున్నారు. ఇతర వ్యక్తులు ఫోటోలను జోడించవచ్చు లేదా మార్చవచ్చు. మీ వాల్‌పేపర్ ప్రస్తుతం ఈ ఆల్బమ్‌లో లేని ఫోటోలను ఉపయోగించవచ్చు.</translation>
 <translation id="1662989795263954667">ఆగిపోయింది - ఇంక్ లేదు</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />ను ప్రివ్యూ చేయండి</translation>
 <translation id="1668469839109562275">బిల్ట్-ఇన్ VPN</translation>
@@ -142,6 +143,7 @@
 <translation id="2157959690810728433">క్యూలో ఉంచబడింది</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: మళ్లీ ట్రై చేయండి</translation>
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయండి</translation>
+<translation id="2161656808144014275">వచనం</translation>
 <translation id="2163937499206714165">డార్క్ మోడ్‌ను ఆన్ చేయండి</translation>
 <translation id="2180197493692062006">ఏదో తప్పు జరిగింది. యాప్‌ను తిరిగి తెరవడానికి ట్రై చేయండి.</translation>
 <translation id="2209788852729124853">ట్రాఫిక్ కౌంటర్‌లను రీసెట్ చేయండి</translation>
@@ -217,6 +219,7 @@
 <translation id="3008341117444806826">రిఫ్రెష్ చేయండి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="3017079585324758401">నేపథ్యం</translation>
+<translation id="3020183492814296499">షార్ట్‌కట్‌లు</translation>
 <translation id="3027578600144895987">కెమెరాను మూసివేయండి</translation>
 <translation id="3031560714565892478">పరికర రకం వీడియో కెమెరా.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -238,6 +241,7 @@
 <translation id="319101249942218879">అవతార్ ఇమేజ్ మారింది</translation>
 <translation id="3192947282887913208">ఆడియో  ఫైళ్ళు</translation>
 <translation id="3199982728237701504">డాక్యుమెంట్ ఫీడర్ (రెండు వైపులా)</translation>
+<translation id="3201315366910775591">షేర్ చేసిన ఆల్బమ్‌లను ఇతర వ్యక్తులు అప్‌డేట్ చేయవచ్చు</translation>
 <translation id="3211671540163313381">కీ మ్యాపింగ్ డి-ప్యాడ్</translation>
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
@@ -656,6 +660,7 @@
 <translation id="6838167112108853532">ఈ APNను డిజేబుల్ చేయడం లేదా తీసివేయడం సాధ్యపడదు. ఎనేబుల్ చేయబడిన అటాచ్ చేయబడిన APNలు డిసేబుల్ లేదా తీసివేయబడ్డాయని నిర్ధారించుకోండి.</translation>
 <translation id="6853312040151791195">డిశ్చార్జింగ్ రేట్</translation>
 <translation id="6889786074662672253">రీస్టార్ట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఇందుకు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
+<translation id="6900701049656042631">ఈ ఆల్బమ్‌లో ఫోటోలు ఏవీ లేవు. ఫోటోలను జోడించడానికి, <ph name="LINK" /> లింక్‌కు వెళ్లండి</translation>
 <translation id="6905724422583748843">తిరిగి <ph name="PAGE_NAME" />‌కు</translation>
 <translation id="6910312834584889076">స్కానర్ కవర్ తెరిచి ఉంది. కవర్‌ను మూసివేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6911383237894364323">మీడియా సర్వర్‌లకు కనెక్ట్ చేయడం సాధ్యం కాలేదు</translation>
@@ -663,7 +668,9 @@
 <translation id="6957231940976260713">సేవ పేరు</translation>
 <translation id="6961170852793647506">ప్రారంభించడానికి, మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టండి</translation>
 <translation id="6965382102122355670">సరే</translation>
+<translation id="6965978654500191972">పరికరం</translation>
 <translation id="6977381486153291903">ఫర్మ్‌వేర్ పునర్విమర్శ</translation>
+<translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="7005833343836210400">పరికరం ఆఫ్‌లైన్‌లో ఉంది</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, అలాగే సందర్శించిన వెబ్ పేజీలు, పాస్‌వర్డ్‌లు, ఈమెయిళ్లతో సహా యూజర్ యాక్టివిటీకి యాక్సెస్‌ను కలిగి ఉంటుంది.</translation>
 <translation id="7040230719604914234">ఆపరేటర్</translation>
@@ -773,6 +780,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> నెట్‌వర్క్‌లో చేరడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="7978412674231730200">వ్యక్తిగత కీ</translation>
 <translation id="7994702968232966508">EAP పద్ధతి</translation>
+<translation id="8004582292198964060">బ్రౌజర్</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ఆటోమేటిక్ రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
@@ -885,6 +893,7 @@
 <translation id="8998289560386111590">ఈ మోడ్ మీ పరికరంలో అందుబాటులో లేదు</translation>
 <translation id="9003704114456258138">పౌనఃపున్యం</translation>
 <translation id="9025198690966128418">వ్యక్తిగత పరికరంగా ఉపయోగించండి</translation>
+<translation id="902638246363752736">కీబోర్డ్ సెట్టింగ్‌లు</translation>
 <translation id="9028832514430399253">స్క్రీన్ సేవర్ ఆప్షన్‌లను ఎంచుకోవడానికి టోగుల్‌ను ఆన్ చేయండి</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +926,5 @@
 <translation id="952992212772159698">సక్రియం చేయబడలేదు</translation>
 <translation id="960719561871045870">ఆపరేటర్ కోడ్</translation>
 <translation id="982713511914535780">డిస్‌ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
+<translation id="987264212798334818">సాధారణం</translation>
 </translationbundle>

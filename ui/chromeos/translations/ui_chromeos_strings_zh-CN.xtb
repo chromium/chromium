@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">您的 Google 云端硬盘缓存被清除了。</translation>
 <translation id="2239068707900391003">一个人在喝咖啡</translation>
 <translation id="2251368349685848079">从回收站还原</translation>
+<translation id="2278133026967558505">所有网站和网址都能访问文件</translation>
 <translation id="2282155092769082568">自动配置网址：</translation>
 <translation id="2284767815536050991">可拆卸式存储设备</translation>
 <translation id="2288278176040912387">电唱机</translation>
@@ -762,6 +763,7 @@
 <translation id="7162080671816799010">缺少“主体备用名称匹配”或“域名后缀匹配”，无法验证服务器身份</translation>
 <translation id="7165320105431587207">无法配置网络</translation>
 <translation id="7170041865419449892">超出范围</translation>
+<translation id="7179579940054351344">除 <ph name="NON_RESTRICTED_DESTINATIONS" /> 之外的所有网站和网址都能访问文件</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">文件另存为</translation>

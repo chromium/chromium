@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ෆයර්වෝලය අනාවරණය කර ගන්නා ලදි</translation>
 <translation id="1075811647922107217">පිටු තරම</translation>
+<translation id="1082009148392559545">තිර සුරැකුම බාගැනීම</translation>
 <translation id="1094693127011229778">IP ලිපිනය ලබා ගත නොහැකිය</translation>
 <translation id="1113892970288677790">තේරූ කලා නිර්මාණ සහ රූප තෝරන්න</translation>
 <translation id="1119447706177454957">අභ්‍යන්තර දෝෂය</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> සහ <ph name="SECOND_MANAGER" /> විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="1726100011689679555">නම් සේවාදායක</translation>
 <translation id="1731082422893354635">බ්ලූටූත් ස්පර්ශ පුවරුව</translation>
+<translation id="1738949837603788263">කලාපය <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">රූප පූරණය කළ නොහැකි විය. ඔබගේ ජාල සබැඳුම පරීක්ෂා කරන්න හෝ රූප නැවත පූරණය කිරීම උත්සාහ කරන්න.</translation>
 <translation id="1751249301761991853">පුද්ගලික</translation>
 <translation id="1753496554272155572">වෝල්පේපර පෙරදසුනෙන් පිටවන්න</translation>
@@ -140,6 +142,7 @@
 <translation id="2157959690810728433">පෙළ ගස්වන ලදි</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: යළි උත්සාහ කරන්න</translation>
 <translation id="2161394479394250669">මුද්‍රණ කාර්යය අවලංගු කරන්න</translation>
+<translation id="2161656808144014275">පාඨය</translation>
 <translation id="2163937499206714165">අඳුරු ප්‍රකාරය ක්‍රියාත්මක කරන්න</translation>
 <translation id="2180197493692062006">යම් දෙයක් වැරදිණි. යෙදුම නැවත විවෘත කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="2209788852729124853">තදබදය ගණනය කිරීම් යළි සකසන්න</translation>
@@ -215,6 +218,7 @@
 <translation id="3008341117444806826">නැවුම් කරන්න</translation>
 <translation id="3009958530611748826">සුරැකීමට ෆෝල්ඩරයක් තෝරන්න</translation>
 <translation id="3017079585324758401">පසුබිම</translation>
+<translation id="3020183492814296499">කෙටි මං</translation>
 <translation id="3027578600144895987">කැමරාව වසන්න</translation>
 <translation id="3031560714565892478">උපාංගය වීඩියෝ කැමරාවකි.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -598,6 +602,7 @@
 <translation id="636850387210749493">ව්‍යාපාරික බඳවාගැනීම</translation>
 <translation id="6379086450106841622">ස්පර්ශ තිරය</translation>
 <translation id="6381741036071372448">ඔබගේ යතුරු පුවරුව පරික්ෂා කරන්න</translation>
+<translation id="6382182670717268353">තිර සුරැකුම් පෙරදසුන</translation>
 <translation id="6388847657025262518">ස්කෑනරයේ ලේඛන සංග්‍රහය තදබදයට පත්ව ඇත. සංග්‍රහය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6394634179843537518">ගොනුව එක් කරන්න</translation>
 <translation id="6410257289063177456">පින්තූර ගොනු</translation>
@@ -660,7 +665,9 @@
 <translation id="6957231940976260713">සේවා නාමය</translation>
 <translation id="6961170852793647506">ආරම්භ කිරීමට, ඔබගේ ලේඛනය ස්කෑනරය මත තබන්න</translation>
 <translation id="6965382102122355670">හරි</translation>
+<translation id="6965978654500191972">උපාංගය</translation>
 <translation id="6977381486153291903">නිත්‍ය මෘදුකාංග සංශෝධනය</translation>
+<translation id="6981982820502123353">ප්‍රවේශ්‍යතාව</translation>
 <translation id="7005833343836210400">උපාංගය නොබැඳි වේ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> මෙම උපාංගය කළමනාකරණය කරන අතර, එයට පිවිසි වෙබ් පිටු, මුරපද සහ ඉ-තැපෑල ඇතුළුව සියලු පරිශීලක ක්‍රියාකාරකම් වෙත ප්‍රවේශය තිබේ.</translation>
 <translation id="7040230719604914234">මෙහෙයවනය</translation>
@@ -687,6 +694,7 @@
 <translation id="7177485034254901881">මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කරනු ලබන්නේ <ph name="MANAGER" /> මගිනි. පරිපාලකයින්ට උපාංගය දුරස්ථව වින්‍යාස කිරීමට හැකිය.</translation>
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
 <translation id="7180865173735832675">ගැලපුම් කරන්න</translation>
+<translation id="7184043045742675738">ඔබේ බොත්තම අභිරුචිකරණය කිරීමට ඕනෑම යතුරක් මත ක්ලික් කරන්න. මූසිකය හෝ ඊතල යතුරු සමග යතුර නැවත ස්ථානගත කරන්න.</translation>
 <translation id="7212734716605298123">බාහිර උපාංග සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
 <translation id="725133483556299729">ඉ-තැපෑල තෝරන්න</translation>
@@ -728,6 +736,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ස්පර්ශ තිරය</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ඉතිරිය</translation>
+<translation id="7613724632293948900">මූසිකය හෝ ඊතල යතුරු සමග නැවත ස්ථානගත කිරීම.</translation>
 <translation id="7620771111601174153">උදවු මධ්‍යස්ථානය තුළ තව දැන ගන්න</translation>
 <translation id="763165478673169849">අවසන් යළි සැකසීමේ වේලාව</translation>
 <translation id="7648838807254605802">ඉහළ HTTPS පමාව</translation>
@@ -768,6 +777,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ජාලයකට එක් වීමට, සැකසීම් වෙත යන්න</translation>
 <translation id="7978412674231730200">පුද්ගලික යතුර</translation>
 <translation id="7994702968232966508">EAP ආකාරය</translation>
+<translation id="8004582292198964060">බ්‍රවුසරය</translation>
 <translation id="802154636333426148">බාගැනීම අසමත් විය</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ස්වයං වර්ණ ප්‍රකාරය සබල කරන්න</translation>
@@ -850,6 +860,7 @@
 <translation id="8798441408945964110">සපයන්නාගේ නම</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">වෝල්පේපරය</translation>
+<translation id="8820457400746201697">නිල් ස්පර්ශ ලක්ෂ්‍යය ක්‍රියාවකට ගෙන යන්න. අභිරුචිකරණය කිරීමට ආශ්‍රිත යතුර තෝරන්න.</translation>
 <translation id="8834539327799336565">දැනට සම්බන්ධ වී ඇත</translation>
 <translation id="8845001906332463065">උදවු ලබා ගන්න</translation>
 <translation id="8855781559874488009">HTTP වෙබ් අඩවිවලට ෆයර්වෝලය හරහා සම්බන්ධ විය නොහැකිය</translation>
@@ -879,6 +890,7 @@
 <translation id="8998289560386111590">ඔබේ උපාංගයෙහි නොමැත</translation>
 <translation id="9003704114456258138">සංඛ්‍යාතය</translation>
 <translation id="9025198690966128418">පුද්ගලික උපාංගයක් ලෙස භාවිත කරන්න</translation>
+<translation id="902638246363752736">යතුරු පුවරු පසුතල</translation>
 <translation id="9028832514430399253">තිර සුරැකුම් විකල්ප තේරීමට ටොගල කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +923,5 @@
 <translation id="952992212772159698">සක්‍රීය කර නොමැත</translation>
 <translation id="960719561871045870">වාහක කේතය</translation>
 <translation id="982713511914535780">විසර්ජන පරීක්ෂණය ධාවනය කරන්න</translation>
+<translation id="987264212798334818">සාමාන්‍ය</translation>
 </translationbundle>

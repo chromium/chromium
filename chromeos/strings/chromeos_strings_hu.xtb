@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Újra</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
+<translation id="2161656808144014275">Szöveg</translation>
 <translation id="2163937499206714165">Sötét mód bekapcsolása</translation>
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="3017079585324758401">Háttér</translation>
+<translation id="3020183492814296499">Parancsikonok</translation>
 <translation id="3027578600144895987">Kamera bezárása</translation>
 <translation id="3031560714565892478">Az eszköz egy videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Szolgáltatás neve</translation>
 <translation id="6961170852793647506">A kezdéshez helyezze dokumentumát a szkennerbe</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Készülék</translation>
 <translation id="6977381486153291903">Firmware ellenőrzése</translation>
+<translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="7005833343836210400">Az eszköz offline állapotú</translation>
 <translation id="7028979494427204405">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
 <translation id="7040230719604914234">Szolgáltató</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">A(z) <ph name="NETWORK_NAME" />-hálózathoz való csatlakozáshoz nyissa meg a Beállításokat</translation>
 <translation id="7978412674231730200">Privát kulcs</translation>
 <translation id="7994702968232966508">EAP módszer</translation>
+<translation id="8004582292198964060">Böngésző</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Automatikus szín mód engedélyezése</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Nem áll rendelkezésre az eszközén</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9025198690966128418">Használat személyes eszközként</translation>
+<translation id="902638246363752736">Billentyűzet beállításai</translation>
 <translation id="9028832514430399253">Kapcsolja be a kapcsolót a képernyőkímélő beállításainak kiválasztásához</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Nincs aktiválva</translation>
 <translation id="960719561871045870">Operátorkód</translation>
 <translation id="982713511914535780">Lemerítési teszt futtatása</translation>
+<translation id="987264212798334818">Általános</translation>
 </translationbundle>

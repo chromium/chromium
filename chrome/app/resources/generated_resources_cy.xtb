@@ -248,6 +248,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1201564082781748151">Gellir adfer data lleol os byddwch yn anghofio eich cyfrinair</translation>
 <translation id="1202116106683864634">Ydych chi'n siŵr eich bod am ddileu'r cod pas hwn?</translation>
 <translation id="1202596434010270079">Mae'r ap Kiosk wedi'i ddiweddaru. Tynnwch y ffon USB.</translation>
+<translation id="1202892408424955784">Cynhyrchion sy'n cael eu dilyn</translation>
 <translation id="120368089816228251">Nodyn cerddoriaeth</translation>
 <translation id="1203942045716040624">Gweithiwr Cyffredin: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Mae llwybrau byr yn cael eu curadu gennych</translation>
@@ -2591,6 +2592,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3242289508736283383">Rhaid gosod ap gyda'r briodwedd maniffest 'kiosk_only' ym modd Kiosk ChromeOS</translation>
 <translation id="3242665648857227438">Mae'r proffil hwn yn defnyddio gosodiadau dirprwyol ChromeOS.</translation>
 <translation id="3243017971870859287">Darllen rhifau cyfresol cydran a dyfais ChromeOS Flex</translation>
+<translation id="324366796737464147">Dileu sŵn</translation>
 <translation id="3244294424315804309">Parhau i ddistewi'r sain</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Gwall rhwydwaith</translation>
 <translation id="3248902735035392926">Mae diogelwch yn bwysig. Cymerwch eiliad ac <ph name="BEGIN_LINK" />edrychwch ar eich estyniadau nawr<ph name="END_LINK" /></translation>
@@ -3007,6 +3009,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3618286417582819036">Mae'n ddrwg gennym, bu gwall</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geoleoliad</translation>
+<translation id="3621202678540785336">Mewnbwn</translation>
 <translation id="3621807901162200696">Helpu i wella nodweddion a pherfformiad ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ap}zero{# ap}two{# ap}few{# ap}many{# ap}other{# ap}}</translation>
 <translation id="362333465072914957">Wrthi'n aros i'r CA gyhoeddi tystysgrif</translation>
@@ -4252,7 +4255,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4726710355753484204">Defnyddiwch Ctrl + Alt + Cynyddu disgleirdeb i chwyddo.
 Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4726710629007580002">Cafwyd rhybuddion wrth geisio gosod yr estyniad hwn:</translation>
-<translation id="472738079453283624">Cynnyrch</translation>
 <translation id="4727847987444062305">Sesiwn gwestai sydd wedi'i reoli</translation>
 <translation id="4728558894243024398">Platfform</translation>
 <translation id="4730492586225682674">Nodyn diweddaraf y pwyntil ar y clo sgrîn</translation>

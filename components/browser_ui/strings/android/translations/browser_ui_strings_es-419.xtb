@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Expandir <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Silenciar un sitio específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
+<translation id="4478158430052450698">Facilitar la personalización del zoom para diferentes sitios</translation>
 <translation id="4479647676395637221">Preguntar primero antes de permitir que los sitios usen tu cámara (recomendado)</translation>
 <translation id="4505788138578415521">URL expandida</translation>
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda a tu micrófono, actívalo también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>

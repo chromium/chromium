@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Автоподатчик документов (односторонний)</translation>
 <translation id="1643449475550628585">Менять обои ежедневно</translation>
 <translation id="1644574205037202324">История</translation>
+<translation id="1651925268237749928">Выбран общий альбом. Другие пользователи могут добавлять или редактировать фотографии. В качестве обоев могут показываться снимки, которых сейчас нет в этом альбоме.</translation>
 <translation id="1662989795263954667">Печать прервана: нет чернил</translation>
 <translation id="1664796644829245314">Предварительный просмотр: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
@@ -142,6 +143,7 @@
 <translation id="2157959690810728433">В ОЧЕРЕДИ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторить</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
+<translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
 <translation id="2209788852729124853">Сбросить счетчики трафика</translation>
@@ -217,6 +219,7 @@
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="3017079585324758401">Фон</translation>
+<translation id="3020183492814296499">Ярлыки</translation>
 <translation id="3027578600144895987">Закрыть камеру</translation>
 <translation id="3031560714565892478">Это видеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
@@ -238,6 +241,7 @@
 <translation id="319101249942218879">Аватар изменен</translation>
 <translation id="3192947282887913208">Аудиофайлы</translation>
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
+<translation id="3201315366910775591">Другие пользователи могут обновлять общие альбомы</translation>
 <translation id="3211671540163313381">D-pad для привязки клавиш</translation>
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
@@ -656,6 +660,7 @@
 <translation id="6838167112108853532">Не удается отключить или удалить эту точку доступа. Убедитесь, что подключенные к ней точки доступа отключены или удалены.</translation>
 <translation id="6853312040151791195">Скорость разрядки</translation>
 <translation id="6889786074662672253">Во время перезапуска не отключайте внешнее устройство и не завершайте работу компьютера. Это окно можно свернуть. Перезапуск займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
+<translation id="6900701049656042631">Этот альбом пустой. Добавить фотографии можно на сайте <ph name="LINK" />.</translation>
 <translation id="6905724422583748843">Вернуться на страницу "<ph name="PAGE_NAME" />"</translation>
 <translation id="6910312834584889076">Открыта крышка сканера. Закройте крышку и повторите попытку.</translation>
 <translation id="6911383237894364323">Не удалось подключиться к медиасерверам.</translation>
@@ -663,7 +668,9 @@
 <translation id="6957231940976260713">Название службы</translation>
 <translation id="6961170852793647506">Чтобы начать, положите документ в сканер.</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6965978654500191972">Устройство</translation>
 <translation id="6977381486153291903">Версия встроенного ПО</translation>
+<translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="7005833343836210400">Устройство не подключено к интернету</translation>
 <translation id="7028979494427204405">Этим устройством управляет <ph name="MANAGER" />. Администратору доступна информация обо всех действиях пользователя, в том числе о посещенных веб-страницах, а также адрес электронной почты и пароли.</translation>
 <translation id="7040230719604914234">Оператор</translation>
@@ -773,6 +780,7 @@
 <translation id="7977800524392185497">Чтобы подключиться к сети <ph name="NETWORK_NAME" />, перейдите в настройки.</translation>
 <translation id="7978412674231730200">Закрытый ключ</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
+<translation id="8004582292198964060">Браузер</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
 <translation id="8031884997696620457">HSPA+</translation>
 <translation id="80398733265834479">Включить автоматический цветовой режим</translation>
@@ -885,6 +893,7 @@
 <translation id="8998289560386111590">Недоступно на вашем устройстве</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9025198690966128418">Использовать как личное устройство</translation>
+<translation id="902638246363752736">Настройки клавиатуры</translation>
 <translation id="9028832514430399253">Чтобы настроить заставку, активируйте переключатель.</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +926,5 @@
 <translation id="952992212772159698">Не активировано</translation>
 <translation id="960719561871045870">Код оператора</translation>
 <translation id="982713511914535780">Запустить проверку расхода заряда</translation>
+<translation id="987264212798334818">Общие</translation>
 </translationbundle>

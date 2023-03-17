@@ -79,6 +79,7 @@
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
 <translation id="1643449475550628585">החלפה של תמונת הטפט מדי יום</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
+<translation id="1651925268237749928">בחרת אלבום משותף. אנשים אחרים יכולים להוסיף או לשנות תמונות. יכול להיות שתמונות שלא נמצאות כרגע באלבום יוגדרו כטפט שלך.</translation>
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1664796644829245314">תצוגה מקדימה של <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">‏רשתות VPN מובנות</translation>
@@ -140,6 +141,7 @@
 <translation id="2157959690810728433">נמצאת בתור</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ניסיון נוסף</translation>
 <translation id="2161394479394250669">ביטול משימת ההדפסה</translation>
+<translation id="2161656808144014275">טקסט</translation>
 <translation id="2163937499206714165">הפעלת המצב הכהה</translation>
 <translation id="2180197493692062006">משהו השתבש. צריך לנסות לפתוח את האפליקציה מחדש.</translation>
 <translation id="2209788852729124853">איפוס מוני התנועה</translation>
@@ -215,6 +217,7 @@
 <translation id="3008341117444806826">רענון</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
 <translation id="3017079585324758401">רקע</translation>
+<translation id="3020183492814296499">קיצורים</translation>
 <translation id="3027578600144895987">סגירת המצלמה</translation>
 <translation id="3031560714565892478">המכשיר הוא מצלמת וידאו.</translation>
 <translation id="3054177598518735801">mA<ph name="CURRENT_VALUE" /></translation>
@@ -236,6 +239,7 @@
 <translation id="319101249942218879">תמונת הדמות שונתה</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
 <translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
+<translation id="3201315366910775591">אנשים אחרים יכולים לעדכן את האלבומים המשותפים</translation>
 <translation id="3211671540163313381">‏לחצני החיצים (D-pad) למיפוי מקשים</translation>
 <translation id="3226405216343213872">מתבצע חיפוש של סורקים</translation>
 <translation id="3226657629376379887">תפריט הפעולות בפריסה</translation>
@@ -653,6 +657,7 @@
 <translation id="6838167112108853532">‏לא ניתן להשבית או להסיר את ה-APN הזה. יש לוודא שפריטי ה-APN המצורפים שהופעלו הושבתו או הוסרו.</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
 <translation id="6889786074662672253">במהלך ההפעלה מחדש אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. הפעולה עשויה להימשך כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל בזמן הזה.</translation>
+<translation id="6900701049656042631">אין תמונות באלבום הזה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
 <translation id="6905724422583748843">חזרה אל <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">המכסה של הסורק פתוח. יש לסגור אותו ולנסות שוב.</translation>
 <translation id="6911383237894364323">לא ניתן להתחבר לשרתי מדיה</translation>
@@ -660,7 +665,9 @@
 <translation id="6957231940976260713">שם שירות</translation>
 <translation id="6961170852793647506">כדי להתחיל, מניחים את המסמך על הסורק</translation>
 <translation id="6965382102122355670">אישור</translation>
+<translation id="6965978654500191972">התקן</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
+<translation id="6981982820502123353">נגישות</translation>
 <translation id="7005833343836210400">המכשיר במצב אופליין</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
@@ -768,6 +775,7 @@
 <translation id="7977800524392185497">כדי להצטרף לרשת <ph name="NETWORK_NAME" />, צריך לעבור להגדרות</translation>
 <translation id="7978412674231730200">מפתח פרטי</translation>
 <translation id="7994702968232966508">‏שיטת EAP</translation>
+<translation id="8004582292198964060">דפדפן</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">הפעלה של מצב צבע אוטומטי</translation>
@@ -879,6 +887,7 @@
 <translation id="8998289560386111590">לא זמין במכשיר שלך</translation>
 <translation id="9003704114456258138">תדר</translation>
 <translation id="9025198690966128418">שימוש בתור מכשיר אישי</translation>
+<translation id="902638246363752736">הגדרות מקלדת</translation>
 <translation id="9028832514430399253">צריך להפעיל את החלפת המצב כדי לבחור את האפשרויות של שומר המסך</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +920,5 @@
 <translation id="952992212772159698">לא פעיל</translation>
 <translation id="960719561871045870">קוד ספק</translation>
 <translation id="982713511914535780">הפעלת בדיקה של פריקת הסוללה</translation>
+<translation id="987264212798334818">כללי</translation>
 </translationbundle>

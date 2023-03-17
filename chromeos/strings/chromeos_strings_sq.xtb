@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">U zbulua mur mbrojtës</translation>
 <translation id="1075811647922107217">Madhësia e faqes</translation>
+<translation id="1082009148392559545">Mbrojtësi i ekranit po shkarkohet</translation>
 <translation id="1094693127011229778">Adresa IP nuk ofrohet</translation>
 <translation id="1113892970288677790">Zgjidh veprat e artit dhe imazhet e përzgjedhura</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Menaxhohet nga <ph name="FIRST_MANAGER" /> dhe <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Serverët e emrave</translation>
 <translation id="1731082422893354635">Blloku me prekje me Bluetooth</translation>
+<translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Imazhet nuk mund të ngarkoheshin. Kontrollo lidhjen e rrjetit ose provo t'i ngarkosh përsëri imazhet.</translation>
 <translation id="1751249301761991853">Personale</translation>
 <translation id="1753496554272155572">Dil nga pamja paraprake e imazhit të sfondit</translation>
@@ -140,6 +142,7 @@
 <translation id="2157959690810728433">NË RADHË</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
+<translation id="2161656808144014275">Teksti</translation>
 <translation id="2163937499206714165">Aktivizo modalitetin e errët</translation>
 <translation id="2180197493692062006">Ndodhi një gabim. Provo të rihapësh aplikacionin.</translation>
 <translation id="2209788852729124853">Rivendos matësit e trafikut</translation>
@@ -215,6 +218,7 @@
 <translation id="3008341117444806826">RIFRESKO</translation>
 <translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
 <translation id="3017079585324758401">Sfondi</translation>
+<translation id="3020183492814296499">Shkurtoret</translation>
 <translation id="3027578600144895987">Mbylle kamerën</translation>
 <translation id="3031560714565892478">Pajisja është një video-kamerë.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -598,6 +602,7 @@
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
 <translation id="6379086450106841622">Ekrani me prekje</translation>
 <translation id="6381741036071372448">Testo tastierën tënde</translation>
+<translation id="6382182670717268353">Pamja paraprake e mbrojtësit të ekranit</translation>
 <translation id="6388847657025262518">Furnizuesi i dokumenteve i skanerit është bllokuar. Kontrollo furnizuesin dhe provo përsëri.</translation>
 <translation id="6394634179843537518">Shto një skedar</translation>
 <translation id="6410257289063177456">Skedarët e imazheve</translation>
@@ -660,7 +665,9 @@
 <translation id="6957231940976260713">Emri i shërbimit</translation>
 <translation id="6961170852793647506">Për të filluar, vendose dokumentin tënd në skaner</translation>
 <translation id="6965382102122355670">Në rregull</translation>
+<translation id="6965978654500191972">Pajisja</translation>
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
+<translation id="6981982820502123353">Qasja</translation>
 <translation id="7005833343836210400">Pajisja është jashtë linje</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7040230719604914234">Operatori</translation>
@@ -687,6 +694,7 @@
 <translation id="7177485034254901881">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7180865173735832675">Personalizo</translation>
+<translation id="7184043045742675738">Kliko te një tast për të personalizuar butonin tënd. Ndrysho pozicionin e tastit me anë të miut ose tasteve të shigjetave.</translation>
 <translation id="7212734716605298123">Përditësimet e firmuerit për pajisjet e jashtme</translation>
 <translation id="7216409898977639127">Operatori celular</translation>
 <translation id="725133483556299729">Zgjidh email-in</translation>
@@ -728,6 +736,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekrani me prekje me USB</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
+<translation id="7613724632293948900">Ndrysho pozicionin me anë të miut ose tasteve të shigjetave.</translation>
 <translation id="7620771111601174153">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="763165478673169849">Koha e rivendosjes së fundit</translation>
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
@@ -768,6 +777,7 @@
 <translation id="7977800524392185497">Për t'iu bashkuar një rrjeti <ph name="NETWORK_NAME" />, shko te "Cilësimet"</translation>
 <translation id="7978412674231730200">Çelës privat</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
+<translation id="8004582292198964060">Shfletuesi</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktivizo modalitetin automatik të ngjyrave</translation>
@@ -850,6 +860,7 @@
 <translation id="8798441408945964110">Emri i ofruesit</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Imazhi i sfondit</translation>
+<translation id="8820457400746201697">Zhvendos pikën blu të prekjes te një veprim. Zgjidh tastin përkatës për ta personalizuar.</translation>
 <translation id="8834539327799336565">Të lidhur aktualisht</translation>
 <translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8855781559874488009">Nuk mund të lidhesh me sajtet e uebit HTTP nëpërmjet murit mbrojtës</translation>
@@ -879,6 +890,7 @@
 <translation id="8998289560386111590">Nuk ofrohet në pajisjen tënde</translation>
 <translation id="9003704114456258138">Frekuenca</translation>
 <translation id="9025198690966128418">Përdore si pajisje personale</translation>
+<translation id="902638246363752736">Cilësimet e tastierës</translation>
 <translation id="9028832514430399253">Aktivizo çelësin e aktivizimit/çaktivizimit për të zgjedhur opsionet e mbrojtësit të ekranit</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +923,5 @@
 <translation id="952992212772159698">Nuk është aktivizuar</translation>
 <translation id="960719561871045870">Kodi i operatorit</translation>
 <translation id="982713511914535780">Ekzekuto testin e shkarkimit</translation>
+<translation id="987264212798334818">Të përgjithshme</translation>
 </translationbundle>

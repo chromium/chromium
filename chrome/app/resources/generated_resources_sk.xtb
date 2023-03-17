@@ -244,6 +244,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1201564082781748151">Keď zabudnete heslo, môžete obnoviť miestne údaje</translation>
 <translation id="1202116106683864634">Naozaj chcete odstrániť tento prístupový kľúč?</translation>
 <translation id="1202596434010270079">Aplikácia Kiosk bola aktualizovaná. Odoberte kľúč USB.</translation>
+<translation id="1202892408424955784">Sledované produkty</translation>
 <translation id="120368089816228251">Nota</translation>
 <translation id="1203942045716040624">Spolupracovník: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Skratky vyberáte vy</translation>
@@ -2577,6 +2578,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3242289508736283383">Aplikácia s atribútom manifestu „kiosk_only“ musí byť nainštalovaná v režime verejného terminálu systému Chrome OS</translation>
 <translation id="3242665648857227438">Tento profil používa nastavenia proxy servera v systéme Chrome OS.</translation>
 <translation id="3243017971870859287">Čítať sériové čísla zariadení ChromeOS Flex a komponentov</translation>
+<translation id="324366796737464147">Potlačenie šumu</translation>
 <translation id="3244294424315804309">Ponechať zvuk vypnutý</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Chyba siete</translation>
 <translation id="3248902735035392926">Na bezpečnosti záleží. Strávte chvíľu <ph name="BEGIN_LINK" />kontrolou rozšírení<ph name="END_LINK" />.</translation>
@@ -2993,6 +2995,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3618286417582819036">Ľutujeme, vyskytla sa chyba</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
 <translation id="3620136223548713675">Geolokácia</translation>
+<translation id="3621202678540785336">Vstup</translation>
 <translation id="3621807901162200696">Pomáhať zlepšovať funkcie a výkonnosť systému Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikáciu}few{# aplikácie}many{# apps}other{# aplikácií}}</translation>
 <translation id="362333465072914957">Čaká sa, kým certifikačná autorita vydá certifikát</translation>
@@ -4237,7 +4240,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4726710355753484204">Ak chcete zobrazenie priblížiť, stlačte Ctrl + Alt + zvýšenie jasu.
 Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translation>
 <translation id="4726710629007580002">Pri pokuse o inštaláciu tohto rozšírenia sa zobrazili upozornenia:</translation>
-<translation id="472738079453283624">Služby</translation>
 <translation id="4727847987444062305">Správa relácie hosťa</translation>
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4730492586225682674">Zobraziť poslednú poznámku napísanú dotykovým perom na uzamknutej obrazovke</translation>

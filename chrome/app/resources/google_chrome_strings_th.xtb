@@ -10,6 +10,7 @@
 <translation id="110877069173485804">นี่คือ Chrome ของคุณ</translation>
 <translation id="1125124144982679672">ใครกำลังใช้ Chrome อยู่</translation>
 <translation id="1142745911746664600">อัปเดต Chrome ไม่ได้</translation>
+<translation id="1149651794389918149">ลงชื่อเข้าใช้ Chrome หากต้องการลงชื่อเข้าใช้บัญชีเพียงครั้งเดียว คุณสามารถ<ph name="GUEST_LINK_BEGIN" />ใช้อุปกรณ์ในฐานะผู้มาเยือน<ph name="GUEST_LINK_END" />ได้</translation>
 <translation id="1152920704813762236">เกี่ยวกับ Chrome OS</translation>
 <translation id="1154147086299354128">เ&amp;ปิดใน Chrome</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
@@ -167,6 +168,7 @@
 <translation id="4147555960264124640">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ และให้การควบคุมระดับผู้ดูแลระบบของบัญชีดังกล่าวเหนือโปรไฟล์ Google Chrome ของคุณ ข้อมูล Chrome เช่น แอป บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะเชื่อมโยงอย่างถาวรกับ <ph name="USER_NAME" /> คุณจะสามารถลบข้อมูลนี้ผ่านทางแผงควบคุมบัญชี Google แต่คุณจะไม่สามารถเชื่อมโยงข้อมูลนี้กับบัญชีอื่น <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">กำลังติดตั้ง...</translation>
 <translation id="4149882025268051530">โปรแกรมติดตั้งยกเลิกการบีบอัดการเก็บข้อมูลไม่ได้ โปรดดาวน์โหลด Google Chrome อีกครั้ง</translation>
+<translation id="4153934450158521343">Chrome จะปิดและลบข้อมูลเร็วๆ นี้</translation>
 <translation id="4191857738314598978">{0,plural, =1{เปิด Chrome ขึ้นมาใหม่ภายใน 1 วัน}other{เปิด Chrome ขึ้นมาใหม่ภายใน # วัน}}</translation>
 <translation id="4205939740494406371">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดรอ 24 ชั่วโมงแล้วลองอีกครั้งหรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
 <translation id="4222932583846282852">กำลังยกเลิก...</translation>
@@ -212,6 +214,7 @@
 <translation id="4970880042055371251">เวอร์ชัน Chrome OS</translation>
 <translation id="4970947549776831107">Chrome บล็อกไฟล์นี้เนื่องจากไฟล์ประเภทนี้เป็นอันตราย</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{ผู้ดูแลระบบจะปิด Chrome โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา 1 นาที ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด}other{ผู้ดูแลระบบจะปิด Chrome โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา # นาที ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด}}</translation>
 <translation id="5098668839038261629">หากเปิดใช้ คุณจะออกจากระบบของ Chrome ด้วย</translation>
 <translation id="5132929315877954718">พบกับแอป เกม ส่วนขยาย และธีมเด็ดๆ สำหรับ Google Chrome</translation>
 <translation id="5139423532931106058">ปรับแต่งโปรไฟล์ Chrome ของคุณ</translation>
@@ -260,12 +263,14 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome เบต้า</translation>
 <translation id="6235018212288296708">กฎขาเข้าสำหรับ Google Chrome เพื่ออนุญาตการเข้าชมแบบ mDNS</translation>
+<translation id="624230925347970731">Chrome จะปิดเร็วๆ นี้</translation>
 <translation id="6247557882553405851">เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6273793429163604305">เข้าที่...</translation>
 <translation id="6291089322031436445">แอป Chrome Dev</translation>
 <translation id="6291549208091401781">มีการติดตั้ง Google Chrome สำหรับผู้ใช้ทุกคนบนคอมพิวเตอร์ของคุณแล้ว</translation>
 <translation id="6326175484149238433">ลบจาก Chrome</translation>
 <translation id="6327105987658262776">ไม่มีอัปเดตพร้อมใช้งาน</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{ผู้ดูแลระบบจะลบข้อมูลการท่องเว็บโดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา 1 นาที ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด แต่แท็บที่มีอยู่จะยังคงเปิดไว้}other{ผู้ดูแลระบบจะลบข้อมูลการท่องเว็บโดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา # นาที ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด แต่แท็บที่มีอยู่จะยังคงเปิดไว้}}</translation>
 <translation id="6412673304250309937">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
 <translation id="6418662306461808273">เปลี่ยนไปใช้โปรไฟล์ Chrome ที่มีอยู่ไหม</translation>
 <translation id="6493527311031785448">Google Chrome กำลังพยายาม<ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -295,6 +300,7 @@
 
 สิทธิ์ที่คุณให้กับเว็บไซต์และแอปต่างๆ ไว้แล้วอาจมีผลกับบัญชีนี้ คุณจัดการบัญชี Google ใน<ph name="SETTINGS_LINK_BEGIN" />การตั้งค่า<ph name="SETTINGS_LINK_END" />ได้</translation>
 <translation id="7062128746136194023">ผู้ปกครองได้ปิด "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chrome ไม่อนุญาตให้เพิ่ม<ph name="EXTENSION_TYPE_PARAMETER" />นี้</translation>
+<translation id="7071827361006050863">Chrome จะลบข้อมูลการท่องเว็บเร็วๆ นี้</translation>
 <translation id="7085332316435785646">เลือกว่าจะรวมประวัติการเข้าชม Chrome เพื่อรับประสบการณ์ที่ปรับเปลี่ยนในแบบของคุณมากขึ้นในบริการของ Google หรือไม่</translation>
 <translation id="7088681679121566888">Chrome เป็นเวอร์ชันล่าสุดแล้ว</translation>
 <translation id="7098166902387133879">Google Chrome ใช้ไมโครโฟนอยู่</translation>
@@ -356,6 +362,7 @@
 <translation id="8290100596633877290">อ๊ะ! Google Chrome ขัดข้อง เปิดใหม่ตอนนี้หรือไม่</translation>
 <translation id="8342675569599923794">ไฟล์นี้อันตราย Chrome จึงบล็อกไว้</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />วิธีที่เราใช้ข้อมูลนี้:<ph name="END_BOLD" /> เว็บไซต์สามารถจัดเก็บข้อมูลเกี่ยวกับความสนใจไว้กับ Chrome ตัวอย่างเช่น หากคุณเข้าชมเว็บไซต์เพื่อซื้อรองเท้าวิ่งมาราธอน เว็บไซต์นี้อาจระบุว่าคุณสนใจการวิ่งมาราธอน ภายหลัง เมื่อคุณเข้าชมเว็บไซต์อื่นเพื่อลงทะเบียนแข่งมาราธอน เว็บไซต์นี้ก็อาจแสดงโฆษณารองเท้าวิ่งโดยอิงจากความสนใจดังกล่าว</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{ผู้ดูแลระบบจะปิด Chrome โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา 1 นาที}other{ผู้ดูแลระบบจะปิด Chrome โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา # นาที}}</translation>
 <translation id="8370517070665726704">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />วิธีที่เราใช้ข้อมูลนี้:<ph name="END_BOLD" /> Chrome ใช้ข้อมูลเพื่อคาดเดาความสนใจของคุณ จากนั้น เว็บไซต์ที่คุณเข้าชมจะขอให้ Chrome ดูความสนใจของคุณเพื่อปรับเปลี่ยนการแสดงโฆษณาให้เหมาะสมตามความสนใจ</translation>
 <translation id="8387459386171870978">ใช้ Chrome ต่อ</translation>

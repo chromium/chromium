@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Développer <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Désactivez le son sur un site précis.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# témoin}one{# témoin}other{# témoins}}</translation>
+<translation id="4478158430052450698">Faciliter la personnalisation du zoom pour différents sites</translation>
 <translation id="4479647676395637221">Demander avant d'autoriser des sites à utiliser votre caméra (recommandé)</translation>
 <translation id="4505788138578415521">URL développée</translation>
 <translation id="4534723447064627427">Pour autoriser <ph name="APP_NAME" /> à accéder à votre microphone, vous devez aussi activer le microphone dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>

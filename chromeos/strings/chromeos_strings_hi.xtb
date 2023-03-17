@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">कतार में है</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फिर से कोशिश करें</translation>
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
+<translation id="2161656808144014275">लेख संदेश</translation>
 <translation id="2163937499206714165">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="2180197493692062006">कोई गड़बड़ी हुई. ऐप्लिकेशन को फिर से खोलने की कोशिश करें.</translation>
 <translation id="2209788852729124853">ट्रैफ़िक काउंटर रीसेट करें</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3017079585324758401">बैकग्राउंड</translation>
+<translation id="3020183492814296499">शॉर्टकट</translation>
 <translation id="3027578600144895987">कैमरा बंद करें</translation>
 <translation id="3031560714565892478">डिवाइस एक वीडियो कैमरा है.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">सेवा का नाम</translation>
 <translation id="6961170852793647506">शुरू करने के लिए, अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="6965382102122355670">ठीक है</translation>
+<translation id="6965978654500191972">डिवाइस</translation>
 <translation id="6977381486153291903">फ़र्मवेयर पुनरीक्षण</translation>
+<translation id="6981982820502123353">सुलभता</translation>
 <translation id="7005833343836210400">डिवाइस ऑफ़लाइन है</translation>
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">किसी <ph name="NETWORK_NAME" /> नेटवर्क से जुड़ने के लिए, सेटिंग पर जाएं</translation>
 <translation id="7978412674231730200">निजी कुंजी</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
+<translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="802154636333426148">डाउनलोड विफल रहा</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">अपने-आप रंग तय करने वाला मोड चालू करें</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">यह मोड आपके डिवाइस पर उपलब्ध नहीं है</translation>
 <translation id="9003704114456258138">आवृत्ति</translation>
 <translation id="9025198690966128418">निजी डिवाइस के तौर पर इस्तेमाल करें</translation>
+<translation id="902638246363752736">कीबोर्ड सेटिंग</translation>
 <translation id="9028832514430399253">स्क्रीन सेवर के विकल्प चुनने के लिए, टॉगल करने की सुविधा चालू करें</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">सक्रिय नहीं किया गया</translation>
 <translation id="960719561871045870">ऑपरेटर कोड</translation>
 <translation id="982713511914535780">डिस्चार्ज टेस्ट चलाएं</translation>
+<translation id="987264212798334818">सामान्य</translation>
 </translationbundle>

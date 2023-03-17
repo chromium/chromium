@@ -679,6 +679,7 @@
 <translation id="259821504105826686">芸術写真、デジタルアート</translation>
 <translation id="2601150049980261779">恋愛映画</translation>
 <translation id="2604589665489080024">ポップ ミュージック</translation>
+<translation id="2606760465469169465">自動確認</translation>
 <translation id="2610561535971892504">クリックしてコピー</translation>
 <translation id="2617988307566202237">Chrome には、次の情報は<ph name="BEGIN_EMPHASIS" />保存されません<ph name="END_EMPHASIS" />。
           <ph name="BEGIN_LIST" />
@@ -1890,6 +1891,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> Chrome では、4 週間以上経過したサイトが自動削除されます。サイトにもう一度アクセスすると、リストにそのサイトが再度表示される場合もあります。また、Chrome の設定では、サイトによる広告の提案をブロックしたり、無効にしたりすることがいつでも可能です。</translation>
 <translation id="5610142619324316209">接続を確認する</translation>
 <translation id="5610807607761827392">カードと住所は [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
+<translation id="5611398002774823980">アカウントに保存</translation>
 <translation id="561165882404867731">Google 翻訳でこのページを翻訳します</translation>
 <translation id="5612720917913232150"><ph name="URL" /> から、パソコンの現在地情報の使用許可を求められています</translation>
 <translation id="561669346091975195">SF 番組、ファンタジー番組</translation>
@@ -3171,6 +3173,7 @@
 <translation id="8806285662264631610">バス、ボディ商品</translation>
 <translation id="8807160976559152894">トリミング（ページ単位）</translation>
 <translation id="8809203544698246977">ブロックしたトピックがここに表示されます</translation>
+<translation id="8811470563853401328">アカウントに住所を保存しますか？</translation>
 <translation id="8813277370772331957">後で通知</translation>
 <translation id="8814707942599948500">C8 封筒</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>
@@ -3264,6 +3267,7 @@
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9044359186343685026">Touch ID を使用</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">これらの動作を行うには、<ph name="POLICY_NAME" /> ポリシーを <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" /> に設定する必要があります。</translation>
 <translation id="9048662076076074925">24x36 インチ</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから無効な証明書が提示されました。</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>

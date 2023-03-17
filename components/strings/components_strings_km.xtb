@@ -686,6 +686,7 @@
 <translation id="259821504105826686">សិល្បៈ​ឌីជីថល និងការថតរូប</translation>
 <translation id="2601150049980261779">ភាពយន្ត​មនោសញ្ចេតនា</translation>
 <translation id="2604589665489080024">តន្ត្រី​ប៉ុប</translation>
+<translation id="2606760465469169465">ការផ្ទៀងផ្ទាត់ដោយស្វ័យ​ប្រវត្តិ</translation>
 <translation id="2610561535971892504">ចុច​ដើម្បី​ចម្លង</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />នឹង​មិន​រក្សាទុក<ph name="END_EMPHASIS" />ព័ត៌មាន​ខាងក្រោម​ទេ៖
         <ph name="BEGIN_LIST" />
@@ -1904,6 +1905,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />របៀប​ដែល​អ្នក​អាច​គ្រប់គ្រង​ទិន្នន័យ​របស់អ្នក៖<ph name="END_BOLD" /> Chrome លុប​គេហទំព័រ​​ដែល​ចាស់​ជាង 4 សប្ដាហ៍ដោយ​ស្វ័យ​ប្រវត្តិ។ គេហទំព័រ​ដែល​អ្នក​ចូលមើល​ម្ដង​ទៀតអាចបង្ហាញ​ឡើងវិញ​នៅ​ក្នុង​បញ្ជី។ អ្នក​ក៏​អាច​ទប់ស្កាត់​គេហទំព័រ​កុំឱ្យ​​​ណែនាំការ​ផ្សាយពាណិជ្ជកម្ម​សម្រាប់​អ្នក និង​បិទ​ការ​ផ្សាយពាណិជ្ជកម្ម​ដែល​ណែនាំ​ដោយ​គេហទំព័រ​បាន​គ្រប់​ពេល​នៅ​ក្នុងការកំណត់ Chrome។</translation>
 <translation id="5610142619324316209">ពិនិត្យការតភ្ជាប់</translation>
 <translation id="5610807607761827392">អ្នក​អាច​គ្រប់គ្រង​កាត​ និង​អាសយដ្ឋាន​នៅក្នុង​ <ph name="BEGIN_LINK" />ការកំណត់​<ph name="END_LINK" />។</translation>
+<translation id="5611398002774823980">រក្សាទុកនៅក្នុងគណនី</translation>
 <translation id="561165882404867731">បកប្រែទំព័រនេះដោយប្រើ Google បកប្រែ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ចង់ប្រើ​ទីតាំង​កុំព្យូទ័រ​របស់អ្នក</translation>
 <translation id="561669346091975195">កម្មវិធី​ទូរទស្សន៍​ប្រឌិតបែប​វិទ្យាសាស្ត្រ និង​ការស្រមើស្រមៃ</translation>
@@ -3192,6 +3194,7 @@
 <translation id="8806285662264631610">ផលិតផល​ថែទាំដងខ្លួន និង​សម្រាប់សម្អាតខ្លួន</translation>
 <translation id="8807160976559152894">តម្រឹម​បន្ទាប់ពី​ទំព័រ​នីមួយៗ</translation>
 <translation id="8809203544698246977">ប្រធានបទ​ដែល​បាន​ទប់ស្កាត់​បង្ហាញ​នៅទីនេះ</translation>
+<translation id="8811470563853401328">រក្សាទុក​អាសយដ្ឋាន​នៅ​ក្នុង​គណនី​ឬ?</translation>
 <translation id="8813277370772331957">រំលឹក​ខ្ញុំ​ពេលក្រោយ</translation>
 <translation id="8814707942599948500">ស្រោមសំបុត្រ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីដំឡើងកំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
@@ -3285,6 +3288,7 @@
 <translation id="9042617223719777575">ទម្រ​ផ្ទុកធំ</translation>
 <translation id="9044359186343685026">ប្រើ Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">សកម្មភាព​ទាំង​នេះ​តម្រូវ​ឱ្យកំណត់​គោលការណ៍ <ph name="POLICY_NAME" /> ទៅជា "<ph name="POLICY_VALUE" />"៖ <ph name="ACTION_LIST" />។</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>
 <translation id="9049981332609050619">អ្នកប៉ុនប៉ងទៅកាន់ <ph name="DOMAIN" /> ប៉ុន្តែម៉ាស៊ីនមេបានបង្ហាញវិញ្ញាបនប័ត្រដែលគ្មានសុពលភាព។</translation>
 <translation id="9050666287014529139">ឃ្លាសម្ងាត់</translation>

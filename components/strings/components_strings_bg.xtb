@@ -152,6 +152,7 @@
 <translation id="132301787627749051">Търсене на изображението от буферната памет</translation>
 <translation id="1323433172918577554">Показване на още</translation>
 <translation id="132390688737681464">Запазване и попълване на адреси</translation>
+<translation id="1329916999021038454">Изпращане на сигнал</translation>
 <translation id="1330449323196174374">Сгъване на левия край навътре</translation>
 <translation id="1333745675627230582">Стартиране на играта с динозавъра в Chrome</translation>
 <translation id="1333989956347591814">Активността ви <ph name="BEGIN_EMPHASIS" />може да остане видима<ph name="END_EMPHASIS" /> за:
@@ -527,6 +528,7 @@
 <translation id="219906046732893612">Подобрение на дома</translation>
 <translation id="2202020181578195191">Въведете валидна година на изтичане</translation>
 <translation id="2202627062836089804">задната страна на картата ви</translation>
+<translation id="2204482073374652408">Актуализирането завърши!</translation>
 <translation id="22081806969704220">Тава 3</translation>
 <translation id="2210794033760923560">Качване на отчет</translation>
 <translation id="2212579473415663542">Този адрес е запазен в профила ви в Google (<ph name="ACCOUNT" />). Можете да го използвате в продуктите ни на всяко устройство.</translation>
@@ -615,6 +617,7 @@
 <translation id="2441854154602066476">Списък с начини на плащане, които да бъдат попълнени при докосване. Клавиатурата е скрита.</translation>
 <translation id="2448295565072560657">Периферните устройства, свързани с това устройство, докато сте в профила си</translation>
 <translation id="2450021089947420533">Пътешествия</translation>
+<translation id="2456755709261364512">Батерията ви трябва да бъде заредена над <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">Попълване</translation>
 <translation id="2465655957518002998">Избиране на начин на бърза доставка</translation>
 <translation id="2465688316154986572">Телбодиране</translation>
@@ -661,6 +664,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">От сега нататък да се използва опцията за заключване на екрана за потвърждаване на картите</translation>
 <translation id="2553853292994445426">Проверете настройките си за защитен DNS. Възможно е да сте конфигурирали защитен DNS сървър, с който не може да бъде установена връзка.</translation>
+<translation id="255497580849974774">Устройството ви трябва да е свързано със зарядно по време на актуализацията.</translation>
 <translation id="2556876185419854533">&amp;Отмяна на редактирането</translation>
 <translation id="2557417190997681027">Бизнес пътувания</translation>
 <translation id="2562087035394240049">Практически ръководства, „направи си сам“ и експертно съдържание</translation>
@@ -892,6 +896,7 @@
 <translation id="320323717674993345">Анулиране на плащането</translation>
 <translation id="3203366800380907218">От мрежата</translation>
 <translation id="3207960819495026254">С отметка</translation>
+<translation id="3208701679386778924">Моля, изпратете сигнал, за да можем допълнително да подобрим актуализациите за ChromeOS.</translation>
 <translation id="3209034400446768650">Страницата може да ви таксува</translation>
 <translation id="3212581601480735796">Активността ви в <ph name="HOSTNAME" /> се следи</translation>
 <translation id="3215092763954878852">WebAuthn не можа да се използва</translation>
@@ -1117,6 +1122,7 @@
 <translation id="3715545959749027023">При откриване на събития, свързани със сигурността, от Chrome данните за тях се изпращат до администратора ви. Те могат да включват URL адресите на посещаваните от вас страници в Chrome, имената на файловете или метаданните, сривовете на браузъра или разделите, както и потребителското име, с което влизате в уеб базирани приложения, в профила си на устройството си и в браузъра.</translation>
 <translation id="3715597595485130451">Свързване с Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проверете конфигурацията на прокси сървъра, защитната стена и DNS<ph name="END_LINK" />.</translation>
+<translation id="3723663469265383848">По време на актуализацията няма да можете да използвате устройството си за период до 10 минути.</translation>
 <translation id="372429172604983730">Тази грешка може да се дължи на приложение, като например антивирусна програма или софтуер за защитна стена или за филтриране на съдържание в мрежата.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо презентация в Google Презентации</translation>
 <translation id="3733139489341305600">Автономни автомобили</translation>
@@ -1154,6 +1160,7 @@
 <translation id="3807366285948165054">Изместване на изображението по оста X</translation>
 <translation id="3807873520724684969">Блокирано бе вредно съдържание.</translation>
 <translation id="3810973564298564668">Управление</translation>
+<translation id="3812398568375898177">Това е критична актуализация, която подобрява ефективността на приложенията за Android под ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 инча</translation>
 <translation id="3816482573645936981">Стойност (заменена)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1258,6 +1265,7 @@
 <translation id="4110652170750985508">Преглед на плащането ви</translation>
 <translation id="4111546256784973544">Пейнтбол</translation>
 <translation id="4112140312785995938">Придвижване назад</translation>
+<translation id="4113354056388982663">Критична актуализация за ефективността на Android</translation>
 <translation id="4114146879518089587">Напред към сайта</translation>
 <translation id="4116663294526079822">Разрешаване винаги на този сайт</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1438,6 +1446,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да преведете тази страница с Google Преводач</translation>
 <translation id="4514308731478712184">Изключване на пътешествията</translation>
 <translation id="4515275063822566619">Картите и адресите са от Chrome и профила ви в Google (<ph name="ACCOUNT_EMAIL" />). Можете да ги управлявате от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">Устройството ви бе прекъснато по време на актуализацията.</translation>
 <translation id="4520048001084013693">Изтеглянето на този файл е блокирано чрез администраторско правило</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Плик Monarch</translation>
@@ -1527,6 +1536,7 @@
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4738601419177586157">Предложение за търсене на „<ph name="TEXT" />“</translation>
 <translation id="4742407542027196863">Управление на паролите…</translation>
+<translation id="4743275772928623722">Системата бе актуализирана, но някои от приложенията и файловете ви не бяха възстановени. Приложенията ви автоматично ще бъдат изтеглени отново.</translation>
 <translation id="4744514002166662487">Създаване на презентация</translation>
 <translation id="4744603770635761495">Път към изпълнимия файл</translation>
 <translation id="4749011317274908093">Преминахте в режим „инкогнито“</translation>
@@ -2228,6 +2238,7 @@
 <translation id="646793340882508547">Приключенски игри</translation>
 <translation id="6468485451923838994">Шрифтове</translation>
 <translation id="647261751007945333">Правила за устройството</translation>
+<translation id="647330291963761005">Актуализациите се инсталират</translation>
 <translation id="6475672344094591109">Сайтовете, които посещавате, могат да поискат от Chrome информация, с чиято помощ да измерват ефективността на рекламите си. Браузърът защитава поверителността ви, като ограничава информацията, която сайтовете могат да споделят помежду си.</translation>
 <translation id="6476284679642588870">Управление на начините на плащане</translation>
 <translation id="6486200200930923183">Документални филми</translation>
@@ -2301,6 +2312,7 @@
 <translation id="6688775486821967877">В момента няма достъп до виртуалната карта. Опитайте отново по-късно</translation>
 <translation id="6689249931105087298">Относително с компенсиране на черните точки</translation>
 <translation id="6689271823431384964">Chrome предлага да запази картите ви в профила ви в Google, защото сте влезли в него. Можете да промените това поведение от настройките. Името на картодържателя е от профила ви.</translation>
+<translation id="6691397311652656001">Освободете повече от <ph name="REQUIRED_FREE_DISK_SPACE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да преминете към „Намиране на устройството ми“ в профила ви Google</translation>
 <translation id="6696588630955820014">Бутон „Споделяне на този раздел“. Натиснете Enter, за да споделите този раздел чрез изпращане на връзката, създаване на QR код, предаване и др.</translation>
 <translation id="6698381487523150993">Създадено:</translation>
@@ -2364,6 +2376,7 @@
 <translation id="6864189428899665393">267 x 389 мм</translation>
 <translation id="686485648936420384">Потребителски ресурси</translation>
 <translation id="6865412394715372076">Тази карта не може да бъде потвърдена в момента</translation>
+<translation id="6868573634057275953">Възобновяване на актуализирането</translation>
 <translation id="6869334554832814367">Потребителски заеми</translation>
 <translation id="6873456682041376666">Горна тава</translation>
 <translation id="6874604403660855544">&amp;Възстановяване на добавянето</translation>
@@ -2520,9 +2533,11 @@
 <translation id="722454870747268814">Нов раздел в режим „инкогнито“</translation>
 <translation id="7233592378249864828">Отпечатване на лист за потвърждение</translation>
 <translation id="7234638337680728591">Цени на горива и зареждане на превозни средства с гориво</translation>
+<translation id="7236417832106250253">Завършено: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Съобщението да не се показва отново за този сайт</translation>
 <translation id="7238585580608191973">Пръстов отпечатък SHA-256</translation>
 <translation id="7240120331469437312">Алтернативно име на субекта на сертификата</translation>
+<translation id="7241863998525879494">Какво да очаквате</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# съответствие}other{# съответствия}}</translation>
@@ -2743,6 +2758,7 @@
 <translation id="7698864304447945242">Да се актуализират ли услугите за Google Play за AR?</translation>
 <translation id="7699293099605015246">В момента няма статии</translation>
 <translation id="7701040980221191251">Няма</translation>
+<translation id="7701544340847569275">Актуализирането завърши с грешки</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Продължаване към <ph name="SITE" /> (опасно)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Ски и сноуборд</translation>
 <translation id="7706689436519265630">Файловете, които копирате или местите, се изпращат до Google Cloud или до трети страни за анализ. Възможно е например файловете да бъдат сканирани за чувствителни данни или злонамерен софтуер и да се съхраняват въз основа на правилата на компанията.</translation>

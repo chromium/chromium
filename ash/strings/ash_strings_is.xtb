@@ -57,6 +57,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1235458158152011030">Þekkt netkerfi</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tengt.</translation>
 <translation id="1240638468526743569">Forrit</translation>
+<translation id="124678866338384709">Loka núverandi flipa</translation>
 <translation id="1246890715821376239">Óstudd forrit</translation>
 <translation id="1247372569136754018">Hljóðnemi (innbyggður)</translation>
 <translation id="1247519845643687288">Nýleg forrit</translation>
@@ -153,6 +154,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1715293566947629045">Slekkur á prófíl. Hinkraðu í nokkrar mínútur.</translation>
 <translation id="1719094688023114093">Kveikt er á skjátextum í rauntíma.</translation>
 <translation id="1720011244392820496">Kveikja á Wi-Fi-samstillingu</translation>
+<translation id="1720230731642245863">Slökkt er á heitum reit</translation>
 <translation id="1731815243805539470">Skipta yfir í fyrri notanda</translation>
 <translation id="1733996486177697563">Skiptu á milli dökka og ljósa þemans. Haltu inni á skjáborðinu og veldu „Veggfóður og stíll“.</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ er sýnilegt Bluetooth-tækjum.</translation>
@@ -206,6 +208,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1961239773406905488">Forskoðun myndavélar falin</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Lásskjár</translation>
+<translation id="1967970931040389207">Kveikja á heitum reit</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hæ, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Textainnsláttur</translation>
@@ -214,6 +217,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1990046457226896323">Talskrár sóttar</translation>
 <translation id="1993072747612765854">Frekari upplýsingar um nýjustu uppfærslu <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Slökkva</translation>
+<translation id="1996162290124031907">Fara á næsta flipa</translation>
 <translation id="1998100899771863792">Núverandi skrifborð</translation>
 <translation id="2001444736072756133">Leitaðu að <ph name="CATEGORY" />, skrám, forritum og fleira.</translation>
 <translation id="2016340657076538683">Sláðu inn skilaboð</translation>
@@ -228,6 +232,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2078034614700056995">Strjúktu til hægri með fjórum fingrum til að skipta yfir í næsta skrifborð</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
 <translation id="2083190527011054446">Góða nótt <ph name="GIVEN_NAME" />,</translation>
+<translation id="2086334242442703436">Opna emoji-val</translation>
 <translation id="2088116547584365419">leikjum</translation>
 <translation id="209965399369889474">Engin nettenging</translation>
 <translation id="2107914222138020205">USB-C-snúran styður ekki Thunderbolt. Afköst tækisins kunna að vera takmörkuð.</translation>
@@ -238,6 +243,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2148716181193084225">Í dag</translation>
 <translation id="2161132820593978283">Prófaðu myndavélarramma svo þú sért á miðjum skjánum í myndsímtölum. Kveiktu á honum í flýtistillingum.</translation>
 <translation id="2170530631236737939">Strjúktu niður með þremur fingrum til að loka Yfirliti.</translation>
+<translation id="2185166372312820725">Fara á fyrri flipa</translation>
 <translation id="219905428774326614">Ræsiforrit, öll forrit</translation>
 <translation id="2201071101391734388">Nýleg mynd <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
@@ -274,6 +280,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2367972762794486313">Sýna forrit</translation>
 <translation id="2369165858548251131">„Halló“ á kínversku</translation>
 <translation id="2390318262976603432">Stillingar tungumálskóða</translation>
+<translation id="2397416548179033562">Sýna valmynd Chrome</translation>
 <translation id="240006516586367791">Efnisstýringar</translation>
 <translation id="2402411679569069051">Notaðu fingrafar eða taktu símann þinn úr lás til að taka Chromebook úr lás</translation>
 <translation id="2405664212338326887">Ekki tengt</translation>
@@ -354,6 +361,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2825619548187458965">Hilla</translation>
 <translation id="2831035692318564937">Kveikt til sólarupprásar</translation>
 <translation id="2834813915651407382">Opnað nýlega</translation>
+<translation id="2840766858109427815">Fara áfram á næstu síðu</translation>
 <translation id="2841907151129139818">Skipt yfir í spjaldtölvustillingu</translation>
 <translation id="2844169650293029770">USB-C tæki (tengi vinstra megin að framan)</translation>
 <translation id="2848120746144143659">Ýttu á Enter til að taka skjámynd af öllum skjánum</translation>
@@ -463,6 +471,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3405101454990027959">Kveikja á hljóðnemaaðgangi</translation>
 <translation id="3410336247007142655">Sýna stillingar fyrir dökkt þema</translation>
 <translation id="3413817803639110246">Ekkert að sjá enn</translation>
+<translation id="3417835166382867856">Leita í flipum</translation>
 <translation id="3423744722495840645">Opna/loka ræsiforriti</translation>
 <translation id="3428447136709161042">Viltu aftengjast <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Strjúktu frá hægri til að fara til baka</translation>
@@ -518,6 +527,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3630697955794050612">slökkt</translation>
 <translation id="3631369015426612114">Leyfa tilkynningar frá eftirfarandi</translation>
 <translation id="3633097874324966332">Opnaðu Bluetooth-stillingar til að para tækið þitt</translation>
+<translation id="3633851487917460983">Opna klippiborð</translation>
 <translation id="3638400994746983214">Kveikja/slökkva á persónuverndarskjá. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minnka glugga</translation>
 <translation id="3649505501900178324">Uppfærsla er komin fram yfir á tíma</translation>
@@ -579,6 +589,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="394485226368336402">Hljóðstillingar</translation>
 <translation id="3945319193631853098">Ýttu til að ljúka uppsetningu</translation>
 <translation id="3945867833895287237">Tengist heitum reit...</translation>
+<translation id="3950272133184491871">Skrá út núna?</translation>
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3962859241508114581">Fyrra lag</translation>
 <translation id="3969043077941541451">Slökkt</translation>
@@ -603,6 +614,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4066027111132117168">Kveikt, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Miðlungssendistyrkur</translation>
 <translation id="4086921558679520050">Kveiktu á áþreifanlega hljóðnemarofanum á tækinu</translation>
+<translation id="4101772068965291327">Opna heimasíðu</translation>
 <translation id="4112140312785995938">Spóla til baka</translation>
 <translation id="4114315158543974537">Kveikja á Phone Hub</translation>
 <translation id="4115378294792113321">Bleikur</translation>
@@ -662,6 +674,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4378551569595875038">Tengist...</translation>
 <translation id="4379531060876907730">Þetta eru pennaverkfærin þín</translation>
 <translation id="4381031910344220229">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með hljóðnemaheimild aðgang að hljóðnema</translation>
+<translation id="4382340674111381977">Fara aftur á fyrri síðu</translation>
 <translation id="4389184120735010762">Þú ýttir á flýtilykilinn fyrir stækkunargler í föstum glugga. Viltu kveikja á því?</translation>
 <translation id="439598569299422042">Í bið, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ekki tókst að vista skjáupptöku</translation>
@@ -795,8 +808,10 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5004607513195820459">Neti er stjórnað</translation>
 <translation id="5016558321564993266">Sýna/fela merkipenna. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Kveikt er á hljóðnemaaðgangi í tæki</translation>
+<translation id="5030659775136592441">Sýna bókamerkjastjórnun</translation>
 <translation id="5030687792513154421">Nú er tíminn á þrotum</translation>
 <translation id="5033299697334913360">Smelltu hvar sem er til að mynda allan skjáinn</translation>
+<translation id="5034421018520995080">Fara efst á síðu</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> tengdist nýjum síma</translation>
 <translation id="5035389544768382859">Staðfesta skjástillingu</translation>
 <translation id="5042305953558921026">Lykill fyrir yfirlit</translation>
@@ -811,6 +826,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5107522548814527560">Vefur</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Sýna næsta mánuð</translation>
+<translation id="5121628974188116412">Fara neðst á síðu</translation>
 <translation id="5127986747308934633">Stjórnandinn þinn stjórnar tækinu þínu</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
 <translation id="5147567197700016471">Ólæst</translation>
@@ -971,6 +987,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5920710855273935292">Slökkt er á hljóðnemanum.</translation>
+<translation id="5924855612669061715">Kveikt er á heitum reit</translation>
 <translation id="5946788582095584774">Kveikt er á <ph name="FEATURE_NAME" /></translation>
 <translation id="5947494881799873997">Afturkalla</translation>
 <translation id="595202126637698455">Kveikt á afkastarakningu</translation>
@@ -1025,9 +1042,11 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6168318496333165060">Opna greiningarforrit</translation>
 <translation id="6179832488876878285">Hér geturðu fest mikilvægar skrár. Opnaðu forritið Skrár til að hefjast handa.</translation>
 <translation id="6182592640011875895">Opna skrifborð</translation>
+<translation id="6185696379715117369">Upp um síðu</translation>
 <translation id="619279033188484792">Skoðaðu nýlegar myndir, margmiðlunarefni og tilkynningar símans í <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Fullhlaða núna</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6199775032047436064">Endurhlaða þessa síðu</translation>
 <translation id="6200515304866777730">Ekki stutt af forriti</translation>
 <translation id="6210042900243040400">Tengdu <ph name="NAME" />, sem áður var vistað á <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Taka skjámynd eða skjáupptöku af hluta skjás</translation>
@@ -1043,6 +1062,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6259254695169772643">Notaðu pennann þinn til að velja</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Virkjar...</translation>
 <translation id="6274202259872570803">Skjáupptaka</translation>
+<translation id="6276708887952587684">Skoða frumkóða síðu</translation>
 <translation id="6283712521836204486">Slökkt er á „Ónáðið ekki“.</translation>
 <translation id="6284232397434400372">Upplausn breytt</translation>
 <translation id="6288235558961782912">Hægt er að bæta <ph name="USER_EMAIL_ADDRESS" /> við aftur síðar með leyfi foreldris.</translation>
@@ -1129,6 +1149,7 @@ Ný uppsetning</translation>
 <translation id="6707693040195709527">Færsla tækisins í fyrri útgáfu er komin fram yfir tíma</translation>
 <translation id="6710213216561001401">Til baka</translation>
 <translation id="6723839937902243910">Orka</translation>
+<translation id="6727005317916125192">Fyrra svæði</translation>
 <translation id="6727969043791803658">Tengt, <ph name="BATTERY_PERCENTAGE" />% rafhlaða</translation>
 <translation id="6732087373923685049">myndavél</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1190,6 +1211,7 @@ Ný uppsetning</translation>
 <translation id="7014684956566476813">Tengdist tækinu <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Komdu aftur klukkan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Skrifborð 6</translation>
+<translation id="7025325401470358758">Næsta svæði</translation>
 <translation id="7025533177575372252">Tengdu <ph name="DEVICE_NAME" /> við símann þinn</translation>
 <translation id="7026338066939101231">Minnka</translation>
 <translation id="7029814467594812963">Loka lotu</translation>
@@ -1340,6 +1362,7 @@ Ný uppsetning</translation>
 <translation id="7848989271541991537">Fært á síðu <ph name="PAGE_NUMBER" />, línu <ph name="ROW_NUMBER" />, dálk <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Strjúktu upp með þremur fingrum til að opna Yfirlit.</translation>
+<translation id="7862292329216937261">Til að nota tækið sem gestur þarftu að skrá þig út og velja svo „Vafra sem gestur“ neðst á skjánum.</translation>
 <translation id="7866482334467279021">kveikja</translation>
 <translation id="7868900307798234037">Tekur úr lás með fingrafari</translation>
 <translation id="7872195908557044066">Stjórnandinn er að endurstilla eSIM. Hinkraðu í nokkrar mínútur.</translation>
@@ -1375,12 +1398,14 @@ Ný uppsetning</translation>
 <translation id="7995804128062002838">Ekki tókst að taka skjámynd</translation>
 <translation id="8000066093800657092">Ekkert net</translation>
 <translation id="8004512796067398576">Auka</translation>
+<translation id="8026334261755873520">Hreinsa vafragögn</translation>
 <translation id="8029247720646289474">Tenging við heitan reit mistókst</translation>
 <translation id="8029629653277878342">Krafa er um PIN-númer eða aðgangsorð fyrir aukið öryggi</translation>
 <translation id="8030169304546394654">Aftengt</translation>
 <translation id="8036504271468642248">Fyrri setning</translation>
 <translation id="8042893070933512245">Opna valmynd aðgengisstillinga</translation>
 <translation id="8044457332620420407">Slökkt er á baklýsingu lyklaborðs</translation>
+<translation id="8048077032188362328">Stjórnandinn slökkti á heitum reit.</translation>
 <translation id="8048123526339889627">Bluetooth-stillingar</translation>
 <translation id="8051716679295756675">Sniðmát sem heitir <ph name="DESK_TEMPLATE_NAME" /> er þegar til</translation>
 <translation id="8052898407431791827">Afritað á klippiborð</translation>
@@ -1395,6 +1420,7 @@ Ný uppsetning</translation>
 <translation id="8120151603115102514">Síminn þinn er ekki með lásskjá. Sláðu inn aðgangsorð til að taka Chromebook úr lás.</translation>
 <translation id="8127095419621171197">Opna forritið Reiknivél</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8130528849632411619">Fara fremst í skjal</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8131994907636310308">Loka röðunartilkynningu</translation>
 <translation id="8132793192354020517">Tengt við <ph name="NAME" /></translation>
@@ -1489,6 +1515,7 @@ Ný uppsetning</translation>
 <translation id="857201607579416096">Valmynd færð neðst í hægra horn skjásins.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Raðaðu forritunum þínum eftir heiti eða lit</translation>
+<translation id="8609384513243082612">Opna nýjan flipa</translation>
 <translation id="8614517853887502247">Tilkynningar frá <ph name="APP_1_TITLE" /> og <ph name="APP_2_TITLE" /> eru faldar vegna þess að kveikt er á gægjuvörn</translation>
 <translation id="8627191004499078455">Tengdist við <ph name="DEVICE_NAME" /></translation>
 <translation id="8630991711272431708">Slökkva á aðgangi að myndavél</translation>
@@ -1509,6 +1536,7 @@ Ný uppsetning</translation>
 <translation id="8683506306463609433">Afkastarakning virk</translation>
 <translation id="8703634754197148428">Hefja upptöku. Eftir að upptaka hefst geturðu notað Alt + Shift + L til að fara á hilluna og finna hnappinn til að hætta upptöku</translation>
 <translation id="870917907284186124">Slökkva/kveikja á raddinnslætti (innsláttur með röddinni)</translation>
+<translation id="8717459106217102612">Velja fyrra orð eða staf</translation>
 <translation id="8721053961083920564">Kveikja/slökkva á hljóði. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Upptaka á öllum skjánum</translation>
 <translation id="8731487213223706745">Lýkur kl. <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1548,6 +1576,7 @@ Ný uppsetning</translation>
 <translation id="8878886163241303700">Framlengir skjá</translation>
 <translation id="888982883502837004">Fastbúnaðaruppfærslur eru tiltækar fyrir tækið þitt. Smelltu til að skoða og uppfæra.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> verður eytt varanlega</translation>
+<translation id="88986195241502842">Niður um síðu</translation>
 <translation id="8905919797434099235">(Ekkert heiti)</translation>
 <translation id="890616557918890486">Breyta uppruna</translation>
 <translation id="8909138438987180327">Rafhlaða í <ph name="PERCENTAGE" />%.</translation>
@@ -1593,6 +1622,7 @@ Ný uppsetning</translation>
 <translation id="9098969848082897657">Slökkva á hljóði síma</translation>
 <translation id="9100887602489003640">Bætir prófíl við. Hinkraðu í nokkrar mínútur.</translation>
 <translation id="9105450214093926548">Innskráning annars notanda er ekki möguleg á meðan Lacros vafrinn er í gangi. Notaðu annan vafraprófíl í Lacros í staðinn eða lokaðu Lacros og reyndu aftur.</translation>
+<translation id="9120448753905017833">Við slökktum á WiFi til að nota heitan reit í gegnum farsímagögn. Þetta kann að hafa í för með sér gagnagjöld.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eða <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Ekki hægt að taka upp varið efni</translation>
 <translation id="9161053988251441839">TILLÖGUR AÐ FORRITUM</translation>
@@ -1621,6 +1651,7 @@ Ný uppsetning</translation>
 <translation id="951991426597076286">Hafna</translation>
 <translation id="954052413789300507">Ekki nægilegt pláss fyrir <ph name="FILENAME" />. Losaðu um pláss.</translation>
 <translation id="974545358917229949">Sýnir niðurstöður <ph name="RESULT_COUNT" /> fyrir „<ph name="QUERY" />“</translation>
+<translation id="98120814841227350">Fara aftast í skjal</translation>
 <translation id="98515147261107953">Langsnið</translation>
 <translation id="989374776391122812">Myndavélar- og hljóðstýringar</translation>
 <translation id="990277280839877440">Glugganum „<ph name="WINDOW_TITILE" />“ lokað.</translation>

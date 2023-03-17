@@ -142,6 +142,7 @@
 <translation id="2157959690810728433">કતારમાં</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ફરી પ્રયાસ કરો</translation>
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
+<translation id="2161656808144014275">ટેક્સ્ટ</translation>
 <translation id="2163937499206714165">ઘેરો મોડ ચાલુ કરો</translation>
 <translation id="2180197493692062006">કંઈક ખોટું થયું. ઍપ ફરીથી ખોલવાનો પ્રયાસ કરી જુઓ.</translation>
 <translation id="2209788852729124853">ટ્રાફિક કાઉન્ટર રીસેટ કરો</translation>
@@ -217,6 +218,7 @@
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
 <translation id="3009958530611748826">સ્કૅન જેમાં સાચવવાના છે તે ફોલ્ડર પસંદ કરો</translation>
 <translation id="3017079585324758401">બૅકગ્રાઉન્ડ</translation>
+<translation id="3020183492814296499">શૉર્ટકટ</translation>
 <translation id="3027578600144895987">કૅમેરા બંધ કરો</translation>
 <translation id="3031560714565892478">ડિવાઇસ એક વીડિયો કૅમેરા છે.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -663,7 +665,9 @@
 <translation id="6957231940976260713">સેવાનું નામ</translation>
 <translation id="6961170852793647506">શરૂ કરવા માટે, તમારા દસ્તાવેજને સ્કૅનર પર મૂકો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
+<translation id="6965978654500191972">ઉપકરણ</translation>
 <translation id="6977381486153291903">ફર્મવેયર પુનરાવર્તન</translation>
+<translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
 <translation id="7005833343836210400">ડિવાઇસ ઑફલાઇન છે</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="7040230719604914234">ઑપરેટર</translation>
@@ -773,6 +777,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> નેટવર્ક સાથે જોડાવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="7978412674231730200">ખાનગી કી</translation>
 <translation id="7994702968232966508">EAP પદ્ધતિ</translation>
+<translation id="8004582292198964060">બ્રાઉઝર</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ઑટો કલર મોડ ચાલુ કરો</translation>
@@ -885,6 +890,7 @@
 <translation id="8998289560386111590">તમારા ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="9003704114456258138">આવર્તન</translation>
 <translation id="9025198690966128418">વ્યક્તિગત ડિવાઇસ તરીકે ઉપયોગ કરો</translation>
+<translation id="902638246363752736">કીબોર્ડ સેટિંગ્સ</translation>
 <translation id="9028832514430399253">સ્ક્રીન સેવરના વિકલ્પો પસંદ કરવા માટે ટૉગલને ચાલુ કરો</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +923,5 @@
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>
 <translation id="960719561871045870">ઑપરેટર કોડ</translation>
 <translation id="982713511914535780">બૅટરી ડિસ્ચાર્જ થવાનું પરીક્ષણ ચાલુ કરો</translation>
+<translation id="987264212798334818">સામાન્ય</translation>
 </translationbundle>

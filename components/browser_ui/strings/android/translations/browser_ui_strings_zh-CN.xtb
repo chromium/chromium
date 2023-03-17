@@ -93,6 +93,7 @@
 <translation id="257931822824936280">已展开 - 点击此处即可收起。</translation>
 <translation id="2586657967955657006">剪贴板</translation>
 <translation id="2597457036804169544">不对网站应用深色主题</translation>
+<translation id="2606760465469169465">自动验证</translation>
 <translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">离开</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">系统会将您所选联系人的详细信息分享给 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5216942107514965959">上次访问时间：今天</translation>
 <translation id="5225463052809312700">开启摄像头</translation>
+<translation id="5229337741799419985">此设置启用时不会识别您的身份，也不会允许网站查看您的浏览记录</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5264323282659631142">移除“<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">从顶部向下拖动并触摸“返回”按钮，即可退出全屏模式。</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6689172468748959065">个人资料照片</translation>
 <translation id="6697925417670533197">正在下载内容</translation>
+<translation id="6701547804986694515">您访问的网站可将信息保存在 Chrome 中，以验证您不是机器人。在您持续浏览的过程中，所访问的网站可以与 Chrome 通信，通过您访问的上一个网站的相关信息验证您可能是真实的用户。</translation>
 <translation id="6722828510648505498">屏蔽来自身份服务的登录提示。</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="6749077623962119521">重置权限？</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">选择图片</translation>
 <translation id="8801436777607969138">禁止特定网站运行 JavaScript。</translation>
 <translation id="8803526663383843427">处于开启状态时</translation>
+<translation id="8805385115381080995">由于网站要求您验证自己是真实用户的情况随之减少，浏览体验将变得更加流畅。</translation>
 <translation id="8816026460808729765">禁止网站使用传感器</translation>
 <translation id="8823559166155093873">屏蔽 Cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">这是一个危险网页</translation>
 <translation id="9201023452444595544">所有离线数据都会被清除</translation>
 <translation id="930525582205581608">移除此网站？</translation>
+<translation id="947156494302904893">您访问的网站可以验证您是真人而非机器人</translation>
 <translation id="967624055006145463">已存储的数据</translation>
 </translationbundle>

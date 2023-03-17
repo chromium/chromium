@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">방화벽 감지됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
+<translation id="1082009148392559545">화면 보호기 다운로드 중</translation>
 <translation id="1094693127011229778">IP 주소를 사용할 수 없습니다.</translation>
 <translation id="1113892970288677790">선별된 예술작품 및 이미지를 선택합니다.</translation>
 <translation id="1119447706177454957">내부 오류</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">서류 급지(단면)</translation>
 <translation id="1643449475550628585">매일 배경화면 이미지 변경</translation>
 <translation id="1644574205037202324">방문 기록</translation>
+<translation id="1651925268237749928">공유 앨범을 선택하셨습니다. 다른 사용자가 사진을 추가하거나 변경할 수 있습니다. 배경화면으로 현재 이 앨범에 없는 사진이 표시될 수도 있습니다.</translation>
 <translation id="1662989795263954667">중지됨 - 잉크 부족</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> 미리보기</translation>
 <translation id="1668469839109562275">기본 제공 VPN</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">관리자: <ph name="FIRST_MANAGER" /> 및 <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">네임서버</translation>
 <translation id="1731082422893354635">블루투스 터치패드</translation>
+<translation id="1738949837603788263"><ph name="ZONE_NUMBER" /> 영역</translation>
 <translation id="1745577949879301685">이미지를 로드할 수 없습니다. 네트워크 연결을 확인하거나 이미지를 다시 로드해 보세요.</translation>
 <translation id="1751249301761991853">개인</translation>
 <translation id="1753496554272155572">배경화면 미리보기 종료</translation>
@@ -140,6 +143,7 @@
 <translation id="2157959690810728433">대기 중</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 다시 시도</translation>
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
+<translation id="2161656808144014275">텍스트</translation>
 <translation id="2163937499206714165">어두운 모드 사용 설정</translation>
 <translation id="2180197493692062006">문제가 발생했습니다. 앱을 다시 열어 보세요.</translation>
 <translation id="2209788852729124853">트래픽 카운터 재설정</translation>
@@ -215,6 +219,7 @@
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3017079585324758401">배경</translation>
+<translation id="3020183492814296499">바로가기</translation>
 <translation id="3027578600144895987">카메라 종료</translation>
 <translation id="3031560714565892478">비디오 카메라 기기입니다.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -236,6 +241,7 @@
 <translation id="319101249942218879">아바타 이미지 변경됨</translation>
 <translation id="3192947282887913208">오디오 파일</translation>
 <translation id="3199982728237701504">서류 급지(양면)</translation>
+<translation id="3201315366910775591">공유 앨범은 다른 사용자가 업데이트할 수 있음</translation>
 <translation id="3211671540163313381">키매핑 D패드</translation>
 <translation id="3226405216343213872">스캐너 검색 중</translation>
 <translation id="3226657629376379887">레이아웃 작업 메뉴</translation>
@@ -598,6 +604,7 @@
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6379086450106841622">터치스크린</translation>
 <translation id="6381741036071372448">키보드 테스트</translation>
+<translation id="6382182670717268353">화면 보호기 미리보기</translation>
 <translation id="6388847657025262518">스캐너의 급지대에 용지가 걸렸습니다. 급지대를 확인한 후 다시 시도해 보세요.</translation>
 <translation id="6394634179843537518">파일 추가</translation>
 <translation id="6410257289063177456">이미지 파일</translation>
@@ -653,6 +660,7 @@
 <translation id="6838167112108853532">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정 및 연결된 APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>
 <translation id="6853312040151791195">방전 속도</translation>
 <translation id="6889786074662672253">다시 시작하는 동안 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 다시 시작하는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
+<translation id="6900701049656042631">앨범에 사진이 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> 페이지로 돌아가기</translation>
 <translation id="6910312834584889076">스캐너의 덮개가 열려 있습니다. 덮개를 닫은 후 다시 시도해 보세요.</translation>
 <translation id="6911383237894364323">미디어 서버에 연결할 수 없음</translation>
@@ -660,7 +668,9 @@
 <translation id="6957231940976260713">서비스 이름</translation>
 <translation id="6961170852793647506">시작하려면 스캐너에 문서를 올리세요.</translation>
 <translation id="6965382102122355670">확인</translation>
+<translation id="6965978654500191972">기기</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
+<translation id="6981982820502123353">접근성</translation>
 <translation id="7005833343836210400">기기가 오프라인 상태입니다.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
 <translation id="7040230719604914234">운영자</translation>
@@ -687,6 +697,7 @@
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7180865173735832675">맞춤설정</translation>
+<translation id="7184043045742675738">아무 키나 클릭하여 버튼을 맞춤설정합니다. 마우스 또는 화살표 키를 사용하여 키를 재배치합니다.</translation>
 <translation id="7212734716605298123">외부 기기 펌웨어 업데이트</translation>
 <translation id="7216409898977639127">이동통신사</translation>
 <translation id="725133483556299729">이메일 선택</translation>
@@ -728,6 +739,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 터치스크린</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> 남음</translation>
+<translation id="7613724632293948900">마우스 또는 화살표 키를 사용하여 재배치합니다.</translation>
 <translation id="7620771111601174153">고객센터에서 자세히 알아보기</translation>
 <translation id="763165478673169849">마지막 재설정 시간</translation>
 <translation id="7648838807254605802">HTTPS 지연 시간 높음</translation>
@@ -768,6 +780,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> 네트워크에 참여하려면 설정으로 이동하세요.</translation>
 <translation id="7978412674231730200">비공개 키</translation>
 <translation id="7994702968232966508">EAP 방식</translation>
+<translation id="8004582292198964060">브라우저</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">색상 자동조절 사용</translation>
@@ -850,6 +863,7 @@
 <translation id="8798441408945964110">공급자 이름</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">배경화면</translation>
+<translation id="8820457400746201697">파란색 터치 포인트를 작업으로 이동합니다. 연결된 키를 선택하여 맞춤설정합니다.</translation>
 <translation id="8834539327799336565">현재 연결된 기기</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8855781559874488009">방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>
@@ -879,6 +893,7 @@
 <translation id="8998289560386111590">내 기기에서 사용할 수 없음</translation>
 <translation id="9003704114456258138">주파수</translation>
 <translation id="9025198690966128418">개인용 기기로 사용</translation>
+<translation id="902638246363752736">키보드 설정</translation>
 <translation id="9028832514430399253">전환 스위치를 사용하여 화면 보호기 옵션을 선택하세요.</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +926,5 @@
 <translation id="952992212772159698">활성화되지 않음</translation>
 <translation id="960719561871045870">운영자 코드</translation>
 <translation id="982713511914535780">방전 테스트 실행</translation>
+<translation id="987264212798334818">일반</translation>
 </translationbundle>

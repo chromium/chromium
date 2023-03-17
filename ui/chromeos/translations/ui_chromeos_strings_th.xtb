@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">เครือข่ายในบ้านไม่พร้อมใช้งาน ต้องเปิดใช้การโรมมิ่งอินเทอร์เน็ตมือถือเพื่อเชื่อมต่อ</translation>
 <translation id="8499098729323186194">กำลังแตกข้อมูล <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="8502913769543567768">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, เปิดใช้งานหลังจากตั้งค่าอุปกรณ์, จัดการโดยผู้ดูแลระบบ</translation>
+<translation id="8512483403832814140">ทุกเวลา</translation>
 <translation id="8521441079177373948">สหราชอาณาจักร</translation>
 <translation id="853494022971700746">ฝรั่งเศส (ฝรั่งเศส)</translation>
 <translation id="8540608333167683902">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>

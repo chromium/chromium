@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">A cache do Google Drive foi limpa.</translation>
 <translation id="2239068707900391003">Pessoa com um café</translation>
 <translation id="2251368349685848079">Restaurar do lixo</translation>
+<translation id="2278133026967558505">Acesso aos ficheiro por todos os Websites e URLs</translation>
 <translation id="2282155092769082568">URL de configuração automática:</translation>
 <translation id="2284767815536050991">armazenamento amovível</translation>
 <translation id="2288278176040912387">Gira-discos</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">A "Correspondência do nome alternativo do assunto" ou a "Correspondência do sufixo do domínio" estão em falta para validar a identidade do servidor de autenticação</translation>
 <translation id="7165320105431587207">Não foi possível configurar a rede</translation>
 <translation id="7170041865419449892">Fora de alcance</translation>
+<translation id="7179579940054351344">Acesso aos ficheiros por todos os Websites e URLs, exceto <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Guardar ficheiro como</translation>

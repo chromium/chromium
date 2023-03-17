@@ -243,6 +243,7 @@
 <translation id="1201564082781748151">Եթե մոռանաք ձեր գաղտնաբառը, սարքի տվյալները կարող են վերականգնվել</translation>
 <translation id="1202116106683864634">Իսկապե՞ս ուզում եք ջնջել այս անցաբառը։</translation>
 <translation id="1202596434010270079">Kiosk հավելվածը թարմացվեց: Հեռացրեք USB հիշողությունը:</translation>
+<translation id="1202892408424955784">Ապրանքներ, որոնց գներին հետևում եք</translation>
 <translation id="120368089816228251">Նոտա</translation>
 <translation id="1203942045716040624">Shared Worker՝ <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Ձեր ընտրած դյուրանցումները</translation>
@@ -2566,6 +2567,7 @@
 <translation id="3242289508736283383">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի ChromeOS-ի կրպակի ռեժիմում</translation>
 <translation id="3242665648857227438">Այս պրոֆիլի համար օգտագործվում են ChromeOS-ի պրոքսի սերվերի կարգավորումները</translation>
 <translation id="3243017971870859287">Կարդալ ChromeOS Flex սարքի և բաղադրիչների սերիական համարները</translation>
+<translation id="324366796737464147">Աղմուկի նվազեցում</translation>
 <translation id="3244294424315804309">Անջատել ձայնը</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Ցանցի սխալ</translation>
 <translation id="3248902735035392926">Անվտանգությունը կարևոր է: <ph name="BEGIN_LINK" />Ստուգեք ձեր ընդլայնումները<ph name="END_LINK" />:</translation>
@@ -2982,6 +2984,7 @@
 <translation id="3618286417582819036">Սխալ առաջացավ</translation>
 <translation id="3619115746895587757">Կապուչինո</translation>
 <translation id="3620136223548713675">Աշխարհագրական դիրք</translation>
+<translation id="3621202678540785336">Ներածում</translation>
 <translation id="3621807901162200696">Օգնել ավելի լավը դարձնել ChromeOS-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{հավելված}one{# հավելված}other{# հավելված}}</translation>
 <translation id="362333465072914957">Սպասում ենք հավաստագրման կենտրոնի կողմից հավաստագրի տրամադրմանը</translation>
@@ -4221,7 +4224,6 @@
 <translation id="4726710355753484204">Օգտագործեք Ctrl + Alt + Ավելացնել պայծառությունը դյուրանցումը՝ մասշտաբը մեծացնելու համար։
 Օգտագործեք Ctrl + Alt + Պակասեցնել պայծառությունը դյուրանցումը՝ մասշտաբը փոքրացնելու համար։</translation>
 <translation id="4726710629007580002">Այս ընդլայնումը տեղադրելիս զգուշացումներ են եղել.</translation>
-<translation id="472738079453283624">Ապրանքներ</translation>
 <translation id="4727847987444062305">Հյուրի կառավարվող աշխատաշրջան</translation>
 <translation id="4728558894243024398">Հենք</translation>
 <translation id="4730492586225682674">Ստիլուսով արված վերջին նշումը կողպէկրանին</translation>

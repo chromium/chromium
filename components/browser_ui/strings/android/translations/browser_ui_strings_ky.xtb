@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Жайылып көрсөтүлгөн – жыйнап коюу үчүн чыкылдатыңыз.</translation>
 <translation id="2586657967955657006">Алмашуу буфери</translation>
 <translation id="2597457036804169544">Сайттарга караңгы тема колдонулбасын</translation>
+<translation id="2606760465469169465">Автоматтык түрдө ырастоо</translation>
 <translation id="2621115761605608342">Белгилүү бир сайтта JavaScript иштешине уруксат берүү.</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2677748264148917807">Чыгуу</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Сиз тандаган байланыштар <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> менен бөлүшүлөт.</translation>
 <translation id="5216942107514965959">Бүгүн акыркы жолу кирген</translation>
 <translation id="5225463052809312700">Камераны күйгүзүү</translation>
+<translation id="5229337741799419985">Жеке маалыматыңыз ачыкталбайт жана сайттарга көрүлгөн вебсайттар көрсөтүлбөйт</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" өчүрүү</translation>
 <translation id="528192093759286357">Толук экрандан чыгуу үчүн жогорудан ылдый сүйрөп келип, "Артка" деген баскычка тийип коюңуз.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6689172468748959065">Профилдин сүрөттөрү</translation>
 <translation id="6697925417670533197">Жүктөлүп алынган файлдар</translation>
+<translation id="6701547804986694515">Сиз баш баккан сайт бот эмес экениңизди ырастаган маалыматты Chrome'до сакташы мүмкүн. Андан кийин башка сайттарга өтсөңүз, алар Chrome аркылуу бот эмес экениңизди текшере алышат</translation>
 <translation id="6722828510648505498">Идентификациялык кызматтарда кирүү сурамдарын бөгөттөө.</translation>
 <translation id="6746124502594467657">Төмөн жылдыруу</translation>
 <translation id="6749077623962119521">Уруксаттарды баштапкы абалга келтиресизби?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Сүрөт тандоо</translation>
 <translation id="8801436777607969138">Белгилүү бир сайтта JavaScript'ти бөгөттөө.</translation>
 <translation id="8803526663383843427">Күйүп турганда</translation>
+<translation id="8805385115381080995">Сайттар чыныгы колдонуучу экениңизди ырастоону азыраак сураса, серептөө тезирээк болот</translation>
 <translation id="8816026460808729765">Сайттардын сенсорлорду колдонуусун бөгөттөө</translation>
 <translation id="8823559166155093873">Cookie файлдарын бөгөттөө</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Бул кооптуу барак</translation>
 <translation id="9201023452444595544">Баардык оффлайн маалыматы тазаланат</translation>
 <translation id="930525582205581608">Бул сайт унутулсунбу?</translation>
+<translation id="947156494302904893">Сайттар чыныгы колдонуучу экениңизди ырастаган маалыматты алышы мүмкүн</translation>
 <translation id="967624055006145463">Сакталган дайындар</translation>
 </translationbundle>

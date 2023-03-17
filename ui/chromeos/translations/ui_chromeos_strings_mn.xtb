@@ -937,6 +937,7 @@
 <translation id="8492972329130824181">Гэрийн сүлжээ боломжгүй байна. Холбогдохын тулд мобайл дата роумингийг идэвхжүүлсэн байх ёстой.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />-г гаргаж байна...</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Төхөөрөмжийг тохируулсны дараа идэвхжүүлнэ үү. Танай администратор удирддаг</translation>
+<translation id="8512483403832814140">Дурын хугацаа</translation>
 <translation id="8521441079177373948">Их Британи</translation>
 <translation id="853494022971700746">Франц (Франц)</translation>
 <translation id="8540608333167683902">Cүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, дэлгэрэнгүй мэдээлэл</translation>

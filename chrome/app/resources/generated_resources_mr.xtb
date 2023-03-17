@@ -244,6 +244,7 @@
 <translation id="1201564082781748151">तुम्ही तुमचा पासवर्ड विसरल्यास, स्थानिक डेटा रिस्टोअर केला जाऊ शकतो</translation>
 <translation id="1202116106683864634">तुम्हाला ही पासकी नक्की हटवायची आहे का?</translation>
 <translation id="1202596434010270079">कियोस्क ॲप अपडेट केला गेला आहे. कृपया USB स्टिक काढून टाका.</translation>
+<translation id="1202892408424955784">माग ठेवलेली उत्पादने</translation>
 <translation id="120368089816228251">संगीत टीप</translation>
 <translation id="1203942045716040624">शेअर केलेला कर्मचारी: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">तुम्ही निवडलेले शॉर्टकट</translation>
@@ -2023,6 +2024,7 @@
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेज शोधा</translation>
 <translation id="2727633948226935816">मला पुन्‍हा स्‍मरण करून देऊ नका</translation>
 <translation id="2727712005121231835">वास्तविक आकार</translation>
+<translation id="2727744317940422214">सॉरी, काहीतरी चूक झाली. कृपया वर्णनात #bruschetta सह फीडबॅक नोंदवा. एरर कोड <ph name="ERROR" /> आहे. साफ करणे पूर्ण करता आले नाही, तुम्हाला ते मॅन्युअली करावे लागू शकते.</translation>
 <translation id="2729314457178420145">तसेच ब्राउझिंग डेटा (<ph name="URL" />) साफ करा ज्यामुळे तुम्ही कदाचित Google.com वरून साइन आउट व्हाल. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">ट्रॅकिंग कमी करण्यासाठी आणि तुम्ही ब्राउझ करत असताना तुम्हाला आणखी सुरक्षित ठेवण्यासाठी Chrome नवीन मार्ग शोधत आहे. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> हेदेखील करते आणि तुम्हाला ते व्यवस्थापित करू देते. त्यानंतर, तुम्ही भेट देता त्या साइट तुम्हाला जाहिराती दाखवण्यासाठी Chrome ला तुमच्या स्वारस्यांबद्दल विचारू शकतात.</translation>
 <translation id="2730029791981212295">Linux अ‍ॅप्स आणि फाइलचा बॅकअप घेत आहे</translation>
@@ -2587,6 +2589,7 @@
 <translation id="3242289508736283383">'kiosk_only' मॅनिफेस्ट ॲट्रिब्यूट असलेले अ‍ॅप हे ChromeOS कियोस्क मोडमध्ये इंस्टॉल केले जाणे आवश्यक आहे</translation>
 <translation id="3242665648857227438">ही प्रोफाइल ChromeOS प्रॉक्सी सेटिंग्ज वापरते.</translation>
 <translation id="3243017971870859287">ChromeOS Flex डिव्हाइस आणि घटकाचे सिरीअल नंबर वाचू शकेल</translation>
+<translation id="324366796737464147">नॉइझ कॅंसलेशन</translation>
 <translation id="3244294424315804309">आवाज म्यूट करणे सुरू ठेवा</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क एरर</translation>
 <translation id="3248902735035392926">सुरक्षा महत्त्वाची आहे. थोडा वेळ काढा आणि <ph name="BEGIN_LINK" />आता तुमची एक्स्टेंशन तपासा<ph name="END_LINK" /></translation>
@@ -3003,6 +3006,7 @@
 <translation id="3618286417582819036">सॉरी, एरर आली</translation>
 <translation id="3619115746895587757">कॅपिचिनो</translation>
 <translation id="3620136223548713675">भौगोलिक स्थान</translation>
+<translation id="3621202678540785336">इनपुट</translation>
 <translation id="3621807901162200696">ChromeOS च्या वैशिष्ट्यांमध्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{अ‍ॅप}other{# अ‍ॅप्स}}</translation>
 <translation id="362333465072914957">CA ने सर्टिफिकेट जारी करण्याची प्रतीक्षा करत आहे</translation>
@@ -4234,6 +4238,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> मधून बाहेर या</translation>
 <translation id="4711638718396952945">सेटिंग्ज पुनर्संचयित करा</translation>
 <translation id="4713409221649555176">तुम्ही सर्व विंडो बंद करता, तेव्हा हटवा</translation>
+<translation id="4715631922189108923">वापरकर्ता नाव संपादित करा</translation>
 <translation id="47158868804223727">त्याचा विस्तार करण्यासाठी किंवा ते कोलॅप्स करण्याकरिता गटाच्या नावावर क्लिक करा</translation>
 <translation id="4716483597559580346">अतिरिक्त सुरक्षिततेसाठी पॉवरवॉश</translation>
 <translation id="471759229191973607">थीम बदला</translation>
@@ -4246,7 +4251,6 @@
 <translation id="4726710355753484204">झूम इन करण्यासाठी Ctrl + Alt + Brightness up वापरा.
 झूम आउट करण्यासाठी Ctrl + Alt + Brightness down वापरा.</translation>
 <translation id="4726710629007580002">हे एक्स्टेंशन इंस्टॉल करण्याचा प्रयत्न करताना चेतावणी देण्यात आली:</translation>
-<translation id="472738079453283624">उत्पादने</translation>
 <translation id="4727847987444062305">अतिथी सत्र व्यवस्थापित करा</translation>
 <translation id="4728558894243024398">प्लॅटफॉर्म</translation>
 <translation id="4730492586225682674">लॉक स्क्रीनवर स्टायलस नवीनतम टीप</translation>
@@ -7560,6 +7564,7 @@
 <translation id="7758450972308449809">तुमच्या डिस्प्लेच्या सीमा समायोजित करा</translation>
 <translation id="7760004034676677601">तुम्ही अपेक्षा करत होता हे तेच स्टार्टअप पेज आहे?</translation>
 <translation id="7762024824096060040">हे खाते वापरू शकत नाही</translation>
+<translation id="7762243782113123335">सॉरी, काहीतरी चूक झाली. कृपया वर्णनात #bruschetta सह फीडबॅक नोंदवा. एरर कोड <ph name="ERROR" /> आहे.</translation>
 <translation id="7764225426217299476">पत्ता जोडा</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> वरून <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7765158879357617694">हलवा</translation>
@@ -8070,6 +8075,7 @@
 <translation id="8203732864715032075">Messages साठी हा कॉंप्युटर डीफॉल्ट म्हणून लक्षात ठेवण्याकरता तुम्हाला सूचना पाठवेल. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">तुमचे डिस्प्ले आणि पेरिफेरल लवकरच रीसेट केले जाऊ शकतात. हा बदल लागू होण्यासाठी, तुमची पेरिफेरल अनप्लग करून पुन्हा प्लग इन करा.</translation>
 <translation id="820568752112382238">सर्वाधिक भेट दिलेल्या साइट</translation>
+<translation id="8206267832882844324">टीप संपादित करा</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
 <translation id="8207404892907560325">पासकी निवडा</translation>
@@ -8657,6 +8663,7 @@
 <translation id="8740247629089392745">तुम्ही हे Chromebook <ph name="SUPERVISED_USER_NAME" /> कडे सोपवू शकता. सेट करणे जवळपास पूर्ण झाले आहे, त्यानंतर एक्सप्लोर करण्याची वेळ आहे.</translation>
 <translation id="8740672167979365981">ChromeOS Flex अपडेट करणे आवश्यक आहे</translation>
 <translation id="8741944563400125534">स्विच अ‍ॅक्सेस सेटअप मार्गदर्शक</translation>
+<translation id="8742395827132970586">इंस्टॉल करणे पूर्ण करता आले नाही, साफ करत आहे</translation>
 <translation id="8742998548129056176">तुमचे डिव्हाइस आणि तुम्ही ते कसे वापरता याबद्दल ही सर्वसाधारण माहिती आहे (जसे की, बॅटरी पातळी, सिस्टम आणि ॲप ॲक्टिव्हिटी व एरर). डेटा Android मध्ये सुधारणा करण्यासाठी वापरला जाईल आणि काही एकत्रित केलेली माहिती Google ॲप्स आणि Android डेव्हलपरसारख्या भागीदारांनादेखील त्यांची ॲप्स आणि उत्पादने आणखी चांगली बनवण्यात मदत करेल.</translation>
 <translation id="8744641000906923997">रोमाजी</translation>
 <translation id="8745034592125932220">तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती नाही</translation>

@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">La red doméstica no está disponible. Para conectarte, debes habilitar el roaming de datos móviles.</translation>
 <translation id="8499098729323186194">Extrayendo <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="8502913769543567768">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Activar tras la configuración del dispositivo, Gestionada por el administrador</translation>
+<translation id="8512483403832814140">Cualquier fecha</translation>
 <translation id="8521441079177373948">Reino Unido</translation>
 <translation id="853494022971700746">Francés (Francia)</translation>
 <translation id="8540608333167683902">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>

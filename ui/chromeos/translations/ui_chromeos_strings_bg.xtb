@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">Няма достъп до домашната мрежа. Роумингът на мобилни данни трябва да е активиран, за да се установи връзка.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> елемента се извличат...</translation>
 <translation id="8502913769543567768">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активиране след настройването на устройството, управлява се от администратора ви</translation>
+<translation id="8512483403832814140">По всяко време</translation>
 <translation id="8521441079177373948">Британска клавиатура</translation>
 <translation id="853494022971700746">Френски (Франция)</translation>
 <translation id="8540608333167683902">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>

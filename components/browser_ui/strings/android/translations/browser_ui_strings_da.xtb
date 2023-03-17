@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Udvid <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Slå lyden fra for et bestemt website.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
+<translation id="4478158430052450698">Gør det nemmere at tilpasse zoom på forskellige websites</translation>
 <translation id="4479647676395637221">Spørg, før websites bruger dit kamera (anbefales)</translation>
 <translation id="4505788138578415521">Webadressen er udvidet</translation>
 <translation id="4534723447064627427">Aktivér også din mikrofon i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til mikrofonen.</translation>

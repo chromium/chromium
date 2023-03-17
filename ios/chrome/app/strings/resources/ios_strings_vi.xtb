@@ -374,6 +374,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3595252146048399851">Bạn có thể chọn nội dung muốn đồng bộ hoá trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> bất cứ lúc nào. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="3603009562372709545">Sao chép URL liên kết</translation>
 <translation id="3607167657931203000">Dữ liệu tự động điền</translation>
+<translation id="3608008480985212611">Đăng nhập để quản lý lựa chọn ưu tiên của bạn.</translation>
 <translation id="3609785682760573515">Đang đồng bộ hóa...</translation>
 <translation id="3631443864840848029">Đảm bảo rằng bạn đang lưu mật khẩu hiện tại cho trang web này.</translation>
 <translation id="3638472932233958418">Tải trước trang web</translation>
@@ -541,6 +542,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="48274138579728272">Đánh dấu là đã đọc</translation>
 <translation id="4833686396768033263">Không có các thẻ gần đây</translation>
 <translation id="4833786495304741580">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google.</translation>
+<translation id="4834499902900503484">Khi bạn đăng nhập vào Chrome, mật khẩu mà bạn lưu sẽ có trong Tài khoản Google của bạn. Để tắt tính năng này, hãy <ph name="BEGIN_LINK" />vào phần cài đặt<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Dấu trang, lịch sử, mật khẩu và các dữ liệu khác sẽ không còn đồng bộ hóa với Tài khoản Google của bạn nữa.</translation>
 <translation id="4844899002472726590">Xem và chỉnh sửa những chủ đề bạn quan tâm</translation>
 <translation id="4848999860252535517">Xoá mật khẩu của <ph name="WEBSITE" />?</translation>
@@ -684,6 +686,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5899314093904173337">Để chia sẻ với những người ở gần, hãy cho phép họ quét mã QR này bằng máy ảnh hoặc ứng dụng quét mã QR</translation>
 <translation id="5911030830365207728">Google Dịch</translation>
 <translation id="5913600720976431809">Các tùy chọn dịch trang</translation>
+<translation id="5922999516621365983">Kéo thẻ vào đây để ghim.</translation>
 <translation id="5938160824633642847">Thiết bị của bạn gần hết không gian lưu trữ. Hãy giải phóng dung lượng và thử lại.</translation>
 <translation id="5948291296578561264">Điều này cho phép bạn lưu ảnh vào thư viện ảnh của mình.</translation>
 <translation id="5951816930277761335">Chia sẻ đường liên kết</translation>
@@ -1040,6 +1043,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8237382152611443140">Mở chế độ Cài đặt tự động điền mật khẩu</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8264966119170358612">Một số mật khẩu bạn lưu đã bị lộ trong một sự cố rò rỉ dữ liệu xảy ra ngoài Google. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Chỉ trên thiết bị này</translation>
 <translation id="8271720166617117963">Chấp nhận và Đăng nhập</translation>
 <translation id="8278938988428169257">Nhập một từ hoặc cụm từ</translation>
 <translation id="8281781826761538115">Mặc định - <ph name="DEFAULT_LOCALE" /></translation>

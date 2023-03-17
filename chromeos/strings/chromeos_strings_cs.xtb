@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Byl zjištěn Firewall</translation>
 <translation id="1075811647922107217">Velikost stránky</translation>
+<translation id="1082009148392559545">Stahování spořiče obrazovky</translation>
 <translation id="1094693127011229778">Není k dispozici IP adresa</translation>
 <translation id="1113892970288677790">Vyberte umělecká díla a obrázky</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">Podavač dokumentů (jednostranných)</translation>
 <translation id="1643449475550628585">Denně měnit tapetu</translation>
 <translation id="1644574205037202324">Historie</translation>
+<translation id="1651925268237749928">Vybrali jste sdílené album. Ostatní lidé mohou přidávat nebo měnit fotografie. Jako tapeta se mohou zobrazit fotografie, které v tomto albu aktuálně nejsou.</translation>
 <translation id="1662989795263954667">Zastaveno – došel inkoust</translation>
 <translation id="1664796644829245314">Náhled <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">Spravuje <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Jmenné servery</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
+<translation id="1738949837603788263">Zóna <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Obrázky se nepodařilo načíst. Zkontrolujte připojení k síti a zkuste je načíst znovu.</translation>
 <translation id="1751249301761991853">Osobní</translation>
 <translation id="1753496554272155572">Zavřít náhled tapety</translation>
@@ -140,6 +143,7 @@
 <translation id="2157959690810728433">VE FRONTĚ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Zkusit znovu</translation>
 <translation id="2161394479394250669">Zrušit tiskovou úlohu</translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Zapnout tmavý režim</translation>
 <translation id="2180197493692062006">Došlo k chybě. Zkuste aplikaci otevřít znovu.</translation>
 <translation id="2209788852729124853">Resetovat počítadla návštěvnosti</translation>
@@ -215,6 +219,7 @@
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3017079585324758401">Pozadí</translation>
+<translation id="3020183492814296499">Zkratky</translation>
 <translation id="3027578600144895987">Zavřete fotoaparát</translation>
 <translation id="3031560714565892478">Zařízení je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -236,6 +241,7 @@
 <translation id="319101249942218879">Obrázek avatara se změnil</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
+<translation id="3201315366910775591">Sdílená alba mohou aktualizovat ostatní</translation>
 <translation id="3211671540163313381">Křížový ovladač mapování kláves</translation>
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
 <translation id="3226657629376379887">Nabídka akcí s rozvržením</translation>
@@ -598,6 +604,7 @@
 <translation id="636850387210749493">Podniková registrace</translation>
 <translation id="6379086450106841622">Dotyková obrazovka</translation>
 <translation id="6381741036071372448">Vyzkoušejte si klávesnici</translation>
+<translation id="6382182670717268353">Náhled spořiče obrazovky</translation>
 <translation id="6388847657025262518">Podavač dokumentů skeneru je zaseknutý. Zkontrolujte podavač a zkuste to znovu.</translation>
 <translation id="6394634179843537518">Přidat soubor</translation>
 <translation id="6410257289063177456">Obrázkové soubory</translation>
@@ -653,6 +660,7 @@
 <translation id="6838167112108853532">Tento APN nelze deaktivovat ani odstranit. Je třeba deaktivovat nebo odstranit připojené APN.</translation>
 <translation id="6853312040151791195">Rychlost vybíjení</translation>
 <translation id="6889786074662672253">Během restartování neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
+<translation id="6900701049656042631">Toto album neobsahuje žádné fotografie. Fotky můžete přidat na adrese <ph name="LINK" />.</translation>
 <translation id="6905724422583748843">Zpět na stránku <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kryt skeneru je otevřený. Zavřete kryt a zkuste to znovu.</translation>
 <translation id="6911383237894364323">Nelze se připojit k mediálním serverům</translation>
@@ -660,7 +668,9 @@
 <translation id="6957231940976260713">Název služby</translation>
 <translation id="6961170852793647506">Začněte položením dokumentu na skener</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Zařízení</translation>
 <translation id="6977381486153291903">Revize firmwaru</translation>
+<translation id="6981982820502123353">Usnadnění</translation>
 <translation id="7005833343836210400">Zařízení je offline</translation>
 <translation id="7028979494427204405">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
 <translation id="7040230719604914234">Operátor</translation>
@@ -687,6 +697,7 @@
 <translation id="7177485034254901881">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7180865173735832675">Personalizovat</translation>
+<translation id="7184043045742675738">Pokud své tlačítko chcete přizpůsobit, klikněte na libovolnou klávesu. Přemístěte klávesu pomocí myši nebo kláves se šipkami.</translation>
 <translation id="7212734716605298123">Aktualizace firmwaru pro externí zařízení</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
 <translation id="725133483556299729">Vyberte e-mail</translation>
@@ -728,6 +739,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Dotyková obrazovka USB</translation>
 <translation id="7595982850646262331">Zbývá <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Přemístěte pomocí myši nebo kláves se šipkami.</translation>
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
 <translation id="763165478673169849">Čas posledního resetování</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
@@ -768,6 +780,7 @@
 <translation id="7977800524392185497">Pokud se chcete připojit k síti <ph name="NETWORK_NAME" />, přejděte do sekce Nastavení</translation>
 <translation id="7978412674231730200">Soukromý klíč</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
+<translation id="8004582292198964060">Prohlížeč</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Zapnout režim automatických barev</translation>
@@ -850,6 +863,7 @@
 <translation id="8798441408945964110">Název poskytovatele</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>
+<translation id="8820457400746201697">Přesuňte modrý kontaktní bod na akci. Vyberte přidruženou klávesu a proveďte přizpůsobení.</translation>
 <translation id="8834539327799336565">Momentálně připojeno</translation>
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8855781559874488009">Přes firewall se nelze připojit k webům HTTP</translation>
@@ -879,6 +893,7 @@
 <translation id="8998289560386111590">Na vašem zařízení není k dispozici</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="9025198690966128418">Použít jako osobní zařízení</translation>
+<translation id="902638246363752736">Nastavení klávesnice</translation>
 <translation id="9028832514430399253">Zapnutím přepínače vyberete možnosti spořiče obrazovky</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +926,5 @@
 <translation id="952992212772159698">Není aktivováno</translation>
 <translation id="960719561871045870">Kód operátora</translation>
 <translation id="982713511914535780">Spustit test vybíjení</translation>
+<translation id="987264212798334818">Všeobecné</translation>
 </translationbundle>

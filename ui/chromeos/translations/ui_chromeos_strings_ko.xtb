@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">홈 네트워크를 사용할 수 없습니다. 연결하려면 모바일 데이터 로밍이 사용 설정되어 있어야 합니다.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />개 항목 추출 중…</translation>
 <translation id="8502913769543567768">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 기기 설정 후 활성화, 관리자가 관리함</translation>
+<translation id="8512483403832814140">전체 기간</translation>
 <translation id="8521441079177373948">영어(영국)</translation>
 <translation id="853494022971700746">프랑스어(프랑스)</translation>
 <translation id="8540608333167683902">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>

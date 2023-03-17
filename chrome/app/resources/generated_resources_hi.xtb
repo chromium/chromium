@@ -245,6 +245,7 @@
 <translation id="1201564082781748151">पासवर्ड भूल जाने पर, आपके पास स्थानीय डेटा वापस लाने का विकल्प होता है</translation>
 <translation id="1202116106683864634">क्या वाकई यह पासकी मिटानी है?</translation>
 <translation id="1202596434010270079">कियोस्‍क ऐप अपडेट कर दिया गया है. कृपया USB स्‍टिक को निकालें.</translation>
+<translation id="1202892408424955784">ट्रैक किए गए प्रॉडक्ट</translation>
 <translation id="120368089816228251">संगीत नोट</translation>
 <translation id="1203942045716040624">शेयर किया गया वर्कर: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">शॉर्टकट आप चुनते हैं</translation>
@@ -2590,6 +2591,7 @@
 <translation id="3242289508736283383">'kiosk_only' मेनिफ़ेस्ट एट्रिब्यूट वाला ऐप्लिकेशन ChromeOS कीऑस्क मोड में इंस्टॉल किया जाना चाहिए</translation>
 <translation id="3242665648857227438">इस प्रोफ़ाइल में, ChromeOS की प्रॉक्सी सेटिंग का इस्तेमाल किया जाता है.</translation>
 <translation id="3243017971870859287">ChromeOS Flex वाले डिवाइस और उसके कॉम्पोनेंट के सीरियल नंबर पढ़ता है</translation>
+<translation id="324366796737464147">ग़ैर-ज़रूरी आवाज़ें कम करने की सुविधा</translation>
 <translation id="3244294424315804309">आवाज़ बंद रखें</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क गड़बड़ी</translation>
 <translation id="3248902735035392926">सुरक्षा ज़रूरी है. थोड़ा समय निकालकर, <ph name="BEGIN_LINK" />अभी अपने एक्सटेंशन की जांच करें.<ph name="END_LINK" /></translation>
@@ -3006,6 +3008,7 @@
 <translation id="3618286417582819036">माफ़ करें, कोई गड़बड़ी हुई</translation>
 <translation id="3619115746895587757">कैपुचिनो</translation>
 <translation id="3620136223548713675">भौगोलिक स्थान</translation>
+<translation id="3621202678540785336">इनपुट</translation>
 <translation id="3621807901162200696">ChromeOS की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{एक ऐप्लिकेशन}one{# ऐप्लिकेशन}other{# ऐप्लिकेशन}}</translation>
 <translation id="362333465072914957">प्रमाणपत्र जारी करने के लिए सीए का इंतज़ार</translation>
@@ -4250,7 +4253,6 @@
 <translation id="4726710355753484204">ज़ूम इन करने के लिए, Ctrl + Alt + 'स्क्रीन की रोशनी बढ़ाएं' बटन का इस्तेमाल करें.
 ज़ूम आउट करने के लिए, Ctrl+Alt+ 'स्क्रीन की रोशनी कम करें' बटन का इस्तेमाल करें.</translation>
 <translation id="4726710629007580002">इस एक्सटेंशन को इंस्टॉल करने का प्रयास करते समय चेतावनियां आई थीं:</translation>
-<translation id="472738079453283624">प्रॉडक्ट</translation>
 <translation id="4727847987444062305">मेहमान के तौर पर ब्राउज़ करने का प्रबंधित सेशन</translation>
 <translation id="4728558894243024398">प्लेटफ़ॉर्म</translation>
 <translation id="4730492586225682674">स्टाइलस की मदद से नए नोट को लॉक स्क्रीन पर रखना</translation>

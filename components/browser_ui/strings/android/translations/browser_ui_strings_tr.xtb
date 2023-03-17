@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Genişletildi - Daraltmak için tıklayın.</translation>
 <translation id="2586657967955657006">Pano</translation>
 <translation id="2597457036804169544">Sitelere koyu tema uygulama</translation>
+<translation id="2606760465469169465">Otomatik doğrulama</translation>
 <translation id="2621115761605608342">Belirli bir site için JavaScript'e izin verin.</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2677748264148917807">Çık</translation>
@@ -188,6 +189,7 @@
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> panelini genişlet</translation>
 <translation id="4468959413250150279">Belirli bir site için sesi kapatın.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# çerez}other{# çerez}}</translation>
+<translation id="4478158430052450698">Yakınlaştırma işlevini farklı siteler için özelleştirmeyi kolay hale getirin</translation>
 <translation id="4479647676395637221">Sitelerin, kameranızı kullanmasına izin verilmeden önce size sorulsun (önerilir)</translation>
 <translation id="4505788138578415521">URL genişletildi</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> uygulamasının mikrofonunuza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da mikrofonu açın.</translation>
@@ -223,6 +225,7 @@
 <translation id="5197729504361054390">Seçtiğiniz kişiler <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ile paylaşılacak.</translation>
 <translation id="5216942107514965959">En son bugün ziyaret edildi</translation>
 <translation id="5225463052809312700">Kamerayı aç</translation>
+<translation id="5229337741799419985">Bu ayar çalışırken kimliğinizin belirlenmesine veya sitelerin tarama geçmişinizi görmesine izin verilmez</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" çipini kaldır</translation>
 <translation id="528192093759286357">Tam ekrandan çıkmak için yukarıdan sürükleyin ve geri düğmesine dokunun.</translation>
@@ -309,6 +312,7 @@
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6689172468748959065">Profil fotoğrafları</translation>
 <translation id="6697925417670533197">Etkin indirme işlemleri</translation>
+<translation id="6701547804986694515">Ziyaret ettiğiniz bir site, bot olmadığınızı doğrulayacak bilgileri Chrome'a kaydedebilir. Siz sitelere göz atarken siteler de Chrome'dan kontrol ederek ziyaret ettiğiniz önceki bir siteden büyük olasılıkla gerçek bir kişi olduğunuzu doğrular</translation>
 <translation id="6722828510648505498">Kimlik hizmetlerinden gelen oturum açma istemlerini engelleyin.</translation>
 <translation id="6746124502594467657">Aşağı taşı</translation>
 <translation id="6749077623962119521">İzinler sıfırlansın mı?</translation>
@@ -426,6 +430,7 @@
 <translation id="8751914237388039244">Resim seçin</translation>
 <translation id="8801436777607969138">JavaScript'i belirli bir site için engelleyin.</translation>
 <translation id="8803526663383843427">Açık olduğunda</translation>
+<translation id="8805385115381080995">Sitelerin gerçek bir kişi olduğunuzu doğrulamanızı isteme olasılığı daha düşük olduğundan daha hızlı bir göz atma deneyimi yaşarsınız</translation>
 <translation id="8816026460808729765">Sitelerin sensörlere erişimini engelle</translation>
 <translation id="8823559166155093873">Çerezleri engelle</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +454,6 @@
 <translation id="9162462602695099906">Bu sayfa tehlikeli</translation>
 <translation id="9201023452444595544">Tüm çevrimdışı veriler temizlenecek</translation>
 <translation id="930525582205581608">Bu site unutulsun mu?</translation>
+<translation id="947156494302904893">Ziyaret ettiğiniz siteler, bot olmadığınızı ve gerçek bir kişi olduğunuzu doğrulayabilir</translation>
 <translation id="967624055006145463">Depolanan veriler</translation>
 </translationbundle>

@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откриен е заштитен ѕид</translation>
 <translation id="1075811647922107217">Големина на страницата</translation>
+<translation id="1082009148392559545">Се презема заштитникот на екран</translation>
 <translation id="1094693127011229778">IP-адресата не е достапна</translation>
 <translation id="1113892970288677790">Изберете избрани илустрации и слики</translation>
 <translation id="1119447706177454957">Внатрешна грешка</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">Внесувач на документи (едностран)</translation>
 <translation id="1643449475550628585">Менувајте ја сликата за тапет секојдневно</translation>
 <translation id="1644574205037202324">Историја</translation>
+<translation id="1651925268237749928">Избравте споделен албум. Други луѓе може да додаваат или променуваат фотографии. Можно е вашиот тапет да користи фотографии што не се во албумов во моментов.</translation>
 <translation id="1662989795263954667">Запрено - нема мастило</translation>
 <translation id="1664796644829245314">Преглед на <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">Управувано од <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">DNS-сервери</translation>
 <translation id="1731082422893354635">Подлога за допир со Bluetooth</translation>
+<translation id="1738949837603788263">Зона <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Не може да се вчитаат сликите. Проверете ја мрежната врска или вчитајте ги сликите повторно.</translation>
 <translation id="1751249301761991853">Персонализација</translation>
 <translation id="1753496554272155572">Преглед на тапет за излез</translation>
@@ -140,6 +143,7 @@
 <translation id="2157959690810728433">ЧЕКА НА РЕД</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Обиди се пак</translation>
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
+<translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Вклучи темен режим</translation>
 <translation id="2180197493692062006">Нешто тргна наопаку. Отворете ја апликацијата повторно.</translation>
 <translation id="2209788852729124853">Ресетирај бројачи на сообраќај</translation>
@@ -215,6 +219,7 @@
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="3017079585324758401">Заднина</translation>
+<translation id="3020183492814296499">Кратенки</translation>
 <translation id="3027578600144895987">Затворете ја камерата</translation>
 <translation id="3031560714565892478">Уредот е видеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -236,6 +241,7 @@
 <translation id="319101249942218879">Сликата на аватарот е променета</translation>
 <translation id="3192947282887913208">Аудиодатотеки</translation>
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
+<translation id="3201315366910775591">Други луѓе може да ги ажурираат споделените албуми</translation>
 <translation id="3211671540163313381">Мапирање клуч на навигациски копчиња</translation>
 <translation id="3226405216343213872">Се бараат скенери</translation>
 <translation id="3226657629376379887">Мени на дејства за распоред</translation>
@@ -598,6 +604,7 @@
 <translation id="636850387210749493">Запишување компанија</translation>
 <translation id="6379086450106841622">Екран на допир</translation>
 <translation id="6381741036071372448">Тестирајте ја тастатурата</translation>
+<translation id="6382182670717268353">Преглед на заштитник на екран</translation>
 <translation id="6388847657025262518">Фиоката за документи на скенерот е заглавена. Проверете ја и обидете се повторно.</translation>
 <translation id="6394634179843537518">Додај датотека</translation>
 <translation id="6410257289063177456">Датотеки со слики</translation>
@@ -653,6 +660,7 @@
 <translation id="6838167112108853532">Не може да се оневозможи или отстрани оваа APN. Погрижете се дека овозможените прикачени APN се оневозможени или отстранети.</translation>
 <translation id="6853312040151791195">Брзина на празнење</translation>
 <translation id="6889786074662672253">Додека се рестартира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ова може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
+<translation id="6900701049656042631">Нема фотографии во албумов. За да додадете фотографии, одете на <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Назад на <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Капакот на скенерот е отворен. Затворете го и обидете се повторно.</translation>
 <translation id="6911383237894364323">Не може да се поврзе со серверите за аудиовизуелни содржини</translation>
@@ -660,7 +668,9 @@
 <translation id="6957231940976260713">Име на услугата</translation>
 <translation id="6961170852793647506">За да започнете, ставете го документот на скенерот</translation>
 <translation id="6965382102122355670">Во ред</translation>
+<translation id="6965978654500191972">Уред</translation>
 <translation id="6977381486153291903">Ревизија на фирмвер</translation>
+<translation id="6981982820502123353">Пристапност</translation>
 <translation id="7005833343836210400">Уредот е офлајн</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управува со уредов и има пристап до целата активност на корисникот, вклучувајќи ги и посетените веб-страници, лозинките и е-поштата.</translation>
 <translation id="7040230719604914234">Оператор</translation>
@@ -687,6 +697,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7180865173735832675">Приспособи</translation>
+<translation id="7184043045742675738">Кликнете на кој било од клучевите за да го приспособите вашето копче. Променете ја позицијата на клучот со глувчето или копчињата со стрелки.</translation>
 <translation id="7212734716605298123">Ажурирања на фирмверот за екстерни уреди</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="725133483556299729">Избери е-пошта</translation>
@@ -728,6 +739,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Допирен екран со USB</translation>
 <translation id="7595982850646262331">Уште <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Променете ја позицијата со глувчето или копчињата со стрелки.</translation>
 <translation id="7620771111601174153">Дознајте повеќе во „Центарот за помош“</translation>
 <translation id="763165478673169849">Време на последно ресетирање</translation>
 <translation id="7648838807254605802">Висока латенција на HTTPS</translation>
@@ -768,6 +780,7 @@
 <translation id="7977800524392185497">За да се придружите на мрежата <ph name="NETWORK_NAME" />, одете во „Поставки“</translation>
 <translation id="7978412674231730200">Приватен клуч</translation>
 <translation id="7994702968232966508">EAP-метод</translation>
+<translation id="8004582292198964060">Прелистувач</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Овозможете режим во автоматска боја</translation>
@@ -850,6 +863,7 @@
 <translation id="8798441408945964110">Име на оператор</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тапет</translation>
+<translation id="8820457400746201697">Преместете ја сината точка на допир на дејство. Изберете го поврзаниот клуч за да приспособите.</translation>
 <translation id="8834539327799336565">Моментално поврзани</translation>
 <translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8855781559874488009">Не може да се поврзе преку заштитен ѕид со веб-сајтови со HTTP</translation>
@@ -879,6 +893,7 @@
 <translation id="8998289560386111590">Не е достапен на вашиот уред</translation>
 <translation id="9003704114456258138">Зачестеност</translation>
 <translation id="9025198690966128418">Користете го како личен уред</translation>
+<translation id="902638246363752736">Поставки на тастатура</translation>
 <translation id="9028832514430399253">Вклучете го копчето за да ги изберете опциите за заштитникот на екранот</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +926,5 @@
 <translation id="952992212772159698">Не е активиран</translation>
 <translation id="960719561871045870">Код на оператор</translation>
 <translation id="982713511914535780">Изврши тест за празнење</translation>
+<translation id="987264212798334818">Општо</translation>
 </translationbundle>

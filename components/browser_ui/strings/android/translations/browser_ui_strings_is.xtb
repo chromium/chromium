@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Stækkað – smelltu til að minnka.</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
 <translation id="2597457036804169544">Ekki nota dökkt þema fyrir vefsvæði</translation>
+<translation id="2606760465469169465">Sjálfvirk staðfesting</translation>
 <translation id="2621115761605608342">Leyfa JavaScript fyrir ákveðna síðu.</translation>
 <translation id="2653659639078652383">Senda</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Tengiliðunum sem þú valdir verður deilt með <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Síðast opnað í dag</translation>
 <translation id="5225463052809312700">Kveikja á myndavél</translation>
+<translation id="5229337741799419985">Þessi stilling virkar án þess að auðkenna þig eða leyfa vefsvæðum að sjá vafraferilinn þinn</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5264323282659631142">Fjarlægja „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Dragðu ofan frá og snertu bakkhnappinn til að hætta birtingu á öllum skjánum.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6689172468748959065">Prófílmyndir</translation>
 <translation id="6697925417670533197">Niðurhal í gangi</translation>
+<translation id="6701547804986694515">Vefsvæði sem þú heimsækir getur vistað upplýsingar í Chrome sem staðfesta að þú sért ekki botti. Þegar þú heldur áfram að vafra geta vefsvæði athugað upplýsingarnar hjá Chrome og staðfest frá fyrra vefsvæði að þú sért líklega mennskur notandi.</translation>
 <translation id="6722828510648505498">Útiloka innskráningartilkynningar frá auðkenningarþjónustum.</translation>
 <translation id="6746124502594467657">Færa niður</translation>
 <translation id="6749077623962119521">Endurstilla heimildir?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Veldu mynd</translation>
 <translation id="8801436777607969138">Setja JavaScript á bannlista fyrir ákveðna síðu.</translation>
 <translation id="8803526663383843427">Þegar kveikt er á þessu</translation>
+<translation id="8805385115381080995">Vefskoðun verður hraðari vegna þess að ólíklegra er að vefsvæði biðji þig um að staðfesta að þú sért manneskja.</translation>
 <translation id="8816026460808729765">Loka fyrir aðgang vefsvæða að skynjurum</translation>
 <translation id="8823559166155093873">Loka á fótspor</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Þessi síða er hættuleg</translation>
 <translation id="9201023452444595544">Öllum ónettengdum gögnum verður eytt</translation>
 <translation id="930525582205581608">Gleyma þessu vefsvæði?</translation>
+<translation id="947156494302904893">Vefsvæði geta staðfest að þú sért manneskja en ekki botti</translation>
 <translation id="967624055006145463">Vistuð gögn</translation>
 </translationbundle>

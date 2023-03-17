@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Uitgevou – klik om in te vou.</translation>
 <translation id="2586657967955657006">Knipbord</translation>
 <translation id="2597457036804169544">Moenie donkertema op werwe toepas nie</translation>
+<translation id="2606760465469169465">Outoverifieer</translation>
 <translation id="2621115761605608342">Laat JavaScript vir 'n spesifieke werf toe.</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Die kontakte wat jy kies, sal gedeel word met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Laas vandag besoek</translation>
 <translation id="5225463052809312700">Skakel kamera aan</translation>
+<translation id="5229337741799419985">Hierdie instelling werk sonder om jou te identifiseer of werwe toe te laat om jou blaaigeskiedenis te sien</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5264323282659631142">Verwyder "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Sleep van bo af en raak die terugknoppie om volskerm te verlaat.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Aktiewe aflaaie</translation>
+<translation id="6701547804986694515">’n Werf wat jy besoek, kan inligting met Chrome stoor wat bekragtig dat jy nie ’n bot is nie. Terwyl jy aanhou blaai, kan werwe met Chrome kontroleer en met ’n vorige werf wat jy besoek het, verifieer dat jy waarskynlik ’n regte persoon is</translation>
 <translation id="6722828510648505498">Blokkeer aanmeldporboodskappe van identiteitsdienste af.</translation>
 <translation id="6746124502594467657">Skuif af</translation>
 <translation id="6749077623962119521">Stel toestemmings terug?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Kies 'n prent</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript vir 'n spesifieke werf.</translation>
 <translation id="8803526663383843427">As dit aan is</translation>
+<translation id="8805385115381080995">Jy kan vinniger blaai omdat die kans kleiner is dat ’n werf jou sal vra om te verifieer dat jy ’n regte persoon is</translation>
 <translation id="8816026460808729765">Blokkeer werwe om toegang tot sensors kry</translation>
 <translation id="8823559166155093873">Blokkeer webkoekies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Hierdie bladsy is gevaarlik</translation>
 <translation id="9201023452444595544">Enige vanlyn data sal uitgevee word</translation>
 <translation id="930525582205581608">Vergeet hierdie werf?</translation>
+<translation id="947156494302904893">Werwe wat jy besoek, kan verifieer dat jy ’n regte persoon is en nie ’n bot nie</translation>
 <translation id="967624055006145463">Data geberg</translation>
 </translationbundle>

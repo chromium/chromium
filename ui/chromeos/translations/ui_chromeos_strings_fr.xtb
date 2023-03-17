@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">Le réseau domestique n'est pas disponible. Pour vous y connecter, vous devez activer l'itinérance des données mobiles.</translation>
 <translation id="8499098729323186194">Extraction de <ph name="NUMBER_OF_ITEMS" /> éléments...</translation>
 <translation id="8502913769543567768">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activer après la configuration de l'appareil, géré par votre administrateur</translation>
+<translation id="8512483403832814140">N'importe quand</translation>
 <translation id="8521441079177373948">Royaume-Uni</translation>
 <translation id="853494022971700746">Français (France)</translation>
 <translation id="8540608333167683902">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>

@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">La xarxa domèstica no està disponible. La itinerància de dades mòbils ha d'estar activada per poder connectar-t'hi.</translation>
 <translation id="8499098729323186194">S'estan extraient <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="8502913769543567768">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Activa després de la configuració del dispositiu, Gestionada pel teu administrador</translation>
+<translation id="8512483403832814140">En qualsevol moment</translation>
 <translation id="8521441079177373948">Regne Unit</translation>
 <translation id="853494022971700746">Francès (França)</translation>
 <translation id="8540608333167683902">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, detalls</translation>

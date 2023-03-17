@@ -93,6 +93,7 @@
 <translation id="257931822824936280">ขยาย - คลิกเพื่อยุบ</translation>
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
 <translation id="2597457036804169544">ไม่ใช้ธีมมืดกับเว็บไซต์ต่างๆ</translation>
+<translation id="2606760465469169465">การยืนยันอัตโนมัติ</translation>
 <translation id="2621115761605608342">อนุญาต JavaScript สำหรับเว็บไซต์ใดเว็บไซต์หนึ่ง</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2677748264148917807">ออก</translation>
@@ -188,6 +189,7 @@
 <translation id="4440642537584213025">ขยาย<ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">ปิดเสียงไซต์ที่ต้องการ</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{คุกกี้ # รายการ}other{คุกกี้ # รายการ}}</translation>
+<translation id="4478158430052450698">ปรับแต่งการซูมของเว็บไซต์ต่างๆ ได้ง่ายขึ้น</translation>
 <translation id="4479647676395637221">ถามก่อน ก่อนที่จะอนุญาตให้เว็บไซต์ใช้กล้องถ่ายรูปของคุณ (แนะนำ)</translation>
 <translation id="4505788138578415521">ขยาย URL แล้ว</translation>
 <translation id="4534723447064627427">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงไมโครโฟน ให้เปิดใช้ไมโครโฟนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
@@ -223,6 +225,7 @@
 <translation id="5197729504361054390">ระบบจะแชร์รายชื่อติดต่อที่คุณเลือกกับ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /></translation>
 <translation id="5216942107514965959">เข้าชมล่าสุดวันนี้</translation>
 <translation id="5225463052809312700">เปิดกล้อง</translation>
+<translation id="5229337741799419985">การตั้งค่านี้จะทำงานโดยไม่ระบุตัวตนของคุณหรือไม่อนุญาตให้เว็บไซต์ดูประวัติการท่องเว็บ</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5264323282659631142">นำ "<ph name="CHIP_LABEL" />" ออก</translation>
 <translation id="528192093759286357">ลากจากด้านบน แล้วแตะปุ่มกลับเพื่อออกจากโหมดเต็มหน้าจอ</translation>
@@ -309,6 +312,7 @@
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6689172468748959065">รูปโปรไฟล์</translation>
 <translation id="6697925417670533197">การดาวน์โหลดที่ทำงานอยู่</translation>
+<translation id="6701547804986694515">เว็บไซต์ที่เข้าชมสามารถบันทึกข้อมูลกับ Chrome ซึ่งจะเป็นการตรวจสอบว่าคุณไม่ใช่บ็อต ขณะท่องเว็บ เว็บไซต์ต่างๆ สามารถตรวจสอบกับ Chrome และยืนยันด้วยเว็บไซต์ที่คุณเข้าชมก่อนหน้าได้ว่าคุณเป็นคนไม่ใช่บ็อต</translation>
 <translation id="6722828510648505498">บล็อกข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตน</translation>
 <translation id="6746124502594467657">เลื่อนลง</translation>
 <translation id="6749077623962119521">รีเซ็ตสิทธิ์ใช่ไหม</translation>
@@ -426,6 +430,7 @@
 <translation id="8751914237388039244">เลือกรูปภาพ</translation>
 <translation id="8801436777607969138">บล็อก JavaScript ในเว็บไซต์ที่ต้องการ</translation>
 <translation id="8803526663383843427">เมื่อเปิด</translation>
+<translation id="8805385115381080995">การท่องเว็บจะรวดเร็วขึ้นเนื่องจากเว็บไซต์อาจขอให้ยืนยันว่าคุณเป็นคนจริงๆ น้อยลง</translation>
 <translation id="8816026460808729765">บล็อกไม่ให้เว็บไซต์เข้าถึงเซ็นเซอร์</translation>
 <translation id="8823559166155093873">บล็อกคุกกี้</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +454,6 @@
 <translation id="9162462602695099906">หน้านี้อันตราย</translation>
 <translation id="9201023452444595544">ระบบจะล้างข้อมูลออฟไลน์ทั้งหมด</translation>
 <translation id="930525582205581608">เลิกจำเว็บไซต์นี้ใช่ไหม</translation>
+<translation id="947156494302904893">เว็บไซต์ที่เข้าชมสามารถยืนยันได้ว่าคุณเป็นคนจริงๆ ไม่ใช่บ็อต</translation>
 <translation id="967624055006145463">ข้อมูลที่จัดเก็บ</translation>
 </translationbundle>

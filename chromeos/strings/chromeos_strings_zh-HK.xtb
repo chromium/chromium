@@ -80,7 +80,7 @@
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
 <translation id="1643449475550628585">每日變更桌布圖片</translation>
 <translation id="1644574205037202324">記錄</translation>
-<translation id="1651925268237749928">你已選取共享相簿。其他使用者可以新增或變更相片。系統不一定會使用目前這本相簿中的相片做為桌布。</translation>
+<translation id="1651925268237749928">您已選取共享相簿。其他人可以加入或變更相片。桌布可能會使用目前不在此相簿中的相片。</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1664796644829245314">預覽「<ph name="PREVIEW_OBJECT" />」</translation>
 <translation id="1668469839109562275">內置 VPN</translation>
@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">已排入序列</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
+<translation id="2161656808144014275">文字</translation>
 <translation id="2163937499206714165">開啟暗光模式</translation>
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
 <translation id="2209788852729124853">重設流量計數器</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3017079585324758401">背景</translation>
+<translation id="3020183492814296499">快速鍵</translation>
 <translation id="3027578600144895987">閂相機</translation>
 <translation id="3031560714565892478">裝置類型係攝影機。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -239,7 +241,7 @@
 <translation id="319101249942218879">改咗顯示圖片</translation>
 <translation id="3192947282887913208">音效檔案</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
-<translation id="3201315366910775591">其他使用者可更新共享相簿</translation>
+<translation id="3201315366910775591">其他人可更新共享相簿</translation>
 <translation id="3211671540163313381">對應緊十字制</translation>
 <translation id="3226405216343213872">正在尋找掃瞄器</translation>
 <translation id="3226657629376379887">版面配置操作選單</translation>
@@ -658,7 +660,7 @@
 <translation id="6838167112108853532">無法停用或移除此 APN。請確保啟用的附加 APN 都已停用或移除。</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6889786074662672253">重新啟動時，請勿拔除此外部裝置的插頭或關閉電腦。您可將此視窗縮到最小。此操作可能需要幾分鐘，這段期間外部裝置可能無法正常運作。</translation>
-<translation id="6900701049656042631">這本相簿中沒有任何相片。如要新增，請前往 <ph name="LINK" /></translation>
+<translation id="6900701049656042631">此相簿沒有任何相片。如要新增相片，請前往 <ph name="LINK" /></translation>
 <translation id="6905724422583748843">返番去<ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">掃瞄器的外蓋已開啟。請關上外蓋，然後再試一次。</translation>
 <translation id="6911383237894364323">無法連線至媒體伺服器</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">服務名稱</translation>
 <translation id="6961170852793647506">如要開始，請將文件放到掃瞄器上</translation>
 <translation id="6965382102122355670">確定</translation>
+<translation id="6965978654500191972">裝置</translation>
 <translation id="6977381486153291903">韌體版本</translation>
+<translation id="6981982820502123353">協助工具</translation>
 <translation id="7005833343836210400">裝置已離線</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="7040230719604914234">流動網絡供應商</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">如要加入 <ph name="NETWORK_NAME" /> 網絡，請前往「設定」頁面</translation>
 <translation id="7978412674231730200">私密金鑰</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
+<translation id="8004582292198964060">瀏覽器</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">啟用自動調色模式</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
 <translation id="9003704114456258138">頻率</translation>
 <translation id="9025198690966128418">作為個人裝置</translation>
+<translation id="902638246363752736">鍵盤設定</translation>
 <translation id="9028832514430399253">開啟切換按鈕以選取螢幕保護程式選項</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">未啟用</translation>
 <translation id="960719561871045870">流動網絡供應商代碼</translation>
 <translation id="982713511914535780">執行放電測試</translation>
+<translation id="987264212798334818">一般</translation>
 </translationbundle>

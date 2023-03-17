@@ -244,6 +244,7 @@
 <translation id="1201564082781748151">നിങ്ങൾ പാസ്‌വേഡ് മറന്നുപോയാൽ ലോക്കൽ ഡാറ്റ പുനഃസ്ഥാപിക്കാനാകും</translation>
 <translation id="1202116106683864634">ഈ പാസ്‌കീ ഇല്ലാതാക്കണമെന്ന് തീർച്ചയാണോ?</translation>
 <translation id="1202596434010270079">കിയോസ്‌ക് ആപ്പ് അപ്‌ഡേറ്റ് ചെയ്‌തു. USB സ്‌റ്റിക്ക് നീക്കംചെയ്യുക.</translation>
+<translation id="1202892408424955784">ട്രാക്ക് ചെയ്യുന്ന ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="120368089816228251">മ്യൂസിക് നോട്ട്</translation>
 <translation id="1203942045716040624">ഷെയേർഡ് വർക്കർ: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">കുറുക്കുവഴികൾ നിങ്ങൾ ക്യുറേറ്റ് ചെയ്‌തവയാണ്</translation>
@@ -862,6 +863,7 @@
 <translation id="1744108098763830590">പശ്ചാത്തല പേജ്</translation>
 <translation id="1745732479023874451">കോൺടാക്‌റ്റുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{ഈ വെബ് ആപ്പിൽ # ഫയലുകൾ തുറന്ന് എഡിറ്റ് ചെയ്യണോ?}}</translation>
+<translation id="1748329107062243374"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്നുള്ള പാസ്‌കീ ഉപയോഗിച്ച് <ph name="WEBSITE" />-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="1748563609363301860">നിങ്ങൾക്ക് ഈ പാസ്‌വേഡ്, നിങ്ങളുടെ Google അക്കൗണ്ടിലോ ഈ ഉപകരണത്തിൽ മാത്രമായോ സംരക്ഷിക്കാം</translation>
 <translation id="1749733017156547309">പാസ്‌വേഡ് ആവശ്യമാണ്</translation>
 <translation id="1750172676754093297">നിങ്ങളുടെ സുരക്ഷാ കീയ്‌ക്ക് ഫിംഗർപ്രിന്റുകൾ സംഭരിക്കാൻ കഴിയില്ല</translation>
@@ -2574,6 +2576,7 @@
 <translation id="3242289508736283383">ChromeOS കിയോസ്‌ക് മോഡിൽ, 'kiosk_only' മാനിഫെസ്റ്റ് ആട്രിബ്യൂട്ട് ഉള്ള ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യണം</translation>
 <translation id="3242665648857227438">ഈ പ്രൊഫൈൽ ChromeOS പ്രോക്‌സി ക്രമീകരണം ഉപയോഗിക്കുന്നു.</translation>
 <translation id="3243017971870859287">ChromeOS Flex ഉപകരണവും കമ്പോണന്റ് സീരിയൽ നമ്പറുകളും റീഡ് ചെയ്യുക</translation>
+<translation id="324366796737464147">നോയ്‌സ് റദ്ദാക്കൽ</translation>
 <translation id="3244294424315804309">ശബ്ദം മ്യൂട്ട് ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - നെറ്റ്‌വർക്ക് പിശക്</translation>
 <translation id="3248902735035392926">സുരക്ഷ പ്രധാനമാണ്. അൽപ്പസമയം ചെലവഴിച്ച് <ph name="BEGIN_LINK" />നിങ്ങളുടെ വിപുലീകരണങ്ങൾ ഇപ്പോൾ തന്നെ പരിശോധിക്കുക<ph name="END_LINK" /></translation>
@@ -2990,6 +2993,7 @@
 <translation id="3618286417582819036">ക്ഷമിക്കൂ, ഒരു പിശക് സംഭവിച്ചു</translation>
 <translation id="3619115746895587757">കാപ്പുചീനോ</translation>
 <translation id="3620136223548713675">ജിയോലൊക്കേഷൻ</translation>
+<translation id="3621202678540785336">ഇൻപുട്ട്</translation>
 <translation id="3621807901162200696">ChromeOS ഫീച്ചറുകളും പ്രകടനവും മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ഒരു ആപ്പ്}other{# ആപ്പുകൾ}}</translation>
 <translation id="362333465072914957">സര്‍ട്ടിഫിക്കറ്റ് ഇഷ്യൂ ചെയ്യാൻ CA-ക്കായി കാത്തിരിക്കുന്നു</translation>
@@ -3732,6 +3736,7 @@
 <translation id="4275397969489577657">ഇവന്റ് സ്‌ട്രീം ലോഗിംഗ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4275830172053184480">നിങ്ങളുടെ ഉപകരണം പുനരാരംഭിക്കുക</translation>
 <translation id="4277434192562187284">XML കോൺഫിഗറേഷൻ ഉറവിടം</translation>
+<translation id="4277529130885813215">മറ്റൊരു ഉപകരണം ഉപയോഗിക്കുക</translation>
 <translation id="4278390842282768270">അനുവദനീയം</translation>
 <translation id="4278498748067682896">ഉപകരണത്തെ കിയോസ്‌ക് അല്ലെങ്കിൽ സൈനേജ് മോഡിൽ മാത്രം റൺ ചെയ്യാൻ അനുവദിക്കുന്ന കിയോസ്‌ക്, സൈനേജ് അപ്ഗ്രേഡ് ആയിരിക്കും നിങ്ങൾ ഉപയോഗിക്കുക. ഉപകരണത്തിൽ ഉപയോക്താക്കൾ സൈൻ ഇൻ ചെയ്യണമെന്നുണ്ടെങ്കിൽ, പിന്നിലേക്ക് പോയി Chrome Enterprise അപ്ഗ്രേഡ് ഉപയോഗിച്ച് എൻറോൾ ചെയ്യുക.</translation>
 <translation id="4278779213160967034">ഈ പ്രക്രിയയ്ക്ക് കുറച്ച് സമയമെടുത്തേക്കാം. ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു.</translation>
@@ -4234,7 +4239,6 @@
 <translation id="4726710355753484204">സൂം ഇൻ ചെയ്യാൻ Ctrl + Alt + Brightness up ഉപയോഗിക്കുക.
 സൂം ഔട്ട് ചെയ്യാൻ Ctrl + Alt + Brightness down ഉപയോഗിക്കുക.</translation>
 <translation id="4726710629007580002">ഈ വിപുലീകരണം ഇൻസ്റ്റാൾ ചെയ്യാൻ ശ്രമിക്കുമ്പോൾ മുന്നറിയിപ്പുകൾ ഉണ്ടായിരുന്നു:</translation>
-<translation id="472738079453283624">ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="4727847987444062305">മാനേജ് ചെയ്യപ്പെടുന്ന അതിഥി സെഷൻ</translation>
 <translation id="4728558894243024398">പ്ലാറ്റ്ഫോം</translation>
 <translation id="4730492586225682674">സ്റ്റൈലസ് ഉപയോഗിച്ച് ലോക്ക്‌സ്ക്രീനിൽ എഴുതിയ ഏറ്റവും പുതിയ കുറിപ്പ്</translation>
@@ -4634,6 +4638,7 @@
 <translation id="5108967062857032718">ക്രമീകരണം - Android ആപ്പുകൾ നീക്കംചെയ്യുക</translation>
 <translation id="5109044022078737958">മിയ</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> നീക്കം ചെയ്യുക</translation>
+<translation id="5111326646107464148">പുതിയ വിൻഡോയിൽ ഗ്രൂപ്പ് തുറക്കുക</translation>
 <translation id="5111646998522066203">അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="5111692334209731439">&amp;ബുക്ക്മാര്‍ക്ക് മാനേജര്‍</translation>
 <translation id="5111794652433847656">ഈ ഉപകരണത്തിൽ <ph name="APP_NAME" /> എന്നതിനുള്ള പാസ്‌കീകളൊന്നുമില്ല</translation>
@@ -6615,6 +6620,7 @@
 <translation id="6903022061658753260">ഈ അക്കൗണ്ടിന് സമന്വയം ഓണാക്കിയിരിക്കുന്ന എല്ലാ Chrome ബ്രൗസറുകളിലും നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കും. ChromeOS സമന്വയിപ്പിക്കൽ ഓപ്‌ഷനുകൾക്ക്, <ph name="LINK_BEGIN" />ChromeOS ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="6903590427234129279">എല്ലാം (<ph name="URL_COUNT" />) തുറക്കുക</translation>
 <translation id="6903907808598579934">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> തിരയുക</translation>
 <translation id="6904344821472985372">ഫയൽ ആക്‌സസ് റദ്ദാക്കുക</translation>
 <translation id="6904655473976120856">പുറത്തുകടക്കുന്നതിന് ആപ്പ് ബട്ടൺ അമർത്തുക</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി സൂക്ഷിക്കാൻ, ഒരു മിനിറ്റ് നിഷ്ക്രിയമായിരുന്നാൽ Google Password Manager ലോക്ക് ആകുന്നു}other{നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി സൂക്ഷിക്കാൻ, {NUM_MINS} മിനിറ്റ് നിഷ്ക്രിയമായിരുന്നാൽ Google Password Manager ലോക്ക് ആകുന്നു}}</translation>
@@ -7561,6 +7567,7 @@
 <translation id="7762243782113123335">ക്ഷമിക്കണം, എന്തോ കുഴപ്പമുണ്ടായി. വിവരണത്തിൽ #bruschetta എന്ന് നൽകി ഫീഡ്‌ബാക്ക് ഫയൽ ചെയ്യുക. പിശക് കോഡ് <ph name="ERROR" /> ആണ്.</translation>
 <translation id="7764225426217299476">വിലാസം ചേർക്കുക</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> ഡൊമെയ്‌നിൽ നിന്ന് <ph name="DOWNLOAD_RECEIVED" /></translation>
+<translation id="7764527477537408401">പുതിയ വിൻഡോയിൽ ഗ്രൂപ്പ് തുറക്കുക</translation>
 <translation id="7765158879357617694">നീക്കുക</translation>
 <translation id="7765507180157272835">Bluetooth-ഉം വൈഫൈയും ആവശ്യമാണ്</translation>
 <translation id="7766082757934713382">ആപ്പിന്റെയും സിസ്റ്റത്തിന്റെയും സ്വയമേവയുള്ള അപ്ഡേറ്റുകൾ താൽക്കാലികമായി നിർത്തി നെറ്റ്‌വർക്ക് ഡാറ്റാ ഉപയോഗം കുറയ്ക്കാൻ സഹായിക്കുന്നു</translation>
@@ -8678,6 +8685,7 @@
           &lt;p&gt;പക്ഷേ കമാൻഡ് ലൈൻ വഴി നിങ്ങൾക്ക് ഇപ്പോഴും കോൺഫിഗർ ചെയ്യാനാവും. ഫ്ലാഗുകളെയും പരിതസ്ഥിതി വേരിയബിളുകളെയും കുറിച്ചുള്ള കൂടുതൽ വിവരങ്ങൾക്ക് &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;കാണുക .&lt;/p&gt;</translation>
 <translation id="8755175579224030324">ഉപകരണത്തിൽ സംഭരിച്ചിരിക്കുന്ന സർട്ടിഫിക്കറ്റുകളും കീകളും മാനേജ് ചെയ്യുന്നത് പോലുള്ള സുരക്ഷയുമായി ബന്ധപ്പെട്ട ടാസ്‌കുകൾ നിങ്ങളുടെ സ്ഥാപനത്തിനായി നിർവഹിക്കുക</translation>
 <translation id="8755376271068075440">&amp;വലുത്</translation>
+<translation id="8755584192133371929">പങ്കിടാൻ ഒരു ടാബ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="875604634276263540">ചിത്ര URL അസാധുവാണ്</translation>
 <translation id="8756969031206844760">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="8757203080302669031">ഈ ടാബ് Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ സജീവമായി സ്‌കാൻ ചെയ്യുന്നു.</translation>
@@ -8687,6 +8695,7 @@
 <translation id="8762886931014513155">നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ന് അപ്‌ഡേറ്റ് ആവശ്യമാണ്</translation>
 <translation id="8763927697961133303">USB ഉപകരണം</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> എന്നതിനുള്ള എല്ലാ തിരയലുകളും കാണിക്കുക</translation>
 <translation id="8767621466733104912">എല്ലാ ഉപയോക്താക്കൾക്കുമായി സ്വയമേവ Chrome അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="8770406935328356739">വിപുലീകരണ റൂട്ട് ഡയറക്റ്ററി</translation>
 <translation id="8771300903067484968">ആരംഭ പേജിൻ്റെ പശ്‌ചാത്തലം ഡിഫോൾട്ട് പശ്ചാത്തലമാക്കി പുനഃക്രമീകരിച്ചു.</translation>

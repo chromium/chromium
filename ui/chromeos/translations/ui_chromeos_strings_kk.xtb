@@ -939,6 +939,7 @@
 <translation id="8492972329130824181">Үй желісі қолжетімді емес. Байланысу үшін мобильдік интернет роумингін қосу қажет.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> элемент алынып жатыр…</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Құрылғыны орнатудан кейін белсендіру, Әкімшіңіз басқарады</translation>
+<translation id="8512483403832814140">Кез келген уақытта</translation>
 <translation id="8521441079177373948">Ұлыбритания</translation>
 <translation id="853494022971700746">Француз (Франция)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>

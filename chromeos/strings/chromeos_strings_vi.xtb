@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">ĐÃ XẾP VÀO HÀNG ĐỢI</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Thử lại</translation>
 <translation id="2161394479394250669">Hủy lệnh in</translation>
+<translation id="2161656808144014275">Văn bản</translation>
 <translation id="2163937499206714165">Bật chế độ tối</translation>
 <translation id="2180197493692062006">Đã xảy ra lỗi. Hãy thử mở lại ứng dụng.</translation>
 <translation id="2209788852729124853">Đặt lại Bộ đếm lưu lượng truy cập</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">LÀM MỚI</translation>
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
 <translation id="3017079585324758401">Nền</translation>
+<translation id="3020183492814296499">Lối tắt</translation>
 <translation id="3027578600144895987">Tắt máy ảnh</translation>
 <translation id="3031560714565892478">Thiết bị là máy quay video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Tên dịch vụ</translation>
 <translation id="6961170852793647506">Hãy đặt tài liệu của bạn lên máy quét để bắt đầu</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Thiết bị</translation>
 <translation id="6977381486153291903">Hiệu chỉnh chương trình cơ sở</translation>
+<translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="7005833343836210400">Thiết bị hiện không có kết nối mạng</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="7040230719604914234">Nhà mạng</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">Để kết nối với mạng <ph name="NETWORK_NAME" />, hãy đi tới phần Cài đặt</translation>
 <translation id="7978412674231730200">Khoá cá nhân</translation>
 <translation id="7994702968232966508">Phương pháp EAP</translation>
+<translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Bật chế độ màu tự động</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Không hoạt động trên thiết bị của bạn</translation>
 <translation id="9003704114456258138">Tần số</translation>
 <translation id="9025198690966128418">Dùng làm thiết bị cá nhân</translation>
+<translation id="902638246363752736">Cài đặt bàn phím</translation>
 <translation id="9028832514430399253">Bật nút chuyển để chọn trình bảo vệ màn hình</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Chưa được kích hoạt</translation>
 <translation id="960719561871045870">Mã của nhà mạng</translation>
 <translation id="982713511914535780">Chạy quá trình Kiểm tra mức xả pin</translation>
+<translation id="987264212798334818">Chung</translation>
 </translationbundle>

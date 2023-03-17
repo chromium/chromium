@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: bandyti dar kartą</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
+<translation id="2161656808144014275">Tekstas</translation>
 <translation id="2163937499206714165">Įjungti tamsų režimą</translation>
 <translation id="2180197493692062006">Kažkas nepavyko. Pabandykite iš naujo atidaryti programą.</translation>
 <translation id="2209788852729124853">Iš naujo nustatyti srauto skaitiklius</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">ATNAUJINTI</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="3017079585324758401">Fonas</translation>
+<translation id="3020183492814296499">Spartieji klavišai</translation>
 <translation id="3027578600144895987">Uždaryti vaizdo kamerą</translation>
 <translation id="3031560714565892478">Įrenginys yra vaizdo kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Paslaugos pavadinimas</translation>
 <translation id="6961170852793647506">Jei norite pradėti, padėkite dokumentą ant skaitytuvo</translation>
 <translation id="6965382102122355670">Gerai</translation>
+<translation id="6965978654500191972">Įrenginys</translation>
 <translation id="6977381486153291903">Programinės aparatinės įrangos taisymas</translation>
+<translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="7005833343836210400">Įrenginys neprijungtas prie interneto</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
 <translation id="7040230719604914234">Operatorius</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">Norėdami prisijungti prie „<ph name="NETWORK_NAME" />“ tinklo, eikite į Nustatymus</translation>
 <translation id="7978412674231730200">Asmeninis raktas</translation>
 <translation id="7994702968232966508">EAP metodas</translation>
+<translation id="8004582292198964060">Naršyklė</translation>
 <translation id="802154636333426148">Įvyko atsisiuntimo klaida</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Įgalinti automatinių spalvų režimą</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Nepasiekiama jūsų įrenginyje</translation>
 <translation id="9003704114456258138">Dažnis</translation>
 <translation id="9025198690966128418">Naudoti kaip asmeninį įrenginį</translation>
+<translation id="902638246363752736">Klaviatūros nustatymai</translation>
 <translation id="9028832514430399253">Įjunkite perjungiklį, kad pasirinktumėte ekrano užsklandos parinktis</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Nesuaktyvinta</translation>
 <translation id="960719561871045870">Operacijos ženklo kodas</translation>
 <translation id="982713511914535780">Vykdyti iškrovimo bandymą</translation>
+<translation id="987264212798334818">Bendra</translation>
 </translationbundle>

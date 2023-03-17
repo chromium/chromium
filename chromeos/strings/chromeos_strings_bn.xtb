@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">ডকুমেন্ট ফিডার (এক পিঠের)</translation>
 <translation id="1643449475550628585">ওয়ালপেপারের ছবি প্রতিদিন পরিবর্তন করুন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
+<translation id="1651925268237749928">আপনি শেয়ার করা অ্যালবাম বেছে নিয়েছেন। অন্য ব্যক্তি ফটো যোগ বা পরিবর্তন করতে পারবেন। আপনার ওয়ালপেপারে এমন ফটো ব্যবহার করা হতে পারে যা বর্তমানে এই অ্যালবামে নেই।</translation>
 <translation id="1662989795263954667">বন্ধ হয়ে গেছে - প্রিন্টারে কালি ফুরিয়ে গেছে</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-এর প্রিভিউ দেখুন</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
@@ -142,6 +143,7 @@
 <translation id="2157959690810728433">সারিতে আছে</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: আবার চেষ্টা করুন</translation>
 <translation id="2161394479394250669">প্রিন্ট জবটি বাতিল করা হয়েছে</translation>
+<translation id="2161656808144014275">পাঠ্য</translation>
 <translation id="2163937499206714165">'ডার্ক মোড' চালু করুন</translation>
 <translation id="2180197493692062006">কোনও সমস্যা হয়েছে। অ্যাপটি আবার খোলার চেষ্টা করে দেখুন।</translation>
 <translation id="2209788852729124853">ট্রাফিক কাউন্টার্স রিসেট করুন</translation>
@@ -217,6 +219,7 @@
 <translation id="3008341117444806826">রিফ্রেশ করুন</translation>
 <translation id="3009958530611748826">কোন ফোল্ডারে সেভ করতে চান তা বেছে নিন</translation>
 <translation id="3017079585324758401">ব্যাকগ্রাউন্ড</translation>
+<translation id="3020183492814296499">শর্টকাট</translation>
 <translation id="3027578600144895987">ক্যামেরা বন্ধ করুন</translation>
 <translation id="3031560714565892478">ডিভাইস একটি ভিডিও ক্যামেরা।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -238,6 +241,7 @@
 <translation id="319101249942218879">অবতারের ছবি পরিবর্তন করা হয়েছে</translation>
 <translation id="3192947282887913208">অডিও ফাইল</translation>
 <translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>
+<translation id="3201315366910775591">অন্য ব্যক্তির মাধ্যমে শেয়ার করা অ্যালবাম আপডেট করা হতে পারে</translation>
 <translation id="3211671540163313381">কীম্যাপ করার ডি-প্যাড</translation>
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
 <translation id="3226657629376379887">লেআউট অ্যাকশন মেনু</translation>
@@ -656,6 +660,7 @@
 <translation id="6838167112108853532">এই APN বন্ধ করা বা সরানো যাচ্ছে না। চালু করা আছে এমন অ্যাটাচ করা APN বন্ধ করা বা সরানো আছে কিনা তা নিশ্চিত করুন।</translation>
 <translation id="6853312040151791195">ডিসচার্জ হওয়ার রেট</translation>
 <translation id="6889786074662672253">রিস্টার্ট হলে, এই এক্সটার্নাল ডিভাইস আনপ্লাগ করবে না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। রিস্টার্ট হতে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
+<translation id="6900701049656042631">এই অ্যালবামে কোনও ফটো নেই। ছবি যোগ করতে, <ph name="LINK" />-এ যান</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> এ ফিরুন</translation>
 <translation id="6910312834584889076">স্ক্যানারের কভার খোলা আছে। কভার বন্ধ করে আবার চেষ্টা করুন।</translation>
 <translation id="6911383237894364323">মিডিয়া সার্ভারে কানেক্ট করা যায়নি</translation>
@@ -663,7 +668,9 @@
 <translation id="6957231940976260713">পরিষেবার নাম</translation>
 <translation id="6961170852793647506">শুরু করার জন্য, স্ক্যানারে ডকুমেন্ট রাখুন</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
+<translation id="6965978654500191972">ডিভাইস</translation>
 <translation id="6977381486153291903">ফার্মওয়ের পুনর্বিবেচনাগুলি</translation>
+<translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
 <translation id="7005833343836210400">ডিভাইস অফলাইন আছে</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবপেজ, পাসওয়ার্ড ও ইমেল আইডি সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করে।</translation>
 <translation id="7040230719604914234">অপারেটর</translation>
@@ -773,6 +780,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> নেটওয়ার্কে যোগ দিতে, সেটিংস বিকল্পে যান</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
 <translation id="7994702968232966508">EAP পদ্ধতি</translation>
+<translation id="8004582292198964060">ব্রাউজার</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">'অটো কালার' মোড চালু করুন</translation>
@@ -885,6 +893,7 @@
 <translation id="8998289560386111590">আপনার ডিভাইসে উপলভ্য নয়</translation>
 <translation id="9003704114456258138">ফ্রিকোয়েন্সি</translation>
 <translation id="9025198690966128418">ব্যক্তিগত ডিভাইস হিসেবে ব্যবহার করুন</translation>
+<translation id="902638246363752736">কীবোর্ড সেটিংস</translation>
 <translation id="9028832514430399253">স্ক্রিনসেভার বিকল্পগুলি বেছে নিতে টগলটি চালু করুন</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +926,5 @@
 <translation id="952992212772159698">সক্রিয় নেই</translation>
 <translation id="960719561871045870">অপারেটরের কোড</translation>
 <translation id="982713511914535780">ডিসচার্জ টেস্ট করুন</translation>
+<translation id="987264212798334818">সাধারণ</translation>
 </translationbundle>

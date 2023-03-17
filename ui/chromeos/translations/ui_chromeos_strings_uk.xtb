@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">Домашня мережа недоступна. Щоб підключитися, потрібно ввімкнути роумінг мобільних даних.</translation>
 <translation id="8499098729323186194">Видобування елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="8502913769543567768">Мережа № <ph name="NETWORK_INDEX" /> (усього: <ph name="NETWORK_COUNT" />); назва мережі: <ph name="NETWORK_NAME" />; оператор мережі: <ph name="NETWORK_PROVIDER_NAME" />. Активація доступна після налаштування пристрою. Мережею керує адміністратор.</translation>
+<translation id="8512483403832814140">За весь час</translation>
 <translation id="8521441079177373948">Англійська (Велика Британія)</translation>
 <translation id="853494022971700746">Французька (Франція)</translation>
 <translation id="8540608333167683902">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>

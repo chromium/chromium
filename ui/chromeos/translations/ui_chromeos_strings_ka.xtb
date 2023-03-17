@@ -939,6 +939,7 @@
 <translation id="8492972329130824181">სახლის ქსელი მიუწვდომელია. დასაკავშირებლად საჭიროა მობილური ინტერნეტის როუმინგის ჩართვა.</translation>
 <translation id="8499098729323186194">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის ამოღება...</translation>
 <translation id="8502913769543567768">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, გაააქტიურეთ მოწყობილობის დაყენების შემდეგ, მართავს თქვენი ადმინისტრატორი</translation>
+<translation id="8512483403832814140">ნებისმიერი დრო</translation>
 <translation id="8521441079177373948">დიდი ბრიტანეთი</translation>
 <translation id="853494022971700746">ფრანგული (საფრანგეთი)</translation>
 <translation id="8540608333167683902">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>

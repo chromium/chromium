@@ -9,6 +9,7 @@
 <translation id="113122355610423240">Chromium 是您的默认浏览器</translation>
 <translation id="1131805035311359397">若要检查您的密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{您的管理员已将 Chromium 设置为，在闲置 1 分钟后自动关闭。浏览数据会被删除。其中可能包括历史记录、自动填充和下载内容。}other{您的管理员已将 Chromium 设置为，在闲置 # 分钟后自动关闭。浏览数据会被删除。其中可能包括历史记录、自动填充和下载内容。}}</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1261119230216066228">省内存模式提高了 Chromium 的运行速度</translation>
 <translation id="1315551408014407711">设置您的新 Chromium 个人资料</translation>
@@ -23,6 +24,7 @@
 <translation id="1640672724030957280">正在下载...</translation>
 <translation id="1708666629004767631">Chromium 现已推出更安全的新版本。</translation>
 <translation id="17264556997921157">您可看到并移除被网站用来向您展示广告的兴趣主题。Chromium 会根据您近期的浏览记录推测出您的兴趣。</translation>
+<translation id="1733725117201708356">Chromium 即将删除浏览数据</translation>
 <translation id="1745121272106313518">Chromium 将在 <ph name="REMAINING_TIME" />后重启</translation>
 <translation id="1774152462503052664">让 Chromium 在后台运行</translation>
 <translation id="1779356040007214683">为了提高 Chromium 的安全性，系统停用了一些未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中、可能是在您不知情的情况下添加的扩展程序。</translation>
@@ -53,6 +55,7 @@
 <translation id="2384373936468275798">由于您的帐号登录详细信息已过期，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="2396765026452590966">“<ph name="EXTENSION_NAME" />”扩展程序更改了 Chromium 启动后系统显示的页面。</translation>
 <translation id="2401032172288869980">Chromium 需要为此网站授予摄像头权限和麦克风权限</translation>
+<translation id="2478295928299953161">Chromium 即将关闭</translation>
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2560420686485554789">Chromium 需要获得存储空间使用权限，才能下载文件</translation>
@@ -171,6 +174,7 @@
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
 <translation id="5114678101347489141">Chromium 正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{您的管理员已将 Chromium 设置为，在闲置 1 分钟后自动关闭。}other{您的管理员已将 Chromium 设置为，在闲置 # 分钟后自动关闭。}}</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" />已登录此 Chromium 个人资料。这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chromium 个人资料</translation>
 <translation id="5277894862589591112">要想应用您的更改，请重新启动 Chromium</translation>
@@ -214,6 +218,7 @@
 <translation id="6119438414301547735">允许扩展程序在 Chromium 工具栏中显示访问请求</translation>
 <translation id="6120345080069858279">Chromium 会将此密码保存在您的 Google 帐号中，因此您不必记住它。</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 存在危险，因此 Chromium 已将其拦截。</translation>
+<translation id="6132897690380286411">Chromium 即将关闭并删除数据</translation>
 <translation id="6134968993075716475">“安全浏览”功能已关闭。Chromium 建议开启此功能。</translation>
 <translation id="6145820983052037069">您可在此处切换 Chromium 个人资料</translation>
 <translation id="6183079672144801177">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chromium，然后再次尝试发送。</translation>
@@ -233,6 +238,7 @@
 <translation id="6327105987658262776">没有可用的更新。</translation>
 <translation id="6333502561965082103">Chromium 正在执行另一项操作，请稍后重试。</translation>
 <translation id="6334986366598267305">现在，无论是通过Google帐号还是在共用的计算机上，您都可以更轻松地使用Chromium。</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{您的管理员已将 Chromium 设置为，在闲置 1 分钟后自动删除浏览数据。其中可能包括历史记录、自动填充和下载内容。现有标签页仍将保持打开状态。}other{您的管理员已将 Chromium 设置为，在闲置 # 分钟后自动删除浏览数据。其中可能包括历史记录、自动填充和下载内容。现有标签页仍将保持打开状态。}}</translation>
 <translation id="6373523479360886564">确定要卸载 Chromium 吗？</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：Chromium 可以推测出您的兴趣。之后，您访问的网站可向 Chromium 请求查看您的兴趣，以便向您展示个性化广告。</translation>
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
@@ -362,6 +368,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8986207147630327271">您将要向此浏览器添加工作资料并允许您的管理员仅控制此工作资料。</translation>
 <translation id="9019929317751753759">为了提高 Chromium 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
+<translation id="907832235989677238">登录 Chromium。如果您只想登录帐号一次，可考虑<ph name="GUEST_LINK_BEGIN" />以访客身份使用设备<ph name="GUEST_LINK_END" />。</translation>
 <translation id="9089354809943900324">Chromium版本太旧</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 将在 1 小时后重新启动}other{Chromium 将在 # 小时后重新启动}}</translation>
 <translation id="9106612006984859720">若要接收后续 Chromium 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 8.1。</translation>

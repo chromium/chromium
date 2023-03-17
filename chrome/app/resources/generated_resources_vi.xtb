@@ -244,6 +244,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1201564082781748151">Bạn có thể khôi phục dữ liệu cục bộ nếu quên mật khẩu</translation>
 <translation id="1202116106683864634">Bạn có chắc chắn muốn xoá mã xác thực này không?</translation>
 <translation id="1202596434010270079">Ứng dụng Kiosk đã được cập nhật. Vui lòng rút thẻ USB.</translation>
+<translation id="1202892408424955784">Các sản phẩm bạn theo dõi</translation>
 <translation id="120368089816228251">Ghi chú âm nhạc</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Lối tắt do bạn lựa chọn</translation>
@@ -874,6 +875,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1744108098763830590">trang nền</translation>
 <translation id="1745732479023874451">Quản lý danh bạ</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Mở và chỉnh sửa # tệp trong ứng dụng web này?}}</translation>
+<translation id="1748329107062243374">Sử dụng mã xác thực từ <ph name="DEVICE_NAME" /> để đăng nhập vào <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Bạn có thể lưu mật khẩu này trong Tài khoản Google của mình hoặc chỉ trên thiết bị này</translation>
 <translation id="1749733017156547309">Cần nhập mật khẩu</translation>
 <translation id="1750172676754093297">Khóa bảo mật của bạn không thể lưu trữ vân tay số</translation>
@@ -2590,6 +2592,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3242289508736283383">Phải cài đặt ứng dụng có thuộc tính tệp kê khai "kiosk_only" ở chế độ kiosk ChromeOS</translation>
 <translation id="3242665648857227438">Hồ sơ này sử dụng chế độ cài đặt proxy của ChromeOS.</translation>
 <translation id="3243017971870859287">Đọc số sê-ri của linh kiện và thiết bị ChromeOS Flex</translation>
+<translation id="324366796737464147">Khử tiếng ồn</translation>
 <translation id="3244294424315804309">Tiếp tục tắt tiếng</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Lỗi mạng</translation>
 <translation id="3248902735035392926">Vấn đề an toàn rất quan trọng. Hãy dành giây lát để <ph name="BEGIN_LINK" />kiểm tra các tiện ích của bạn ngay bây giờ<ph name="END_LINK" /></translation>
@@ -3006,6 +3009,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3618286417582819036">Rất tiếc, đã xảy ra lỗi</translation>
 <translation id="3619115746895587757">Cà phê cappuccino</translation>
 <translation id="3620136223548713675">Vị trí địa lý</translation>
+<translation id="3621202678540785336">Thiết bị vào</translation>
 <translation id="3621807901162200696">Giúp cải thiện hiệu suất và các tính năng của ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{một ứng dụng}other{# ứng dụng}}</translation>
 <translation id="362333465072914957">Đang đợi tổ chức phát hành chứng chỉ (CA) cấp chứng chỉ</translation>
@@ -3749,6 +3753,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4275397969489577657">Bật ghi nhật ký luồng sự kiện</translation>
 <translation id="4275830172053184480">Khởi động lại thiết bị của bạn</translation>
 <translation id="4277434192562187284">Nguồn cấu hình XML</translation>
+<translation id="4277529130885813215">Sử dụng thiết bị khác</translation>
 <translation id="4278390842282768270">Được cho phép</translation>
 <translation id="4278498748067682896">Bạn sẽ sử dụng Bản nâng cấp Kiosk &amp; Signage, khi đó thiết bị chỉ chạy được trong chế độ kiosk hoặc signage. Nếu bạn muốn người dùng đăng nhập vào thiết bị, vui lòng quay lại rồi đăng ký sử dụng Bản nâng cấp Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Quá trình này có thể mất vài phút. Đang tải tệp xuống.</translation>
@@ -4239,6 +4244,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4708849949179781599">Thoát <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Khôi phục cài đặt</translation>
 <translation id="4713409221649555176">Xoá khi bạn đóng tất cả cửa sổ</translation>
+<translation id="4715631922189108923">Chỉnh sửa tên người dùng</translation>
 <translation id="47158868804223727">Nhấp vào tên nhóm để mở rộng hoặc thu gọn</translation>
 <translation id="4716483597559580346">Powerwash giúp tăng cường bảo mật</translation>
 <translation id="471759229191973607">Thay đổi giao diện</translation>
@@ -4251,7 +4257,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4726710355753484204">Nhấn tổ hợp phím Ctrl + Alt + Tăng độ sáng để phóng to.
 Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4726710629007580002">Đã có cảnh báo khi cố cài đặt tiện ích này:</translation>
-<translation id="472738079453283624">Sản phẩm</translation>
 <translation id="4727847987444062305">Phiên khách được quản lý</translation>
 <translation id="4728558894243024398">Nền tảng</translation>
 <translation id="4730492586225682674">Ghi chú mới nhất bằng bút cảm ứng trên màn hình khóa</translation>
@@ -4651,6 +4656,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5108967062857032718">Cài đặt - Xóa ứng dụng Android</translation>
 <translation id="5109044022078737958">Nữ cầu thủ Mia</translation>
 <translation id="5109816792918100764">Xóa <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Mở nhóm trong cửa sổ mới</translation>
 <translation id="5111646998522066203">Thoát khỏi chế độ ẩn danh</translation>
 <translation id="5111692334209731439">&amp;Trình quản lý Dấu trang</translation>
 <translation id="5111794652433847656">Không có mã xác thực nào cho <ph name="APP_NAME" /> trên thiết bị này</translation>
@@ -6630,6 +6636,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6903022061658753260">Dữ liệu của bạn sẽ được đồng bộ hoá trên mọi trình duyệt Chrome nơi bạn đã bật tính năng đồng bộ hoá cho tài khoản này. Để xem các chế độ đồng bộ hoá trên ChromeOS, hãy chuyển đến phần <ph name="LINK_BEGIN" />cài đặt ChromeOS<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Mở tất cả (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Bật đồng bộ hóa</translation>
+<translation id="6903916726032521638">Tìm kiếm <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Thu hồi quyền truy cập tệp</translation>
 <translation id="6904655473976120856">Nhấn vào nút Ứng dụng để thoát</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Để giữ an toàn cho mật khẩu của bạn, Trình quản lý mật khẩu của Google sẽ khoá sau 1 phút không hoạt động}other{Để giữ an toàn cho mật khẩu của bạn, Trình quản lý mật khẩu của Google sẽ khoá sau {NUM_MINS} phút không hoạt động}}</translation>
@@ -7576,6 +7583,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7762243782113123335">Rất tiếc, đã xảy ra lỗi. Vui lòng gửi ý kiến phản hồi kèm #bruschetta trong phần mô tả. Mã lỗi là <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Thêm địa chỉ</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> từ <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Mở nhóm trong cửa sổ mới</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
 <translation id="7765507180157272835">Cần có Bluetooth và Wi-Fi</translation>
 <translation id="7766082757934713382">Giúp giảm mức sử dụng dữ liệu mạng bằng cách tạm dừng chế độ tự động cập nhật ứng dụng và hệ thống</translation>
@@ -8086,6 +8094,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8203732864715032075">Gửi cho bạn thông báo và đặt mặc định để ghi nhớ máy tính này cho ứng dụng Messages. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Các màn hình và thiết bị ngoại vi của bạn có thể đặt lại sau giây lát. Để sự thay đổi này có hiệu lực, hãy rút phích cắm rồi cắm lại các thiết bị ngoại vi.</translation>
 <translation id="820568752112382238">Trang web truy cập nhiều nhất</translation>
+<translation id="8206267832882844324">Chỉnh sửa ghi chú</translation>
 <translation id="8206745257863499010">Nốt nhạc xanh</translation>
 <translation id="8206859287963243715">Di động</translation>
 <translation id="8207404892907560325">Chọn một mã xác thực</translation>
@@ -8693,6 +8702,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
           &lt;p&gt;Tuy nhiên, bạn vẫn có thể định cấu hình qua dòng lệnh.  Hãy xem  &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; để biết thêm thông tin về cờ và biến môi trường.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Thực hiện các nhiệm vụ liên quan đến bảo mật cho tổ chức bạn, chẳng hạn như quản lý các chứng chỉ và khóa lưu trữ trên thiết bị</translation>
 <translation id="8755376271068075440">&amp;Lớn hơn</translation>
+<translation id="8755584192133371929">Chọn một thẻ để chia sẻ</translation>
 <translation id="875604634276263540">URL hình ảnh là không hợp lệ</translation>
 <translation id="8756969031206844760">Cập nhật mật khẩu?</translation>
 <translation id="8757203080302669031">Thẻ này đang tích cực quét tìm các thiết bị Bluetooth.</translation>
@@ -8702,6 +8712,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8762886931014513155">Bạn cần cập nhật <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">Thiết bị USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Hiển thị tất cả kết quả tìm kiếm cho <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Tự động cập nhật Chrome cho tất cả người dùng</translation>
 <translation id="8770406935328356739">Thư mục gốc của tiện ích</translation>
 <translation id="8771300903067484968">Nền của trang bắt đầu đã được đặt lại thành nền mặc định.</translation>

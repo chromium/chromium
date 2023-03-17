@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Uvlačenje dokumenta (jednostrano)</translation>
 <translation id="1643449475550628585">Menjajte sliku pozadine svakog dana</translation>
 <translation id="1644574205037202324">Istorija</translation>
+<translation id="1651925268237749928">Izabrali ste deljeni album. Drugi ljudi mogu da dodaju ili menjaju slike. Pozadina može da koristi slike koje trenutno nisu u ovom albumu.</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema više mastila</translation>
 <translation id="1664796644829245314">Pregled za <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
@@ -142,6 +143,7 @@
 <translation id="2157959690810728433">NA ČEKANJU</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Probaj ponovo</translation>
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
+<translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Uključite tamni režim</translation>
 <translation id="2180197493692062006">Došlo je do greške. Probajte da ponovo otvorite aplikaciju.</translation>
 <translation id="2209788852729124853">Resetuj brojače saobraćaja</translation>
@@ -217,6 +219,7 @@
 <translation id="3008341117444806826">OSVEŽI</translation>
 <translation id="3009958530611748826">Izaberite folder za čuvanje</translation>
 <translation id="3017079585324758401">Pozadina</translation>
+<translation id="3020183492814296499">Prečice</translation>
 <translation id="3027578600144895987">Zatvorite kameru</translation>
 <translation id="3031560714565892478">Uređaj je video kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -238,6 +241,7 @@
 <translation id="319101249942218879">Slika avatara je promenjena</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>
+<translation id="3201315366910775591">Drugi ljudi mogu da ažuriraju deljene albume</translation>
 <translation id="3211671540163313381">D-pad za mapiranje tastera</translation>
 <translation id="3226405216343213872">Traže se skeneri</translation>
 <translation id="3226657629376379887">Meni sa radnjama za raspored</translation>
@@ -656,6 +660,7 @@
 <translation id="6838167112108853532">Ne možete da onemogućite ni uklonite ovaj naziv pristupne tačke. Uverite se da su omogućeni priloženi nazivi pristupnih tačaka onemogućeni ili uklonjeni.</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
 <translation id="6889786074662672253">Ne isključujte spoljni uređaj ni računar tokom restartovanja. Možete da umanjite ovaj prozor. Ovo može da potraje nekoliko minuta, a spoljni uređaj možda neće raditi tokom tog perioda.</translation>
+<translation id="6900701049656042631">Ovaj album ne sadrži nijednu sliku. Da biste dodali slike, idite na <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Vratite se na stranicu <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite ga i probajte ponovo.</translation>
 <translation id="6911383237894364323">Povezivanje sa medijskim serverima nije uspelo</translation>
@@ -663,7 +668,9 @@
 <translation id="6957231940976260713">Naziv usluge</translation>
 <translation id="6961170852793647506">Da biste započeli, postavite dokument na skener</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
+<translation id="6965978654500191972">Uređaj</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
+<translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="7005833343836210400">Uređaj je oflajn</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posećene veb-stranice, lozinke i imejlove.</translation>
 <translation id="7040230719604914234">Mobilni operater</translation>
@@ -773,6 +780,7 @@
 <translation id="7977800524392185497">Da biste se pridružili <ph name="NETWORK_NAME" /> mreži, idite u Podešavanja</translation>
 <translation id="7978412674231730200">Privatni ključ</translation>
 <translation id="7994702968232966508">EAP metod</translation>
+<translation id="8004582292198964060">Pregledač</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Omogućite režim autopodešavanja boja</translation>
@@ -885,6 +893,7 @@
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="9025198690966128418">Koristi kao lični uređaj</translation>
+<translation id="902638246363752736">Podešavanja tastature</translation>
 <translation id="9028832514430399253">Uključite prekidač da biste izabrali opcije čuvara ekrana</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPV6</translation>
@@ -917,4 +926,5 @@
 <translation id="952992212772159698">Nije aktivirano</translation>
 <translation id="960719561871045870">Kôd mobilnog operatera</translation>
 <translation id="982713511914535780">Pokreni test pražnjenja</translation>
+<translation id="987264212798334818">Opšte</translation>
 </translationbundle>

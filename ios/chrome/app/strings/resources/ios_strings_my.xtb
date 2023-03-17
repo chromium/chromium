@@ -374,6 +374,7 @@
 <translation id="3595252146048399851">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင် အချိန်မရွေး ရွေးနိုင်သည်။ Google က Search နှင့် အခြားဝန်ဆောင်မှုများကို သင့်မှတ်တမ်းပေါ်မူတည်၍ ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်နိုင်သည်။</translation>
 <translation id="3603009562372709545">လင့်ခ် URL ကို ကူးယူမည်</translation>
 <translation id="3607167657931203000">အလိုအလျောက် ဖြည့်စွက်ရန်ဒေတာ</translation>
+<translation id="3608008480985212611">သင့်သတ်မှတ်ချက်များကို စီမံရန် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="3609785682760573515">စင့်က် လုပ်နေ...</translation>
 <translation id="3631443864840848029">ဤဝဘ်ဆိုက်အတွက် လက်ရှိစကားဝှက်ကို သိမ်းနေကြောင်း သေချာပါစေ။</translation>
 <translation id="3638472932233958418">ဝက်ဘ်စာမျက်နှာများ ကြိုခေါ်ထားရန်</translation>
@@ -519,6 +520,7 @@
 <translation id="4737560986434232178">မကြာသေးမီက တဘ်များတွင် ရှာဖွေခြင်း</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="4747097190499141774">စကားဝှက်စာ အသွင်ဝှက်ခြင်းတွင် ငွေပေးချေနည်းလမ်းများနှင့် Google Pay မှ လိပ်စာများ မပါဝင်ပါ။ သင့်စကားဝှက်ရှိသူသာ သင်အသွင်ဝှက်ထားသည့် ဒေတာများကို ဖတ်နိုင်မည် ဖြစ်သည်။ စကားဝှက်ကို Google သို့ပို့ခြင်း သို့မဟုတ် သိမ်းဆည်းထားခြင်း မရှိပါ။ သင့်စကားဝှက်ကို မေ့သွားလျှင် သို့မဟုတ် ဤဆက်တင်ကို ပြောင်းလဲလိုလျှင် စင့်ခ်လုပ်ခြင်းကို ပြင်ဆင်သတ်မှတ်ရန် လိုအပ်ပါသည်။ <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />၊ <ph name="STATE" />၊ ဤစက်တွင်သာ၊ <ph name="URL" /></translation>
 <translation id="4751645464639803239">ရုပ်ဖျက်တဘ်အသစ်</translation>
 <translation id="4766112107778026136">Discover နှင့် လိုက်ကြည့်နေသည်များ</translation>
 <translation id="4775879719735953715">မူရင်း ဘရောင်ဇာ</translation>
@@ -944,6 +946,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7600965453749440009">ဘာသာပြန်အသစ် <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">ပိတ်ဆို့ထားသည့် ပေါ့အာပ်များ( <ph name="NUMBER_OF_BLOCKED_POPUPS" /> )</translation>
 <translation id="7607521702806708809">စကားဝှက်ကို ဖျက်ရန်</translation>
+<translation id="7611459119367035420">ပင်ထိုးထားသောတဘ်များကို ဤနေရာတွင် ရှာတွေ့နိုင်သည်။</translation>
 <translation id="7638584964844754484">စကားဝှက် မမှန်</translation>
 <translation id="7646263789464975852">မီနူး → ဆက်တင်များ → လုံခြုံရေး စစ်ဆေးမှု</translation>
 <translation id="7646772052135772216">စကားဝှက်စင့်ခ်လုပ်ခြင်းကို အသုံးပြု၍မရပါ</translation>
@@ -956,6 +959,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7701040980221191251">မရှိ</translation>
 <translation id="7720410380936703141">ထပ်စမ်းကြည့်ရန်</translation>
 <translation id="7726702057919861819">မီနူး → မှတ်တမ်း → ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖယ်ရှားရန်</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />။ ဤစက်တွင်သာ။</translation>
 <translation id="7738120385185846461">ပြဿနာကို အကြောင်းကြားရန်…</translation>
 <translation id="7741325291586284254">ရုပ်ဖျက်တဘ် စာမျက်နှာသစ်</translation>
 <translation id="7744394900930577716">အခြားအက်ပ်များရှိ စကားဝှက်များ</translation>
@@ -1038,6 +1042,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8237382152611443140">‘စကားဝှက် အော်တိုဖြည့်ဆက်တင်များ’ ဖွင့်ပါ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8264966119170358612">Google မဟုတ်သည့် ဒေတာကျိုးပေါက်မှုတွင် သင်၏ သိမ်းထားသည့်စကားဝှက်အချို့ ဖော်ထုတ်ခံထားရသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">ဤစက်တွင်သာ</translation>
 <translation id="8271720166617117963">လက်ခံပြီး လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="8278938988428169257">စကားလုံး (သို့) စကားစု ထည့်ပါ</translation>
 <translation id="8281781826761538115">မူရင်း − <ph name="DEFAULT_LOCALE" /></translation>
@@ -1131,6 +1136,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8952559610785099500">စကားဝှက် ထည့်ခြင်း</translation>
 <translation id="8953046091948372197">သင့်စကားဝှက်ကို ဤနေရာတွင် တွေ့မည်</translation>
 <translation id="895541991026785598">ပြဿနာတစ်ခု အစီရင်ခံမည်</translation>
+<translation id="8971545611707025079">ထပ်မံစစ်ဆေးရန်</translation>
 <translation id="8974714402877957201">၁။ ‘iPad ဆက်တင်များ’ ဖွင့်ပါ</translation>
 <translation id="8976382372951310360">အကူအညီ</translation>
 <translation id="8976414606286374109">ကတ်များကို သင်၏ Google Account တွင် သိမ်းမည်။</translation>

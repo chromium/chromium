@@ -142,6 +142,7 @@
 <translation id="2157959690810728433">MEWN CIW</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Rhoi cynnig arall arni</translation>
 <translation id="2161394479394250669">Canslo'r dasg argraffu</translation>
+<translation id="2161656808144014275">Testun</translation>
 <translation id="2163937499206714165">Troi'r modd tywyll ymlaen</translation>
 <translation id="2180197493692062006">Aeth rhywbeth o'i le. Rhowch gynnig ar ailagor yr ap.</translation>
 <translation id="2209788852729124853">Ailosod Rhifyddion Traffig</translation>
@@ -217,6 +218,7 @@
 <translation id="3008341117444806826">AIL-LWYTHO</translation>
 <translation id="3009958530611748826">Dewiswch ffolder i gadw iddi</translation>
 <translation id="3017079585324758401">Cefndir</translation>
+<translation id="3020183492814296499">Llwybrau byr</translation>
 <translation id="3027578600144895987">Cau'r camera</translation>
 <translation id="3031560714565892478">Mae'r ddyfais yn gamera fideo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -663,7 +665,9 @@
 <translation id="6957231940976260713">Enw'r gwasanaeth</translation>
 <translation id="6961170852793647506">I gychwyn arni, rhowch eich dogfen ar y sganiwr</translation>
 <translation id="6965382102122355670">Iawn</translation>
+<translation id="6965978654500191972">Dyfais</translation>
 <translation id="6977381486153291903">Adolygiad cadarnwedd</translation>
+<translation id="6981982820502123353">Hygyrchedd</translation>
 <translation id="7005833343836210400">Mae'r ddyfais all-lein</translation>
 <translation id="7028979494427204405">Mae <ph name="MANAGER" /> yn rheoli'r ddyfais hon ac mae ganddo fynediad at holl weithgarwch y defnyddiwr, gan gynnwys tudalennau gwe yr ymwelwyd â nhw, cyfrineiriau, ac e-byst.</translation>
 <translation id="7040230719604914234">Gweithredydd</translation>
@@ -773,6 +777,7 @@
 <translation id="7977800524392185497">I ymuno â rhwydwaith <ph name="NETWORK_NAME" />, ewch i'r Gosodiadau</translation>
 <translation id="7978412674231730200">Allwedd breifat</translation>
 <translation id="7994702968232966508">Dull EAP</translation>
+<translation id="8004582292198964060">Porwr</translation>
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Galluogi'r modd lliw awtomatig</translation>
@@ -885,6 +890,7 @@
 <translation id="8998289560386111590">Dim ar gael ar eich dyfais</translation>
 <translation id="9003704114456258138">Amlder</translation>
 <translation id="9025198690966128418">Defnyddio fel dyfais bersonol</translation>
+<translation id="902638246363752736">Gosodiadau bysellfwrdd</translation>
 <translation id="9028832514430399253">Trowch y togl ymlaen i ddewis opsiynau arbedwr sgrîn</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +923,5 @@
 <translation id="952992212772159698">Heb ei weithredu</translation>
 <translation id="960719561871045870">Cod gweithredwr</translation>
 <translation id="982713511914535780">Rhedeg prawf Dadwefru</translation>
+<translation id="987264212798334818">Cyffredinol</translation>
 </translationbundle>

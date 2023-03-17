@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Разгъване на „<ph name="TARGET_DESCRIPTION" />“</translation>
 <translation id="4468959413250150279">Спиране на звука за конкретен сайт.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# „бисквитка“}other{# „бисквитки“}}</translation>
+<translation id="4478158430052450698">Улесняване на персонализирането на мащаба за различните сайтове</translation>
 <translation id="4479647676395637221">Извеждане на запитване, преди да се разреши на сайтовете да използват камерата (препоръчително)</translation>
 <translation id="4505788138578415521">URL адресът е разгънат</translation>
 <translation id="4534723447064627427">За да разрешите на <ph name="APP_NAME" /> да осъществява достъп до микрофона ви, той трябва да бъде включен и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>

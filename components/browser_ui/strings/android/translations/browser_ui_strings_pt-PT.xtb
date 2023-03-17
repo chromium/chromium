@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Expandido. Clique para reduzir.</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2597457036804169544">Não aplique o tema escuro aos sites</translation>
+<translation id="2606760465469169465">Validação automática</translation>
 <translation id="2621115761605608342">Permitir JavaScript num site específico.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Sair</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Os contactos que selecionar serão partilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Última visita hoje</translation>
 <translation id="5225463052809312700">Ativar câmara</translation>
+<translation id="5229337741799419985">Esta definição funciona sem saber a sua identidade nem permitir que os sites vejam o seu histórico de navegação</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5264323282659631142">Remover "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Arraste a partir da parte superior e toque no botão de retrocesso para sair do ecrã inteiro.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Transferências ativas</translation>
+<translation id="6701547804986694515">Um site que visita pode guardar informações no Chrome que validam que não é um bot. À medida que navega, os sites podem verificar com o Chrome e validar com um site anterior que tenha visitado que provavelmente é uma pessoa real</translation>
 <translation id="6722828510648505498">Bloqueie pedidos de início de sessão dos serviços de identidade.</translation>
 <translation id="6746124502594467657">Mover para baixo</translation>
 <translation id="6749077623962119521">Pretende repor as autorizações?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Selecionar uma imagem</translation>
 <translation id="8801436777607969138">Bloqueie JavaScript num site específico.</translation>
 <translation id="8803526663383843427">Quando está ativada</translation>
+<translation id="8805385115381080995">A navegação é mais rápida porque é menos provável que um site lhe peça para validar que é uma pessoa real</translation>
 <translation id="8816026460808729765">Impedir que os sites acedam aos sensores</translation>
 <translation id="8823559166155093873">Bloquear cookies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Esta página é perigosa</translation>
 <translation id="9201023452444595544">Todos os dados offline serão limpos.</translation>
 <translation id="930525582205581608">Pretende esquecer este site?</translation>
+<translation id="947156494302904893">Os sites que visita podem validar que é uma pessoa real e não um bot</translation>
 <translation id="967624055006145463">Dados armazenados</translation>
 </translationbundle>

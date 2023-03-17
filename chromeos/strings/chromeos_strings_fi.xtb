@@ -142,6 +142,7 @@
 <translation id="2157959690810728433">JONOSSA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yritä uudelleen</translation>
 <translation id="2161394479394250669">Peru tulostustyö</translation>
+<translation id="2161656808144014275">Teksti</translation>
 <translation id="2163937499206714165">Ota tumma tila käyttöön</translation>
 <translation id="2180197493692062006">Jotain meni pieleen. Kokeile avata sovellus uudelleen.</translation>
 <translation id="2209788852729124853">Nollaa liikennelaskurit</translation>
@@ -217,6 +218,7 @@
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="3017079585324758401">Tausta</translation>
+<translation id="3020183492814296499">Pikanäppäimet</translation>
 <translation id="3027578600144895987">Sulje kamera</translation>
 <translation id="3031560714565892478">Laite on videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -663,7 +665,9 @@
 <translation id="6957231940976260713">Palvelun nimi</translation>
 <translation id="6961170852793647506">Aloita asettamalla dokumentti skanneriin</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Laite</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
+<translation id="6981982820502123353">Saavutettavuus</translation>
 <translation id="7005833343836210400">Laite on offline-tilassa</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="7040230719604914234">Operaattori</translation>
@@ -773,6 +777,7 @@
 <translation id="7977800524392185497">Liity <ph name="NETWORK_NAME" />-verkkoon avaamalla Asetukset</translation>
 <translation id="7978412674231730200">Yksityinen avain</translation>
 <translation id="7994702968232966508">EAP-tapa</translation>
+<translation id="8004582292198964060">Selain</translation>
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Ota automaattinen väritila käyttöön</translation>
@@ -885,6 +890,7 @@
 <translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
 <translation id="9003704114456258138">Taajuus</translation>
 <translation id="9025198690966128418">Käytä henkilökohtaisena laitteena</translation>
+<translation id="902638246363752736">Näppäimistön asetukset</translation>
 <translation id="9028832514430399253">Laita valitsin päälle-asentoon, niin voit valita näytönsäästäjän asetukset</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +923,5 @@
 <translation id="952992212772159698">Ei aktivoitu</translation>
 <translation id="960719561871045870">Operaattorikoodi</translation>
 <translation id="982713511914535780">Suorita purkautumistesti</translation>
+<translation id="987264212798334818">Yleistä</translation>
 </translationbundle>

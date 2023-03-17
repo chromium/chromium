@@ -29,6 +29,7 @@
 <translation id="2036868001356139588">定时器时长</translation>
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2064538373111010176">已切换到<ph name="CAMERA" /></translation>
+<translation id="2128052519899549250">录制延时摄影视频</translation>
 <translation id="2134029355740465625">视频设置</translation>
 <translation id="2144806332417375165">自定义视频参数</translation>
 <translation id="2175927920773552910">二维码</translation>
@@ -91,6 +92,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5320594929574852403">正在向左移动</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5577251651370645658">延时摄影</translation>
 <translation id="5662366948659129155">正在扫描第 <ph name="COUNT" /> 页</translation>
 <translation id="5671277269877808209">方形</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>

@@ -683,6 +683,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="259821504105826686">Sztuka fotograficzna i cyfrowa</translation>
 <translation id="2601150049980261779">Filmy romantyczne</translation>
 <translation id="2604589665489080024">Muzyka pop</translation>
+<translation id="2606760465469169465">Automatyczna weryfikacja</translation>
 <translation id="2610561535971892504">Kliknij, aby skopiować</translation>
 <translation id="2617988307566202237">W Chrome <ph name="BEGIN_EMPHASIS" />nie są zapisywane<ph name="END_EMPHASIS" /> te informacje:
 <ph name="BEGIN_LIST" />
@@ -1900,6 +1901,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />W jaki sposób możesz zarządzać swoimi danymi:<ph name="END_BOLD" /> Chrome automatycznie usuwa witryny odwiedzone ponad 4 tygodnie temu. Witryna, którą odwiedzisz ponownie, może pojawić się znów na liście. W ustawieniach Chrome możesz też w każdej chwili zablokować witrynie możliwość sugerowania reklam i wyłączyć reklamy sugerowane przez witryny.</translation>
 <translation id="5610142619324316209">Sprawdź połączenie</translation>
 <translation id="5610807607761827392">Możesz zarządzać kartami i adresami w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Zapisz na koncie</translation>
 <translation id="561165882404867731">Przetłumacz tę stronę w Tłumaczu Google</translation>
 <translation id="5612720917913232150"><ph name="URL" /> chce używać lokalizacji Twojego komputera</translation>
 <translation id="561669346091975195">Seriale science fiction i fantasy</translation>
@@ -3186,6 +3188,7 @@ Dodatkowe informacje:
 <translation id="8806285662264631610">Produkty do kąpieli i pielęgnacji ciała</translation>
 <translation id="8807160976559152894">Przycięcie po każdej stronie</translation>
 <translation id="8809203544698246977">Tutaj pojawią się zablokowane tematy</translation>
+<translation id="8811470563853401328">Zapisać adres na koncie?</translation>
 <translation id="8813277370772331957">Przypomnij później</translation>
 <translation id="8814707942599948500">Koperta C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by zaktualizować przeglądarkę Chrome z poziomu jej ustawień.</translation>
@@ -3279,6 +3282,7 @@ Dodatkowe informacje:
 <translation id="9042617223719777575">Duża pojemność</translation>
 <translation id="9044359186343685026">Używaj Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Te działania wymagają ustawienia zasady <ph name="POLICY_NAME" /> na <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 cali</translation>
 <translation id="9049981332609050619">Podjęto próbę nawiązania połączenia z witryną <ph name="DOMAIN" />, jednak serwer przedstawił nieprawidłowy certyfikat.</translation>
 <translation id="9050666287014529139">Hasło</translation>

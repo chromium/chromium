@@ -939,6 +939,7 @@
 <translation id="8492972329130824181">အိမ်ကွန်ရက်ကို မရနိုင်ပါ။ ချိတ်ဆက်ရန် ကွန်ရက်ပြင်ပဒေတာ အသုံးပြုခြင်းကို ဖွင့်ထားရမည်။</translation>
 <translation id="8499098729323186194">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ထုတ်ယူနေသည်…</translation>
 <translation id="8502913769543567768">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ။ သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
+<translation id="8512483403832814140">အချိန်မရွေး</translation>
 <translation id="8521441079177373948">ယူကေ</translation>
 <translation id="853494022971700746">ပြင်သစ် (ပြင်သစ်)</translation>
 <translation id="8540608333167683902">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>

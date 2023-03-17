@@ -374,6 +374,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3595252146048399851">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />. Google may personalise Search and other services based on your history.</translation>
 <translation id="3603009562372709545">Copy link URL</translation>
 <translation id="3607167657931203000">Auto-fill Data</translation>
+<translation id="3608008480985212611">Sign in to manage your preferences</translation>
 <translation id="3609785682760573515">Syncing...</translation>
 <translation id="3631443864840848029">Make sure that you're saving your current password for this site.</translation>
 <translation id="3638472932233958418">Pre-load Web Pages</translation>
@@ -1042,6 +1043,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8237382152611443140">Open auto-fill password settings</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8264966119170358612">Some of your saved passwords were exposed in a non-Google data breach. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Only on this device</translation>
 <translation id="8271720166617117963">Accept and sign in</translation>
 <translation id="8278938988428169257">Enter a word or phrase</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>

@@ -12,6 +12,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="110877069173485804">Dit is jou Chrome</translation>
 <translation id="1125124144982679672">Wie gebruik tans Chrome?</translation>
 <translation id="1142745911746664600">Kan nie Chrome opdateer nie</translation>
+<translation id="1149651794389918149">Meld by Chrome aan. As jy ’n rekening net een keer wil aanmeld, kan jy <ph name="GUEST_LINK_BEGIN" />die toestel as gas gebruik<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Meer oor Chrome-bedryfstelsel</translation>
 <translation id="1154147086299354128">&amp;Maak in Chrome oop</translation>
 <translation id="1203500561924088507">Dankie dat jy geïnstalleer het. Jy moet jou blaaier herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
@@ -172,6 +173,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4147555960264124640">Jy meld tans met 'n bestuurde rekening aan en gee sy administrateur beheer oor jou Google Chrome-profiel. Jou Chrome-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings, sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekeningekontroleskerm kan uitvee, maar jy sal hierdie data nie met 'n ander rekening kan assosieer nie. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installeer tans …</translation>
 <translation id="4149882025268051530">Die installeerder kon nie die argief se saampersing omkeer nie. Laai Google Chrome asseblief weer af.</translation>
+<translation id="4153934450158521343">Chrome gaan binnekort toemaak en data uitvee</translation>
 <translation id="4191857738314598978">{0,plural, =1{Herbegin Chrome binne 'n dag}other{Herbegin Chrome binne # dae}}</translation>
 <translation id="4205939740494406371">Chrome kan nie jou wagwoorde nagaan nie. Probeer ná 24 uur weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Kanselleer tans …</translation>
@@ -217,6 +219,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4970880042055371251">Chrome-bedryfstelselweergawe</translation>
 <translation id="4970947549776831107">Chrome het hierdie lêer geblokkeer omdat hierdie soort lêer gevaarlik is</translation>
 <translation id="4990567037958725628">Google Chrome Kanarie</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Jou admin maak Chrome outomaties toe nadat dit 1 minuut lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}other{Jou admin maak Chrome outomaties toe nadat dit # minute lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}}</translation>
 <translation id="5098668839038261629">Wanneer dit aan is, sal jy ook by Chrome afgemeld word</translation>
 <translation id="5132929315877954718">Ontdek wonderlike programme, speletjies, uitbreidings en temas vir Google Chrome.</translation>
 <translation id="5139423532931106058">Pasmaak jou Chrome-profiel</translation>
@@ -269,12 +272,14 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Inkomende reël vir Google Chrome om mDNS-verkeer toe te laat.</translation>
+<translation id="624230925347970731">Chrome gaan binnekort toemaak</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
 <translation id="6273793429163604305">Op jou merke …</translation>
 <translation id="6291089322031436445">Chrome Dev-programme</translation>
 <translation id="6291549208091401781">Google Chrome is reeds vir alle gebruikers op jou rekenaar geïnstalleer.</translation>
 <translation id="6326175484149238433">Verwyder van Chrome af</translation>
 <translation id="6327105987658262776">Geen opdatering is beskikbaar nie.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Jou admin vee blaaierdata outomaties uit wanneer dit 1 minuut lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit. Jou bestaande oortjies sal oop bly.}other{Jou admin vee blaaierdata outomaties uit wanneer dit # minute lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit. Jou bestaande oortjies sal oop bly.}}</translation>
 <translation id="6412673304250309937">Vergelyk URL'e met 'n lys onveilige werwe wat in Chrome geberg word. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chrome dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
 <translation id="6418662306461808273">Skakel oor na bestaande Chrome-profiel?</translation>
 <translation id="6493527311031785448">Google Chrome probeer tans om <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -304,6 +309,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 
 Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekening van toepassing wees. Jy kan jou Google-rekeninge in <ph name="SETTINGS_LINK_BEGIN" />Instellings<ph name="SETTINGS_LINK_END" /> bestuur.</translation>
 <translation id="7062128746136194023">Jou ouer het "Toestemmings vir werwe, programme en uitbreidings" vir Chrome afgeskakel. Hierdie <ph name="EXTENSION_TYPE_PARAMETER" /> mag nie bygevoeg word nie.</translation>
+<translation id="7071827361006050863">Chrome gaan blaaierdata binnekort uitvee</translation>
 <translation id="7085332316435785646">Kies of jy Chrome-geskiedenis wil insluit vir meer gepersonaliseerde ervarings in Google-dienste</translation>
 <translation id="7088681679121566888">Chrome is op datum</translation>
 <translation id="7098166902387133879">Google Chrome gebruik tans jou mikrofoon.</translation>
@@ -365,6 +371,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="8290100596633877290">Sjoe! Google Chrome het omgeval. Herbegin nou?</translation>
 <translation id="8342675569599923794">Hierdie lêer is gevaarlik en daarom het Chrome dit geblokkeer.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Hoe ons hierdie data gebruik:<ph name="END_BOLD" /> Werwe kan inligting oor jou belangstellings in Chrome stoor. As jy byvoorbeeld ’n werf besoek om skoene vir ’n marathon te koop, kan die werf jou belangstelling definieer as iemand wat marathons hardloop. As jy later ’n ander werf besoek om vir ’n wedloop te registreer, kan daardie werf vir jou ’n advertensie vir drafskoene op grond van jou belangstellings wys.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Jou admin maak Chrome outomaties toe nadat dit 1 minuut lank nie gebruik is nie.}other{Jou admin maak Chrome outomaties toe nadat dit # minute lank nie gebruik is nie.}}</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Hoe ons hierdie data gebruik:<ph name="END_BOLD" /> Chrome kan jou belangstellings skat. 'n Werf wat jy besoek kan Chrome later vra om jou belangstellings te sien om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="8387459386171870978">Hou aan om Chrome te gebruik</translation>

@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">文件馈送器（单面）</translation>
 <translation id="1643449475550628585">每天更改一次壁纸图片</translation>
 <translation id="1644574205037202324">历史记录</translation>
+<translation id="1651925268237749928">您已选择一个共享影集。他人可以添加或更改照片。您的壁纸可能会使用尚不在此影集内的照片。</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1664796644829245314">预览“<ph name="PREVIEW_OBJECT" />”</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
@@ -142,6 +143,7 @@
 <translation id="2157959690810728433">已加入队列</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重试</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
+<translation id="2161656808144014275">文字</translation>
 <translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
@@ -217,6 +219,7 @@
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3017079585324758401">背景</translation>
+<translation id="3020183492814296499">快捷方式</translation>
 <translation id="3027578600144895987">关闭摄像头</translation>
 <translation id="3031560714565892478">设备类型是摄像机。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -238,6 +241,7 @@
 <translation id="319101249942218879">头像图片变了</translation>
 <translation id="3192947282887913208">音频文件</translation>
 <translation id="3199982728237701504">文件馈送器（双面）</translation>
+<translation id="3201315366910775591">他人可以更新共享影集</translation>
 <translation id="3211671540163313381">按键映射方向键</translation>
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3226657629376379887">布局操作菜单</translation>
@@ -656,6 +660,7 @@
 <translation id="6838167112108853532">无法停用或移除此 APN。请务必停用或移除已启用的附接 APN。</translation>
 <translation id="6853312040151791195">放电速率</translation>
 <translation id="6889786074662672253">重启期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。这可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
+<translation id="6900701049656042631">此影集内尚无任何照片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="6905724422583748843">返回“<ph name="PAGE_NAME" />”</translation>
 <translation id="6910312834584889076">扫描仪的盖子没合上。请合上盖子，然后重试。</translation>
 <translation id="6911383237894364323">无法连接到媒体服务器</translation>
@@ -663,7 +668,9 @@
 <translation id="6957231940976260713">服务名称</translation>
 <translation id="6961170852793647506">首先，将您的文件放置在扫描仪上</translation>
 <translation id="6965382102122355670">确定</translation>
+<translation id="6965978654500191972">设备</translation>
 <translation id="6977381486153291903">固件版本</translation>
+<translation id="6981982820502123353">无障碍</translation>
 <translation id="7005833343836210400">设备处于离线状态</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
@@ -773,6 +780,7 @@
 <translation id="7977800524392185497">若要加入“<ph name="NETWORK_NAME" />”网络，请转到“设置”</translation>
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
+<translation id="8004582292198964060">浏览器</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">启用自动颜色模式</translation>
@@ -885,6 +893,7 @@
 <translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="9003704114456258138">频率</translation>
 <translation id="9025198690966128418">用作个人设备</translation>
+<translation id="902638246363752736">键盘设置</translation>
 <translation id="9028832514430399253">将切换开关上的滑块滑至开启位置即可选择屏保选项</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +926,5 @@
 <translation id="952992212772159698">未激活</translation>
 <translation id="960719561871045870">运营商代码</translation>
 <translation id="982713511914535780">运行放电测试</translation>
+<translation id="987264212798334818">常规</translation>
 </translationbundle>

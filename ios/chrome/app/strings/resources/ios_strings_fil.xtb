@@ -374,6 +374,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3595252146048399851">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="3603009562372709545">Kopyahin ang URL ng Link</translation>
 <translation id="3607167657931203000">Mag-autofill ng Data</translation>
+<translation id="3608008480985212611">Mag-sign in para pamahalaan ang iyong mga preference.</translation>
 <translation id="3609785682760573515">Nagsi-sync...</translation>
 <translation id="3631443864840848029">Tiyaking sine-save mo ang iyong kasalukuyang password para sa site na ito.</translation>
 <translation id="3638472932233958418">Mag-preload ng Mga Webpage</translation>
@@ -541,6 +542,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="48274138579728272">Markahan Bilang Nabasa Na</translation>
 <translation id="4833686396768033263">Hindi Available ang Mga Kamakailang Tab</translation>
 <translation id="4833786495304741580">Awtomatikong nagpapadala sa Google ng mga istatistika sa paggamit at ulat ng pag-crash.</translation>
+<translation id="4834499902900503484">Kapag naka-sign in ka sa Chrome, ang mga sine-save mong password ay mapupunta sa iyong Google Account. Para i-off ito, <ph name="BEGIN_LINK" />pumunta sa mga setting<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Ang iyong mga bookmark, history, mga password, at higit pa ay hindi na masi-sync sa Google Account mo.</translation>
 <translation id="4844899002472726590">Tingnan at i-edit ang mga paksa kung saan ka interesado</translation>
 <translation id="4848999860252535517">I-delete ang Password para sa <ph name="WEBSITE" />?</translation>
@@ -684,6 +686,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5899314093904173337">Para magbahagi sa mga taong nasa malapit, ipa-scan sa kanila ang QR code na ito gamit ang kanilang camera o QR scanner app</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Mga opsyon para Isalin ang page</translation>
+<translation id="5922999516621365983">I-drag ang tab dito para i-pin ito.</translation>
 <translation id="5938160824633642847">Malapit nang mapuno ang iyong device. Magbakante ng espasyo at subukan ulit.</translation>
 <translation id="5948291296578561264">Binibigyang-daan ka nito na mag-save ng mga larawan sa iyong library ng larawan.</translation>
 <translation id="5951816930277761335">Ibahagi ang Link</translation>
@@ -1040,6 +1043,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8237382152611443140">Buksan ang Mga Setting ng Pag-autofill ng Password</translation>
 <translation id="8261506727792406068">I-delete</translation>
 <translation id="8264966119170358612">Nalantad ang ilan sa iyong mga naka-save na password sa isang paglabag sa data na hindi sa Google. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Sa device lang na ito</translation>
 <translation id="8271720166617117963">Tanggapin at Mag-sign in</translation>
 <translation id="8278938988428169257">Maglagay ng Salita o Parirala</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>

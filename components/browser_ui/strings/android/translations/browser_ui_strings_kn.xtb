@@ -189,6 +189,7 @@
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> ಅನ್ನು ವಿಸ್ತರಿಸಿ</translation>
 <translation id="4468959413250150279">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ನ ಧ್ವನಿಯನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# ಕುಕೀ}one{# ಕುಕೀಗಳು}other{# ಕುಕೀಗಳು}}</translation>
+<translation id="4478158430052450698">ವಿವಿಧ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಜೂಮ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡುವುದನ್ನು ಸುಲಭಗೊಳಿಸಿ</translation>
 <translation id="4479647676395637221">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="4505788138578415521">URL ಅನ್ನು ವಿಸ್ತರಿಸಲಾಗಿದೆ</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್‌ಗೆ ಪ್ರವೇಶಿಸುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
@@ -383,7 +384,7 @@
 <translation id="8116925261070264013">ಮ್ಯೂಟ್‌ ಆಗಿರುವುದು</translation>
 <translation id="813082847718468539">ಸೈಟ್ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
-<translation id="8154912474061769055">ಫೀಚರ್‌ಗಳು ನನ್ನ ಸೈಟ್‌ಗಳಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
+<translation id="8154912474061769055">ಹಲವು ಸೈಟ್‌ಗಳಲ್ಲಿನ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
 <translation id="8168435359814927499">ವಿಷಯ</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>

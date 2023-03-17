@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">NA ČEKANJU</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Pokušaj ponovo</translation>
 <translation id="2161394479394250669">Otkaži zadatak ispisa</translation>
+<translation id="2161656808144014275">Tekst</translation>
 <translation id="2163937499206714165">Uključivanje tamnog načina</translation>
 <translation id="2180197493692062006">Nešto nije u redu. Pokušajte ponovo otvoriti aplikaciju.</translation>
 <translation id="2209788852729124853">Poništi brojače prometa</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="3017079585324758401">Pozadina</translation>
+<translation id="3020183492814296499">Prečaci</translation>
 <translation id="3027578600144895987">Zatvorite kameru</translation>
 <translation id="3031560714565892478">Uređaj je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Naziv usluge</translation>
 <translation id="6961170852793647506">Da biste započeli, postavite dokument na skener</translation>
 <translation id="6965382102122355670">U redu</translation>
+<translation id="6965978654500191972">Uređaj</translation>
 <translation id="6977381486153291903">Revizija opreme</translation>
+<translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="7005833343836210400">Uređaj je offline</translation>
 <translation id="7028979494427204405">Uređajem upravlja <ph name="MANAGER" /> i taj upravitelj ima pristup svim aktivnostima korisnika, uključujući posjećene web-stranice, zaporke i e-poštu.</translation>
 <translation id="7040230719604914234">Mobilni operater</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">Da biste se pridružili <ph name="NETWORK_NAME" /> mreži, otvorite postavke</translation>
 <translation id="7978412674231730200">Osobni ključ</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
+<translation id="8004582292198964060">Preglednik</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Omogućite način automatske boje</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="9025198690966128418">Upotrijebi kao osobni uređaj</translation>
+<translation id="902638246363752736">Postavke tipkovnice</translation>
 <translation id="9028832514430399253">Uključite prekidač da biste odabrali opcije čuvara zaslona</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Nije aktivirano</translation>
 <translation id="960719561871045870">Kôd operatera</translation>
 <translation id="982713511914535780">Pokreni test pražnjenja</translation>
+<translation id="987264212798334818">Općenito</translation>
 </translationbundle>

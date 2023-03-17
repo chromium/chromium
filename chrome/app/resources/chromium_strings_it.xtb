@@ -9,6 +9,7 @@
 <translation id="113122355610423240">Chromium è il tuo browser predefinito</translation>
 <translation id="1131805035311359397">Per controllare che le tue password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{L'amministratore chiude automaticamente Chromium quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{L'amministratore chiude automaticamente Chromium quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Risparmio memoria ha reso Chromium più veloce</translation>
 <translation id="1315551408014407711">Configura il tuo nuovo profilo di Chromium</translation>
@@ -23,6 +24,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="1640672724030957280">Download in corso...</translation>
 <translation id="1708666629004767631">È disponibile una nuova versione più sicura di Chromium.</translation>
 <translation id="17264556997921157">Puoi visualizzare e rimuovere argomenti di interesse usati dai siti per mostrarti annunci. Chromium stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
+<translation id="1733725117201708356">A breve Chromium eliminerà i dati di navigazione</translation>
 <translation id="1745121272106313518">Chromium verrà riavviato tra <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Lascia Chromium in esecuzione in background</translation>
 <translation id="1779356040007214683">Per rendere Chromium più sicuro, abbiamo disattivato alcune estensioni che non sono elencate nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e potrebbero essere state aggiunte a tua insaputa.</translation>
@@ -53,6 +55,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="2384373936468275798">Impossibile sincronizzare i dati in Chromium OS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="2396765026452590966">L'estensione "<ph name="EXTENSION_NAME" />" ha cambiato la pagina mostrata all'avvio di Chromium.</translation>
 <translation id="2401032172288869980">Chromium deve avere le autorizzazioni di accesso al microfono e alla fotocamera per questo sito</translation>
+<translation id="2478295928299953161">Chromium verrà chiuso a breve</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
 <translation id="2560420686485554789">Chromium deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
@@ -171,6 +174,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="4987820182225656817">Gli ospiti possono utilizzare Chromium senza lasciare tracce.</translation>
 <translation id="4994636714258228724">Aggiungiti a Chromium</translation>
 <translation id="5114678101347489141">Chromium sta esaminando nuove funzionalità che consentano ai siti di offrire la stessa esperienza di navigazione utilizzando meno informazioni personali</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{L'amministratore chiude automaticamente Chromium quando non viene utilizzato per 1 minuto.}other{L'amministratore chiude automaticamente Chromium quando non viene utilizzato per # minuti.}}</translation>
 <translation id="5224391634244552924">Nessuna password salvata. Chromium può controllare le password quando le salvi.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chromium. Questa operazione creerà un nuovo profilo Chromium per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Riavvia Chromium per applicare le modifiche</translation>
@@ -214,6 +218,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6119438414301547735">Consenti all'estensione di mostrare le richieste di accesso nella barra degli strumenti di Chromium</translation>
 <translation id="6120345080069858279">Chromium salverà la password nel tuo Account Google affinché tu non debba memorizzarla.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> è pericoloso, pertanto è stato bloccato da Chromium.</translation>
+<translation id="6132897690380286411">A breve Chromium chiuderà ed eliminerà i dati</translation>
 <translation id="6134968993075716475">Navigazione sicura è disattivata. Chromium consiglia di attivarla.</translation>
 <translation id="6145820983052037069">Puoi passare da un profilo Chromium all'altro qui</translation>
 <translation id="6183079672144801177">Assicurati di aver effettuato l'accesso a Chromium sul tuo dispositivo <ph name="TARGET_DEVICE_NAME" /> e prova a ripetere l'invio.</translation>
@@ -233,6 +238,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6327105987658262776">Nessun aggiornamento disponibile.</translation>
 <translation id="6333502561965082103">C'è un'altra operazione in corso su Chromium. Riprova più tardi.</translation>
 <translation id="6334986366598267305">Ora è più facile utilizzare Chromium con il tuo Account Google e sui computer condivisi.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{L'amministratore elimina automaticamente i dati di navigazione quando non vengono utilizzati per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}other{L'amministratore elimina automaticamente i dati di navigazione quando non vengono utilizzati per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}}</translation>
 <translation id="6373523479360886564">Vuoi disinstallare Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> Chromium può stimare i tuoi interessi. Dopodiché, un sito che visiti può chiedere a Chromium di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
 <translation id="6403826409255603130">Chromium è un browser web che esegue le pagine web e le applicazioni alla velocità della luce. È veloce, stabile e facile da utilizzare. Naviga su Internet in modo più sicuro grazie alla protezione da malware e phishing integrata in Chromium.</translation>
@@ -362,6 +368,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8986207147630327271">Stai per aggiungere a questo browser un profilo di lavoro che sarà controllato dal tuo amministratore.</translation>
 <translation id="9019929317751753759">Per rendere Chromium più sicuro, abbiamo disattivato la seguente estensione non presente nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> che potrebbe essere stata aggiunta a tua insaputa.</translation>
 <translation id="9022552996538154597">Accedi a Chromium</translation>
+<translation id="907832235989677238">Accedi a Chromium. Se vuoi accedere con un account una sola volta, puoi <ph name="GUEST_LINK_BEGIN" />utilizzare il dispositivo come ospite<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9089354809943900324">Chromium non è aggiornato</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium verrà riavviato tra un'ora}other{Chromium verrà riavviato tra # ore}}</translation>
 <translation id="9106612006984859720">Per ricevere gli aggiornamenti futuri di Chromium, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.1.</translation>

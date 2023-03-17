@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">Hjemmenetværket er ikke tilgængeligt. Dataroaming med mobildata skal være aktiveret, før du kan oprette forbindelse.</translation>
 <translation id="8499098729323186194">Udtrækker <ph name="NUMBER_OF_ITEMS" /> elementer…</translation>
 <translation id="8502913769543567768">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivér efter konfiguration af enhed, administreret af din administrator</translation>
+<translation id="8512483403832814140">Når som helst</translation>
 <translation id="8521441079177373948">Britisk</translation>
 <translation id="853494022971700746">Fransk (Frankrig)</translation>
 <translation id="8540608333167683902">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>

@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Установена е защитна стена</translation>
 <translation id="1075811647922107217">Размер на страницата</translation>
+<translation id="1082009148392559545">Скрийнсейвърът се изтегля</translation>
 <translation id="1094693127011229778">IP адресът не е налице</translation>
 <translation id="1113892970288677790">Изберете подбрани произведения на изкуството и изображения</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
 <translation id="1643449475550628585">Ежедневна промяна на изображението на тапета</translation>
 <translation id="1644574205037202324">История</translation>
+<translation id="1651925268237749928">Избрахте споделен албум. Другите хора могат да добавят или променят снимки. Тапетът ви може да използва снимки, които понастоящем не са в този албум.</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1664796644829245314">Визуализация на „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">Управлява се от <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Сървъри за имена</translation>
 <translation id="1731082422893354635">Сензорен панел с Bluetooth</translation>
+<translation id="1738949837603788263">Зона <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Изображенията не се заредиха. Проверете връзката си с мрежата или ги заредете отново.</translation>
 <translation id="1751249301761991853">Лични</translation>
 <translation id="1753496554272155572">Изход от визуализацията на тапета</translation>
@@ -140,6 +143,7 @@
 <translation id="2157959690810728433">В ОПАШКАТА</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
+<translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Включване на тъмния режим</translation>
 <translation id="2180197493692062006">Нещо се обърка. Опитайте да отворите приложението отново.</translation>
 <translation id="2209788852729124853">Нулиране на броячите за трафика</translation>
@@ -215,6 +219,7 @@
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
 <translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="3017079585324758401">Фон</translation>
+<translation id="3020183492814296499">Клавишни комбинации</translation>
 <translation id="3027578600144895987">Затваряне на камерата</translation>
 <translation id="3031560714565892478">Устройството е видеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -236,6 +241,7 @@
 <translation id="319101249942218879">Изображението на аватара бе променено</translation>
 <translation id="3192947282887913208">Аудиофайлове</translation>
 <translation id="3199982728237701504">Подавач на документи (двустранно)</translation>
+<translation id="3201315366910775591">Споделените албуми могат да се актуализират от други хора</translation>
 <translation id="3211671540163313381">Контролен пад за задаване на функции за клавишите</translation>
 <translation id="3226405216343213872">Търсят се скенери</translation>
 <translation id="3226657629376379887">Меню с действия за оформлението</translation>
@@ -598,6 +604,7 @@
 <translation id="636850387210749493">Корпоративно записване</translation>
 <translation id="6379086450106841622">Сензорен екран</translation>
 <translation id="6381741036071372448">Тестване на клавиатурата</translation>
+<translation id="6382182670717268353">Визуализация на скрийнсейвъра</translation>
 <translation id="6388847657025262518">Подавачът на документи на скенера е блокирал. Проверете го и опитайте отново.</translation>
 <translation id="6394634179843537518">Добавяне на файл</translation>
 <translation id="6410257289063177456">Графични файлове</translation>
@@ -653,6 +660,7 @@
 <translation id="6838167112108853532">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните прикачени APN са деактивирани или премахнати.</translation>
 <translation id="6853312040151791195">Скорост на разреждане</translation>
 <translation id="6889786074662672253">По време на рестартирането не изключвайте това външно устройство, нито компютъра си. Можете да намалите прозореца. Възможно е процесът да отнеме няколко минути и през това време външното ви устройство може да не работи.</translation>
+<translation id="6900701049656042631">В този албум няма снимки. За да добавите, отворете <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Назад към <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Капакът на скенера е отворен. Затворете го и опитайте отново.</translation>
 <translation id="6911383237894364323">Не може да се установи връзка с мултимедийните сървъри</translation>
@@ -660,7 +668,9 @@
 <translation id="6957231940976260713">Имe на услугата</translation>
 <translation id="6961170852793647506">За да започнете, поставете документа върху скенера</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Устройство</translation>
 <translation id="6977381486153291903">Версия на фърмуера</translation>
+<translation id="6981982820502123353">Достъпност</translation>
 <translation id="7005833343836210400">Устройството е офлайн</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
 <translation id="7040230719604914234">Оператор</translation>
@@ -687,6 +697,7 @@
 <translation id="7177485034254901881">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="7180611975245234373">Опресняване</translation>
 <translation id="7180865173735832675">Персонализиране</translation>
+<translation id="7184043045742675738">Кликнете върху който и да е клавиш, за да персонализирате бутона. Преместете клавиша с мишката или клавишите със стрелки.</translation>
 <translation id="7212734716605298123">Актуализации на фърмуера на външни устройства</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="725133483556299729">Избиране на имейл адрес</translation>
@@ -728,6 +739,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сензорен екран с USB</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Преместете с мишката или клавишите със стрелки.</translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
 <translation id="763165478673169849">Последен час на нулиране</translation>
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
@@ -768,6 +780,7 @@
 <translation id="7977800524392185497">За да се присъедините към <ph name="NETWORK_NAME" /> мрежа, отворете „Настройки“</translation>
 <translation id="7978412674231730200">Личен ключ</translation>
 <translation id="7994702968232966508">Метод с EAP</translation>
+<translation id="8004582292198964060">Браузър</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Активиране на режима за автоматични цветове</translation>
@@ -850,6 +863,7 @@
 <translation id="8798441408945964110">Име на доставчика</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тапет</translation>
+<translation id="8820457400746201697">Преместете синята точка на докосване до дадено действие. Изберете съответния клавиш за персонализиране.</translation>
 <translation id="8834539327799336565">Свързани сега</translation>
 <translation id="8845001906332463065">Получете помощ</translation>
 <translation id="8855781559874488009">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTP</translation>
@@ -879,6 +893,7 @@
 <translation id="8998289560386111590">Не е налице на устройството ви</translation>
 <translation id="9003704114456258138">Честота</translation>
 <translation id="9025198690966128418">Използване като лично устройство</translation>
+<translation id="902638246363752736">Настройки на клавиатурата</translation>
 <translation id="9028832514430399253">Включете превключвателя, за да изберете опциите за скрийнсейвъра</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +926,5 @@
 <translation id="952992212772159698">Не е активиран</translation>
 <translation id="960719561871045870">Код на оператора</translation>
 <translation id="982713511914535780">Тестване на разреждането</translation>
+<translation id="987264212798334818">Общи</translation>
 </translationbundle>

@@ -93,6 +93,7 @@
 <translation id="257931822824936280">展開されています - クリックすると折りたたまれます。</translation>
 <translation id="2586657967955657006">クリップボード</translation>
 <translation id="2597457036804169544">ダークモードをサイトに適用しません</translation>
+<translation id="2606760465469169465">自動確認</translation>
 <translation id="2621115761605608342">特定のサイトに対して JavaScript を許可します。</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
@@ -223,6 +224,7 @@
 <translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
 <translation id="5225463052809312700">カメラをオンにする</translation>
+<translation id="5229337741799419985">この設定では、ユーザーを特定したり、ユーザーの閲覧履歴の参照をサイトに許可したりすることはありません</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5264323282659631142"><ph name="CHIP_LABEL" /> を削除</translation>
 <translation id="528192093759286357">全画面表示を終了するには、上からドラッグして、戻るボタンをタップします。</translation>
@@ -309,6 +311,7 @@
 <translation id="6643016212128521049">削除</translation>
 <translation id="6689172468748959065">プロフィール写真</translation>
 <translation id="6697925417670533197">アクティブなダウンロード</translation>
+<translation id="6701547804986694515">アクセス先のサイトは、あなたが bot でないことを確認する情報を Chrome に保存できます。それ以降にアクセスしたサイトは、あなたが実在のユーザーであることを、前にアクセスしたサイトから Chrome を介して確認できます。</translation>
 <translation id="6722828510648505498">ID サービスからのログイン メッセージをブロックします。</translation>
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="6749077623962119521">権限をリセットしますか？</translation>
@@ -426,6 +429,7 @@
 <translation id="8751914237388039244">画像を選択</translation>
 <translation id="8801436777607969138">特定のサイトで JavaScript をブロックします。</translation>
 <translation id="8803526663383843427">オンにした場合</translation>
+<translation id="8805385115381080995">サイトであなたが実在のユーザーであることを確認する頻度が減るため、ブラウジングが高速化されます</translation>
 <translation id="8816026460808729765">サイトによるセンサーへのアクセスをブロックする</translation>
 <translation id="8823559166155093873">Cookie をブロック</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +453,6 @@
 <translation id="9162462602695099906">このページは危険です</translation>
 <translation id="9201023452444595544">オフライン データも削除されます</translation>
 <translation id="930525582205581608">このサイトに関する情報をすべて削除しますか？</translation>
+<translation id="947156494302904893">アクセスしたサイトは、あなたが bot ではなく実在のユーザーであることを確認できます</translation>
 <translation id="967624055006145463">保存データ</translation>
 </translationbundle>

@@ -9,6 +9,7 @@
 <translation id="113122355610423240">O Chromium é seu navegador padrão</translation>
 <translation id="1131805035311359397">Para verificar se suas senhas estão protegidas contra violações de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />faça login no Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Sobre o Chromium</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{O administrador vai fechar o Chromium automaticamente se ele não for usado por 1 minuto. Os dados de navegação serão excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.}one{O administrador vai fechar o Chromium automaticamente se ele não for usado por # minuto. Os dados de navegação serão excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.}other{O administrador vai fechar o Chromium automaticamente se ele não for usado por # minutos. Os dados de navegação serão excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.}}</translation>
 <translation id="1203500561924088507">Agradecemos por fazer a instalação. É necessário reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">A Economia de memória tornou o Chromium mais rápido</translation>
 <translation id="1315551408014407711">Configure seu novo perfil do Chromium</translation>
@@ -23,6 +24,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="1640672724030957280">Fazendo download...</translation>
 <translation id="1708666629004767631">Há uma nova versão mais segura do Chromium disponível.</translation>
 <translation id="17264556997921157">É possível ver e remover os assuntos de interesse que os sites usam para mostrar anúncios a você. O Chromium faz uma estimativa dos seus interesses com base no seu histórico de navegação recente.</translation>
+<translation id="1733725117201708356">O Chromium vai excluir os dados de navegação em breve</translation>
 <translation id="1745121272106313518">O Chromium será reiniciado em <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Permitir que o Chromium seja executado em segundo plano</translation>
 <translation id="1779356040007214683">Para tornar o Chromium mais seguro, desativamos algumas extensões que não estão listadas na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e podem ser sido adicionadas sem seu conhecimento.</translation>
@@ -53,6 +55,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="2384373936468275798">O ChromiumOS não pôde sincronizar seus dados porque os detalhes de login da sua conta estão desatualizados.</translation>
 <translation id="2396765026452590966">A extensão "<ph name="EXTENSION_NAME" />" alterou a página que é exibida quando você inicia o Chromium.</translation>
 <translation id="2401032172288869980">O Chromium precisa da permissão de acesso ao microfone e à câmera para este site</translation>
+<translation id="2478295928299953161">O Chromium será fechado em breve</translation>
 <translation id="2483889755041906834">No Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2560420686485554789">O Chromium precisa de acesso de armazenamento para fazer o download de arquivos</translation>
@@ -169,6 +172,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="4987820182225656817">Convidados podem usar o Chromium sem deixar nada para trás.</translation>
 <translation id="4994636714258228724">Cadastrar-se no Chromium</translation>
 <translation id="5114678101347489141">O Chromium está explorando novos recursos que permitem que os sites ofereçam a mesma experiência de navegação atual usando menos informações pessoais</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{O administrador vai fechar o Chromium automaticamente se ele não for usado por 1 minuto.}one{O administrador vai fechar o Chromium automaticamente se ele não for usado por # minuto.}other{O administrador vai fechar o Chromium automaticamente se ele não for usado por # minutos.}}</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5252179775517634216">A conta de <ph name="EXISTING_USER" /> já está conectada a este perfil do Chromium. Isso criará um novo perfil do Chromium para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Para que as alterações sejam aplicadas, reinicie o Chromium</translation>
@@ -212,6 +216,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6119438414301547735">Permitir que a extensão mostre solicitações de acesso na barra de ferramentas do Chromium</translation>
 <translation id="6120345080069858279">O Chromium salvará essa senha na sua Conta do Google. Você não precisará se lembrar dela.</translation>
 <translation id="6129621093834146363">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chromium.</translation>
+<translation id="6132897690380286411">O Chromium será fechado em breve, e os dados serão excluídos</translation>
 <translation id="6134968993075716475">O "Navegação segura" está desativado. O Chromium recomenda ativá-lo.</translation>
 <translation id="6145820983052037069">Aqui, você pode alternar entre os perfis do Chromium</translation>
 <translation id="6183079672144801177">Verifique se sua conta está conectada ao Chromium no <ph name="TARGET_DEVICE_NAME" /> e tente fazer o envio novamente.</translation>
@@ -231,6 +236,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6327105987658262776">Nenhuma atualização disponível.</translation>
 <translation id="6333502561965082103">Outra operação está em progresso no Chromium. Tente novamente mais tarde.</translation>
 <translation id="6334986366598267305">Agora ficou mais fácil usar o Chromium com sua Conta do Google e em computadores compartilhados.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{O administrador vai excluir os dados de navegação automaticamente quando o Chromium não for usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}one{O administrador vai excluir os dados de navegação automaticamente quando Chromium não for usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}other{O administrador vai excluir os dados de navegação automaticamente quando Chromium não for usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}}</translation>
 <translation id="6373523479360886564">Você quer mesmo desinstalar o Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Como usamos esses dados<ph name="END_BOLD" />: o Chromium faz uma estimativa dos seus interesses. Sites que você visitar vão poder pedir ao Chromium para ver seus interesses e personalizar os anúncios mostrados a você.</translation>
 <translation id="6403826409255603130">O Chromium é um navegador que executa páginas e aplicativos da web com alta velocidade. É rápido, estável e fácil de usar. Navegue na web com mais segurança com a proteção contra malware e phishing incorporada ao Chromium.</translation>
@@ -357,6 +363,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8986207147630327271">Você está adicionando um perfil de trabalho a este navegador. O administrador poderá controlar apenas o perfil de trabalho.</translation>
 <translation id="9019929317751753759">Para tornar o Chromium mais seguro, desativamos a extensão a seguir, que não está listada na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e pode ter sido adicionada sem seu conhecimento.</translation>
 <translation id="9022552996538154597">Fazer login no Chromium</translation>
+<translation id="907832235989677238">Faça login no Chromium. Se você quiser que a conta fique conectada apenas nesta sessão, <ph name="GUEST_LINK_BEGIN" />use o dispositivo como visitante<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="9093206154853821181">{0,plural, =1{O Chromium será reiniciado em 1 hora}one{O Chromium será reiniciado em # hora}other{O Chromium será reiniciado em # horas}}</translation>
 <translation id="9106612006984859720">Para receber as próximas atualizações do Chromium, você precisa ter do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.1.</translation>

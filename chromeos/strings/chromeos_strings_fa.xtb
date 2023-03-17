@@ -142,6 +142,7 @@
 <translation id="2157959690810728433">در صف</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: امتحان مجدد</translation>
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
+<translation id="2161656808144014275">نوشتار</translation>
 <translation id="2163937499206714165">روشن کردن حالت تاریک</translation>
 <translation id="2180197493692062006">مشکلی پیش آمد. برنامه را دوباره باز کنید.</translation>
 <translation id="2209788852729124853">بازنشانی شمارش‌گرهای ترافیک</translation>
@@ -217,6 +218,7 @@
 <translation id="3008341117444806826">بازآوری</translation>
 <translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3017079585324758401">پس‌زمینه</translation>
+<translation id="3020183492814296499">میان‌برها</translation>
 <translation id="3027578600144895987">بستن دوربین</translation>
 <translation id="3031560714565892478">دستگاه دوربین ویدیویی است.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> میلی‌آمپر</translation>
@@ -663,7 +665,9 @@
 <translation id="6957231940976260713">نام سرویس</translation>
 <translation id="6961170852793647506">برای شروع‌، سند را روی اسکنر قرار دهید</translation>
 <translation id="6965382102122355670">قبول</translation>
+<translation id="6965978654500191972">دستگاه</translation>
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
+<translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="7005833343836210400">دستگاه آفلاین است</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
 <translation id="7040230719604914234">اپراتور</translation>
@@ -773,6 +777,7 @@
 <translation id="7977800524392185497">برای پیوستن به <ph name="NETWORK_NAME" />، به «تنظیمات» بروید</translation>
 <translation id="7978412674231730200">کلید خصوصی</translation>
 <translation id="7994702968232966508">‏روش EAP</translation>
+<translation id="8004582292198964060">مرورگر</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">فعال کردن حالت رنگ خودکار</translation>
@@ -885,6 +890,7 @@
 <translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
 <translation id="9003704114456258138">فرکانس</translation>
 <translation id="9025198690966128418">استفاده به‌عنوان دستگاه شخصی</translation>
+<translation id="902638246363752736">تنظیمات صفحه‌کلید</translation>
 <translation id="9028832514430399253">برای انتخاب گزینه‌های محافظ صفحه‌نمایش، کلید تغییر وضعیت را روشن کنید</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +923,5 @@
 <translation id="952992212772159698">فعال نشد</translation>
 <translation id="960719561871045870">کد اپراتور</translation>
 <translation id="982713511914535780">اجرای آزمایش تخلیه شارژ</translation>
+<translation id="987264212798334818">موارد کلی</translation>
 </translationbundle>

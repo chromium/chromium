@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Uitgevouwen; klik om samen te vouwen.</translation>
 <translation id="2586657967955657006">Klembord</translation>
 <translation id="2597457036804169544">Donker thema niet toepassen op sites</translation>
+<translation id="2606760465469169465">Automatisch verifiëren</translation>
 <translation id="2621115761605608342">JavaScript toestaan voor een specfieke site.</translation>
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2677748264148917807">Verlaten</translation>
@@ -188,6 +189,7 @@
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> uitvouwen</translation>
 <translation id="4468959413250150279">Geluid uitzetten voor een specifieke site.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
+<translation id="4478158430052450698">Maak het makkelijker om op verschillende sites in te zoomen</translation>
 <translation id="4479647676395637221">Eerst vragen voordat sites je camera mogen gebruiken (aanbevolen)</translation>
 <translation id="4505788138578415521">URL uitgevouwen</translation>
 <translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
@@ -223,6 +225,7 @@
 <translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Laatst bezocht: vandaag</translation>
 <translation id="5225463052809312700">Camera aanzetten</translation>
+<translation id="5229337741799419985">Deze instelling werkt zonder je te identificeren of sites toegang te geven tot je browsegeschiedenis</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' verwijderen</translation>
 <translation id="528192093759286357">Sleep vanaf de bovenkant en tik op de knop Terug om het volledige scherm te sluiten.</translation>
@@ -309,6 +312,7 @@
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Actieve downloads</translation>
+<translation id="6701547804986694515">Een site die je bezoekt, kan informatie opslaan in Chrome waarmee wordt bevestigd dat je geen bot bent. Terwijl je browst, kunnen sites via Chrome checken en met een eerder bezochte site verifiëren dat je waarschijnlijk een echte persoon bent.</translation>
 <translation id="6722828510648505498">Hiermee worden inlogprompts van identiteitsservices geblokkeerd.</translation>
 <translation id="6746124502594467657">Omlaag</translation>
 <translation id="6749077623962119521">Rechten resetten?</translation>
@@ -426,6 +430,7 @@
 <translation id="8751914237388039244">Een afbeelding selecteren</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript voor een specifieke site.</translation>
 <translation id="8803526663383843427">Als dit aanstaat</translation>
+<translation id="8805385115381080995">Je kunt sneller browsen omdat een site je minder vaak vraagt te verifiëren dat je een echte persoon bent</translation>
 <translation id="8816026460808729765">Sites geen toegang tot sensoren geven</translation>
 <translation id="8823559166155093873">Cookies blokkeren</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +454,6 @@
 <translation id="9162462602695099906">Deze pagina is gevaarlijk</translation>
 <translation id="9201023452444595544">Alle offline gegevens worden gewist</translation>
 <translation id="930525582205581608">Deze site vergeten?</translation>
+<translation id="947156494302904893">Sites die je bezoekt, kunnen verifiëren dat je een echte persoon bent en geen bot</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>
 </translationbundle>

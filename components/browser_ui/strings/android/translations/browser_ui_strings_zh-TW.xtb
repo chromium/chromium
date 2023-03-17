@@ -93,6 +93,7 @@
 <translation id="257931822824936280">已展開 - 按一下即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2597457036804169544">不要對網站套用深色主題</translation>
+<translation id="2606760465469169465">自動驗證</translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">離開</translation>
@@ -188,6 +189,7 @@
 <translation id="4440642537584213025">展開「<ph name="TARGET_DESCRIPTION" />」</translation>
 <translation id="4468959413250150279">關閉特定網站的音訊。</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# 個 Cookie}other{# 個 Cookie}}</translation>
+<translation id="4478158430052450698">在不同網站上都能更輕鬆地自訂縮放比例</translation>
 <translation id="4479647676395637221">允許網站使用你的攝影機前，必須先詢問你 (建議)</translation>
 <translation id="4505788138578415521">已展開網址</translation>
 <translation id="4534723447064627427">如要允許 <ph name="APP_NAME" /> 存取裝置的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
@@ -223,6 +225,7 @@
 <translation id="5197729504361054390">系統會將你選取的聯絡人資訊提供給 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5216942107514965959">上次造訪日期：今天</translation>
 <translation id="5225463052809312700">開啟攝影機</translation>
+<translation id="5229337741799419985">不必提供身分識別資訊或授權讓網站查看瀏覽記錄，系統也能執行這項設定</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">從頂端拖曳並輕觸返回按鈕即可結束全螢幕模式。</translation>
@@ -309,6 +312,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6689172468748959065">個人資料相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
+<translation id="6701547804986694515">你造訪的網站可將資訊儲存在 Chrome，用來證明你不是機器人。你隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資訊，確認你應該是真人</translation>
 <translation id="6722828510648505498">封鎖身分識別服務的登入提示。</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
@@ -426,6 +430,7 @@
 <translation id="8751914237388039244">選取圖片</translation>
 <translation id="8801436777607969138">封鎖特定網站的 JavaScript。</translation>
 <translation id="8803526663383843427">開啟時</translation>
+<translation id="8805385115381080995">降低網站確認你是否為真人的機率，提供更快速的瀏覽體驗</translation>
 <translation id="8816026460808729765">禁止網站存取感應器</translation>
 <translation id="8823559166155093873">封鎖 Cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +454,6 @@
 <translation id="9162462602695099906">這是危險網頁</translation>
 <translation id="9201023452444595544">所有離線資料都將遭到清除</translation>
 <translation id="930525582205581608">要清除這個網站的資料嗎？</translation>
+<translation id="947156494302904893">你造訪的網站可驗證你是真人，而不是機器人</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 </translationbundle>

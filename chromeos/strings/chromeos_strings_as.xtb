@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">ডব্লিউইপি</translation>
 <translation id="1071587090247825784">ফায়াৰৱাল চিনাক্ত কৰা হৈছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠাৰ আকাৰ</translation>
+<translation id="1082009148392559545">স্ক্ৰীন ছেভাৰ ডাউনল’ড হৈ আছে</translation>
 <translation id="1094693127011229778">আইপি ঠিকনাটো উপলব্ধ নহয়</translation>
 <translation id="1113892970288677790">সুনিৰ্বাচিত শিল্পকৰ্ম আৰু প্ৰতিচ্ছবিসমূহ বাছনি কৰক</translation>
 <translation id="1119447706177454957">আভ্যন্তৰীণ আসোঁৱাহ</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> আৰু <ph name="SECOND_MANAGER" />এ পৰিচালনা কৰা</translation>
 <translation id="1726100011689679555">নাম সম্পর্কীয় ছার্ভাৰ</translation>
 <translation id="1731082422893354635">ব্লুটুথ টাচ্চপেড</translation>
+<translation id="1738949837603788263">জ’ন <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">প্ৰতিচ্ছবি ল’ড কৰিব পৰা নগ’ল। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক অথবা প্ৰতিচ্ছবিসমূহ পুনৰ ল’ড কৰিবলৈ চেষ্টা কৰক।</translation>
 <translation id="1751249301761991853">ব্যক্তিগত</translation>
 <translation id="1753496554272155572">ৱালপেপাৰৰ পূৰ্বদৰ্শনৰ পৰা বাহিৰ হওক</translation>
@@ -140,6 +142,7 @@
 <translation id="2157959690810728433">শাৰীত ৰখা হৈছে</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: পুনৰ চেষ্টা কৰক</translation>
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
+<translation id="2161656808144014275">পাঠ</translation>
 <translation id="2163937499206714165">গাঢ় ম’ড ম’ডটো অন কৰক</translation>
 <translation id="2180197493692062006">কিবা ভুল হ’ল। এপ্‌টো পুনৰ খুলিবলৈ চেষ্টা কৰক।</translation>
 <translation id="2209788852729124853">ট্ৰেফিক কাউণ্টাৰ ৰিছেট কৰক</translation>
@@ -215,6 +218,7 @@
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3017079585324758401">নেপথ্য</translation>
+<translation id="3020183492814296499">শ্বৰ্টকাট</translation>
 <translation id="3027578600144895987">কেমেৰাটো বন্ধ কৰক</translation>
 <translation id="3031560714565892478">ডিভাইচটো এটা ভিডিঅ’ কেমেৰা।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />এমএ</translation>
@@ -598,6 +602,7 @@
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
 <translation id="6379086450106841622">টাচ্‌স্ক্ৰীন</translation>
 <translation id="6381741036071372448">আপোনাৰ কীব’ৰ্ডখন পৰীক্ষা কৰক</translation>
+<translation id="6382182670717268353">স্ক্ৰীন ছেভাৰৰ পূৰ্বদৰ্শন</translation>
 <translation id="6388847657025262518">স্কেনাৰৰ নথিৰ ফীডাৰটো জাম লাগিছে। ফীডাৰটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6394634179843537518">ফাইল যোগ দিয়ক</translation>
 <translation id="6410257289063177456">প্ৰতিচ্ছবিৰ ফাইল</translation>
@@ -660,7 +665,9 @@
 <translation id="6957231940976260713">সেৱাৰ নাম</translation>
 <translation id="6961170852793647506">আৰম্ভ কৰিবলৈ আপোনাৰ নথি স্কেনাৰটোত ৰাখক</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
+<translation id="6965978654500191972">ডিভাইচ</translation>
 <translation id="6977381486153291903">ফাৰ্মৱেৰৰ পুনৰীক্ষণ</translation>
+<translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
 <translation id="7005833343836210400">ডিভাইচটো অফলাইন হৈ আছে</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="7040230719604914234">অপাৰেটৰ</translation>
@@ -687,6 +694,7 @@
 <translation id="7177485034254901881">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰে। প্ৰশাসকে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7180865173735832675">কাষ্ট’মাইজ কৰক</translation>
+<translation id="7184043045742675738">আপোনাৰ বুটামটো কাষ্টমাইজ কৰিবলৈ যিকোনো এটা কীত ক্লিক কৰক। মাউছ অথবা এৰ’ কীৰ জৰিয়তে কীৰ স্থান সলনি কৰক।</translation>
 <translation id="7212734716605298123">বাহ্যিক ডিভাইচৰ বাবে ফাৰ্মৱেৰৰ আপডে’ট</translation>
 <translation id="7216409898977639127">চেলুলাৰ প্ৰদানকাৰী</translation>
 <translation id="725133483556299729">ইমেইল বাছনি কৰক</translation>
@@ -728,6 +736,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">ইউএছবি টাচ্‌স্ক্ৰীন</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকী</translation>
+<translation id="7613724632293948900">মাউছ অথবা এৰ’ কীৰ জৰিয়তে স্থান সলনি কৰক।</translation>
 <translation id="7620771111601174153">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="763165478673169849">অন্তিমবাৰ ৰিছেট কৰাৰ সময়</translation>
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
@@ -768,6 +777,7 @@
 <translation id="7977800524392185497">এটা <ph name="NETWORK_NAME" /> নেটৱৰ্কত যোগদান কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
 <translation id="7994702968232966508">ই.এ.পি. পদ্ধতি</translation>
+<translation id="8004582292198964060">ব্ৰাউজাৰ</translation>
 <translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">স্বয়ংক্ৰিয় ৰঙৰ ম'ডটো সক্ষম কৰক</translation>
@@ -850,6 +860,7 @@
 <translation id="8798441408945964110">প্ৰদানকাৰীৰ নাম</translation>
 <translation id="8814190375133053267">ৱাই-ফাই</translation>
 <translation id="8818152010000655963">ৱালপেপাৰ</translation>
+<translation id="8820457400746201697">নীলা টাচ্চ পইণ্টটো এটা কাৰ্যলৈ স্থানান্তৰ কৰক। কাষ্টমাইজ কৰিবলৈ সম্পৰ্কিত কী বাছনি কৰক।</translation>
 <translation id="8834539327799336565">বৰ্তমান সংযোজিত হৈ আছে</translation>
 <translation id="8845001906332463065">সহায় পাওক</translation>
 <translation id="8855781559874488009">ফায়াৰৱালৰ জৰিয়তে HTTP ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিব নোৱাৰি</translation>
@@ -879,6 +890,7 @@
 <translation id="8998289560386111590">আপোনাৰ ডিভাইচত উপলব্ধ নহয়</translation>
 <translation id="9003704114456258138">ফ্ৰিকুৱেন্সী</translation>
 <translation id="9025198690966128418">এটা ব্যক্তিগত ডিভাইচ হিচাপে ব্যৱহাৰ কৰক</translation>
+<translation id="902638246363752736">কীব’ৰ্ডৰ ছেটিং</translation>
 <translation id="9028832514430399253">স্ক্ৰীন ছেভাৰৰ বিকল্প বাছনি কৰিবলৈ ট’গল অন কৰক</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +923,5 @@
 <translation id="952992212772159698">সক্ৰিয় কৰা হোৱা নাই</translation>
 <translation id="960719561871045870">অপাৰেটৰ ক’ড</translation>
 <translation id="982713511914535780">ডিচচাৰ্জ পৰীক্ষা চলাওক</translation>
+<translation id="987264212798334818">সাধাৰণ</translation>
 </translationbundle>

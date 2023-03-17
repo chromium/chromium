@@ -1035,6 +1035,7 @@
 <translation id="8237382152611443140">[パスワードを自動入力] 設定を開く</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8264966119170358612">保存したパスワードの一部が Google 以外でのデータ侵害で漏洩しました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">保存先: このデバイスのみ</translation>
 <translation id="8271720166617117963">同意してログイン</translation>
 <translation id="8278938988428169257">単語や語句を入力します</translation>
 <translation id="8281781826761538115">デフォルト - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1128,6 +1129,7 @@
 <translation id="8952559610785099500">パスワードの追加</translation>
 <translation id="8953046091948372197">パスワードはここに表示されます</translation>
 <translation id="895541991026785598">問題の報告</translation>
+<translation id="8971545611707025079">もう一度確認</translation>
 <translation id="8974714402877957201">1. iPad の [設定] を開く</translation>
 <translation id="8976382372951310360">ヘルプ</translation>
 <translation id="8976414606286374109">カードは Google アカウントに保存されます。</translation>

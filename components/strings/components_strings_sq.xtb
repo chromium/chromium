@@ -152,6 +152,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="132301787627749051">Kërko për imazhin e kujtesës së fragmenteve</translation>
 <translation id="1323433172918577554">Shfaq më shumë</translation>
 <translation id="132390688737681464">Ruaj dhe plotëso adresat</translation>
+<translation id="1329916999021038454">Dërgo një raport</translation>
 <translation id="1330449323196174374">Palosje me dritare majtas</translation>
 <translation id="1333745675627230582">Luaj lojën Chrome Dino</translation>
 <translation id="1333989956347591814">Aktiviteti yt <ph name="BEGIN_EMPHASIS" />mund të jetë përsëri i dukshëm<ph name="END_EMPHASIS" /> për:
@@ -527,6 +528,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="219906046732893612">Përmirësimi i shtëpisë</translation>
 <translation id="2202020181578195191">Fut një vit të vlefshëm skadimi</translation>
 <translation id="2202627062836089804">pjesën e pasme e kartës</translation>
+<translation id="2204482073374652408">Përditësimi përfundoi!</translation>
 <translation id="22081806969704220">Tabakaja 3</translation>
 <translation id="2210794033760923560">Ngarko raportin</translation>
 <translation id="2212579473415663542">Kjo adresë është ruajtur në "Llogarinë tënde të Google" (<ph name="ACCOUNT" />). Mund ta përdorësh adresën nëpër produktet e Google në çdo pajisje.</translation>
@@ -615,6 +617,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2441854154602066476">Mënyrat e pagesës të disponueshme për t'u plotësuar me prekje. Tastiera është e fshehur.</translation>
 <translation id="2448295565072560657">Pajisjet periferike të montuara në këtë pajisje ndërkohë që je i/e identifikuar</translation>
 <translation id="2450021089947420533">Udhëtimet</translation>
+<translation id="2456755709261364512">Bateria duhet të karikohet mbi <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">Plotëso</translation>
 <translation id="2465655957518002998">Zgjidh mënyrën e dorëzimit</translation>
 <translation id="2465688316154986572">Kapje me tel</translation>
@@ -661,6 +664,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Përdor kyçjen e ekranit për të konfirmuar kartat nga tani e tutje</translation>
 <translation id="2553853292994445426">Kontrollo cilësimet e DNS-së së sigurt. Mund të kesh konfiguruar një server të sigurt të DNS-së me të cilin ka pasur dështime të lidhjeve.</translation>
+<translation id="255497580849974774">Mbaji pajisjet e tua të lidhura me një karikues gjatë përditësimit.</translation>
 <translation id="2556876185419854533">&amp;Zhbëje redaktimin</translation>
 <translation id="2557417190997681027">Udhëtime biznesi</translation>
 <translation id="2562087035394240049">Udhëzimet, "bëje vetë" dhe përmbajtja e ekspertëve</translation>
@@ -892,6 +896,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="320323717674993345">Anulo pagesën</translation>
 <translation id="3203366800380907218">Nga uebi</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
+<translation id="3208701679386778924">Dërgo një raport që të mund t'i përmirësojmë përditësimet e mëtejshme të ChromeOS.</translation>
 <translation id="3209034400446768650">Faqja mund të tarifojë para</translation>
 <translation id="3212581601480735796">Aktiviteti yt në <ph name="HOSTNAME" /> po monitorohet</translation>
 <translation id="3215092763954878852">WebAuthn nuk mund të përdorej</translation>
@@ -1117,6 +1122,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3715545959749027023">Kur sinjalizohen ngjarje sigurie nga Chrome, të dhënat përkatëse rreth ngjarjeve i dërgohen administratorit tënd. Kjo mund të përfshijë URL-të e faqeve që viziton në Chrome, emrat e skedarëve ose të dhënat meta, ndërprerjet aksidentale të shfletuesit ose të skedës dhe emrin e përdoruesit që përdor ti për t'u identifikuar në aplikacionet bazuar në ueb, në pajisjen tënde dhe në Chrome.</translation>
 <translation id="3715597595485130451">Lidhu me Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin, murin mbrojtës dhe konfigurimin e DNS-së<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Gjatë përditësimit, nuk do të mund ta përdorësh pajisjen tënde për deri në 10 minuta.</translation>
 <translation id="372429172604983730">Aplikacionet që mund ta shkaktojnë këtë gabim përfshijnë softuerë antivirusi, murin mbrojtës, si dhe softuerë filtrimi uebi ose ndërmjetësues.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një prezantim të ri të Google te Slides</translation>
 <translation id="3733139489341305600">Automjetet autonome</translation>
@@ -1154,6 +1160,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3807366285948165054">Zhvendosja e imazhit në boshtin X</translation>
 <translation id="3807873520724684969">Përmbajtja e dëmshme është bllokuar.</translation>
 <translation id="3810973564298564668">Menaxho</translation>
+<translation id="3812398568375898177">Ky është një përditësim kritik që përmirëson performancën e aplikacioneve për Android në ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 inç</translation>
 <translation id="3816482573645936981">Vlera (e zëvendësuar)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1258,6 +1265,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4110652170750985508">Rishiko pagesën tënde</translation>
 <translation id="4111546256784973544">Lojërat me armë me bojë</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
+<translation id="4113354056388982663">Përditësim kritik i performancës i Android</translation>
 <translation id="4114146879518089587">Vazhdo te sajti</translation>
 <translation id="4116663294526079822">Lejoje gjithmonë në këtë faqe</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1438,6 +1446,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për ta përkthyer këtë faqe me "Përkthe me Google"</translation>
 <translation id="4514308731478712184">Çaktivizo "Udhëtimet"</translation>
 <translation id="4515275063822566619">Kartat dhe adresat janë nga Chrome dhe llogaria jote e Google (<ph name="ACCOUNT_EMAIL" />). Ato mund t'i menaxhosh te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">Pajisja jote është ndërprerë gjatë procesit të përditësimit</translation>
 <translation id="4520048001084013693">Shkarkimi i këtij skedari është bllokuar nga politika e administratorit</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Zarf monark</translation>
@@ -1527,6 +1536,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4738601419177586157">Sugjerim kërkimi për <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Menaxho fjalëkalimet…</translation>
+<translation id="4743275772928623722">Sistemi yt u përditësua, por disa nga aplikacionet dhe skedarët e tu nuk mund të rikuperoheshin. Aplikacionet e tua do të shkarkohen përsëri automatikisht.</translation>
 <translation id="4744514002166662487">Krijo prezantim</translation>
 <translation id="4744603770635761495">Shtegu i ekzekutueshëm</translation>
 <translation id="4749011317274908093">Ke kaluar në modalitetin "e fshehtë"</translation>
@@ -2227,6 +2237,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="646793340882508547">Lojërat aventurë</translation>
 <translation id="6468485451923838994">Shkrimet</translation>
 <translation id="647261751007945333">Politikat e pajisjes</translation>
+<translation id="647330291963761005">Përditësimet po instalohen</translation>
 <translation id="6475672344094591109">Sajtet që viziton ti mund t'i kërkojnë informacione Chrome për t'i ndihmuar të matin performancën e reklamave të tyre. Chrome mbron privatësinë tënde duke kufizuar informacionet që mund të ndajnë sajtet me njëra-tjetrën.</translation>
 <translation id="6476284679642588870">Menaxho mënyrat e pagesës</translation>
 <translation id="6486200200930923183">Filmat dokumentarë</translation>
@@ -2300,6 +2311,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6688775486821967877">Karta virtuale nuk ofrohet për momentin, provo përsëri më vonë</translation>
 <translation id="6689249931105087298">Relative me ngjeshjen e pikës së zezë</translation>
 <translation id="6689271823431384964">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet. Emri i mbajtësit të kartës vjen nga llogaria jote.</translation>
+<translation id="6691397311652656001">Liro më shumë se <ph name="REQUIRED_FREE_DISK_SPACE" /> hapësirë</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të përdorur "Gjej pajisjen tënde" me "Llogarinë tënde të Google"</translation>
 <translation id="6696588630955820014">Butoni "Ndaj këtë skedë". Shtyp "Enter" për ta ndarë këtë skedë duke ndarë lidhjen, duke krijuar një kod QR, duke transmetuar etj.</translation>
 <translation id="6698381487523150993">Krijuar:</translation>
@@ -2363,6 +2375,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Burimet e konsumatorit</translation>
 <translation id="6865412394715372076">Kjo kartë nuk mund të verifikohet për momentin</translation>
+<translation id="6868573634057275953">Vazhdo përditësimin</translation>
 <translation id="6869334554832814367">Kreditë personale</translation>
 <translation id="6873456682041376666">Tabakaja e sipërme</translation>
 <translation id="6874604403660855544">&amp;Ribëje shtimin</translation>
@@ -2519,9 +2532,11 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="722454870747268814">Skedë e re "e fshehtë"</translation>
 <translation id="7233592378249864828">Printo fletën e konfirmimit</translation>
 <translation id="7234638337680728591">Çmimet e karburantit dhe furnizimi i automjeteve</translation>
+<translation id="7236417832106250253">Përfunduar: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Mos e shfaq më këtë mesazh për këtë sajt</translation>
 <translation id="7238585580608191973">Gjurma e gishtit SHA-256</translation>
 <translation id="7240120331469437312">Emri alternativ i subjektit të certifikatës</translation>
+<translation id="7241863998525879494">Çfarë mund të presësh</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# përputhje}other{# përputhje}}</translation>
@@ -2742,6 +2757,7 @@ Detaje shtesë:
 <translation id="7698864304447945242">Të përditësohen "Shërbimet e Google Play për AR"?</translation>
 <translation id="7699293099605015246">Artikujt nuk janë të disponueshëm në këtë moment</translation>
 <translation id="7701040980221191251">Asnjë</translation>
+<translation id="7701544340847569275">Përditësimi përfundoi me gabime</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Vazhdo te <ph name="SITE" /> (e pasigurt)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Ski dhe snoubording</translation>
 <translation id="7706689436519265630">Skedarët që kopjon ose zhvendos dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë.</translation>

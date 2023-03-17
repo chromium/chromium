@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Проширено је – Кликните да бисте скупили.</translation>
 <translation id="2586657967955657006">Меморија</translation>
 <translation id="2597457036804169544">Тамна тема се не примењује за сајтове</translation>
+<translation id="2606760465469169465">Аутоматска верификација</translation>
 <translation id="2621115761605608342">Дозволите JavaScript за одређени сајт.</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2677748264148917807">Затвори</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Контакти које изаберете ће се делити са <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Последњи посећен данас</translation>
 <translation id="5225463052809312700">Укључи камеру</translation>
+<translation id="5229337741799419985">Ово подешавање ради, а да не мора да вас идентификује или да дозволи сајтовима да виде историју прегледања</translation>
 <translation id="5234764350956374838">Одбаци</translation>
 <translation id="5264323282659631142">Уклоните „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Превуците од врха екрана и додирните дугме Назад да бисте изашли из режима целог екрана.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6689172468748959065">Слике профила</translation>
 <translation id="6697925417670533197">Активна преузимања</translation>
+<translation id="6701547804986694515">Сајт који посетите може да чува информације помоћу Chrome-а које потврђују да нисте робот. Док настављате са прегледањем, сајтови могу да проверавају у Chrome-у и да од претходног сајта који сте посетили добију потврду да сте вероватно стварна особа</translation>
 <translation id="6722828510648505498">Блокирајте упите за пријављивање које приказују услуге за идентитет.</translation>
 <translation id="6746124502594467657">Премести надоле</translation>
 <translation id="6749077623962119521">Желите да ресетујете дозволе?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Изаберите слику</translation>
 <translation id="8801436777607969138">Блокирајте JavaScript за одређени сајт.</translation>
 <translation id="8803526663383843427">Када је укључено</translation>
+<translation id="8805385115381080995">Прегледање је брже јер је мања вероватноћа да ће сајт затражити да потврдите да сте стварна особа</translation>
 <translation id="8816026460808729765">Не дозвољавај сајтовима да приступају сензорима</translation>
 <translation id="8823559166155093873">Блокирај колачиће</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Ова страница је опасна</translation>
 <translation id="9201023452444595544">Бришу се сви офлајн подаци</translation>
 <translation id="930525582205581608">Желите да заборавите овај сајт?</translation>
+<translation id="947156494302904893">Сајтови које посећујете могу да потврде да сте стварна особа, а не робот</translation>
 <translation id="967624055006145463">Сачувани подаци</translation>
 </translationbundle>

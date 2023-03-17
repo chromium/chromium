@@ -227,7 +227,10 @@ Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, halaman web akan menggunakan WebGL API dan plugin akan menggunakan Pepper 3D API, tetapi setelan browser default mungkin masih memerlukan argumen command line untuk menggunakan API ini.</translation>
 <translation id="1202216683470826356">Tampilkan kartu di Halaman Tab Baru</translation>
+<translation id="120314092766637918">Jika kebijakan ini disetel ke aktif atau tidak disetel, perlindungan dari phishing sisi klien akan dikontrol oleh <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> untuk <ph name="PRODUCT_NAME" />. Jika <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> disetel ke <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> atau <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, perlindungan dari phishing sisi klien akan menjalankan model lokal untuk memeriksa apakah halaman merupakan phishing. Jika model yakin bahwa halaman tersebut adalah phishing, <ph name="PRODUCT_NAME" /> akan mengirim permintaan ke Google untuk meminta keputusan akhir.
+Jika kebijakan ini disetel ke nonaktif, perlindungan dari phishing sisi klien tidak akan melakukan perlindungan apa pun dan tidak akan mengirim data ke Google untuk meminta keputusan.</translation>
 <translation id="1204263402976895730">Mengaktifkan printer perusahaan</translation>
+<translation id="1207301487141109411">Cegah pemilihan avatar pengguna dari sistem file lokal, kamera, dan profil Google</translation>
 <translation id="1209065772997672966">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang dapat membuka pop-up.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
@@ -558,6 +561,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1515230621229117540">Mengaktifkan menu aksesibilitas mengambang</translation>
 <translation id="1515824657887788963">Mengizinkan halaman untuk melakukan permintaan XHR sinkron saat menutup halaman.</translation>
 <translation id="1516486219683984217">Jangan izinkan penggunaan notifikasi sistem</translation>
+<translation id="1519092983270375506">Setelan partisi penyimpanan pihak ketiga default</translation>
 <translation id="1522425503138261032">Izinkan situs melacak lokasi fisik pengguna</translation>
 <translation id="1523587744262636189">port 10080 (blokir dapat dibatalkan hingga 01/04/2022)</translation>
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
@@ -680,6 +684,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1634989431648355062">Izinkan plugin <ph name="FLASH_PLUGIN_NAME" /> di situs ini</translation>
 <translation id="1635748761015837179">Izinkan penulisan ke perangkat penyimpanan eksternal</translation>
 <translation id="1639468541408865385">Aktifkan cache autentikasi HTTP yang tercakup secara global</translation>
+<translation id="1639673466479276550">Aktifkan screensaver di layar login.</translation>
 <translation id="1641117061932613266">Mengaktifkan Layanan <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Memungkinkan Anda menetapkan daftar fitur <ph name="PRODUCT_OS_NAME" /> untuk dinonaktifkan.
 
@@ -948,6 +953,7 @@ Chrome Web Store serta semua ekstensi yang ditetapkan ke versi tertentu juga aka
 Jika kebijakan disetel ke <ph name="ALLOW_UNPUBLISHED" /> (0) atau tidak disetel, ekstensi yang tidak dipublikasikan di Chrome Web Store akan diizinkan.
 Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang tidak dipublikasikan di Chrome Web Store akan dinonaktifkan.</translation>
 <translation id="1905061765326052857">Jangan izinkan pengguna yang tidak terafiliasi menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
+<translation id="1907696459350079081">Jangan aktifkan screensaver di layar login.</translation>
 <translation id="1910704279188129272">Memungkinkan untuk menetapkan pembatasan penggunaan per aplikasi.
         Pembatasan penggunaan dapat diterapkan ke aplikasi yang diinstal di <ph name="PRODUCT_OS_NAME" /> untuk pengguna tertentu.
         Pembatasan harus dimasukkan dalam daftar |app_limits|. Hanya diperbolehkan satu entri per aplikasi. Aplikasi yang tidak dimasukkan dalam daftar ini tidak dikenakan pembatasan.
@@ -1099,6 +1105,11 @@ Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang t
 <translation id="2018425641414671849">Jangan izinkan pengguna memutar media saat perangkat dikunci</translation>
 <translation id="2021087124402050619">Izinkan Pembersih Chrome memindai sistem secara berkala dan izinkan pemindaian manual</translation>
 <translation id="2024476116966025075">Mengonfigurasi nama domain yang diperlukan untuk klien akses jarak jauh</translation>
+<translation id="2026749017601510117">Mengonfigurasi waktu dalam detik saat perangkat akan menunggu tidak ada aktivitas sebelum menampilkan screensaver untuk layar login.
+
+Nilai yang valid berkisar dari 1 detik hingga 9999 detik. Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan nilai default 7 detik.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> disetel ke salah (false).</translation>
 <translation id="2029985289397958781">Nonaktifkan penelusuran yang dibantu kamera <ph name="GOOGLE_LENS_PRODUCT_NAME" /> untuk pengguna versi Bisnis</translation>
 <translation id="2030905906517501646">Kata kunci penyedia penelusuran default</translation>
 <translation id="203096360153626918">Kebijakan ini tidak memengaruhi aplikasi Android. Aplikasi akan dapat memasuki mode layar penuh meski kebijakan ini disetel ke <ph name="FALSE" />.</translation>
@@ -1132,6 +1143,7 @@ Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang t
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="2043749682619281558">Mengaktifkan sorotan kursor di layar login</translation>
 <translation id="2043770014371753404">Menonaktifkan printer perusahaan</translation>
+<translation id="2054093043033461396">Screensaver untuk layar login perangkat diaktifkan.</translation>
 <translation id="2057317273526988987">Izinkan akses ke daftar URL</translation>
 <translation id="2058055310819710697">Aktifkan Mode Developer Aplikasi Terisolasi</translation>
 <translation id="205807990145127714">Data telemetri yang akan dilaporkan saat peristiwa perubahan kekuatan sinyal terjadi.</translation>
@@ -1645,6 +1657,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2506865562891982662">Mengizinkan pengguna memilih perangkat transmisi dengan akses kode atau kode QR dari dalam menu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2509748672176727116">Pengguna akan dapat melakukan rekaman paket jaringan</translation>
 <translation id="2509919237512982967">Menggunakan Kontrol Formulir Lama hingga M84.</translation>
+<translation id="251050607781210155">Izinkan Perlindungan dari Phishing Sisi Klien Safe Browsing</translation>
 <translation id="2512972020817284317">Aktifkan penggabungan kebijakan cloud tingkat pengguna.</translation>
 <translation id="2515699738406900920">Ketersediaan pemilih profil saat browser dimulai</translation>
 <translation id="251594860034549963">Jika kebijakan disetel ke Aktif, jendela browser dari perangkat yang terakhir digunakan oleh pengguna saat ini akan otomatis diluncurkan saat login.
@@ -1769,6 +1782,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="264252574246191885">Tidak terdaftar</translation>
 <translation id="2647069081229792812">Aktifkan atau nonaktifkan pengeditan bookmark</translation>
 <translation id="264771271300359481">Jangan izinkan situs apa pun menggunakan izin situs papan klip</translation>
+<translation id="2649537800219643135">Sumber gambar screensaver untuk layar kunci pengguna.</translation>
 <translation id="2649896281375932517">Biarkan pengguna memutuskan</translation>
 <translation id="2650049181907741121">Tindakan yang akan diambil saat pengguna menutup penutupnya</translation>
 <translation id="2656559539624760733">Jangan gunakan Chrome Root Store.</translation>
@@ -1783,6 +1797,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2672012807430078509">Kontrol yang mengaktifkan NTLM sebagai protokol autentikasi untuk pemasangan SMB</translation>
 <translation id="2673363037046384711">Pengguna akhir dapat mengaktifkan atau menonaktifkan Mode Efisiensi Tinggi.</translation>
 <translation id="2678503605767349615">Sertifikat Klien seluruh perangkat yang diperlukan</translation>
+<translation id="268134026533587276">Screensaver untuk layar kunci pengguna diaktifkan.</translation>
 <translation id="268577405881275241">Aktifkan fitur proxy kompresi data</translation>
 <translation id="268695908564263739">Kebijakan ini mengaktifkan atau menonaktifkan setelan Mode Efisiensi Tinggi. Setelan ini membuat tab ditutup setelah jangka waktu tertentu di latar belakang untuk mengklaim kembali memori.
       Jika kebijakan ini tidak disetel, pengguna akhir dapat mengontrol setelan ini di chrome://settings/performance.
@@ -1858,6 +1873,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan ini disetel ke false atau tidak dikonfigurasikan, ikon akan terlihat.</translation>
 <translation id="2744751866269053547">Daftarkan penangan protokol</translation>
+<translation id="2745150813292162313">Izinkan pengaktifan partisi penyimpanan pihak ketiga.</translation>
 <translation id="2746016768603629042">Kebijakan ini sudah tidak digunakan lagi, sebaiknya gunakan DefaultJavaScriptSetting.
 
       Dapat digunakan untuk menonaktifkan JavaScript pada <ph name="PRODUCT_NAME" />.
@@ -1948,6 +1964,7 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> dapat memilih pengen
 <translation id="2853649500575897584">Jangan blokir titik ekstensi lama dalam Proses browser</translation>
 <translation id="285480231336205327">Aktifkan mode kontras tinggi</translation>
 <translation id="285627849510728211">Menetapkan konfigurasi hari mode pengisian daya baterai lanjutan</translation>
+<translation id="28600673996840076">Mengizinkan penyesuaian gambar avatar pengguna menggunakan foto profil Google atau gambar lokal.</translation>
 <translation id="2864207379891420023">Mengonfigurasi daftar penginstalan ekstensi yang diizinkan</translation>
 <translation id="2866387633548787857">Nonaktifkan Transisi Cepat</translation>
 <translation id="2866619962692161453">Jenis Metapolicy</translation>
@@ -2166,6 +2183,9 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> dapat memilih pengen
           Jika kebijakan ini tidak ditetapkan, kursor besar mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="3027837632741099453">Mode Penghemat Baterai akan diaktifkan saat perangkat menggunakan daya baterai.</translation>
 <translation id="3030000825273123558">Aktifkan pelaporan metrik</translation>
+<translation id="3030232909811556512">Jika kebijakan ini disetel ke nonaktif, gambar avatar <ph name="PRODUCT_OS_NAME" /> pengguna tidak dapat disetel menggunakan file lokal, kamera perangkat, atau foto profil Google pengguna.
+
+Pengguna dapat menyetel gambar avatar dari salah satu opsi ini jika kebijakan ini disetel ke aktif atau tidak disetel.</translation>
 <translation id="3031796805169553856">Izinkan modul WebAssembly dikirim lintas asal</translation>
 <translation id="3032322294267258117">Mengontrol setelan untuk pengguna yang diautentikasi terhadap GAIA tanpa SAML.</translation>
 <translation id="3034855514833090741">Jika kebijakan disetel ke Aktif, alur Voice Match Asisten Google akan ditampilkan selama penyiapan awal. Jika kebijakan disetel ke Nonaktif, Asisten Google tidak akan menampilkan alur Voice Match selama penyiapan awal.
@@ -2496,6 +2516,7 @@ Jika ekstensi yang ditentukan dalam kebijakan ini tidak diinstal, navigasi dalam
 
       Jika <ph name="PRODUCT_NAME" /> tidak ditutup dengan benar (misalnya, browser atau OS mengalami error), data penjelajahan akan dihapus saat berikutnya profil dimuat.</translation>
 <translation id="3264793472749429012">Penyandiaksaraan penyedia penelusuran default</translation>
+<translation id="3269198556438453775">Cegah koneksi dukungan jarak jauh dari admin perusahaan ke perangkat ini</translation>
 <translation id="3273221114520206906">Setelan JavaScript default</translation>
 <translation id="3278042410658310805">Nonaktifkan respons lisan di layar login dan izinkan pengguna mengaktifkannya untuk sementara</translation>
 <translation id="328347261792478720">Secara default, browser akan menampilkan rekomendasi media yang dipersonalisasi kepada pengguna. Jika kebijakan ini disetel ke Nonaktif, rekomendasi ini akan disembunyikan dari pengguna. Jika kebijakan ini disetel ke Aktif atau tidak disetel, rekomendasi media akan ditampilkan kepada pengguna.</translation>
@@ -2663,6 +2684,7 @@ Jika ekstensi yang ditentukan dalam kebijakan ini tidak diinstal, navigasi dalam
 <translation id="3435796032110614169">Mengizinkan histori tugas pencetakan untuk dihapus</translation>
 <translation id="3436217793443508863">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan baterai, dalam milidetik.</translation>
 <translation id="3437924696598384725">Izinkan pengguna mengelola koneksi VPN</translation>
+<translation id="3441664787678256816">Mengizinkan koneksi dukungan jarak jauh perusahaan ke perangkat ini</translation>
 <translation id="3442269905344976871">Jika kebijakan disetel ke Aktif saat diagnostik dan pengontrol telemetri (DTC) <ph name="WILCO_NAME" /> tersedia di perangkat yang mengaktifkan pengumpulan, pemrosesan, dan pelaporan telemetri dan data diagnostik.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, DTC akan dinonaktifkan. DTC tidak akan dapat mengumpulkan, memproses, atau melaporkan data telemetri dan diagnostik dari perangkat.</translation>
@@ -2736,6 +2758,7 @@ Jika ekstensi yang ditentukan dalam kebijakan ini tidak diinstal, navigasi dalam
       Jika disetel ke SAML_INTERSTITIAL, login akan otomatis dialihkan ke IdP SAML secara default. Pengguna masih diizinkan untuk kembali ke alur login GAIA normal.
 
       Catatan: layar konfirmasi pengguna tambahan, yang ditampilkan pada <ph name="PRODUCT_NAME" /> sampai versi 99, tidak ditampilkan lagi. Jika IdP SAML tidak dikonfigurasi dan kebijakan ini disetel ke SAML_INTERSTITIAL, pengalihan akan gagal dengan error 400.</translation>
+<translation id="3523630512885826906">Interval tampilan gambar screensaver untuk layar kunci pengguna.</translation>
 <translation id="3524204464536655762">Jangan izinkan situs apa pun meminta akses ke perangkat USB melalui WebUSB API</translation>
 <translation id="3526752951628474302">Khusus pencetakan monokrom</translation>
 <translation id="3528000905991875314">Mengaktifkan halaman kesalahan alternatif</translation>
@@ -3650,6 +3673,35 @@ Hal ini dihapus di M112.</translation>
 <translation id="441686537793821907">Blokir penginstalan ekstensi eksternal</translation>
 <translation id="4423597592074154136">Tentukan setelan proxy secara manual</translation>
 <translation id="4424004842303301809">Nonaktifkan pelaporan peristiwa pencegahan kebocoran data</translation>
+<translation id="4426288704078471820"><ph name="WEBVIEW_TAG_NAME" /> Aplikasi Chrome memungkinkan
+perilaku yang sedang dalam proses dihapus dari
+<ph name="PRODUCT_NAME" />.
+
+Perilaku sebelumnya akan menampilkan halaman interstisial jika
+<ph name="WEBVIEW_TAG_NAME" /> harus membuka halaman
+dengan sertifikat SSL yang tidak valid. Halaman interstisial ini memberikan opsi kepada pengguna
+untuk melanjutkan secara tidak aman. Perilaku baru ini menampilkan halaman error tanpa opsi
+untuk melanjutkan secara tidak aman.
+
+Perilaku sebelumnya juga memungkinkan
+peristiwa <ph name="NEWWINDOW_EVENT_NAME" />
+<ph name="WEBVIEW_TAG_NAME" />
+(https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow)
+untuk melampirkan jendela baru ke elemen<ph name="WEBVIEW_TAG_NAME" />
+di jendela Aplikasi terpisah dari
+<ph name="WEBVIEW_TAG_NAME" /> asal. Dengan perilaku baru tersebut, lampiran
+ini masih diizinkan, tetapi referensi jendela yang ditampilkan dari
+panggilan ke <ph name="WINDOW_OPEN_NAME" /> dalam <ph name="WEBVIEW_TAG_NAME" /> asal
+menjadi tidak valid.
+
+Jika diaktifkan, perilaku sebelumnya akan digunakan.
+Jika dinonaktifkan atau tidak disetel, perubahan perilaku akan berlaku saat diluncurkan
+melalui proses rilis
+<ph name="PRODUCT_NAME" />.
+
+Kebijakan ini merupakan solusi sementara jika perusahaan
+mengalami gangguan akibat perubahan ini. Kebijakan ini akan dihapus
+dari versi 117.</translation>
 <translation id="4426601693403743089">Nonaktifkan dogfood Screencast untuk pengguna Family Link</translation>
 <translation id="4427173305799125784">Penampil PDF tidak dapat menganotasi PDF</translation>
 <translation id="4432762137771104529">Aktifkan Pelaporan Lengkap Safe Browsing</translation>
@@ -3712,6 +3764,13 @@ Hal ini dihapus di M112.</translation>
 <translation id="4491607814095953976">Memilih apakah setelan pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan</translation>
 <translation id="4492287494009043413">Menonaktifkan pengambilan screenshot</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
+<translation id="449419757874646879">Jika kebijakan ini disetel ke nonaktif, sesi dukungan jarak jauh tidak dapat dimulai menggunakan konsol admin.
+
+Kebijakan ini tidak memengaruhi skenario akses jarak jauh.
+
+Kebijakan ini mencegah admin perusahaan terhubung ke perangkat <ph name="PRODUCT_OS_NAME" /> terkelola.
+
+Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau tidak disetel.</translation>
 <translation id="449423975179525290">Konfigurasikan kebijakan terkait <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="4495390552861857186">Mengaktifkan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL.
 
@@ -3962,6 +4021,11 @@ Jika kebijakan tidak disetel, pengguna akan diizinkan mengubah daftar aplikasi t
 <translation id="471360812659157054">window.webkitStorageInfo tidak akan tersedia.</translation>
 <translation id="4715773950737036924">Mengontrol ketersediaan ekstensi yang tidak dipublikasikan di Chrome Web Store.</translation>
 <translation id="4722122254122249791">Aktifkan Isolasi Situs untuk asal yang ditetapkan</translation>
+<translation id="4722761845551711583">Mengonfigurasi internal dalam detik untuk menampilkan gambar saat screensaver layar login memiliki beberapa gambar yang akan ditampilkan.
+
+Nilai yang valid berkisar dari 1 detik hingga 9999 detik. Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan nilai default 60 detik.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> disetel ke salah (false).</translation>
 <translation id="4723829699367336876">Mengaktifkan firewall traversal dari klien akses jarak jauh</translation>
 <translation id="4725528134735324213">Aktifkan Android Backup Service</translation>
 <translation id="4725691087141147920">Tampilkan Izin Sinkronisasi selama login</translation>
@@ -4421,6 +4485,15 @@ Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 Jika disetel ke Benar (True) atau tidak disetel, <ph name="PRODUCT_NAME" /> akan diizinkan untuk menggunakan notifikasi sistem.
 
 Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan notifikasi sistem. Pusat Pesan <ph name="PRODUCT_NAME" /> akan digunakan sebagai penggantian.</translation>
+<translation id="5207700504551161524">Mengonfigurasi daftar gambar yang akan ditampilkan di screensaver untuk layar login.
+
+Setiap item harus berupa URL yang mereferensikan file gambar. Format gambar harus JPEG dan ukuran file tidak boleh lebih dari 8 MB. URL yang tidak valid dan gambar yang tidak didukung akan diabaikan. Perangkat <ph name="PRODUCT_OS_NAME" /> akan mendownload gambar ini, dan menyimpannya di cache lokal.
+
+Jumlah gambar yang akan ditampilkan di screensaver dibatasi hingga 25. Hanya 25 entri URL pertama dari daftar yang akan digunakan.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> disetel ke salah (false).
+
+Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang valid, screensaver untuk layar login tidak akan ditampilkan, terlepas dari nilai yang disetel dalam kebijakan <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5208675398826212411">Kebijakan ini mengonfigurasi perilaku untuk pengalihan intranet melalui pemeriksaan intersepsi DNS. Pemeriksaan tersebut berupaya mencari tahu apakah browser berada di balik proxy yang mengalihkan nama host tidak dikenal.
 
       Jika kebijakan ini disetel, browser akan menggunakan perilaku default dari pemeriksaan intersepsi DNS dan saran pengalihan intranet. Di M88, perilaku ini diaktifkan secara default, tetapi akan dinonaktifkan secara default pada rilis mendatang.
@@ -4917,6 +4990,7 @@ Jika kebijakan ini tidak disetel, semua domain tidak akan dapat mengakses URL fi
 <translation id="5639454129004500060">Jika disetel, kebijakan ini akan berisi informasi untuk mendownload file template desktop.  File tersebut berisi template desktop yang akan disediakan untuk pengguna saat ini.
       Jika tidak disetel, template desktop yang dikonfigurasi sebelumnya tidak disertakan dalam daftar template desktop.  Jika kebijakan <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />
       tidak disetel ke benar (true), kebijakan ini tidak akan berpengaruh.</translation>
+<translation id="5644038505105689131">Sumber gambar screensaver untuk layar login perangkat.</translation>
 <translation id="5645779841392247734">Izinkan cookie di situs ini</translation>
 <translation id="5646234199535103501">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnBulkDataEntry</translation>
 <translation id="5648016151508002741">Cegah pelaksanaan pemeriksaan <ph name="OCSP_CRL_LABEL" /> online</translation>
@@ -4943,6 +5017,7 @@ Jika kebijakan ini tidak disetel, semua domain tidak akan dapat mengakses URL fi
 <translation id="5657752663637568277">Kebijakan ini mengontrol apakah peringatan penghentian <ph name="CLOUD_PRINT_NAME" /> akan ditampilkan kepada pengguna di dialog pratinjau cetak atau di halaman setelan.
       Jika kebijakan ini disetel ke True (Benar), peringatan penghentian akan disembunyikan.
       Jika kebijakan ini disetel ke False (Salah) atau tidak disetel, peringatan penghentian akan ditampilkan.</translation>
+<translation id="5660228672907979869">Blokir pengaktifan partisi penyimpanan pihak ketiga.</translation>
 <translation id="5666457529647159548">Mengizinkan pengguna mengelola sertifikat klien yang terinstal.</translation>
 <translation id="5670286392821164294">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Pihak Pertama.
 
@@ -5403,6 +5478,15 @@ Jika kebijakan ini tidak disetel, semua domain tidak akan dapat mengakses URL fi
 <translation id="6131803221304830537">Nonaktifkan Integritas Kode Perender</translation>
 <translation id="6132506775968708399">Blokir cookie pihak ketiga</translation>
 <translation id="6133088669883929098">Izinkan semua situs menggunakan pembuatan kunci</translation>
+<translation id="6134295464078457940">Mengonfigurasi daftar gambar yang akan ditampilkan di screensaver untuk layar kunci.
+
+Setiap item harus berupa URL yang mereferensikan file gambar. Format gambar harus JPEG dan ukuran file tidak boleh lebih dari 8 MB. URL yang tidak valid dan gambar yang tidak didukung akan diabaikan. Perangkat <ph name="PRODUCT_OS_NAME" /> akan mendownload gambar ini, dan menyimpannya di cache lokal.
+
+Jumlah gambar yang akan ditampilkan di screensaver dibatasi hingga 25. Hanya 25 entri URL pertama dari daftar yang akan digunakan.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> disetel ke salah (false).
+
+Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang valid, screensaver untuk layar kunci tidak akan ditampilkan, terlepas dari nilai yang disetel dalam kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" />.</translation>
 <translation id="6135398260575578389">Safe Browsing aktif dalam mode yang disempurnakan. Mode ini memberikan keamanan yang lebih baik, tetapi perlu membagikan lebih banyak informasi penjelajahan kepada Google.</translation>
 <translation id="6135552820180449830">Crosh (didukung sejak versi 99)</translation>
 <translation id="6138636318340561140">Memeriksa status Safe Browsing pada URL secara real-time</translation>
@@ -5449,6 +5533,15 @@ Jika kebijakan ini tidak disetel, semua domain tidak akan dapat mengakses URL fi
 <translation id="6158324314836466367">Nama toko web perusahaan (tidak digunakan)</translation>
 <translation id="6164441518097008843">Hanya izinkan login untuk pengguna di daftar</translation>
 <translation id="6169768162756928771">Setelan pengelolaan identitas pengguna GAIA</translation>
+<translation id="6172110090237528457">Mengonfigurasi screensaver tingkat perangkat untuk layar login.
+
+Jika kebijakan ini disetel ke benar (true), perangkat <ph name="PRODUCT_OS_NAME" /> akan menampilkan screensaver saat tidak ada aktivitas di layar login.
+
+Jika kebijakan ini disetel ke salah (false) atau tidak disetel, screensaver tidak akan ditampilkan di layar login.
+
+Screensaver perangkat menampilkan gambar yang dirujuk oleh kebijakan <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IMAGES_POLICY_NAME" />. Jika <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IMAGES_POLICY_NAME" /> tidak disetel, atau disetel ke daftar kosong, atau ke daftar tanpa gambar yang valid, screensaver untuk layar login tidak akan ditampilkan.
+
+Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gambar ditampilkan dapat diubah dengan kebijakan <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> dan kebijakan <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />. Jika kebijakan tersebut tidak disetel, nilai defaultnya akan digunakan.</translation>
 <translation id="6172896675583897796">Jika kebijakan disetel ke Aktif, Asisten Google akan diizinkan untuk mengakses konteks layar dan mengirimkan data tersebut ke server. Jika kebijakan disetel ke Nonaktif, Asisten Google tidak akan diizinkan mengakses konteks layar.
 
       Jika kebijakan tidak disetel, pengguna akan dapat mengaktifkan atau menonaktifkan fitur ini.</translation>
@@ -5686,6 +5779,7 @@ mengetahui detail tambahan.</translation>
         Tambahkan regular expression URL ke |url_list| untuk mengizinkan URL yang cocok dengan regular expression mana pun yang ada dalam daftar.
         Tambahkan aplikasi menggunakan |app_id| dan |app_type|-nya ke |app_list| untuk mengizinkan aplikasi tersebut.
        </translation>
+<translation id="6334397544347592516">Izinkan koneksi dukungan jarak jauh dari admin perusahaan ke perangkat ini</translation>
 <translation id="6337782882143073193">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       Menonaktifkan skema protokol yang tercantum di <ph name="PRODUCT_NAME" />.
@@ -5865,6 +5959,15 @@ Lihat juga kebijakan <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 <translation id="6506486086262398387">Menyetel kebijakan ke Aktif berarti fitur Berbagi File Jaringan untuk <ph name="PRODUCT_OS_NAME" /> akan menggunakan NTLM sebagai autentikasi untuk berbagi SMB jika perlu. Jika kebijakan disetel ke Nonaktif, autentikasi NTLM untuk berbagi SMB akan dinonaktifkan.
 
       Jika kebijakan tidak disetel, perilaku default akan dinonaktifkan bagi pengguna terkelola dan aktif bagi pengguna lainnya.</translation>
+<translation id="6509376413448002446">Mengonfigurasi screensaver pengguna untuk layar kunci.
+
+Jika kebijakan ini disetel ke benar (true), perangkat <ph name="PRODUCT_OS_NAME" /> akan menampilkan screensaver saat tidak ada aktivitas di layar kunci.
+
+Jika kebijakan ini disetel ke salah (false) atau tidak disetel, screensaver tidak akan ditampilkan di layar kunci.
+
+Screensaver pengguna menampilkan gambar yang dirujuk oleh kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_IMAGES_POLICY_NAME" />. Jika <ph name="SCREENSAVER_LOCK_SCREEN_IMAGES_POLICY_NAME" /> tidak disetel, atau disetel ke daftar kosong, atau ke daftar tanpa gambar yang valid, screensaver untuk layar kunci tidak akan ditampilkan.
+
+Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gambar ditampilkan dapat diubah dengan kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> dan kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />. Jika kebijakan tersebut tidak disetel, nilai defaultnya akan digunakan.</translation>
 <translation id="651248769129998376">Jangan membuat atau mengupload permintaan penginstalan ekstensi ke konsol Admin</translation>
 <translation id="6513453889192806240">Latensi HTTPS</translation>
 <translation id="6515357889978918016">Gambar <ph name="PLUGIN_VM_NAME" /></translation>
@@ -5913,6 +6016,7 @@ Lihat juga kebijakan <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 
       Catatan: Saat ini, mulai ulang otomatis hanya diaktifkan ketika layar login ditampilkan atau sesi aplikasi kios sedang berlangsung.</translation>
 <translation id="6556586932263358975">Izinkan penguncian layar</translation>
+<translation id="6557178935482719861">Nonaktifkan Perlindungan dari Phishing Sisi Klien Safe Browsing</translation>
 <translation id="6558013557780651644">Penundaan sebelum menjalankan tindakan tidak ada aktivitas</translation>
 <translation id="6559057113164934677">Jangan izinkan situs apa pun mengakses kamera dan mikrofon</translation>
 <translation id="65591220958874949">Gunakan klien DNS bawaan di Windows, macOS, Android, dan Chrome OS</translation>
@@ -7218,6 +7322,7 @@ kebijakan ini saat browser berjalan.</translation>
 
       Catatan: Lihat daftar variabel yang dapat Anda gunakan ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).</translation>
 <translation id="7719808201797990069">Pengecualian pola URL untuk penghapusan tab</translation>
+<translation id="7721018062743758054">Perlindungan dari Phishing Sisi Klien Safe Browsing dikontrol oleh kebijakan <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="7721944091689270995">ID pengguna <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Jika kebijakan disetel ke 1, situs akan menampilkan pop-up. Jika kebijakan disetel ke 2, pop-up tidak dapat ditampilkan.
 
@@ -7389,6 +7494,11 @@ kebijakan ini saat browser berjalan.</translation>
           Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7906983682927840536">Mengambil durasi keepalive saat Penutupan</translation>
 <translation id="7908384265697653397">Waktu dalam satuan hari sebelum pengguna logout jika versi <ph name="PRODUCT_OS_NAME" /> lebih rendah dari <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> yang ditentukan.</translation>
+<translation id="7911685775490889216">Mengonfigurasi internal dalam detik untuk menampilkan gambar saat screensaver layar kunci memiliki beberapa gambar yang akan ditampilkan.
+
+Nilai yang valid berkisar dari 1 detik hingga 9999 detik. Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan nilai default 60 detik.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> disetel ke salah (false).</translation>
 <translation id="7912255076272890813">Konfigurasikan jenis aplikasi/ekstensi yang diizinkan</translation>
 <translation id="791267408364877739">Perlihatkan peringatan keamanan saat tanda command line yang berpotensi berbahaya digunakan</translation>
 <translation id="79156801312131034">Menyetel kebijakan memungkinkan Anda menentukan perilaku sistem saat browser mulai dijalankan. Menonaktifkan setelan ini memiliki efek yang sama dengan tidak menyetelnya, karena <ph name="PRODUCT_NAME" /> sudah menetapkan perilaku saat browser mulai dijalankan.
@@ -7598,6 +7708,11 @@ juga aman.</translation>
 <translation id="8102913158860568230">Setelan streaming media default</translation>
 <translation id="8104962233214241919">Memilih sertifikat klien untuk situs ini secara otomatis</translation>
 <translation id="8109762054721090517">Template untuk <ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /></translation>
+<translation id="8111331908123507719">Mengonfigurasi waktu dalam detik saat perangkat akan menunggu tidak ada aktivitas sebelum menampilkan screensaver untuk layar kunci.
+
+Nilai yang valid berkisar dari 1 detik hingga 9999 detik. Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan nilai default 7 detik.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> disetel ke salah (false).</translation>
 <translation id="8113731369695819720">Nonaktifkan audio mono di layar login</translation>
 <translation id="8114382167597081590">Jangan terapkan Mode Terbatas di YouTube</translation>
 <translation id="8117662664312039036">Jangan izinkan perangkat menggunakan PluginVm</translation>
@@ -7950,6 +8065,7 @@ perangkat akan digunakan selama pengguna login.</translation>
 <translation id="838870586332499308">Aktifkan roaming data</translation>
 <translation id="8392478748777481636">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />'.</translation>
 <translation id="8393850527597048037">Khusus Platform</translation>
+<translation id="8395350646076131800">Waktu tunggu tidak ada aktivitas untuk screensaver layar kunci pengguna.</translation>
 <translation id="8395749934754392549">Mengontrol setelan untuk container Android (ARC) dan aplikasi Android.</translation>
 <translation id="8398952282584132331">Mengaktifkan layar privasi</translation>
 <translation id="8402079500086185021">Selalu Buka file PDF secara eksternal</translation>
@@ -8348,6 +8464,7 @@ VM tersebut. Beberapa VM dapat diinstal dari konfigurasi yang sama di perangkat 
 <translation id="8768528324886802059">Menyetel kebijakan akan menentukan host pesan native mana yang tidak termasuk dalam daftar yang ditolak. Nilai <ph name="WILDCARD_VALUE" /> untuk daftar yang ditolak berarti semua host pesan native ditolak, kecuali diizinkan secara eksplisit.
 
       Semua host pesan native diizinkan secara default. Namun, jika semua host pesan native ditolak oleh kebijakan, admin dapat menggunakan daftar yang diizinkan untuk mengubah kebijakan tersebut.</translation>
+<translation id="877101880914876353">Interval tampilan gambar screensaver untuk layar login perangkat.</translation>
 <translation id="8772900888819482215">Nonaktifkan Perlindungan Download Real Time Safe Browsing</translation>
 <translation id="877557628527387598">Login sandi</translation>
 <translation id="8777369558049831576">Menampilkan kotak centang "Always open" pada dialog protokol eksternal.</translation>
@@ -8723,6 +8840,7 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan m
 <translation id="9112727953998243860">File konfigurasi untuk printer perusahaan</translation>
 <translation id="9113058104383612727">Mengaktifkan alat pemecahan masalah Kios</translation>
 <translation id="9113065986946552397">Hasil dari pembersihan Pembersih Chrome selalu dibagikan ke Google</translation>
+<translation id="9113262510565261950">Waktu tunggu tidak ada aktivitas untuk screensaver layar login perangkat.</translation>
 <translation id="911605919007170833">Laporkan status keamanan</translation>
 <translation id="9117826695152538214">Jika kebijakan ditetapkan ke Benar (True), tombol lekat akan tetap diaktifkan. Jika kebijakan ditetapkan ke Salah (False), tombol lekat akan tetap dinonaktifkan.
 
@@ -8750,6 +8868,7 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan m
 <translation id="9123464369663964441">Izinkan pengguna menambahkan pengecualian untuk mengizinkan konten campuran</translation>
 <translation id="9124770007620653639">Jangan pernah mengirimkan data keandalan domain ke Google</translation>
 <translation id="9125694642546254164">Larang penggunaan Developer Tools pada aplikasi dan ekstensi yang diinstal oleh kebijakan perusahaan, izinkan penggunaan Developer Tools dalam konteks lainnya</translation>
+<translation id="9126331659955304300">Izinkan pemilihan avatar pengguna dari sistem file lokal, kamera, dan profil Google</translation>
 <translation id="9126491667911789829">Menyetel kebijakan akan menentukan daftar aplikasi web yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna.
 
       Setiap item daftar kebijakan adalah objek yang berisi satu elemen wajib:

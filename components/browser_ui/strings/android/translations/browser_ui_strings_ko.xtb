@@ -93,6 +93,7 @@
 <translation id="257931822824936280">펼쳐짐 - 접으려면 클릭</translation>
 <translation id="2586657967955657006">클립보드</translation>
 <translation id="2597457036804169544">사이트에 어두운 테마를 적용하지 마세요.</translation>
+<translation id="2606760465469169465">자동 인증</translation>
 <translation id="2621115761605608342">특정 사이트에서 자바스크립트를 허용합니다.</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2677748264148917807">나가기</translation>
@@ -188,6 +189,7 @@
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> 펼치기</translation>
 <translation id="4468959413250150279">특정 사이트를 음소거합니다.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{쿠키 #개}other{쿠키 #개}}</translation>
+<translation id="4478158430052450698">여러 사이트의 확대/축소 맞춤설정이 더 쉬워집니다.</translation>
 <translation id="4479647676395637221">사이트에서 카메라를 사용하도록 허용하기 전에 확인(권장)</translation>
 <translation id="4505788138578415521">URL 펼쳐짐</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" />에서 마이크에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 마이크를 사용 설정하세요.</translation>
@@ -223,6 +225,7 @@
 <translation id="5197729504361054390">선택한 연락처가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />과(와) 공유됩니다.</translation>
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
 <translation id="5225463052809312700">카메라 켜기</translation>
+<translation id="5229337741799419985">이 설정은 사이트에서 방문 기록을 보도록 허용하거나 사용자를 식별하지 않아도 작동합니다.</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ 삭제</translation>
 <translation id="528192093759286357">전체화면을 종료하려면 상단에서 드래그하여 뒤로 버튼을 터치하세요.</translation>
@@ -309,6 +312,7 @@
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6689172468748959065">프로필 사진</translation>
 <translation id="6697925417670533197">진행 중인 다운로드</translation>
+<translation id="6701547804986694515">방문하는 사이트에서 내가 봇이 아님을 확인하는 정보를 Chrome에 저장할 수 있습니다. 브라우징을 계속하면 사이트에서 Chrome을 통해 이를 확인하고 이전에 방문한 적이 있는 이전 사이트로 내가 실제 사람인지 확인할 수 있습니다.</translation>
 <translation id="6722828510648505498">ID 서비스의 로그인 메시지를 차단합니다.</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="6749077623962119521">권한을 재설정하시겠습니까?</translation>
@@ -426,6 +430,7 @@
 <translation id="8751914237388039244">이미지 선택</translation>
 <translation id="8801436777607969138">특정 사이트의 자바스크립트를 차단합니다.</translation>
 <translation id="8803526663383843427">켜졌을 때</translation>
+<translation id="8805385115381080995">사이트에서 내가 실제 사람임을 확인할 가능성이 줄어들기 때문에 브라우징이 더 빨라집니다.</translation>
 <translation id="8816026460808729765">사이트에서 센서에 액세스하지 못하도록 차단</translation>
 <translation id="8823559166155093873">쿠키 차단</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +454,6 @@
 <translation id="9162462602695099906">위험한 페이지입니다.</translation>
 <translation id="9201023452444595544">모든 오프라인 데이터가 삭제됩니다.</translation>
 <translation id="930525582205581608">사이트 데이터를 삭제하시겠습니까?</translation>
+<translation id="947156494302904893">방문하는 사이트에서 내가 봇이 아니라 실제 사람인지 확인할 수 있습니다</translation>
 <translation id="967624055006145463">저장된 데이터</translation>
 </translationbundle>

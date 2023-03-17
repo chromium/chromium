@@ -244,6 +244,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1201564082781748151">Lokale data kan gjenopprettes hvis du glemmer passordet ditt</translation>
 <translation id="1202116106683864634">Er du sikker på at du vil slette denne sikkerhetsnøkkelen?</translation>
 <translation id="1202596434010270079">Kiosk-appen er oppdatert. Ta ut USB-pinnen.</translation>
+<translation id="1202892408424955784">Sporede produkter</translation>
 <translation id="120368089816228251">Note</translation>
 <translation id="1203942045716040624">Delt arbeider: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Snarveiene er utvalgt av deg</translation>
@@ -2584,6 +2585,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3242289508736283383">Apper med manifest-attributtet «kiosk_only» må være installert i ChromeOS-kioskmodus</translation>
 <translation id="3242665648857227438">Denne profilen bruker proxy-innstillingene i ChromeOS.</translation>
 <translation id="3243017971870859287">lese serienumrene til ChromeOS Flex-enheten og -komponenter</translation>
+<translation id="324366796737464147">Støyreduksjon</translation>
 <translation id="3244294424315804309">Fortsett med å kutte lyden</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – nettverksfeil</translation>
 <translation id="3248902735035392926">Sikkerhet er viktig. Bruk et øyeblikk på å <ph name="BEGIN_LINK" />sjekke utvidelsene dine nå<ph name="END_LINK" /></translation>
@@ -3000,6 +3002,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3618286417582819036">Beklager, det oppsto en feil</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolokalisering</translation>
+<translation id="3621202678540785336">Inndata</translation>
 <translation id="3621807901162200696">Bidra til å gjøre funksjonene og ytelsen til ChromeOS bedre</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{en app}other{# apper}}</translation>
 <translation id="362333465072914957">Venter på at sertifiseringsinstansen skal utstede et sertifikat</translation>
@@ -4230,6 +4233,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4708849949179781599">Avslutt <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Gjenopprett innstillingene</translation>
 <translation id="4713409221649555176">Slett når du lukker alle vinduer</translation>
+<translation id="4715631922189108923">Endre brukernavn</translation>
 <translation id="47158868804223727">Klikk på gruppenavnet for å vise eller skjule det</translation>
 <translation id="4716483597559580346">Powerwash for økt sikkerhet</translation>
 <translation id="471759229191973607">Endre tema</translation>
@@ -4242,7 +4246,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4726710355753484204">Bruk Ctrl + Alt + lysstyrke opp for å zoome inn.
 Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4726710629007580002">Det kom advarsler under forsøket på å installere denne utvidelsen:</translation>
-<translation id="472738079453283624">Produkter</translation>
 <translation id="4727847987444062305">Administrert gjesteøkt</translation>
 <translation id="4728558894243024398">Plattform</translation>
 <translation id="4730492586225682674">Vis det siste pekepenn-notatet på låseskjermen</translation>
@@ -8076,6 +8079,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8203732864715032075">sende deg varsler og huske denne datamaskinen som standard for Messages (<ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" />)</translation>
 <translation id="8205432712228803050">Det kan hende at skjermene og de eksterne enhetene dine blir tilbakestilt. For at denne endringen skal tre i kraft, må du koble fra de eksterne enhetene dine og koble dem til igjen.</translation>
 <translation id="820568752112382238">Mest besøkte nettsteder</translation>
+<translation id="8206267832882844324">Endre notat</translation>
 <translation id="8206745257863499010">Plystre</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8207404892907560325">Velg en tilgangsnøkkel</translation>

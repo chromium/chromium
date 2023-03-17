@@ -188,6 +188,7 @@
 <translation id="4440642537584213025">Desplega <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Silencia el so d'un lloc web concret.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# galeta}other{# galetes}}</translation>
+<translation id="4478158430052450698">Facilita personalitzar el zoom per a diferents llocs web</translation>
 <translation id="4479647676395637221">Pregunta abans de permetre que els llocs web utilitzin la càmera (opció recomanada)</translation>
 <translation id="4505788138578415521">L'URL s'ha ampliat</translation>
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>

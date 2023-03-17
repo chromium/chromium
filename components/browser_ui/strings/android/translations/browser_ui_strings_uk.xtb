@@ -189,6 +189,7 @@
 <translation id="4440642537584213025">Кнопка розгортання "<ph name="TARGET_DESCRIPTION" />"</translation>
 <translation id="4468959413250150279">Вимкнути звук для певного сайту.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# файл cookie}one{# файл cookie}few{# файли cookie}many{# файлів cookie}other{# файлу cookie}}</translation>
+<translation id="4478158430052450698">Спростити налаштування масштабування для різних сайтів</translation>
 <translation id="4479647676395637221">Запитувати, перш ніж дозволити сайтам використовувати камеру (рекомендується)</translation>
 <translation id="4505788138578415521">URL-адресу розгорнуто</translation>
 <translation id="4534723447064627427">Щоб надати додатку <ph name="APP_NAME" /> доступ до мікрофона, також увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>

@@ -246,6 +246,7 @@
 <translation id="1201564082781748151">يمكنك استعادة البيانات المحلية في حال نسيان كلمة المرور.</translation>
 <translation id="1202116106683864634">هل تريد فعلاً حذف مفتاح المرور هذا؟</translation>
 <translation id="1202596434010270079">‏تم تحديث تطبيق Kiosk. يُرجى إزالة جهاز USB.</translation>
+<translation id="1202892408424955784">المنتجات التي يتم تتبُّع أسعارها</translation>
 <translation id="120368089816228251">نوتة موسيقية</translation>
 <translation id="1203942045716040624">عامل مشترَك: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">لك حرية تنظيم الاختصارات</translation>
@@ -353,6 +354,7 @@
 <translation id="1303671224831497365">لم يتم العثور على أي أجهزة بلوتوث</translation>
 <translation id="130491383855577612">‏تم استبدال تطبيقات وملفات Linux بنجاح</translation>
 <translation id="1306390193749326011">لن تعرض هذه الصفحة <ph name="MODULE_NAME" /> مرة أخرى.</translation>
+<translation id="1306518237408758433">فتح "<ph name="BOOKMARK_TITLE" />"</translation>
 <translation id="1306606229401759371">تغيير الإعدادات</translation>
 <translation id="1307165550267142340">تم إنشاء رقم التعريف الشخصي</translation>
 <translation id="1307431692088049276">عدم السؤال مرة أخرى</translation>
@@ -442,6 +444,7 @@
 <translation id="1393283411312835250">الشمس والسحاب</translation>
 <translation id="1395730723686586365">خدمة التحديث بدأت</translation>
 <translation id="1395832189806039783">تمييز العنصر باستخدام تركيز لوحة المفاتيح</translation>
+<translation id="1396120028054416908">الرجوع إلى "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">حدث خطأ أثناء إعداد الطابعة</translation>
 <translation id="1396963298126346194">اسم المستخدم وكلمة المرور اللذان أدخلتهما غير متطابقين</translation>
 <translation id="1397500194120344683">لا تتوفَّر أجهزة مؤهَّلة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -684,6 +687,7 @@
 <translation id="1596286373007273895">متوفِّر</translation>
 <translation id="1596709061955594992">تم إيقاف اتصال البلوتوث. يُرجى تفعيل اتصال البلوتوث لرؤية الأجهزة المتاحة.</translation>
 <translation id="1596780725094407793">- بما في ذلك النطاقات الفرعية</translation>
+<translation id="1597852076552089763">خيارات الإشارات المرجعية</translation>
 <translation id="1598163867407640634">استخدِم <ph name="SITE_ETLD_PLUS_ONE" /> مع <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="1598233202702788831">أوقف المشرف التحديثات.</translation>
 <translation id="1600857548979126453">الدخول إلى الواجهة الخلفية لبرنامج تصحيح أخطاء الصفحة</translation>
@@ -1827,6 +1831,7 @@
 <translation id="25568951186001797">‏العنصر Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">يؤثر سجلّ تصفّحك في الإعلانات التي تظهر لك.</translation>
 <translation id="2559889124253841528">حفظ على الجهاز</translation>
+<translation id="2561211427862644160">عرض جميع الإشارات المرجعية هنا</translation>
 <translation id="2564520396658920462">‏تم إيقاف تنفيذ JavaScript عبر AppleScript. ولتفعيله، انتقل من شريط القائمة إلى عرض &gt; مطوّر البرامج &gt; السماح بJavaScript من أحداث Apple. لمزيد من المعلومات: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">تدقيق إملائي مُحسّن</translation>
 <translation id="2568694057933302218">في وضع التصفُّح المتخفي، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح على المواقع الإلكترونية. ولا يتم استخدام نشاط التصفُّح لأغراض مثل تخصيص الإعلانات. قد لا تعمل الميزات على بعض المواقع الإلكترونية.</translation>
@@ -2434,6 +2439,7 @@
 <translation id="3090871774332213558">تم إقران "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">عدم السماح للمواقع الإلكترونية بتثبيت معالِجات الدفع</translation>
 <translation id="3094141017404513551">سيؤدي هذا إلى فصل تجربة تصفّحك عن <ph name="EXISTING_USER" />.</translation>
+<translation id="3094521107841754472">‏تم تغيير السعر من ‎<ph name="PREVIOUS_PRICE" /> إلى ‎<ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">تتم مزامنة الإشارات المرجعية وكلمات المرور وبيانات التصفُّح الأخرى مع الحساب الأساسي.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{تم إيقاف إضافة واحدة يُحتمل أن تكون ضارة، ويمكنك أيضًا إزالتها.}zero{تم إيقاف {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}two{تم إيقاف إضافتَين ({NUM_EXTENSIONS}) يُحتمل أن تكونا ضارتَين. ويمكنك أيضًا إزالتهما.}few{تم إيقاف {NUM_EXTENSIONS} إضافات يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}many{تم إيقاف {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}other{تم إيقاف {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}}</translation>
 <translation id="3101126716313987672">إضاءة خافتة</translation>
@@ -2566,6 +2572,7 @@
 <translation id="3242289508736283383">‏يجب تثبيت التطبيق الذي يحمل سمة البيان "kiosk_only" في وضع الكشك على نظام التشغيل Chrome.</translation>
 <translation id="3242665648857227438">‏يستخدم هذا الملف الشخصي إعدادات الخادم الوكيل لنظام التشغيل Chrome.</translation>
 <translation id="3243017971870859287">‏الاطّلاع على الأرقام التسلسلية لمكوِّنات وأجهزة ChromeOS Flex</translation>
+<translation id="324366796737464147">إلغاء الضجيج</translation>
 <translation id="3244294424315804309">استمرار كتم الصوت</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - خطأ في الشبكة</translation>
 <translation id="3248902735035392926">الحفاظ على الأمان من أهم أولوياتنا. يُرجى <ph name="BEGIN_LINK" />التحقُّق من الإضافات الآن<ph name="END_LINK" />.</translation>
@@ -2785,6 +2792,7 @@
 <translation id="3441653493275994384">الشاشة</translation>
 <translation id="3441663102605358937">يُرجى تسجيل الدخول إلى الحساب <ph name="ACCOUNT" /> مرّة أخرى لإثبات ملكيته.</translation>
 <translation id="3442674350323953953">‏يمكنك السماح لشركة Google باستخدام بيانات أجهزتك لتحسين <ph name="DEVICE_OS" />. وفي حال عدم موافقتك، سيستمر إرسال هذه البيانات إلى Google لتحديد التحديثات المناسبة، ولكن لا يتم تخزينها أو استخدامها بطريقة أخرى.</translation>
+<translation id="3443744348829035122">انتهت مهلة "<ph name="BRAND" />"</translation>
 <translation id="3444726579402183581">سيتمكّن <ph name="ORIGIN" /> من الاطّلاع على <ph name="FILENAME" />.</translation>
 <translation id="3445047461171030979">‏إجابات "مساعد Google" السريعة</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
@@ -2981,6 +2989,7 @@
 <translation id="3618286417582819036">حدث خطأ</translation>
 <translation id="3619115746895587757">كابتشينو</translation>
 <translation id="3620136223548713675">رصد الموقع الجغرافي</translation>
+<translation id="3621202678540785336">الإدخال</translation>
 <translation id="3621807901162200696">‏المساعدة على تحسين ميزات نظام التشغيل Chrome وأدائه</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{تطبيق واحد}zero{# تطبيق}two{تطبيقان}few{# تطبيقات}many{# تطبيقًا}other{# تطبيق}}</translation>
 <translation id="362333465072914957">‏في انتظار إصدار شهادة CA</translation>
@@ -3329,6 +3338,7 @@
 <translation id="39103738135459590">رمز التفعيل</translation>
 <translation id="3911824782900911339">صفحة "علامة تبويب جديدة"</translation>
 <translation id="3914173277599553213">مطلوبة</translation>
+<translation id="3914568430265141791">فتح المجلد "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3915280005470252504">البحث الصوتي</translation>
 <translation id="3916233823027929090">اكتملت عمليات فحص الأمان.</translation>
 <translation id="3916445069167113093">هذا النوع من الملفات قد يلحق الضرر بالكمبيوتر. هل تريد الاحتفاظ بـ <ph name="FILE_NAME" /> على أيّ حال؟</translation>
@@ -3457,6 +3467,7 @@
 <translation id="4022426551683927403">إ&amp;ضافة إلى القاموس</translation>
 <translation id="4025039777635956441">كتم صوت الموقع الإلكتروني المحدد</translation>
 <translation id="402707738228916911">تم تلقي تعليمات "<ph name="AUTHORIZE_INSTRUCTION_NAME" />".</translation>
+<translation id="4027569221211770437">مجلد "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="4027958407426528157">فتح المواقع الإلكترونية في التطبيقات المثبّتة على <ph name="DEVICE_TYPE" /></translation>
 <translation id="4028467762035011525">إضافة أساليب إدخال</translation>
 <translation id="4029556917477724407">الرجوع من الصفحة "<ph name="PAGE_TITLE" />" إلى الصفحة السابقة</translation>
@@ -3511,6 +3522,7 @@
 <translation id="4077917118009885966">حظر الإعلانات على هذا الموقع</translation>
 <translation id="4077919383365622693">سيتم محو جميع البيانات وملفات تعريف الارتباط المُخزّنة من خلال <ph name="SITE" />.</translation>
 <translation id="4078738236287221428">حادّ</translation>
+<translation id="4078903002989614318">خيارات الترتيب والقوائم</translation>
 <translation id="4079140982534148664">استخدام التدقيق الإملائي المُحسَّن</translation>
 <translation id="4084682180776658562">إشارة</translation>
 <translation id="4084835346725913160">غلق <ph name="TAB_NAME" /></translation>
@@ -3655,6 +3667,7 @@
 <translation id="4217571870635786043">إملاء</translation>
 <translation id="4218081191298393750">انقر على رمز مكبّر الصوت لكتم صوت علامة التبويب هذه.</translation>
 <translation id="4220648711404560261">حدث خطأ أثناء التفعيل.</translation>
+<translation id="4222917615373664617">‏تم تفعيل ميزة تتبُّع السعر. يبلغ السعر ‎<ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">إنشاء مفتاح مرور</translation>
 <translation id="4225397296022057997">على جميع المواقع</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{هذه الإضافة غير مسموح بها}zero{هذه الإضافات غير مسموح بها}two{هاتان الإضافتان غير مسموح بهما}few{بعض الإضافات غير مسموح بها}many{بعض الإضافات غير مسموح بها}other{بعض الإضافات غير مسموح بها}}</translation>
@@ -4214,7 +4227,6 @@
 <translation id="4726710355753484204">‏لتكبير الشاشة، اضغط على Ctrl ‏+ Alt + مفتاح رفع مستوى السطوع.
 لتصغير الشاشة، اضغط على Ctrl ‏+ Alt + مفتاح خفض مستوى السطوع.</translation>
 <translation id="4726710629007580002">ظهرت تحذيرات عن محاولة تثبيت هذه الإضافة:</translation>
-<translation id="472738079453283624">المنتجات</translation>
 <translation id="4727847987444062305">جلسة الضيف المُدارة</translation>
 <translation id="4728558894243024398">النظام الأساسي</translation>
 <translation id="4730492586225682674">أحدث ملاحظة باستخدام قلم الشاشة في وضع قفل الشاشة</translation>
@@ -5817,6 +5829,7 @@
 <translation id="6212168817037875041">إيقاف الشاشة</translation>
 <translation id="6212752530110374741">إرسال الرابط عبر البريد الإلكتروني</translation>
 <translation id="621470880408090483">عدم السماح للمواقع الإلكترونية بالاتصال بأجهزة تتضمّن بلوتوث</translation>
+<translation id="6215039389782910006">{1,plural, =1{للحفاظ على أمان كلمات المرور، يتم قفل "<ph name="BRAND" />" بعد مرور دقيقة واحدة من عدم النشاط.}zero{للحفاظ على أمان كلمات المرور، يتم قفل "<ph name="BRAND" />" بعد مرور # دقيقة من عدم النشاط.}two{للحفاظ على أمان كلمات المرور، يتم قفل "<ph name="BRAND" />" بعد مرور دقيقتين من عدم النشاط.}few{للحفاظ على أمان كلمات المرور، يتم قفل "<ph name="BRAND" />" بعد مرور # دقائق من عدم النشاط.}many{للحفاظ على أمان كلمات المرور، يتم قفل "<ph name="BRAND" />" بعد مرور # دقيقة من عدم النشاط.}other{للحفاظ على أمان كلمات المرور، يتم قفل "<ph name="BRAND" />" بعد مرور # دقيقة من عدم النشاط.}}</translation>
 <translation id="6216239400972191926">المواقع الإلكترونية والتطبيقات المحظورة</translation>
 <translation id="6216601812881225442">‏لا يُسمح بتغيير حجم الحاوية. لضبط مقدار المساحة التي تم تخصيصها مسبقًا لنظام Linux، يُرجى الاحتفاظ بنسخة احتياطية ثم استعادتها في حاوية جديدة.</translation>
 <translation id="6216696360484424239">تسجيل الدخول تلقائيًا</translation>

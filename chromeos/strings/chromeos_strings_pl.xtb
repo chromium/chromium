@@ -142,6 +142,7 @@
 <translation id="2157959690810728433">W KOLEJCE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: spróbuj ponownie</translation>
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
+<translation id="2161656808144014275">Tekstowe</translation>
 <translation id="2163937499206714165">Włącz tryb ciemny</translation>
 <translation id="2180197493692062006">Coś poszło nie tak. Spróbuj ponownie otworzyć aplikację.</translation>
 <translation id="2209788852729124853">Zresetuj liczniki natężenia ruchu</translation>
@@ -217,6 +218,7 @@
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
 <translation id="3009958530611748826">Wybierz folder zapisu</translation>
 <translation id="3017079585324758401">Tło</translation>
+<translation id="3020183492814296499">Skróty</translation>
 <translation id="3027578600144895987">Zamknij kamerę</translation>
 <translation id="3031560714565892478">Urządzenie to kamera wideo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -663,7 +665,9 @@
 <translation id="6957231940976260713">Nazwa usługi</translation>
 <translation id="6961170852793647506">Aby rozpocząć, umieść dokument na skanerze</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Urządzenie</translation>
 <translation id="6977381486153291903">Wersja oprogramowania</translation>
+<translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="7005833343836210400">Urządzenie jest offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="7040230719604914234">Operator</translation>
@@ -773,6 +777,7 @@
 <translation id="7977800524392185497">Aby połączyć się z siecią <ph name="NETWORK_NAME" />, otwórz Ustawienia</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
+<translation id="8004582292198964060">Przeglądarka</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Włącz automatyczny tryb kolorów</translation>
@@ -885,6 +890,7 @@
 <translation id="8998289560386111590">Niedostępne na Twoim urządzeniu</translation>
 <translation id="9003704114456258138">Częstotliwość</translation>
 <translation id="9025198690966128418">Użyj jako urządzenia osobistego</translation>
+<translation id="902638246363752736">Ustawienia klawiatury</translation>
 <translation id="9028832514430399253">Włącz przełącznik, aby wybrać opcje wygaszacza ekranu</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +923,5 @@
 <translation id="952992212772159698">Nie aktywowano</translation>
 <translation id="960719561871045870">Kod operatora</translation>
 <translation id="982713511914535780">Przeprowadź test rozładowywania</translation>
+<translation id="987264212798334818">Ogólne</translation>
 </translationbundle>

@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">OP WAGLYS</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: herprobeer</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
+<translation id="2161656808144014275">Teks</translation>
 <translation id="2163937499206714165">Skakel donkermodus aan</translation>
 <translation id="2180197493692062006">Iets was fout. Probeer om die program weer oop te maak.</translation>
 <translation id="2209788852729124853">Stel verkeertellers terug</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">HERLAAI</translation>
 <translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="3017079585324758401">Agtergrond</translation>
+<translation id="3020183492814296499">Kortpaaie</translation>
 <translation id="3027578600144895987">Maak die kamera toe</translation>
 <translation id="3031560714565892478">Toestel is 'n videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Diensnaam</translation>
 <translation id="6961170852793647506">Plaas jou dokument op die skandeerder om te begin</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Toestel</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
+<translation id="6981982820502123353">Toeganklikheid</translation>
 <translation id="7005833343836210400">Toestel is vanlyn</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="7040230719604914234">Diensverskaffer</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">Gaan na Instellings om by 'n <ph name="NETWORK_NAME" />-netwerk aan te sluit</translation>
 <translation id="7978412674231730200">Private sleutel</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
+<translation id="8004582292198964060">Blaaier</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktiveer outokleurmodus</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
 <translation id="9003704114456258138">Frekwensie</translation>
 <translation id="9025198690966128418">Gebruik as ’n persoonlike toestel</translation>
+<translation id="902638246363752736">Sleutelbordinstellings</translation>
 <translation id="9028832514430399253">Skakel die wisselaar aan om die sluimerskermopsies te kies</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Nie geaktiveer nie</translation>
 <translation id="960719561871045870">Diensverskafferkode</translation>
 <translation id="982713511914535780">Laat loop ontlaaitoets</translation>
+<translation id="987264212798334818">Algemeen</translation>
 </translationbundle>

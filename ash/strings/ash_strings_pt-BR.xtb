@@ -57,6 +57,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="1239161794459865856">O recurso <ph name="FEATURE_NAME" /> está conectado.</translation>
 <translation id="1240638468526743569">Um app</translation>
+<translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246890715821376239">Apps sem suporte</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
@@ -128,6 +129,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1576623706766186887">Diminuir zoom quando a lupa estiver ativada</translation>
 <translation id="1586324912145647027">Ir para o espaço de trabalho 1 a 8</translation>
 <translation id="1589090746204042747">acessar todas as suas atividades nesta sessão;</translation>
+<translation id="1604857178818051494">Pausar mídia</translation>
 <translation id="1610778689852195798">"Desfazer"</translation>
 <translation id="1611993646327628135">Ativado</translation>
 <translation id="1618835956950524778">Destacar o botão do acesso rápido na estante</translation>
@@ -153,6 +155,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1715293566947629045">Desativando perfil. Aguarde alguns minutos.</translation>
 <translation id="1719094688023114093">O recurso Legenda instantânea está ativado.</translation>
 <translation id="1720011244392820496">Ativar o Sincronizar Wi-Fi</translation>
+<translation id="1720230731642245863">O ponto de acesso está desativado</translation>
 <translation id="1731815243805539470">Mudar para o usuário anterior</translation>
 <translation id="1733996486177697563">Escolha entre o tema claro ou escuro. Toque na área de trabalho e a mantenha pressionada. Depois, selecione a opção "Plano de fundo e estilo".</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visível para dispositivos Bluetooth.</translation>
@@ -188,6 +191,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1862380676329487333">Atualizar e sair</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
 <translation id="1869497990620230175">Arquivos de acesso rápido</translation>
+<translation id="1871023081802165724">Tocar mídia</translation>
 <translation id="1879018240766558464">No momento, não há suporte para janelas anônimas. Outros apps serão salvos.</translation>
 <translation id="1882814835921407042">Rede móvel indisponível</translation>
 <translation id="1882897271359938046">Espelhamento de <ph name="DISPLAY_NAME" /></translation>
@@ -206,6 +210,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1961239773406905488">Visualização da câmera oculta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Tela de bloqueio</translation>
+<translation id="1967970931040389207">Ativar o ponto de acesso</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Olá, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Entrada de texto</translation>
@@ -214,6 +219,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1990046457226896323">Download de arquivos de fala concluído</translation>
 <translation id="1993072747612765854">Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Desligar</translation>
+<translation id="1996162290124031907">Ir para a próxima guia</translation>
 <translation id="1998100899771863792">Espaço de trabalho atual</translation>
 <translation id="2001444736072756133">Pesquise <ph name="CATEGORY" />, arquivos, apps e muito mais.</translation>
 <translation id="2016340657076538683">Digite uma mensagem</translation>
@@ -228,6 +234,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2078034614700056995">Deslize para a direita com quatro dedos para acessar o próximo espaço de trabalho</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2083190527011054446">Boa noite, <ph name="GIVEN_NAME" />,</translation>
+<translation id="2086334242442703436">Abrir seletor de emojis</translation>
 <translation id="2088116547584365419">jogos</translation>
 <translation id="209965399369889474">Sem conexão com a rede</translation>
 <translation id="2107914222138020205">O cabo USB-C não oferece suporte a Thunderbolt. O desempenho do dispositivo pode ser limitado.</translation>
@@ -236,8 +243,10 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2132302418721800944">Gravar tela cheia</translation>
 <translation id="2135456203358955318">Lupa em área fixa</translation>
 <translation id="2148716181193084225">Hoje</translation>
+<translation id="2149229036084364364">Ir para a faixa anterior</translation>
 <translation id="2161132820593978283">Use o enquadramento da câmera para ficar no centro da tela durante videochamadas. Ative essa opção nas Configurações rápidas.</translation>
 <translation id="2170530631236737939">Deslize com três dedos para baixo para fechar a Visão geral</translation>
+<translation id="2185166372312820725">Ir para a guia anterior</translation>
 <translation id="219905428774326614">Tela de início, todos os apps</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
@@ -274,6 +283,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2367972762794486313">Mostrar aplicativos</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2390318262976603432">Configurações de localidade</translation>
+<translation id="2397416548179033562">Exibir o menu do Google Chrome</translation>
 <translation id="240006516586367791">Controles de mídia</translation>
 <translation id="2402411679569069051">Para desbloquear o Chromebook, use sua impressão digital ou desbloqueie o smartphone</translation>
 <translation id="2405664212338326887">Não conectado</translation>
@@ -354,6 +364,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2825619548187458965">Estante</translation>
 <translation id="2831035692318564937">Ativado até o amanhecer</translation>
 <translation id="2834813915651407382">Aberto recentemente</translation>
+<translation id="2840766858109427815">Avançar para a próxima página</translation>
 <translation id="2841907151129139818">Modo tablet ativado</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal da esquerda)</translation>
 <translation id="2848120746144143659">Pressione "Enter" para fazer uma captura de tela cheia</translation>
@@ -362,6 +373,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2865888419503095837">Informações de rede</translation>
 <translation id="2872353916818027657">Trocar monitor primário</translation>
 <translation id="2872961005593481000">Desligar</translation>
+<translation id="2876338922445400217">Aumentar o zoom na tela</translation>
 <translation id="2878884018241093801">Nenhum item recente</translation>
 <translation id="2885950158625301909">Saiba mais</translation>
 <translation id="2891209721153296020">"Desmarcar"</translation>
@@ -386,6 +398,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009958530611748826">Selecione em que pasta quer salvar</translation>
 <translation id="301282384882049174">Compartilhado pelo administrador</translation>
+<translation id="3018135054368884502">Avançar mídia</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3033912566804961911">Combinar com <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir arquivos</translation>
@@ -438,6 +451,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3289544412142055976">No momento, não há suporte para os apps do Linux</translation>
 <translation id="3289674678944039601">Carregando pelo adaptador</translation>
 <translation id="3290356915286466215">Não protegida</translation>
+<translation id="3291862315280588024">Ir para início da palavra anterior</translation>
 <translation id="3294437725009624529">Visitante</translation>
 <translation id="3298690094479023523">Ainda não foi possível verificar seu PIN ou sua senha. Tente de novo.</translation>
 <translation id="3307642347673023554">Modo laptop ativado</translation>
@@ -463,6 +477,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3405101454990027959">Ativar o acesso ao microfone</translation>
 <translation id="3410336247007142655">Mostrar configurações do tema escuro</translation>
 <translation id="3413817803639110246">Nada para ver ainda</translation>
+<translation id="3417835166382867856">Pesquisar guias</translation>
 <translation id="3423744722495840645">Abrir/fechar acesso rápido</translation>
 <translation id="3428447136709161042">Desconectar da rede <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Deslize da direita para voltar</translation>
@@ -488,6 +503,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="353086728817903341">Conectado a <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3533126039236445965">Apps na estante</translation>
 <translation id="3542066395059568317">Serão mostradas recomendações para que você continue de onde parou. Se quiser que elas sejam removidas, clique com o botão direito do mouse.</translation>
+<translation id="3546121235777416274">Focar na janela picture-in-picture</translation>
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
 <translation id="3554637740840164787">O item <ph name="ITEM_TITLE" /> foi fixado</translation>
 <translation id="3558768885091059911">Ativar o acesso à câmera e ao microfone?</translation>
@@ -518,6 +534,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3630697955794050612">desativada</translation>
 <translation id="3631369015426612114">Permitir as seguintes notificações</translation>
 <translation id="3633097874324966332">Abra as configurações do Bluetooth se quiser parear o dispositivo</translation>
+<translation id="3633851487917460983">Abrir a área de transferência</translation>
 <translation id="3638400994746983214">Alternar tela de privacidade. <ph name="STATE_TEXT" /></translation>
 <translation id="3649256019230929621">Minimizar janela</translation>
 <translation id="3649505501900178324">Atualização atrasada</translation>
@@ -566,6 +583,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3891340733213178823">Pressione Ctrl+Shift+Q duas vezes para sair.</translation>
 <translation id="3893630138897523026">ChromeVox (resposta falada)</translation>
 <translation id="3897533311200664389">Iniciar uma consulta por texto</translation>
+<translation id="3898464793473355515">Girar a tela 90 graus no sentido horário</translation>
 <translation id="3899995891769452915">Entrada de texto por voz</translation>
 <translation id="3900355044994618856">Sua sessão terminará em <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Conectando-se a <ph name="NAME" /></translation>
@@ -579,6 +597,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="394485226368336402">Configurações de áudio</translation>
 <translation id="3945319193631853098">Toque para concluir a configuração</translation>
 <translation id="3945867833895287237">Conectando ao ponto de acesso…</translation>
+<translation id="3950272133184491871">Sair agora?</translation>
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3969043077941541451">Desativado</translation>
@@ -603,6 +622,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4066027111132117168">Ativado, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinal médio</translation>
 <translation id="4086921558679520050">Ativar a chave do microfone do dispositivo</translation>
+<translation id="4101772068965291327">Abrir página inicial</translation>
 <translation id="4112140312785995938">Voltar</translation>
 <translation id="4114315158543974537">Ativar o Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -613,6 +633,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4129129681837227511">Para ver as notificações na sua tela de bloqueio, desbloqueie a tela e altere a configuração</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C. Velocidade atual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Ativado até o amanhecer</translation>
+<translation id="4146671046252289537">Ir para o final da próxima palavra</translation>
 <translation id="4146833061457621061">Ouvir música</translation>
 <translation id="4150201353443180367">Exibição</translation>
 <translation id="4165275524535002941">Talvez o cabo não transmita sinal de vídeo</translation>
@@ -662,6 +683,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4379531060876907730">Estas são suas ferramentas da stylus</translation>
 <translation id="4381031910344220229">Dá acesso ao microfone para o app <ph name="APP_NAME" /> e todos os apps e sites com essa permissão</translation>
+<translation id="4382340674111381977">Voltar para a página anterior</translation>
 <translation id="4389184120735010762">Você pressionou o atalho de teclado para a lupa em área fixa. Gostaria de ativá-la?</translation>
 <translation id="439598569299422042">Pausado, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Falha ao salvar screencast</translation>
@@ -731,6 +753,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
 <translation id="4706121060329443414">O download será feito mais tarde. Por enquanto, a fala será enviada ao Google para processamento.</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
+<translation id="4708065238214351979">Aumentar o brilho do teclado</translation>
 <translation id="4717575069099566988">O cabo USB-C não oferece suporte a USB4. O desempenho do dispositivo pode ser limitado.</translation>
 <translation id="4730374152663651037">USADOS FREQUENTEMENTE</translation>
 <translation id="4731797938093519117">Acesso do familiar responsável</translation>
@@ -757,6 +780,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4849058404725798627">Destacar objeto com o foco de teclado</translation>
 <translation id="485592688953820832">Nenhuma ação (pausar)</translation>
 <translation id="485634149294284819">Menu "Informar teclado"</translation>
+<translation id="485806788160414322">Tocar ou pausar mídia</translation>
 <translation id="4860284199500934869">Confira sua conexão de rede para fazer o download do arquivo <ph name="FILENAME" /></translation>
 <translation id="4864369630010738180">Fazendo login...</translation>
 <translation id="4864648187878336334">Espaço de trabalho 15</translation>
@@ -776,6 +800,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="4925542575807923399">O administrador dessa conta exige que ela seja a primeira conta a fazer o login em uma sessão de login múltiplo.</translation>
 <translation id="4929163402621253029">Você está falando? O microfone está desativado. Saiba mais</translation>
+<translation id="493076006037866439">Diminuir o zoom na tela</translation>
 <translation id="4936329710968938986">Todos (desativado)</translation>
 <translation id="4938176435186993759">Ocultar todas as sugestões</translation>
 <translation id="4945196315133970626">Desativar notificações</translation>
@@ -784,6 +809,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4952936045814352993">O recurso "Localizar smartphone" fica indisponível quando os sons do alarme estão desativados</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requer que você reverta seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>
 <translation id="4961318399572185831">Transmitir tela</translation>
+<translation id="4966431234408005599">Aumentar o volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h<ph name="MINUTES" />min<ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">Notificações de apps</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
@@ -795,8 +821,10 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5004607513195820459">Rede gerenciada</translation>
 <translation id="5016558321564993266">Alterne o marcador. <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">O acesso ao microfone do dispositivo está ativado</translation>
+<translation id="5030659775136592441">Mostrar gerenciador de favoritos</translation>
 <translation id="5030687792513154421">Tempo esgotado</translation>
 <translation id="5033299697334913360">Clique em qualquer lugar para capturar a tela cheia</translation>
+<translation id="5034421018520995080">Ir para a parte superior da página</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> conectado a um novo smartphone</translation>
 <translation id="5035389544768382859">Confirmar configuração da tela</translation>
 <translation id="5042305953558921026">Tecla do modo de visão geral</translation>
@@ -805,12 +833,14 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083553833479578423">Desbloqueie mais recursos do Assistente.</translation>
+<translation id="5092436659250499817">Ativar/desativar a luz de fundo do teclado</translation>
 <translation id="509790653408515442">Quando você fizer uma transmissão dos apps do smartphone, eles vão aparecer aqui.</translation>
 <translation id="5098537242461068432">As janelas e o espaço de trabalho foram reabertos</translation>
 <translation id="5104236669533825617">Não foi possível criar o screencast</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Mostrar próximo mês</translation>
+<translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5127986747308934633">O administrador está controlando seu dispositivo</translation>
 <translation id="5136175204352732067">Teclado diferente conectado</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
@@ -828,6 +858,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5208059991603368177">Ativado</translation>
 <translation id="5216991270656129561">Desativado até <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Sair</translation>
+<translation id="5229343007215035173">Ativar/desativar a Tela de privacidade</translation>
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
 <translation id="5245201184978705914">Falha ao gerar transcrição</translation>
@@ -941,6 +972,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="576341972084747908">Fazendo o download do arquivo perigoso <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">O modo Grupo de estantes está desativado.</translation>
 <translation id="576453121877257266">O Modo noturno está ativado.</translation>
+<translation id="5764569119212455782">Mudar para o último idioma selecionado</translation>
 <translation id="5769373120130404283">Tela de privacidade</translation>
 <translation id="5773950591113557721">Esta ação libera o acesso para o app <ph name="APP_NAME" /> e todos os apps e sites com essas permissões</translation>
 <translation id="5774295353725270860">Abrir aplicativo Arquivos</translation>
@@ -952,6 +984,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5805809050170488595">Clique para ativar <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Configurações de dispositivos conectados</translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> para <ph name="RECEIVER_NAME" /></translation>
+<translation id="5841296711770970362">Ir para a próxima faixa</translation>
 <translation id="584525477304726060">Para maximizar a janela, mantenha-a pressionada</translation>
 <translation id="5856638668464565213">A rede <ph name="NETWORK_NAME" /> não está ativada.</translation>
 <translation id="5860033963881614850">Desativado</translation>
@@ -971,6 +1004,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5920710855273935292">O microfone está desativado.</translation>
+<translation id="5924855612669061715">O ponto de acesso está ativado</translation>
 <translation id="5946788582095584774">O recurso <ph name="FEATURE_NAME" /> está ativado.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Rastreamento de desempenho ativado</translation>
@@ -1025,9 +1059,11 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6168318496333165060">Abrir o app Diagnóstico</translation>
 <translation id="6179832488876878285">Fixe seus arquivos importantes aqui. Abra o app Arquivos para começar.</translation>
 <translation id="6182592640011875895">Abrir espaço de trabalho</translation>
+<translation id="6185696379715117369">Página para cima</translation>
 <translation id="619279033188484792">Veja as fotos, mídias e notificações recentes do smartphone no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6199775032047436064">Recarregar página atual</translation>
 <translation id="6200515304866777730">O app não oferece suporte</translation>
 <translation id="6210042900243040400">Conectar o dispositivo <ph name="NAME" /> salvo anteriormente em <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Fazer uma captura ou gravação de tela parcial</translation>
@@ -1043,6 +1079,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6259254695169772643">Use a stylus para selecionar</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Ativando...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6276708887952587684">Ver código-fonte da página</translation>
 <translation id="6283712521836204486">O "Não perturbe" está desativado.</translation>
 <translation id="6284232397434400372">Resolução alterada</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode ser adicionado novamente com a permissão do familiar responsável.</translation>
@@ -1083,6 +1120,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6497418457565568043">"Não perturbe" ativado</translation>
 <translation id="6500896621837555595">Atualizar</translation>
 <translation id="6501401484702599040">Transmitindo tela para <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507618042428827377">Mudar para o próximo método de entrada disponível</translation>
 <translation id="6508923215158854599">Confira se o Chromebook está na mesma rede Wi-Fi do dispositivo Chromecast.</translation>
 <translation id="6515727200518652613">Câmera perdida, tentando reconectar.</translation>
 <translation id="6520517963145875092">Selecione uma janela para a captura</translation>
@@ -1129,6 +1167,7 @@ Nova instalação</translation>
 <translation id="6707693040195709527">A mudança do dispositivo para a versão anterior está atrasada</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Energia</translation>
+<translation id="6727005317916125192">Painel anterior</translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1190,6 +1229,7 @@ Nova instalação</translation>
 <translation id="7014684956566476813">Conectado a um dispositivo chamado <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Volte às <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Espaço de trabalho 6</translation>
+<translation id="7025325401470358758">Próximo painel</translation>
 <translation id="7025533177575372252">Conecte seu <ph name="DEVICE_NAME" /> ao smartphone</translation>
 <translation id="7026338066939101231">Reduzir</translation>
 <translation id="7029814467594812963">Sair da sessão</translation>
@@ -1340,6 +1380,7 @@ Nova instalação</translation>
 <translation id="7848989271541991537">Movido para página <ph name="PAGE_NUMBER" />, linha <ph name="ROW_NUMBER" />, coluna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Deslize com três dedos para cima para abrir a Visão geral</translation>
+<translation id="7862292329216937261">Para usar o dispositivo como visitante, é necessário sair da conta e selecionar a opção "Navegar como visitante" na parte de baixo da tela.</translation>
 <translation id="7866482334467279021">ativada</translation>
 <translation id="7868900307798234037">Desbloqueio por impressão digital</translation>
 <translation id="7872195908557044066">O administrador está redefinindo o eSIM. Aguarde alguns minutos.</translation>
@@ -1363,6 +1404,7 @@ Nova instalação</translation>
 <translation id="793716872548410480">Pressione <ph name="SHORTCUT_KEY_NAME" /> + V para ver a área de transferência. Os últimos cinco itens que você copiou ficam salvos nela.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7944023924886109030">Confira todos os eventos de hoje</translation>
+<translation id="7951630946012935453">Escurecer o teclado</translation>
 <translation id="7963992254934562106">Do <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selecionar pasta…</translation>
 <translation id="797512352675305461">Ativar ou desativar a lupa de tela cheia</translation>
@@ -1375,12 +1417,14 @@ Nova instalação</translation>
 <translation id="7995804128062002838">Falha na captura de tela</translation>
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8004512796067398576">Aumentar</translation>
+<translation id="8026334261755873520">Remover dados de navegação</translation>
 <translation id="8029247720646289474">Falha na conexão com o ponto de acesso</translation>
 <translation id="8029629653277878342">O PIN ou a senha são necessários para aumentar a segurança</translation>
 <translation id="8030169304546394654">Desconectado</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menu de configurações de acessibilidade</translation>
 <translation id="8044457332620420407">A luz de fundo do teclado está desligada</translation>
+<translation id="8048077032188362328">O administrador desativou o ponto de acesso.</translation>
 <translation id="8048123526339889627">Configurações de Bluetooth</translation>
 <translation id="8051716679295756675">Já existe um modelo com o nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
@@ -1395,6 +1439,7 @@ Nova instalação</translation>
 <translation id="8120151603115102514">Seu smartphone não tem uma tela de bloqueio. Para desbloquear o Chromebook, digite sua senha</translation>
 <translation id="8127095419621171197">Abrir o app Calculadora</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8130528849632411619">Ir para o início do documento</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8131994907636310308">Fechar aviso de classificação</translation>
 <translation id="8132793192354020517">Conectado à <ph name="NAME" /></translation>
@@ -1489,11 +1534,14 @@ Nova instalação</translation>
 <translation id="857201607579416096">O menu foi movido para o canto inferior direito da tela.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordenar seus apps por nome e cor</translation>
+<translation id="8609384513243082612">Abrir nova guia</translation>
 <translation id="8614517853887502247">As notificações dos apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção de visualização está ativada</translation>
+<translation id="8619138598101195078">Diminuir o volume</translation>
 <translation id="8627191004499078455">Conectado a <ph name="DEVICE_NAME" /></translation>
 <translation id="8630991711272431708">Desativar o acesso à câmera</translation>
 <translation id="8631727435199967028">Configurações de acessibilidade</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
+<translation id="8638637208069328956">Ativar/desativar o microfone</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante(s)</translation>
 <translation id="8641805545866562088">Atualizando a lista de perfis. Aguarde alguns minutos.</translation>
 <translation id="8646417893960517480">Timer de <ph name="TOTAL_TIME" /></translation>
@@ -1509,8 +1557,10 @@ Nova instalação</translation>
 <translation id="8683506306463609433">Acompanhamento de desempenho ativo</translation>
 <translation id="8703634754197148428">Iniciar gravação. Depois que a gravação for iniciada, pressione Alt + Shift + L para ir até a estante e localizar o botão para "Parar de gravar"</translation>
 <translation id="870917907284186124">Ativar/desativar o ditado (digitação usando a voz)</translation>
+<translation id="8717459106217102612">Selecionar palavra ou letra anterior</translation>
 <translation id="8721053961083920564">Altere o volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de tela cheia</translation>
+<translation id="8725214031272624704">Mostrar lista de métodos de entrada disponíveis</translation>
 <translation id="8731487213223706745">Término: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Ele pode estar tentando capturar sua digitação</translation>
 <translation id="8735678380411481005">Cor da luz de fundo do teclado</translation>
@@ -1548,6 +1598,7 @@ Nova instalação</translation>
 <translation id="8878886163241303700">Tela ampla</translation>
 <translation id="888982883502837004">Há atualizações de firmware disponíveis para seu dispositivo. Clique para revisar e atualizar.</translation>
 <translation id="8896630965521842259">O modelo <ph name="DESK_TEMPLATE_NAME" /> será excluído permanentemente</translation>
+<translation id="88986195241502842">Página para baixo</translation>
 <translation id="8905919797434099235">(Sem título)</translation>
 <translation id="890616557918890486">Alterar origem</translation>
 <translation id="8909138438987180327">Bateria em <ph name="PERCENTAGE" /> por cento.</translation>
@@ -1593,6 +1644,7 @@ Nova instalação</translation>
 <translation id="9098969848082897657">Silenciar smartphone</translation>
 <translation id="9100887602489003640">Adicionando perfil. Aguarde alguns minutos.</translation>
 <translation id="9105450214093926548">Não é possível fazer login em um segundo usuário enquanto o navegador Lacros está aberto. Use um segundo perfil de navegador no Lacros ou feche-o e tente novamente.</translation>
+<translation id="9120448753905017833">Desativamos o Wi-Fi para iniciar o uso do ponto de acesso com dados móveis. Isso pode gerar custos.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9161053988251441839">APPS SUGERIDOS</translation>
@@ -1621,6 +1673,7 @@ Nova instalação</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="954052413789300507">Não há espaço suficiente para o arquivo <ph name="FILENAME" />. Libere espaço.</translation>
 <translation id="974545358917229949">Exibindo <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
+<translation id="98120814841227350">Ir para o final do documento</translation>
 <translation id="98515147261107953">Paisagem</translation>
 <translation id="989374776391122812">Controles de câmera e áudio</translation>
 <translation id="990277280839877440">Janela <ph name="WINDOW_TITILE" /> fechada.</translation>

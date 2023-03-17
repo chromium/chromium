@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">ຕົວປ້ອນເອກະສານ (ດ້ານດຽວ)</translation>
 <translation id="1643449475550628585">ປ່ຽນຮູບພື້ນຫຼັງທຸກມື້</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
+<translation id="1651925268237749928">ທ່ານໄດ້ເລືອກອະລະບ້ຳແບ່ງປັນ. ຄົນອື່ນໆສາມາດເພີ່ມ ຫຼື ປ່ຽນຮູບພາບໄດ້. ຮູບພື້ນຫຼັງຂອງທ່ານອາດໃຊ້ຮູບພາບທີ່ບໍ່ໄດ້ຢູ່ໃນອະລະບ້ຳນີ້ໃນປັດຈຸບັນ.</translation>
 <translation id="1662989795263954667">ຢຸດພິມ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="1664796644829245314">ສະແດງຕົວຢ່າງ <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN ໃນຕົວ</translation>
@@ -142,6 +143,7 @@
 <translation id="2157959690810728433">ເຂົ້າຄິວແລ້ວ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ລອງໃໝ່</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
+<translation id="2161656808144014275">ຂໍ້ຄວາມ</translation>
 <translation id="2163937499206714165">ເປີດໃຊ້ໂໝດມືດ</translation>
 <translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
 <translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
@@ -217,6 +219,7 @@
 <translation id="3008341117444806826">ໂຫຼດຂໍ້ມູນໃໝ່</translation>
 <translation id="3009958530611748826">ເລືອກໂຟນເດີທີ່ຈະບັນທຶກໄວ້ໃນ</translation>
 <translation id="3017079585324758401">ພາບພື້ນຫຼັງ</translation>
+<translation id="3020183492814296499">ທາງລັດ</translation>
 <translation id="3027578600144895987">ປິດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="3031560714565892478">ອຸປະກອນແມ່ນກ້ອງຖ່າຍວິດີໂອ.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -238,6 +241,7 @@
 <translation id="319101249942218879">ປ່ຽນຮູບແທນຕົວແລ້ວ</translation>
 <translation id="3192947282887913208">ໄຟລ໌ສຽງ</translation>
 <translation id="3199982728237701504">ຕົວປ້ອນເອກະສານ (ສອງດ້ານ)</translation>
+<translation id="3201315366910775591">ຄົນອື່ນໆສາມາດອັບເດດອະລະບ້ຳແບ່ງປັນໄດ້</translation>
 <translation id="3211671540163313381">Keymapping D-pad</translation>
 <translation id="3226405216343213872">ກຳລັງຊອກຫາເຄື່ອງສະແກນ</translation>
 <translation id="3226657629376379887">ເມນູຄຳສັ່ງໂຄງຮ່າງ</translation>
@@ -656,6 +660,7 @@
 <translation id="6838167112108853532">ບໍ່ສາມາດປິດການນຳໃຊ້ ຫຼື ລຶບ APN ນີ້ອອກໄດ້. ກະລຸນາກວດສອບວ່າ APN ທີ່ແນບມາເຊິ່ງໄດ້ເປີດການນຳໃຊ້ນັ້ນແມ່ນຖືກປິດການນຳໃຊ້ ຫຼື ຖືກລຶບອອກແລ້ວ.</translation>
 <translation id="6853312040151791195">ອັດຕາການຄາຍປະຈຸ</translation>
 <translation id="6889786074662672253">ໃນລະຫວ່າງທີ່ກຳລັງຣີສະຕາດ, ກະລຸນາຢ່າຖອດປລັກອຸປະກອນພາຍນອກນີ້ ຫຼື ປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
+<translation id="6900701049656042631">ອະລະບ້ຳນີ້ຍັງບໍ່ມີຮູບພາບ. ກະລຸນາເຂົ້າໄປ <ph name="LINK" /> ເພື່ອເພີ່ມຮູບພາບ</translation>
 <translation id="6905724422583748843">ກັບໄປ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">ຝາເຄື່ອງສະແກນເປີດຢູ່. ກະລຸນາປິດຝາແລ້ວລອງໃໝ່.</translation>
 <translation id="6911383237894364323">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີມີເດຍໄດ້</translation>
@@ -663,7 +668,9 @@
 <translation id="6957231940976260713">ຊື່ການບໍລິການ</translation>
 <translation id="6961170852793647506">ເພື່ອເລີ່ມຕົ້ນ, ໃຫ້ວາງເອກະສານຂອງທ່ານໃສ່ເຄື່ອງສະແກນ</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
+<translation id="6965978654500191972">ອຸ​ປະ​ກອນ</translation>
 <translation id="6977381486153291903">ການດັດແກ້ເຟີມແວ</translation>
+<translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
 <translation id="7005833343836210400">ອຸປະກອນອອບລາຍຢູ່</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ເຂົ້າເຖິງການເຄື່ອນໄຫວຜູ້ໃຊ້ທັງໝົດ, ຮວມທັງໜ້າເວັບທີ່ເຂົ້າເບິ່ງ, ລະຫັດຜ່ານ ແລະ ອີເມວ.</translation>
 <translation id="7040230719604914234">ຜູ້ໃຫ້ບໍລິການ</translation>
@@ -774,6 +781,7 @@
 <translation id="7977800524392185497">ເພື່ອເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="NETWORK_NAME" />, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
+<translation id="8004582292198964060">ບຣາວ​ເຊີ</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ເປີດການນຳໃຊ້ໂໝດປັບສີອັດຕະໂນມັດ</translation>
@@ -886,6 +894,7 @@
 <translation id="8998289560386111590">ບໍ່ມີໃຫ້ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="9003704114456258138">ຄວາມຖີ່</translation>
 <translation id="9025198690966128418">ໃຊ້ເປັນອຸປະກອນສ່ວນຕົວ</translation>
+<translation id="902638246363752736">ການຕັ້ງຄ່າຄີບອດ</translation>
 <translation id="9028832514430399253">ເປີດໃຊ້ຕົວສະຫຼັບເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -918,4 +927,5 @@
 <translation id="952992212772159698">ບໍ່ໄດ້ເປີດໃຊ້ງານ</translation>
 <translation id="960719561871045870">ລະຫັດຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="982713511914535780">ດຳເນີນການທົດສອບການຄາຍປະຈຸຂອງແບັດເຕີຣີ</translation>
+<translation id="987264212798334818">ທົ່ວໄປ</translation>
 </translationbundle>

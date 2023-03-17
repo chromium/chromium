@@ -140,6 +140,7 @@
 <translation id="2157959690810728433">ILARAN</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Saiatu berriro</translation>
 <translation id="2161394479394250669">Utzi bertan behera inprimatze-lana</translation>
+<translation id="2161656808144014275">testua</translation>
 <translation id="2163937499206714165">Aktibatu modu iluna</translation>
 <translation id="2180197493692062006">Arazo bat izan da. Ireki berriro aplikazioa.</translation>
 <translation id="2209788852729124853">Berrezarri trafiko-kontagailuak</translation>
@@ -215,6 +216,7 @@
 <translation id="3008341117444806826">FRESKATU</translation>
 <translation id="3009958530611748826">Hautatu zer karpetatan gorde nahi duzun</translation>
 <translation id="3017079585324758401">Atzeko planoa</translation>
+<translation id="3020183492814296499">Lasterbideak</translation>
 <translation id="3027578600144895987">Itxi kamera</translation>
 <translation id="3031560714565892478">Gailua bideokamera bat da.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -660,7 +662,9 @@
 <translation id="6957231940976260713">Zerbitzuaren izena</translation>
 <translation id="6961170852793647506">Hasteko, jarri dokumentua eskanerrean</translation>
 <translation id="6965382102122355670">Ados</translation>
+<translation id="6965978654500191972">Gailua</translation>
 <translation id="6977381486153291903">Firmwarearen berrikuspena</translation>
+<translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="7005833343836210400">Deskonektatuta dago gailua</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta erabiltzaileen jarduera guztiak atzi ditzake; besteak beste, bisitatutako webguneak, erabilitako pasahitzak eta posta elektronikoa.</translation>
 <translation id="7040230719604914234">Operadorea</translation>
@@ -768,6 +772,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> sare batean sartzeko, joan ezarpenetara</translation>
 <translation id="7978412674231730200">Gako pribatua</translation>
 <translation id="7994702968232966508">EAP metodoa</translation>
+<translation id="8004582292198964060">Arakatzailea</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Gaitu kolore automatikoaren modua</translation>
@@ -879,6 +884,7 @@
 <translation id="8998289560386111590">Ez dago erabilgarri zure gailuan</translation>
 <translation id="9003704114456258138">Maiztasuna</translation>
 <translation id="9025198690966128418">Erabili gailu pertsonal gisa</translation>
+<translation id="902638246363752736">Teklatuaren ezarpenak</translation>
 <translation id="9028832514430399253">Aktibatu etengailua pantaila-babeslearen aukerak hautatzeko</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +917,5 @@
 <translation id="952992212772159698">Ez da aktibatu</translation>
 <translation id="960719561871045870">Operadorearen kodea</translation>
 <translation id="982713511914535780">Egin bateria deskargatzeko prozesuaren proba</translation>
+<translation id="987264212798334818">Orokorra</translation>
 </translationbundle>

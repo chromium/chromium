@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">ΣΤΗΝ ΟΥΡΑ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Επανάληψη</translation>
 <translation id="2161394479394250669">Ακύρωση εργασίας εκτύπωσης</translation>
+<translation id="2161656808144014275">Κείμενο</translation>
 <translation id="2163937499206714165">Ενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="2180197493692062006">Παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε να ανοίξετε ξανά την εφαρμογή.</translation>
 <translation id="2209788852729124853">Επαναφορά μετρητών επισκεψιμότητας</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
 <translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
 <translation id="3017079585324758401">Φόντο</translation>
+<translation id="3020183492814296499">Συντομεύσεις</translation>
 <translation id="3027578600144895987">Κλείστε την κάμερα</translation>
 <translation id="3031560714565892478">Η συσκευή είναι κάμερα βίντεο.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Όνομα υπηρεσίας</translation>
 <translation id="6961170852793647506">Για να ξεκινήσετε, τοποθετήστε το έγγραφό σας στον σαρωτή</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Συσκευή</translation>
 <translation id="6977381486153291903">Έκδοση υλικολογισμικού</translation>
+<translation id="6981982820502123353">Προσβασιμότητα</translation>
 <translation id="7005833343836210400">Η συσκευή είναι εκτός σύνδεσης</translation>
 <translation id="7028979494427204405">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και έχει πρόσβαση σε όλη τη δραστηριότητα των χρηστών, συμπεριλαμβανομένων των ιστοσελίδων που επισκέπτεστε, των κωδικών πρόσβασης και του ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="7040230719604914234">Χειριστής</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">Για να συμμετάσχετε σε ένα δίκτυο <ph name="NETWORK_NAME" />, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="7978412674231730200">Ιδιωτικό κλειδί</translation>
 <translation id="7994702968232966508">Μέθοδος EAP</translation>
+<translation id="8004582292198964060">Πρόγραμμα περιήγησης</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Ενεργοποίηση λειτουργίας αυτόματης ρύθμισης χρώματος</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Δεν διατίθεται στη συσκευή σας</translation>
 <translation id="9003704114456258138">Συχνότητα</translation>
 <translation id="9025198690966128418">Χρήση ως προσωπική συσκευή</translation>
+<translation id="902638246363752736">Ρυθμίσεις πληκτρολογίου</translation>
 <translation id="9028832514430399253">Ενεργοποιήστε την εναλλαγή για να ορίσετε τις επιλογές προφύλαξης οθόνης</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Μη ενεργοποιημένο</translation>
 <translation id="960719561871045870">Κωδικός τελεστή</translation>
 <translation id="982713511914535780">Εκτέλεση δοκιμής αποφόρτισης</translation>
+<translation id="987264212798334818">Γενικά</translation>
 </translationbundle>

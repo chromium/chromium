@@ -939,6 +939,7 @@
 <translation id="8492972329130824181">A rede doméstica non está dispoñible. Para conectarte, debes ter activada a itinerancia de datos móbiles.</translation>
 <translation id="8499098729323186194">Extraendo <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="8502913769543567768">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />. Activar despois de configurar o dispositivo. Xestionada polo administrador</translation>
+<translation id="8512483403832814140">Sen data determinada</translation>
 <translation id="8521441079177373948">RU</translation>
 <translation id="853494022971700746">Francés (Francia)</translation>
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>

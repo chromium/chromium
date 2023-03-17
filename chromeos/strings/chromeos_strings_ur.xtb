@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">دستاویز فیڈر (یک طرفہ)</translation>
 <translation id="1643449475550628585">وال پیپر کی تصویر کو روزانہ تبدیل کریں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
+<translation id="1651925268237749928">آپ نے ایک اشتراک کردہ البم منتخب کیا ہے۔ دوسرے لوگ تصاویر شامل یا تبدیل کر سکتے ہیں۔ آپ کا وال پیپر ایسی تصاویر استعمال کر سکتا ہے جو فی الحال اس البم میں موجود نہیں ہیں۔</translation>
 <translation id="1662989795263954667">رک گیا - سیاہی ختم ہو گئی</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> کا پیش منظر دیکھیں</translation>
 <translation id="1668469839109562275">‏پہلے سے موجود VPN</translation>
@@ -142,6 +143,7 @@
 <translation id="2157959690810728433">قطار بند</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: پھر کوشش کریں</translation>
 <translation id="2161394479394250669">پرنٹ جاب منسوخ کریں</translation>
+<translation id="2161656808144014275">متن</translation>
 <translation id="2163937499206714165">تاریک وضع آن کریں</translation>
 <translation id="2180197493692062006">کچھ غلط ہوگیا۔ ایپ کو دوبار کھولنے کی کوشش کریں۔</translation>
 <translation id="2209788852729124853">ٹریفک کاؤنٹرز ری سیٹ کریں</translation>
@@ -217,6 +219,7 @@
 <translation id="3008341117444806826">ریفریش کریں</translation>
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="3017079585324758401">پس منظر</translation>
+<translation id="3020183492814296499">شارٹ کٹس</translation>
 <translation id="3027578600144895987">کیمرا بند کریں</translation>
 <translation id="3031560714565892478">آلہ ایک ویڈیو کیمرا ہے۔</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -238,6 +241,7 @@
 <translation id="319101249942218879">اوتار تصویر تبدیل کی گئی</translation>
 <translation id="3192947282887913208">آڈیو فائلز</translation>
 <translation id="3199982728237701504">دستاویز فیڈر (دو طرفہ)</translation>
+<translation id="3201315366910775591">اشتراک کردہ البمز کو دیگر لوگ اپ ڈیٹ کر سکتے ہیں</translation>
 <translation id="3211671540163313381">‏کلید کی نقشہ سازی کا D-pad</translation>
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
 <translation id="3226657629376379887">لے آؤٹ کارروائیوں کا مینو</translation>
@@ -656,6 +660,7 @@
 <translation id="6838167112108853532">‏اس APN کو غیر فعال یا ہٹا نہیں سکتے۔ یقینی بنائیں کہ فعال کردہ منسلکہ APNs کو غیر فعال یا ہٹا دیا گیا ہے۔</translation>
 <translation id="6853312040151791195">ڈسچارج ہونے کی شرح</translation>
 <translation id="6889786074662672253">ری سٹارٹ کرنے کے دوران، اس خارجی آلے کو ان پلگ نہ کریں یا اپنے کمپیوٹر کو شٹ ڈاؤن نہ کریں۔ آپ اس ونڈو کو چھوٹا کر سکتے ہیں۔ اس اپ ڈیٹ میں کچھ منٹ لگ سکتے ہیں اور ہو سکتا ہے کہ آپ کا خارجی آلہ اس دوران کام نہ کرے۔</translation>
+<translation id="6900701049656042631">اس البم میں کوئی تصویر نہیں ہے۔ تصاویر شامل کرنے کے لیے، <ph name="LINK" /> پر جائیں</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> پر واپس جائیں</translation>
 <translation id="6910312834584889076">اسکینر کا سرورق کھلا ہوا ہے۔ سرورق کو بند کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6911383237894364323">میڈیا سرورز سے منسلک ہونے سے قاصر</translation>
@@ -663,7 +668,9 @@
 <translation id="6957231940976260713">سروس کا نام</translation>
 <translation id="6961170852793647506">شروع کرنے کیلئے، اپنی دستاویز کو اسکینر پر رکھیں</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
+<translation id="6965978654500191972">آلہ</translation>
 <translation id="6977381486153291903">فرم ویئر نظر ثانی</translation>
+<translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="7005833343836210400">آلہ آف لائن ہے</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور ملاحظہ کردہ ویب صفحات، پاس ورڈز اور ای میل سمیت صارف کی تمام سرگرمی تک رسائی حاصل کر سکتا ہے۔</translation>
 <translation id="7040230719604914234">آپریٹر</translation>
@@ -773,6 +780,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> نیٹ ورک میں شامل ہونے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="7978412674231730200">نجی کلید</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>
+<translation id="8004582292198964060">براؤزر</translation>
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">خودکار رنگ موڈ کو فعال کریں</translation>
@@ -885,6 +893,7 @@
 <translation id="8998289560386111590">آپ کے آلے پر دستیاب نہیں ہے</translation>
 <translation id="9003704114456258138">فریکوئنسی</translation>
 <translation id="9025198690966128418">ذاتی آلے کے طور پر استعمال کریں</translation>
+<translation id="902638246363752736">کی بورڈ کی ترتیبات</translation>
 <translation id="9028832514430399253">اسکرین سیور کے اختیارات کو منتخب کرنے کے لیے ٹوگل آن کریں</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +926,5 @@
 <translation id="952992212772159698">فعال نہیں ہے</translation>
 <translation id="960719561871045870">آپریٹر کوڈ</translation>
 <translation id="982713511914535780">ڈسچارج ٹیسٹ چلائیں</translation>
+<translation id="987264212798334818">عمومی</translation>
 </translationbundle>

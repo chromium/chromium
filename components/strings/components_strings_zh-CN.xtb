@@ -683,6 +683,7 @@
 <translation id="259821504105826686">摄影与数码艺术</translation>
 <translation id="2601150049980261779">爱情片</translation>
 <translation id="2604589665489080024">流行音乐</translation>
+<translation id="2606760465469169465">自动验证</translation>
 <translation id="2610561535971892504">点击复制</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />以下信息：
           <ph name="BEGIN_LIST" />
@@ -1896,6 +1897,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的网站。您再次访问的网站可能会再次出现在列表中。您还可随时在 Chrome 设置中禁止某个网站向您展示建议的广告，以及停用网站建议的广告。</translation>
 <translation id="5610142619324316209">检查网络连接</translation>
 <translation id="5610807607761827392">您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理信用卡和地址信息。</translation>
+<translation id="5611398002774823980">保存到帐号</translation>
 <translation id="561165882404867731">使用 Google 翻译来翻译此页面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 想使用您计算机的位置信息</translation>
 <translation id="561669346091975195">科幻与奇幻电视节目</translation>
@@ -3182,6 +3184,7 @@
 <translation id="8806285662264631610">沐浴与身体护理产品</translation>
 <translation id="8807160976559152894">完成每页后裁切</translation>
 <translation id="8809203544698246977">已屏蔽的主题会显示在此处</translation>
+<translation id="8811470563853401328">是否将地址保存到帐号？</translation>
 <translation id="8813277370772331957">稍后提醒我</translation>
 <translation id="8814707942599948500">C8 信封</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
@@ -3275,6 +3278,7 @@
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9044359186343685026">使用触控 ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">以下操作需要将 <ph name="POLICY_NAME" /> 政策设置为 <ph name="POLICY_VALUE" />：<ph name="ACTION_LIST" />。</translation>
 <translation id="9048662076076074925">24 x 36 英寸</translation>
 <translation id="9049981332609050619">您试图访问 <ph name="DOMAIN" />，但服务器提供的证书无效。</translation>
 <translation id="9050666287014529139">密码</translation>

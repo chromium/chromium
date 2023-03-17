@@ -142,6 +142,7 @@
 <translation id="2157959690810728433">IEVIETOTS RINDĀ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Mēģināt vēlreiz</translation>
 <translation id="2161394479394250669">Atcelt drukas uzdevumu</translation>
+<translation id="2161656808144014275">Teksts</translation>
 <translation id="2163937499206714165">Ieslēgt tumšo režīmu</translation>
 <translation id="2180197493692062006">Radās kļūda. Mēģiniet atkārtoti atvērt lietotni.</translation>
 <translation id="2209788852729124853">Atiestatīt datplūsmas skaitītājus</translation>
@@ -217,6 +218,7 @@
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
 <translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
 <translation id="3017079585324758401">Fons</translation>
+<translation id="3020183492814296499">Īsinājumtaustiņi</translation>
 <translation id="3027578600144895987">Aizvērt kameru</translation>
 <translation id="3031560714565892478">Ierīce ir videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -663,7 +665,9 @@
 <translation id="6957231940976260713">Pakalpojuma nosaukums</translation>
 <translation id="6961170852793647506">Lai sāktu darbu, novietojiet dokumentu uz skenera.</translation>
 <translation id="6965382102122355670">Labi</translation>
+<translation id="6965978654500191972">Ierīce</translation>
 <translation id="6977381486153291903">Aparātprogrammatūras pārskatīšana</translation>
+<translation id="6981982820502123353">Pieejamība</translation>
 <translation id="7005833343836210400">Ierīce ir bezsaistē</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> pārvalda šo ierīci un var piekļūt visām lietotāja darbībām, tostarp apmeklētajām tīmekļa lapām, parolēm un e-pastam.</translation>
 <translation id="7040230719604914234">Mobilo sakaru operators</translation>
@@ -773,6 +777,7 @@
 <translation id="7977800524392185497">Lai izveidotu savienojumu ar <ph name="NETWORK_NAME" /> tīklu, pārejiet uz iestatījumiem.</translation>
 <translation id="7978412674231730200">Privātā atslēga</translation>
 <translation id="7994702968232966508">EAP metode</translation>
+<translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Iespējot automātisko krāsu režīmu</translation>
@@ -885,6 +890,7 @@
 <translation id="8998289560386111590">Nav pieejams jūsu ierīcē</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="9025198690966128418">Izmantot kā personīgo ierīci</translation>
+<translation id="902638246363752736">Tastatūras iestatījumi</translation>
 <translation id="9028832514430399253">Ieslēdziet slēdzi, lai atlasītu ekrānsaudzētāja opcijas.</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +923,5 @@
 <translation id="952992212772159698">Neaktivizēts</translation>
 <translation id="960719561871045870">Operatora kods</translation>
 <translation id="982713511914535780">Veikt izlādes pārbaudi</translation>
+<translation id="987264212798334818">Vispārīgi</translation>
 </translationbundle>

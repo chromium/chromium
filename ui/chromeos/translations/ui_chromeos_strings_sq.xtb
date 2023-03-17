@@ -939,6 +939,7 @@
 <translation id="8492972329130824181">Rrjeti i shtëpisë nuk ofrohet. Duhet të aktivizohet roaming-u për të dhënat celulare për t'u lidhur.</translation>
 <translation id="8499098729323186194">Po nxjerr <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="8502913769543567768">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivizoje pas konfigurimit të pajisjes, menaxhohet nga administratori yt</translation>
+<translation id="8512483403832814140">Në çdo kohë</translation>
 <translation id="8521441079177373948">Britanike</translation>
 <translation id="853494022971700746">Frëngjisht (Francë)</translation>
 <translation id="8540608333167683902">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>

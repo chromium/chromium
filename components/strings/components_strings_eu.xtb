@@ -679,6 +679,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="259821504105826686">Argazkigintza eta arte digitala</translation>
 <translation id="2601150049980261779">Film erromantikoak</translation>
 <translation id="2604589665489080024">Pop musika</translation>
+<translation id="2606760465469169465">Egiaztapen automatikoa</translation>
 <translation id="2610561535971892504">Sakatu kopiatzeko</translation>
 <translation id="2617988307566202237">Chrome-k <ph name="BEGIN_EMPHASIS" />ez du gordeko<ph name="END_EMPHASIS" /> informazio hau:
         <ph name="BEGIN_LIST" />
@@ -1886,6 +1887,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Nola kudea ditzakezu datuak?<ph name="END_BOLD" /> Lau aste baino gehiago dituzten webguneak automatikoki ezabatzen ditu Chrome-k. Baliteke beste behin bisitatzen duzun webgune bat berriro ere zerrendan agertzea. Era berean, webgune bati zuretzako iragarkiak iradokitzea galaraz diezaiokezu, eta webguneek iradokitako iragarkiak desaktibatu. Horretarako, joan Chrome-ren ezarpenetara.</translation>
 <translation id="5610142619324316209">Konexioa egiaztatu.</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalean kudea ditzakezu txartelak eta helbideak.</translation>
+<translation id="5611398002774823980">Gorde kontuan</translation>
 <translation id="561165882404867731">Itzuli orria Google Translate-rekin</translation>
 <translation id="5612720917913232150"><ph name="URL" /> webguneak ordenagailuaren kokapena erabili nahi du</translation>
 <translation id="561669346091975195">Zientzia-fikziozko eta fantasiazko saioak</translation>
@@ -3165,6 +3167,7 @@ Xehetasun gehiago:
 <translation id="8806285662264631610">Bainugelarako eta gorputzerako produktuak</translation>
 <translation id="8807160976559152894">Moztu orri bakoitzaren amaieran</translation>
 <translation id="8809203544698246977">Blokeatutako gaiak hemen agertzen dira</translation>
+<translation id="8811470563853401328">Helbidea kontuan gorde nahi duzu?</translation>
 <translation id="8813277370772331957">Gogorarazi geroago</translation>
 <translation id="8814707942599948500">C8 gutun-azala</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu Chrome eguneratzeko Chrome-ren ezarpenetan</translation>
@@ -3258,6 +3261,7 @@ Xehetasun gehiago:
 <translation id="9042617223719777575">Edukiera handia</translation>
 <translation id="9044359186343685026">Erabili Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_PRODUCT_SOURCE" /> (<ph name="RESULT_MODIFIED_DATE" />)</translation>
+<translation id="9048035366624198823"><ph name="POLICY_NAME" /> gidalerroa <ph name="POLICY_VALUE" /> gisa ezarri behar da ekintza hauek gauzatzeko: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">60,96 × 91,44 cm (24 × 36 in)</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> domeinura konektatzen saiatu zara, baina zerbitzariak balio ez duen ziurtagiria aurkeztu du.</translation>
 <translation id="9050666287014529139">Pasaesaldia</translation>

@@ -142,6 +142,7 @@
 <translation id="2157959690810728433">NÖVBƏDƏDİR</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yenidən cəhd edin</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
+<translation id="2161656808144014275">Mətn</translation>
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
 <translation id="2180197493692062006">Xəta oldu. Tətbiqi yenidən açmağa çalışın.</translation>
 <translation id="2209788852729124853">Nəqliyyat Sayğaclarını sıfırlayın</translation>
@@ -217,6 +218,7 @@
 <translation id="3008341117444806826">YENİLƏYİN</translation>
 <translation id="3009958530611748826">Yadda saxlamaq üçün qovluq seçin</translation>
 <translation id="3017079585324758401">Arxa fon</translation>
+<translation id="3020183492814296499">Qısayollar</translation>
 <translation id="3027578600144895987">Kameranı bağlayın</translation>
 <translation id="3031560714565892478">Cihaz video kameradır.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -663,7 +665,9 @@
 <translation id="6957231940976260713">Xidmət adı</translation>
 <translation id="6961170852793647506">Başlamaq üçün sənədinizi skanerə yerləşdirin</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Cihaz</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
+<translation id="6981982820502123353">Giriş İmkanı</translation>
 <translation id="7005833343836210400">Cihaz oflayndır</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
 <translation id="7040230719604914234">Operator</translation>
@@ -773,6 +777,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> şəbəkəsinə qoşulmaq üçün Ayarlara keçin</translation>
 <translation id="7978412674231730200">Şəxsi açar</translation>
 <translation id="7994702968232966508">EAP üsulu</translation>
+<translation id="8004582292198964060">Brauzer</translation>
 <translation id="802154636333426148">Endirmə alınmadı</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Avtomatik rəng rejimini aktiv edin</translation>
@@ -885,6 +890,7 @@
 <translation id="8998289560386111590">Cihazınızda əlçatan deyil</translation>
 <translation id="9003704114456258138">Tezlik</translation>
 <translation id="9025198690966128418">Şəxsi cihaz kimi istifadə edin</translation>
+<translation id="902638246363752736">Klaviatura ayarları</translation>
 <translation id="9028832514430399253">Ekran qoruyucu seçimlərini etmək üçün keçiricini aktiv edin</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +923,5 @@
 <translation id="952992212772159698">Aktiv edilməyib</translation>
 <translation id="960719561871045870">Operator kodu</translation>
 <translation id="982713511914535780">Deşarj testi icra edin</translation>
+<translation id="987264212798334818">Ümumi</translation>
 </translationbundle>

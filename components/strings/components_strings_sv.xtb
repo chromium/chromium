@@ -152,6 +152,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="132301787627749051">Sök efter bilden i Urklipp</translation>
 <translation id="1323433172918577554">Visa fler</translation>
 <translation id="132390688737681464">Spara och fyll i adresser</translation>
+<translation id="1329916999021038454">Skicka en rapport</translation>
 <translation id="1330449323196174374">Fönsterfalsning, vänster flik</translation>
 <translation id="1333745675627230582">Spela Chrome Dino-spelet</translation>
 <translation id="1333989956347591814">Din aktivitet <ph name="BEGIN_EMPHASIS" />kanske fortfarande är synlig<ph name="END_EMPHASIS" /> för:
@@ -527,6 +528,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="219906046732893612">Husrenovering</translation>
 <translation id="2202020181578195191">Ange ett giltigt utgångsår</translation>
 <translation id="2202627062836089804">baksidan av kortet</translation>
+<translation id="2204482073374652408">Uppdateringen är slutförd.</translation>
 <translation id="22081806969704220">Fack 3</translation>
 <translation id="2210794033760923560">Ladda upp rapport</translation>
 <translation id="2212579473415663542">Adressen har sparats i ditt Google-konto (<ph name="ACCOUNT" />). Du kan använda adressen i alla Googles produkter på alla enheter.</translation>
@@ -615,6 +617,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2441854154602066476">De tillgängliga betalningsmetoderna som kan fyllas i med ett tryck. Tangentbordet är dolt.</translation>
 <translation id="2448295565072560657">Kringutrustning som är ansluten till enheten när du är inloggad</translation>
 <translation id="2450021089947420533">Sökningar</translation>
+<translation id="2456755709261364512">Batteriet måste vara laddat över <ph name="REQUIRED_BATTERY_PRECENT" /> %</translation>
 <translation id="2463739503403862330">Fyll i</translation>
 <translation id="2465655957518002998">Välj leveranssätt</translation>
 <translation id="2465688316154986572">Häftning</translation>
@@ -661,6 +664,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Verifiera kreditkort med skärmlåset från och med nu</translation>
 <translation id="2553853292994445426">Kontrollera inställningarna för den säkra DNS-konfigurationen. Du kan ha konfigurerat en säker DNS-server som det inte går att ansluta till.</translation>
+<translation id="255497580849974774">Se till att enheten är ansluten till en laddare under uppdateringen.</translation>
 <translation id="2556876185419854533">&amp;Ånga Redigera</translation>
 <translation id="2557417190997681027">Företagsresa</translation>
 <translation id="2562087035394240049">Bruksanvisningar, gör det själv och expertinnehåll</translation>
@@ -892,6 +896,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="320323717674993345">Avbryt betalningen</translation>
 <translation id="3203366800380907218">Från webben</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
+<translation id="3208701679386778924">Skicka en rapport så att vi kan förbättra framtida ChromeOS-uppdateringar.</translation>
 <translation id="3209034400446768650">Sidan kan vara avgiftsbelagd</translation>
 <translation id="3212581601480735796">Din aktivitet på <ph name="HOSTNAME" /> övervakas</translation>
 <translation id="3215092763954878852">Det gick inte att använda WebAuthn</translation>
@@ -1117,6 +1122,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3715545959749027023">När säkerhetshändelser flaggas av Chrome skickas relevant data om händelserna till administratören. Exempel på sådan data är webbadresser till sidor du besöker i Chrome, filnamn eller metadata, webbläsar- eller flikkrascher och användarnamnet du loggar in med i webbaserade appar, på dina enheter och i Chrome.</translation>
 <translation id="3715597595485130451">Anslut till wifi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />kontrollera proxyn, brandväggen och DNS-konfigureringen<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Det går inte att använda enheten i upp till tio minuter under uppdateringen.</translation>
 <translation id="372429172604983730">Det här problemet kan orsakas av bland annat antivirusprogram, brandväggar, webbfiltrerings- och proxyprogram.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa en ny Google-presentation i Presentationer</translation>
 <translation id="3733139489341305600">Självkörande fordon</translation>
@@ -1154,6 +1160,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3807366285948165054">Bild X – byte</translation>
 <translation id="3807873520724684969">Skadligt innehåll har blockerats.</translation>
 <translation id="3810973564298564668">Hantera</translation>
+<translation id="3812398568375898177">Det här är en viktig uppdatering som förbättrar Android-appars prestanda i ChromeOS.</translation>
 <translation id="3815434930383843058">8 x 12 tum</translation>
 <translation id="3816482573645936981">Värde (ersatt)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1258,6 +1265,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4110652170750985508">Granska betalningen</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Sök bakåt</translation>
+<translation id="4113354056388982663">Kritisk prestandauppdatering för Android</translation>
 <translation id="4114146879518089587">Fortsätt till webbplatsen</translation>
 <translation id="4116663294526079822">Tillåt alltid på den här webbplatsen</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1438,6 +1446,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill översätta den här sidan med Google Översätt</translation>
 <translation id="4514308731478712184">Inaktivera Sökningar</translation>
 <translation id="4515275063822566619">Kort och adresser har hämtats från Chrome och ditt Google-konto (<ph name="ACCOUNT_EMAIL" />). Du hanterar dessa under <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" />.</translation>
+<translation id="4519245469315452746">Uppdateringsprocessen avbröts på enheten.</translation>
 <translation id="4520048001084013693">Möjligheten att ladda ned den här filen blockeras av administratörspolicyn</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Monarch-kuvert</translation>
@@ -1527,6 +1536,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4738601419177586157">Sökförslag för <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Hantera lösenord …</translation>
+<translation id="4743275772928623722">Systemet har uppdaterats men vissa av dina appar och filer kunde inte återställas. Apparna laddas ned igen automatiskt.</translation>
 <translation id="4744514002166662487">Skapa presentation</translation>
 <translation id="4744603770635761495">Sökväg till körbar fil</translation>
 <translation id="4749011317274908093">Du surfar inkognito</translation>
@@ -2228,6 +2238,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="646793340882508547">Äventyrsspel</translation>
 <translation id="6468485451923838994">Teckensnitt</translation>
 <translation id="647261751007945333">Enhetspolicyer</translation>
+<translation id="647330291963761005">Uppdateringar installeras</translation>
 <translation id="6475672344094591109">Webbplatser du besöker kan be Chrome om information som hjälper dem att mäta annonsernas resultat. Chrome skyddar din integritet genom att begränsa informationen som webbplatser kan dela med varandra.</translation>
 <translation id="6476284679642588870">Hantera betalningsmetoder</translation>
 <translation id="6486200200930923183">Dokumentärer</translation>
@@ -2301,6 +2312,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6688775486821967877">Virtuella kort är inte tillgängliga just nu. Försök igen senare</translation>
 <translation id="6689249931105087298">Relativ med svartpunktskomprimering</translation>
 <translation id="6689271823431384964">Chrome ger möjlighet att spara dina kort i ditt Google-konto eftersom du är inloggad. Du kan ändra detta i inställningarna. Kortinnehavarens namn hämtas från ditt konto.</translation>
+<translation id="6691397311652656001">Frigör mer än <ph name="REQUIRED_FREE_DISK_SPACE" /> utrymme</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hitta enheten i Google-kontot</translation>
 <translation id="6696588630955820014">Knappen Dela den här fliken: tryck på Retur om du vill dela den här fliken genom att dela länken, skapa en QR-kod, casta med flera alternativ</translation>
 <translation id="6698381487523150993">Skapad av:</translation>
@@ -2364,6 +2376,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Resurser för konsumenter</translation>
 <translation id="6865412394715372076">Det går inte att verifiera kortet just nu</translation>
+<translation id="6868573634057275953">Återuppta uppdatering</translation>
 <translation id="6869334554832814367">Privatlån</translation>
 <translation id="6873456682041376666">Övre fack</translation>
 <translation id="6874604403660855544">&amp;Gör om Lägg till</translation>
@@ -2520,9 +2533,11 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="722454870747268814">Ny inkognitoflik</translation>
 <translation id="7233592378249864828">Skriva ut bekräftelseark</translation>
 <translation id="7234638337680728591">Bensinpriser och fordonsbränsle</translation>
+<translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % slutförd | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Visa inte det här meddelandet igen för den här webbplatsen</translation>
 <translation id="7238585580608191973">SHA-256-fingeravtryck</translation>
 <translation id="7240120331469437312">Certifikatämnets andra namn</translation>
+<translation id="7241863998525879494">Det här kan du förvänta dig</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# träff}other{# träffar}}</translation>
@@ -2743,6 +2758,7 @@ Mer information.
 <translation id="7698864304447945242">Vill du uppdatera Google Play-tjänster för AR?</translation>
 <translation id="7699293099605015246">Inga artiklar är tillgängliga just nu</translation>
 <translation id="7701040980221191251">Inga</translation>
+<translation id="7701544340847569275">Uppdateringen slutfördes med fel</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Fortsätt till <ph name="SITE" /> (osäkert)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Skidor och snowboard</translation>
 <translation id="7706689436519265630">Filer som du kopierar eller flyttar skickas till Google Cloud eller tredje part för analys. De kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig programvara, och de kan lagras i enlighet med företagspolicyer.</translation>

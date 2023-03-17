@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Zabalduta; egin klik tolesteko.</translation>
 <translation id="2586657967955657006">Arbela</translation>
 <translation id="2597457036804169544">Ez aplikatu gai iluna webguneetan</translation>
+<translation id="2606760465469169465">Egiaztapen automatikoa</translation>
 <translation id="2621115761605608342">Baimendu JavaScript erabiltzea webgune zehatz batean.</translation>
 <translation id="2653659639078652383">Bidali</translation>
 <translation id="2677748264148917807">Irten</translation>
@@ -223,6 +224,7 @@
 <translation id="5197729504361054390">Hautatzen dituzun kontaktuak <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webgunearekin partekatuko dira.</translation>
 <translation id="5216942107514965959">Gaur bisitatu duzu azkenengoz</translation>
 <translation id="5225463052809312700">Aktibatu kamera</translation>
+<translation id="5229337741799419985">Ezarpen honek ez du zure identitatea desestaltzen, eta ez die uzten webguneei zure arakatze-historia ikusten</translation>
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="5264323282659631142">Kendu "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Pantaila osoko ikuspegitik irteteko, arrastatu goitik eta ukitu Atzera botoia.</translation>
@@ -309,6 +311,7 @@
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6689172468748959065">Profileko argazkiak</translation>
 <translation id="6697925417670533197">Deskarga aktiboak</translation>
+<translation id="6701547804986694515">Bisitatzen dituzun webguneek robot bat ez zarela berresten duen informazioa gorde dezakete Chrome-ren bidez. Arakatzen jarraitu ahala, beste webgune batzuek Chrome-ren informazioa ikus dezakete, eta aurrez bisitatu duzun webgune batek benetako pertsonatzat hartu zaituela egiaztatu.</translation>
 <translation id="6722828510648505498">Blokeatu identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak.</translation>
 <translation id="6746124502594467657">Eraman behera</translation>
 <translation id="6749077623962119521">Baimenak berrezarri nahi dituzu?</translation>
@@ -426,6 +429,7 @@
 <translation id="8751914237388039244">Hautatu irudi bat</translation>
 <translation id="8801436777607969138">Blokeatu JavaScript webgune zehatz batean.</translation>
 <translation id="8803526663383843427">Aktibatuta dagoenean</translation>
+<translation id="8805385115381080995">Bizkorrago arakatuko duzu, probabilitate gutxiago egongo baita webguneek benetako pertsona bat zarela egiaztatzea eskatzeko</translation>
 <translation id="8816026460808729765">Ez utzi webguneei sentsoreak erabiltzen</translation>
 <translation id="8823559166155093873">Blokeatu cookieak</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +453,6 @@
 <translation id="9162462602695099906">Orri hau arriskutsua da</translation>
 <translation id="9201023452444595544">Garbitu egingo dira konexiorik gabe erabiltzeko datu guztiak</translation>
 <translation id="930525582205581608">Webgunea ahaztea nahi duzu?</translation>
+<translation id="947156494302904893">Bisitatzen dituzun webguneek benetako pertsona bat zarela eta robot bat ez zarela egiazta dezakete</translation>
 <translation id="967624055006145463">Gordetako datuak</translation>
 </translationbundle>

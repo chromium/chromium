@@ -93,6 +93,7 @@
 <translation id="257931822824936280">વિસ્તૃત - સંકુચિત કરવા માટે ક્લિક કરો.</translation>
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
 <translation id="2597457036804169544">સાઇટ પર ઘેરી થીમ લાગુ કરશો નહીં</translation>
+<translation id="2606760465469169465">ઑટોમૅટિક ચકાસણી</translation>
 <translation id="2621115761605608342">ચોક્કસ સાઇટ માટે JavaScript ની મંજૂરી આપો.</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2677748264148917807">છોડો</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">તમે પસંદ કરશો તે સંપર્કોને <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> સાથે શેર કરવામાં આવશે.</translation>
 <translation id="5216942107514965959">છેલ્લે આજે મુલાકાત લીધી</translation>
 <translation id="5225463052809312700">કૅમેરા ચાલુ કરો</translation>
+<translation id="5229337741799419985">આ સેટિંગ તમારી ઓળખ કર્યા વિના અથવા સાઇટને તમારો બ્રાઉઝિંગ ઇતિહાસ જોવાની મંજૂરી આપ્યા વિના કામ કરે છે</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />'ને કાઢી નાખો</translation>
 <translation id="528192093759286357">પૂર્ણસ્ક્રીનથી બહાર નીકળવા માટે ઉપરથી ખેંચો અને પાછળ બટનને ટચ કરો.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6689172468748959065">પ્રોફાઇલ ફોટો</translation>
 <translation id="6697925417670533197">ડાઉનલોડ કરવાનું સક્રિય કરો</translation>
+<translation id="6701547804986694515">તમે મુલાકાત લો છો તે સાઇટ Chrome પર એ માહિતી સાચવે છે, જે પ્રમાણિત કરે છે કે તમે બૉટ નથી. જેમ જેમ તમે બ્રાઉઝ કરવાનું ચાલુ રાખો છો, તેમ તેમ વિવિધ વેબસાઇટ Chrome વડે એ ચેક કરી શકે છે કે તમે અસલી વપરાશકર્તા છો કે નહીં અને સાથે જ તમે મુલાકાત લીધી હોય એવી અગાઉની સાઇટ વડે આ બાબતની ચકાસણી પણ તે કરી શકે છે</translation>
 <translation id="6722828510648505498">ઓળખ સેવાઓના સાઇન ઇન કરવાના સંકેતો બ્લૉક કરો.</translation>
 <translation id="6746124502594467657">નીચે ખસેડો</translation>
 <translation id="6749077623962119521">પરવાનગીઓ રીસેટ કરીએ?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">છબી પસંદ કરો</translation>
 <translation id="8801436777607969138">કોઈ ચોક્કસ સાઇટ માટે JavaScriptને બ્લૉક કરો.</translation>
 <translation id="8803526663383843427">જ્યારે ચાલુ હોય</translation>
+<translation id="8805385115381080995">બ્રાઉઝિંગની સ્પીડ વધી જાય છે, કારણ કે અલગ-અલગ સાઇટ દ્વારા ચકાસણી માટે તમને એ પૂછવાની શક્યતા ઘટી જાય છે કે તમે જ અસલી વપરાશકર્તા છો</translation>
 <translation id="8816026460808729765">સાઇટને સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરો</translation>
 <translation id="8823559166155093873">કુકી બ્લૉક કરો</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">આ પેજ જોખમી છે</translation>
 <translation id="9201023452444595544">બધો ઑફલાઇન ડેટા સાફ કરવામાં આવશે</translation>
 <translation id="930525582205581608">આ સાઇટને ભૂલી જઈએ?</translation>
+<translation id="947156494302904893">તમે મુલાકાત લો છો એ વિવિધ સાઇટ એ વાતની ચકાસણી કરી શકે છે કે તમે જ અસલી વપરાશકર્તા છો અને બૉટ નથી</translation>
 <translation id="967624055006145463">સ્ટોર કરેલ ડેટા</translation>
 </translationbundle>

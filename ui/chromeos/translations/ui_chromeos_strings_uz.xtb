@@ -939,6 +939,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8492972329130824181">Uydagi tarmoq ishlamayapti. Ulanish uchun mobil internet-roumingni yoqing.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ta fayl arxivdan chiqarilmoqda...</translation>
 <translation id="8502913769543567768">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Provayder: <ph name="NETWORK_PROVIDER_NAME" />, Qurilma sozlangandan keyin faollashtiriladi, Administrator boshqaruvida</translation>
+<translation id="8512483403832814140">Istalgan vaqtda</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">Fransuz (Fransiya)</translation>
 <translation id="8540608333167683902">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish:<ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Batafsil</translation>

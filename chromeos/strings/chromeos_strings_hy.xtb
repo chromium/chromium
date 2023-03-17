@@ -140,6 +140,7 @@
 <translation id="2157959690810728433">ՀԵՐԹԱԳՐՎԱԾ Է</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />՝ նորից փորձել</translation>
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
+<translation id="2161656808144014275">Տեքստ</translation>
 <translation id="2163937499206714165">Միացնել մուգ ռեժիմը</translation>
 <translation id="2180197493692062006">Սխալ առաջացավ։ Փորձեք նորից բացել հավելվածը։</translation>
 <translation id="2209788852729124853">Զրոյացնել թրաֆիկի հաշվիչները</translation>
@@ -215,6 +216,7 @@
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
 <translation id="3009958530611748826">Ընտրեք պանակ, որում պետք է պահել</translation>
 <translation id="3017079585324758401">Ֆոն</translation>
+<translation id="3020183492814296499">Դյուրանցումներ</translation>
 <translation id="3027578600144895987">Փակել տեսախցիկը</translation>
 <translation id="3031560714565892478">Սարքը տեսախցիկ է։</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> մԱ</translation>
@@ -660,7 +662,9 @@
 <translation id="6957231940976260713">Ծառայության անվանումը</translation>
 <translation id="6961170852793647506">Սկսելու համար փաստաթուղթը դրեք սկաների վրա</translation>
 <translation id="6965382102122355670">Եղավ</translation>
+<translation id="6965978654500191972">Սարք</translation>
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
+<translation id="6981982820502123353">Մատչելիությունը</translation>
 <translation id="7005833343836210400">Սարքը միացած չէ ինտերնետին</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
@@ -768,6 +772,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ցանցի միանալու համար անցեք Կարգավորումներ</translation>
 <translation id="7978412674231730200">Մասնավոր բանալի</translation>
 <translation id="7994702968232966508">EAP եղանակ</translation>
+<translation id="8004582292198964060">Դիտարկիչ</translation>
 <translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Միացնել գույների ինքնակարգավորման ռեժիմը</translation>
@@ -879,6 +884,7 @@
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>
 <translation id="9003704114456258138">Հաճախականություն</translation>
 <translation id="9025198690966128418">Օգտագործել որպես անձնական սարք</translation>
+<translation id="902638246363752736">Ստեղնաշարի կարգավորումներ</translation>
 <translation id="9028832514430399253">Էկրանապահի տարբերակներն ընտրելու համար միացրեք փոխանջատիչը</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +917,5 @@
 <translation id="952992212772159698">Ակտիվացված չէ</translation>
 <translation id="960719561871045870">Օպերատորի կոդը</translation>
 <translation id="982713511914535780">Փորձարկել լիցքաթափումը</translation>
+<translation id="987264212798334818">Ընդհանուր</translation>
 </translationbundle>

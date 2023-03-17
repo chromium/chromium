@@ -939,6 +939,7 @@
 <translation id="8492972329130824181">නිවාස ජාලය ලබා ගත නොහැකිය. සම්බන්ධ වීමට ජංගම දත්ත රෝමිං සබල කළ යුතුය.</translation>
 <translation id="8499098729323186194">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් උපුටා ගනිමින්...</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, උපාංග පිහිටුවීමෙන් පසු සක්‍රිය කරන්න, ඔබේ පරිපාලක විසින් කළමනාකරණය කරයි</translation>
+<translation id="8512483403832814140">ඕනෑම වේලාවක</translation>
 <translation id="8521441079177373948">එක්සත් රාජධානිය</translation>
 <translation id="853494022971700746">ප්‍රංශ (ප්‍රංශය)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>

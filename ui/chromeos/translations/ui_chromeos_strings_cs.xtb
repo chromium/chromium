@@ -939,6 +939,7 @@
 <translation id="8492972329130824181">Domácí síť není k dispozici. K připojení musí být zapnutý roaming pro mobilní data.</translation>
 <translation id="8499098729323186194">Rozbalování položek (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="8502913769543567768">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivujte po nastavení zařízení, spravováno administrátorem</translation>
+<translation id="8512483403832814140">Kdykoli</translation>
 <translation id="8521441079177373948">Britská klávesnice</translation>
 <translation id="853494022971700746">francouzština (Francie)</translation>
 <translation id="8540608333167683902">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>

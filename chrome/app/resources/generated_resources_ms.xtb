@@ -244,6 +244,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1201564082781748151">Data setempat boleh dipulihkan jika anda terlupa kata laluan anda</translation>
 <translation id="1202116106683864634">Adakah anda pasti mahu memadamkan kunci laluan ini?</translation>
 <translation id="1202596434010270079">Apl Kiosk telah dikemas kini. Sila alih keluar batang USB.</translation>
+<translation id="1202892408424955784">Produk yang dijejaki</translation>
 <translation id="120368089816228251">Nota muzik</translation>
 <translation id="1203942045716040624">Pekerja Dikongsi: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Pintasan dipilih susun oleh anda</translation>
@@ -2590,6 +2591,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3242289508736283383">Apl dengan atribut manifes 'kiosk_only' mesti dipasang dalam mod kios Chrome OS</translation>
 <translation id="3242665648857227438">Profil ini menggunakan tetapan proksi Chrome OS.</translation>
 <translation id="3243017971870859287">Baca nombor siri peranti dan komponen ChromeOS Flex</translation>
+<translation id="324366796737464147">Pembatalan hingar</translation>
 <translation id="3244294424315804309">Teruskan meredam bunyi</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Ralat rangkaian</translation>
 <translation id="3248902735035392926">Keselamatan adalah perkara penting. Luangkan masa dan <ph name="BEGIN_LINK" />semak sambungan anda<ph name="END_LINK" /></translation>
@@ -3006,6 +3008,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3618286417582819036">Maaf, ralat telah berlaku</translation>
 <translation id="3619115746895587757">Kapucino</translation>
 <translation id="3620136223548713675">Geolokasi</translation>
+<translation id="3621202678540785336">Input</translation>
 <translation id="3621807901162200696">Bantu kami memperbaik ciri dan prestasi Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{satu apl}other{# apl}}</translation>
 <translation id="362333465072914957">Menunggu CA mengeluarkan sijil</translation>
@@ -4251,7 +4254,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4726710355753484204">Gunakan Ctrl + Alt + Tingkatkan kecerahan untuk zum masuk.
 Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4726710629007580002">Terdapat amaran apabila cuba memasang sambungan ini:</translation>
-<translation id="472738079453283624">Produk</translation>
 <translation id="4727847987444062305">Sesi tetamu terurus</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4730492586225682674">Nota terkini stilus pada skrin kunci</translation>

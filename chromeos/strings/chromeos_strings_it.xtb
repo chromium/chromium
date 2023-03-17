@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">IN CODA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
 <translation id="2161394479394250669">Annulla processo di stampa</translation>
+<translation id="2161656808144014275">Testo</translation>
 <translation id="2163937499206714165">Attiva la modalità Buio</translation>
 <translation id="2180197493692062006">Si è verificato un errore. Prova a riaprire l'app.</translation>
 <translation id="2209788852729124853">Reimposta contatori di traffico</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="3017079585324758401">Sfondo</translation>
+<translation id="3020183492814296499">Scorciatoie</translation>
 <translation id="3027578600144895987">Chiudi la videocamera</translation>
 <translation id="3031560714565892478">Il dispositivo è una videocamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Nome servizio</translation>
 <translation id="6961170852793647506">Per iniziare, posiziona il documento sullo scanner</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6977381486153291903">Revisione firmware</translation>
+<translation id="6981982820502123353">Accessibilità</translation>
 <translation id="7005833343836210400">Il dispositivo è offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="7040230719604914234">Operatore</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">Per collegarti alla rete <ph name="NETWORK_NAME" />, vai alle Impostazioni</translation>
 <translation id="7978412674231730200">Chiave privata</translation>
 <translation id="7994702968232966508">Metodo EAP</translation>
+<translation id="8004582292198964060">Browser</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Attiva la modalità Colore automatico</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Non disponibile sul tuo dispositivo</translation>
 <translation id="9003704114456258138">Frequenza</translation>
 <translation id="9025198690966128418">Utilizza come dispositivo personale</translation>
+<translation id="902638246363752736">Impostazioni tastiera</translation>
 <translation id="9028832514430399253">Usa l'opzione di attivazione/disattivazione per selezionare le opzioni per il salvaschermo</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Non attivo</translation>
 <translation id="960719561871045870">Codice operatore</translation>
 <translation id="982713511914535780">Esegui test esaurimento batteria</translation>
+<translation id="987264212798334818">Generali</translation>
 </translationbundle>

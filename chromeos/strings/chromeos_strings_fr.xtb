@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
 <translation id="1075811647922107217">Taille de page</translation>
+<translation id="1082009148392559545">Téléchargement de l'économiseur d'écran</translation>
 <translation id="1094693127011229778">Adresse IP indisponible</translation>
 <translation id="1113892970288677790">Faites votre choix parmi une sélection d'images et d'œuvres</translation>
 <translation id="1119447706177454957">Erreur interne.</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1643449475550628585">Modifier le fond d'écran tous les jours</translation>
 <translation id="1644574205037202324">Historique</translation>
+<translation id="1651925268237749928">Vous avez sélectionné un album partagé. D'autres personnes peuvent ajouter ou modifier des photos. Votre fond d'écran pourrait utiliser des photos qui ne sont pas dans cet album actuellement.</translation>
 <translation id="1662989795263954667">Tâche suspendue - À court d'encre</translation>
 <translation id="1664796644829245314">Prévisualiser : <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN intégré</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">Géré par <ph name="FIRST_MANAGER" /> et <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
 <translation id="1731082422893354635">Pavé tactile Bluetooth</translation>
+<translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Impossible de charger les images. Vérifiez votre connexion réseau ou réessayez de charger les images.</translation>
 <translation id="1751249301761991853">Personnalisés</translation>
 <translation id="1753496554272155572">Quitter l'aperçu du fond d'écran</translation>
@@ -140,6 +143,7 @@
 <translation id="2157959690810728433">Test ajouté à la file d'attente</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
+<translation id="2161656808144014275">Texte</translation>
 <translation id="2163937499206714165">Appliquer le mode sombre</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayez de rouvrir l'appli.</translation>
 <translation id="2209788852729124853">Réinitialiser les compteurs de trafic</translation>
@@ -215,6 +219,7 @@
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionner un dossier de destination</translation>
 <translation id="3017079585324758401">Arrière-plan</translation>
+<translation id="3020183492814296499">Raccourcis</translation>
 <translation id="3027578600144895987">Fermer la caméra</translation>
 <translation id="3031560714565892478">L'appareil est une caméra.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -236,6 +241,7 @@
 <translation id="319101249942218879">Image d'avatar modifiée</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
+<translation id="3201315366910775591">Les albums partagés peuvent être mis à jour par d'autres personnes</translation>
 <translation id="3211671540163313381">Pavé directionnel du mappage des touches</translation>
 <translation id="3226405216343213872">Recherche de scanners…</translation>
 <translation id="3226657629376379887">Menu d'actions de la mise en page</translation>
@@ -598,6 +604,7 @@
 <translation id="636850387210749493">Enregistrement d'entreprise</translation>
 <translation id="6379086450106841622">Écran tactile</translation>
 <translation id="6381741036071372448">Testez le clavier</translation>
+<translation id="6382182670717268353">Aperçu de l'écran de veille</translation>
 <translation id="6388847657025262518">Le chargeur de document du scanner est bloqué. Vérifiez le chargeur, puis réessayez.</translation>
 <translation id="6394634179843537518">Ajouter un fichier</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
@@ -653,6 +660,7 @@
 <translation id="6838167112108853532">Impossible de désactiver ou de supprimer cet APN. Assurez-vous que les APN connectés sont désactivés ou supprimés.</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
 <translation id="6889786074662672253">Vous ne devez pas débrancher cet appareil externe ni éteindre votre ordinateur pendant le redémarrage. Vous pouvez réduire cette fenêtre. Le redémarrage peut prendre quelques minutes, durant lesquelles le fonctionnement de l'appareil externe est compromis.</translation>
+<translation id="6900701049656042631">Cet album ne contient aucune photo. Pour en ajouter, accédez à <ph name="LINK" />.</translation>
 <translation id="6905724422583748843">Revenir à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le capot du scanner est ouvert. Refermez-le, puis réessayez.</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
@@ -660,7 +668,9 @@
 <translation id="6957231940976260713">Nom du service</translation>
 <translation id="6961170852793647506">Pour commencer, placez votre document sur le scanner</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Appareil</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
+<translation id="6981982820502123353">Accessibilité</translation>
 <translation id="7005833343836210400">L'appareil est hors connexion</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités des utilisateurs, y compris les pages Web consultées, les mots de passe et la messagerie.</translation>
 <translation id="7040230719604914234">Opérateur</translation>
@@ -687,6 +697,7 @@
 <translation id="7177485034254901881">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent le configurer à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
+<translation id="7184043045742675738">Cliquez sur n'importe quelle touche pour personnaliser votre bouton. Repositionnez la touche à l'aide de la souris ou des flèches.</translation>
 <translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
 <translation id="725133483556299729">Sélectionnez une adresse e-mail</translation>
@@ -728,6 +739,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Écran tactile USB</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Repositionnez la touche à l'aide de la souris ou des flèches.</translation>
 <translation id="7620771111601174153">En savoir plus sur le centre d'aide</translation>
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>
 <translation id="7648838807254605802">Latence élevée des requêtes HTTPS</translation>
@@ -768,6 +780,7 @@
 <translation id="7977800524392185497">Pour rejoindre un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
 <translation id="7978412674231730200">Clé privée</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
+<translation id="8004582292198964060">Navigateur</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8031884997696620457">HSPA+</translation>
 <translation id="80398733265834479">Activer le mode couleur auto</translation>
@@ -850,6 +863,7 @@
 <translation id="8798441408945964110">Nom du fournisseur</translation>
 <translation id="8814190375133053267">Wi-Fi </translation>
 <translation id="8818152010000655963">Fond d'écran</translation>
+<translation id="8820457400746201697">Déplacez le point de contact bleu vers une action. Sélectionnez la touche associée à personnaliser.</translation>
 <translation id="8834539327799336565">Actuellement connectés</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8855781559874488009">Impossible de se connecter aux sites HTTP via le pare-feu</translation>
@@ -879,6 +893,7 @@
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="9025198690966128418">Utiliser en tant qu'appareil personnel</translation>
+<translation id="902638246363752736">Paramètres du clavier</translation>
 <translation id="9028832514430399253">Activez le bouton pour sélectionner les options de l'économiseur d'écran</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +926,5 @@
 <translation id="952992212772159698">Désactivé</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>
 <translation id="982713511914535780">Lancer le test de décharge</translation>
+<translation id="987264212798334818">Général</translation>
 </translationbundle>

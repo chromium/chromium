@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">الخطوط</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">جرّب الاتصال بمشرف النظام.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />تسجيل الدخول<ph name="END_LINK" /> إلى الشبكة</translation>
 <translation id="1736420071277903564">جهاز الكمبيوتر</translation>
 <translation id="1740951997222943430">أدخِل شهر انتهاء صلاحية صحيح</translation>
 <translation id="1741613555002899862">‏يجب أن تكون محدّدة وتُمثّل سلسلة صالحة عندما تكون DnsOverHttpsMode مضبوطة على <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1198,6 +1199,7 @@
 <translation id="3949601375789751990">يظهر سجلّ التصفّح هنا</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">لا تتوفر طرق دفع محفوظة</translation>
+<translation id="3950574001630941635">إعادة تشغيل الدليل التوجيهي</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3958057596965527988">4 × 4 بوصة</translation>
 <translation id="3961148744525529027">جدول بيانات معالج الدفع مفتوح جزئيًا</translation>

@@ -57,6 +57,7 @@
 <translation id="1235458158152011030">Պահված ցանցեր</translation>
 <translation id="1239161794459865856">«<ph name="FEATURE_NAME" />» գործառույթը միացված է։</translation>
 <translation id="1240638468526743569">Հավելված</translation>
+<translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1246890715821376239">Չաջակցվող հավելվածներ</translation>
 <translation id="1247372569136754018">Խոսափող (ներքին)</translation>
 <translation id="1247519845643687288">Վերջին օգտագործած հավելվածները</translation>
@@ -205,6 +206,7 @@
 <translation id="1961239773406905488">Տեսախցիկի նախադիտումը թաքցված է</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Կողպել էկրանը</translation>
+<translation id="1967970931040389207">Միացնել թեժ կետը</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ողջույն, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Տեքսի մուտքագրում</translation>
@@ -213,6 +215,7 @@
 <translation id="1990046457226896323">Ենթագրերի ֆայլերը ներբեռնվել են</translation>
 <translation id="1993072747612765854">Իմացեք ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին</translation>
 <translation id="1995660704900986789">Անջատել</translation>
+<translation id="1996162290124031907">Անցնել հաջորդ ներդիր</translation>
 <translation id="1998100899771863792">Ընթացիկ աշխատասեղանը</translation>
 <translation id="2001444736072756133">Որոնեք ձեր <ph name="CATEGORY" />ում, ֆայլերում, հավելվածներում և այլն։</translation>
 <translation id="2016340657076538683">Մուտքագրեք հաղորդագրություն</translation>
@@ -227,6 +230,7 @@
 <translation id="2078034614700056995">Հաջորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք աջ</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2083190527011054446">Բարի գիշեր, <ph name="GIVEN_NAME" /></translation>
+<translation id="2086334242442703436">Բացել էմոջիների ընտրիչը</translation>
 <translation id="2088116547584365419">խաղեր</translation>
 <translation id="209965399369889474">Սարքը միացած չէ ցանցին</translation>
 <translation id="2107914222138020205">USB-C մալուխը չի աջակցում Thunderbolt միջերես։ Սարքի աշխատանքի արդյունավետությունը կարող է սահմանափակվել։</translation>
@@ -237,6 +241,7 @@
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2161132820593978283">Տեսազանգերում փորձեք օգտագործել տեսախցիկի կադրավորումը էկրանի կենտրոնով։ Միացրեք այն Արագ կարգավորումներում։</translation>
 <translation id="2170530631236737939">Համատեսքը փակելու համար երեք մատով սահեցրեք վար</translation>
+<translation id="2185166372312820725">Անցնել նախորդ ներդիր</translation>
 <translation id="219905428774326614">Գործարկիչ, բոլոր հավելվածները</translation>
 <translation id="2201071101391734388">Վերջին լուսանկար <ph name="INDEX" />/<ph name="TOTAL_COUNT" />։</translation>
 <translation id="2208323208084708176">Միասնական աշխատասեղանի ռեժիմ</translation>
@@ -273,6 +278,7 @@
 <translation id="2367972762794486313">Ցույց տալ հավելվածները</translation>
 <translation id="2369165858548251131">Ինչպես չինարեն ասել «Բարև»</translation>
 <translation id="2390318262976603432">Լեզվի կարգավորումներ</translation>
+<translation id="2397416548179033562">Ցույց տալ Chrome-ի ընտրացանկը</translation>
 <translation id="240006516586367791">Մեդիա կարգավորումներ</translation>
 <translation id="2402411679569069051">Ապակողպեք ձեր Chromebook-ը մատնահետքի կամ հեռախոսն ապակողպելու միջոցով</translation>
 <translation id="2405664212338326887">Միացված չէ</translation>
@@ -352,6 +358,7 @@
 <translation id="2825619548187458965">Դարակ</translation>
 <translation id="2831035692318564937">Միացված է մինչև մայրամուտ</translation>
 <translation id="2834813915651407382">Վերջերս բացել եք</translation>
+<translation id="2840766858109427815">Անցնել հաջորդ էջ</translation>
 <translation id="2841907151129139818">Անցում կատարվեց պլանշետի ռեժիմին</translation>
 <translation id="2844169650293029770">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
 <translation id="2848120746144143659">Սեղմեք Enter՝ ամբողջ էկրանի սքրինշոթ անելու համար</translation>
@@ -461,6 +468,7 @@
 <translation id="3405101454990027959">Միացնել խոսափողի օգտագործման թույլտվությունը</translation>
 <translation id="3410336247007142655">Ցույց տալ մուգ թեմայի կարգավորումները</translation>
 <translation id="3413817803639110246">Դեռևս ոչինչ չկա</translation>
+<translation id="3417835166382867856">Որոնել ներդիրներ</translation>
 <translation id="3423744722495840645">Բացել/փակել գործարկիչը</translation>
 <translation id="3428447136709161042">Անջատել «<ph name="NETWORK_NAME" />» ցանցից</translation>
 <translation id="3430396595145920809">Սահեցրեք մատը աջից՝ հետ գնալու համար</translation>
@@ -515,6 +523,7 @@
 <translation id="3630697955794050612">անջատված է</translation>
 <translation id="3631369015426612114">Թույլ տալ ծանուցումները հետևյալ կայքերից</translation>
 <translation id="3633097874324966332">Բացեք Bluetooth-ի կարգավորումները՝ սարքը զուգակցելու համար</translation>
+<translation id="3633851487917460983">Բացել սեղմատախտակը</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="3649256019230929621">Նվազեցնել պատուհանը</translation>
 <translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
@@ -600,6 +609,7 @@
 <translation id="4066027111132117168">Միացված է, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Միջին ուժգնության ազդանշան</translation>
 <translation id="4086921558679520050">Միացրեք խոսափողի ֆիզիկական անջատիչը ձեր սարքում</translation>
+<translation id="4101772068965291327">Բացել գլխավոր էջը</translation>
 <translation id="4112140312785995938">Հետ գնալ</translation>
 <translation id="4114315158543974537">Միացրեք Phone Hub-ը</translation>
 <translation id="4115378294792113321">Ծիրանեգույն</translation>
@@ -657,6 +667,7 @@
 <translation id="4378551569595875038">Միացում…</translation>
 <translation id="4379531060876907730">Սրանք ձեր ստիլուսի գործիքներն են</translation>
 <translation id="4381031910344220229">Սա հասանելի է դարձնում խոսափողը <ph name="APP_NAME" /> հավելվածին և բոլոր հավելվածներին ու կայքերին, որոնք ունեն խոսափողի օգտագործման թույլտվություն</translation>
+<translation id="4382340674111381977">Անցնել նախորդ էջ</translation>
 <translation id="4389184120735010762">Դուք սեղմել եք ամրացված խոշորացույցի դյուրանցման ստեղները: Ուզում եք միացնե՞լ այն:</translation>
 <translation id="439598569299422042">Դադարեցված է, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Չհաջողվեց պահել սքրինքաստը</translation>
@@ -789,8 +800,10 @@
 <translation id="5004607513195820459">Ցանցը կառավարվում է ադմինիստրատորի կողմից</translation>
 <translation id="5016558321564993266">Միացնել/անջատել նշիչը։ <ph name="STATE_TEXT" /></translation>
 <translation id="5029356738310729434">Սարքի տեսախցիկի օգտագործման թույլտվությունը միացված է</translation>
+<translation id="5030659775136592441">Ցուցադրել էջանիշների կառավարիչը</translation>
 <translation id="5030687792513154421">Ժամանակը սպառվեց</translation>
 <translation id="5033299697334913360">Լիաէկրան ռեժիմում լուսանկարելու համար սեղմեք էկրանի որևէ կետ</translation>
+<translation id="5034421018520995080">Անցնել էջի սկիզբ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> սարքը կապվեց նոր հեռախոսի հետ</translation>
 <translation id="5035389544768382859">Հաստատեք էկրանի կազմաձևումը</translation>
 <translation id="5042305953558921026">Համատեսքի ռեժիմի ստեղն</translation>
@@ -805,6 +818,7 @@
 <translation id="5107522548814527560">Վեբ</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Ցուցադրել հաջորդ ամիսը</translation>
+<translation id="5121628974188116412">Անցնել էջի ներքև</translation>
 <translation id="5127986747308934633">Ձեր ադմինիստրատորը վերահսկում է ձեր սարքը</translation>
 <translation id="5136175204352732067">Այլ ստեղնաշար է միացվել</translation>
 <translation id="5147567197700016471">Ապակողպվեց</translation>
@@ -1019,9 +1033,11 @@
 <translation id="6168318496333165060">Բացել «Դիագնոստիկա» հավելվածը</translation>
 <translation id="6179832488876878285">Դուք կարող եք այստեղ ամրացնել ձեր կարևոր ֆայլերը։ Սկսելու համար բացեք «Ֆայլեր» հավելվածը։</translation>
 <translation id="6182592640011875895">Բացել աշխատասեղանը</translation>
+<translation id="6185696379715117369">Էջը վեր</translation>
 <translation id="619279033188484792">Թույլ է տալիս հեռախոսում վերջերս ավելացված լուսանկարները, մեդիա ֆայլերը և ծանուցումները դիտել <ph name="DEVICE_TYPE" /> սարքում։</translation>
 <translation id="619335566042889110">Լիցքավորել ամբողջությամբ հիմա</translation>
 <translation id="6193431488227440296">Մշակողների</translation>
+<translation id="6199775032047436064">Վերաբեռնել ընթացիկ էջը</translation>
 <translation id="6200515304866777730">Չի աջակցվում հավելվածի կողմից</translation>
 <translation id="6210042900243040400">Միացեք սարքին (<ph name="NAME" />), որը նախկինում պահել եք <ph name="EMAIL" /> հաշվում</translation>
 <translation id="6213808132343683860">Էկրանի մի մասի սքրինշոթ կամ տեսագրություն անել</translation>
@@ -1037,6 +1053,7 @@
 <translation id="6259254695169772643">Ընտրելու համար օգտագործեք ստիլուսը</translation>
 <translation id="6267036997247669271"><ph name="NAME" />` ակտիվացում…</translation>
 <translation id="6274202259872570803">Սքրինքաստ</translation>
+<translation id="6276708887952587684">Դիտել էջի կոդը</translation>
 <translation id="6283712521836204486">«Չանհանգստացնել» ռեժիմն անջատված է։</translation>
 <translation id="6284232397434400372">Լուծաչափը փոխվել է</translation>
 <translation id="6288235558961782912">Ծնողների թույլտվությամբ <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջը հնարավոր կլինի նորից ավելացնել ավելի ուշ:</translation>
@@ -1122,6 +1139,7 @@
 <translation id="6707693040195709527">Օպերացիոն համակարգի նախորդ տարբերակին անցնելու ժամանակը լրացել է</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="6723839937902243910">Սնուցում</translation>
+<translation id="6727005317916125192">Նախորդ վահանակը</translation>
 <translation id="6727969043791803658">Միացված է, մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="6732087373923685049">տեսախցիկ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1183,6 +1201,7 @@
 <translation id="7014684956566476813">Կապ է հաստատվել «<ph name="DEVICE_NAME" />» սարքի հետ</translation>
 <translation id="7015766095477679451">Վերադարձեք <ph name="COME_BACK_TIME" />։</translation>
 <translation id="70168403932084660">Աշխատասեղան 6</translation>
+<translation id="7025325401470358758">Հաջորդ վահանակը</translation>
 <translation id="7025533177575372252">Կապեք ձեր <ph name="DEVICE_NAME" /> սարքը ձեր հեռախոսի հետ</translation>
 <translation id="7026338066939101231">Նվազեցնել</translation>
 <translation id="7029814467594812963">Ավարտել սեսիան</translation>
@@ -1366,6 +1385,7 @@
 <translation id="7995804128062002838">Չհաջողվեց լուսանկարել էկրանը</translation>
 <translation id="8000066093800657092">Ցանց չկա</translation>
 <translation id="8004512796067398576">Մեծացնել</translation>
+<translation id="8026334261755873520">Դիտարկումների տվյալների մաքրում</translation>
 <translation id="8029247720646289474">Չհաջողվեց միանալ թեժ կետին</translation>
 <translation id="8029629653277878342">Անվտանգության նկատառումներից ելնելով անհրաժեշտ է մուտքագրել PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="8030169304546394654">Անջատված է</translation>
@@ -1386,6 +1406,7 @@
 <translation id="8120151603115102514">Հեռախոսում կարգավորված չէ կողպէկրան։ Ձեր Chromebook-ն ապակողպելու համար մուտքագրեք գաղտնաբառը։</translation>
 <translation id="8127095419621171197">Բացել «Հաշվիչ» հավելվածը</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8130528849632411619">Անցնել փաստաթղթի սկիզբ</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8131994907636310308">Փակել տեսակավորման մասին ծանուցումը</translation>
 <translation id="8132793192354020517">Միացված է <ph name="NAME" />-ին</translation>
@@ -1477,6 +1498,7 @@
 <translation id="857201607579416096">Ընտրացանկը տեղափոխվեց էկրանի ներքևի աջ անկյուն։</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Դասավորեք ձեր հավելվածներն ըստ անվանման կամ գույնի</translation>
+<translation id="8609384513243082612">Բացել նոր ներդիր</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> և <ph name="APP_2_TITLE" /> հավելվածների ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="8627191004499078455">Միացված է <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="8630991711272431708">Անջատել տեսախցիկի օգտագործման թույլտվությունը</translation>
@@ -1497,6 +1519,7 @@
 <translation id="8683506306463609433">Արդյունավետության հետագծումն ակտիվ է</translation>
 <translation id="8703634754197148428">Սկսել տեսագրումը։ Տեսագրումը սկսելուց հետո կարող եք օգտագործել Alt+Shift+L ստեղների համադրությունը՝ դարակ անցնելու և տեսագրումը կանգնեցնելու կոճակը գտնելու համար։</translation>
 <translation id="870917907284186124">Միացնել/անջատել թելադրումը (ձայնային մուտքագրում)</translation>
+<translation id="8717459106217102612">Ընտրել նախորդ բառը կամ տառը</translation>
 <translation id="8721053961083920564">Միացնել/անջատել ձայնը: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Լիաէկրան տեսագրում</translation>
 <translation id="8731487213223706745">Ավարտը՝ <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1536,6 +1559,7 @@
 <translation id="8878886163241303700">Էկրանի ընդարձակում</translation>
 <translation id="888982883502837004">Ձեր սարքի համար հասանելի են ներկառուցված ծրագրի թարմացումներ։ Սեղմեք՝ դրանք տեսնելու և թարմացնելու համար։</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />-ն ընդմիշտ կջնջվի</translation>
+<translation id="88986195241502842">Էջը վար</translation>
 <translation id="8905919797434099235">(Անանուն)</translation>
 <translation id="890616557918890486">Փոխել աղբյուրը</translation>
 <translation id="8909138438987180327">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%</translation>
@@ -1609,6 +1633,7 @@
 <translation id="951991426597076286">Մերժել</translation>
 <translation id="954052413789300507">Բավարար տարածք չկա <ph name="FILENAME" /> ֆայլը ներբեռնելու համար։ Ազատեք տարածք։</translation>
 <translation id="974545358917229949">Ցուցադրվում է «<ph name="QUERY" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
+<translation id="98120814841227350">Անցնել փաստաթղթի վերջ</translation>
 <translation id="98515147261107953">Հորիզոնական</translation>
 <translation id="989374776391122812">Տեսախցիկի և ձայնի կառավարման տարրեր</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> պատուհանը փակվեց։</translation>

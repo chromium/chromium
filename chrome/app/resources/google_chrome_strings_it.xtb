@@ -10,6 +10,7 @@
 <translation id="110877069173485804">Questo è il tuo Chrome</translation>
 <translation id="1125124144982679672">Chi usa Chrome?</translation>
 <translation id="1142745911746664600">Impossibile aggiornare Chrome</translation>
+<translation id="1149651794389918149">Accedi a Chrome. Se vuoi accedere con un account una sola volta, puoi <ph name="GUEST_LINK_BEGIN" />utilizzare il dispositivo come ospite<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Informazioni su ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Apri in Chrome</translation>
 <translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
@@ -167,6 +168,7 @@
 <translation id="4147555960264124640">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Google Chrome. I tuoi dati di Chrome, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installazione...</translation>
 <translation id="4149882025268051530">Il programma di installazione non è riuscito a decomprimere il file. Scarica nuovamente Google Chrome.</translation>
+<translation id="4153934450158521343">A breve Chrome chiuderà ed eliminerà i dati</translation>
 <translation id="4191857738314598978">{0,plural, =1{Riavvia Chrome entro un giorno}other{Riavvia Chrome entro # giorni}}</translation>
 <translation id="4205939740494406371">Chrome non può controllare le tue password. Riprova tra 24 ore oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annullamento…</translation>
@@ -212,6 +214,7 @@
 <translation id="4970880042055371251">Versione di ChromeOS</translation>
 <translation id="4970947549776831107">Chrome ha bloccato questo file perché è un tipo di file pericoloso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{L'amministratore chiude automaticamente Chrome quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{L'amministratore chiude automaticamente Chrome quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="5098668839038261629">Se attivi l'opzione, uscirai anche da Chrome</translation>
 <translation id="5132929315877954718">Scopri applicazioni, giochi, estensioni e temi straordinari per Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizza il tuo profilo Chrome</translation>
@@ -260,12 +263,14 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Regola inbound per consentire il traffico mDNS in Google Chrome.</translation>
+<translation id="624230925347970731">Chrome verrà chiuso a breve</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6273793429163604305">Inizializzazione in corso…</translation>
 <translation id="6291089322031436445">App di Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome è già installato per tutti gli utenti sul computer.</translation>
 <translation id="6326175484149238433">Rimuovi da Chrome</translation>
 <translation id="6327105987658262776">Nessun aggiornamento disponibile.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{L'amministratore elimina automaticamente i dati di navigazione quando non vengono utilizzati per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}other{L'amministratore elimina automaticamente i dati di navigazione quando non vengono utilizzati per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}}</translation>
 <translation id="6412673304250309937">Verifica gli URL con un elenco di siti non sicuri archiviati in Chrome. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare anche gli URL, inclusi bit e contenuti di pagina, a Navigazione sicura.</translation>
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
 <translation id="6493527311031785448">Google Chrome sta cercando di <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -295,6 +300,7 @@
 
 A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Puoi gestire i tuoi Account Google nelle <ph name="SETTINGS_LINK_BEGIN" />Impostazioni<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chrome. L'aggiunta di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>
+<translation id="7071827361006050863">A breve Chrome eliminerà i dati di navigazione</translation>
 <translation id="7085332316435785646">Scegli se includere la cronologia di Chrome per esperienze ancora più personalizzate nei servizi Google</translation>
 <translation id="7088681679121566888">Chrome è aggiornato</translation>
 <translation id="7098166902387133879">Google Chrome sta utilizzando il microfono.</translation>
@@ -356,6 +362,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8290100596633877290">Spiacenti, si è verificato un arresto anomalo di Google Chrome. Riavviarlo ora?</translation>
 <translation id="8342675569599923794">Questo file è pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> i siti possono memorizzare su Chrome informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{L'amministratore chiude automaticamente Chrome quando non viene utilizzato per 1 minuto.}other{L'amministratore chiude automaticamente Chrome quando non viene utilizzato per # minuti.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> Chrome può stimare i tuoi interessi. Dopodiché, un sito che visiti può chiedere a Chrome di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
 <translation id="8387459386171870978">Continua a utilizzare Chrome</translation>

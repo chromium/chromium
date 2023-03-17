@@ -93,6 +93,7 @@
 <translation id="257931822824936280">已展開 - 點擊即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2597457036804169544">不要為網站套用深色主題背景</translation>
+<translation id="2606760465469169465">自動驗證</translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">離開</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
 <translation id="5216942107514965959">上次瀏覽時間：今天</translation>
 <translation id="5225463052809312700">開啟攝錄機</translation>
+<translation id="5229337741799419985">此設定運作時不需識別您的身份或允許網站查看您的瀏覽記錄</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">由上而下拖曳，然後輕觸返回按鈕即可退出全螢幕。</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6689172468748959065">個人檔案相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
+<translation id="6701547804986694515">您瀏覽的網站可將資料儲存至 Chrome，以驗證您不是機器人。您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>
 <translation id="6722828510648505498">封鎖來自身分服務的登入提示。</translation>
 <translation id="6746124502594467657">向下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">選取圖片</translation>
 <translation id="8801436777607969138">封鎖特定網站執行 JavaScript。</translation>
 <translation id="8803526663383843427">開啟時</translation>
+<translation id="8805385115381080995">降低網站要求驗證您是真人的機率，讓瀏覽體驗更快速</translation>
 <translation id="8816026460808729765">禁止網站存取感應器</translation>
 <translation id="8823559166155093873">封鎖 Cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">此頁面不安全</translation>
 <translation id="9201023452444595544">所有離線資料將會被清除</translation>
 <translation id="930525582205581608">要清除此網站的資料嗎？</translation>
+<translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 </translationbundle>

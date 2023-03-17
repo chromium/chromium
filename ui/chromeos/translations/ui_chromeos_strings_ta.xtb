@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">வீட்டு நெட்வொர்க் கிடைக்கவில்லை. இணைக்க மொபைல் டேட்டா ரோமிங்கை இயக்க வேண்டும்.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்களைப் பிரித்தெடுக்கிறது...</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_COUNT" />ல் <ph name="NETWORK_INDEX" />வது நெட்வொர்க், <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, சாதன அமைவிற்குப் பிறகு செயல்படுத்தவும், உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
+<translation id="8512483403832814140">எல்லா நேரமும்</translation>
 <translation id="8521441079177373948">யு.கே.</translation>
 <translation id="853494022971700746">ஃபிரெஞ்சு (ஃபிரான்ஸ்)</translation>
 <translation id="8540608333167683902">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>

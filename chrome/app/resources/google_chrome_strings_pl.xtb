@@ -10,6 +10,7 @@
 <translation id="110877069173485804">Oto Twój Chrome</translation>
 <translation id="1125124144982679672">Kto używa Chrome?</translation>
 <translation id="1142745911746664600">Nie można zaktualizować Chrome</translation>
+<translation id="1149651794389918149">Zaloguj się w Chrome. Jeśli chcesz zalogować się na konto tylko raz, możesz <ph name="GUEST_LINK_BEGIN" />skorzystać z trybu gościa na urządzeniu<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">System operacyjny Chrome – informacje</translation>
 <translation id="1154147086299354128">&amp;Otwórz w Chrome</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
@@ -167,6 +168,7 @@
 <translation id="4147555960264124640">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Google Chrome. Twoje dane Chrome, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Trwa instalowanie...</translation>
 <translation id="4149882025268051530">Instalator nie może prawidłowo rozpakować archiwum. Pobierz Google Chrome ponownie.</translation>
+<translation id="4153934450158521343">Przeglądarka Chrome zostanie wkrótce zamknięta, a dane zostaną usunięte</translation>
 <translation id="4191857738314598978">{0,plural, =1{Ponowne uruchomienie Chrome nastąpi w ciągu 1 dnia}few{Ponowne uruchomienie Chrome nastąpi w ciągu # dni}many{Ponowne uruchomienie Chrome nastąpi w ciągu # dni}other{Ponowne uruchomienie Chrome nastąpi w ciągu # dnia}}</translation>
 <translation id="4205939740494406371">Chrome nie może sprawdzić Twoich haseł. Spróbuj ponownie za 24 godziny lub <ph name="BEGIN_LINK" />sprawdź hasła na koncie Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Anuluję...</translation>
@@ -212,6 +214,7 @@
 <translation id="4970880042055371251">Wersja Chrome OS</translation>
 <translation id="4970947549776831107">Plik został zablokowany przez Chrome, bo ten typ pliku jest niebezpieczny</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Administrator automatycznie zamyka przeglądarkę Chrome, gdy nie jest ona używana przez 1 minutę. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}few{Administrator automatycznie zamyka przeglądarkę Chrome, gdy nie jest ona używana przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}many{Administrator automatycznie zamyka przeglądarkę Chrome, gdy nie jest ona używana przez # minut. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}other{Administrator automatycznie zamyka przeglądarkę Chrome, gdy nie jest ona używana przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}}</translation>
 <translation id="5098668839038261629">Jeśli ta opcja jest włączona, zostaniesz też wylogowany(-a) z Chrome</translation>
 <translation id="5132929315877954718">Odkryj znakomite aplikacje, gry, rozszerzenia i motywy do przeglądarki Google Chrome.</translation>
 <translation id="5139423532931106058">Dostosuj swój profil Chrome</translation>
@@ -260,12 +263,14 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Reguła dla ruchu przychodzącego w Google Chrome zezwalająca na ruch mDNS.</translation>
+<translation id="624230925347970731">Przeglądarka Chrome zostanie wkrótce zamknięta</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
 <translation id="6273793429163604305">Na miejsca…</translation>
 <translation id="6291089322031436445">Aplikacje do Chrome w wersji deweloperskiej</translation>
 <translation id="6291549208091401781">Google Chrome jest już zainstalowany dla wszystkich użytkowników tego komputera.</translation>
 <translation id="6326175484149238433">Usuń z Chrome</translation>
 <translation id="6327105987658262776">Brak dostępnych aktualizacji.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Administrator automatycznie usuwa dane przeglądania, gdy nie są one używane przez 1 minutę. Może to obejmować historię, autouzupełnianie i pobrane pliki. Dotychczasowe karty pozostaną otwarte.}few{Administrator automatycznie usuwa dane przeglądania, gdy nie są one używane przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Dotychczasowe karty pozostaną otwarte.}many{Administrator automatycznie usuwa dane przeglądania, gdy nie są one używane przez # minut. Może to obejmować historię, autouzupełnianie i pobrane pliki. Dotychczasowe karty pozostaną otwarte.}other{Administrator automatycznie usuwa dane przeglądania, gdy nie są one używane przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Dotychczasowe karty pozostaną otwarte.}}</translation>
 <translation id="6412673304250309937">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="6418662306461808273">Przełączyć na istniejący profil Chrome?</translation>
 <translation id="6493527311031785448">Google Chrome próbuje <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -295,6 +300,7 @@
 
 Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. Kontami Google możesz zarządzać w <ph name="SETTINGS_LINK_BEGIN" />Ustawieniach<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” dla Chrome. Dodanie elementu <ph name="EXTENSION_TYPE_PARAMETER" /> jest niedozwolone.</translation>
+<translation id="7071827361006050863">Chrome usunie wkrótce dane przeglądania</translation>
 <translation id="7085332316435785646">Określ, czy chcesz uwzględniać historię Chrome w celu lepszego dostosowania usług Google</translation>
 <translation id="7088681679121566888">Masz aktualną wersję Chrome</translation>
 <translation id="7098166902387133879">Google Chrome używa Twojego mikrofonu.</translation>
@@ -356,6 +362,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8290100596633877290">O kurczę! Przeglądarka Google Chrome uległa awarii. Uruchomić ją teraz ponownie?</translation>
 <translation id="8342675569599923794">Ten plik jest niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> w Chrome witryny mogą przechowywać informacje o Twoich zainteresowaniach. Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Administrator automatycznie zamyka przeglądarkę Chrome, gdy nie jest ona używana przez 1 minutę.}few{Administrator automatycznie zamyka przeglądarkę Chrome, gdy nie jest ona używana przez # minuty.}many{Administrator automatycznie zamyka przeglądarkę Chrome, gdy nie jest ona używana przez # minut.}other{Administrator automatycznie zamyka przeglądarkę Chrome, gdy nie jest ona używana przez # minuty.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> Chrome może oszacować, jakie są Twoje zainteresowania. Później odwiedzana przez Ciebie witryna może wykorzystać te informacje, aby spersonalizować wyświetlane Ci reklamy.</translation>
 <translation id="8387459386171870978">Nadal korzystaj z Chrome</translation>

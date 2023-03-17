@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
 <translation id="1075811647922107217">Ukuran halaman</translation>
+<translation id="1082009148392559545">Mendownload screensaver</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
 <translation id="1113892970288677790">Pilih karya seni dan gambar pilihan</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
@@ -79,6 +80,7 @@
 <translation id="1641857168437328880">Pengumpan Dokumen (Satu Sisi)</translation>
 <translation id="1643449475550628585">Ubah gambar wallpaper setiap hari</translation>
 <translation id="1644574205037202324">Histori</translation>
+<translation id="1651925268237749928">Anda telah memilih album bersama. Pengguna lain dapat menambahkan atau mengubah foto. Wallpaper Anda mungkin menggunakan foto yang saat ini tidak ada di album ini.</translation>
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
 <translation id="1664796644829245314">Pratinjau <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
@@ -90,6 +92,7 @@
 <translation id="1717874160321062422">Dikelola oleh <ph name="FIRST_MANAGER" /> dan <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nama server</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
+<translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Tidak dapat memuat foto. Periksa koneksi jaringan Anda atau coba muat foto lagi.</translation>
 <translation id="1751249301761991853">Pribadi</translation>
 <translation id="1753496554272155572">Keluar dari pratinjau wallpaper</translation>
@@ -140,6 +143,7 @@
 <translation id="2157959690810728433">DALAM ANTREAN</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Coba lagi</translation>
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
+<translation id="2161656808144014275">Teks</translation>
 <translation id="2163937499206714165">Aktifkan mode gelap</translation>
 <translation id="2180197493692062006">Terjadi error. Coba buka aplikasi kembali.</translation>
 <translation id="2209788852729124853">Reset Penghitung Traffic</translation>
@@ -215,6 +219,7 @@
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
+<translation id="3020183492814296499">Pintasan</translation>
 <translation id="3027578600144895987">Tutup kamera</translation>
 <translation id="3031560714565892478">Perangkat adalah kamera video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -236,6 +241,7 @@
 <translation id="319101249942218879">Gambar avatar diubah</translation>
 <translation id="3192947282887913208">File Audio</translation>
 <translation id="3199982728237701504">Pengumpan Dokumen (Dua Sisi)</translation>
+<translation id="3201315366910775591">Album bersama dapat diperbarui oleh pengguna lain</translation>
 <translation id="3211671540163313381">D-pad konfigurasi tombol</translation>
 <translation id="3226405216343213872">Mencari pemindai</translation>
 <translation id="3226657629376379887">Menu tindakan tata letak</translation>
@@ -598,6 +604,7 @@
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="6379086450106841622">Layar sentuh</translation>
 <translation id="6381741036071372448">Uji keyboard Anda</translation>
+<translation id="6382182670717268353">Pratinjau screensaver</translation>
 <translation id="6388847657025262518">Pengumpan dokumen pemindai macet. Periksa pengumpan, lalu coba lagi.</translation>
 <translation id="6394634179843537518">Tambahkan file</translation>
 <translation id="6410257289063177456">File Gambar</translation>
@@ -653,6 +660,7 @@
 <translation id="6838167112108853532">Tidak dapat menonaktifkan atau menghapus APN ini. Pastikan aktifkan APN terlampir dinonaktifkan atau dihapus.</translation>
 <translation id="6853312040151791195">Kecepatan pemakaian daya</translation>
 <translation id="6889786074662672253">Saat memulai ulang, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Proses ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama proses berlangsung.</translation>
+<translation id="6900701049656042631">Album ini tidak memiliki foto. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Penutup pemindai terbuka. Tutup penutup dan coba lagi.</translation>
 <translation id="6911383237894364323">Tidak dapat terhubung ke server media</translation>
@@ -660,7 +668,9 @@
 <translation id="6957231940976260713">Nama layanan</translation>
 <translation id="6961170852793647506">Untuk memulai, letakkan dokumen Anda pada pemindai</translation>
 <translation id="6965382102122355670">Oke</translation>
+<translation id="6965978654500191972">Perangkat</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
+<translation id="6981982820502123353">Aksesibilitas</translation>
 <translation id="7005833343836210400">Perangkat sedang offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
@@ -687,6 +697,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7180611975245234373">Perbarui</translation>
 <translation id="7180865173735832675">Sesuaikan</translation>
+<translation id="7184043045742675738">Klik sembarang tombol untuk menyesuaikan tombol Anda. Ubah posisi tombol dengan mouse atau tombol panah.</translation>
 <translation id="7212734716605298123">Update firmware untuk perangkat eksternal</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="725133483556299729">Pilih email</translation>
@@ -728,6 +739,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Layar sentuh USB</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
+<translation id="7613724632293948900">Ubah posisi dengan tombol mouse atau panah.</translation>
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>
 <translation id="763165478673169849">Waktu Reset Terakhir</translation>
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
@@ -768,6 +780,7 @@
 <translation id="7977800524392185497">Untuk bergabung ke jaringan <ph name="NETWORK_NAME" />, buka Setelan</translation>
 <translation id="7978412674231730200">Kunci pribadi</translation>
 <translation id="7994702968232966508">Metode EAP</translation>
+<translation id="8004582292198964060">Browser</translation>
 <translation id="802154636333426148">Download gagal</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktifkan mode warna otomatis</translation>
@@ -850,6 +863,7 @@
 <translation id="8798441408945964110">Nama penyedia</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
+<translation id="8820457400746201697">Pindahkan titik sentuh biru ke tindakan. Pilih tombol terkait untuk disesuaikan.</translation>
 <translation id="8834539327799336565">Saat ini terhubung</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8855781559874488009">Tidak dapat terhubung melewati firewall ke situs HTTP</translation>
@@ -879,6 +893,7 @@
 <translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9025198690966128418">Gunakan sebagai perangkat pribadi</translation>
+<translation id="902638246363752736">Setelan keyboard</translation>
 <translation id="9028832514430399253">Aktifkan tombol untuk memilih opsi screensaver</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +926,5 @@
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="960719561871045870">Kode operator</translation>
 <translation id="982713511914535780">Jalankan pengujian Pengosongan Daya Baterai</translation>
+<translation id="987264212798334818">Umum</translation>
 </translationbundle>

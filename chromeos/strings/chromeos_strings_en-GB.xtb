@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">QUEUED</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
 <translation id="2161394479394250669">Cancel print job</translation>
+<translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">REFRESH</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3017079585324758401">Background</translation>
+<translation id="3020183492814296499">Shortcuts</translation>
 <translation id="3027578600144895987">Close the camera</translation>
 <translation id="3031560714565892478">Device is a video camera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">Service name</translation>
 <translation id="6961170852793647506">To get started, place your document on the scanner</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Device</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
+<translation id="6981982820502123353">Accessibility</translation>
 <translation id="7005833343836210400">Device is offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="7040230719604914234">Operator</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497">To join a <ph name="NETWORK_NAME" /> network, go to Settings</translation>
 <translation id="7978412674231730200">Private key</translation>
 <translation id="7994702968232966508">EAP method</translation>
+<translation id="8004582292198964060">Browser</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Enable auto colour mode</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">Not available on your device</translation>
 <translation id="9003704114456258138">Frequency:</translation>
 <translation id="9025198690966128418">Use as a personal device</translation>
+<translation id="902638246363752736">Keyboard settings</translation>
 <translation id="9028832514430399253">Turn on the toggle to select the screen saver options</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">Not activated</translation>
 <translation id="960719561871045870">Operator code</translation>
 <translation id="982713511914535780">Run discharge test</translation>
+<translation id="987264212798334818">General</translation>
 </translationbundle>

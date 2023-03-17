@@ -142,6 +142,7 @@
 <translation id="2157959690810728433">NA ČAKANJU</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Poskusi znova</translation>
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
+<translation id="2161656808144014275">Besedilo</translation>
 <translation id="2163937499206714165">Vklop temnega načina</translation>
 <translation id="2180197493692062006">Prišlo je do napake. Poskusite znova odpreti aplikacijo.</translation>
 <translation id="2209788852729124853">Ponastavi števce prometa</translation>
@@ -217,6 +218,7 @@
 <translation id="3008341117444806826">OSVEŽI</translation>
 <translation id="3009958530611748826">Izberite mapo za shranjevanje</translation>
 <translation id="3017079585324758401">Ozadje</translation>
+<translation id="3020183492814296499">Bližnjice</translation>
 <translation id="3027578600144895987">Zapri kamero</translation>
 <translation id="3031560714565892478">Naprava je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -663,7 +665,9 @@
 <translation id="6957231940976260713">Ime storitve</translation>
 <translation id="6961170852793647506">Če želite začeti, postavite dokument na optični bralnik.</translation>
 <translation id="6965382102122355670">V redu</translation>
+<translation id="6965978654500191972">Naprava</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
+<translation id="6981982820502123353">Dostopnost</translation>
 <translation id="7005833343836210400">Naprava nima vzpostavljene povezave</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="7040230719604914234">Operater</translation>
@@ -773,6 +777,7 @@
 <translation id="7977800524392185497">Če se želite pridružiti omrežju <ph name="NETWORK_NAME" />, odprite nastavitve.</translation>
 <translation id="7978412674231730200">Zasebni ključ</translation>
 <translation id="7994702968232966508">Način EAP</translation>
+<translation id="8004582292198964060">Brskalnik</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Omogoči način samodejne barve</translation>
@@ -885,6 +890,7 @@
 <translation id="8998289560386111590">Ni na voljo v vaši napravi</translation>
 <translation id="9003704114456258138">Frekvenca</translation>
 <translation id="9025198690966128418">Uporabi kot osebno napravo</translation>
+<translation id="902638246363752736">Nastavitve tipkovnice</translation>
 <translation id="9028832514430399253">Vklopite preklop, če želite izbrati možnosti ohranjevalnika zaslona.</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -917,4 +923,5 @@
 <translation id="952992212772159698">Ni aktivirano</translation>
 <translation id="960719561871045870">Koda operaterja</translation>
 <translation id="982713511914535780">Zaženi preizkus praznjenja</translation>
+<translation id="987264212798334818">Splošno</translation>
 </translationbundle>

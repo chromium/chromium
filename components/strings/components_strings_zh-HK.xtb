@@ -683,6 +683,7 @@
 <translation id="259821504105826686">攝影和數碼藝術</translation>
 <translation id="2601150049980261779">愛情電影</translation>
 <translation id="2604589665489080024">流行音樂</translation>
+<translation id="2606760465469169465">自動驗證</translation>
 <translation id="2610561535971892504">點擊複製</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />以下資料：
           <ph name="BEGIN_LIST" />
@@ -1899,6 +1900,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />Chrome 會自動刪除超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。您亦可隨時前往 Chrome 設定，禁止根據特定網站建議廣告，亦可關閉網站建議廣告設定。</translation>
 <translation id="5610142619324316209">檢查連線狀態</translation>
 <translation id="5610807607761827392">您可在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中管理名片和地址。</translation>
+<translation id="5611398002774823980">儲存在帳戶中</translation>
 <translation id="561165882404867731">使用「Google 翻譯」來翻譯此頁面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 要求使用電腦的位置資料</translation>
 <translation id="561669346091975195">科幻和奇幻電視節目</translation>
@@ -3185,6 +3187,7 @@
 <translation id="8806285662264631610">沐浴和身體護理產品</translation>
 <translation id="8807160976559152894">完成每頁後修剪</translation>
 <translation id="8809203544698246977">已封鎖的主題會在此顯示</translation>
+<translation id="8811470563853401328">要將地址儲存在帳戶中嗎？</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8814707942599948500">C8 信封</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以透過 Chrome 設定更新 Chrome</translation>
@@ -3278,6 +3281,7 @@
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9044359186343685026">使用 Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">您需要將 <ph name="POLICY_NAME" /> 政策設定為「<ph name="POLICY_VALUE" />」，才能執行以下操作：<ph name="ACTION_LIST" />。</translation>
 <translation id="9048662076076074925">24 x 36 吋</translation>
 <translation id="9049981332609050619">您嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證無效。</translation>
 <translation id="9050666287014529139">複雜密碼</translation>

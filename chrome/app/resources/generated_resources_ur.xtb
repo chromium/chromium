@@ -242,6 +242,7 @@
 <translation id="1201564082781748151">آپ کے اپنا پاس ورڈ بھول جانے پر مقامی ڈیٹا کو بحال کیا جا سکتا ہے</translation>
 <translation id="1202116106683864634">کیا آپ واقعی یہ پاس کی حذف کرنا چاہتے ہیں؟</translation>
 <translation id="1202596434010270079">‏کیوسک ایپ کو اپ ڈیٹ کر دیا گیا ہے۔ براہ کرم USB اسٹک کو ہٹائیں۔</translation>
+<translation id="1202892408424955784">ٹریک کردہ پروڈکٹس</translation>
 <translation id="120368089816228251">موسیقی نوٹ</translation>
 <translation id="1203942045716040624">اشتراک کردہ ورکر: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">شارٹ کٹس آپ کیوریٹ کرتے ہیں</translation>
@@ -863,6 +864,7 @@
 <translation id="1744108098763830590">پس منظر کا صفحہ</translation>
 <translation id="1745732479023874451">رابطوں کا نظم کریں</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{اس ویب ایپ میں # فائلز کھولیں اور ان میں ترمیم کریں؟}}</translation>
+<translation id="1748329107062243374"><ph name="WEBSITE" /> میں سائن ان کرنے کے لئے <ph name="DEVICE_NAME" /> سے پاس کی کا استعمال کریں</translation>
 <translation id="1748563609363301860">‏آپ اس پاس ورڈ کو اپنے Google اکاؤنٹ میں یا صرف اس آلے پر محفوظ کر سکتے ہیں</translation>
 <translation id="1749733017156547309">ایک پاس ورڈ درکار ہے</translation>
 <translation id="1750172676754093297">آپ کی سیکیورٹی کلید فنگر پرنٹس اسٹور نہیں کر سکتی</translation>
@@ -2012,6 +2014,7 @@
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تصویر تلاش کریں</translation>
 <translation id="2727633948226935816">مجھے دوبارہ یاد نہ دلائیں</translation>
 <translation id="2727712005121231835">اصل سائز</translation>
+<translation id="2727744317940422214">‏معذرت، کچھ غلط ہو گیا۔ براہ کرم تفصیل میں bruschetta# کے ساتھ تاثرات درج کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔ صاف کرنے کا عمل ناکام ہو گیا، آپ کو دستی طور پر ایسا کرنا ہوگا۔</translation>
 <translation id="2729314457178420145">‏براؤزنگ ڈیٹا (<ph name="URL" />) بھی صاف کریں جس سے آپ Google.com سے سائن آؤٹ ہو سکتے ہیں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">‏Chrome براؤز کرتے وقت ٹریکنگ کو کم کرنے اور آپ کو مزید محفوظ رکھنے کے نئے طریقے تلاش کر رہا ہے۔ Chrome آپ کی <ph name="ESTIMATE_INTERESTS_LINK" /> بھی لگاتا ہے اور آپ کو ان کا نظم کرنے کا اہل بناتا ہے۔ پھر، آپ کی ملاحظہ کردہ سائٹس آپ کو اشتہارات دکھانے کی خاطر آپ کی دلچسپیوں کے لیے Chrome سے پوچھ سکتی ہیں۔</translation>
 <translation id="2730029791981212295">‏Linux ایپس اور فائلز کا بیک اپ لیا جا رہا ہے</translation>
@@ -2576,6 +2579,7 @@
 <translation id="3242289508736283383">‏'kiosk_only' مینی فیسٹ انتساب والی ایپ کا ChromeOS کیوسک وضع میں انسٹال ہونا ضروری ہے</translation>
 <translation id="3242665648857227438">‏یہ پروفائل ChromeOS کی پراکسی ترتیبات کا استعمال کرتی ہے۔</translation>
 <translation id="3243017971870859287">‏ChromeOS Flex آلہ اور جزو کے نمبر شمار پڑھیں</translation>
+<translation id="324366796737464147">شور کو کم کرنا</translation>
 <translation id="3244294424315804309">آواز بند کرنا جاری رکھیں</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - نیٹ ورک کی خرابی</translation>
 <translation id="3248902735035392926">حفاظتی معاملات۔ کچھ وقت نکالیں اور ابھی <ph name="BEGIN_LINK" />اپنی ایکسٹینشنز کو چیک کریں<ph name="END_LINK" /></translation>
@@ -2992,6 +2996,7 @@
 <translation id="3618286417582819036">معذرت، ایک خرابی پیش آ گئی</translation>
 <translation id="3619115746895587757">کیپو چینو</translation>
 <translation id="3620136223548713675">جغرافیائی مقام</translation>
+<translation id="3621202678540785336">ان پٹ</translation>
 <translation id="3621807901162200696">‏ChromeOS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ایک ایپ}other{# ایپس}}</translation>
 <translation id="362333465072914957">‏سرٹیفیکیٹ جاری کرنے کے لیے CA کا انتظار</translation>
@@ -3735,6 +3740,7 @@
 <translation id="4275397969489577657">ایونٹ اسٹریم لاگنگ کو فعال کریں</translation>
 <translation id="4275830172053184480">اپنا آلہ دوبارہ شروع کریں</translation>
 <translation id="4277434192562187284">‏XML کنفیگریشن کا ماخذ</translation>
+<translation id="4277529130885813215">کوئی دوسرا آلہ استعمال کریں</translation>
 <translation id="4278390842282768270">اجازت یافتہ</translation>
 <translation id="4278498748067682896">‏آپ کیوسک اور سائنیج اپ گریڈ استعمال کریں گے جو صرف آلہ کو کیوسک یا سائنیج موڈ میں چلنے دیتا ہے۔ اگر آپ چاہتے ہیں کہ صارفین آلے میں سائن ان کریں تو براہ کرم واپس جائیں اور Chrome انٹرپرائز اپ گریڈ کا استعمال کر کے اندراج کریں۔</translation>
 <translation id="4278779213160967034">اس کاروائی میں کچھ منٹ لگ سکتے ہیں۔ فائلز ڈاؤن لوڈ ہو رہی ہیں۔</translation>
@@ -4236,7 +4242,6 @@
 <translation id="4726710355753484204">‏زوم ان کرنے کے لیے Ctrl+Alt+Brightness Up کا استعمال کریں۔
 زوم آؤٹ کرنے کے لیے Ctrl+Alt+Brightness Down کا استعمال کریں۔</translation>
 <translation id="4726710629007580002">اس ایکسٹینشن کو انسٹال کرتے وقت وارننگز موصول ہوئیں:</translation>
-<translation id="472738079453283624">پروڈکٹس</translation>
 <translation id="4727847987444062305">نظم کردہ مہمان سیشن</translation>
 <translation id="4728558894243024398">پلیٹ فارم</translation>
 <translation id="4730492586225682674">مقفل اسکرین پر اسٹائلس تازہ ترین نوٹ</translation>
@@ -4636,6 +4641,7 @@
 <translation id="5108967062857032718">‏ترتیبات - Android ایپس کو ہٹائیں</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> ہٹائیں</translation>
+<translation id="5111326646107464148">نئی ونڈو میں گروپ کھولیں</translation>
 <translation id="5111646998522066203">پوشیدگی وضع سے باہر نکلیں</translation>
 <translation id="5111692334209731439">&amp;بک مارک مینیجر</translation>
 <translation id="5111794652433847656">اس آلے پر <ph name="APP_NAME" /> کے لیے کوئی پاس کی نہیں ہے۔</translation>
@@ -7557,8 +7563,10 @@
 <translation id="7758450972308449809">اپنے ڈسپلے کی حدود کو ایڈجسٹ کریں</translation>
 <translation id="7760004034676677601">کیا یہی وہ ابتدائی صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="7762024824096060040">یہ اکاؤنٹ استعمال نہیں کیا جا سکتا</translation>
+<translation id="7762243782113123335">‏معذرت، کچھ غلط ہو گیا۔ براہ کرم تفصیل میں bruschetta# کے ساتھ تاثرات درج کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> سے <ph name="DOWNLOAD_RECEIVED" /></translation>
+<translation id="7764527477537408401">نئی ونڈو میں گروپ کھولیں</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7765507180157272835">‏بلوٹوتھ اور Wi-Fi درکار ہے</translation>
 <translation id="7766082757934713382">ایپس اور سسٹم کی خودکار اپ ڈیٹس کو موقوف کرنے سے نیٹ ورک ڈیٹا کے استعمال میں کمی آتی ہے</translation>
@@ -8655,6 +8663,7 @@
 <translation id="8740247629089392745">‏آپ اس Chromebook کو <ph name="SUPERVISED_USER_NAME" /> کو دے سکتے ہیں۔ سیٹ اپ تقریباً مکمل ہو گیا ہے، اب اسے دریافت کرنے کا وقت ہے۔</translation>
 <translation id="8740672167979365981">‏ChromeOS Flex اپ ڈیٹ درکار ہے</translation>
 <translation id="8741944563400125534">سوئچ رسائی کی سیٹ اپ گائیڈ</translation>
+<translation id="8742395827132970586">انسٹال کرنے کا عمل ناکام ہو گیا، صاف کیا جا رہا ہے</translation>
 <translation id="8742998548129056176">‏یہ آپ کے آلہ اور آپ کے طریقۂ استعمال (جیسے بیٹری کی سطح، سسٹم، ایپ کی سرگرمی اور خرابیوں) کے بارے میں ایک عام معلومات ہے۔ Android کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کیا جائے گا، اور کچھ مجموعی معلومات سے Google ایپس اور پارٹنرز، جیسے کہ Android ڈیولپرز، کو ان کی ایپس اور پروڈکٹس کو بہتر بنانے میں بھی مدد ملے گی۔</translation>
 <translation id="8744641000906923997">روماجی</translation>
 <translation id="8745034592125932220">آپ کے آلے میں ڈیٹا محفوظ کرنے کی اجازت نہیں ہے</translation>
@@ -8674,6 +8683,7 @@
           &lt;p&gt;لیکن آپ اب بھی کمانڈ لائن کے ذریعے کنفیگر کر سکتے ہیں۔ پرچموں اور ماحول کے تغیرات پر مزید معلومات کیلئے براہ کرم &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; دیکھیں۔&lt;/p&gt;</translation>
 <translation id="8755175579224030324">اپنی تنظیم کیلئے سیکیورٹی سے متعلقہ ٹاسکس کو انجام دیں، جیسے آلہ پر اسٹور کردہ سرٹیفیکیٹس اور کلیدوں کا نظم کرنا</translation>
 <translation id="8755376271068075440">&amp;بڑا</translation>
+<translation id="8755584192133371929">اشتراک کرنے کیلئے ٹیب منتخب کریں</translation>
 <translation id="875604634276263540">‏تصویری URL غلط ہے</translation>
 <translation id="8756969031206844760">پاس ورڈ کو اپ ڈیٹ کریں؟</translation>
 <translation id="8757203080302669031">یہ ٹیب بلوٹوتھ آلات کے لیے فعال طور پر اسکین کر رہا ہے۔</translation>

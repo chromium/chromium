@@ -143,6 +143,7 @@
 <translation id="2157959690810728433">ക്യൂവിലാണ്</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2161394479394250669">പ്രിന്റ് ജോലി റദ്ദാക്കുക</translation>
+<translation id="2161656808144014275">വാചകം</translation>
 <translation id="2163937499206714165">ഡാർക്ക് മോഡ് ഓണാക്കുക</translation>
 <translation id="2180197493692062006">എന്തോ കുഴപ്പമുണ്ടായി. ആപ്പ് വീണ്ടും തുറക്കാൻ ശ്രമിക്കുക.</translation>
 <translation id="2209788852729124853">ട്രാഫിക് കൗണ്ടറുകൾ റീസെറ്റ് ചെയ്യുക</translation>
@@ -218,6 +219,7 @@
 <translation id="3008341117444806826">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="3009958530611748826">സംരക്ഷിക്കാൻ ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3017079585324758401">പശ്ചാത്തലം</translation>
+<translation id="3020183492814296499">കുറുക്കുവഴികൾ</translation>
 <translation id="3027578600144895987">ക്യാമറ അടയ്ക്കുക</translation>
 <translation id="3031560714565892478">ഉപകരണം ഒരു വീഡിയോ ക്യാമറയാണ്.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -666,7 +668,9 @@
 <translation id="6957231940976260713">സേവനത്തിന്‍റെ പേര്</translation>
 <translation id="6961170852793647506">ആരംഭിക്കാൻ, നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്ക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
+<translation id="6965978654500191972">ഉപകരണം</translation>
 <translation id="6977381486153291903">ഫേംവെയർ പുനഃപരിശോധന</translation>
+<translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="7005833343836210400">ഉപകരണം ഓഫ്‌ലൈനാണ്</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
 <translation id="7040230719604914234">ഓപ്പറേറ്റർ</translation>
@@ -776,6 +780,7 @@
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> നെറ്റ്‌വർക്കിൽ ചേരാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="7978412674231730200">സ്വകാര്യ കീ</translation>
 <translation id="7994702968232966508">EAP രീതി</translation>
+<translation id="8004582292198964060">ബ്രൗസര്‍</translation>
 <translation id="802154636333426148">ഡൗൺലോഡ് പരാജയപ്പെട്ടു</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">സ്വയം നിറം ക്രമീകരിക്കൽ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -888,6 +893,7 @@
 <translation id="8998289560386111590">നിങ്ങളുടെ ഉപകരണത്തിൽ ലഭ്യമല്ല</translation>
 <translation id="9003704114456258138">ആവൃത്തി</translation>
 <translation id="9025198690966128418">വ്യക്തിപര ഉപകരണമായി ഉപയോഗിക്കുക</translation>
+<translation id="902638246363752736">കീബോർഡ് ക്രമീകരണം</translation>
 <translation id="9028832514430399253">സ്ക്രീൻ സേവർ ഓപ്ഷനുകൾ തിരഞ്ഞെടുക്കാൻ ടോഗിൾ ഓണാക്കുക</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -920,4 +926,5 @@
 <translation id="952992212772159698">സജീവമാക്കിയില്ല</translation>
 <translation id="960719561871045870">ഓപ്പറേറ്റർ കോഡ്</translation>
 <translation id="982713511914535780">ഡിസ്‌ചാർജ്ജ് ടെസ്‌റ്റ് റൺ ചെയ്യുക</translation>
+<translation id="987264212798334818">പൊതുവായ</translation>
 </translationbundle>

@@ -683,6 +683,7 @@
 <translation id="259821504105826686">Фотографска и дигитална уметност</translation>
 <translation id="2601150049980261779">Љубавни филмови</translation>
 <translation id="2604589665489080024">Поп музика</translation>
+<translation id="2606760465469169465">Аутоматска верификација</translation>
 <translation id="2610561535971892504">Кликните да бисте копирали</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />не чува<ph name="END_EMPHASIS" /> следеће информације:
         <ph name="BEGIN_LIST" />
@@ -1900,6 +1901,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Како можете да управљате подацима:<ph name="END_BOLD" /> Chrome аутоматски брише сајтове старије од 4 недеље. Сајт који поново посетите може опет да се појави на листи. У сваком тренутку у подешавањима Chrome-а можете и да блокирате сајт да вам не би предлагао огласе, као и да искључите огласе које сајтови предлажу.</translation>
 <translation id="5610142619324316209">да проверите везу</translation>
 <translation id="5610807607761827392">Картицама и адресама можете да управљате у <ph name="BEGIN_LINK" />Подешавањима<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Сачувај на налогу</translation>
 <translation id="561165882404867731">Преведите ову страницу помоћу Google преводиоца</translation>
 <translation id="5612720917913232150"><ph name="URL" /> жели да користи локацију рачунара</translation>
 <translation id="561669346091975195">ТВ емисије о научној и осталој фантастици</translation>
@@ -3186,6 +3188,7 @@
 <translation id="8806285662264631610">Производи за купање и негу тела</translation>
 <translation id="8807160976559152894">Скраћивање после сваке странице</translation>
 <translation id="8809203544698246977">Блокиране теме се приказују овде</translation>
+<translation id="8811470563853401328">Желите да сачувате адресу на налогу?</translation>
 <translation id="8813277370772331957">Подсети ме касније</translation>
 <translation id="8814707942599948500">Коверта C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте ажурирали Chrome из подешавања Chrome-а</translation>
@@ -3279,6 +3282,7 @@
 <translation id="9042617223719777575">Велики капацитет</translation>
 <translation id="9044359186343685026">Користи Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Ове радње захтевају да смернице <ph name="POLICY_NAME" /> буду подешене на <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24×36 in</translation>
 <translation id="9049981332609050619">Покушали сте да дођете до домена <ph name="DOMAIN" />, али сервер је послао неважећи сертификат.</translation>
 <translation id="9050666287014529139">Приступна фраза</translation>

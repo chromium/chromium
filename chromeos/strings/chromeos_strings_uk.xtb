@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">виявлено брандмауер</translation>
 <translation id="1075811647922107217">Розмір сторінки</translation>
+<translation id="1082009148392559545">Завантаження заставки</translation>
 <translation id="1094693127011229778">IP-адреса недоступна</translation>
 <translation id="1113892970288677790">Вибрати рекомендовані твори мистецтва й зображення</translation>
 <translation id="1119447706177454957">Внутрішня помилка</translation>
@@ -90,6 +91,7 @@
 <translation id="1717874160321062422">Пристроєм керують <ph name="FIRST_MANAGER" /> і <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Сервери імен</translation>
 <translation id="1731082422893354635">Сенсорна панель із Bluetooth</translation>
+<translation id="1738949837603788263">Зона <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Не вдалося завантажити зображення. Перевірте з’єднання з мережею або повторіть спробу.</translation>
 <translation id="1751249301761991853">Персоналізація</translation>
 <translation id="1753496554272155572">Закрити попередній перегляд фонового малюнка</translation>
@@ -140,6 +142,7 @@
 <translation id="2157959690810728433">У ЧЕРЗІ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторити</translation>
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
+<translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Увімкнути темний режим</translation>
 <translation id="2180197493692062006">Сталася помилка. Відкрийте додаток ще раз.</translation>
 <translation id="2209788852729124853">Скинути лічильники трафіку</translation>
@@ -215,6 +218,7 @@
 <translation id="3008341117444806826">ОНОВИТИ</translation>
 <translation id="3009958530611748826">Виберіть, у якій папці зберегти</translation>
 <translation id="3017079585324758401">Фон</translation>
+<translation id="3020183492814296499">Ярлики</translation>
 <translation id="3027578600144895987">Закрити камеру</translation>
 <translation id="3031560714565892478">Це відеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
@@ -598,6 +602,7 @@
 <translation id="636850387210749493">Корпоративна реєстрація</translation>
 <translation id="6379086450106841622">Сенсорний екран</translation>
 <translation id="6381741036071372448">Перевірте клавіатуру</translation>
+<translation id="6382182670717268353">Попередній перегляд заставки</translation>
 <translation id="6388847657025262518">Автоподавач документів заклинило. Перевірте його та повторіть спробу.</translation>
 <translation id="6394634179843537518">Додати файл</translation>
 <translation id="6410257289063177456">Файли зображень</translation>
@@ -660,7 +665,9 @@
 <translation id="6957231940976260713">Назва служби</translation>
 <translation id="6961170852793647506">Щоб почати, покладіть документ на сканер</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6965978654500191972">Пристрій</translation>
 <translation id="6977381486153291903">Мікропрограма</translation>
+<translation id="6981982820502123353">Спеціальні можливості</translation>
 <translation id="7005833343836210400">Пристрій не підключено до Інтернету</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих веб-сторінок, паролів і електронних листів.</translation>
 <translation id="7040230719604914234">Оператор</translation>
@@ -687,6 +694,7 @@
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7180865173735832675">Налаштувати</translation>
+<translation id="7184043045742675738">Щоб налаштувати кнопку, натисніть будь-яку клавішу. Змініть положення клавіші за допомогою миші або стрілок.</translation>
 <translation id="7212734716605298123">Оновлення мікропрограми для зовнішніх пристроїв</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
 <translation id="725133483556299729">Вибрати електронну адресу</translation>
@@ -728,6 +736,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сенсорний екран USB</translation>
 <translation id="7595982850646262331">Ще <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Змініть положення за допомогою клавіш миші або стрілок.</translation>
 <translation id="7620771111601174153">Дізнатися більше в Довідковому центрі</translation>
 <translation id="763165478673169849">Час останнього скидання</translation>
 <translation id="7648838807254605802">велика затримка HTTPS</translation>
@@ -768,6 +777,7 @@
 <translation id="7977800524392185497">Щоб приєднатися до мережі <ph name="NETWORK_NAME" />, перейдіть у налаштування</translation>
 <translation id="7978412674231730200">Секретний ключ</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
+<translation id="8004582292198964060">Переглядач</translation>
 <translation id="802154636333426148">Не вдалося завантажити</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Увімкнути режим автоматичного вибору кольору</translation>
@@ -850,6 +860,7 @@
 <translation id="8798441408945964110">Назва постачальника</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Фоновий малюнок</translation>
+<translation id="8820457400746201697">Перемістіть синю точку дотику до дії. Щоб налаштувати, виберіть пов’язану клавішу.</translation>
 <translation id="8834539327799336565">Підключено</translation>
 <translation id="8845001906332463065">Отримати довідку</translation>
 <translation id="8855781559874488009">Не вдається підключитися до веб-сайтів HTTP через брандмауер</translation>
@@ -879,6 +890,7 @@
 <translation id="8998289560386111590">Недоступно на вашому пристрої</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9025198690966128418">Використовувати як особистий пристрій</translation>
+<translation id="902638246363752736">Налаштування клавіатури</translation>
 <translation id="9028832514430399253">Увімкніть перемикач, щоб вибрати варіанти заставки</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
@@ -911,4 +923,5 @@
 <translation id="952992212772159698">Не активовано</translation>
 <translation id="960719561871045870">Код оператора</translation>
 <translation id="982713511914535780">Виконати перевірку розряджання</translation>
+<translation id="987264212798334818">Загальне</translation>
 </translationbundle>

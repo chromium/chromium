@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">Jaringan rumah tidak tersedia. Roaming data seluler harus diaktifkan agar dapat terhubung.</translation>
 <translation id="8499098729323186194">Mengekstrak <ph name="NUMBER_OF_ITEMS" /> item ...</translation>
 <translation id="8502913769543567768">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Aktifkan setelah penyiapan perangkat, Dikelola oleh Administrator Anda</translation>
+<translation id="8512483403832814140">Kapan saja</translation>
 <translation id="8521441079177373948">Inggris</translation>
 <translation id="853494022971700746">Prancis (Prancis)</translation>
 <translation id="8540608333167683902">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>

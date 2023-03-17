@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">無法使用家用網路，你必須啟用行動數據漫遊服務才能連線。</translation>
 <translation id="8499098729323186194">正在擷取 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
 <translation id="8502913769543567768">第 <ph name="NETWORK_INDEX" /> 個網路，共 <ph name="NETWORK_COUNT" /> 個網路，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，在裝置完成設定後啟用，由管理員管理</translation>
+<translation id="8512483403832814140">不限時間</translation>
 <translation id="8521441079177373948">英式配置</translation>
 <translation id="853494022971700746">法文 (法國)</translation>
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>

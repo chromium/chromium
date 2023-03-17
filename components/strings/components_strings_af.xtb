@@ -683,6 +683,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="259821504105826686">Fotografie en digitale kuns</translation>
 <translation id="2601150049980261779">Romanseflieks</translation>
 <translation id="2604589665489080024">Popmusiek</translation>
+<translation id="2606760465469169465">Outoverifieer</translation>
 <translation id="2610561535971892504">Klik om te kopieer</translation>
 <translation id="2617988307566202237">Chrome sal nie die volgende inligting <ph name="BEGIN_EMPHASIS" />stoor nie<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -1900,6 +1901,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Chrome vee werwe wat ouer as 4 weke is, outomaties uit. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Jy kan ook enige tyd in Chrome-instellings ’n werf keer om vir jou advertensies voor te stel en werfvoorgestelde advertensies afskakel.</translation>
 <translation id="5610142619324316209">Die verbinding nagaan</translation>
 <translation id="5610807607761827392">Jy kan kaarte en adresse in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> bestuur.</translation>
+<translation id="5611398002774823980">Stoor in rekening</translation>
 <translation id="561165882404867731">Vertaal hierdie bladsy met Google Vertaal</translation>
 <translation id="5612720917913232150"><ph name="URL" /> wil jou rekenaar se ligging gebruik</translation>
 <translation id="561669346091975195">Wetenskapsfiksie -en fantasie-programme vir TV</translation>
@@ -3186,6 +3188,7 @@ Bykomende besonderhede:
 <translation id="8806285662264631610">Bad- en lyfprodukte</translation>
 <translation id="8807160976559152894">Knip ná elke bladsy</translation>
 <translation id="8809203544698246977">Geblokkeerde onderwerpe verskyn hier</translation>
+<translation id="8811470563853401328">Stoor adres in rekening?</translation>
 <translation id="8813277370772331957">Herinner my later</translation>
 <translation id="8814707942599948500">Koevert C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om Chrome vanuit jou Chrome-instellings op te dateer</translation>
@@ -3279,6 +3282,7 @@ Bykomende besonderhede:
 <translation id="9042617223719777575">Groot kapasiteit</translation>
 <translation id="9044359186343685026">Gebruik Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Die volgende handelinge vereis dat die <ph name="POLICY_NAME" />-beleid op <ph name="POLICY_VALUE" /> gestel moet wees: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24x36 dm.</translation>
 <translation id="9049981332609050619">Jy het probeer om <ph name="DOMAIN" /> te bereik, maar die bediener het 'n ongeldige sertifikaat voorgehou.</translation>
 <translation id="9050666287014529139">Wagfrase</translation>

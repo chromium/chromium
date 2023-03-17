@@ -683,6 +683,7 @@
 <translation id="259821504105826686">Фото жана санарип көркөм өнөрү</translation>
 <translation id="2601150049980261779">Романтикалык тасмалар</translation>
 <translation id="2604589665489080024">Поп-музыка</translation>
+<translation id="2606760465469169465">Автоматтык түрдө ырастоо</translation>
 <translation id="2610561535971892504">Көчүрүү үчүн чыкылдатыңыз</translation>
 <translation id="2617988307566202237">Chrome төмөнкү маалыматты <ph name="BEGIN_EMPHASIS" />сактабайт<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -1899,6 +1900,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Маалыматыңызды кантип тескей аласыз:<ph name="END_BOLD" /> Chrome 4 апта мурун пайда болгон сайттарды автоматтык түрдө жок кылып турат. Сиз кайрадан баш баккан сайт тизмеде кайра пайда болушу мүмкүн. Ошондой эле, каалаган убакта Chrome параметрлеринен сайттын жарнамаларды сунуштоо мүмкүнчүлүгүн бөгөттөп, сайт сунуштаган жарнамаларды өчүрүп койсоңуз болот.</translation>
 <translation id="5610142619324316209">Туташууну текшерип көрүңүз</translation>
 <translation id="5610807607761827392">Карточкаларды жана даректерди <ph name="BEGIN_LINK" />Жөндөөлөрдөн<ph name="END_LINK" /> башкарсаңыз болот.</translation>
+<translation id="5611398002774823980">Аккаунтта сактоо</translation>
 <translation id="561165882404867731">Бул баракты Google Котормочуда которуңуз</translation>
 <translation id="5612720917913232150"><ph name="URL" /> компьютериңиздин жайгашуусун пайдаланганы жатат</translation>
 <translation id="561669346091975195">Илимий-фантастикалык жана фантастикалык телешоулор</translation>
@@ -3185,6 +3187,7 @@
 <translation id="8806285662264631610">Ваннага жана денеге арналган буюмдар</translation>
 <translation id="8807160976559152894">Ар бир барактан кийин кыркуу</translation>
 <translation id="8809203544698246977">Бөгөттөлгөн темалар ушул жерде көрүнөт</translation>
+<translation id="8811470563853401328">Дарек аккаунтка сакталсынбы?</translation>
 <translation id="8813277370772331957">Кийинчерээк эскертүү</translation>
 <translation id="8814707942599948500">Конверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлериңизден Chrome'ду жаңыртуу үчүн, Tab, андан соң Enter баскычын басыңыз</translation>
@@ -3278,6 +3281,7 @@
 <translation id="9042617223719777575">Сыйымдуулугу чоң</translation>
 <translation id="9044359186343685026">Touch ID функциясын колдонуу</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823"><ph name="ACTION_LIST" /> аракети үчүн <ph name="POLICY_NAME" /> саясаты <ph name="POLICY_VALUE" /> дегенге өзгөртүлүшү керек.</translation>
 <translation id="9048662076076074925">24 x 36 дюйм</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> жетүүгө аракет кылдыңыз, бирок сервер жараксыз тастыктама сунуштады.</translation>
 <translation id="9050666287014529139">Купуя сөз айкашы</translation>
