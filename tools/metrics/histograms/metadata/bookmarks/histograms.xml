@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad" units="bookmarks"
-    expires_after="2023-02-26">
+    expires_after="2024-03-16">
   <obsolete>
     Logged on profile open, including for profiles that do not support
     bookmarks. (We did not investigate thoroughly; we don't know what value
