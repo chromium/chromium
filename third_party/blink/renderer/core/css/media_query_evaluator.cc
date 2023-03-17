@@ -1532,56 +1532,6 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
   return result ? KleeneValue::kTrue : KleeneValue::kFalse;
 }
 
-namespace {
-
-void ConsumeWhitespace(base::span<CSSParserToken>::const_iterator& iterator,
-                       const base::span<CSSParserToken>::const_iterator& end) {
-  while (iterator != end && (*iterator).GetType() == kWhitespaceToken) {
-    iterator++;
-  }
-}
-
-void ConsumeWhitespaceReverse(
-    base::span<CSSParserToken>::const_iterator& iterator,
-    const base::span<CSSParserToken>::const_iterator& start) {
-  while (iterator != start && (*(iterator - 1)).GetType() == kWhitespaceToken) {
-    iterator--;
-  }
-}
-
-bool TokensEqualIgnoringLeadingAndTrailingSpaces(
-    const CSSVariableData* value1,
-    const CSSVariableData* value2) {
-  if (value1 == value2) {
-    return true;
-  }
-  if (!value1 || !value2) {
-    return false;
-  }
-
-  CSSTokenizer tokenizer1(value1->OriginalText());
-  CSSTokenizer tokenizer2(value2->OriginalText());
-  auto tokens1vec = tokenizer1.TokenizeToEOF();
-  auto tokens2vec = tokenizer2.TokenizeToEOF();
-
-  const base::span<CSSParserToken> tokens1 = tokens1vec;
-  const base::span<CSSParserToken> tokens2 = tokens2vec;
-
-  base::span<CSSParserToken>::const_iterator tokens1_start = tokens1.begin();
-  base::span<CSSParserToken>::const_iterator tokens1_end = tokens1.end();
-  base::span<CSSParserToken>::const_iterator tokens2_start = tokens2.begin();
-  base::span<CSSParserToken>::const_iterator tokens2_end = tokens2.end();
-
-  ConsumeWhitespace(tokens1_start, tokens1_end);
-  ConsumeWhitespaceReverse(tokens1_end, tokens1_start);
-  ConsumeWhitespace(tokens2_start, tokens2_end);
-  ConsumeWhitespaceReverse(tokens2_end, tokens2_start);
-
-  return std::equal(tokens1_start, tokens1_end, tokens2_start, tokens2_end);
-}
-
-}  // namespace
-
 KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     const MediaQueryFeatureExpNode& feature,
     MediaQueryResultFlags* result_flags) const {
@@ -1620,10 +1570,7 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     CSSVariableData* computed =
         container->ComputedStyleRef().GetVariableData(property_name);
 
-    // TODO(crbug.com/1220144): Compare the two CSSVariableData using
-    // base::ValuesEquivalent when we correctly strip leading and trailing
-    // whitespaces for custom property values.
-    if (TokensEqualIgnoringLeadingAndTrailingSpaces(computed, query_computed)) {
+    if (base::ValuesEquivalent(computed, query_computed)) {
       return KleeneValue::kTrue;
     }
     return KleeneValue::kFalse;
