@@ -142,7 +142,8 @@ public class StripStackerUnitTest {
         public void setTabOffsets(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
                 float tabStackWidth, int maxTabsToStack, float tabOverlapWidth,
                 float stripLeftMargin, float stripRightMargin, float stripWidth,
-                boolean inReorderMode, boolean tabClosing, float cachedTabWidth) {}
+                boolean inReorderMode, boolean tabClosing, boolean tabCreating,
+                float cachedTabWidth) {}
 
         @Override
         public void performOcclusionPass(

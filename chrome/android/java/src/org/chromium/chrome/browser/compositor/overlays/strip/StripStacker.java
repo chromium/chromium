@@ -63,11 +63,13 @@ public abstract class StripStacker {
      * @param stripWidth The width of the tab strip.
      * @param inReorderMode Whether the strip is in reorder mode.
      * @param tabClosing Whether a tab is being closed.
+     * @param tabCreating Whether a tab is being created.
+     * @param cachedTabWidth Whether The ideal tab width.
      */
     public abstract void setTabOffsets(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
             float tabStackWidth, int maxTabsToStack, float tabOverlapWidth, float stripLeftMargin,
             float stripRightMargin, float stripWidth, boolean inReorderMode, boolean tabClosing,
-            float cachedTabWidth);
+            boolean tabCreating, float cachedTabWidth);
 
     /**
      * Computes the X offset for the new tab button.

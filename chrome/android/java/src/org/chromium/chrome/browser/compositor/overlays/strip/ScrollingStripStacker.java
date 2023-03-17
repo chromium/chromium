@@ -17,7 +17,7 @@ public class ScrollingStripStacker extends StripStacker {
     public void setTabOffsets(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
             float tabStackWidth, int maxTabsToStack, float tabOverlapWidth, float stripLeftMargin,
             float stripRightMargin, float stripWidth, boolean inReorderMode, boolean tabClosing,
-            float cachedTabWidth) {
+            boolean tabCreating, float cachedTabWidth) {
         boolean tabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
         for (int i = 0; i < indexOrderedTabs.length; i++) {
             StripLayoutTab tab = indexOrderedTabs[i];
@@ -25,7 +25,8 @@ public class ScrollingStripStacker extends StripStacker {
                 // When a tab is closed, drawX and width update will be animated so skip this.
                 if (!tabClosing) {
                     tab.setDrawX(tab.getIdealX() + tab.getOffsetX());
-                    tab.setWidth(cachedTabWidth);
+                    // When a tab is being created, all tabs are animating to their desired width.
+                    if (!tabCreating) tab.setWidth(cachedTabWidth);
                 }
             } else {
                 tab.setDrawX(tab.getIdealX());

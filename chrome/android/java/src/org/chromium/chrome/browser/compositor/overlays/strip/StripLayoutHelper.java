@@ -245,6 +245,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     // Animation states. True while the relevant animations are running, and false otherwise.
     private boolean mMultiStepTabCloseAnimRunning;
     private boolean mTabGroupMarginAnimRunning;
+    private boolean mTabCreating;
 
     // Experiment flags
     private final boolean mTabStripImpEnabled;
@@ -652,7 +653,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mModel = model;
         mTabCreator = tabCreator;
         setShouldCascadeTabs(mShouldCascadeTabs);
-        computeAndUpdateTabOrders(false);
+        computeAndUpdateTabOrders(false, false);
     }
 
     /**
@@ -763,7 +764,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean closingLastTab = mStripTabs[mStripTabs.length - 1].getId() == id;
 
         // 2. Rebuild the strip.
-        computeAndUpdateTabOrders(!closingLastTab);
+        computeAndUpdateTabOrders(!closingLastTab, false);
 
         mUpdateHost.requestUpdate();
     }
@@ -772,7 +773,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * Called when all tabs are closed at once.
      */
     public void willCloseAllTabs() {
-        computeAndUpdateTabOrders(true);
+        computeAndUpdateTabOrders(true, false);
         mUpdateHost.requestUpdate();
     }
 
@@ -801,15 +802,23 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (findTabById(id) != null) return;
 
         // 1. Build any tabs that are missing.
-        computeAndUpdateTabOrders(false);
+        List<Animator> animationList = computeAndUpdateTabOrders(false, !onStartup);
+        if (animationList == null) animationList = new ArrayList<>();
 
         // 2. Start an animation for the newly created tab.
         StripLayoutTab tab = findTabById(id);
         if (tab != null && !onStartup) {
             finishAnimationsAndPushTabUpdates();
-            mRunningAnimator = CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(),
-                    tab, StripLayoutTab.Y_OFFSET, tab.getHeight(), 0f, ANIM_TAB_CREATED_MS);
-            mRunningAnimator.start();
+            animationList.add(CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(),
+                    tab, StripLayoutTab.Y_OFFSET, tab.getHeight(), 0f, ANIM_TAB_CREATED_MS));
+
+            mTabCreating = true;
+            startAnimationList(animationList, new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mTabCreating = false;
+                }
+            });
         }
 
         // 3. Figure out which tab needs to be visible.
@@ -1273,7 +1282,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 } else {
                     mMultiStepTabCloseAnimRunning = false;
                     // Resize the tabs appropriately.
-                    resizeTabStrip(!lastTab);
+                    resizeTabStrip(!lastTab, false);
                 }
             }
         });
@@ -1531,7 +1540,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         updateScrollOffsetPosition(mScrollOffset);
     }
 
-    private void computeAndUpdateTabOrders(boolean delayResize) {
+    private List<Animator> computeAndUpdateTabOrders(boolean delayResize, boolean deferAnimations) {
         final int count = mModel.getCount();
         StripLayoutTab[] tabs = new StripLayoutTab[count];
 
@@ -1546,17 +1555,26 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int oldStripLength = mStripTabs.length;
         mStripTabs = tabs;
 
-        if (mStripTabs.length != oldStripLength) resizeTabStrip(delayResize);
+        List<Animator> animationList = null;
+        // If multi-step animation is running, the resize will be handled elsewhere.
+        if (mStripTabs.length != oldStripLength && !mMultiStepTabCloseAnimRunning) {
+            animationList = resizeTabStrip(delayResize, deferAnimations);
+        }
 
         updateVisualTabOrdering();
+        return animationList;
     }
 
-    private void resizeTabStrip(boolean delay) {
+    private List<Animator> resizeTabStrip(boolean delay, boolean deferAnimations) {
+        List<Animator> animationList = null;
+
         if (delay) {
             resetResizeTimeout(true);
         } else {
-            computeAndUpdateTabWidth(true, false);
+            animationList = computeAndUpdateTabWidth(true, deferAnimations);
         }
+
+        return animationList;
     }
 
     private void updateVisualTabOrdering() {
@@ -1665,7 +1683,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // TODO(dtrainor): Remove this once tabCreated() is refactored to be called even from
         // restore.
         if (mStripTabs == null || mModel.getCount() != mStripTabs.length) {
-            computeAndUpdateTabOrders(false);
+            computeAndUpdateTabOrders(false, false);
         }
 
         // 1. Update the scroll offset limits
@@ -1677,7 +1695,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 3. Calculate the tab stacking and ensure that tabs are sized correctly.
         mStripStacker.setTabOffsets(mModel.index(), mStripTabs, TAB_STACK_WIDTH_DP,
                 MAX_TABS_TO_STACK, mTabOverlapWidth, mLeftMargin, mRightMargin, mWidth,
-                mInReorderMode, mMultiStepTabCloseAnimRunning, mCachedTabWidth);
+                mInReorderMode, mMultiStepTabCloseAnimRunning, mTabCreating, mCachedTabWidth);
 
         // 4. Calculate which tabs are visible.
         mStripStacker.performOcclusionPass(mModel.index(), mStripTabs, mWidth);
@@ -1718,7 +1736,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // idealX represents where a tab should be placed in the tab strip. mCachedTabWidth may
             // be different than tab.getWidth() when a tab is closing because for the improved tab
             // strip animations the tab width expansion animations will not have run yet.
-            float tabWidth = mCachedTabWidth;
+            float tabWidth = mMultiStepTabCloseAnimRunning ? mCachedTabWidth : tab.getWidth();
             float delta = (tabWidth - mTabOverlapWidth) * tab.getWidthWeight();
             if (mInReorderMode || mTabGroupMarginAnimRunning) {
                 delta += tab.getTrailingMargin();

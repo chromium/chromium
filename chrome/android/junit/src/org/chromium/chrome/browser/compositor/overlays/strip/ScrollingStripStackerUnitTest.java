@@ -64,7 +64,7 @@ public final class ScrollingStripStackerUnitTest {
 
     @Test
     public void testSetTabOffsets() {
-        mTarget.setTabOffsets(2, mInput, 0, 0, 0, 0, 0, 0, false, false, CACHED_TAB_WIDTH);
+        mTarget.setTabOffsets(2, mInput, 0, 0, 0, 0, 0, 0, false, false, false, CACHED_TAB_WIDTH);
 
         float expected_x = 0;
         for (StripLayoutTab tab : mInput) {
@@ -77,10 +77,10 @@ public final class ScrollingStripStackerUnitTest {
     }
 
     @Test
-    public void testSetTabOffsets_withTabStripImprovement_tabNotClosing() {
+    public void testSetTabOffsets_withTabStripImprovement() {
         setTabStripImprovementFeature(true);
 
-        mTarget.setTabOffsets(2, mInput, 0, 0, 0, 0, 0, 0, false, false, CACHED_TAB_WIDTH);
+        mTarget.setTabOffsets(2, mInput, 0, 0, 0, 0, 0, 0, false, false, false, CACHED_TAB_WIDTH);
 
         float expected_x = 0;
         for (StripLayoutTab tab : mInput) {
@@ -97,7 +97,8 @@ public final class ScrollingStripStackerUnitTest {
     public void testSetTabOffsets_withTabStripImprovement_tabClosing() {
         setTabStripImprovementFeature(true);
 
-        mTarget.setTabOffsets(2, mInput, 0, 0, 0, 0, 0, STRIP_WIDTH, false, true, CACHED_TAB_WIDTH);
+        mTarget.setTabOffsets(
+                2, mInput, 0, 0, 0, 0, 0, STRIP_WIDTH, false, true, false, CACHED_TAB_WIDTH);
 
         for (StripLayoutTab tab : mInput) {
             verify(tab).setDrawY(TAB_OFFSET_Y);
@@ -105,6 +106,27 @@ public final class ScrollingStripStackerUnitTest {
             verify(tab).setContentOffsetX(0.f);
             verify(tab).getOffsetY();
             verifyNoMoreInteractions(tab);
+        }
+    }
+
+    @Test
+    public void testSetTabOffsets_withTabStripImprovement_tabCreating() {
+        setTabStripImprovementFeature(true);
+
+        mTarget.setTabOffsets(
+                2, mInput, 0, 0, 0, 0, 0, STRIP_WIDTH, false, false, true, CACHED_TAB_WIDTH);
+
+        float expected_x = 0;
+        for (StripLayoutTab tab : mInput) {
+            verify(tab).getIdealX();
+            verify(tab).getOffsetX();
+            verify(tab).setDrawX(expected_x);
+            verify(tab).setDrawY(TAB_OFFSET_Y);
+            verify(tab).setVisiblePercentage(1.f);
+            verify(tab).setContentOffsetX(0.f);
+            verify(tab).getOffsetY();
+            verifyNoMoreInteractions(tab);
+            expected_x += TAB_WIDTH;
         }
     }
 

@@ -17,7 +17,7 @@ public class CascadingStripStacker extends StripStacker {
     public void setTabOffsets(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
             float tabStackWidth, int maxTabsToStack, float tabOverlapWidth, float stripLeftMargin,
             float stripRightMargin, float stripWidth, boolean inReorderMode, boolean tabClosing,
-            float cachedTabWidth) {
+            boolean tabCreating, float cachedTabWidth) {
         // 1. Calculate the size of the selected tab.  This is used later to figure out how
         // occluded the tabs are.
         final StripLayoutTab selTab = selectedIndex >= 0 ? indexOrderedTabs[selectedIndex] : null;
