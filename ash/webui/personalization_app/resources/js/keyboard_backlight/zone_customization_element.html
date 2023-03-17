@@ -1,28 +1,41 @@
 <style include="common cros-button-style">
   cr-dialog::part(dialog) {
+    padding-bottom: 20px;
     width: 600px;
   }
+
   #zoneSelector {
     background-color: var(--cros-sys-system_on_base);
     border-radius: 18px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(0,1fr));
     grid-template-rows: minmax(0,1fr);
+    margin-block-end: 20px;
     width: 100%;
   }
+
+  .zone-button[aria-checked='true'] {
+    background-color: var(--cros-sys-system_primary_container);
+  }
+
   .zone-button {
     border-style: none;
     height: 100%;
     width: 100%;
   }
+
   .zone-title-container {
     align-items: center;
     display: flex;
     width: 100%;
   }
-  color-icon {
+
+  .zone-title-container > color-icon {
+    height: auto;
     margin-inline-end: 10px;
+    width: auto;
   }
+
   #zoneTitle {
     max-width: calc(100% - 40px);
     word-wrap: break-word;
@@ -30,6 +43,8 @@
 </style>
 <cr-dialog id="dialog" on-close="closeZoneCustomizationDialog_">
   <div slot="body">
+    <iron-a11y-keys id="zoneKeys" keys="left right" on-keys-pressed="onZoneKeysPress_">
+    </iron-a11y-keys>
     <iron-selector
         id="zoneSelector"
         selected="0"
@@ -37,8 +52,10 @@
       <template is="dom-repeat" items="[[zoneIdxs_]]" as="zoneIdx">
         <cr-button
             class="zone-button tab-slider"
-            tabindex$="[[getTabIndex_(zoneIdx)]]"
-            on-click="onClickZoneButton_">
+            tabindex$="[[getZoneTabIndex_(zoneIdx)]]"
+            data-zone-idx$="[[zoneIdx]]"
+            on-click="onClickZoneButton_"
+            aria-checked$="[[getZoneAriaChecked_(zoneIdx, zoneSelected_)]]">
           <div class="zone-title-container">
             <color-icon color-id="[[getColorId_(zoneIdx, zoneColors_)]]"></color-icon>
             <div id="zoneTitle">[[getZoneTitle_(zoneIdx)]]</div>
@@ -46,12 +63,16 @@
         </cr-button>
       </template>
     </iron-selector>
-    <!-- TODO(b/265855838): Add color selector -->
-    <cr-button on-click="setZoneOneToRed_">[temp] Red</cr-button>
-  </div>
-  <div slot="button-container">
-    <cr-button class="primary" id="dialogCloseButton" on-click="closeZoneCustomizationDialog_">
-      $i18n{dismissButtonText}
-    </cr-button>
+    <color-selector
+        is-customized-dialog
+        selected-color="[[getSelectedColor_(zoneSelected_, zoneColors_)]]"
+        on-wallpaper-color-selected="onWallpaperColorSelected_"
+        on-preset-color-selected="onPresetColorSelected_">
+      <div slot="button-container" class="customization-button-container">
+        <cr-button class="primary" id="dialogCloseButton" on-click="closeZoneCustomizationDialog_">
+          $i18n{dismissButtonText}
+        </cr-button>
+      </div>
+    </color-selector>
   </div>
 </cr-dialog>

@@ -19,15 +19,21 @@ export function setBacklightColor(
     provider: KeyboardBacklightProviderInterface, store: PersonalizationStore) {
   provider.setBacklightColor(backlightColor);
 
-  // Dispatch action to set the current backlight state.
+  // Dispatch action to set the current backlight state - color.
   store.dispatch(setCurrentBacklightStateAction({color: backlightColor}));
 }
 
 // Set the keyboard backlight color for the given zone.
 export function setBacklightZoneColor(
-    zone: number, backlightColor: BacklightColor,
-    provider: KeyboardBacklightProviderInterface) {
+    zone: number, backlightColor: BacklightColor, zoneColors: BacklightColor[],
+    provider: KeyboardBacklightProviderInterface, store: PersonalizationStore) {
   provider.setBacklightZoneColor(zone, backlightColor);
+
+  // Dispatch action to set the current backlight state - zone colors.
+  const updatedZoneColors = [...zoneColors];
+  updatedZoneColors[zone] = backlightColor;
+  store.dispatch(
+      setCurrentBacklightStateAction({zoneColors: updatedZoneColors}));
 }
 
 // Set the should show nudge boolean.

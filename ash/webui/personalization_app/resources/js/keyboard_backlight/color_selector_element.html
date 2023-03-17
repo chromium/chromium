@@ -87,12 +87,12 @@
       role="radiogroup" aria-label="[[getColorSelectorAriaLabel_()]]">
     <template is="dom-if" if="[[!isMultiZoneRgbKeyboardSupported_]]">
       <div id$="[[wallpaperColorId_]]"
-          class$="[[getWallpaperColorContainerClass_(backlightColor_)]]"
+          class$="[[getWallpaperColorContainerClass_(selectedColor)]]"
           tabindex="0"
           on-click="onWallpaperColorSelected_"
           on-keypress="onWallpaperColorSelected_"
           aria-label="$i18n{wallpaperColor}"
-          aria-checked$="[[getWallpaperColorAriaChecked_(backlightColor_)]]"
+          aria-checked$="[[getWallpaperColorAriaChecked_(selectedColor)]]"
           title$="[[getWallpaperColorTitle_()]]"
           role="radio">
         <color-icon color-id="[[wallpaperColorId_]]"></color-icon>
@@ -126,10 +126,10 @@
     </template>
     <template is="dom-if" if="[[!isCustomizedDialog]]">
       <div id$="[[rainbowColorId_]]"
-          class$="[[getRainbowColorContainerClass_(backlightColor_)]]"
+          class$="[[getRainbowColorContainerClass_(selectedColor)]]"
           on-click="onRainbowColorSelected_" on-keypress="onRainbowColorSelected_"
           aria-label="$i18n{rainbowColor}" role="radio"
-          aria-checked$="[[getRainbowColorAriaChecked_(backlightColor_)]]"
+          aria-checked$="[[getRainbowColorAriaChecked_(selectedColor)]]"
           title="$i18n{rainbowColor}">
         <color-icon color-id="[[rainbowColorId_]]"></color-icon>
       </div>

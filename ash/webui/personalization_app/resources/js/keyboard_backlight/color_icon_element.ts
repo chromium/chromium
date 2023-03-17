@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * The color icon indicates wallpaper or preset colors in keyboard backlight and
+ * zone customization section.
+ */
+
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {convertToRgbHexStr, getPresetColors, GREEN, INDIGO, RAINBOW, RED, WALLPAPER, YELLOW} from '../utils.js';
 
 import {getTemplate} from './color_icon_element.html.js';
-
-/**
- * @fileoverview
- * The color icon indicates wallpaper or preset colors in keyboard backlight and
- * zone customization section.
- */
 
 /**
   Based on this algorithm suggested by the W3:

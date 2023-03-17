@@ -103,13 +103,7 @@ export class ColorSelector extends WithPersonalizationStore {
 
       currentBacklightState_: Object,
 
-      /** The selected backlight color if single color is selected. */
-      backlightColor_: {
-        type: Object,
-        computed: 'computeBacklightColor_(currentBacklightState_)',
-      },
-
-      selectedColor: String,
+      selectedColor: BacklightColor,
 
       /** The current wallpaper extracted color. */
       wallpaperColor_: Object,
@@ -129,8 +123,7 @@ export class ColorSelector extends WithPersonalizationStore {
   private rainbowColorId_: string;
   private wallpaperColorId_: string;
   private currentBacklightState_: CurrentBacklightState|null;
-  private backlightColor_: BacklightColor|null;
-  private selectedColor: string;
+  private selectedColor: BacklightColor;
   private wallpaperColor_: SkColor|null;
   private shouldShowNudge_: boolean;
 
@@ -203,11 +196,6 @@ export class ColorSelector extends WithPersonalizationStore {
 
   private shouldShowRainbowColorItem_(): boolean {
     return !this.isCustomizedDialog;
-  }
-
-  private computeBacklightColor_(currentBacklightState: CurrentBacklightState):
-      BacklightColor|null|undefined {
-    return currentBacklightState ? currentBacklightState.color : null;
   }
 
   private computePresetColorIds_(presetColors: Record<string, string>):

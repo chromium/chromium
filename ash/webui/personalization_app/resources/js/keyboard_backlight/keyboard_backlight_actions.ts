@@ -7,7 +7,6 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 
 import {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
 
-
 /**
  * @fileoverview Defines the actions to update keyboard backlight settings.
  */

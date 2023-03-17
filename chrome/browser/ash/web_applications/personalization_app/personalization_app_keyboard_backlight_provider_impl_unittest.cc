@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager.h"
+#include "ash/shell.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -154,6 +156,12 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
     return test_keyboard_backlight_observer_.wallpaper_color();
   }
 
+  void set_rgb_capability(rgbkbd::RgbKeyboardCapabilities capability) {
+    RgbKeyboardManager* rgb_keyboard_manager =
+        Shell::Get()->rgb_keyboard_manager();
+    rgb_keyboard_manager->OnCapabilityUpdatedForTesting(capability);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -185,6 +193,28 @@ TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest, SetBacklightColor) {
   histogram_tester().ExpectBucketCount(
       kPersonalizationKeyboardBacklightColorHistogramName,
       mojom::BacklightColor::kBlue, 1);
+}
+
+TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
+       SetBacklightZoneColor) {
+  SimulateUserLogin(account_id);
+  SetKeyboardBacklightObserver();
+  set_rgb_capability(rgbkbd::RgbKeyboardCapabilities::kFourZoneFortyLed);
+  keyboard_backlight_provider_remote()->FlushForTesting();
+
+  keyboard_backlight_provider()->SetBacklightColor(
+      mojom::BacklightColor::kBlue);
+  EXPECT_TRUE(ObservedBacklightColor()->is_color());
+
+  keyboard_backlight_provider()->SetBacklightZoneColor(
+      1, mojom::BacklightColor::kRed);
+  // Verify JS side is notified.
+  EXPECT_TRUE(ObservedBacklightColor()->is_zone_colors());
+  const auto zone_colors = ObservedBacklightColor()->get_zone_colors();
+  for (size_t i = 0; i < zone_colors.size(); i++) {
+    EXPECT_EQ(zone_colors[i], i == 1 ? mojom::BacklightColor::kRed
+                                     : mojom::BacklightColor::kBlue);
+  }
 }
 
 TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
