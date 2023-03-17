@@ -668,7 +668,6 @@ crbug.com/874695 [ Debug Linux ] media/controls/video-enter-exit-fullscreen-whil
 crbug.com/874695 [ Debug Mac12 ] media/controls/video-enter-exit-fullscreen-while-hovering-shows-controls.html [ Slow ]
 crbug.com/874695 [ Release ] media/controls/video-enter-exit-fullscreen-while-hovering-shows-controls.html [ Slow ]
 crbug.com/874695 media/encrypted-media/encrypted-media-onencrypted.html [ Slow ]
-crbug.com/874695 [ Debug Mac12 ] media/encrypted-media/encrypted-media-setmediakeys-at-same-time.html [ Slow ]
 crbug.com/874695 [ Release ] media/encrypted-media/encrypted-media-setmediakeys-at-same-time.html [ Slow ]
 crbug.com/874695 [ Linux Release ] media/media-controls-tap-show-controls-without-activating.html [ Slow ]
 crbug.com/874695 [ Debug Mac12 ] media/media-controls-tap-show-controls-without-activating.html [ Slow ]
