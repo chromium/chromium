@@ -16,8 +16,12 @@ source_set("telemetry_extension") {
     "probe_service_ash.h",
     "probe_service_converters.cc",
     "probe_service_converters.h",
+    "telemetry_event_forwarder.cc",
+    "telemetry_event_forwarder.h",
     "telemetry_event_service_ash.cc",
     "telemetry_event_service_ash.h",
+    "telemetry_event_service_converters.cc",
+    "telemetry_event_service_converters.h",
   ]
 
   deps = [
@@ -29,6 +33,7 @@ source_set("telemetry_extension") {
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/network_health/public/mojom:types",
+    "//mojo/public/cpp/bindings",
   ]
 }
 
@@ -39,6 +44,8 @@ source_set("unit_tests") {
     "diagnostics_service_converters_unittest.cc",
     "probe_service_ash_unittest.cc",
     "probe_service_converters_unittest.cc",
+    "telemetry_event_service_ash_unittest.cc",
+    "telemetry_event_service_converters_unittest.cc",
   ]
   deps = [
     ":telemetry_extension",

@@ -130,6 +130,11 @@ void FakeCrosHealthd::SetProbeTelemetryInfoResponseForTesting(
   telemetry_response_info_.Swap(&response_info);
 }
 
+void FakeCrosHealthd::SetIsEventSupportedResponseForTesting(
+    mojom::SupportStatusPtr& result) {
+  is_event_supported_response_.Swap(&result);
+}
+
 void FakeCrosHealthd::SetProbeProcessInfoResponseForTesting(
     mojom::ProcessResultPtr& result) {
   process_response_.Swap(&result);
@@ -167,6 +172,16 @@ void FakeCrosHealthd::EmitEventForCategory(mojom::EventCategoryEnum category,
   for (auto& observer : it->second) {
     observer->OnEvent(info.Clone());
   }
+}
+
+mojo::RemoteSet<mojom::EventObserver>* FakeCrosHealthd::GetObserversByCategory(
+    mojom::EventCategoryEnum category) {
+  auto it = event_observers_.find(category);
+  if (it == event_observers_.end()) {
+    return nullptr;
+  }
+
+  return &it->second;
 }
 
 void FakeCrosHealthd::EmitConnectionStateChangedEventForTesting(
@@ -741,7 +756,7 @@ void FakeCrosHealthd::AddEventObserver(
 void FakeCrosHealthd::IsEventSupported(
     ash::cros_healthd::mojom::EventCategoryEnum category,
     IsEventSupportedCallback callback) {
-  std::move(callback).Run(nullptr);
+  std::move(callback).Run(is_event_supported_response_.Clone());
 }
 
 void FakeCrosHealthd::ProbeTelemetryInfo(

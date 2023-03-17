@@ -138,6 +138,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   void SetProbeMultipleProcessInfoResponseForTesting(
       mojom::MultipleProcessResultPtr& result);
 
+  // Set the result for a call to `IsEventSupported`.
+  void SetIsEventSupportedResponseForTesting(mojom::SupportStatusPtr& result);
+
   // Set expectation about the parameter that is passed to a call of
   // a Diagnostics routine (`Run*Routine`) and `GetRoutineUpdate`.
   void SetExpectedLastPassedDiagnosticsParametersForTesting(
@@ -154,6 +157,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // `category`.
   void EmitEventForCategory(mojom::EventCategoryEnum category,
                             mojom::EventInfoPtr info);
+
+  mojo::RemoteSet<mojom::EventObserver>* GetObserversByCategory(
+      mojom::EventCategoryEnum category);
 
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
@@ -337,6 +343,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   mojom::RoutineUpdatePtr routine_update_response_{mojom::RoutineUpdate::New()};
   // Used as the response to any ProbeTelemetryInfo IPCs received.
   mojom::TelemetryInfoPtr telemetry_response_info_{mojom::TelemetryInfo::New()};
+  // Used as the response to any IsEventSupported IPCs received.
+  mojom::SupportStatusPtr is_event_supported_response_{
+      mojom::SupportStatus::NewUnmappedUnionField(0)};
   // Used as the response to any ProbeProcessInfo IPCs received.
   mojom::ProcessResultPtr process_response_{
       mojom::ProcessResult::NewProcessInfo(mojom::ProcessInfo::New())};
