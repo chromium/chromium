@@ -17,33 +17,16 @@ CompanionPageHandler::CompanionPageHandler(
     mojo::PendingRemote<side_panel::mojom::CompanionPage> page,
     Browser* browser,
     CompanionSidePanelUntrustedUI* companion_untrusted_ui)
-    : receiver_(this, std::move(receiver)),
+    : content::WebContentsObserver(
+          browser->tab_strip_model()->GetActiveWebContents()),
+      receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      browser_(browser),
       companion_untrusted_ui_(companion_untrusted_ui) {
-  DCHECK(browser_);
-  browser_->tab_strip_model()->AddObserver(this);
-
-  // Observe the active web contents and then pass the current active visible
-  // URL to the WebUI.
-  Observe(browser_->tab_strip_model()->GetActiveWebContents());
+  DCHECK(browser);
   NotifyURLChanged();
 }
 
-CompanionPageHandler::~CompanionPageHandler() {
-  browser_->tab_strip_model()->RemoveObserver(this);
-  Observe(nullptr);
-}
-
-void CompanionPageHandler::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (selection.active_tab_changed() && selection.new_contents) {
-    Observe(selection.new_contents);
-    NotifyURLChanged();
-  }
-}
+CompanionPageHandler::~CompanionPageHandler() = default;
 
 void CompanionPageHandler::PrimaryPageChanged(content::Page& page) {
   NotifyURLChanged();
