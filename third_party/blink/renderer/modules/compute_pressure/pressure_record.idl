@@ -15,7 +15,7 @@ enum PressureState {
 
 // https://wicg.github.io/compute-pressure/#dom-pressurerecord
 [
-    Exposed=Window,
+    Exposed=(DedicatedWorker,SharedWorker,Window),
     RuntimeEnabled=ComputePressure,
     SecureContext
 ] interface PressureRecord {

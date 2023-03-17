@@ -1,5 +1,6 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: global=window,dedicatedworker,sharedworker
 
 // https://wicg.github.io/compute-pressure/
 

@@ -9,7 +9,7 @@ enum PressureSource {
 
 // https://wicg.github.io/compute-pressure/#dom-pressureobserver
 [
-    Exposed=Window,
+    Exposed=(DedicatedWorker,SharedWorker,Window),
     RuntimeEnabled=ComputePressure,
     SecureContext
 ] interface PressureObserver {

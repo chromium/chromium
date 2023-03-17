@@ -3,11 +3,7 @@
 // found in the LICENSE file.
 
 // https://wicg.github.io/compute-pressure/#dom-pressureupdatecallback
-[
-    Exposed=Window,
-    RuntimeEnabled=ComputePressure,
-    SecureContext
-] callback PressureUpdateCallback = void (
+callback PressureUpdateCallback = void (
     sequence<PressureRecord> changes,
     PressureObserver observer
   );

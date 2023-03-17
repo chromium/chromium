@@ -190,6 +190,14 @@ void PressureObserverManager::EnsureServiceConnection() {
 
 // https://wicg.github.io/compute-pressure/#dfn-passes-privacy-test
 bool PressureObserverManager::PassesPrivacyTest() const {
+  const ExecutionContext* context = GetExecutionContext();
+
+  // TODO(crbug.com/1425053): Check for active needed worker.
+  if (context->IsDedicatedWorkerGlobalScope() ||
+      context->IsSharedWorkerGlobalScope()) {
+    return true;
+  }
+
   if (!DomWindow()) {
     return false;
   }

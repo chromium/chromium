@@ -1093,6 +1093,22 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method request
 [Worker]     method requestAll
 [Worker]     method revoke
+[Worker] interface PressureObserver
+[Worker]     static getter supportedSources
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method disconnect
+[Worker]     method observe
+[Worker]     method takeRecords
+[Worker]     method unobserve
+[Worker] interface PressureRecord
+[Worker]     attribute @@toStringTag
+[Worker]     getter factors
+[Worker]     getter source
+[Worker]     getter state
+[Worker]     getter time
+[Worker]     method constructor
+[Worker]     method toJSON
 [Worker] interface ProgressEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter lengthComputable

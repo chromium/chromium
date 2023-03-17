@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 // https://wicg.github.io/compute-pressure/#dom-pressureobserveroptions
-[
-    Exposed=Window,
-    SecureContext
-] dictionary PressureObserverOptions {
+
+dictionary PressureObserverOptions {
   double sampleRate = 1.0;
 };
