@@ -1743,6 +1743,47 @@ TEST_F(DriveFsPinManagerTest, OnTransientError) {
   EXPECT_EQ(manager.progress_.stage, Stage::kCannotListFiles);
 }
 
+// Tests PinManager::OnError().
+TEST_F(DriveFsPinManagerTest, OnError) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kSyncing;
+
+  using mojom::DriveError;
+  DriveError error;
+  error.stable_id = 214;
+  error.path = Path("My Path");
+
+  using Type = DriveError::Type;
+
+  // These error types should just be logged.
+  for (const Type type : {
+           Type::kCantUploadStorageFull,
+           Type::kCantUploadStorageFullOrganization,
+           Type::kCantUploadSharedDriveStorageFull,
+           Type(-1),
+
+       }) {
+    error.type = type;
+    manager.OnError(std::as_const(error));
+    EXPECT_EQ(manager.progress_.stage, Stage::kSyncing);
+  }
+
+  // Error of type kPinningFailedDiskFull should stop the pin manager.
+  error.type = Type::kPinningFailedDiskFull;
+  manager.OnError(std::as_const(error));
+  EXPECT_EQ(manager.progress_.stage, Stage::kNotEnoughSpace);
+
+  manager.Stop();
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+
+  // Error of type kPinningFailedDiskFull should not have any effect if the pin
+  // manager is already stopped.
+  manager.OnError(std::as_const(error));
+  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+}
+
 TEST_F(DriveFsPinManagerTest,
        DISABLED_FailingToPinOneItemShouldNotFailCompletely) {
   CompletionCallback completion_callback;

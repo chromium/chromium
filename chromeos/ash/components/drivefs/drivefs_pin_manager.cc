@@ -1073,6 +1073,11 @@ void PinManager::OnFileModified(const mojom::FileChange& event) {
 
 void PinManager::OnError(const mojom::DriveError& error) {
   LOG(ERROR) << "Got DriveError " << Quote(error);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (error.type == mojom::DriveError::Type::kPinningFailedDiskFull &&
+      InProgress(progress_.stage)) {
+    Complete(Stage::kNotEnoughSpace);
+  }
 }
 
 void PinManager::NotifyProgress() {
