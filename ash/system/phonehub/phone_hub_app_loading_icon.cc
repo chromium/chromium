@@ -13,6 +13,12 @@ namespace ash {
 
 namespace {
 
+// Constants for loading animation
+constexpr float kAnimationOpacityHigh = 1.0f;
+constexpr float kAnimationOpacityLow = 0.5f;
+constexpr int kAnimationFadeDownDurationInMs = 500;
+constexpr int kAnimationFadeUpDurationInMs = 500;
+
 class LoadingCircle : public gfx::CanvasImageSource {
  public:
   explicit LoadingCircle(int size)
@@ -41,6 +47,34 @@ AppLoadingIcon::AppLoadingIcon(int size)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetFillsBoundsCompletely(false);
+}
+
+AppLoadingIcon::~AppLoadingIcon() = default;
+
+void AppLoadingIcon::StartLoadingAnimation(
+    absl::optional<base::TimeDelta> initial_delay) {
+  if (initial_delay) {
+    animation_initial_delay_timer_.Start(
+        FROM_HERE, *initial_delay,
+        base::BindOnce(&AppLoadingIcon::StartLoadingAnimation,
+                       base::Unretained(this),
+                       /*initial_delay=*/absl::nullopt));
+    return;
+  }
+
+  views::AnimationBuilder builder;
+  builder.Repeatedly()
+      .SetDuration(base::Milliseconds(kAnimationFadeDownDurationInMs))
+      .SetOpacity(this, kAnimationOpacityLow, gfx::Tween::ACCEL_30_DECEL_20_85)
+      .Then()
+      .SetDuration(base::Milliseconds(kAnimationFadeUpDurationInMs))
+      .SetOpacity(this, kAnimationOpacityHigh, gfx::Tween::LINEAR);
+  animation_abort_handle_ = builder.GetAbortHandle();
+}
+
+void AppLoadingIcon::StopLoadingAnimation() {
+  animation_abort_handle_.reset();
+  animation_initial_delay_timer_.Stop();
 }
 
 }  // namespace ash

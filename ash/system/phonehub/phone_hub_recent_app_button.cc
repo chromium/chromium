@@ -18,7 +18,7 @@ namespace ash {
 namespace {
 
 // Appearance in DIPs.
-constexpr int kRecentAppButtonSize = 32;
+constexpr int kRecentAppButtonSize = 42;
 
 }  // namespace
 

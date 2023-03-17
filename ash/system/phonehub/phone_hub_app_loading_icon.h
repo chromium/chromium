@@ -7,12 +7,25 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_app_icon.h"
+#include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/views/animation/animation_abort_handle.h"
 
 namespace ash {
 
 class ASH_EXPORT AppLoadingIcon : public AppIcon {
  public:
   explicit AppLoadingIcon(int size);
+  AppLoadingIcon(const AppLoadingIcon&) = delete;
+  AppLoadingIcon& operator=(const AppLoadingIcon&) = delete;
+  ~AppLoadingIcon() override;
+
+  void StartLoadingAnimation(absl::optional<base::TimeDelta> initial_delay);
+  void StopLoadingAnimation();
+
+ private:
+  std::unique_ptr<views::AnimationAbortHandle> animation_abort_handle_;
+  base::OneShotTimer animation_initial_delay_timer_;
 };
 
 }  // namespace ash

@@ -5,12 +5,16 @@
 #ifndef ASH_SYSTEM_PHONEHUB_PHONE_HUB_MORE_APPS_BUTTON_H_
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_MORE_APPS_BUTTON_H_
 
-#include "base/timer/timer.h"
+#include <vector>
+
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/table_layout.h"
 
 namespace ash {
+
+class AppLoadingIcon;
 
 // A view in phone hub that displays the first three apps in a user's app
 // drawer, as well as a count of how many apps they have on their phone.
@@ -32,19 +36,22 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
   PhoneHubMoreAppsButton& operator=(const PhoneHubMoreAppsButton&) = delete;
   ~PhoneHubMoreAppsButton() override;
 
-  // phonehub::AppStreamLauncherDataModel
+  void StartLoadingAnimation(absl::optional<base::TimeDelta> initial_delay);
+  void StopLoadingAnimation();
+
+  // phonehub::AppStreamLauncherDataModel::Observer:
   void OnShouldShowMiniLauncherChanged() override;
   void OnAppListChanged() override;
 
  private:
   void InitLayout();
   void LoadAppList();
-  void AddLoadingAppIcons(bool animate);
 
   base::TimeTicks load_app_list_latency_ = base::TimeTicks();
   views::TableLayout* table_layout_ = nullptr;
   phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model_ =
       nullptr;
+  std::vector<AppLoadingIcon*> app_loading_icons_;
 };
 
 }  // namespace ash

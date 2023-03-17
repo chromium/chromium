@@ -4,6 +4,7 @@
 
 #ifndef ASH_SYSTEM_PHONEHUB_PHONE_HUB_APP_ICON_H_
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_APP_ICON_H_
+
 #include "ash/ash_export.h"
 #include "ui/views/controls/image_view.h"
 
@@ -13,7 +14,7 @@ class ASH_EXPORT AppIcon : public views::ImageView {
  public:
   // Measured in DIPs.
   static constexpr int kSizeSmall = 20;
-  static constexpr int kSizeNormal = 32;
+  static constexpr int kSizeNormal = 42;
 
   static constexpr gfx::Size GetRecommendedImageSize(int icon_size) {
     // Leave 1 DP of space around the image to avoid the appearance of clipping.
@@ -26,7 +27,6 @@ class ASH_EXPORT AppIcon : public views::ImageView {
   AppIcon(const gfx::Image& icon, int size);
   AppIcon(const AppIcon&) = delete;
   AppIcon& operator=(const AppIcon&) = delete;
-
   ~AppIcon() override = default;
 
   // views::View:

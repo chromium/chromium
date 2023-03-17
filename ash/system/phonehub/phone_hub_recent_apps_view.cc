@@ -29,7 +29,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -67,14 +66,11 @@ constexpr int kMaxAppsWithMoreAppsButton = 5;
 constexpr gfx::Rect kMoreAppsButtonArea = gfx::Rect(57, 32);
 constexpr int kMoreAppsButtonRadius = 16;
 
-// Animation constants for loading view
-constexpr float kAnimationLoadingIconOpacityHigh = 1.0f;
-constexpr float kAnimationLoadingIconOpacityLow = 0.5f;
-constexpr int kAnimationLoadingIconStaggerDelayInMs = 100;
-constexpr int kAnimationLoadingIconFadeDownDurationInMs = 500;
-constexpr int kAnimationLoadingIconFadeUpDurationInMs = 500;
-
 constexpr int kRecentAppsHeaderSpacing = 220;
+
+// The app icons in the LoadingView stagger the start of the loading animation
+// to make the appearance of a ripple.
+constexpr int kAnimationLoadingIconStaggerDelayInMs = 100;
 
 void LayoutAppButtonsView(views::View* buttons_view) {
   const gfx::Rect child_area = buttons_view->GetContentsBounds();
@@ -112,18 +108,6 @@ void LayoutAppButtonsView(views::View* buttons_view) {
     child->SetBounds(child_x, child_y, width, child->GetHeightForWidth(width));
     child_x += width + spacing;
   }
-}
-
-void ApplyLoadingAnimation(views::View* view) {
-  views::AnimationBuilder()
-      .Repeatedly()
-      .SetDuration(
-          base::Milliseconds(kAnimationLoadingIconFadeDownDurationInMs))
-      .SetOpacity(view, kAnimationLoadingIconOpacityLow,
-                  gfx::Tween::ACCEL_30_DECEL_20_85)
-      .Then()
-      .SetDuration(base::Milliseconds(kAnimationLoadingIconFadeUpDurationInMs))
-      .SetOpacity(view, kAnimationLoadingIconOpacityHigh, gfx::Tween::LINEAR);
 }
 
 class HeaderView : public views::View {
@@ -294,7 +278,13 @@ PhoneHubRecentAppsView::LoadingView::LoadingView() {
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  PopulateLoadingView();
+  for (size_t i = 0; i < 5; i++) {
+    app_loading_icons_.push_back(
+        AddChildView(new AppLoadingIcon(AppIcon::kSizeNormal)));
+  }
+  more_apps_button_ = AddChildView(new PhoneHubMoreAppsButton());
+
+  StartLoadingAnimation();
 }
 
 PhoneHubRecentAppsView::LoadingView::~LoadingView() = default;
@@ -319,26 +309,21 @@ const char* PhoneHubRecentAppsView::LoadingView::GetClassName() const {
   return "RecentAppLoadingView";
 }
 
-void PhoneHubRecentAppsView::LoadingView::PopulateLoadingView() {
-  for (size_t i = 0; i < 6; i++) {
-    views::View* empty_app_loading_icon = nullptr;
-    if (i == 5) {
-      empty_app_loading_icon = AddChildView(new PhoneHubMoreAppsButton());
-
-      // TODO(b/271478560): Animation fails for more apps button.
-      continue;
-    } else {
-      empty_app_loading_icon =
-          AddChildView(new AppLoadingIcon(AppIcon::kSizeNormal));
-    }
-
-    auto timer = std::make_unique<base::OneShotTimer>();
-    timer->Start(
-        FROM_HERE,
-        /*delay=*/base::Milliseconds(i * kAnimationLoadingIconStaggerDelayInMs),
-        base::BindOnce(&ApplyLoadingAnimation, empty_app_loading_icon));
-    timers_.emplace_back(std::move(timer));
+void PhoneHubRecentAppsView::LoadingView::StartLoadingAnimation() {
+  for (size_t i = 0; i < app_loading_icons_.size(); i++) {
+    app_loading_icons_[i]->StartLoadingAnimation(
+        /*initial_delay=*/base::Milliseconds(
+            i * kAnimationLoadingIconStaggerDelayInMs));
   }
+  more_apps_button_->StartLoadingAnimation(/*initial_delay=*/base::Milliseconds(
+      5 * kAnimationLoadingIconStaggerDelayInMs));
+}
+
+void PhoneHubRecentAppsView::LoadingView::StopLoadingAnimation() {
+  for (AppLoadingIcon* app_loading_icon : app_loading_icons_) {
+    app_loading_icon->StopLoadingAnimation();
+  }
+  more_apps_button_->StopLoadingAnimation();
 }
 
 void PhoneHubRecentAppsView::Update() {

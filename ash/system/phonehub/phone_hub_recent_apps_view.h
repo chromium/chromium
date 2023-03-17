@@ -10,14 +10,17 @@
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_connected_view.h"
 #include "base/gtest_prod_util.h"
-#include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
 namespace ash {
+
+class AppLoadingIcon;
+class PhoneHubMoreAppsButton;
 
 namespace phonehub {
 class PhoneHubManager;
@@ -83,10 +86,12 @@ class ASH_EXPORT PhoneHubRecentAppsView
     void Layout() override;
     const char* GetClassName() const override;
 
-    void PopulateLoadingView();
+    void StartLoadingAnimation();
+    void StopLoadingAnimation();
 
    private:
-    std::vector<std::unique_ptr<base::OneShotTimer>> timers_;
+    std::vector<AppLoadingIcon*> app_loading_icons_;
+    PhoneHubMoreAppsButton* more_apps_button_ = nullptr;
   };
 
   // Update the view to reflect the most recently opened apps.
