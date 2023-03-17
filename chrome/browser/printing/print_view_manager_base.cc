@@ -1109,10 +1109,9 @@ void PrintViewManagerBase::ReleasePrinterQuery() {
   if (!print_job_manager)
     return;
 
+  // Let `printer_query` go out of scope to release it.
   std::unique_ptr<PrinterQuery> printer_query =
       queue_->PopPrinterQuery(current_cookie);
-  if (!printer_query)
-    return;
 }
 
 void PrintViewManagerBase::CompletePrintNow(content::RenderFrameHost* rfh) {
