@@ -162,11 +162,40 @@ const cellularRegEx: RegExp = buildWordMatcher([
 const displayRegEx = buildWordMatcher([
   'display',
   'displayport',
-  'dock',
   'hdmi',
   'monitor',
   'panel',
   'screen',
+]);
+
+/**
+ * Regular expression to check for USB-related keywords.
+ */
+const usbRegEx = buildWordMatcher([
+  'USB',
+  'USB-C',
+  'Type-C',
+  'TypeC',
+  'USBC',
+  'USBTypeC',
+  'USBPD',
+  'hub',
+  'charger',
+  'dock',
+]);
+
+/**
+ * Regular expression to check for thunderbolt-related keywords.
+ */
+const thunderboltRegEx = buildWordMatcher([
+  'Thunderbolt',
+  'Thunderbolt3',
+  'Thunderbolt4',
+  'TBT',
+  'TBT3',
+  'TBT4',
+  'TB3',
+  'TB4',
 ]);
 
 /**
@@ -341,6 +370,12 @@ function checkForShowQuestionnaire(inputEvent: Event) {
 
   if (displayRegEx.test(matchedText)) {
     toAppend.push(...domainQuestions['display']);
+  }
+
+  if (thunderboltRegEx.test(matchedText)) {
+    toAppend.push(...domainQuestions['thunderbolt']);
+  } else if (usbRegEx.test(matchedText)) {
+    toAppend.push(...domainQuestions['usb']);
   }
 
   if (toAppend.length === 0) {

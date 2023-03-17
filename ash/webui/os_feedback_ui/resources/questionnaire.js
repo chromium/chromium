@@ -87,6 +87,31 @@ const questionDisplayProblem =
     '   * Part of screen is intermittently black/off \n' +
     '   * Picture on screen is corrupted \n';
 
+const questionUSBDevice = '[USB] What is the make/model of the affected USB ' +
+    'device?';
+
+const questionUSBCable = '[USB] Tell us about your cable. What kind of plug ' +
+    'does it have at each end (USB-A, USB-C, Micro USB, etc.). Does it have ' +
+    'any logos or labeling?';
+
+const questionUSBTopology = '[USB] How is the device connected to your ' +
+    'Chromebook? Which port is the device connected to? Is it directly ' +
+    'connected to your Chromebook, or connected through hubs? If it is ' +
+    'connected through hubs, please tell us their make and model.';
+
+const questionThunderboltDevice = '[Thunderbolt] What is the make/model of ' +
+    'the affected Thunderbolt device?';
+
+const questionThunderboltCable = '[Thunderbolt] Tell us about your cable. Is ' +
+    'it labeled as a Thunderbolt cable? If not, what kind of plug does it ' +
+    'have at each end (USB-A, USB-C, Micro USB, etc.). Does it have any ' +
+    'other logos or labeling?';
+
+const questionThunderboltDisplays = '[Thunderbolt] If you are having trouble ' +
+    'connecting external displays to your Chromebook with a Thunderbolt ' +
+    'dock, what are the make and model of the displays? Which ports on the ' +
+    'dock are they connected to?';
+
 export const domainQuestions = {
   'bluetooth': [
     questionGeneralTimestamp,
@@ -118,5 +143,23 @@ export const domainQuestions = {
     questionDisplayConnectionDock,
     questionDisplayProblemScope,
     questionDisplayProblem,
+  ],
+  'usb': [
+    questionGeneralTimestamp,
+    questionGeneralCurrentProblem,
+    questionGeneralRegression,
+    questionGeneralReproducibility,
+    questionUSBDevice,
+    questionUSBCable,
+    questionUSBTopology,
+  ],
+  'thunderbolt': [
+    questionGeneralTimestamp,
+    questionGeneralCurrentProblem,
+    questionGeneralRegression,
+    questionGeneralReproducibility,
+    questionThunderboltDevice,
+    questionThunderboltCable,
+    questionThunderboltDisplays,
   ],
 };
