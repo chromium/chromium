@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
+#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_retention_field_trial_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
@@ -1263,6 +1264,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTFLiteLanguageDetectionIgnoreDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(translate::kTFLiteLanguageDetectionIgnoreEnabled)},
+    {"keyboard-shortcuts-menu", flag_descriptions::kKeyboardShortcutsMenuName,
+     flag_descriptions::kKeyboardShortcutsMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kKeyboardShortcutsMenu)},
     {"enable-check-visibility-on-attention-log-start",
      flag_descriptions::kEnableCheckVisibilityOnAttentionLogStartName,
      flag_descriptions::kEnableCheckVisibilityOnAttentionLogStartDescription,

@@ -477,6 +477,10 @@ extern const char kIOSSharedHighlightingV2Description[];
 extern const char kIOSShowPasswordStorageInSaveInfobarName[];
 extern const char kIOSShowPasswordStorageInSaveInfobarDescription[];
 
+// Title and description for the flag to enable Keyboard Shortcuts Refresh.
+extern const char kKeyboardShortcutsMenuName[];
+extern const char kKeyboardShortcutsMenuDescription[];
+
 // Title and description for the flag to lock the bottom toolbar into place.
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];

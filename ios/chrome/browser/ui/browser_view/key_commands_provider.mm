@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -103,26 +104,69 @@ using base::UserMetricsAction;
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
-  // Return the key commands that are not already present in the menu (see
-  // i/c/b/ui/keyboard/menu_builder.h).
-  return @[
-    UIKeyCommand.cr_openNewRegularTab,
-    UIKeyCommand.cr_showNextTab_2,
-    UIKeyCommand.cr_showPreviousTab_2,
-    UIKeyCommand.cr_showNextTab_3,
-    UIKeyCommand.cr_showPreviousTab_3,
-    UIKeyCommand.cr_back_2,
-    UIKeyCommand.cr_forward_2,
-    UIKeyCommand.cr_showDownloads_2,
-    UIKeyCommand.cr_select2,
-    UIKeyCommand.cr_select3,
-    UIKeyCommand.cr_select4,
-    UIKeyCommand.cr_select5,
-    UIKeyCommand.cr_select6,
-    UIKeyCommand.cr_select7,
-    UIKeyCommand.cr_select8,
-    UIKeyCommand.cr_reportAnIssue_2,
-  ];
+  if (IsKeyboardShortcutsMenuEnabled()) {
+    // Return the key commands that are not already present in the menu (see
+    // i/c/b/ui/keyboard/menu_builder.h).
+    return @[
+      UIKeyCommand.cr_openNewRegularTab,
+      UIKeyCommand.cr_showNextTab_2,
+      UIKeyCommand.cr_showPreviousTab_2,
+      UIKeyCommand.cr_showNextTab_3,
+      UIKeyCommand.cr_showPreviousTab_3,
+      UIKeyCommand.cr_back_2,
+      UIKeyCommand.cr_forward_2,
+      UIKeyCommand.cr_showDownloads_2,
+      UIKeyCommand.cr_select2,
+      UIKeyCommand.cr_select3,
+      UIKeyCommand.cr_select4,
+      UIKeyCommand.cr_select5,
+      UIKeyCommand.cr_select6,
+      UIKeyCommand.cr_select7,
+      UIKeyCommand.cr_select8,
+      UIKeyCommand.cr_reportAnIssue_2,
+    ];
+  } else {
+    return @[
+      UIKeyCommand.cr_openNewTab,
+      UIKeyCommand.cr_openNewIncognitoTab,
+      UIKeyCommand.cr_reopenLastClosedTab,
+      UIKeyCommand.cr_find,
+      UIKeyCommand.cr_findNext,
+      UIKeyCommand.cr_findPrevious,
+      UIKeyCommand.cr_openLocation,
+      UIKeyCommand.cr_closeTab,
+      UIKeyCommand.cr_showNextTab,
+      UIKeyCommand.cr_showPreviousTab,
+      UIKeyCommand.cr_showNextTab_2,
+      UIKeyCommand.cr_showPreviousTab_2,
+      UIKeyCommand.cr_showNextTab_3,
+      UIKeyCommand.cr_showPreviousTab_3,
+      UIKeyCommand.cr_showBookmarks,
+      UIKeyCommand.cr_addToBookmarks,
+      UIKeyCommand.cr_reload,
+      UIKeyCommand.cr_back,
+      UIKeyCommand.cr_forward,
+      UIKeyCommand.cr_back_2,
+      UIKeyCommand.cr_forward_2,
+      UIKeyCommand.cr_showHistory,
+      UIKeyCommand.cr_voiceSearch,
+      UIKeyCommand.cr_openNewRegularTab,
+      UIKeyCommand.cr_showSettings,
+      UIKeyCommand.cr_stop,
+      UIKeyCommand.cr_showHelp,
+      UIKeyCommand.cr_showDownloads,
+      UIKeyCommand.cr_showDownloads_2,
+      UIKeyCommand.cr_select1,
+      UIKeyCommand.cr_select2,
+      UIKeyCommand.cr_select3,
+      UIKeyCommand.cr_select4,
+      UIKeyCommand.cr_select5,
+      UIKeyCommand.cr_select6,
+      UIKeyCommand.cr_select7,
+      UIKeyCommand.cr_select8,
+      UIKeyCommand.cr_select9,
+    ];
+  }
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
