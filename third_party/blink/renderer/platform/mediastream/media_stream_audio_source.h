@@ -133,6 +133,9 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   virtual std::unique_ptr<MediaStreamAudioTrack> CreateMediaStreamAudioTrack(
       const std::string& id);
 
+  // Number of MediaStreamAudioTracks added as consumers.
+  size_t NumTracks() const override;
+
  protected:
   // Returns true if the source has already been started and has not yet been
   // stopped. Otherwise, attempts to start the source and returns true if
@@ -189,9 +192,6 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   // audio data. The "stop callback" that was provided to the track calls
   // this.
   void StopAudioDeliveryTo(MediaStreamAudioTrack* track);
-
-  // Number of MediaStreamAudioTracks added as consumers.
-  int NumConsumers() const;
 
   void LogMessage(const std::string& message);
 

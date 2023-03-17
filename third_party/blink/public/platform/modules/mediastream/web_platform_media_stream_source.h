@@ -73,6 +73,10 @@ class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource {
   void ChangeSource(const MediaStreamDevice& new_device);
 
   WebMediaStreamSource Owner();
+
+  // Number of live (non-ended) MediaStreamTracks added as consumers.
+  virtual size_t NumTracks() const = 0;
+
 #if INSIDE_BLINK
   void SetOwner(MediaStreamSource*);
 #endif

@@ -269,9 +269,9 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
     base::OnceClosure callback,
     bool is_clone)
     : ready_state_(ready_state),
-      has_clones_(is_clone),
       component_(component),
       execution_context_(context) {
+  DCHECK(component_);
   component_->AddSourceObserver(this);
 
   // If the source is already non-live at this point, the observer won't have
@@ -928,9 +928,14 @@ bool MediaStreamTrackImpl::TransferAllowed(String& message) const {
     message = "MediaStreamTrack has ended.";
     return false;
   }
-  if (has_clones_) {
-    message = "MediaStreamTracks with clones cannot be transferred.";
-    return false;
+  if (MediaStreamSource* source = component_->Source()) {
+    if (WebPlatformMediaStreamSource* platform_source =
+            source->GetPlatformSource()) {
+      if (platform_source->NumTracks() > 1) {
+        message = "MediaStreamTracks with clones cannot be transferred.";
+        return false;
+      }
+    }
   }
   if (!(device() && device()->serializable_session_id() &&
         IsMediaStreamDeviceTransferrable(*device()))) {
@@ -990,8 +995,6 @@ void MediaStreamTrackImpl::CloneInternal(MediaStreamTrackImpl* cloned_track) {
   if (image_capture_) {
     cloned_track->image_capture_ = image_capture_->Clone();
   }
-
-  has_clones_ = true;
 }
 
 void MediaStreamTrackImpl::EnsureFeatureHandleForScheduler() {
