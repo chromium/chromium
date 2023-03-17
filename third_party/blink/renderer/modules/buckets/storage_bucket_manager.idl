@@ -11,6 +11,6 @@
 ] interface StorageBucketManager {
     [CallWith=ScriptState, RaisesException, MeasureAs=StorageBucketsOpen]
     Promise<StorageBucket> open(DOMString name, optional StorageBucketOptions options = {});
-    [CallWith=ScriptState, RaisesException] Promise<sequence<DOMString>> keys();
-    [CallWith=ScriptState, RaisesException, ImplementedAs=Delete] Promise<void> delete(DOMString name);
+    [CallWith=ScriptState, RaisesException, Measure] Promise<sequence<DOMString>> keys();
+    [CallWith=ScriptState, RaisesException, ImplementedAs=Delete, Measure] Promise<void> delete(DOMString name);
 };

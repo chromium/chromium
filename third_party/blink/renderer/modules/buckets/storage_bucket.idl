@@ -9,21 +9,21 @@
   Exposed=(Window,Worker),
   SecureContext
 ] interface StorageBucket {
-  [Exposed=Window, CallWith=ScriptState] Promise<boolean> persist();
-  [CallWith=ScriptState] Promise<boolean> persisted();
+  [Exposed=Window, CallWith=ScriptState, Measure] Promise<boolean> persist();
+  [CallWith=ScriptState, Measure] Promise<boolean> persisted();
 
-  [CallWith=ScriptState] Promise<StorageEstimate> estimate();
+  [CallWith=ScriptState, Measure] Promise<StorageEstimate> estimate();
 
-  [CallWith=ScriptState] Promise<StorageBucketDurability> durability();
+  [CallWith=ScriptState, Measure] Promise<StorageBucketDurability> durability();
 
-  [CallWith=ScriptState] Promise<void> setExpires(DOMHighResTimeStamp expires);
-  [CallWith=ScriptState] Promise<DOMHighResTimeStamp?> expires();
+  [CallWith=ScriptState, Measure] Promise<void> setExpires(DOMHighResTimeStamp expires);
+  [CallWith=ScriptState, Measure] Promise<DOMHighResTimeStamp?> expires();
 
-  [SameObject] readonly attribute IDBFactory indexedDB;
+  [SameObject, Measure] readonly attribute IDBFactory indexedDB;
 
-  [SameObject, RuntimeEnabled=StorageBucketsLocks] readonly attribute LockManager locks;
+  [SameObject, RuntimeEnabled=StorageBucketsLocks, Measure] readonly attribute LockManager locks;
 
-  [SameObject, RaisesException] readonly attribute CacheStorage caches;
+  [SameObject, RaisesException, Measure] readonly attribute CacheStorage caches;
 
-  [CallWith=ScriptState, RaisesException] Promise<FileSystemDirectoryHandle> getDirectory();
+  [CallWith=ScriptState, RaisesException, Measure] Promise<FileSystemDirectoryHandle> getDirectory();
 };

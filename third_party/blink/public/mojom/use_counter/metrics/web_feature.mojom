@@ -3846,6 +3846,18 @@ enum WebFeature {
   kV8Animation_RangeStart_AttributeSetter = 4505,
   kV8Animation_RangeEnd_AttributeGetter = 4506,
   kV8Animation_RangeEnd_AttributeSetter = 4507,
+  kV8StorageBucket_Persist_Method = 4508,
+  kV8StorageBucket_Persisted_Method = 4509,
+  kV8StorageBucket_Estimate_Method = 4510,
+  kV8StorageBucket_Durability_Method = 4511,
+  kV8StorageBucket_SetExpires_Method = 4512,
+  kV8StorageBucket_Expires_Method = 4513,
+  kV8StorageBucket_IndexedDB_AttributeGetter = 4514,
+  kV8StorageBucket_Locks_AttributeGetter = 4515,
+  kV8StorageBucket_Caches_AttributeGetter = 4516,
+  kV8StorageBucket_GetDirectory_Method = 4517,
+  kV8StorageBucketManager_Keys_Method = 4518,
+  kV8StorageBucketManager_Delete_Method = 4519,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

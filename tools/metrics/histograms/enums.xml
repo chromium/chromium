@@ -42502,6 +42502,18 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4505" label="V8Animation_RangeStart_AttributeSetter"/>
   <int value="4506" label="V8Animation_RangeEnd_AttributeGetter"/>
   <int value="4507" label="V8Animation_RangeEnd_AttributeSetter"/>
+  <int value="4508" label="V8StorageBucket_Persist_Method"/>
+  <int value="4509" label="V8StorageBucket_Persisted_Method"/>
+  <int value="4510" label="V8StorageBucket_Estimate_Method"/>
+  <int value="4511" label="V8StorageBucket_Durability_Method"/>
+  <int value="4512" label="V8StorageBucket_SetExpires_Method"/>
+  <int value="4513" label="V8StorageBucket_Expires_Method"/>
+  <int value="4514" label="V8StorageBucket_IndexedDB_AttributeGetter"/>
+  <int value="4515" label="V8StorageBucket_Locks_AttributeGetter"/>
+  <int value="4516" label="V8StorageBucket_Caches_AttributeGetter"/>
+  <int value="4517" label="V8StorageBucket_GetDirectory_Method"/>
+  <int value="4518" label="V8StorageBucketManager_Keys_Method"/>
+  <int value="4519" label="V8StorageBucketManager_Delete_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
