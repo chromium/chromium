@@ -57,54 +57,6 @@ namespace media {
 
 namespace {
 
-// If Windows SDK version is not at least 10.0.22621.0 (for Windows 11 22H2) or
-// if features added by that SDK version are not enabled.
-#if !(defined(NTDDI_WIN10_NI) && NTDDI_VERSION >= NTDDI_WIN10_NI)
-
-// This definition is from <mfidl.h> in Windows SDK 10.0.22621.0.
-// https://learn.microsoft.com/en-us/windows/win32/api/mfidl/nn-mfidl-imfcameracontrolmonitor
-MIDL_INTERFACE("4D46F2C9-28BA-4970-8C7B-1F0C9D80AF69")
-IMFCameraControlMonitor : public IUnknown {
- public:
-  virtual HRESULT STDMETHODCALLTYPE Start(void) = 0;
-  virtual HRESULT STDMETHODCALLTYPE Stop(void) = 0;
-  virtual HRESULT STDMETHODCALLTYPE AddControlSubscription(_In_ GUID controlSet,
-                                                           _In_ UINT32 id) = 0;
-  virtual HRESULT STDMETHODCALLTYPE RemoveControlSubscription(
-      _In_ GUID controlSet, _In_ UINT32 id) = 0;
-  virtual void STDMETHODCALLTYPE Shutdown(void) = 0;
-};
-
-// This definition is from <mfidl.h> in Windows SDK 10.0.22621.0.
-// https://learn.microsoft.com/en-us/windows/win32/api/mfidl/nn-mfidl-imfcameracontrolnotify
-MIDL_INTERFACE("E8F2540D-558A-4449-8B64-4863467A9FE8")
-IMFCameraControlNotify : public IUnknown {
- public:
-  virtual void STDMETHODCALLTYPE OnChange(_In_ REFGUID controlSet,
-                                          _In_ UINT32 id) = 0;
-  virtual void STDMETHODCALLTYPE OnError(_In_ HRESULT hrStatus) = 0;
-};
-
-constexpr GUID IID_IMFCameraControlNotify = __uuidof(IMFCameraControlNotify);
-
-// This definition is from <mfidl.h> in Windows SDK 10.0.22621.0.
-constexpr GUID KSPROPERTYSETID_ANYCAMERACONTROL = {
-    0x94dd0c30,
-    0x28c7,
-    0x4efb,
-    {0x9d, 0x6b, 0x81, 0x23, 0x0, 0xfb, 0xc, 0x7f}};
-
-#endif
-
-// This definition is from <mfidl.h> in Windows SDK 10.0.22621.0
-// but it has been converted from a function declaration to a function pointer
-// type definition.
-// https://learn.microsoft.com/en-us/windows/win32/api/mfidl/nf-mfidl-mfcreatecameracontrolmonitor
-using MFCreateCameraControlMonitorType = HRESULT STDAPICALLTYPE (*)(
-    _In_z_ LPCWSTR symbolicLink,
-    _In_ IMFCameraControlNotify* callback,
-    _COM_Outptr_ IMFCameraControlMonitor** ppCameraControlMonitor);
-
 // How many times we try to restart D3D11 path.
 constexpr int kMaxD3DRestarts = 2;
 
@@ -837,6 +789,8 @@ bool VideoCaptureDeviceMFWin::CreateMFCameraControlMonitor() {
     DLOG(ERROR) << "Failed to get the mfsensorgroup.dll module handle";
     return false;
   }
+  using MFCreateCameraControlMonitorType =
+      decltype(&MFCreateCameraControlMonitor);
   static const MFCreateCameraControlMonitorType create_camera_control_monitor =
       reinterpret_cast<MFCreateCameraControlMonitorType>(
           GetProcAddress(module, "MFCreateCameraControlMonitor"));
@@ -1134,10 +1088,7 @@ void VideoCaptureDeviceMFWin::DeinitVideoCallbacksControlsAndMonitors() {
   extended_camera_controller_.Reset();
 
   if (camera_control_monitor_) {
-    ComPtr<IMFCameraControlMonitor> camera_control_monitor;
-    if (SUCCEEDED(camera_control_monitor_.As(&camera_control_monitor))) {
-      camera_control_monitor->Shutdown();
-    }
+    camera_control_monitor_->Shutdown();
     camera_control_monitor_.Reset();
   }
 

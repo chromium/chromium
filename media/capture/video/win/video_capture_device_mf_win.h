@@ -186,9 +186,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   Microsoft::WRL::ComPtr<IMFMediaSource> source_;
   Microsoft::WRL::ComPtr<IAMCameraControl> camera_control_;
   Microsoft::WRL::ComPtr<IAMVideoProcAmp> video_control_;
-  // This is actually IMFCameraControlMonitor but using it here requires at
-  // least Windows SDK 10.0.22621.0 (for Windows 11 22H2).
-  Microsoft::WRL::ComPtr<IUnknown> camera_control_monitor_;
+  Microsoft::WRL::ComPtr<IMFCameraControlMonitor> camera_control_monitor_;
   Microsoft::WRL::ComPtr<IMFExtendedCameraController>
       extended_camera_controller_;
   Microsoft::WRL::ComPtr<IMFCaptureEngine> engine_;
