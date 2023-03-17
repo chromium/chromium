@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL A custom property of type <transform-function> can yield a CSS Transition assert_equals: A single animation is running expected 1 but got 0
+FAIL A custom property of type <transform-function> can yield a CSS Transition assert_equals: Element has the expected animated value expected "translateX(150px)" but got "translateX(200px)"
 Harness: the test ran to completion.
 

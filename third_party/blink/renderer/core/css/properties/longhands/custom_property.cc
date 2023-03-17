@@ -265,4 +265,8 @@ bool CustomProperty::SupportsGuaranteedInvalid() const {
   return !registration_ || registration_->Syntax().IsUniversal();
 }
 
+bool CustomProperty::HasUniversalSyntax() const {
+  return registration_ && registration_->Syntax().IsUniversal();
+}
+
 }  // namespace blink

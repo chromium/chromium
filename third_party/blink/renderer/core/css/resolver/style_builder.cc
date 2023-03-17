@@ -52,6 +52,21 @@
 
 namespace blink {
 
+namespace {
+
+#if DCHECK_IS_ON()
+
+bool IsCustomPropertyWithUniversalSyntax(const CSSProperty& property) {
+  if (const auto* custom_property = DynamicTo<CustomProperty>(property)) {
+    return custom_property->HasUniversalSyntax();
+  }
+  return false;
+}
+
+#endif  // DCHECK_IS_ON()
+
+}  // namespace
+
 void StyleBuilder::ApplyProperty(const CSSPropertyName& name,
                                  StyleResolverState& state,
                                  const CSSValue& value,
@@ -87,10 +102,16 @@ void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
   CSSPropertyID id = property.PropertyID();
 
   // These values must be resolved by StyleCascade before application:
-  DCHECK(!value.IsVariableReferenceValue());
   DCHECK(!value.IsPendingSubstitutionValue());
   DCHECK(!value.IsRevertValue());
   DCHECK(!value.IsRevertLayerValue());
+  // CSSVariableReferenceValues should have been resolved as well, *except*
+  // for custom properties with universal syntax, which actually use
+  // CSSVariableReferenceValue to represent their computed value.
+#if DCHECK_IS_ON()
+  DCHECK(!value.IsVariableReferenceValue() ||
+         IsCustomPropertyWithUniversalSyntax(property));
+#endif  // DCHECK_IS_ON()
 
   DCHECK(!property.IsShorthand())
       << "Shorthand property id = " << static_cast<int>(id)

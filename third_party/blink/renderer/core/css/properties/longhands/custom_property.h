@@ -65,6 +65,9 @@ class CORE_EXPORT CustomProperty : public Variable {
   // https://drafts.csswg.org/css-variables/#guaranteed-invalid-value
   bool SupportsGuaranteedInvalid() const;
 
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-definition
+  bool HasUniversalSyntax() const;
+
   void Trace(Visitor* visitor) const { visitor->Trace(registration_); }
 
  private:
