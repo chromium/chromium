@@ -1957,6 +1957,8 @@ source_set("ash") {
     "login/users/avatar/user_image_manager.h",
     "login/users/avatar/user_image_manager_impl.cc",
     "login/users/avatar/user_image_manager_impl.h",
+    "login/users/avatar/user_image_prefs.cc",
+    "login/users/avatar/user_image_prefs.h",
     "login/users/avatar/user_image_sync_observer.cc",
     "login/users/avatar/user_image_sync_observer.h",
     "login/users/chrome_user_manager.cc",

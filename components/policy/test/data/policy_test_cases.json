@@ -22718,7 +22718,45 @@
     ]
   },
   "UserAvatarCustomizationSelectorsEnabled": {
-    "reason_for_missing_test": "TODO(b/271606439): Feature not yet implemented"
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "policies": { },
+        "prefs": {
+          "user_avatar_customization_selectors_enabled": {
+            "location": "user_profile",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Check true policy value",
+        "policies": {
+          "UserAvatarCustomizationSelectorsEnabled": true
+        },
+        "prefs": {
+          "user_avatar_customization_selectors_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check false policy value",
+        "policies": {
+          "UserAvatarCustomizationSelectorsEnabled": false
+        },
+        "prefs": {
+          "user_avatar_customization_selectors_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
   },
   "DefaultThirdPartyStoragePartitioningSetting": {
     "os": [

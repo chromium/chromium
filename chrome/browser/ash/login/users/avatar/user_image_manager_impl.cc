@@ -904,6 +904,8 @@ void UserImageManagerImpl::TryToInitDownloadedProfileImage() {
   }
 }
 
+// TODO(b/271606439): Check IsCustomizationSelectorsPrefEnabled() to disable
+// image download by policy.
 bool UserImageManagerImpl::NeedProfileImage() const {
   const user_manager::User* user = GetUser();
   return IsUserLoggedInAndHasGaiaAccount() &&

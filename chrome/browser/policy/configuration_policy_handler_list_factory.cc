@@ -160,6 +160,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_policy_handler.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_policy_handler.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
@@ -1427,6 +1428,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     { key::kScreensaverLockScreenImageDisplayIntervalSeconds,
     ash::ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
     base::Value::Type::INTEGER },
+  { key::kUserAvatarCustomizationSelectorsEnabled,
+    ash::user_image::prefs::kUserAvatarCustomizationSelectorsEnabled,
+    base::Value::Type::BOOLEAN },
+
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
