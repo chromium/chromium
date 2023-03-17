@@ -8,9 +8,13 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/decorators_utils.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
@@ -468,6 +472,57 @@ TEST_F(PageLiveStateDecoratorTest, OnIsDevToolsOpenChanged) {
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnIsDevToolsOpenChanged);
 }
-#endif
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(PageLiveStateDecoratorTest, UpdateTitleInBackground) {
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  base::RunLoop run_loop;
+  PerformanceManager::CallOnGraph(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        ASSERT_TRUE(node);
+        auto* node_impl = PageNodeImpl::FromNode(node.get());
+        auto* data =
+            PageLiveStateDecorator::Data::GetOrCreateForPageNode(node.get());
+
+        // Updating the title while the node is visible does nothing.
+        node_impl->SetIsVisible(true);
+        node_impl->OnTitleUpdated();
+        EXPECT_EQ(data->UpdatedTitleOrFaviconInBackground(), false);
+
+        node_impl->SetIsVisible(false);
+        node_impl->OnTitleUpdated();
+        EXPECT_EQ(data->UpdatedTitleOrFaviconInBackground(), true);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(PageLiveStateDecoratorTest, UpdateFaviconInBackground) {
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  base::RunLoop run_loop;
+  PerformanceManager::CallOnGraph(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        ASSERT_TRUE(node);
+        auto* node_impl = PageNodeImpl::FromNode(node.get());
+        auto* data =
+            PageLiveStateDecorator::Data::GetOrCreateForPageNode(node.get());
+
+        // Updating the favicon while the node is visible does nothing.
+        node_impl->SetIsVisible(true);
+        node_impl->OnFaviconUpdated();
+        EXPECT_EQ(data->UpdatedTitleOrFaviconInBackground(), false);
+
+        node_impl->SetIsVisible(false);
+        node_impl->OnFaviconUpdated();
+        EXPECT_EQ(data->UpdatedTitleOrFaviconInBackground(), true);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
 
 }  // namespace performance_manager

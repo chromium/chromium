@@ -114,6 +114,7 @@ void PageTimelineMonitor::CollectSlice() {
     bool has_notification_permission = false;
     bool is_capturing_media = false;
     bool is_connected_to_device = false;
+    bool updated_title_or_favicon_in_background = false;
 
     const auto* page_live_state_data =
         PageLiveStateDecorator::Data::FromPageNode(page_node);
@@ -130,6 +131,8 @@ void PageTimelineMonitor::CollectSlice() {
       is_connected_to_device =
           page_live_state_data->IsConnectedToUSBDevice() ||
           page_live_state_data->IsConnectedToBluetoothDevice();
+      updated_title_or_favicon_in_background =
+          page_live_state_data->UpdatedTitleOrFaviconInBackground();
     }
 
     ukm::builders::PerformanceManager_PageTimelineState builder(source_id);
@@ -147,7 +150,7 @@ void PageTimelineMonitor::CollectSlice() {
         .SetTotalForegroundTime(ukm::GetSemanticBucketMinForDurationTiming(
             curr_info->total_foreground_milliseconds))
         .SetChangedFaviconOrTitleInBackground(
-            curr_info->updated_title_or_favicon_in_background)
+            updated_title_or_favicon_in_background)
         .SetHasNotificationPermission(has_notification_permission)
         .SetIsCapturingMedia(is_capturing_media)
         .SetIsConnectedToDevice(is_connected_to_device)
@@ -284,29 +287,6 @@ void PageTimelineMonitor::OnTypeChanged(const PageNode* page_node,
     case performance_manager::PageType::kUnknown:
       NOTREACHED();
       break;
-  }
-}
-
-void PageTimelineMonitor::OnTitleUpdated(const PageNode* page_node) {
-  if (page_node->GetType() != performance_manager::PageType::kTab)
-    return;
-
-  DCHECK(base::Contains(page_node_info_map_, page_node));
-  if (page_node_info_map_[page_node]->GetPageState() ==
-      PageState::kBackground) {
-    page_node_info_map_[page_node]->updated_title_or_favicon_in_background =
-        true;
-  }
-}
-void PageTimelineMonitor::OnFaviconUpdated(const PageNode* page_node) {
-  if (page_node->GetType() != performance_manager::PageType::kTab)
-    return;
-
-  DCHECK(base::Contains(page_node_info_map_, page_node));
-  if (page_node_info_map_[page_node]->GetPageState() ==
-      PageState::kBackground) {
-    page_node_info_map_[page_node]->updated_title_or_favicon_in_background =
-        true;
   }
 }
 

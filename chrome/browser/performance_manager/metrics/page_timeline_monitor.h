@@ -51,8 +51,6 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   void OnPageLifecycleStateChanged(const PageNode* page_node) override;
   void OnTypeChanged(const PageNode* page_node,
                      PageType previous_state) override;
-  void OnTitleUpdated(const PageNode* page_node) override;
-  void OnFaviconUpdated(const PageNode* page_node) override;
   void OnAboutToBeDiscarded(const PageNode* page_node,
                             const PageNode* new_page_node) override;
 
@@ -78,7 +76,6 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
     bool currently_visible;
     PageNode::LifecycleState current_lifecycle;
     base::TimeTicks time_of_most_recent_state_change;
-    bool updated_title_or_favicon_in_background{false};
     base::TimeTicks time_of_last_foreground_millisecond_update;
     int total_foreground_milliseconds{0};
     int tab_id;

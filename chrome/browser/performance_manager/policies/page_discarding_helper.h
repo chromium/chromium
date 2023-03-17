@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -124,7 +125,8 @@ class PageDiscardingHelper : public GraphOwned,
 
   void ImmediatelyDiscardSpecificPage(
       const PageNode* page_node,
-      ::mojom::LifecycleUnitDiscardReason discard_reason);
+      ::mojom::LifecycleUnitDiscardReason discard_reason,
+      base::OnceCallback<void(bool)> post_discard_cb = base::DoNothing());
 
   // PageNodeObserver:
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;

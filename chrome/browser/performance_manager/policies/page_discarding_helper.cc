@@ -5,12 +5,14 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,6 +24,7 @@
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
+#include "components/performance_manager/public/graph/node_data_describer_util.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/url_matcher/url_matcher.h"
@@ -211,13 +214,16 @@ void PageDiscardingHelper::DiscardMultiplePages(
 
 void PageDiscardingHelper::ImmediatelyDiscardSpecificPage(
     const PageNode* page_node,
-    ::mojom::LifecycleUnitDiscardReason discard_reason) {
+    ::mojom::LifecycleUnitDiscardReason discard_reason,
+    base::OnceCallback<void(bool)> post_discard_cb) {
   // Pass 0 TimeDelta to bypass the minimum time in background check.
   if (CanUrgentlyDiscard(page_node,
                          /* minimum_time_in_background */ base::TimeDelta()) ==
       CanUrgentlyDiscardResult::kEligible) {
     page_discarder_->DiscardPageNodes({page_node}, discard_reason,
-                                      base::DoNothing());
+                                      std::move(post_discard_cb));
+  } else {
+    std::move(post_discard_cb).Run(false);
   }
 }
 
@@ -388,6 +394,9 @@ PageDiscardingHelper::CanUrgentlyDiscard(
     if (live_state_data->IsDevToolsOpen()) {
       return CanUrgentlyDiscardResult::kProtected;
     }
+    if (live_state_data->UpdatedTitleOrFaviconInBackground()) {
+      return CanUrgentlyDiscardResult::kProtected;
+    }
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(sebmarchand): Skip this check if the Entreprise memory limit is set.
     if (live_state_data->WasDiscarded()) {
@@ -431,14 +440,30 @@ bool PageDiscardingHelper::IsPageOptedOutOfDiscarding(
 
 base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
     const PageNode* node) const {
-  auto* data = DiscardAttemptMarker::Get(PageNodeImpl::FromNode(node));
-  if (data == nullptr) {
-    return base::Value::Dict();
+  base::StringPiece can_discard;
+  switch (CanUrgentlyDiscard(node, base::TimeDelta())) {
+    case CanUrgentlyDiscardResult::kEligible:
+      can_discard = "eligible";
+      break;
+    case CanUrgentlyDiscardResult::kProtected:
+      can_discard = "protected";
+      break;
+    case CanUrgentlyDiscardResult::kMarked:
+      can_discard = "marked";
+      break;
   }
 
   base::Value::Dict ret;
-  ret.Set("has_discard_attempt_marker", base::Value("true"));
-
+  ret.Set("can_urgently_discard", can_discard);
+  auto it = last_change_to_non_audible_time_.find(node);
+  if (it != last_change_to_non_audible_time_.end()) {
+    ret.Set("non_audible_change_time", TimeDeltaFromNowToValue(it->second));
+  }
+  auto* main_frame = node->GetMainFrameNode();
+  if (main_frame) {
+    ret.Set("opted_out", IsPageOptedOutOfDiscarding(node->GetBrowserContextID(),
+                                                    main_frame->GetURL()));
+  }
   return ret;
 }
 

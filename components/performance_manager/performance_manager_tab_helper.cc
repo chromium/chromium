@@ -384,7 +384,9 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
 void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
   DCHECK(primary_page_);
 
-  // TODO(siggi): This logic belongs in the policy layer rather than here.
+  // TODO(crbug.com/1418410): This logic belongs in the policy layer rather than
+  // here. If a page has no <title> element on first load, the first change of
+  // title will be ignored no matter much later it happens.
   if (!primary_page_->first_time_title_set) {
     primary_page_->first_time_title_set = true;
     return;
@@ -466,7 +468,9 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
   if (!render_frame_host->IsActive())
     return;
 
-  // TODO(siggi): This logic belongs in the policy layer rather than here.
+  // TODO(crbug.com/1418410): This logic belongs in the policy layer rather than
+  // here. If a page has no favicon on first load, the first change of favicon
+  // will be ignored no matter much later it happens.
   if (!primary_page_->first_time_favicon_set) {
     primary_page_->first_time_favicon_set = true;
     return;

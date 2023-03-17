@@ -310,6 +310,15 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsDevToolsOpen) {
           page_node()));
 }
 
+TEST_F(PageDiscardingHelperTest,
+       TestCannotDiscardUpdatedTitleOrFaviconInBackground) {
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetUpdatedTitleOrFaviconInBackgroundForTesting(true);
+  EXPECT_FALSE(
+      PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
+          page_node()));
+}
+
 // Tests DiscardMultiplePages.
 
 TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoCandidate) {

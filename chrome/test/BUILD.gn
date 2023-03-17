@@ -2050,6 +2050,7 @@ if (!is_android) {
       "../browser/performance_manager/page_load_tracker_decorator_browsertest.cc",
       "../browser/performance_manager/page_node_browsertest.cc",
       "../browser/performance_manager/policies/bfcache_policy_browsertest.cc",
+      "../browser/performance_manager/policies/page_discarding_helper_browsertest.cc",
       "../browser/performance_timeline_browsertest.cc",
       "../browser/permissions/permission_delegation_browsertest.cc",
       "../browser/permissions/permission_manager_browsertest.cc",
