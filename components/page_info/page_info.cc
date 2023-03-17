@@ -51,6 +51,7 @@
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
@@ -664,7 +665,7 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
       permissions::PermissionRequestManager::FromWebContents(
           web_contents_.get());
 
-  if (manager) {
+  if (manager && permissions::IsRequestablePermissionType(type)) {
     // Retrieve latest permission action for the current origin and the current
     // content settings type. Note that these values are only kept in memory and
     // not persisted across browser sessions.
@@ -736,7 +737,7 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
     show_info_bar_ = true;
   }
 
-  if (permissions::PermissionUtil::IsPermission(type)) {
+  if (permissions::IsRequestablePermissionType(type)) {
     auto* permission_tracker =
         permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
             web_contents_.get());
