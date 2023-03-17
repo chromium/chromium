@@ -4,11 +4,18 @@
 
 module gl.mojom;
 
+import "ui/gl/mojom/gl_implementation.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 
 // All functions on this interface echo their arguments to test StructTraits
 // serialization and deserialization.
 interface TraitsTestService {
+  // Serializes and deserializes GpuPreference.
   [Sync]
   EchoGpuPreference(GpuPreference g) => (GpuPreference pass);
+  // Serializes and deserializes GLImplementationParts.
+  [Sync]
+  EchoGLImplementationParts(
+    GLImplementationParts impl) =>
+      (GLImplementationParts pass);
 };

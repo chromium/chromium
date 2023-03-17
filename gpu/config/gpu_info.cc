@@ -219,7 +219,7 @@ GPUInfo::GPUInfo()
     : optimus(false),
       amd_switchable(false),
       gl_reset_notification_strategy(0),
-      software_rendering(false),
+      gl_implementation_parts(gl::kGLImplementationNone),
       sandboxed(false),
       in_process_gpu(true),
       passthrough_cmd_decoder(false),
@@ -317,7 +317,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     std::string gl_ws_version;
     std::string gl_ws_extensions;
     uint32_t gl_reset_notification_strategy;
-    bool software_rendering;
+    gl::GLImplementationParts gl_implementation_parts;
     std::string direct_rendering_version;
     bool sandboxed;
     bool in_process_gpu;
@@ -390,7 +390,8 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
       "glResetNotificationStrategy",
       static_cast<int>(gl_reset_notification_strategy));
   // TODO(kbr): add performance_stats.
-  enumerator->AddBool("softwareRendering", software_rendering);
+  enumerator->AddString("glImplementationParts",
+                        gl_implementation_parts.ToString());
   enumerator->AddString("directRenderingVersion", direct_rendering_version);
   enumerator->AddBool("sandboxed", sandboxed);
   enumerator->AddBool("inProcessGpu", in_process_gpu);

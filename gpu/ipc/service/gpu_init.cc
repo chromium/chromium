@@ -732,9 +732,11 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
 #endif
+  gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
+  bool software_rendering = false;
   if (gl_use_swiftshader_ ||
       gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
-    gpu_info_.software_rendering = true;
+    software_rendering = true;
   } else if (gl_disabled) {
     DCHECK(!recreate_watchdog);
     watchdog_thread_ = nullptr;
@@ -747,7 +749,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     watchdog_init.SetGpuWatchdogPtr(nullptr);
     watchdog_thread_ =
         GpuWatchdogThread::Create(gpu_preferences_.watchdog_starts_backgrounded,
-                                  gpu_info_.software_rendering, "GpuWatchdog");
+                                  software_rendering, "GpuWatchdog");
     watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
   }
 

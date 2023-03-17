@@ -24,6 +24,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gpu_preference.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -400,7 +401,7 @@ struct GPU_EXPORT GPUInfo {
   // reset detection or notification not available.
   uint32_t gl_reset_notification_strategy;
 
-  bool software_rendering;
+  gl::GLImplementationParts gl_implementation_parts;
 
   // Empty means unknown. Defined on X11 as
   // - "1" means indirect (versions can't be all zero)

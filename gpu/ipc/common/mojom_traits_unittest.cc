@@ -162,7 +162,8 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const std::string gl_ws_version = "gl_ws_version";
   const std::string gl_ws_extensions = "gl_ws_extensions";
   const uint32_t gl_reset_notification_strategy = 0xbeef;
-  const bool software_rendering = true;
+  const gl::GLImplementationParts gl_implementation_parts(
+      gl::ANGLEImplementation::kSwiftShader);
   const std::string direct_rendering_version = "DRI1";
   const bool sandboxed = true;
   const bool in_process_gpu = true;
@@ -201,7 +202,7 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.gl_ws_version = gl_ws_version;
   input.gl_ws_extensions = gl_ws_extensions;
   input.gl_reset_notification_strategy = gl_reset_notification_strategy;
-  input.software_rendering = software_rendering;
+  input.gl_implementation_parts = gl_implementation_parts;
   input.direct_rendering_version = direct_rendering_version;
   input.sandboxed = sandboxed;
   input.in_process_gpu = in_process_gpu;
@@ -264,7 +265,7 @@ TEST_F(StructTraitsTest, GpuInfo) {
   EXPECT_EQ(gl_ws_extensions, output.gl_ws_extensions);
   EXPECT_EQ(gl_reset_notification_strategy,
             output.gl_reset_notification_strategy);
-  EXPECT_EQ(software_rendering, output.software_rendering);
+  EXPECT_EQ(gl_implementation_parts, output.gl_implementation_parts);
   EXPECT_EQ(direct_rendering_version, output.direct_rendering_version);
   EXPECT_EQ(sandboxed, output.sandboxed);
   EXPECT_EQ(in_process_gpu, output.in_process_gpu);

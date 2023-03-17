@@ -10,6 +10,7 @@ import "gpu/ipc/common/dx_diag_node.mojom";
 import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gl/mojom/gl_implementation.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 
 [EnableIf=supports_vulkan]
@@ -164,7 +165,7 @@ struct GpuInfo {
   string gl_ws_version;
   string gl_ws_extensions;
   uint32 gl_reset_notification_strategy;
-  bool software_rendering;
+  gl.mojom.GLImplementationParts gl_implementation_parts;
   string direct_rendering_version;
   bool sandboxed;
   bool in_process_gpu;

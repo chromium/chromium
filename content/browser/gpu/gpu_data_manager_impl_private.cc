@@ -448,7 +448,8 @@ void CollectExtraDevicePerfInfo(const gpu::GPUInfo& gpu_info,
   if (device.vendor_id == 0xffff /* internal flag for software rendering */ ||
       device.vendor_id == 0x15ad /* VMware */ ||
       device.vendor_id == 0x1414 /* Microsoft software renderer */ ||
-      gpu_info.software_rendering /* SwiftShader */) {
+      gl::IsSoftwareGLImplementation(
+          gpu_info.gl_implementation_parts) /* SwiftShader */) {
     device_perf_info->software_rendering = true;
   }
 }

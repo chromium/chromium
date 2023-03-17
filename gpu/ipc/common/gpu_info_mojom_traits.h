@@ -352,8 +352,9 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.gl_reset_notification_strategy;
   }
 
-  static bool software_rendering(const gpu::GPUInfo& input) {
-    return input.software_rendering;
+  static const gl::GLImplementationParts gl_implementation_parts(
+      const gpu::GPUInfo& input) {
+    return input.gl_implementation_parts;
   }
 
   static const std::string& direct_rendering_version(

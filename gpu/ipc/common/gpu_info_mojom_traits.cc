@@ -422,7 +422,6 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
   out->optimus = data.optimus();
   out->amd_switchable = data.amd_switchable();
   out->gl_reset_notification_strategy = data.gl_reset_notification_strategy();
-  out->software_rendering = data.software_rendering();
   out->sandboxed = data.sandboxed();
   out->in_process_gpu = data.in_process_gpu();
   out->passthrough_cmd_decoder = data.passthrough_cmd_decoder();
@@ -465,6 +464,7 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
          data.ReadGlWsVendor(&out->gl_ws_vendor) &&
          data.ReadGlWsVersion(&out->gl_ws_version) &&
          data.ReadGlWsExtensions(&out->gl_ws_extensions) &&
+         data.ReadGlImplementationParts(&out->gl_implementation_parts) &&
          data.ReadDirectRenderingVersion(&out->direct_rendering_version) &&
 #if BUILDFLAG(IS_WIN)
          data.ReadOverlayInfo(&out->overlay_info) &&
