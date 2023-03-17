@@ -1727,40 +1727,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Enterprise.EnrollmentAttestationBased.EnrollmentCertificateStatus.InitialAttempt"
-    enum="EnrollmentAttestationBasedCertificateStatus"
-    expires_after="2023-12-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>sergiyb@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Status of possibly existing cached enrollment certificate recorded at the
-    first registration attempt during attestation-based enrollment.
-
-    Note that the certificate request status is not in the scope of this metric
-    and is recorded on &quot;EnterpriseEnrollmentType&quot; events by
-    &quot;Enterprise.Enrollment*&quot; metrics.
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.EnrollmentAttestationBased.EnrollmentCertificateStatus.SubsequentAttempt"
-    enum="EnrollmentAttestationBasedCertificateStatus"
-    expires_after="2023-12-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>sergiyb@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Status of refreshed enrollment certificate recorded at the subsequent
-    registration attempt during attestation-based enrollment.
-
-    Note that the certificate request status is not in the scope of this metric
-    and is recorded on &quot;EnterpriseEnrollmentType&quot; events by
-    &quot;Enterprise.Enrollment*&quot; metrics.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.EnrollmentForced" enum="EnterpriseEnrollmentType"
     expires_after="2023-12-01">
   <owner>asumaneev@google.com</owner>

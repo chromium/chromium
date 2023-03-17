@@ -14,7 +14,6 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -60,19 +59,6 @@ namespace em = ::enterprise_management;
 // An enum for PSM execution result values.
 using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
-// This enum is used to define the buckets for an enumerated UMA histogram.
-// Hence,
-//   (a) existing enumerated constants should never be deleted or reordered, and
-//   (b) new constants should only be appended at the end of the enumeration
-//       (update tools/metrics/histograms/enums.xml as well).
-enum class EnrollmentAttestationBasedCertificateStatus {
-  kValid = 0,
-  kExpired = 1,
-  kUnknown = 2,
-
-  kMaxValue = kUnknown,  // Must be the last.
-};
-
 class TpmEnrollmentKeySigningServiceProvider final
     : public EnrollmentHandler::SigningServiceProvider {
  public:
@@ -80,17 +66,6 @@ class TpmEnrollmentKeySigningServiceProvider final
     return std::make_unique<TpmEnrollmentKeySigningService>();
   }
 };
-
-// UMAs for status of the first fetched enrollment certificate for registration
-// during attestation-based enrollment.
-constexpr char
-    kMetricEnrollmentAttestationBasedCertificateStatusInitialAttempt[] =
-        "Enterprise.EnrollmentAttestationBased.EnrollmentCertificateStatus."
-        "InitialAttempt";
-constexpr char
-    kMetricEnrollmentAttestationBasedCertificateStatusSubsequentAttempt[] =
-        "Enterprise.EnrollmentAttestationBased.EnrollmentCertificateStatus."
-        "SubsequentAttempt";
 
 // Retry for InstallAttrs initialization every 500ms.
 const int kLockRetryIntervalMs = 500;
@@ -216,20 +191,6 @@ std::string GetActiveDirectoryDomainJoinConfig(
     return std::string();
   }
   return result;
-}
-
-EnrollmentAttestationBasedCertificateStatus CertificateStatusToMetric(
-    ash::attestation::CertificateExpiryStatus status) {
-  switch (status) {
-    case ash::attestation::CertificateExpiryStatus::kValid:
-      return EnrollmentAttestationBasedCertificateStatus::kValid;
-    case ash::attestation::CertificateExpiryStatus::kExpiringSoon:
-    case ash::attestation::CertificateExpiryStatus::kExpired:
-      return EnrollmentAttestationBasedCertificateStatus::kExpired;
-    case ash::attestation::CertificateExpiryStatus::kInvalidPemChain:
-    case ash::attestation::CertificateExpiryStatus::kInvalidX509:
-      return EnrollmentAttestationBasedCertificateStatus::kUnknown;
-  }
 }
 
 }  // namespace
@@ -579,11 +540,6 @@ void EnrollmentHandler::HandleRegistrationCertificateResult(
       ash::attestation::CheckCertificateExpiry(
           pem_certificate_chain,
           /*expiry_threshold=*/base::TimeDelta());
-  base::UmaHistogramEnumeration(
-      is_initial_attempt
-          ? kMetricEnrollmentAttestationBasedCertificateStatusInitialAttempt
-          : kMetricEnrollmentAttestationBasedCertificateStatusSubsequentAttempt,
-      CertificateStatusToMetric(cert_status));
 
   switch (cert_status) {
     case ash::attestation::CertificateExpiryStatus::kValid:

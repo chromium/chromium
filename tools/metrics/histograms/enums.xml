@@ -31343,13 +31343,6 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Grid view mode"/>
 </enum>
 
-<enum name="EnrollmentAttestationBasedCertificateStatus">
-  <summary>Expiry status of certificate in terms of time.</summary>
-  <int value="0" label="Valid"/>
-  <int value="1" label="Expired"/>
-  <int value="3" label="Unknown"/>
-</enum>
-
 <enum name="EnrollmentStatus">
   <int value="0" label="Non-managed"/>
   <int value="1" label="Managed EDU (Deprecated)"/>
