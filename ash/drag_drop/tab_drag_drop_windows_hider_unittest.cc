@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_session_windows_hider.h"
+#include "ash/drag_drop/tab_drag_drop_windows_hider.h"
 
 #include "ash/test/ash_test_base.h"
 
 namespace ash {
 
-class TabletModeBrowserWindowDragSessionWindowsHiderTest : public AshTestBase {
+class TabDragDropWindowsHiderTest : public AshTestBase {
  public:
   // AshTestBase:
   void SetUp() override {
@@ -26,16 +26,14 @@ class TabletModeBrowserWindowDragSessionWindowsHiderTest : public AshTestBase {
 };
 
 // Test for crbug.com/1330038 .
-TEST_F(TabletModeBrowserWindowDragSessionWindowsHiderTest,
-       WindowVisibilityChangedDuringDrag) {
+TEST_F(TabDragDropWindowsHiderTest, WindowVisibilityChangedDuringDrag) {
   std::unique_ptr<aura::Window> source_window = CreateToplevelTestWindow();
 
   // Create a sub window and hide it.
   std::unique_ptr<aura::Window> sub_window = CreateTestWindow();
   dummy_window_->AddChild(sub_window.get());
   sub_window->Hide();
-  auto hider = std::make_unique<TabletModeBrowserWindowDragSessionWindowsHider>(
-      source_window.get(), nullptr);
+  auto hider = std::make_unique<TabDragDropWindowsHider>(source_window.get());
   int size = hider->GetWindowVisibilityMapSizeForTesting();
 
   // Show the sub window. Make sure the window observer list size remains the

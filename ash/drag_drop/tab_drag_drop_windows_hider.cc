@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_session_windows_hider.h"
+#include "ash/drag_drop/tab_drag_drop_windows_hider.h"
 
 #include <vector>
 
@@ -21,15 +21,9 @@
 
 namespace ash {
 
-TabletModeBrowserWindowDragSessionWindowsHider::
-    TabletModeBrowserWindowDragSessionWindowsHider(aura::Window* source_window,
-                                                   aura::Window* dragged_window)
-    : source_window_(source_window), dragged_window_(dragged_window) {
+TabDragDropWindowsHider::TabDragDropWindowsHider(aura::Window* source_window)
+    : source_window_(source_window) {
   DCHECK(source_window_);
-  if (dragged_window_) {
-    DCHECK_EQ(source_window_,
-              dragged_window_->GetProperty(kTabDraggingSourceWindowKey));
-  }
 
   root_window_ = source_window_->GetRootWindow();
 
@@ -41,8 +35,7 @@ TabletModeBrowserWindowDragSessionWindowsHider::
   std::vector<aura::Window*> windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (aura::Window* window : windows) {
-    if (window == dragged_window_ || window == source_window_ ||
-        window->GetRootWindow() != root_window_) {
+    if (window == source_window_ || window->GetRootWindow() != root_window_) {
       continue;
     }
 
@@ -63,11 +56,11 @@ TabletModeBrowserWindowDragSessionWindowsHider::
       ->SetWallpaperBlur(wallpaper_constants::kOverviewBlur);
 }
 
-TabletModeBrowserWindowDragSessionWindowsHider::
-    ~TabletModeBrowserWindowDragSessionWindowsHider() {
+TabDragDropWindowsHider::~TabDragDropWindowsHider() {
   // It might be possible that |source_window_| is destroyed during dragging.
-  if (source_window_)
+  if (source_window_) {
     WindowBackdrop::Get(source_window_)->RestoreBackdrop();
+  }
 
   for (auto iter = window_visibility_map_.begin();
        iter != window_visibility_map_.end(); ++iter) {
@@ -90,8 +83,7 @@ TabletModeBrowserWindowDragSessionWindowsHider::
       ->SetWallpaperBlur(wallpaper_constants::kClear);
 }
 
-void TabletModeBrowserWindowDragSessionWindowsHider::OnWindowDestroying(
-    aura::Window* window) {
+void TabDragDropWindowsHider::OnWindowDestroying(aura::Window* window) {
   if (window == source_window_) {
     source_window_ = nullptr;
     return;
@@ -100,13 +92,13 @@ void TabletModeBrowserWindowDragSessionWindowsHider::OnWindowDestroying(
   window->RemoveObserver(this);
   window_visibility_map_.erase(window);
 }
-void TabletModeBrowserWindowDragSessionWindowsHider::OnWindowVisibilityChanged(
-    aura::Window* window,
-    bool visible) {
+void TabDragDropWindowsHider::OnWindowVisibilityChanged(aura::Window* window,
+                                                        bool visible) {
   // The window object is not necessarily the one that is being observed.
   // So we only take action if the window is currently being observed.
-  if (window_visibility_map_.count(window) == 0)
+  if (window_visibility_map_.count(window) == 0) {
     return;
+  }
 
   if (visible) {
     // Do not let |window| change to visible during the lifetime of |this|.
@@ -119,8 +111,7 @@ void TabletModeBrowserWindowDragSessionWindowsHider::OnWindowVisibilityChanged(
   // ignored.
 }
 
-int TabletModeBrowserWindowDragSessionWindowsHider::
-    GetWindowVisibilityMapSizeForTesting() const {
+int TabDragDropWindowsHider::GetWindowVisibilityMapSizeForTesting() const {
   return window_visibility_map_.size();
 }
 

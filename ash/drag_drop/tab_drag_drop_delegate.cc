@@ -6,6 +6,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/drag_drop/tab_drag_drop_windows_hider.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
@@ -17,7 +18,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_session_windows_hider.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -300,9 +300,7 @@ void TabDragDropDelegate::UpdateSourceWindowBoundsIfNecessary(
     return;
 
   if (!windows_hider_) {
-    windows_hider_ =
-        std::make_unique<TabletModeBrowserWindowDragSessionWindowsHider>(
-            source_window_, nullptr);
+    windows_hider_ = std::make_unique<TabDragDropWindowsHider>(source_window_);
   }
 
   gfx::Rect new_source_window_bounds;

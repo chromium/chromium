@@ -39,7 +39,6 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/overview/drop_target_view.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
@@ -79,6 +78,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/background.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -138,6 +138,12 @@ constexpr base::TimeDelta kZeroDesksBarSlideDuration = base::Milliseconds(250);
 // that is visible on all desks to another desk.
 constexpr char kMoveVisibleOnAllDesksWindowToastId[] =
     "ash.wm.overview.move_visible_on_all_desks_window_toast";
+
+constexpr SkColor kDropTargetBackgroundColor =
+    SkColorSetARGB(0x24, 0xFF, 0XFF, 0XFF);
+constexpr SkColor kDropTargetBorderColor =
+    SkColorSetARGB(0x4C, 0xE8, 0XEA, 0XED);
+constexpr int kDropTargetBorderThickness = 2;
 
 // Histogram names for overview enter/exit smoothness in clamshell,
 // tablet mode and splitview.
@@ -267,6 +273,42 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver,
   OverviewExitMetricsTracker metrics_tracker_;
 };
 
+// DropTargetView represents a transparent view with border in overview. It
+// includes a background view. Dragged window in tablet mode can be dragged
+// into it and then dropped into overview.
+class DropTargetView : public views::View {
+ public:
+  METADATA_HEADER(DropTargetView);
+  DropTargetView() {
+    SetUseDefaultFillLayout(true);
+    const int corner_radius =
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::Emphasis::kLow);
+
+    background_view_ = AddChildView(std::make_unique<views::View>());
+    background_view_->SetBackground(views::CreateRoundedRectBackground(
+        kDropTargetBackgroundColor, corner_radius));
+
+    SetBorder(views::CreateRoundedRectBorder(
+        kDropTargetBorderThickness, corner_radius, kDropTargetBorderColor));
+  }
+  DropTargetView(const DropTargetView&) = delete;
+  DropTargetView& operator=(const DropTargetView&) = delete;
+  ~DropTargetView() override = default;
+
+  // Updates the visibility of `background_view_` since it is only shown when
+  // drop target is selected in overview.
+  void UpdateBackgroundVisibility(bool visible) {
+    background_view_->SetVisible(visible);
+  }
+
+ private:
+  views::View* background_view_ = nullptr;
+};
+
+BEGIN_METADATA(DropTargetView, views::View)
+END_METADATA
+
 // Creates |drop_target_widget_|. It's created when a window or overview item is
 // dragged around, and destroyed when the drag ends.
 std::unique_ptr<views::Widget> CreateDropTargetWidget(
@@ -286,8 +328,7 @@ std::unique_ptr<views::Widget> CreateDropTargetWidget(
   widget->Init(std::move(params));
   widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
 
-  widget->SetContentsView(
-      std::make_unique<DropTargetView>(/*has_plus_icon=*/false));
+  widget->SetContentsView(std::make_unique<DropTargetView>());
   aura::Window* drop_target_window = widget->GetNativeWindow();
   drop_target_window->parent()->StackChildAtBottom(drop_target_window);
   widget->Show();
