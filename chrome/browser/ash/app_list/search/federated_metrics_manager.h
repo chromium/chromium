@@ -102,7 +102,7 @@ class FederatedMetricsManager : ash::AppListNotifier::Observer {
   // interacting with the service.
   bool IsFederatedServiceAvailable();
   void TryToBindFederatedServiceIfNecessary();
-  void LogExample(const std::string& example_str);
+  void LogExample(const std::string& query);
 
   base::ScopedObservation<ash::AppListNotifier, ash::AppListNotifier::Observer>
       observation_{this};

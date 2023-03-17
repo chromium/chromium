@@ -31,11 +31,11 @@ std::string SearchSessionConclusionToString(
     ash::SearchSessionConclusion conclusion) {
   switch (conclusion) {
     case ash::SearchSessionConclusion::kQuit:
-      return "q";
+      return "quit";
     case ash::SearchSessionConclusion::kLaunch:
-      return "l";
+      return "launch";
     case ash::SearchSessionConclusion::kAnswerCardSeen:
-      return "ac";
+      return "answer_card";
     default:
       NOTREACHED();
   }
@@ -59,22 +59,16 @@ void LogReportStatus(FederatedMetricsManager::ReportStatus status) {
   base::UmaHistogramEnumeration(kHistogramReportStatus, status);
 }
 
-ExamplePtr CreateExamplePtr(const std::string& example_str) {
+ExamplePtr CreateExamplePtr(const std::string& query,
+                            const std::string& user_action) {
   ExamplePtr example = Example::New();
   example->features = Features::New();
   auto& feature_map = example->features->feature;
-  feature_map["query"] = CreateStringList({example_str});
-  return example;
-}
-
-std::string CreateExampleString(const std::string& prefix,
-                                const std::u16string& query) {
   // TODO(b/262611120): To be decided: Conversion to lowercase, white space
-  // stripping, truncation, etc.
-
-  // TODO(b/262611120): Don't annotate via prefixes. Use a different method.
-  // This will give greater flexibility in subsequent processing.
-  return base::StrCat({prefix, "_", base::UTF16ToUTF8(query)});
+  // stripping, truncation, etc. of query.
+  feature_map["query"] = CreateStringList({query});
+  feature_map["user_action"] = CreateStringList({user_action});
+  return example;
 }
 
 }  // namespace
@@ -125,8 +119,7 @@ void FederatedMetricsManager::OnSearchSessionEnded(
   // UMA logging:
   LogSearchSessionConclusion(session_result_);
   // Federated logging:
-  LogExample(CreateExampleString(
-      SearchSessionConclusionToString(session_result_), query));
+  LogExample(base::UTF16ToUTF8(query));
 
   session_result_ = ash::SearchSessionConclusion::kQuit;
   session_active_ = false;
@@ -172,7 +165,7 @@ void FederatedMetricsManager::TryToBindFederatedServiceIfNecessary() {
   }
 }
 
-void FederatedMetricsManager::LogExample(const std::string& example_str) {
+void FederatedMetricsManager::LogExample(const std::string& query) {
   if (!IsLoggingEnabled()) {
     return;
   }
@@ -185,7 +178,8 @@ void FederatedMetricsManager::LogExample(const std::string& example_str) {
     LogReportStatus(ReportStatus::kFederatedServiceNotConnected);
   } else {
     // Federated service available and connected.
-    ExamplePtr example = CreateExamplePtr(example_str);
+    ExamplePtr example = CreateExamplePtr(
+        query, SearchSessionConclusionToString(session_result_));
     federated_service_->ReportExample(kClientName, std::move(example));
     LogReportStatus(ReportStatus::kOk);
   }
