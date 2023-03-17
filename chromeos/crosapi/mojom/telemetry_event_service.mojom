@@ -1,0 +1,94 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// API and definitions exposed by the Telemetry Event Services. This API is
+// normally consumed by the Telemetry Extension APIs implementation.
+
+// Note: this is a subset of the cros_healthd event service interface which is
+// located in
+// //chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.
+// This interface serves as PII filtering and data post-processing service
+// between the source (cros_healthd) and the clients
+// (third-party telemetry extensions).
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
+
+// Audio jack event info. This is emitted when the
+// audio jack is plugged in or out.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryAudioJackEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Audio jack added.
+    kAdd = 1,
+    // Audio jack removed.
+    kRemove = 2,
+  };
+
+  State state@0;
+};
+
+// Union of event info.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable, Extensible]
+union TelemetryEventInfo {
+  // The default value for forward compatibility. All the unknown type will be
+  // mapped to this.
+  [Default] uint8 default_type@0;
+  // Audio jack event info.
+  TelemetryAudioJackEventInfo audio_jack_event_info@1;
+};
+
+// An enumeration of event categories.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable, Extensible]
+enum TelemetryEventCategoryEnum {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kAudioJack = 1,
+};
+
+// Implemented by clients who desire events.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+interface TelemetryEventObserver {
+  // Fired when an event happens.
+  OnEvent@0(TelemetryEventInfo info);
+};
+
+// Event interface exposed to Lacros.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable, Uuid="9771fd1b-79b9-4698-b20f-3168d2af3f77"]
+interface TelemetryEventService {
+  // Adds an observer to be notified on events. The caller can remove the
+  // observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |category| - Event category.
+  // * |observer| - Event observer to be added to crosapi.
+  AddEventObserver@1(
+      TelemetryEventCategoryEnum category,
+      pending_remote<TelemetryEventObserver> observer);
+
+  // Checks whether an event is supported. It does the same support status check
+  // as in `AddEventObserver()` and returns immediately after the check.
+  //
+  // The request:
+  // * |category| - Event category to check.
+  //
+  // The response:
+  // * |status| - See the documentation of `SupportStatus`.
+  IsEventSupported@2(TelemetryEventCategoryEnum category)
+      => (SupportStatus status);
+};

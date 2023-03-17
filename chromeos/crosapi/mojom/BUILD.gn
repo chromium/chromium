@@ -94,6 +94,8 @@ mojom("mojom") {
     "synced_session_client.mojom",
     "system_display.mojom",
     "task_manager.mojom",
+    "telemetry_event_service.mojom",
+    "telemetry_extension_exception.mojom",
     "test_controller.mojom",
     "timezone.mojom",
     "tts.mojom",
