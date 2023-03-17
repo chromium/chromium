@@ -10,7 +10,9 @@ const { REPLAY_LOCAL_DRIVER_DIR } = process.env;
 
 if (REPLAY_LOCAL_DRIVER_DIR && process.env.DRIVER_REVISION) {
   // local driver should generally be latest
-  throw new Error("Conflicting build settings: environment variables DRIVER_REVISION and REPLAY_LOCAL_DRIVER_DIR cannot coexist.");
+  throw new Error(
+    "Conflicting build settings: environment variables DRIVER_REVISION and REPLAY_LOCAL_DRIVER_DIR cannot coexist."
+  );
 }
 
 // Ensure that the git repository is "trusted", otherwise we'll get errors like:
@@ -52,7 +54,6 @@ if (!REPLAY_LOCAL_DRIVER_DIR) {
   fs.unlinkSync(driverArchive);
 }
 
-
 let driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
 let driverJSON = `${currentPlatform()}-recordreplay.json`;
 if (REPLAY_LOCAL_DRIVER_DIR) {
@@ -61,7 +62,9 @@ if (REPLAY_LOCAL_DRIVER_DIR) {
 }
 
 // Embed the driver in the source.
-console.log(`Embedding ${REPLAY_LOCAL_DRIVER_DIR ? 'LOCAL' : 'DOWNLOADED'} driver...`);
+console.log(
+  `Embedding ${REPLAY_LOCAL_DRIVER_DIR ? "LOCAL" : "DOWNLOADED"} driver...`
+);
 const driverContents = fs.readFileSync(driverFile);
 const { revision: driverRevision, date: driverDate } = JSON.parse(
   fs.readFileSync(driverJSON, "utf8")
@@ -92,7 +95,7 @@ console.log(`Preparing...`);
 const useGoma = !process.env.NO_GOMA;
 if (useGoma) {
   // ensure goma is started for cloud builds with engflow
-  spawnChecked("goma_ctl", ["restart"]);
+  spawnChecked("goma_ctl", ["ensure_start"]);
 }
 
 // ensure that build configuration is written with correct paths
@@ -100,7 +103,8 @@ const gn = currentPlatform() == "windows" ? "gn.bat" : "gn";
 spawnChecked(gn, ["gen", "out/Release"]);
 
 console.log(`Building...`);
-const autoninja = currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
+const autoninja =
+  currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
 spawnChecked(autoninja, ["-C", "out/Release", "chrome"], {
   stdio: "inherit",
 });
@@ -114,9 +118,9 @@ function spawnChecked(cmd, args, options) {
   const rv = spawnSync(cmd, args, options);
 
   if (rv.status != 0 || rv.error) {
-    console.error('Process failed:', rv.error || '');
-    console.log(rv.stdout.toString() || '');
-    console.error(rv.stderr.toString() || '');
+    console.error("Process failed:", rv.error || "");
+    console.log(rv.stdout.toString() || "");
+    console.error(rv.stderr.toString() || "");
     throw new Error(`Spawned process failed with exit code ${rv.status}`);
   }
 
@@ -143,10 +147,7 @@ function driverExtension() {
 /**
  * @returns {string} "YYYYMMDD" format of UTC timestamp of given revision.
  */
-function getRevisionDate(
-  revision = "HEAD",
-  spawnOptions
-) {
+function getRevisionDate(revision = "HEAD", spawnOptions) {
   const dateString = spawnChecked(
     "git",
     ["show", revision, "--pretty=%cd", "--date=iso-strict", "--no-patch"],
