@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/app_service/public/cpp/shortcut.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
 #include <sstream>
 

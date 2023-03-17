@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_SHORTCUT_H_
-#define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_SHORTCUT_H_
+#ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_SHORTCUT_SHORTCUT_H_
+#define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_SHORTCUT_SHORTCUT_H_
 
 #include <memory>
 #include <string>
@@ -70,4 +70,4 @@ Shortcuts CloneShortcuts(const Shortcuts& source_shortcuts);
 
 }  // namespace apps
 
-#endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_SHORTCUT_H_
+#endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_SHORTCUT_SHORTCUT_H_
