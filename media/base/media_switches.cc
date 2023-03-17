@@ -1449,19 +1449,6 @@ bool IsMediaFoundationD3D11VideoCaptureEnabled() {
 }
 #endif
 
-bool IsUseMojoVideoDecoderForPepperEnabled() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableUseMojoVideoDecoderForPepper)) {
-    LOG(WARNING) << "UseMojoVideoDecoderForPepper: Disabled by policy";
-    return false;
-  }
-
-  auto enabled = base::FeatureList::IsEnabled(kUseMojoVideoDecoderForPepper);
-  LOG(WARNING) << "UseMojoVideoDecoderForPepper: feature controlled: "
-               << enabled;
-  return enabled;
-}
-
 // Return bitmask of audio formats supported by EDID.
 uint32_t GetPassthroughAudioFormats() {
 #if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)

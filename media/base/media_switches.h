@@ -428,8 +428,6 @@ MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
 MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();
 #endif
 
-MEDIA_EXPORT bool IsUseMojoVideoDecoderForPepperEnabled();
-
 enum class kCrosGlobalMediaControlsPinOptions {
   kPin,
   kNotPin,

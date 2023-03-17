@@ -176,6 +176,12 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
   bool initialized_ = false;
 };
 
+// Checks the corresponding flag and enterprise policy to know if the
+// MojoVideoDecoder should be used in Pepper for hardware video decoding.
+// Returns true if the MojoVideoDecoder should be used and false if the
+// legacy VDA path should be used instead.
+bool ShouldUseMojoVideoDecoderForPepper();
+
 }  // namespace content
 
 #endif  // CONTENT_RENDERER_PEPPER_PEPPER_VIDEO_DECODER_HOST_H_

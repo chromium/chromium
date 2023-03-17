@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -108,6 +109,20 @@ media::VideoCodecProfile PepperToMediaVideoProfile(PP_VideoProfile profile) {
 }
 
 }  // namespace
+
+bool ShouldUseMojoVideoDecoderForPepper() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableUseMojoVideoDecoderForPepper)) {
+    LOG(WARNING) << "UseMojoVideoDecoderForPepper: Disabled by policy";
+    return false;
+  }
+
+  auto enabled =
+      base::FeatureList::IsEnabled(media::kUseMojoVideoDecoderForPepper);
+  LOG(WARNING) << "UseMojoVideoDecoderForPepper: feature controlled: "
+               << enabled;
+  return enabled;
+}
 
 PepperVideoDecoderHost::PendingDecode::PendingDecode(
     int32_t decode_id,
@@ -221,7 +236,7 @@ int32_t PepperVideoDecoderHost::OnHostMsgInitialize(
   min_picture_count_ = min_picture_count;
 
   if (acceleration != PP_HARDWAREACCELERATION_NONE) {
-    if (!media::IsUseMojoVideoDecoderForPepperEnabled()) {
+    if (!ShouldUseMojoVideoDecoderForPepper()) {
       // This is not synchronous, but subsequent IPC messages will be buffered,
       // so it is okay to immediately send IPC messages.
       if (command_buffer->channel()) {
