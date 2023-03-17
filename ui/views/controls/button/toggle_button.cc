@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
@@ -66,6 +67,21 @@ int GetThumbInset(bool is_on) {
   return kThumbInset;
 }
 
+absl::optional<SkColor> GetSkColorFromVariant(
+    const absl::variant<ui::ColorId, SkColor>& color_variant) {
+  return absl::holds_alternative<SkColor>(color_variant)
+             ? absl::make_optional(absl::get<SkColor>(color_variant))
+             : absl::nullopt;
+}
+
+SkColor ConvertVariantToSkColor(
+    const absl::variant<ui::ColorId, SkColor> color_variant,
+    const ui::ColorProvider* color_provider) {
+  return absl::holds_alternative<SkColor>(color_variant)
+             ? absl::get<SkColor>(color_variant)
+             : color_provider->GetColor(absl::get<ui::ColorId>(color_variant));
+}
+
 }  // namespace
 
 class ToggleButton::FocusRingHighlightPathGenerator
@@ -80,7 +96,7 @@ class ToggleButton::FocusRingHighlightPathGenerator
 class ToggleButton::ThumbView : public View {
  public:
   METADATA_HEADER(ThumbView);
-  ThumbView() {
+  explicit ThumbView(bool has_shadow) : has_shadow_(has_shadow) {
     // Make the thumb behave as part of the parent for event handling.
     SetCanProcessEventsWithinSubtree(false);
   }
@@ -103,19 +119,18 @@ class ToggleButton::ThumbView : public View {
 
   // Returns the extra space needed to draw the shadows around the thumb. Since
   // the extra space is around the thumb, the insets will be negative.
-  static gfx::Insets GetShadowOutsets() {
-    return features::IsChromeRefresh2023()
-               ? gfx::Insets()
-               : gfx::Insets(-kShadowBlur) +
-                     gfx::Vector2d(kShadowOffsetX, kShadowOffsetY);
+  gfx::Insets GetShadowOutsets() {
+    return has_shadow_ ? gfx::Insets(-kShadowBlur) +
+                             gfx::Vector2d(kShadowOffsetX, kShadowOffsetY)
+                       : gfx::Insets();
   }
 
-  void SetThumbColor(bool is_on, const absl::optional<SkColor>& thumb_color) {
+  void SetThumbColor(bool is_on, SkColor thumb_color) {
     (is_on ? thumb_on_color_ : thumb_off_color_) = thumb_color;
   }
 
   absl::optional<SkColor> GetThumbColor(bool is_on) const {
-    return is_on ? thumb_on_color_ : thumb_off_color_;
+    return GetSkColorFromVariant(is_on ? thumb_on_color_ : thumb_off_color_);
   }
 
  private:
@@ -128,7 +143,7 @@ class ToggleButton::ThumbView : public View {
     const float dsf = canvas->UndoDeviceScaleFactor();
     const ui::ColorProvider* color_provider = GetColorProvider();
     cc::PaintFlags thumb_flags;
-    if (!features::IsChromeRefresh2023()) {
+    if (has_shadow_) {
       std::vector<gfx::ShadowValue> shadows;
       gfx::ShadowValue shadow(
           gfx::Vector2d(kShadowOffsetX, kShadowOffsetY), 2 * kShadowBlur,
@@ -137,10 +152,10 @@ class ToggleButton::ThumbView : public View {
       thumb_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
     }
     thumb_flags.setAntiAlias(true);
-    const SkColor thumb_on_color = thumb_on_color_.value_or(
-        color_provider->GetColor(ui::kColorToggleButtonThumbOn));
-    const SkColor thumb_off_color = thumb_off_color_.value_or(
-        color_provider->GetColor(ui::kColorToggleButtonThumbOff));
+    const SkColor thumb_on_color =
+        ConvertVariantToSkColor(thumb_on_color_, color_provider);
+    const SkColor thumb_off_color =
+        ConvertVariantToSkColor(thumb_off_color_, color_provider);
     SkColor thumb_color =
         color_utils::AlphaBlend(thumb_on_color, thumb_off_color, color_ratio_);
     if (features::IsChromeRefresh2023() && is_hovered_ && is_on_) {
@@ -165,9 +180,27 @@ class ToggleButton::ThumbView : public View {
                        thumb_flags);
   }
 
+  void OnEnabledStateChanged() {
+    // If using default color ID, update it according to the enabled state.
+    if (absl::holds_alternative<ui::ColorId>(thumb_on_color_)) {
+      thumb_on_color_ = GetEnabled() ? ui::kColorToggleButtonThumbOn
+                                     : ui::kColorToggleButtonThumbOnDisabled;
+    }
+
+    if (absl::holds_alternative<ui::ColorId>(thumb_off_color_)) {
+      thumb_off_color_ = GetEnabled() ? ui::kColorToggleButtonThumbOff
+                                      : ui::kColorToggleButtonThumbOffDisabled;
+    }
+  }
+
+  // Indicate if the thumb has shadow.
+  const bool has_shadow_;
+
   // Colors used for the thumb.
-  absl::optional<SkColor> thumb_on_color_;
-  absl::optional<SkColor> thumb_off_color_;
+  absl::variant<ui::ColorId, SkColor> thumb_on_color_ =
+      ui::kColorToggleButtonThumbOn;
+  absl::variant<ui::ColorId, SkColor> thumb_off_color_ =
+      ui::kColorToggleButtonThumbOff;
 
   // Thumb paints differently when on under ChromeRefresh2023.
   bool is_on_ = false;
@@ -177,15 +210,25 @@ class ToggleButton::ThumbView : public View {
   float color_ratio_ = 0.0f;
   // Color ratio between 0 and 1 that controls the thumb hover color.
   float hover_ratio_ = 0.0f;
+
+  // Callback when the enabled state changes.
+  base::CallbackListSubscription enabled_state_changed_subscription_{
+      AddEnabledChangedCallback(
+          base::BindRepeating(&ThumbView::OnEnabledStateChanged,
+                              base::Unretained(this)))};
 };
 
 ToggleButton::ToggleButton(PressedCallback callback)
+    : ToggleButton(callback,
+                   /*has_thumb_shadow=*/!features::IsChromeRefresh2023()) {}
+
+ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)
     : Button(std::move(callback)) {
   slide_animation_.SetSlideDuration(base::Milliseconds(80));
   slide_animation_.SetTweenType(gfx::Tween::LINEAR);
   hover_animation_.SetSlideDuration(base::Milliseconds(250));
   hover_animation_.SetTweenType(gfx::Tween::LINEAR);
-  thumb_view_ = AddChildView(std::make_unique<ThumbView>());
+  thumb_view_ = AddChildView(std::make_unique<ThumbView>(has_thumb_shadow));
   InkDrop::Get(this)->SetMode(InkDropHost::InkDropMode::ON);
   InkDrop::Get(this)->SetLayerRegion(LayerRegion::kAbove);
   // Do not set a clip, allow the ink drop to burst out.
@@ -199,9 +242,10 @@ ToggleButton::ToggleButton(PressedCallback callback)
       /*highlight_on_focus=*/false,
       /*show_highlight_on_ripple=*/features::IsChromeRefresh2023());
   InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
-      [](ToggleButton* host) -> std::unique_ptr<InkDropRipple> {
+      [](ToggleButton* host,
+         gfx::Insets insets) -> std::unique_ptr<InkDropRipple> {
         gfx::Rect rect = host->thumb_view_->GetLocalBounds();
-        rect.Inset(-ThumbView::GetShadowOutsets());
+        rect.Inset(insets);
         if (!features::IsChromeRefresh2023()) {
           return InkDrop::Get(host)->CreateSquareRipple(rect.CenterPoint());
         }
@@ -218,7 +262,7 @@ ToggleButton::ToggleButton(PressedCallback callback)
             views::SquareInkDropRipple::ActivatedShape::kCircle);
         return ripple;
       },
-      this));
+      this, -thumb_view_->GetShadowOutsets()));
   InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](ToggleButton* host) {
         return host->GetTrackColor(host->GetIsOn() || host->HasFocus());
@@ -281,8 +325,7 @@ bool ToggleButton::GetIsOn() const {
   return slide_animation_.IsShowing();
 }
 
-void ToggleButton::SetThumbOnColor(
-    const absl::optional<SkColor>& thumb_on_color) {
+void ToggleButton::SetThumbOnColor(SkColor thumb_on_color) {
   thumb_view_->SetThumbColor(true /* is_on */, thumb_on_color);
 }
 
@@ -290,8 +333,7 @@ absl::optional<SkColor> ToggleButton::GetThumbOnColor() const {
   return thumb_view_->GetThumbColor(true);
 }
 
-void ToggleButton::SetThumbOffColor(
-    const absl::optional<SkColor>& thumb_off_color) {
+void ToggleButton::SetThumbOffColor(SkColor thumb_off_color) {
   thumb_view_->SetThumbColor(false /* is_on */, thumb_off_color);
 }
 
@@ -299,22 +341,20 @@ absl::optional<SkColor> ToggleButton::GetThumbOffColor() const {
   return thumb_view_->GetThumbColor(false);
 }
 
-void ToggleButton::SetTrackOnColor(
-    const absl::optional<SkColor>& track_on_color) {
+void ToggleButton::SetTrackOnColor(SkColor track_on_color) {
   track_on_color_ = track_on_color;
 }
 
 absl::optional<SkColor> ToggleButton::GetTrackOnColor() const {
-  return track_on_color_;
+  return GetSkColorFromVariant(track_on_color_);
 }
 
-void ToggleButton::SetTrackOffColor(
-    const absl::optional<SkColor>& track_off_color) {
+void ToggleButton::SetTrackOffColor(SkColor track_off_color) {
   track_off_color_ = track_off_color;
 }
 
 absl::optional<SkColor> ToggleButton::GetTrackOffColor() const {
-  return track_off_color_;
+  return GetSkColorFromVariant(track_off_color_);
 }
 
 void ToggleButton::SetAcceptsEvents(bool accepts_events) {
@@ -360,11 +400,15 @@ gfx::Rect ToggleButton::GetThumbBounds() const {
                          (thumb_bounds.width() - thumb_bounds.height()));
   // The thumb is a circle, so the width should match the height.
   thumb_bounds.set_width(thumb_bounds.height());
-  thumb_bounds.Inset(ThumbView::GetShadowOutsets());
+  thumb_bounds.Inset(thumb_view_->GetShadowOutsets());
   if (GetState() == STATE_PRESSED && features::IsChromeRefresh2023()) {
     thumb_bounds.Outset(kRefreshThumbPressedOutset);
   }
   return thumb_bounds;
+}
+
+double ToggleButton::GetAnimationProgress() const {
+  return slide_animation_.GetCurrentValue();
 }
 
 void ToggleButton::UpdateThumb() {
@@ -385,9 +429,8 @@ void ToggleButton::UpdateThumb() {
 }
 
 SkColor ToggleButton::GetTrackColor(bool is_on) const {
-  absl::optional<SkColor> color = is_on ? track_on_color_ : track_off_color_;
-  return color.value_or(GetColorProvider()->GetColor(
-      is_on ? ui::kColorToggleButtonTrackOn : ui::kColorToggleButtonTrackOff));
+  return ConvertVariantToSkColor(is_on ? track_on_color_ : track_off_color_,
+                                 GetColorProvider());
 }
 
 SkColor ToggleButton::GetHoverColor() const {
@@ -430,6 +473,22 @@ void ToggleButton::NotifyClick(const ui::Event& event) {
 
 void ToggleButton::StateChanged(ButtonState old_state) {
   Button::StateChanged(old_state);
+
+  // Update default track color ID and propagate the enabled state to the thumb.
+  const bool enabled = GetState() != ButtonState::STATE_DISABLED;
+  if (absl::holds_alternative<ui::ColorId>(track_on_color_)) {
+    track_on_color_ = enabled ? ui::kColorToggleButtonTrackOn
+                              : ui::kColorToggleButtonTrackOnDisabled;
+  }
+
+  if (absl::holds_alternative<ui::ColorId>(track_off_color_)) {
+    track_off_color_ = enabled ? ui::kColorToggleButtonTrackOff
+                               : ui::kColorToggleButtonTrackOffDisabled;
+  }
+
+  thumb_view_->SetEnabled(enabled);
+
+  // Update thumb bounds.
   if (features::IsChromeRefresh2023()) {
     if (GetState() == STATE_PRESSED || old_state == STATE_PRESSED) {
       UpdateThumb();
@@ -543,10 +602,6 @@ END_METADATA
 BEGIN_METADATA(ToggleButton, Button)
 ADD_PROPERTY_METADATA(bool, IsOn)
 ADD_PROPERTY_METADATA(bool, AcceptsEvents)
-ADD_PROPERTY_METADATA(absl::optional<SkColor>, ThumbOnColor)
-ADD_PROPERTY_METADATA(absl::optional<SkColor>, ThumbOffColor)
-ADD_PROPERTY_METADATA(absl::optional<SkColor>, TrackOnColor)
-ADD_PROPERTY_METADATA(absl::optional<SkColor>, TrackOffColor)
 END_METADATA
 
 }  // namespace views

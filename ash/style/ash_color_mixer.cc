@@ -602,6 +602,20 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[kColorAshFolderItemCountBackgroundColor] =
       use_dark_color ? ui::ColorTransform(gfx::kGoogleBlue300)
                      : ui::ColorTransform(gfx::kGoogleBlue600);
+
+  mixer[ui::kColorToggleButtonThumbOn] = {cros_tokens::kCrosSysOnPrimary};
+  mixer[ui::kColorToggleButtonThumbOff] = {cros_tokens::kCrosSysOnSecondary};
+  mixer[ui::kColorToggleButtonThumbOnDisabled] =
+      ui::SetAlpha({ui::kColorToggleButtonThumbOn}, kDisabledColorOpacity);
+  mixer[ui::kColorToggleButtonThumbOffDisabled] =
+      ui::SetAlpha({ui::kColorToggleButtonThumbOff}, kDisabledColorOpacity);
+  mixer[ui::kColorToggleButtonTrackOn] = {cros_tokens::kCrosSysPrimary};
+  mixer[ui::kColorToggleButtonTrackOff] = {cros_tokens::kCrosSysSecondary};
+  mixer[ui::kColorToggleButtonTrackOnDisabled] =
+      ui::SetAlpha({ui::kColorToggleButtonTrackOn}, kDisabledColorOpacity);
+  mixer[ui::kColorToggleButtonTrackOffDisabled] =
+      ui::SetAlpha({ui::kColorToggleButtonTrackOff}, kDisabledColorOpacity);
+  mixer[ui::kColorToggleButtonHover] = {cros_tokens::kCrosSysHoverOnProminent};
 }
 
 }  // namespace ash

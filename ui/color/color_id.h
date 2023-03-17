@@ -399,6 +399,7 @@
   E_CPONLY(kColorToggleButtonThumbOnDisabled) \
   E_CPONLY(kColorToggleButtonThumbOnHover) \
   E_CPONLY(kColorToggleButtonTrackOff) \
+  E_CPONLY(kColorToggleButtonTrackOffDisabled) \
   E_CPONLY(kColorToggleButtonTrackOn) \
   E_CPONLY(kColorToggleButtonTrackOnDisabled) \
   E_CPONLY(kColorToolbarSearchFieldBackground) \

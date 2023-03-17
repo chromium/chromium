@@ -167,7 +167,7 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
       u"RadioButtonGroup",
       base::BindRepeating(&CreateRadioButtonGroupInstancesGridView));
   viewer_view->AddComponent(
-      u"KnobSwitch", base::BindRepeating(&CreateKnobSwitchInstancesGridView));
+      u"Switch", base::BindRepeating(&CreateSwitchInstancesGridView));
   viewer_view->AddComponent(
       u"TabSlider", base::BindRepeating(&CreateTabSliderInstancesGridView));
   viewer_view->AddComponent(
