@@ -241,6 +241,10 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
                 .ToNSImage();
   }
 
+  // The frame given to -[NSDraggingItem setDraggingFrame:contents:] will be
+  // interpreted as being in the coordinate system of this view, so convert it
+  // from the coordinate system of the window.
+  mouseLocation = [self convertPoint:mouseLocation fromView:nil];
   NSRect imageRect = NSMakeRect(mouseLocation.x, mouseLocation.y,
                                 image.size.width, image.size.height);
   imageRect.origin.x -= offset.x;
