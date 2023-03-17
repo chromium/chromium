@@ -356,20 +356,31 @@ bool PaintArtifactCompositor::DecompositeEffect(
 
   upcast_state->SetEffect(parent_effect);
 
-  // Exotic blending layer can be decomposited only if its parent group
-  // (which defines the scope of the blending) has zero or one layer before it,
-  // and it can be merged into that layer. However, a layer not drawing content
-  // at the beginning of the parent group doesn't count, as the blending mode
-  // doesn't apply to it.
+  // An exotic blend mode can be decomposited only if the src (`layer`) and
+  // the dest (previous layers in the parent group) will be in the same
+  // composited layer to ensure the blend mode has access to both the src and
+  // the dest.
   if (effect.BlendMode() != SkBlendMode::kSrcOver) {
     auto num_previous_siblings =
         layer_index - first_layer_in_parent_group_index;
+    // If num_previous_siblings is zero, the dest is empty, and the blend mode
+    // can be decomposited.
     if (num_previous_siblings) {
-      if (num_previous_siblings > 2)
+      if (num_previous_siblings > 2) {
+        // If the dest has multiple composited layers, the blend mode must be
+        // composited, too.
         return false;
+      }
       if (num_previous_siblings == 2 &&
-          pending_layers_[first_layer_in_parent_group_index].DrawsContent())
+          // Same as the above, but if the first layer doesn't draw content,
+          // only the second layer is the dest, and we'll check CanMerge()
+          // with the second layer below.
+          pending_layers_[first_layer_in_parent_group_index].DrawsContent()) {
         return false;
+      }
+      // The previous sibling is the dest. Check whether the src (`layer`), if
+      // it's upcasted, can be merged with the dest so that they will be in
+      // the same composited layer.
       const auto& previous_sibling = pending_layers_[layer_index - 1];
       if (previous_sibling.DrawsContent() &&
           !previous_sibling.CanMerge(layer, *upcast_state,
