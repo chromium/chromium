@@ -42,8 +42,8 @@ struct TelemetryExtensionException {
     // use this as the reason.
     kUnexpected = 2,
     // Raises this if clients try to run an unsupported feature. Note that
-    // clients should use methods which return `SupportStatus` for
-    // support status check.
+    // clients should use methods which return `TelemetryExtensionSupportStatus`
+    // for support status check.
     kUnsupported = 3,
   };
 
@@ -58,35 +58,35 @@ struct TelemetryExtensionException {
 //
 // NextMinVersion: 1
 [Stable, Extensible]
-union SupportStatus {
+union TelemetryExtensionSupportStatus {
   // This is required for backwards compatibility. Don't use this.
   [Default] int8 unmapped_union_field;
   // This is set if any exception happens before we can determine whether the
   // feature is supported.
   TelemetryExtensionException exception;
   // The feature is supported.
-  Supported supported;
+  TelemetryExtensionSupported supported;
   // The feature is not supported.
-  Unsupported unsupported;
+  TelemetryExtensionUnsupported unsupported;
 };
 
 // Empty struct for future extensibility.
 //
 // NextMinVersion: 1, NextIndex: 0
 [Stable]
-struct Supported {};
+struct TelemetryExtensionSupported {};
 
 // Details about the unsupported reason.
 //
 // NextMinVersion: 1, NextIndex: 2
 [Stable]
-struct Unsupported {
+struct TelemetryExtensionUnsupported {
   // A human readable message for debugging. If a client want to handle a
   // specific exception, use |reason|. Don't rely on the content because it
   // could change anytime.
   string debug_message@0;
   // A union for the detailed reason.
-  UnsupportedReason? reason@1;
+  TelemetryExtensionUnsupportedReason? reason@1;
 };
 
 // Empty union for future extensibility. This can be used to pass the details
@@ -95,7 +95,7 @@ struct Unsupported {
 //
 // NextMinVersion: 1
 [Stable, Extensible]
-union UnsupportedReason {
+union TelemetryExtensionUnsupportedReason {
   // This is required for backwards compatibility. Don't use this.
   [Default] int8 unmapped_union_field;
 };
