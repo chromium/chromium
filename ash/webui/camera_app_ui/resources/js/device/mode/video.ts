@@ -700,7 +700,8 @@ export class Video extends ModeBase {
     const gifSaver = await GifSaver.create(new Resolution(width, height));
     const canvas = new OffscreenCanvas(width, height);
     const context = assertInstanceof(
-        canvas.getContext('2d'), OffscreenCanvasRenderingContext2D);
+        canvas.getContext('2d', {willReadFrequently: true}),
+        OffscreenCanvasRenderingContext2D);
     if (videoTrack.readyState === 'ended') {
       throw new NoFrameError();
     }
