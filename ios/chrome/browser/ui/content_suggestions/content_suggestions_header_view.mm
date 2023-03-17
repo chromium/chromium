@@ -416,6 +416,15 @@ CGFloat ToolbarHeight() {
   CGFloat percent =
       [self searchFieldProgressForOffset:offset safeAreaInsets:safeAreaInsets];
 
+  // Offset the hint label constraints with half of the change in width
+  // from the original scale, since constraints are calculated before
+  // transformations are applied. This prevents the label from overlapping
+  // with other UI elements.
+  CGFloat hintLabelScalingExtraOffset =
+      (content_suggestions::kHintTextScale * (1 - percent)) *
+      self.searchHintLabel.bounds.size.width * 0.5;
+  self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset;
+
   CGFloat toolbarExpandedHeight = ToolbarHeight();
 
   if (!IsSplitToolbarMode(self)) {
@@ -440,7 +449,8 @@ CGFloat ToolbarHeight() {
 
     // Reset the view horizontal constraints.
     if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
-      self.hintLabelLeadingMarginConstraint.constant = 0;
+      self.hintLabelLeadingMarginConstraint.constant =
+          kHintLabelFakeboxLeadingSpace + hintLabelScalingExtraOffset;
     } else {
       self.hintLabelLeadingConstraint.constant =
           ntp_header::kCenteredHintLabelSidePadding;
@@ -506,14 +516,6 @@ CGFloat ToolbarHeight() {
       (kEndButtonFakeboxTrailingSpace - kEndButtonOmniboxTrailingSpace) *
           percent;
 
-  // Offset the hint label constraints with half of the change in width
-  // from the original scale, since constraints are calculated before
-  // transformations are applied. This prevents the label from overlapping
-  // with other UI elements.
-  CGFloat additionalScaleOffset =
-      (content_suggestions::kHintTextScale * (1 - percent)) *
-      self.searchHintLabel.bounds.size.width * 0.5;
-  self.hintLabelTrailingConstraint.constant = -additionalScaleOffset;
   if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
     // A similar positioning scheme is applied to the leading-edge-aligned
     // hint label as the trailing-edge-aligned buttons.
@@ -523,7 +525,7 @@ CGFloat ToolbarHeight() {
         (kHintLabelFakeboxLeadingSpace - kHintLabelOmniboxLeadingSpace) *
             percent;
     self.hintLabelLeadingConstraint.constant =
-        desiredLeadingSpace + additionalScaleOffset;
+        desiredLeadingSpace + hintLabelScalingExtraOffset;
   } else {
     self.hintLabelLeadingConstraint.constant =
         subviewsDiff + ntp_header::kCenteredHintLabelSidePadding;
