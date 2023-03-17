@@ -504,6 +504,10 @@ vars = {
   # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
   # This has to stay in sync with the version in src/third_party/ninja/README.chromium.
   'ninja_version': 'version:2@1.11.1.chromium.6',
+
+  # Used for src-internal deps into src migration.
+  # TODO(1409738): Remove this post migration.
+  'checkout_chromeos_assistant': False,
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
@@ -3918,6 +3922,23 @@ deps = {
     'dep_type': 'cipd',
     'condition': 'checkout_win and checkout_bazel',
   },
+
+  # Dependencies from src_internal
+  'src/chromeos/assistant/internal': {
+      'url': Var('chrome_git') + '/chrome/assistant.git' + '@' +
+        '207acca58e002bec18b8ffdd76e2ef1c1515cbf2',
+      'condition': 'checkout_src_internal and checkout_chromeos',
+    },
+
+  'src/chromeos/assistant/libassistant/src': {
+      'url': Var('chrome_git') + '/external/gob/libassistant-internal/standalone/src.git' + '@' + '7e8a91342977bbcac4536afdee7af96ab45e51f3',
+      'condition': 'checkout_src_internal and checkout_chromeos',
+  },
+
+  'src/libassistant': {
+      'url': Var('chrome_git') + '/chrome/libassistant.git' + '@' + 'fe0ef57f250510e890fc01e1b6c7da7b59117603',
+      'condition': 'checkout_src_internal and checkout_chromeos',
+  },
 }
 
 
@@ -5099,4 +5120,7 @@ recursedeps = [
   # clank has its own DEPS file, does not need to be in trybot_analyze_config
   # since the roller does not run tests.
   'src/clank',
+  'src/chromeos/assistant/internal',
+  'src/chromeos/assistant/libassistant/src',
+  'src/libassistant',
 ]
