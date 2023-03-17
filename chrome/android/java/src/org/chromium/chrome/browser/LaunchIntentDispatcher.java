@@ -17,9 +17,11 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
+import androidx.core.os.BuildCompat;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
@@ -51,6 +53,8 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Set;
 
 /**
@@ -396,6 +400,11 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         if (callingActivity != null) {
             launchIntent.putExtra(
                     IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, callingActivity.getPackageName());
+        } else {
+            String packageName = getClientPackageNameFromIdentitySharing();
+            if (packageName != null) {
+                launchIntent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
+            }
         }
 
         // Allow disk writes during startActivity() to avoid strict mode violations on some
@@ -408,6 +417,26 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             mActivity.startActivity(launchIntent, null);
             return true;
         }
+    }
+
+    /**
+     * @return Client package name obtained from {@link Activity#getLaunchedFromPackage()}.
+     *         {@code null} if the underlying OS doesn't support the feature.
+     */
+    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
+    private String getClientPackageNameFromIdentitySharing() {
+        if (!BuildCompat.isAtLeastU()) return null;
+
+        // Activity.getLaunchedFromPackage()
+        // TODO(crbug.com/1423489): Replace the reflection with the normal API.
+        try {
+            Method method = Activity.class.getMethod("getLaunchedFromPackage");
+            return (String) method.invoke(mActivity);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException
+                | RuntimeException e) {
+            assert false : "Activity.getLaunchedFromPackage() failed.";
+        }
+        return null;
     }
 
     /**
