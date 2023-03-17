@@ -129,6 +129,11 @@ void AutomationEventRouter::DispatchAccessibilityEventsInternal(
 
 void AutomationEventRouter::DispatchAccessibilityLocationChange(
     const ExtensionMsg_AccessibilityLocationChangeParams& params) {
+  if (remote_router_) {
+    remote_router_->DispatchAccessibilityLocationChange(params);
+    return;
+  }
+
   for (const auto& listener : listeners_) {
     // Skip listeners that don't want to listen to this tree.
     if (!listener->desktop &&
