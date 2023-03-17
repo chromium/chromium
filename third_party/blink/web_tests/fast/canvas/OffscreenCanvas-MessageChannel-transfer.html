@@ -3,29 +3,32 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script>
 async_test(t => {
-  var channel = new MessageChannel();
-  var canvas = document.createElement('canvas');
+  const channel = new MessageChannel();
+  const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 10;
-  var offscreen = canvas.transferControlToOffscreen();
+  const offscreen = canvas.transferControlToOffscreen();
   channel.port2.onmessage = function(message) {
-    var ctx = message.data.getContext('2d');
+    const ctx = message.data.getContext('2d');
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 10, 10);
-    setTimeout(() => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          var canvas2 = document.createElement('canvas');
-          canvas2.width = canvas2.height = 10;
-          var ctx2 = canvas2.getContext('2d', {willReadFrequently: true});
-          ctx2.drawImage(canvas, 0, 0);
-          var pixel = ctx2.getImageData(0, 0, 1, 1).data;
-          t.step(function() {
+    const canvas2 = document.createElement('canvas');
+    canvas2.width = canvas2.height = 10;
+    const ctx2 = canvas2.getContext('2d', {willReadFrequently: true});
+    function checkResult() {
+      ctx2.drawImage(canvas, 0, 0);
+      var pixel = ctx2.getImageData(0, 0, 1, 1).data;
+      if (pixel[3] == 0) {
+        // result not available, wait longer.
+        console.log('pixel: ' + pixel);
+        setTimeout(checkResult, 1);
+      } else {
+        t.step(function() {
             assert_array_equals(pixel, [0, 255, 0, 255]);
           });
           t.done();
-        });
-      });
-    }, 1);
+      }
+    }
+    checkResult();
   }
   channel.port1.postMessage(offscreen, [offscreen]);
 }, "Verify that posting an OffscreenCanvas through a MessageChannel works as intended.");

@@ -221,10 +221,6 @@ crbug.com/1124352 external/wpt/picture-in-picture/exit-picture-in-picture.html [
 crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Failure ]
 crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
 
-# Offscreen canvas tests that are flaky because sometimes the image is not rendered in time
-# See crbug.com/1315650
-crbug.com/1322089 fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Failure Pass ]
-
 # This test is originally added with external/wpt/speculation-rules/prerender/* skipped and broken.
 crbug.com/1356449 external/wpt/speculation-rules/prerender/credentialed-prerender-opt-in.html [ Crash Failure Pass Timeout ]
 # These tests are tentatively disabled.
