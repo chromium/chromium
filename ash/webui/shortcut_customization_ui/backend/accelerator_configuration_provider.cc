@@ -231,6 +231,12 @@ void AcceleratorConfigurationProvider::IsMutable(
   std::move(callback).Run(/*is_mutable=*/true);
 }
 
+void AcceleratorConfigurationProvider::HasLauncherButton(
+    HasLauncherButtonCallback callback) {
+  std::move(callback).Run(
+      Shell::Get()->keyboard_capability()->HasLauncherButton());
+}
+
 void AcceleratorConfigurationProvider::GetAccelerators(
     GetAcceleratorsCallback callback) {
   std::move(callback).Run(CreateConfigurationMap());

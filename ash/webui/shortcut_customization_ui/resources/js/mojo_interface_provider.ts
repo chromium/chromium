@@ -82,6 +82,10 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     return this.remote.isMutable(source);
   }
 
+  hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
+    return this.remote.hasLauncherButton();
+  }
+
   removeAccelerator(
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {

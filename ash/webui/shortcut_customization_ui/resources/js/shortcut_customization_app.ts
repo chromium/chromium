@@ -125,6 +125,11 @@ export class ShortcutCustomizationAppElement extends
     // Kickoff fetching accelerators by first fetching the accelerator configs.
     this.shortcutProvider.getAccelerators().then(
         ({config}) => this.onAcceleratorConfigFetched(config));
+
+    // Fetch the hasLauncherButton value.
+    this.shortcutProvider.hasLauncherButton().then(({hasLauncherButton}) => {
+      this.acceleratorlookupManager.setHasLauncherButton(hasLauncherButton);
+    });
   }
 
   private onAcceleratorConfigFetched(config: MojoAcceleratorConfig): void {
@@ -151,6 +156,11 @@ export class ShortcutCustomizationAppElement extends
   onAcceleratorsUpdated(config: MojoAcceleratorConfig): void {
     this.acceleratorlookupManager.setAcceleratorLookup(config);
     this.$.navigationPanel.notifyEvent('updateSubsections');
+
+    // Update the hasLauncherButton value every time accelerators are updated.
+    this.shortcutProvider.hasLauncherButton().then(({hasLauncherButton}) => {
+      this.acceleratorlookupManager.setHasLauncherButton(hasLauncherButton);
+    });
   }
 
   private addNavigationSelectors(layoutInfos: MojoLayoutInfo[]): void {

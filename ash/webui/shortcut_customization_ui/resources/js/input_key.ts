@@ -11,7 +11,11 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './input_key.html.js';
+
+const META_KEY = 'meta';
+const OPEN_LAUNCHER_KEY = 'OpenLauncher';
 
 /**
  * Refers to the state of an 'input-key' item.
@@ -95,17 +99,21 @@ export class InputKeyElement extends InputKeyElementBase {
 
   key: string;
   keyState: KeyInputState;
+  private lookupManager: AcceleratorLookupManager =
+      AcceleratorLookupManager.getInstance();
 
   static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
   private getIconIdForKey(): string|null {
-    const iconName = keyToIconNameMap[this.key];
-    if (iconName) {
-      return `shortcut-customization-keys:${iconName}`;
+    const hasLauncherButton = this.lookupManager.getHasLauncherButton();
+    if (this.key === META_KEY || this.key === OPEN_LAUNCHER_KEY) {
+      return hasLauncherButton ? 'shortcut-customization-keys:launcher' :
+                                 'shortcut-customization-keys:search';
     }
-    return null;
+    const iconName = keyToIconNameMap[this.key];
+    return iconName ? `shortcut-customization-keys:${iconName}` : null;
   }
 
   /**
@@ -113,13 +121,21 @@ export class InputKeyElement extends InputKeyElementBase {
    * static so that it can be used by the test for this element.
    *
    * @param key The KeyboardEvent.code of a key, e.g. ArrowUp or PrintScreen.
+   * @param hasLauncherButton Whether the keyboard has a launcher button or a
+   *     search button.
    */
-  static getAriaLabelStringId(key: string): string {
+  static getAriaLabelStringId(key: string, hasLauncherButton: boolean): string {
+    if (key === META_KEY || key === OPEN_LAUNCHER_KEY) {
+      return hasLauncherButton ? 'iconLabelOpenLauncher' :
+                                 'iconLabelBrowserSearch';
+    }
     return `iconLabel${key}`;  // e.g. iconLabelArrowUp
   }
 
   private getAriaLabelForIcon(): string {
-    const ariaLabelStringId = InputKeyElement.getAriaLabelStringId(this.key);
+    const hasLauncherButton = this.lookupManager.getHasLauncherButton();
+    const ariaLabelStringId =
+        InputKeyElement.getAriaLabelStringId(this.key, hasLauncherButton);
     assert(
         this.i18nExists(ariaLabelStringId),
         `String ID ${ariaLabelStringId} should exist, but it doesn't.`);

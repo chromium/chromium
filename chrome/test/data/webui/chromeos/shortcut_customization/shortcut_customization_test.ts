@@ -59,6 +59,7 @@ suite('shortcutCustomizationAppTest', function() {
     // with how Mojo handles union types, we will need to refactor
     // the fake data to support the correct Mojo types for OnAceleratorsUpdated.
     provider.setFakeAcceleratorsUpdated([fakeAcceleratorConfig]);
+    provider.setFakeHasLauncherButton(true);
 
     setShortcutProviderForTesting(provider);
 

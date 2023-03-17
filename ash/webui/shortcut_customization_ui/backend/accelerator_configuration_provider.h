@@ -64,6 +64,7 @@ class AcceleratorConfigurationProvider
   // shortcut_customization::mojom::AcceleratorConfigurationProvider:
   void IsMutable(ash::mojom::AcceleratorSource source,
                  IsMutableCallback callback) override;
+  void HasLauncherButton(HasLauncherButtonCallback callback) override;
   void GetAccelerators(GetAcceleratorsCallback callback) override;
   void AddObserver(mojo::PendingRemote<
                    shortcut_customization::mojom::AcceleratorsUpdatedObserver>

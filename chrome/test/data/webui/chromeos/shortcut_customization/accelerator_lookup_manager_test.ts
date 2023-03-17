@@ -383,4 +383,14 @@ suite('acceleratorLookupManagerTest', function() {
       assertEquals(1, textLookup.length);
     });
   });
+
+  test('SetAndGetHasLauncherButton', () => {
+    getProvider().setFakeHasLauncherButton(true);
+    return getProvider().hasLauncherButton().then((result) => {
+      assertEquals(true, result.hasLauncherButton);
+
+      getManager().setHasLauncherButton(result.hasLauncherButton);
+      assertEquals(true, getManager().getHasLauncherButton());
+    });
+  });
 });

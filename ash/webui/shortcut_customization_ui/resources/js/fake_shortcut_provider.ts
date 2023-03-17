@@ -35,6 +35,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('getAccelerators');
     this.methods.register('getAcceleratorLayoutInfos');
     this.methods.register('isMutable');
+    this.methods.register('hasLauncherButton');
     this.methods.register('addUserAccelerator');
     this.methods.register('replaceAccelerator');
     this.methods.register('removeAccelerator');
@@ -66,6 +67,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.setResult(
         'isMutable', {isMutable: source !== AcceleratorSource.kBrowser});
     return this.methods.resolveMethod('isMutable');
+  }
+
+  hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
+    return this.methods.resolveMethod('hasLauncherButton');
   }
 
   addObserver(observer: AcceleratorsUpdatedObserverRemote): void {
@@ -146,6 +151,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   getRestoreDefaultCallCount(): number {
     return this.restoreDefaultCallCount;
+  }
+
+  setFakeHasLauncherButton(hasLauncherButton: boolean): void {
+    this.methods.setResult('hasLauncherButton', {hasLauncherButton});
   }
 
   // Sets up an observer for methodName.

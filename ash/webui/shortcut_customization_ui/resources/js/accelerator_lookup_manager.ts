@@ -82,6 +82,10 @@ export class AcceleratorLookupManager {
    */
   private reverseAcceleratorLookup: ReverseAcceleratorLookupMap = new Map();
 
+  // Determine whether the keyboard has a launcher button or a search button. It
+  // is used to display the 'meta' key with correct icon.
+  private hasLauncherButton: boolean = false;
+
   /**
    * Used to generate the keys for the ReverseAcceleratorLookupMap.
    */
@@ -185,6 +189,14 @@ export class AcceleratorLookupManager {
 
   setAcceleratorLayoutLookup(layoutInfoList: MojoLayoutInfo[]): void {
     this.layoutInfoProvider.initializeLayoutInfo(layoutInfoList);
+  }
+
+  setHasLauncherButton(hasLauncherButton: boolean): void {
+    this.hasLauncherButton = hasLauncherButton;
+  }
+
+  getHasLauncherButton(): boolean {
+    return this.hasLauncherButton;
   }
 
   replaceAccelerator(
