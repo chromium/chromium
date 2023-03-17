@@ -14,7 +14,7 @@ class TimeTicks;
 }
 
 namespace web {
-class WebMainRunner;
+class WebMain;
 }
 
 // Encapsulates any setup and initialization that is needed by common
@@ -35,7 +35,7 @@ class IOSChromeMain {
 
  private:
   IOSChromeMainDelegate main_delegate_;
-  std::unique_ptr<web::WebMainRunner> web_main_runner_;
+  std::unique_ptr<web::WebMain> web_main_;
 };
 
 #endif  // IOS_CHROME_APP_STARTUP_IOS_CHROME_MAIN_H_

@@ -12,7 +12,7 @@
 #import "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "ios/web/public/init/web_main_runner.h"
+#import "ios/web/public/init/web_main.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -23,8 +23,6 @@ base::TimeTicks* g_start_time;
 }  // namespace
 
 IOSChromeMain::IOSChromeMain() {
-  web_main_runner_.reset(web::WebMainRunner::Create());
-
   web::WebMainParams main_params(&main_delegate_);
   NSArray* arguments = [[NSProcessInfo processInfo] arguments];
   main_params.argc = [arguments count];
@@ -47,12 +45,10 @@ IOSChromeMain::IOSChromeMain() {
   // Chrome registers an AtExitManager in main in order to initialize the crash
   // handler early, so prevent a second registration by WebMainRunner.
   main_params.register_exit_manager = false;
-  web_main_runner_->Initialize(std::move(main_params));
+  web_main_ = std::make_unique<web::WebMain>(std::move(main_params));
 }
 
-IOSChromeMain::~IOSChromeMain() {
-  web_main_runner_->ShutDown();
-}
+IOSChromeMain::~IOSChromeMain() {}
 
 // static
 void IOSChromeMain::InitStartTime() {

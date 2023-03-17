@@ -7,7 +7,9 @@ source_set("init") {
     "web_main.mm",
     "web_main_loop.h",
     "web_main_loop.mm",
-    "web_main_runner.mm",
+    "web_main_runner_factory.mm",
+    "web_main_runner_impl.h",
+    "web_main_runner_impl.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
