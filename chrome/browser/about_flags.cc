@@ -2843,6 +2843,16 @@ const FeatureEntry::FeatureVariation kLauncherItemSuggestVariations[] = {
     {"with 72 hour long delay", kLauncherItemSuggest_LongDelay72Hours,
      std::size(kLauncherItemSuggest_LongDelay72Hours), nullptr}};
 
+const FeatureEntry::FeatureParam kEolIncentiveOffer[] = {
+    {"incentive_type", "offer"}};
+const FeatureEntry::FeatureParam kEolIncentiveNoOffer[] = {
+    {"incentive_type", "no_offer"}};
+
+const FeatureEntry::FeatureVariation kEolIncentiveVariations[] = {
+    {"with offer", kEolIncentiveOffer, std::size(kEolIncentiveOffer), nullptr},
+    {"with no offer", kEolIncentiveNoOffer, std::size(kEolIncentiveNoOffer),
+     nullptr}};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -7590,6 +7600,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::kLauncherItemSuggest,
                                     kLauncherItemSuggestVariations,
                                     "LauncherItemSuggest")},
+    {"eol-incentive", flag_descriptions::kEolIncentiveName,
+     flag_descriptions::kEolIncentiveDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kEolIncentive,
+                                    kEolIncentiveVariations,
+                                    "EolIncentive")},
     {"autocomplete-extended-suggestions",
      flag_descriptions::kAutocompleteExtendedSuggestionsName,
      flag_descriptions::kAutocompleteExtendedSuggestionsDescription, kOsCrOS,

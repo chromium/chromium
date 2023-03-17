@@ -63244,6 +63244,7 @@ from previous Chrome versions.
   <int value="644084236" label="CloseButtonsInactiveTabs:enabled"/>
   <int value="644189071" label="PermissionsBlacklist:enabled"/>
   <int value="644526367" label="TerminalMultiProfile:disabled"/>
+  <int value="645518695" label="EolIncentive:enabled"/>
   <int value="646252875" label="ReadItLaterInMenu:enabled"/>
   <int value="646269021" label="UnifiedSidePanel:disabled"/>
   <int value="646738320" label="disable-gesture-editing"/>
@@ -63452,6 +63453,7 @@ from previous Chrome versions.
   <int value="746944193" label="enable-automatic-password-saving:disabled"/>
   <int value="747076955" label="MobileIdentityConsistency:enabled"/>
   <int value="747391377" label="DesktopPWAsRunOnOsLogin:disabled"/>
+  <int value="747477721" label="EolIncentive:disabled"/>
   <int value="747847237" label="PhysicalWeb:enabled"/>
   <int value="749312701" label="ChromeOSAccountManager:disabled"/>
   <int value="749516419" label="DragToSnapInClamshellMode:disabled"/>

@@ -5522,6 +5522,10 @@ const char kEolResetDismissedPrefsDescription[] =
     "Reset the end of life notification prefs to their default value, at the "
     "start of the user session. This is meant to make manual testing easier.";
 
+const char kEolIncentiveName[] = "Enable end of life incentives";
+const char kEolIncentiveDescription[] =
+    "Allows end of life incentives to be shown within the system ui.";
+
 const char kExoGamepadVibrationName[] = "Gamepad Vibration for Exo Clients";
 const char kExoGamepadVibrationDescription[] =
     "Allow Exo clients like Android to request vibration events for gamepads "

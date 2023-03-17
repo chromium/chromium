@@ -749,11 +749,10 @@ BASE_FEATURE(kEolWarningNotifications,
 BASE_FEATURE(kEolIncentive, "EolIncentive", base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<EolIncentiveType>::Option eol_incentive_options[] = {
-    {EolIncentiveType::kNone, "none"},
-    {EolIncentiveType::kPerk, "perk"},
-    {EolIncentiveType::kCoupon, "coupon"}};
+    {EolIncentiveType::kNoOffer, "no_offer"},
+    {EolIncentiveType::kOffer, "offer"}};
 const base::FeatureParam<EolIncentiveType> kEolIncentiveTypeParam{
-    &kEolIncentive, "incentive_type", EolIncentiveType::kNone,
+    &kEolIncentive, "incentive_type", EolIncentiveType::kNoOffer,
     &eol_incentive_options};
 
 // Enable or disable support for touchpad with haptic feedback.

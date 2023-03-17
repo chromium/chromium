@@ -3162,6 +3162,9 @@ extern const char kEnableViewPpdDescription[];
 extern const char kEnforceAshExtensionKeeplistName[];
 extern const char kEnforceAshExtensionKeeplistDescription[];
 
+extern const char kEolIncentiveName[];
+extern const char kEolIncentiveDescription[];
+
 extern const char kEolResetDismissedPrefsName[];
 extern const char kEolResetDismissedPrefsDescription[];
 
