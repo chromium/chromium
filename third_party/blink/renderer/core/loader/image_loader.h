@@ -38,7 +38,6 @@
 
 namespace blink {
 
-class ContainerNode;
 class DOMWrapperWorld;
 class Element;
 class ExceptionState;
@@ -88,10 +87,6 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   bool ImageComplete() const { return image_complete_; }
 
   ImageResourceContent* GetContent() const { return image_content_.Get(); }
-
-  // Returns true if this loader should be updated via UpdateFromElement() when
-  // being inserted into a new parent; returns false otherwise.
-  bool ShouldUpdateOnInsertedInto(ContainerNode& insertion_point) const;
 
   // Returns true if a the owner of this loader should consider the image being
   // loaded as "potentially available", i.e that it may eventually become

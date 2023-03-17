@@ -206,17 +206,6 @@ void SVGImageElement::AttachLayoutTree(AttachContext& context) {
   }
 }
 
-Node::InsertionNotificationRequest SVGImageElement::InsertedInto(
-    ContainerNode& root_parent) {
-  // A previous loader update may have failed to actually fetch the image if
-  // the document was inactive. In that case, force a re-update (but don't
-  // clear previous errors).
-  if (GetImageLoader().ShouldUpdateOnInsertedInto(root_parent))
-    GetImageLoader().UpdateFromElement(ImageLoader::kUpdateNormal);
-
-  return SVGGraphicsElement::InsertedInto(root_parent);
-}
-
 const AtomicString SVGImageElement::ImageSourceURL() const {
   return AtomicString(HrefString());
 }

@@ -515,8 +515,12 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
 
   if (was_added_to_picture_parent) {
     SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError);
-  } else if (GetImageLoader().ShouldUpdateOnInsertedInto(insertion_point)) {
-    GetImageLoader().UpdateFromElement(ImageLoader::kUpdateNormal);
+  } else if (insertion_point.isConnected()) {
+    // If the <img> was inserted into the tree, and the image is not
+    // potentially available, fallback rendering needs to be triggered.
+    if (!GetImageLoader().ImageIsPotentiallyAvailable()) {
+      GetImageLoader().NoImageResourceToLoad();
+    }
   }
   return HTMLElement::InsertedInto(insertion_point);
 }

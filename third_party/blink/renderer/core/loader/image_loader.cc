@@ -282,21 +282,6 @@ void ImageLoader::SetImageForTest(ImageResourceContent* new_image) {
   SetImageWithoutConsideringPendingLoadEvent(new_image);
 }
 
-bool ImageLoader::ShouldUpdateOnInsertedInto(
-    ContainerNode& insertion_point) const {
-  // If we're being inserted into a disconnected tree, we don't need to update.
-  if (!insertion_point.isConnected())
-    return false;
-
-  // If we already have image content, then we don't need an update.
-  if (image_content_)
-    return false;
-
-  // Finally, try to update if we're idle. This could be an indication that we
-  // skipped a previous load when inserted into an inactive document.
-  return !HasPendingActivity();
-}
-
 bool ImageLoader::ImageIsPotentiallyAvailable() const {
   bool is_lazyload = lazy_image_load_state_ == LazyImageLoadState::kDeferred;
 
