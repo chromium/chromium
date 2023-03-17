@@ -163,7 +163,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
-      if (app_type_ == apps::AppType::kCrostini) {
+      if (app_type_ == apps::AppType::kCrostini ||
+          app_type_ == apps::AppType::kBruschetta) {
         ShelfContextMenu::ExecuteCommand(ash::LAUNCH_NEW, event_flags);
       } else if (app_type_ == apps::AppType::kStandaloneBrowser) {
         crosapi::BrowserManager::Get()->NewWindow(

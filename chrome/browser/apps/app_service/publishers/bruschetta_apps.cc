@@ -8,9 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/app_menu_constants.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -263,6 +266,30 @@ void BruschettaApps::CreateAppOverrides(
     const guest_os::GuestOsRegistryService::Registration& registration,
     App* app) {
   // TODO(b/247638042): Implement IsUninstallable and use it here.
+}
+
+void BruschettaApps::GetMenuModel(
+    const std::string& app_id,
+    MenuType menu_type,
+    int64_t display_id,
+    base::OnceCallback<void(MenuItems)> callback) {
+  MenuItems menu_items;
+
+  if (menu_type == MenuType::kShelf) {
+    AddCommandItem(ash::APP_CONTEXT_MENU_NEW_WINDOW, IDS_APP_LIST_NEW_WINDOW,
+                   menu_items);
+  }
+
+  if (ShouldAddOpenItem(app_id, menu_type, profile())) {
+    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
+                   menu_items);
+  }
+
+  if (ShouldAddCloseItem(app_id, menu_type, profile())) {
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
+  }
+
+  std::move(callback).Run(std::move(menu_items));
 }
 
 }  // namespace apps
