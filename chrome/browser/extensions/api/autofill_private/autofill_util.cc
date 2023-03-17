@@ -74,12 +74,12 @@ autofill_private::AddressSource ConvertProfileSource(
     autofill::AutofillProfile::Source source) {
   switch (source) {
     case autofill::AutofillProfile::Source::kLocalOrSyncable:
-      return autofill_private::AddressSource::ADDRESS_SOURCE_LOCAL_OR_SYNCABLE;
+      return autofill_private::AddressSource::kLocalOrSyncable;
     case autofill::AutofillProfile::Source::kAccount:
-      return autofill_private::AddressSource::ADDRESS_SOURCE_ACCOUNT;
+      return autofill_private::AddressSource::kAccount;
     default:
       NOTREACHED();
-      return autofill_private::AddressSource::ADDRESS_SOURCE_NONE;
+      return autofill_private::AddressSource::kNone;
   }
 }
 

@@ -4,6 +4,7 @@
 
 // Use the <code>chrome.autofillPrivate</code> API to add, remove, or update
 // autofill data from the settings UI.
+[modernised_enums]
 namespace autofillPrivate {
   // Subset of properties from the user account (signin component, AccountInfo).
   dictionary AccountInfo {
