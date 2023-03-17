@@ -120,9 +120,6 @@ BASE_FEATURE(kSidePanelJourneysQueryless,
              "SidePanelJourneysQueryless",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSidePanelSearchCompanion,
-             "SidePanelSearchCompanion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #if !defined(ANDROID)
 // This differs from the search companion by providing a separate WebUI that
 // contains untrusted content in an iframe.

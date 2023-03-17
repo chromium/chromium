@@ -174,7 +174,6 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
-#include "chrome/browser/ui/webui/side_panel/search_companion/search_companion_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
@@ -1058,16 +1057,9 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       shopping_list::mojom::ShoppingListHandlerFactory, BookmarksSidePanelUI>(
       map);
-
   if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
     RegisterWebUIControllerInterfaceBinder<
         image_service::mojom::ImageServiceHandler, BookmarksSidePanelUI>(map);
-  }
-
-  if (base::FeatureList::IsEnabled(features::kSidePanelSearchCompanion)) {
-    RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::SearchCompanionPageHandlerFactory,
-        SearchCompanionSidePanelUI>(map);
   }
 
   if (customize_chrome::IsSidePanelEnabled()) {

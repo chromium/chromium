@@ -254,8 +254,6 @@ extern const char kChromeUIReadAnythingSidePanelHost[];
 extern const char kChromeUIReadAnythingSidePanelURL[];
 extern const char kChromeUIReadLaterHost[];
 extern const char kChromeUIReadLaterURL[];
-extern const char kChromeUISearchCompanionSidePanelHost[];
-extern const char kChromeUISearchCompanionSidePanelURL[];
 extern const char kChromeUIUntrustedCompanionSidePanelHost[];
 extern const char kChromeUIUntrustedCompanionSidePanelURL[];
 extern const char kChromeUIUntrustedFeedURL[];
