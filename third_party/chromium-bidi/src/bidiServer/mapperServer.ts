@@ -23,6 +23,8 @@ import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
 
 const debugInternal = debug('bidiMapper:internal');
 const debugLog = debug('bidiMapper:log');
+const cdpLog = debug('bidiMapper:cdp');
+const MAPPER_DEBUG_CHANNEL = 'MAPPER_DEBUG_CHANNEL';
 
 export class MapperServer {
   #handlers: ((message: string) => void)[] = [];
@@ -32,13 +34,15 @@ export class MapperServer {
 
   static async create(
     cdpUrl: string,
-    mapperContent: string
+    mapperContent: string,
+    cdpOutput: boolean
   ): Promise<MapperServer> {
     const cdpConnection = await this.#establishCdpConnection(cdpUrl);
     try {
       const mapperCdpClient = await this.#initMapper(
         cdpConnection,
-        mapperContent
+        mapperContent,
+        cdpOutput
       );
       return new MapperServer(cdpConnection, mapperCdpClient);
     } catch (e) {
@@ -64,9 +68,11 @@ export class MapperServer {
   setOnMessage(handler: (message: string) => void): void {
     this.#handlers.push(handler);
   }
+
   sendMessage(messageJson: string): Promise<void> {
-    return this.#sendBidiMessage(messageJson);
+    return MapperServer.#sendBidiMessage(messageJson, this.#mapperCdpClient);
   }
+
   close() {
     this.#cdpConnection.close();
   }
@@ -89,13 +95,24 @@ export class MapperServer {
     });
   }
 
-  async #sendBidiMessage(bidiMessageJson: string): Promise<void> {
-    await this.#mapperCdpClient.sendCommand('Runtime.evaluate', {
+  static async #sendBidiMessage(
+    bidiMessageJson: string,
+    mapperCdpClient: CdpClient
+  ): Promise<void> {
+    await mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: `onBidiMessage(${JSON.stringify(bidiMessageJson)})`,
     });
   }
 
   #onBidiMessage(bidiMessage: string): void {
+    // Messages in MAPPER_CHANNEL are for debug output and should not be forwarded to users.
+    try {
+      const message = JSON.parse(bidiMessage);
+      if (message.channel === MAPPER_DEBUG_CHANNEL) {
+        cdpLog(bidiMessage);
+        return;
+      }
+    } catch {}
     for (const handler of this.#handlers) handler(bidiMessage);
   }
 
@@ -115,7 +132,8 @@ export class MapperServer {
 
   static async #initMapper(
     cdpConnection: CdpConnection,
-    mapperContent: string
+    mapperContent: string,
+    cdpOutput: boolean
   ): Promise<CdpClient> {
     debugInternal('Connection opened.');
 
@@ -148,7 +166,7 @@ export class MapperServer {
     });
 
     const launchedPromise = new Promise<void>((resolve, reject) => {
-      const onBindingCalled = ({
+      const onBindingCalled = async ({
         name,
         payload,
       }: Protocol.Runtime.BindingCalledEvent) => {
@@ -158,6 +176,21 @@ export class MapperServer {
             const parsed = JSON.parse(payload);
             if (parsed.launched) {
               mapperCdpClient.off('Runtime.bindingCalled', onBindingCalled);
+              // Subscribe to CDP events in a dedicated channel if needed for debugging.
+              if (cdpOutput) {
+                await this.#sendBidiMessage(
+                  JSON.stringify({
+                    id: 1002,
+                    method: 'session.subscribe',
+                    params: {
+                      events: ['cdp'],
+                    },
+                    channel: MAPPER_DEBUG_CHANNEL,
+                  }),
+                  mapperCdpClient
+                );
+              }
+
               resolve();
             }
           } catch (e) {

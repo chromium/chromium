@@ -182,6 +182,18 @@ CHANNEL=dev npm run server
 npm run server -- --channel=dev
 ```
 
+Use the CLI argument `--cdp-output` to have CDP events printed to the console. Note: you have to enable debugging output `bidiMapper:cdp` as well.
+
+```sh
+DEBUG=bidiMapper:cdp npm run server -- --cdp-output
+```
+
+or
+
+```sh
+DEBUG=* npm run server -- --cdp-output
+```
+
 ### Starting on Linux and Mac
 
 TODO: verify if it works on Windows.
