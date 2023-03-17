@@ -20,8 +20,10 @@ BackgroundIO::BackgroundIO(InFlightIO* controller)
 
 // Runs on the primary thread.
 void BackgroundIO::OnIOSignalled() {
-  if (controller_)
+  if (controller_) {
+    did_notify_controller_io_signalled_ = true;
     controller_->InvokeCallback(this, false);
+  }
 }
 
 void BackgroundIO::Cancel() {

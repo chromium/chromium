@@ -95,7 +95,9 @@ class StorageBlock : public FileBlock {
   uint32_t CalculateHash() const;
 
   raw_ptr<T> data_ = nullptr;
-  raw_ptr<MappedFile> file_;
+  // DanglingUntriaged is largely needed for when this class is owned by an
+  // EntryImpl that is deleted after the Backend.
+  raw_ptr<MappedFile, DanglingUntriaged> file_;
   Addr address_;
   bool modified_ = false;
   // Is data_ owned by this object or shared with someone else.

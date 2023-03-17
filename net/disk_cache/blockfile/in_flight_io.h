@@ -66,6 +66,10 @@ class BackgroundIO : public base::RefCountedThreadSafe<BackgroundIO> {
 
   int result_ = -1;  // Final operation result.
 
+  bool did_notify_controller_io_signalled() const {
+    return did_notify_controller_io_signalled_;
+  }
+
  private:
   friend class base::RefCountedThreadSafe<BackgroundIO>;
 
@@ -74,6 +78,9 @@ class BackgroundIO : public base::RefCountedThreadSafe<BackgroundIO> {
   raw_ptr<InFlightIO>
       controller_;              // The controller that tracks all operations.
   base::Lock controller_lock_;  // A lock protecting clearing of controller_.
+  // Set to true if OnIOSignalled() is called *and* the `controller_` was
+  // called.
+  bool did_notify_controller_io_signalled_ = false;
 };
 
 // This class keeps track of asynchronous IO operations. A single instance

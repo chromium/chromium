@@ -35,29 +35,32 @@ EntryImpl* LeakEntryImpl(scoped_refptr<EntryImpl> entry) {
 
 }  // namespace
 
-BackendIO::BackendIO(InFlightIO* controller,
+BackendIO::BackendIO(InFlightBackendIO* controller,
                      BackendImpl* backend,
                      net::CompletionOnceCallback callback)
     : BackendIO(controller, backend) {
   callback_ = std::move(callback);
 }
 
-BackendIO::BackendIO(InFlightIO* controller,
+BackendIO::BackendIO(InFlightBackendIO* controller,
                      BackendImpl* backend,
                      EntryResultCallback callback)
     : BackendIO(controller, backend) {
   entry_result_callback_ = std::move(callback);
 }
 
-BackendIO::BackendIO(InFlightIO* controller,
+BackendIO::BackendIO(InFlightBackendIO* controller,
                      BackendImpl* backend,
                      RangeResultCallback callback)
     : BackendIO(controller, backend) {
   range_result_callback_ = std::move(callback);
 }
 
-BackendIO::BackendIO(InFlightIO* controller, BackendImpl* backend)
-    : BackgroundIO(controller), backend_(backend) {
+BackendIO::BackendIO(InFlightBackendIO* controller, BackendImpl* backend)
+    : BackgroundIO(controller),
+      backend_(backend),
+      background_task_runner_(controller->background_thread()) {
+  DCHECK(background_task_runner_);
   start_time_ = base::TimeTicks::Now();
 }
 
@@ -259,7 +262,22 @@ void BackendIO::ReadyForSparseIO(EntryImpl* entry) {
   entry_ = entry;
 }
 
-BackendIO::~BackendIO() = default;
+BackendIO::~BackendIO() {
+  if (!did_notify_controller_io_signalled() && out_entry_) {
+    // At this point it's very likely the Entry does not have a
+    // `background_queue_` so that Close() would do nothing. Post an empty
+    // task to the background task runner, which should effectively destroy
+    // the entry as there are no more references. Destruction has to happen
+    // on the background task runner.
+    scoped_refptr<EntryImpl> entry(out_entry_.ExtractAsDangling());
+    // This balances the ref taken in LeakEntryImpl().
+    entry->Release();
+    // This should be the last ref.
+    DCHECK(entry->HasOneRef());
+    background_task_runner_->PostTask(
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(entry)));
+  }
+}
 
 bool BackendIO::ReturnsEntry() {
   return operation_ == OP_OPEN || operation_ == OP_CREATE ||
