@@ -179,9 +179,6 @@ void SurfaceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
       data.use_default_lower_bound_deadline = true;
     }
 
-    // TODO(crbug.com/1408128): Simple and incomplete hit test data
-    // generation. This does not work with non-root render passes, no
-    // support for clipping or occlusion.
     auto& hit_test_region = data.hit_test_regions.emplace_back();
     hit_test_region.flags = viz::HitTestRegionFlags::kHitTestMouse |
                             viz::HitTestRegionFlags::kHitTestTouch |

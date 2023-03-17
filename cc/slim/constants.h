@@ -20,6 +20,10 @@ inline constexpr uint32_t kNumUnneededBeginFrameBeforeStop = 4u;
 // to be similar to the limits on max GPU texture size.
 inline constexpr int kSoftwareMaxTextureSize = 16 * 1024;
 
+// Keep tracking of layer occlusion if both x and y dimensions are greater than
+// this.
+inline constexpr int kMinimumOcclusionTrackingDimension = 160;
+
 }  // namespace cc::slim
 
 #endif  // CC_SLIM_CONSTANTS_H_

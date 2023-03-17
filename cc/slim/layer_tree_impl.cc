@@ -50,10 +50,12 @@ LayerTreeImpl::PresentationCallbackInfo::operator=(PresentationCallbackInfo&&) =
     default;
 
 LayerTreeImpl::LayerTreeImpl(LayerTreeClient* client,
-                             uint32_t num_unneeded_begin_frame_before_stop)
+                             uint32_t num_unneeded_begin_frame_before_stop,
+                             int min_occlusion_tracking_dimension)
     : client_(client),
       num_unneeded_begin_frame_before_stop_(
-          num_unneeded_begin_frame_before_stop) {}
+          num_unneeded_begin_frame_before_stop),
+      min_occlusion_tracking_dimension_(min_occlusion_tracking_dimension) {}
 
 LayerTreeImpl::~LayerTreeImpl() {
   SetRoot(nullptr);
@@ -391,7 +393,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
   // TODO(crbug.com/1408128): Only has a very simple and basic compositor frame
   // generation. Some missing features include:
   // * Damage tracking
-  // * Occlusion culling
   // * Ensure entire viewport is covered by quads.
   TRACE_EVENT0("cc", "slim::LayerTreeImpl::ProduceFrame");
 
@@ -597,9 +598,30 @@ void LayerTreeImpl::Draw(Layer& layer,
   // the new pass since the bounds of the new pass already has any necessary
   // clip applied.
   const gfx::RectF* clip_in_target = nullptr;
-  DrawChildrenAndAppendQuads(layer, frame, *new_pass, data, transform_to_root,
-                             transform_to_target, clip_in_target, clip_in_layer,
-                             /*opacity=*/1.0f);
+  SimpleEnclosedRegion occlusion_in_new_pass;
+  {
+    SimpleEnclosedRegion parent_pass_occlusion = data.occlusion_in_target;
+    data.occlusion_in_target.Clear();
+    DrawChildrenAndAppendQuads(layer, frame, *new_pass, data, transform_to_root,
+                               transform_to_target, clip_in_target,
+                               clip_in_layer,
+                               /*opacity=*/1.0f);
+    occlusion_in_new_pass = data.occlusion_in_target;
+
+    // Apply new pass's occlusion to parent pass.
+    if (transform_new_pass_to_parent_target.Preserves2dAxisAlignment()) {
+      DCHECK(transform_new_pass_to_parent_target.Is2dTransform());
+      for (size_t i = 0; i < occlusion_in_new_pass.GetRegionComplexity(); ++i) {
+        // Use ToEnclosedRect to avoid including extra pixels as occluded due to
+        // rounding error.
+        gfx::Rect occlusion_in_parent_target =
+            gfx::ToEnclosedRect(transform_new_pass_to_parent_target.MapRect(
+                gfx::RectF(occlusion_in_new_pass.GetRect(i))));
+        parent_pass_occlusion.Union(occlusion_in_parent_target);
+      }
+    }
+    data.occlusion_in_target = parent_pass_occlusion;
+  }
 
   if (new_pass->quad_list.empty()) {
     // Throw away new pass if it has no quads.
@@ -614,12 +636,12 @@ void LayerTreeImpl::Draw(Layer& layer,
   if (parent_clip_in_target) {
     clip_opt = gfx::ToEnclosingRect(*parent_clip_in_target);
   }
-  // TODO(crbug.com/1408128): Revisit contents_opaque when implementing
-  // occlusion culling.
+  const bool new_pass_contents_opaque =
+      occlusion_in_new_pass.Contains(new_pass_content_bounds);
   shared_quad_state->SetAll(
       transform_new_pass_to_parent_target, new_pass_content_bounds,
       new_pass_content_bounds, gfx::MaskFilterInfo(), clip_opt,
-      /*contents_opaque=*/false, parent_opacity * layer.opacity(),
+      new_pass_contents_opaque, parent_opacity * layer.opacity(),
       SkBlendMode::kSrcOver, 0);
   auto* quad =
       parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
@@ -676,11 +698,54 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
   // `masks_to_bounds()`.
   gfx::RectF clip(layer.bounds().width(), layer.bounds().height());
   clip.Intersect(clip_in_layer);
-  if (!clip_in_layer.IsEmpty() && layer.HasDrawableContent()) {
+  if (!clip_in_layer.IsEmpty() && layer.HasDrawableContent() &&
+      UpdateOcclusionRect(layer, data, transform_to_target, opacity, clip)) {
     layer.AppendQuads(render_pass, data, transform_to_root, transform_to_target,
                       clip_in_target ? &integer_clip_in_target : nullptr,
-                      /*visible_rect=*/gfx::ToEnclosingRect(clip), opacity);
+                      gfx::ToEnclosingRect(clip), opacity);
   }
+}
+
+bool LayerTreeImpl::UpdateOcclusionRect(
+    Layer& layer,
+    FrameData& data,
+    const gfx::Transform& transform_to_target,
+    float opacity,
+    gfx::RectF& visible_rect) {
+  if (opacity < 1.0f || !layer.contents_opaque()) {
+    return true;
+  }
+  if (!transform_to_target.Preserves2dAxisAlignment()) {
+    return true;
+  }
+  DCHECK(transform_to_target.Is2dTransform());
+  DCHECK(transform_to_target.IsInvertible());
+
+  gfx::RectF visible_rect_in_target = transform_to_target.MapRect(visible_rect);
+  // Use enclosing rect here to avoid false rejections due to rounding error.
+  if (data.occlusion_in_target.Contains(
+          gfx::ToEnclosingRect(visible_rect_in_target))) {
+    return false;
+  }
+
+  // Map occlusion to layer space and try to reduce `visible_rect`.
+  gfx::Transform from_target;
+  if (transform_to_target.GetInverse(&from_target)) {
+    for (size_t i = 0; i < data.occlusion_in_target.GetRegionComplexity();
+         ++i) {
+      visible_rect.Subtract(
+          from_target.MapRect(gfx::RectF(data.occlusion_in_target.GetRect(i))));
+    }
+  }
+
+  // Add unoccluded visible rect to occlusion.
+  if (visible_rect_in_target.width() >= min_occlusion_tracking_dimension_ ||
+      visible_rect_in_target.height() >= min_occlusion_tracking_dimension_) {
+    // Use ToEnclosedRect to avoid including extra pixels as occluded due to
+    // rounding error.
+    data.occlusion_in_target.Union(gfx::ToEnclosedRect(visible_rect_in_target));
+  }
+  return true;
 }
 
 }  // namespace cc::slim

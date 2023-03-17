@@ -1,5 +1,6 @@
 include_rules = [
   "-cc",
+  "+cc/base",
   "+cc/slim",
   "+mojo/public/cpp/bindings",
   "+services/viz/public/mojom",

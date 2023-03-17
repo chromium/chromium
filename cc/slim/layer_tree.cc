@@ -21,7 +21,8 @@ std::unique_ptr<LayerTree> LayerTree::Create(InitParams params) {
         new LayerTreeCcWrapper(std::move(params)));
   }
   return base::WrapUnique<LayerTree>(
-      new LayerTreeImpl(params.client, kNumUnneededBeginFrameBeforeStop));
+      new LayerTreeImpl(params.client, kNumUnneededBeginFrameBeforeStop,
+                        kMinimumOcclusionTrackingDimension));
 }
 
 LayerTree::InitParams::InitParams() = default;

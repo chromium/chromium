@@ -48,6 +48,7 @@ component("slim") {
     "//ui/gfx/geometry",
   ]
   deps = [
+    "//cc/base",
     "//components/viz/client",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",

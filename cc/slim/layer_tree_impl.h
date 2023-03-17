@@ -121,7 +121,8 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   };
 
   LayerTreeImpl(LayerTreeClient* client,
-                uint32_t num_unneeded_begin_frame_before_stop);
+                uint32_t num_unneeded_begin_frame_before_stop,
+                int min_occlusion_tracking_dimension);
 
   // Request a new frame sink from the client if a new frame sink is needed and
   // there isn't already a pending request.
@@ -159,9 +160,18 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
                                   const gfx::RectF* clip_in_target,
                                   const gfx::RectF& clip_in_layer,
                                   float opacity);
+  // Updates the `FrameData::occlusion_in_target` field with the visible_rect.
+  // Return if layer's AppendQuads should happen. May reduce `visible_rect` if
+  // it's partially occluded.
+  bool UpdateOcclusionRect(Layer& layer,
+                           FrameData& data,
+                           const gfx::Transform& transform_to_target,
+                           float opacity,
+                           gfx::RectF& visible_rect);
 
   const raw_ptr<LayerTreeClient> client_;
   const uint32_t num_unneeded_begin_frame_before_stop_;
+  const int min_occlusion_tracking_dimension_;
   std::unique_ptr<FrameSinkImpl> frame_sink_;
 
   cc::UIResourceManager ui_resource_manager_;
