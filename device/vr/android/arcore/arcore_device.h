@@ -34,6 +34,7 @@ class ArImageTransportFactory;
 class ArCoreFactory;
 class ArCoreGlThread;
 class XrJavaCoordinator;
+class CompositorDelegateProvider;
 class MailboxToSurfaceBridge;
 class MailboxToSurfaceBridgeFactory;
 
@@ -45,6 +46,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
       std::unique_ptr<MailboxToSurfaceBridgeFactory>
           mailbox_to_surface_bridge_factory,
       std::unique_ptr<XrJavaCoordinator> xr_java_coordinator,
+      std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider,
       XrFrameSinkClientFactory xr_frame_sink_client_factory);
 
   ArCoreDevice(const ArCoreDevice&) = delete;
@@ -112,6 +114,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
   std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory_;
   std::unique_ptr<MailboxToSurfaceBridgeFactory> mailbox_bridge_factory_;
   std::unique_ptr<XrJavaCoordinator> xr_java_coordinator_;
+  std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider_;
   XrFrameSinkClientFactory xr_frame_sink_client_factory_;
 
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;

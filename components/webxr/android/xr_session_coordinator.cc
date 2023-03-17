@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "components/webxr/android/webxr_utils.h"
 #include "components/webxr/android/xr_jni_headers/XrSessionCoordinator_jni.h"
+#include "device/vr/android/compositor_delegate_provider.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "ui/android/window_android.h"
@@ -26,9 +27,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace webxr {
 
-XrSessionCoordinator::XrSessionCoordinator(
-    webxr::ArCompositorDelegateProvider compositor_delegate_provider)
-    : compositor_delegate_provider_(compositor_delegate_provider) {
+XrSessionCoordinator::XrSessionCoordinator() {
   JNIEnv* env = AttachCurrentThread();
   if (!env) {
     return;
@@ -51,6 +50,7 @@ void XrSessionCoordinator::RequestArSession(
     int render_frame_id,
     bool use_overlay,
     bool can_render_dom_content,
+    const device::CompositorDelegateProvider& compositor_delegate_provider,
     device::SurfaceReadyCallback ready_callback,
     device::SurfaceTouchCallback touch_callback,
     device::SurfaceDestroyedCallback destroyed_callback) {
@@ -63,7 +63,7 @@ void XrSessionCoordinator::RequestArSession(
 
   Java_XrSessionCoordinator_startSession(
       env, j_xr_session_coordinator_,
-      compositor_delegate_provider_.GetJavaObject(),
+      compositor_delegate_provider.GetJavaObject(),
       webxr::GetJavaWebContents(render_process_id, render_frame_id),
       use_overlay, can_render_dom_content);
 }

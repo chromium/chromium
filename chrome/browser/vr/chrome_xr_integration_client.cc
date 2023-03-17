@@ -133,7 +133,7 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
           base::android::AttachCurrentThread());
 
   providers.push_back(std::make_unique<webxr::ArCoreDeviceProvider>(
-      webxr::ArCompositorDelegateProvider(
+      std::make_unique<webxr::ArCompositorDelegateProvider>(
           std::move(j_ar_compositor_delegate_provider))));
 #endif  // BUILDFLAG(ENABLE_ARCORE)
 #endif  // BUILDFLAG(IS_ANDROID)

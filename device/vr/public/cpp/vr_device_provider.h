@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(VR_PUBLIC_CPP) VRDeviceProvider {
 
   // If the VR API requires initialization that should happen here.
   // Note that the client must be guaranteed to outlive the device provider.
+  // Guaranteed to only be called once.
   virtual void Initialize(VRDeviceProviderClient* client) = 0;
 
   // Returns true if initialization is complete.

@@ -18,6 +18,7 @@
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/android/arcore/arcore_gl_thread.h"
 #include "device/vr/android/arcore/arcore_impl.h"
+#include "device/vr/android/compositor_delegate_provider.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "device/vr/android/xr_java_coordinator.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
@@ -60,6 +61,7 @@ ArCoreDevice::ArCoreDevice(
     std::unique_ptr<MailboxToSurfaceBridgeFactory>
         mailbox_to_surface_bridge_factory,
     std::unique_ptr<XrJavaCoordinator> xr_java_coordinator,
+    std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider,
     XrFrameSinkClientFactory xr_frame_sink_client_factory)
     : VRDeviceBase(mojom::XRDeviceId::ARCORE_DEVICE_ID),
       main_thread_task_runner_(
@@ -68,9 +70,11 @@ ArCoreDevice::ArCoreDevice(
       ar_image_transport_factory_(std::move(ar_image_transport_factory)),
       mailbox_bridge_factory_(std::move(mailbox_to_surface_bridge_factory)),
       xr_java_coordinator_(std::move(xr_java_coordinator)),
+      compositor_delegate_provider_(std::move(compositor_delegate_provider)),
       xr_frame_sink_client_factory_(std::move(xr_frame_sink_client_factory)),
       mailbox_bridge_(mailbox_bridge_factory_->Create()),
       session_state_(std::make_unique<ArCoreDevice::SessionState>()) {
+  CHECK(compositor_delegate_provider_);
   // ARCORE always support AR blend modes
   SetArBlendModeSupported(true);
 
@@ -186,8 +190,8 @@ void ArCoreDevice::OnGlThreadReady(int render_process_id,
 
   xr_java_coordinator_->RequestArSession(
       render_process_id, render_frame_id, use_overlay, can_render_dom_content,
-      std::move(ready_callback), std::move(touch_callback),
-      std::move(destroyed_callback));
+      *compositor_delegate_provider_.get(), std::move(ready_callback),
+      std::move(touch_callback), std::move(destroyed_callback));
 }
 
 void ArCoreDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,

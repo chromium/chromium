@@ -21,7 +21,8 @@ namespace webxr {
 class ArCoreDeviceProvider : public device::VRDeviceProvider {
  public:
   explicit ArCoreDeviceProvider(
-      webxr::ArCompositorDelegateProvider compositor_delegate_provider);
+      std::unique_ptr<webxr::ArCompositorDelegateProvider>
+          compositor_delegate_provider);
 
   ArCoreDeviceProvider(const ArCoreDeviceProvider&) = delete;
   ArCoreDeviceProvider& operator=(const ArCoreDeviceProvider&) = delete;
@@ -31,7 +32,8 @@ class ArCoreDeviceProvider : public device::VRDeviceProvider {
   bool Initialized() override;
 
  private:
-  webxr::ArCompositorDelegateProvider compositor_delegate_provider_;
+  std::unique_ptr<webxr::ArCompositorDelegateProvider>
+      compositor_delegate_provider_;
 
   std::unique_ptr<device::ArCoreDevice> arcore_device_;
   bool initialized_ = false;

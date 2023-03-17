@@ -9,15 +9,13 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
-#include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "device/vr/android/xr_java_coordinator.h"
 
 namespace webxr {
 
 class XrSessionCoordinator : public device::XrJavaCoordinator {
  public:
-  explicit XrSessionCoordinator(
-      webxr::ArCompositorDelegateProvider compositor_delegate_provider);
+  explicit XrSessionCoordinator();
   ~XrSessionCoordinator() override;
 
   // XrJavaCoordinator:
@@ -26,6 +24,7 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
       int render_frame_id,
       bool use_overlay,
       bool can_render_dom_content,
+      const device::CompositorDelegateProvider& compositor_delegate_provider,
       device::SurfaceReadyCallback ready_callback,
       device::SurfaceTouchCallback touch_callback,
       device::SurfaceDestroyedCallback destroyed_callback) override;
@@ -55,8 +54,6 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_xr_session_coordinator_;
-
-  webxr::ArCompositorDelegateProvider compositor_delegate_provider_;
 
   device::SurfaceReadyCallback surface_ready_callback_;
   device::SurfaceTouchCallback surface_touch_callback_;

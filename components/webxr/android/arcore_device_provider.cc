@@ -14,12 +14,15 @@
 namespace webxr {
 
 ArCoreDeviceProvider::ArCoreDeviceProvider(
-    webxr::ArCompositorDelegateProvider compositor_delegate_provider)
-    : compositor_delegate_provider_(compositor_delegate_provider) {}
+    std::unique_ptr<webxr::ArCompositorDelegateProvider>
+        compositor_delegate_provider)
+    : compositor_delegate_provider_(std::move(compositor_delegate_provider)) {}
 
 ArCoreDeviceProvider::~ArCoreDeviceProvider() = default;
 
 void ArCoreDeviceProvider::Initialize(device::VRDeviceProviderClient* client) {
+  CHECK(!initialized_);
+
   if (device::IsArCoreSupported()) {
     DVLOG(2) << __func__ << ": ARCore is supported, creating device";
 
@@ -27,8 +30,8 @@ void ArCoreDeviceProvider::Initialize(device::VRDeviceProviderClient* client) {
         std::make_unique<device::ArCoreImplFactory>(),
         std::make_unique<device::ArImageTransportFactory>(),
         std::make_unique<webxr::MailboxToSurfaceBridgeFactoryImpl>(),
-        std::make_unique<webxr::XrSessionCoordinator>(
-            compositor_delegate_provider_),
+        std::make_unique<webxr::XrSessionCoordinator>(),
+        std::move(compositor_delegate_provider_),
         client->GetXrFrameSinkClientFactory());
 
     client->AddRuntime(arcore_device_->GetId(), arcore_device_->GetDeviceData(),
