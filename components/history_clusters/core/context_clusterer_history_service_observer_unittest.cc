@@ -411,13 +411,16 @@ TEST_F(ContextClustererHistoryServiceObserverTest, ClusterTwoVisitsTiedByURL) {
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
-       ClusterTwoVisitsTiedBySearchURL) {
+       ClusterVisitsTiedBySearchURL) {
   VisitURL(GURL("http://default-engine.com/search?q=foo"), 1,
            base::Time::FromTimeT(123));
   VisitURL(GURL("http://default-engine.com/search?q=foo#whatever"), 2,
            base::Time::FromTimeT(123),
            /*opener_visit=*/history::kInvalidVisitID,
            /*referring_visit=*/history::kInvalidVisitID);
+  // Simulate a back-forward navigation.
+  VisitURL(GURL("http://default-engine.com/search?q=foo"), 3,
+           base::Time::FromTimeT(124));
 
   EXPECT_EQ(1, GetNumClustersCreated());
 }
