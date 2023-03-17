@@ -200,14 +200,14 @@ class PrintRenderFrameHelper
   // enum PrintPreviewFailureType in tools/metrics/histograms/enums.xml.
   enum PrintPreviewErrorBuckets {
     PREVIEW_ERROR_NONE = 0,  // Always first.
-    PREVIEW_ERROR_BAD_SETTING_DEPRECATED = 1,
+    // PREVIEW_ERROR_BAD_SETTING_DEPRECATED = 1,
     PREVIEW_ERROR_METAFILE_COPY_FAILED = 2,
-    PREVIEW_ERROR_METAFILE_INIT_FAILED_DEPRECATED = 3,
+    // PREVIEW_ERROR_METAFILE_INIT_FAILED_DEPRECATED = 3,
     PREVIEW_ERROR_ZERO_PAGES = 4,
-    PREVIEW_ERROR_MAC_DRAFT_METAFILE_INIT_FAILED_DEPRECATED = 5,
-    PREVIEW_ERROR_PAGE_RENDERED_WITHOUT_METAFILE_DEPRECATED = 6,
-    PREVIEW_ERROR_INVALID_PRINTER_SETTINGS = 7,
-    PREVIEW_ERROR_METAFILE_CAPTURE_FAILED_DEPRECATED = 8,
+    // PREVIEW_ERROR_MAC_DRAFT_METAFILE_INIT_FAILED_DEPRECATED = 5,
+    // PREVIEW_ERROR_PAGE_RENDERED_WITHOUT_METAFILE_DEPRECATED = 6,
+    // PREVIEW_ERROR_INVALID_PRINTER_SETTINGS_DEPRECATED = 7,
+    // PREVIEW_ERROR_METAFILE_CAPTURE_FAILED_DEPRECATED = 8,
     PREVIEW_ERROR_EMPTY_PRINTER_SETTINGS = 9,
     PREVIEW_ERROR_LAST_ENUM  // Always last.
   };
@@ -570,7 +570,6 @@ class PrintRenderFrameHelper
     void SetIsForArc(bool is_for_arc);
 #endif
     void set_error(enum PrintPreviewErrorBuckets error);
-    void set_error_details(const std::string& details);
 
     // Getters
     // Original frame for which preview was requested.
@@ -591,7 +590,6 @@ class PrintRenderFrameHelper
     MetafileSkia* metafile();
     ContentProxySet* typeface_content_info();
     int last_error() const;
-    const std::string& last_error_details() const;
 
    private:
     enum State {
@@ -645,7 +643,6 @@ class PrintRenderFrameHelper
     base::TimeTicks begin_time_;
 
     enum PrintPreviewErrorBuckets error_ = PREVIEW_ERROR_NONE;
-    std::string error_details_;
 
     State state_ = UNINITIALIZED;
   };

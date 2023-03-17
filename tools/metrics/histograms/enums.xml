@@ -85479,7 +85479,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4" label="0-page preview"/>
   <int value="5" label="Mac draft metafile init failed (Deprecated)"/>
   <int value="6" label="PreviewPageRendered with no metafile (Deprecated)"/>
-  <int value="7" label="Received bad printer settings"/>
+  <int value="7" label="Received bad printer settings (Deprecated)"/>
   <int value="8" label="Capture metadata failed (Deprecated)"/>
   <int value="9" label="Got empty printer settings"/>
 </enum>

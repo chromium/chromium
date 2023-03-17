@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -59,7 +60,6 @@
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_view_manager.h"
-#include "printing/print_settings.h"
 #include "printing/print_settings_conversion.h"
 #endif
 
@@ -136,6 +136,33 @@ void OnDidScriptedPrint(
   std::move(callback).Run(std::move(params));
   queue->QueuePrinterQuery(std::move(printer_query));
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+std::string PrintMsgPrintParamsErrorDetails(const mojom::PrintParams& params) {
+  std::vector<base::StringPiece> details;
+
+  if (params.content_size.IsEmpty()) {
+    details.push_back("content size is empty");
+  }
+  if (params.page_size.IsEmpty()) {
+    details.push_back("page size is empty");
+  }
+  if (params.printable_area.IsEmpty()) {
+    details.push_back("printable area is empty");
+  }
+  if (!params.document_cookie) {
+    details.push_back("invalid document cookie");
+  }
+  if (params.dpi.width() <= kMinDpi || params.dpi.height() <= kMinDpi) {
+    details.push_back("invalid DPI dimensions");
+  }
+  if (params.margin_top < 0 || params.margin_left < 0) {
+    details.push_back("invalid margins");
+  }
+
+  return base::JoinString(details, "; ");
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 }  // namespace
 
@@ -609,8 +636,14 @@ void PrintViewManagerBase::UpdatePrintSettings(
   settings->params = mojom::PrintParams::New();
   RenderParamsFromPrintSettings(*print_settings, settings->params.get());
   settings->params->document_cookie = PrintSettings::NewCookie();
-  set_cookie(settings->params->document_cookie);
+  if (!PrintMsgPrintParamsIsValid(*settings->params)) {
+    PRINTER_LOG(ERROR) << "Printer settings invalid: "
+                       << PrintMsgPrintParamsErrorDetails(*settings->params);
+    std::move(callback).Run(nullptr);
+    return;
+  }
 
+  set_cookie(settings->params->document_cookie);
   std::move(callback).Run(std::move(settings));
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
