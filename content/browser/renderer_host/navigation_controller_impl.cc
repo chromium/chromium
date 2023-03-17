@@ -1041,20 +1041,30 @@ int NavigationControllerImpl::GetIndexForOffset(int offset) {
   return GetCurrentEntryIndex() + offset;
 }
 
-bool NavigationControllerImpl::CanGoBack() {
+absl::optional<int> NavigationControllerImpl::GetIndexForGoBack() {
   for (int index = GetIndexForOffset(-1); index >= 0; index--) {
-    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui())
-      return true;
+    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
+      return index;
+    }
   }
-  return false;
+  return absl::nullopt;
+}
+
+bool NavigationControllerImpl::CanGoBack() {
+  return GetIndexForGoBack().has_value();
+}
+
+absl::optional<int> NavigationControllerImpl::GetIndexForGoForward() {
+  for (int index = GetIndexForOffset(1); index < GetEntryCount(); index++) {
+    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
+      return index;
+    }
+  }
+  return absl::nullopt;
 }
 
 bool NavigationControllerImpl::CanGoForward() {
-  for (int index = GetIndexForOffset(1); index < GetEntryCount(); index++) {
-    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui())
-      return true;
-  }
-  return false;
+  return GetIndexForGoForward().has_value();
 }
 
 bool NavigationControllerImpl::CanGoToOffset(int offset) {
@@ -1081,39 +1091,34 @@ bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
 #endif
 
 void NavigationControllerImpl::GoBack() {
-  int target_index = GetIndexForOffset(-1);
+  const absl::optional<int> target_index = GetIndexForGoBack();
 
-  // Move the target index past the skippable entries.
-  bool all_skippable_entries = true;
-  while (target_index >= 0) {
-    if (!GetEntryAtIndex(target_index)->should_skip_on_back_forward_ui()) {
-      all_skippable_entries = false;
-      break;
-    }
-    target_index--;
+  // TODO(mcnee): `GoBack` has been permissive about being called when it's not
+  // possible to go back. Fix any callers that do this. If there are no issues,
+  // change this to `DCHECK(CanGoBack())`.
+  if (!target_index.has_value()) {
+    base::debug::DumpWithoutCrashing();
+    return;
   }
 
-  // Do nothing if all entries are skippable. Normally this path would not
-  // happen as consumers would have already checked it in CanGoBack but a lot of
-  // tests do not do that.
-  if (all_skippable_entries)
-    return;
-
-  GoToIndex(target_index);
+  GoToIndex(*target_index);
 }
 
 void NavigationControllerImpl::GoForward() {
-  int target_index = GetIndexForOffset(1);
-
   // Note that at least one entry (the last one) will be non-skippable since
   // entries are marked skippable only when they add another entry because of
   // redirect or pushState.
-  while (target_index < static_cast<int>(entries_.size())) {
-    if (!GetEntryAtIndex(target_index)->should_skip_on_back_forward_ui())
-      break;
-    target_index++;
+  const absl::optional<int> target_index = GetIndexForGoForward();
+
+  // TODO(mcnee): `GoForward` has been permissive about being called when it's
+  // not possible to go forward. Fix any callers that do this. If there are no
+  // issues, change this to `DCHECK(CanGoForward())`.
+  if (!target_index.has_value()) {
+    base::debug::DumpWithoutCrashing();
+    return;
   }
-  GoToIndex(target_index);
+
+  GoToIndex(*target_index);
 }
 
 void NavigationControllerImpl::GoToIndex(int index) {

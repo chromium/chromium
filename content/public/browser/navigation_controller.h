@@ -465,6 +465,7 @@ class NavigationController {
   virtual bool CanGoBack() = 0;
   virtual bool CanGoForward() = 0;
   virtual bool CanGoToOffset(int offset) = 0;
+  // `CanGoBack`/`CanGoForward` are preconditions for these respective methods.
   virtual void GoBack() = 0;
   virtual void GoForward() = 0;
 

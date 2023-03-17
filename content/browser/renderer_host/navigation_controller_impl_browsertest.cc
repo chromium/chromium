@@ -17664,9 +17664,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 
   // CanGoBack should return false since all previous entries are skippable.
   EXPECT_FALSE(controller.CanGoBack());
-
-  controller.GoBack();  // Will not go back
-  EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 2);
 }
 
 // Same as above but tests the metrics on going forward.

@@ -272,6 +272,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Return the index of the entry with the given unique id, or -1 if not found.
   int GetEntryIndexWithUniqueID(int nav_entry_id) const;
 
+  // Returns the index that would be used by `GoBack`. This respects skippable
+  // entries. Returns nullopt if no unskippable back entry exists.
+  absl::optional<int> GetIndexForGoBack();
+  // Returns the index that would be used by `GoForward`. This respects
+  // skippable entries. Returns nullopt if no forward entry exists.
+  absl::optional<int> GetIndexForGoForward();
+
   // Return the entry with the given unique id, or null if not found.
   NavigationEntryImpl* GetEntryWithUniqueID(int nav_entry_id) const;
   // Same as above method, but also includes the pending entry in the search
