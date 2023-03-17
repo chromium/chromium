@@ -395,6 +395,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.ANDROID_EXTENDED_KEYBOARD_SHORTCUTS,
                     "Enables WebView to use the extended keyboard shortcuts added for Android U"),
             Flag.baseFeature("LessChattyNetworkService"),
+            Flag.baseFeature(BlinkFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
+                    "Enables Autofill to detect if form controls are removed from the DOM"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
