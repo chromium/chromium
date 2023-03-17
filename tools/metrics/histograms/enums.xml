@@ -18306,6 +18306,8 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Has signaling request but probably late"/>
   <int value="4" label="Security channel disconnects"/>
   <int value="5" label="Device is in tablet mode"/>
+  <int value="6" label="Devices are on different Wi-Fi networks"/>
+  <int value="7" label="Phone is on cellular"/>
 </enum>
 
 <enum name="ConnectionFailureReason">
