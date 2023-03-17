@@ -18,14 +18,18 @@ group("mac") {
     ":launcher",
     ":launcher_test",
     ":privileged_helper",
-    ":updater_bundle",
     ":updater_bundle_test",
     ":updater_install_script",
     ":updater_zip",
-    "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
   ]
-  if (!is_component_build && enable_dsyms) {
+  if (!is_asan) {
+    deps += [
+      ":updater_bundle",
+      "//chrome/updater/mac/installer:metainstaller",
+    ]
+  }
+  if (!is_asan && !is_component_build && enable_dsyms) {
     deps += [ ":syms_archive" ]
   }
 }
@@ -34,27 +38,29 @@ tweak_info_plist("updater_plist") {
   info_plist = "Info.plist"
 }
 
-mac_app_bundle("updater_bundle") {
-  info_plist_target = ":updater_plist"
-  output_name = updater_product_full_name
-  extra_substitutions =
-      [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
+if (!is_asan) {
+  mac_app_bundle("updater_bundle") {
+    info_plist_target = ":updater_plist"
+    output_name = updater_product_full_name
+    extra_substitutions =
+        [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
 
-  sources = [ "main.cc" ]
-  deps = [
-    ":keystone_agent_bundle_resource_executable",
-    ":keystone_agent_bundle_resource_plist",
-    ":updater_bundle_helpers",
-    ":updater_bundle_keystone_executable",
-    ":updater_bundle_keystone_helpers_ksinstall",
-    ":updater_bundle_keystone_plist",
-    "//chrome/updater:base",
-    "//chrome/updater:constants_prod",
-  ]
-  public_deps = [
-    ":ksadmin_copy",
-    ":ksadmin_link",
-  ]
+    sources = [ "main.cc" ]
+    deps = [
+      ":keystone_agent_bundle_resource_executable",
+      ":keystone_agent_bundle_resource_plist",
+      ":updater_bundle_helpers",
+      ":updater_bundle_keystone_executable",
+      ":updater_bundle_keystone_helpers_ksinstall",
+      ":updater_bundle_keystone_plist",
+      "//chrome/updater:base",
+      "//chrome/updater:constants_prod",
+    ]
+    public_deps = [
+      ":ksadmin",
+      ":ksadmin_link",
+    ]
+  }
 }
 
 mac_app_bundle("updater_bundle_test") {
@@ -78,7 +84,7 @@ mac_app_bundle("updater_bundle_test") {
     deps += [ ":keystone_agent_bundle_resource_executable_test_asan_dylib" ]
   }
   public_deps = [
-    ":ksadmin_test_copy",
+    ":ksadmin_test",
     ":ksadmin_test_link",
   ]
 }
@@ -333,32 +339,24 @@ source_set("ksadmin_lib") {
   ]
 }
 
-executable("ksadmin") {
-  output_name = "ksadmin"
-  sources = [ "keystone/ksadmin_main.cc" ]
+if (!is_asan) {
+  executable("ksadmin") {
+    output_dir = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers"
+    sources = [ "keystone/ksadmin_main.cc" ]
 
-  deps = [
-    ":ksadmin_lib",
-    "//base",
-    "//chrome/updater:constants_prod",
-  ]
+    deps = [
+      ":ksadmin_lib",
+      "//base",
+      "//chrome/updater:constants_prod",
+    ]
 
-  frameworks = [ "CoreFoundation.framework" ]
-
-  if (is_asan) {
-    # asan injects a dylib that we package in ../MacOS.
-    ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
+    frameworks = [ "CoreFoundation.framework" ]
   }
 }
 
-copy("ksadmin_copy") {
-  sources = [ "$root_out_dir/ksadmin" ]
-  outputs = [ "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin" ]
-  deps = [ ":ksadmin" ]
-}
-
 executable("ksadmin_test") {
-  output_name = "ksadmin_test"
+  output_name = "ksadmin"
+  output_dir = "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers"
   sources = [ "keystone/ksadmin_main.cc" ]
 
   deps = [
@@ -373,12 +371,6 @@ executable("ksadmin_test") {
     # asan injects a dylib that we package in ../MacOS.
     ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
   }
-}
-
-copy("ksadmin_test_copy") {
-  sources = [ "$root_out_dir/ksadmin_test" ]
-  outputs = [ "$root_out_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin" ]
-  deps = [ ":ksadmin_test" ]
 }
 
 executable("ksinstall") {
@@ -405,10 +397,12 @@ executable("ksinstall") {
   }
 }
 
-symlink("ksadmin_link") {
-  source = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin"
-  output = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/ksadmin"
-  deps = [ ":ksadmin" ]
+if (!is_asan) {
+  symlink("ksadmin_link") {
+    source = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin"
+    output = "$root_out_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/ksadmin"
+    deps = [ ":ksadmin" ]
+  }
 }
 
 symlink("ksadmin_test_link") {
@@ -533,7 +527,7 @@ bundle_data("updater_bundle_helpers_test") {
   public_deps = [ ":launcher_test" ]
 }
 
-if (!is_component_build && enable_dsyms) {
+if (!is_asan && !is_component_build && enable_dsyms) {
   _symbols_sources = [
     "$root_out_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
     "$root_out_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
@@ -585,17 +579,6 @@ if (!is_component_build && enable_dsyms) {
 artifact_zip("updater_zip") {
   output = "$root_build_dir/updater.zip"
   inputs = [
-    "$root_build_dir/${updater_product_full_name}.app/Contents/Info.plist",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/MacOS/${updater_product_full_name}",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/ksadmin",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/launcher",
-    "$root_build_dir/${updater_product_full_name}.app/Contents/PkgInfo",
     "$root_build_dir/${updater_product_full_name}_test.app/Contents/Info.plist",
     "$root_build_dir/${updater_product_full_name}_test.app/Contents/MacOS/${updater_product_full_name}_test",
     "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
@@ -622,15 +605,34 @@ artifact_zip("updater_zip") {
     "$root_build_dir/Updater Packaging/signing/commands.py",
     "$root_build_dir/Updater Packaging/sign_updater.py",
     "$root_build_dir/chrome/updater/.install",
-    "$root_build_dir/UpdaterSetup",
     "$root_build_dir/qualification_app",
   ]
   deps = [
-    ":updater_bundle",
     ":updater_bundle_test",
     ":updater_install_script",
-    "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
     "//chrome/updater/test/qualification_app",
   ]
+
+  if (!is_asan) {
+    inputs += [
+      "$root_build_dir/${updater_product_full_name}.app/Contents/Info.plist",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/MacOS/${updater_product_full_name}",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/ksadmin",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/launcher",
+      "$root_build_dir/${updater_product_full_name}.app/Contents/PkgInfo",
+      "$root_build_dir/UpdaterSetup",
+    ]
+
+    deps += [
+      ":updater_bundle",
+      "//chrome/updater/mac/installer:metainstaller",
+    ]
+  }
 }

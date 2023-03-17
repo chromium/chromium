@@ -14,6 +14,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +27,14 @@ namespace {
 int RunKSAdmin(std::string* std_out, const std::vector<std::string>& args) {
   base::FilePath out_dir;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &out_dir));
-  base::CommandLine command(out_dir.Append(FILE_PATH_LITERAL("ksadmin")));
+  base::CommandLine command(
+      out_dir.Append(base::StrCat({PRODUCT_FULLNAME_STRING, "_test.app"}))
+          .Append(FILE_PATH_LITERAL("Contents"))
+          .Append(FILE_PATH_LITERAL("Helpers"))
+          .Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
+          .Append(FILE_PATH_LITERAL("Contents"))
+          .Append(FILE_PATH_LITERAL("Helpers"))
+          .Append(FILE_PATH_LITERAL("ksadmin")));
   for (const auto& arg : args) {
     command.AppendSwitch(arg);
   }
