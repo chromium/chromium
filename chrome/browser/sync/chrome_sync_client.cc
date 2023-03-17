@@ -148,7 +148,6 @@
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
-#include "chrome/browser/ash/sync/os_syncable_service_model_type_controller.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
@@ -501,10 +500,11 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
       !ash::switches::IsTabletFormFactor()) {
     // Runs in sync transport-mode and full-sync mode.
     controllers.push_back(
-        std::make_unique<OsSyncableServiceModelTypeController>(
+        std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
             syncer::APP_LIST, model_type_store_factory,
             GetSyncableServiceForType(syncer::APP_LIST), dump_stack,
-            profile_->GetPrefs(), sync_service));
+            syncer::SyncableServiceBasedModelTypeController::DelegateMode::
+                kTransportModeWithSingleModel));
   }
 
   if (arc::IsArcAllowedForProfile(profile_) &&
@@ -514,14 +514,19 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         GetSyncableServiceForType(syncer::ARC_PACKAGE), dump_stack,
         sync_service, profile_));
   }
-  controllers.push_back(std::make_unique<OsSyncableServiceModelTypeController>(
-      syncer::OS_PREFERENCES, model_type_store_factory,
-      GetSyncableServiceForType(syncer::OS_PREFERENCES), dump_stack,
-      profile_->GetPrefs(), sync_service));
-  controllers.push_back(std::make_unique<OsSyncableServiceModelTypeController>(
-      syncer::OS_PRIORITY_PREFERENCES, model_type_store_factory,
-      GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES), dump_stack,
-      profile_->GetPrefs(), sync_service));
+  controllers.push_back(
+      std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
+          syncer::OS_PREFERENCES, model_type_store_factory,
+          GetSyncableServiceForType(syncer::OS_PREFERENCES), dump_stack,
+          syncer::SyncableServiceBasedModelTypeController::DelegateMode::
+              kTransportModeWithSingleModel));
+  controllers.push_back(
+      std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
+          syncer::OS_PRIORITY_PREFERENCES, model_type_store_factory,
+          GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES),
+          dump_stack,
+          syncer::SyncableServiceBasedModelTypeController::DelegateMode::
+              kTransportModeWithSingleModel));
 
   syncer::ModelTypeControllerDelegate* printers_delegate =
       GetControllerDelegateForModelType(syncer::PRINTERS).get();
