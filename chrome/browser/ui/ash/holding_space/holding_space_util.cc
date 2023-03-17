@@ -48,7 +48,12 @@ void FilePathValid(Profile* profile,
   file_manager::util::GetMetadataForPath(
       file_manager::util::GetFileManagerFileSystemContext(profile),
       file_path_with_requirement.first,
-      storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+      // NOTE: Provided file systems DCHECK if no metadata field is requested.
+      // TODO(http://b/274011452): Investigate if provided file systems should
+      //                           be supported by holding space.
+      // TODO(http://b/274011722): Investigate if we can remove time based
+      //                           validation of items in holding space.
+      storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
       base::BindOnce(
           [](FilePathValidCallback callback,
              FilePathWithValidityRequirement file_path_with_requirement,
