@@ -34,11 +34,12 @@ export function setupFakeInputDeviceSettingsProvider(): void {
 
 export function getInputDeviceSettingsProvider():
     InputDeviceSettingsProviderInterface {
-  if (!inputDeviceSettingsProvider && USE_FAKE_PROVIDER) {
-    setupFakeInputDeviceSettingsProvider();
-  }
   if (!inputDeviceSettingsProvider) {
-    inputDeviceSettingsProvider = InputDeviceSettingsProvider.getRemote();
+    if (USE_FAKE_PROVIDER) {
+      setupFakeInputDeviceSettingsProvider();
+    } else {
+      inputDeviceSettingsProvider = InputDeviceSettingsProvider.getRemote();
+    }
   }
 
   assert(!!inputDeviceSettingsProvider);
