@@ -46,7 +46,6 @@ bool SafeBrowsingDatabaseManager::CancelApiCheck(Client* client) {
 bool SafeBrowsingDatabaseManager::CheckApiBlocklistUrl(const GURL& url,
                                                        Client* client) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(v4_get_hash_protocol_manager_);
 
   // Make sure we can check this url and that the service is enabled.
   if (!enabled_ ||
