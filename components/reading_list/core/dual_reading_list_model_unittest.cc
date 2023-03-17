@@ -54,12 +54,14 @@ class TestEntryBuilder {
     return *this;
   }
 
-  TestEntryBuilder& SetRead() {
+  TestEntryBuilder& SetRead(bool read = true) {
+    read_ = read;
     update_read_time_ = creation_time_;
     return *this;
   }
 
-  TestEntryBuilder& SetRead(base::Time now) {
+  TestEntryBuilder& SetRead(base::Time now, bool read = true) {
+    read_ = read;
     update_read_time_ = now;
     return *this;
   }
@@ -89,7 +91,7 @@ class TestEntryBuilder {
     }
 
     if (update_read_time_.has_value()) {
-      entry->SetRead(true, update_read_time_.value());
+      entry->SetRead(read_, update_read_time_.value());
     }
 
     if (estimated_read_time_.has_value()) {
@@ -115,6 +117,7 @@ class TestEntryBuilder {
 
   absl::optional<std::pair<std::string, base::Time>> title_and_update_time_;
   absl::optional<base::Time> update_read_time_;
+  bool read_;
   absl::optional<base::TimeDelta> estimated_read_time_;
   absl::optional<ReadingListEntry::DistillationState> distilation_state_;
   absl::optional<base::FilePath> distilation_path_;
@@ -1766,6 +1769,54 @@ TEST_F(DualReadingListModelTest, TestTrimmingTitle) {
 
   dual_model_->SetEntryTitleIfExists(kUrl, title);
   EXPECT_EQ(entry->Title(), "This title contains new line characters");
+}
+
+TEST_F(DualReadingListModelTest, ShouldMaintainCountsWhenModelLoaded) {
+  const GURL kUnseenLocalUrl("http://unseen_local_url.com/");
+  const GURL kUnreadLocalUrl("http://unread_local_url.com/");
+  const GURL kReadLocalUrl("http://read_local_url.com/");
+  const GURL kUnseenAccountUrl("http://unseen_account_url.com/");
+  const GURL kUnreadAccountUrl("http://unread_account_url.com/");
+  const GURL kReadAccountUrl("http://read_account_url.com/");
+  const GURL kUnreadCommonUrl("http://unread_common_url.com/");
+  const GURL kReadCommonUrl("http://read_common_url.com/");
+
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUnseenLocalUrl, clock_.Now()),
+       TestEntryBuilder(kUnreadLocalUrl, clock_.Now()).SetRead(false),
+       TestEntryBuilder(kReadLocalUrl, clock_.Now()).SetRead(),
+       TestEntryBuilder(kUnreadCommonUrl, clock_.Now()).SetRead(false),
+       TestEntryBuilder(kReadCommonUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUnseenAccountUrl, clock_.Now()),
+          TestEntryBuilder(kUnreadAccountUrl, clock_.Now()).SetRead(false),
+          TestEntryBuilder(kReadAccountUrl, clock_.Now()).SetRead(),
+          TestEntryBuilder(kUnreadCommonUrl, clock_.Now()).SetRead(false),
+          TestEntryBuilder(kReadCommonUrl, clock_.Now())
+              .SetRead(clock_.Now() + base::Seconds(1))}));
+  ASSERT_TRUE(dual_model_->loaded());
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnseenLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnseenAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  EXPECT_EQ(8ul, dual_model_->size());
+  EXPECT_EQ(2ul, dual_model_->unseen_size());
+  EXPECT_EQ(5ul, dual_model_->unread_size());
 }
 
 }  // namespace

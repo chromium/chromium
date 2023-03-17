@@ -112,16 +112,16 @@ size_t DualReadingListModel::size() const {
 
 size_t DualReadingListModel::unread_size() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
-  return 0UL;
+  DCHECK(loaded());
+
+  return unread_entry_count_;
 }
 
 size_t DualReadingListModel::unseen_size() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
-  return 0UL;
+  DCHECK(loaded());
+
+  return unseen_entry_count_;
 }
 
 void DualReadingListModel::MarkAllSeen() {
@@ -477,11 +477,16 @@ void DualReadingListModel::ReadingListModelCompletedBatchUpdates(
 void DualReadingListModel::ReadingListModelLoaded(
     const ReadingListModel* model) {
   DCHECK(!suppress_observer_notifications_);
+  if (!loaded()) {
+    return;
+  }
 
-  if (loaded()) {
-    for (auto& observer : observers_) {
-      observer.ReadingListModelLoaded(this);
-    }
+  for (const auto& url : GetKeys()) {
+    UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
+  }
+
+  for (auto& observer : observers_) {
+    observer.ReadingListModelLoaded(this);
   }
 }
 
@@ -681,6 +686,18 @@ const ReadingListModelImpl* DualReadingListModel::ToReadingListModelImpl(
   // `local_or_syncable_model_` are ReadingListModelImpl, and hence it is also
   // the case for model.
   return static_cast<const ReadingListModelImpl*>(model);
+}
+
+void DualReadingListModel::UpdateEntryStateCountersOnEntryInsertion(
+    const ReadingListEntry& entry) {
+  if (!entry.HasBeenSeen()) {
+    unseen_entry_count_++;
+  }
+  if (entry.IsRead()) {
+    read_entry_count_++;
+  } else {
+    unread_entry_count_++;
+  }
 }
 
 }  // namespace reading_list
