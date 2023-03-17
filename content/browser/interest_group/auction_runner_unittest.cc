@@ -10314,6 +10314,7 @@ TEST_F(AuctionRunnerTest,
 
 TEST_F(AuctionRunnerTest,
        PrivateAggregationRequestForEventContributionScaleAndOffset) {
+  // Only one bidder participating the auction, to keep things simple.
   interest_group_buyers_ = {{kBidder1}};
 
   const char kBidScript[] = R"(
@@ -10387,7 +10388,6 @@ TEST_F(AuctionRunnerTest,
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
-  // Only one bidder, to keep things simple.
   RunStandardAuction(/*request_trusted_bidding_signals=*/false);
   EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
   EXPECT_FALSE(result_.manually_aborted);
@@ -11384,7 +11384,6 @@ TEST_F(AuctionRunnerTest, AdCostPassed) {
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
-  // Only one bidder, to keep things simple.
   RunStandardAuction(/*request_trusted_bidding_signals=*/false);
   EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
@@ -11429,7 +11428,6 @@ TEST_F(AuctionRunnerTest, AdCostRounded) {
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
-  // Only one bidder, to keep things simple.
   RunStandardAuction(/*request_trusted_bidding_signals=*/false);
   EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
@@ -11474,7 +11472,6 @@ TEST_F(AuctionRunnerTest, AdCostExponentTruncated) {
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
-  // Only one bidder, to keep things simple.
   RunStandardAuction(/*request_trusted_bidding_signals=*/false);
   EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
