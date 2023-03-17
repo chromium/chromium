@@ -202,12 +202,7 @@ public class CompositorViewHolder extends FrameLayout
     private ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier;
 
     // Handler for changes to viewport insets.
-    private Callback<ViewportInsets> mOnViewportInsetsChanged = (unused) -> {
-        // TODO(bokan): This needs to be called in non-fullscreen cases too. e.g. When showing a
-        // keyboard accessory sheet, the inset will change without causing a View layout so the
-        // WebContents size is not updated.
-        if (mShowingFullscreen) handleWindowInsetChanged();
-    };
+    private Callback<ViewportInsets> mOnViewportInsetsChanged;
 
     /**
      * Tracks whether geometrychange event is fired for the active tab when the keyboard
@@ -408,7 +403,7 @@ public class CompositorViewHolder extends FrameLayout
                     boolean sizeChanged = (right - left) != (oldRight - oldLeft)
                             || (top - bottom) != (oldTop - oldBottom);
                     if (attachedNativePage || sizeChanged) {
-                        updateViewportSize();
+                        tryUpdateControlsAndWebContentsSizing();
                     }
                 }
             } else {
@@ -584,6 +579,7 @@ public class CompositorViewHolder extends FrameLayout
         assert mApplicationBottomInsetSupplier == null;
         mApplicationBottomInsetSupplier = supplier;
         mApplicationBottomInsetSupplier.setVirtualKeyboardMode(mVirtualKeyboardMode);
+        mOnViewportInsetsChanged = (unused) -> handleWindowInsetChanged();
         mApplicationBottomInsetSupplier.addObserver(mOnViewportInsetsChanged);
     }
 
@@ -591,21 +587,20 @@ public class CompositorViewHolder extends FrameLayout
     // state changes while fullscreened and is used to simulate a view resize. This is only needed
     // if the page has opted in to keyboard resizes.
     private void handleWindowInsetChanged() {
-        if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT) {
-            // Notify the WebContents that the size has changed.
-            updateWebContentsSize(getCurrentTab());
-
-            // Notify the compositor layout that the size has changed.  The layout does not drive
-            // the WebContents sizing, so this needs to be done in addition to the above size
-            // update.
-            onViewportChanged();
-        } else if (mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT) {
-            // Call updateWebContentsSize for OVERLAYS_CONTENT to ensure the virtual-keyboard
-            // geometrychange event is dispatched.
-            // TODO(bokan): The viewport doesn't change size in OVERLAYS_CONTENT so we should factor
-            // the event dispatch code out of there.
-            updateWebContentsSize(getCurrentTab());
+        // TODO(bokan): Call tryUpdateControlsAndWebContentsSizing in OVERLAYS_CONTENT only to
+        // ensure dispatch of the keyboard geometrychange event. The WebContents doesn't actually
+        // change size in OVERLAYS_CONTENT so we should factor the event dispatch code out of
+        // updateWebContentsSize and then replace this call.
+        if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT
+                || mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT) {
+            // Notify the WebContents that its size may have changed.
+            tryUpdateControlsAndWebContentsSizing();
         }
+
+        // Notify the compositor layout that the size has changed.  The layout does not drive
+        // the WebContents sizing, so this needs to be done in addition to the above size
+        // update.
+        onViewportChanged();
     }
 
     /**
@@ -614,6 +609,7 @@ public class CompositorViewHolder extends FrameLayout
     public void shutDown() {
         setTab(null);
         if (mApplicationBottomInsetSupplier != null) {
+            assert mOnViewportInsetsChanged != null;
             mApplicationBottomInsetSupplier.removeObserver(mOnViewportInsetsChanged);
         }
 
@@ -717,7 +713,7 @@ public class CompositorViewHolder extends FrameLayout
         } else if (eventAction == MotionEvent.ACTION_CANCEL
                 || eventAction == MotionEvent.ACTION_UP) {
             mInGesture = false;
-            updateViewportSize();
+            tryUpdateControlsAndWebContentsSizing();
         }
         if (!sDeferNotifyInMotion.isEnabled()) {
             updateInMotion();
@@ -1056,9 +1052,11 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /**
-     * Updates viewport size to have it render the content correctly.
+     * Attempts to update browser controls sizing state and then synchronizes the WebContents size
+     * based on the current viewport and insets. No-op if the user is currently scrolling or in a
+     * gesture.
      */
-    private void updateViewportSize() {
+    private void tryUpdateControlsAndWebContentsSizing() {
         if (mInGesture || mContentViewScrolling) return;
         boolean controlsResizeViewChanged = false;
         if (mBrowserControlsManager != null) {
@@ -1104,7 +1102,7 @@ public class CompositorViewHolder extends FrameLayout
                     BrowserControlsUtils.getBottomContentOffset(mBrowserControlsManager);
             applyTranslationToTopChildViews(view, topViewsTranslation);
             applyMarginToFullscreenChildViews(view, topViewsTranslation, bottomMargin);
-            updateViewportSize();
+            tryUpdateControlsAndWebContentsSizing();
         }
         TraceEvent.end("CompositorViewHolder:updateContentViewChildrenDimension");
     }
@@ -1446,7 +1444,7 @@ public class CompositorViewHolder extends FrameLayout
             if (webContents != null) {
                 assert !webContents.isDestroyed();
                 getContentView().setVisibility(View.VISIBLE);
-                updateViewportSize();
+                tryUpdateControlsAndWebContentsSizing();
             }
 
             // CompositorView always has index of 0.
@@ -1611,7 +1609,7 @@ public class CompositorViewHolder extends FrameLayout
      */
     public void onExitVr() {
         mIsInVr = false;
-        updateViewportSize();
+        tryUpdateControlsAndWebContentsSizing();
     }
 
     @Override
