@@ -278,6 +278,16 @@ class VideoDecoderTest : public ::testing::Test {
 TEST_F(VideoDecoderTest, FlushAtEndOfStream) {
   auto tvp = CreateDecoderListener(g_env->Video());
 
+  // This test case is used for video.ChromeStackDecoderVerification.
+  // Mapping is very slow on some intel devices and hit the default timeout
+  // in long 4k video verification. Increase the timeout more than 1080p video
+  // to mitigate the issue. See b/230378122 for the discussion.
+  // 180 seconds are selected as it is long enough to pass the existing tests.
+  constexpr gfx::Size k1080p(1920, 1080);
+  if (g_env->Video()->Resolution().GetArea() > k1080p.GetArea()) {
+    tvp->SetEventWaitTimeout(base::Seconds(180));
+  }
+
   tvp->Play();
   EXPECT_TRUE(tvp->WaitForFlushDone());
 
