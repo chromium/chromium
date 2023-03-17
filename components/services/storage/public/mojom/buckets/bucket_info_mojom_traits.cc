@@ -4,7 +4,10 @@
 
 #include "components/services/storage/public/mojom/buckets/bucket_info_mojom_traits.h"
 
+#include <string>
+
 #include "third_party/blink/public/common/storage_key/storage_key_mojom_traits.h"
+#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 
 namespace mojo {
 
