@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -35,6 +36,13 @@
 namespace crypto {
 
 namespace {
+
+const char kMetricVirtualCreateKeyError[] = "Crypto.TpmError.VirtualCreateKey";
+const char kMetricVirtualFinalizeKeyError[] =
+    "Crypto.TpmError.VirtualFinalizeKey";
+const char kMetricVirtualOpenKeyError[] = "Crypto.TpmError.VirtualOpenKey";
+const char kMetricVirtualOpenStorageError[] =
+    "Crypto.TpmError.VirtualOpenStorage";
 
 std::vector<uint8_t> CBBToVector(const CBB* cbb) {
   return std::vector<uint8_t>(CBB_data(cbb), CBB_data(cbb) + CBB_len(cbb));
@@ -597,9 +605,11 @@ class VirtualUnexportableKeyProviderWin
     ScopedNCryptProvider provider;
     {
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-      if (FAILED(NCryptOpenStorageProvider(
-              ScopedNCryptProvider::Receiver(provider).get(),
-              MS_KEY_STORAGE_PROVIDER, /*dwFlags=*/0))) {
+      SECURITY_STATUS status = NCryptOpenStorageProvider(
+          ScopedNCryptProvider::Receiver(provider).get(),
+          MS_KEY_STORAGE_PROVIDER, /*dwFlags=*/0);
+      if (FAILED(status)) {
+        base::UmaHistogramSparse(kMetricVirtualOpenStorageError, status);
         return absl::nullopt;
       }
     }
@@ -617,9 +627,11 @@ class VirtualUnexportableKeyProviderWin
     ScopedNCryptProvider provider;
     {
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-      if (FAILED(NCryptOpenStorageProvider(
-              ScopedNCryptProvider::Receiver(provider).get(),
-              MS_KEY_STORAGE_PROVIDER, /*dwFlags=*/0))) {
+      SECURITY_STATUS status = NCryptOpenStorageProvider(
+          ScopedNCryptProvider::Receiver(provider).get(),
+          MS_KEY_STORAGE_PROVIDER, /*dwFlags=*/0);
+      if (FAILED(status)) {
+        base::UmaHistogramSparse(kMetricVirtualOpenStorageError, status);
         return nullptr;
       }
     }
@@ -634,18 +646,20 @@ class VirtualUnexportableKeyProviderWin
     {
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
       // An empty key name stops the key being persisted to disk.
-      unsigned long status = NCryptCreatePersistedKey(
+      SECURITY_STATUS status = NCryptCreatePersistedKey(
           provider.get(), ScopedNCryptKey::Receiver(key).get(),
           BCryptAlgorithmFor(*algo).value(), base::SysUTF8ToWide(name).c_str(),
           /*dwLegacyKeySpec=*/0,
           /*dwFlags=*/NCRYPT_USE_VIRTUAL_ISOLATION_FLAG);
       if (FAILED(status)) {
+        base::UmaHistogramSparse(kMetricVirtualCreateKeyError, status);
         return nullptr;
       }
 
       status = NCryptFinalizeKey(
           key.get(), NCRYPT_PROTECT_TO_LOCAL_SYSTEM | NCRYPT_SILENT_FLAG);
       if (FAILED(status)) {
+        base::UmaHistogramSparse(kMetricVirtualFinalizeKeyError, status);
         return nullptr;
       }
     }
@@ -680,16 +694,20 @@ class VirtualUnexportableKeyProviderWin
     ScopedNCryptKey key;
     {
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-      if (FAILED(NCryptOpenStorageProvider(
-              ScopedNCryptProvider::Receiver(provider).get(),
-              MS_KEY_STORAGE_PROVIDER, /*dwFlags=*/0))) {
+      SECURITY_STATUS status = NCryptOpenStorageProvider(
+          ScopedNCryptProvider::Receiver(provider).get(),
+          MS_KEY_STORAGE_PROVIDER, /*dwFlags=*/0);
+      if (FAILED(status)) {
+        base::UmaHistogramSparse(kMetricVirtualOpenStorageError, status);
         return nullptr;
       }
 
-      if (FAILED(NCryptOpenKey(
-              provider.get(), ScopedNCryptKey::Receiver(key).get(),
-              base::SysUTF8ToWide(name).c_str(), /*dwLegacyKeySpec=*/0,
-              /*dwFlags*/ 0))) {
+      status = NCryptOpenKey(
+          provider.get(), ScopedNCryptKey::Receiver(key).get(),
+          base::SysUTF8ToWide(name).c_str(), /*dwLegacyKeySpec=*/0,
+          /*dwFlags*/ 0);
+      if (FAILED(status)) {
+        base::UmaHistogramSparse(kMetricVirtualOpenKeyError, status);
         return nullptr;
       }
     }

@@ -89,6 +89,46 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Crypto.TpmError.VirtualCreateKey" units="win32 error code"
+    expires_after="2024-03-01">
+  <owner>kristianm@chromium.org</owner>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Error code returned by NCryptCreatePersistedKey. One of the error codes from
+    https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-4.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TpmError.VirtualFinalizeKey" units="win32 error code"
+    expires_after="2024-03-01">
+  <owner>kristianm@chromium.org</owner>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Error code returned by NCryptFinalizeKey. One of the error codes from
+    https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-4.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TpmError.VirtualOpenKey" units="win32 error code"
+    expires_after="2024-03-01">
+  <owner>kristianm@chromium.org</owner>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Error code returned by NCryptOpenKey. One of the error codes from
+    https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-4.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TpmError.VirtualOpenStorage" units="win32 error code"
+    expires_after="2024-03-01">
+  <owner>kristianm@chromium.org</owner>
+  <owner>agl@chromium.org</owner>
+  <summary>
+    Error code returned by NCryptOpenStorageProvider. One of the error codes
+    from https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-4.
+  </summary>
+</histogram>
+
 <histogram name="Crypto.TPMOperation.Virtual.{Operation}{SignatureAlgorithm}"
     enum="BooleanSuccess" expires_after="2023-12-01">
   <owner>kristianm@chromium.org</owner>
