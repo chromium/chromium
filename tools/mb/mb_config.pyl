@@ -890,6 +890,8 @@
         'reclient': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_reclient',
         'siso': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_siso',
       },
+      'win-arm64-dbg': 'chrome_branded_arm64_debug_reclient',
+      'win-arm64-rel': 'chrome_branded_arm64_release_reclient',
       'win-celab-rel': 'official_celab_release_bot_reclient',
       'win-finch-smoke-chrome': 'official_reclient',
     },
@@ -1987,6 +1989,14 @@
 
     'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient': [
       'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'reclient',
+    ],
+
+    'chrome_branded_arm64_debug_reclient': [
+      'debug_bot_reclient', 'chrome_branded', 'arm64', 'proprietary_codecs', 'ffmpeg_branding_chrome'
+    ],
+
+    'chrome_branded_arm64_release_reclient': [
+      'release_bot_reclient', 'chrome_branded', 'arm64', 'proprietary_codecs', 'ffmpeg_branding_chrome'
     ],
 
     'chrome_branded_goma_minimal_symbols': [

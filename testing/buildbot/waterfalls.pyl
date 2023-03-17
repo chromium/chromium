@@ -6598,6 +6598,25 @@
         ],
         # no tests, stay compile only.
       },
+      'win-arm64-dbg': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'win-arm64-rel': {
+        'additional_compile_targets': [
+          'chrome',
+          'chromedriver_group',
+        ],
+        'mixins': [
+          'win_arm64',
+          'isolate_profile_data',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_win10_gtests',
+          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
+        },
+      },
       'win-chrome-reclient': {
         'additional_compile_targets': [
            # same build target as win-chrome even if it doesn't run the tests
