@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -41,14 +42,6 @@ PerformanceManagerImpl* g_performance_manager = nullptr;
 // |g_performance_manager|. Should only be accessed on the main thread.
 bool g_pm_is_available = false;
 
-bool RunningOnUIThread() {
-  // This doesn't change from test to test, so we cache the value for
-  // efficiency.
-  static const bool kRunningOnUIThread =
-      base::FeatureList::IsEnabled(features::kRunOnMainThread);
-  return kRunningOnUIThread;
-}
-
 // Task traits appropriate for the PM task runner. This is a macro because it
 // is used to build both content::BrowserTaskTraits and base::TaskTraits, which
 // are type incompatible.
@@ -60,6 +53,11 @@ bool RunningOnUIThread() {
       base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()
 
 // Builds a UI task runner with the appropriate traits for the PM.
+// TODO(crbug.com/1189677): The PM task runner has to block shutdown as some of
+// the tasks posted to it should be guaranteed to run before shutdown (e.g.
+// removing some entries from the site data store). The UI thread ignores
+// MayBlock and TaskShutdownBehavior, so these tasks and any blocking tasks must
+// be found and migrated to a worker thread.
 scoped_refptr<base::SequencedTaskRunner> GetUITaskRunner() {
   return content::GetUIThreadTaskRunner({PM_TASK_TRAITS});
 }
@@ -234,19 +232,17 @@ void PerformanceManagerImpl::SetOnDestroyedCallbackForTesting(
 
 PerformanceManagerImpl::PerformanceManagerImpl() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  if (RunningOnUIThread())
+  if (base::FeatureList::IsEnabled(features::kRunOnMainThread)) {
     ui_task_runner_ = GetUITaskRunner();
+  }
 }
 
 // static
 scoped_refptr<base::SequencedTaskRunner>
 PerformanceManagerImpl::GetTaskRunner() {
-  // The performance manager TaskRunner. Thread-safe.
-  static base::LazyThreadPoolSequencedTaskRunner
-      performance_manager_task_runner =
-          LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
-              base::TaskTraits{PM_TASK_TRAITS});
-  if (RunningOnUIThread()) {
+  if (base::FeatureList::IsEnabled(features::kRunOnMainThread)) {
+    CHECK(!base::FeatureList::IsEnabled(
+        features::kRunOnDedicatedThreadPoolThread));
     // Used the cached runner, if available. This prevents doing repeated
     // lookups.
     if (g_performance_manager)
@@ -260,6 +256,20 @@ PerformanceManagerImpl::GetTaskRunner() {
     // |g_performance_manager| while it was alive.
     return GetUITaskRunner();
   }
+  if (base::FeatureList::IsEnabled(features::kRunOnDedicatedThreadPoolThread)) {
+    CHECK(!base::FeatureList::IsEnabled(features::kRunOnMainThread));
+    // Use a dedicated thread so that all tasks on the PM sequence can be
+    // identified in traces.
+    static base::LazyThreadPoolSingleThreadTaskRunner task_runner =
+        LAZY_THREAD_POOL_SINGLE_THREAD_TASK_RUNNER_INITIALIZER(
+            base::TaskTraits{PM_TASK_TRAITS},
+            base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+    return task_runner.Get();
+  }
+  static base::LazyThreadPoolSequencedTaskRunner
+      performance_manager_task_runner =
+          LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+              base::TaskTraits{PM_TASK_TRAITS});
   return performance_manager_task_runner.Get();
 }
 
@@ -379,6 +389,11 @@ void PerformanceManagerImpl::BatchDeleteNodesImpl(
 void PerformanceManagerImpl::OnStartImpl(GraphImplCallback on_start) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!g_performance_manager);
+
+  if (base::FeatureList::IsEnabled(features::kRunOnDedicatedThreadPoolThread)) {
+    // This should be the first task that runs on the dedicated thread.
+    base::PlatformThread::SetName("Performance Manager");
+  }
 
   g_performance_manager = this;
   graph_.SetUp();

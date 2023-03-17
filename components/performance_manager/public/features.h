@@ -15,8 +15,16 @@
 
 namespace performance_manager::features {
 
-// The feature that gates whether or not the PM runs on the main (UI) thread.
+// If enabled the PM runs on the main (UI) thread. Incompatible with
+// kRunOnDedicatedThreadPoolThread.
 BASE_DECLARE_FEATURE(kRunOnMainThread);
+
+// If enabled the PM runs on a single ThreadPool thread that isn't shared with
+// any other task runners. It will be named "Performance Manager" in traces.
+// This makes it easy to identify tasks running on the PM sequence, but may not
+// perform as well as a shared sequence, which is the default. Incompatible with
+// kRunOnMainThread.
+BASE_DECLARE_FEATURE(kRunOnDedicatedThreadPoolThread);
 
 #if !BUILDFLAG(IS_ANDROID)
 
