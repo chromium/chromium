@@ -28,11 +28,11 @@ namespace base::allocator::dispatcher {
 // strictly worse for performance). Make use of pthread TLS instead of C++
 // thread_local there.
 struct BASE_EXPORT ReentryGuard {
-  ReentryGuard() : allowed_(!pthread_getspecific(entered_key_)) {
+  ALWAYS_INLINE ReentryGuard() : allowed_(!pthread_getspecific(entered_key_)) {
     pthread_setspecific(entered_key_, reinterpret_cast<void*>(true));
   }
 
-  ~ReentryGuard() {
+  ALWAYS_INLINE ~ReentryGuard() {
     if (LIKELY(allowed_))
       pthread_setspecific(entered_key_, nullptr);
   }
