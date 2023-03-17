@@ -206,7 +206,7 @@ TEST_F(PingManagerImplTest, OnPingTimerFired) {
   EXPECT_TRUE(ping_manager_->is_waiting_for_response());
   EXPECT_TRUE(ping_manager_->IsPingTimeoutTimerRunning());
 
-  task_environment_.FastForwardBy(base::Seconds(3));
+  task_environment_.FastForwardBy(base::Minutes(2));
 
   histogram_tester.ExpectBucketCount(kPingManagerPingResultHistogramName, false,
                                      1);

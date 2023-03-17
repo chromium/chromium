@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/ping_manager_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/message_receiver_impl.h"
@@ -15,7 +16,6 @@
 namespace ash::phonehub {
 
 const proto::PingRequest kDefaultPingRequest;
-constexpr base::TimeDelta kPingTimeout = base::Seconds(2);
 
 PingManagerImpl::PingManagerImpl(
     secure_channel::ConnectionManager* connection_manager,
@@ -67,7 +67,7 @@ void PingManagerImpl::SendPingRequest() {
   message_sender_->SendPingRequest(kDefaultPingRequest);
 
   ping_sent_timestamp_ = base::TimeTicks::Now();
-  ping_timeout_timer_.Start(FROM_HERE, kPingTimeout,
+  ping_timeout_timer_.Start(FROM_HERE, features::kPhoneHubPingTimeout.Get(),
                             base::BindOnce(&PingManagerImpl::OnPingTimerFired,
                                            base::Unretained(this)));
   is_waiting_for_response_ = true;

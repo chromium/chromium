@@ -23,7 +23,7 @@ void FakePingManager::OnPingResponseReceived() {
   is_waiting_for_response_ = false;
 }
 
-int FakePingManager::GetNumPingRequest() const {
+int FakePingManager::GetNumPingRequests() const {
   return num_ping_requests_;
 }
 

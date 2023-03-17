@@ -19,11 +19,11 @@ class FakePingManager : public PingManager {
 
   void OnPingResponseReceived();
 
-  int GetNumPingRequest() const;
+  int GetNumPingRequests() const;
   bool GetIsWaitingForResponse() const;
 
  private:
-  int num_ping_requests_;
+  int num_ping_requests_ = 0;
   bool is_waiting_for_response_;
 };
 
