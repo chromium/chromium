@@ -3762,8 +3762,6 @@ crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-on-accelerate
 #crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-incremental-repaint.html [ Pass Failure Timeout Crash ]
 crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/image-object-in-canvas.html [ Crash Failure Pass Timeout ]
 
-# We cannot yet launch Canvas2D staying GPU on readback
-
 # Antialiasing error
 crbug.com/845973 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Failure Pass ]
 
@@ -3898,7 +3896,6 @@ crbug.com/778467 [ Fuchsia ] mhtml/mhtml_in_iframe.html [ Failure ]
 # These tests timeout when using Scenic ozone platform.
 
 ### See crbug.com/891427 comment near the top of this file:
-###crbug.com/816914 [ Mac ] fast/canvas/canvas-drawImage-live-video.html [ Failure Pass ]
 crbug.com/817167 http/tests/devtools/oopif/oopif-cookies-refresh.js [ Failure Pass Timeout ]
 
 # Sheriff 2018-03-02
@@ -5689,7 +5686,7 @@ crbug.com/1038139 [ Linux ] virtual/gpu-rasterization/images/2-comp.html [ Failu
 crbug.com/1038139 [ Mac ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
 
 
-# Sheriff 2022-02-08
+# Failures cause by SwiftShader not working on arm-based Macs
 crbug.com/1295317 [ Mac11-arm64 ] compositing/geometry/video-opacity-overlay.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] compositing/video/video-controls-squashing.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/color-jpeg-with-color-profile.html [ Failure ]
