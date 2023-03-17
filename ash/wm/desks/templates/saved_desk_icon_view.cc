@@ -9,13 +9,12 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -111,17 +110,6 @@ void SavedDeskIconView::Layout() {
                   width() - (icon_view_ ? kIconViewSize : 0), kIconViewSize));
   }
 }
-void SavedDeskIconView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  if (count_label_) {
-    auto* color_provider = AshColorProvider::Get();
-    count_label_->SetBackgroundColor(color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
-    count_label_->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-  }
-}
 
 void SavedDeskIconView::UpdateCount(int count) {
   // We should never get there. We only update `count_` for the overflow icon.
@@ -138,6 +126,8 @@ void SavedDeskIconView::CreateCountLabelChildView(bool show_plus,
                        .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                            kCountLabelInsetSize, kCountLabelInsetSize,
                            kCountLabelInsetSize, inset_size)))
+                       .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
+                       .SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase)
                        .SetAutoColorReadabilityEnabled(false)
                        .Build());
 }
@@ -158,7 +148,7 @@ SavedDeskRegularIconView::SavedDeskRegularIconView(
       on_icon_loaded_(std::move(on_icon_loaded)) {
   if (GetCountToShow()) {
     SetBackground(views::CreateThemedRoundedRectBackground(
-        ash::kColorAshControlBackgroundColorInactive,
+        cros_tokens::kCrosSysSystemOnBase,
         /*radius=*/kIconViewSize / 2.0f));
   }
 
@@ -272,8 +262,7 @@ void SavedDeskRegularIconView::LoadDefaultIcon() {
           ui::ResourceBundle::GetSharedInstance()
               .GetImageNamed(resource_id)
               .AsImageSkia(),
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)),
+          GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)),
       /*is_default=*/true));
 }
 
@@ -285,7 +274,7 @@ END_METADATA
 SavedDeskOverflowIconView::SavedDeskOverflowIconView(int count, bool show_plus)
     : SavedDeskIconView("", count, kOverflowIconSortingKey) {
   SetBackground(views::CreateThemedRoundedRectBackground(
-      ash::kColorAshControlBackgroundColorInactive,
+      cros_tokens::kCrosSysSystemOnBase,
       /*radius=*/kIconViewSize / 2.0f));
 
   CreateCountLabelChildView(show_plus, kCountLabelInsetSize);

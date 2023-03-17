@@ -5,7 +5,7 @@
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 
 #include "ash/shell.h"
-#include "ash/style/close_button.h"
+#include "ash/style/icon_button.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
@@ -221,8 +221,8 @@ views::Button* GetSavedDeskItemButton(int index) {
 
 views::Button* GetSavedDeskItemDeleteButton(int index) {
   auto* item = GetItemViewFromSavedDeskGrid(index);
-  return item ? static_cast<views::Button*>(const_cast<CloseButton*>(
-                    SavedDeskItemViewTestApi(item).delete_button()))
+  return item ? const_cast<IconButton*>(
+                    SavedDeskItemViewTestApi(item).delete_button())
               : nullptr;
 }
 

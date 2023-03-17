@@ -24,7 +24,7 @@ class Textfield;
 
 namespace ash {
 
-class CloseButton;
+class IconButton;
 class PillButton;
 class SavedDeskIconContainer;
 class SavedDeskNameView;
@@ -113,7 +113,6 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout() override;
-  void OnThemeChanged() override;
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
   void OnFocus() override;
@@ -170,7 +169,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // description instead.
   views::Label* time_view_ = nullptr;
   SavedDeskIconContainer* icon_container_view_ = nullptr;
-  CloseButton* delete_button_ = nullptr;
+  IconButton* delete_button_ = nullptr;
   PillButton* launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
   views::View* hover_container_ = nullptr;

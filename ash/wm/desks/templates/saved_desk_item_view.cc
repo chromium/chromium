@@ -11,9 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/close_button.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/desks_textfield.h"
@@ -40,6 +38,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -127,10 +126,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
 
   const std::u16string saved_desk_name = saved_desk_->template_name();
   DCHECK(!saved_desk_name.empty());
-  auto* color_provider = AshColorProvider::Get();
   const bool is_admin_managed =
       saved_desk_->source() == DeskTemplateSource::kPolicy;
-
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   views::Builder<SavedDeskItemView>(this)
@@ -139,10 +136,11 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       .SetAccessibleName(saved_desk_name)
       .SetCallback(std::move(launch_template_callback))
       .SetBackground(views::CreateThemedRoundedRectBackground(
-          kColorAshShieldAndBase80, kCornerRadius))
+          cros_tokens::kCrosSysSystemBaseElevated, kCornerRadius))
       .SetBorder(std::make_unique<views::HighlightBorder>(
           kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
           /*use_light_colors=*/false))
+      // TODO(b/274025495): Update Shadow for SavedDeskItemView.
       .AddChildren(
           views::Builder<views::FlexLayoutView>()
               .SetOrientation(views::LayoutOrientation::kVertical)
@@ -189,12 +187,10 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
                               .SetPreferredSize(
                                   gfx::Size(kManagedStatusIndicatorSize,
                                             kManagedStatusIndicatorSize))
-                              .SetImage(gfx::CreateVectorIcon(
+                              .SetImage(ui::ImageModel::FromVectorIcon(
                                   chromeos::kEnterpriseIcon,
-                                  kManagedStatusIndicatorSize,
-                                  color_provider->GetContentLayerColor(
-                                      AshColorProvider::ContentLayerType::
-                                          kIconColorSecondary)))
+                                  cros_tokens::kCrosSysSecondary,
+                                  kManagedStatusIndicatorSize))
                               .SetProperty(
                                   views::kFlexBehaviorKey,
                                   views::FlexSpecification(
@@ -204,6 +200,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
                   views::Builder<views::Label>()
                       .CopyAddressTo(&time_view_)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                      .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
                       .SetText(
                           is_admin_managed
                               ? l10n_util::GetStringUTF16(
@@ -246,11 +243,12 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   // Users cannot delete admin templates.
   if (!is_admin_managed) {
     delete_button_ =
-        hover_container_->AddChildView(std::make_unique<CloseButton>(
+        hover_container_->AddChildView(std::make_unique<IconButton>(
             base::BindRepeating(&SavedDeskItemView::OnDeleteButtonPressed,
                                 weak_ptr_factory_.GetWeakPtr()),
-            CloseButton::Type::kMedium, &kDeleteIcon,
-            kColorAshControlBackgroundColorInactive));
+            IconButton::Type::kXSmall, &kDeleteIcon,
+            /*is_togglable=*/false,
+            /*has_border=*/false));
     delete_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON));
   }
@@ -275,7 +273,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   focus_ring->SetHasFocusPredicate([](views::View* view) {
     return static_cast<SavedDeskItemView*>(view)->IsViewHighlighted();
   });
-  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -424,15 +422,6 @@ void SavedDeskItemView::Layout() {
                  height() - launch_button_preferred_size.height() -
                      kLaunchButtonDistanceFromBottomDp},
                 launch_button_preferred_size));
-}
-
-void SavedDeskItemView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  auto* color_provider = AshColorProvider::Get();
-
-  time_view_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  time_view_->SetEnabledColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
 }
 
 void SavedDeskItemView::OnViewFocused(views::View* observed_view) {

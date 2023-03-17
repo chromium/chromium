@@ -22,7 +22,7 @@ class Label;
 
 namespace ash {
 
-class CloseButton;
+class IconButton;
 class OverviewGrid;
 class PillButton;
 class RoundedImageView;
@@ -103,9 +103,7 @@ class SavedDeskItemViewTestApi {
 
   const views::Label* time_view() const { return item_view_->time_view_; }
 
-  const CloseButton* delete_button() const {
-    return item_view_->delete_button_;
-  }
+  const IconButton* delete_button() const { return item_view_->delete_button_; }
 
   const PillButton* launch_button() const { return item_view_->launch_button_; }
 
