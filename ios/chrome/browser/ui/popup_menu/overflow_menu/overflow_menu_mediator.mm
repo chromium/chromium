@@ -1894,7 +1894,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher
       showSavedPasswordsSettingsFromViewController:self.baseViewController
-                                  showCancelButton:NO];
+                                  showCancelButton:NO
+                                startPasswordCheck:NO];
 }
 
 // Dismisses the menu and opens price notifications list.

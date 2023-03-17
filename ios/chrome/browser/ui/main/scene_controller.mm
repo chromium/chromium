@@ -1958,7 +1958,8 @@ void InjectNTP(Browser* browser) {
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showSavedPasswordsSettingsFromViewController:
             (UIViewController*)baseViewController
-                                    showCancelButton:(BOOL)showCancelButton {
+                                    showCancelButton:(BOOL)showCancelButton
+                                  startPasswordCheck:(BOOL)startPasswordCheck {
   if (!baseViewController) {
     // TODO(crbug.com/779791): Don't pass base view controller through
     // dispatched command.
@@ -1967,41 +1968,19 @@ void InjectNTP(Browser* browser) {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  [self dismissModalDialogs];
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
         showSavedPasswordsSettingsFromViewController:baseViewController
-                                    showCancelButton:showCancelButton];
+                                    showCancelButton:showCancelButton
+                                  startPasswordCheck:startPasswordCheck];
     return;
   }
   Browser* browser = self.mainInterface.browser;
   self.settingsNavigationController = [SettingsNavigationController
       savePasswordsControllerForBrowser:browser
                                delegate:self
-        startPasswordCheckAutomatically:YES
                        showCancelButton:showCancelButton];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
-}
-
-- (void)showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
-    (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  [self dismissModalDialogs];
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
-        showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
-            baseViewController];
-    return;
-  }
-  Browser* browser = self.mainInterface.browser;
-  self.settingsNavigationController =
-      [SettingsNavigationController savePasswordsControllerForBrowser:browser
-                                                             delegate:self
-                                      startPasswordCheckAutomatically:YES
-                                                     showCancelButton:NO];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];

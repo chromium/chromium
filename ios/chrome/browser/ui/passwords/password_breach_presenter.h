@@ -17,7 +17,7 @@
 - (void)stop;
 
 // Informs the presenter that the Password page should be open.
-- (void)startPasswordCheck;
+- (void)openSavedPasswordsSettings;
 
 @end
 

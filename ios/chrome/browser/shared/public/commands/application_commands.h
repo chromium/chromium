@@ -48,15 +48,16 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController;
 
-// Shows the list of saved passwords in the settings.
+// TODO(crbug.com/1406871): Remove the `startPasswordCheck` parameter when
+// kIOSPasswordCheckup feature is enabled by default.
+// Shows the list of saved passwords in the settings. `showCancelButton`
+// indicates whether a cancel button should be added as the left navigation item
+// of the saved passwords view. `startPasswordCheck` indicates whether a
+// password check should be started when the saved passwords are shown.
 - (void)showSavedPasswordsSettingsFromViewController:
             (UIViewController*)baseViewController
-                                    showCancelButton:(BOOL)showCancelButton;
-
-// Shows the list of saved passwords in the settings. Automatically starts
-// password check.
-- (void)showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
-    (UIViewController*)baseViewController;
+                                    showCancelButton:(BOOL)showCancelButton
+                                  startPasswordCheck:(BOOL)startPasswordCheck;
 
 // Shows the list of profiles (addresess) in the settings.
 - (void)showProfileSettingsFromViewController:

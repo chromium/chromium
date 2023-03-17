@@ -78,7 +78,8 @@ TEST_F(PasswordInfobarModalInteractionHandlerTest, NeverSaveCredentials) {
 TEST_F(PasswordInfobarModalInteractionHandlerTest, PresentPasswordsSettings) {
   OCMExpect([mock_command_receiver_
       showSavedPasswordsSettingsFromViewController:nil
-                                  showCancelButton:YES]);
+                                  showCancelButton:YES
+                                startPasswordCheck:NO]);
   handler_->PresentPasswordsSettings(&infobar_);
 }
 

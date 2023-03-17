@@ -114,7 +114,7 @@ using password_manager::CredentialLeakType;
       .permittedArrowDirections = UIPopoverArrowDirectionUp;
 }
 
-- (void)startPasswordCheck {
+- (void)openSavedPasswordsSettings {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   password_manager::LogPasswordCheckReferrer(
@@ -122,8 +122,10 @@ using password_manager::CredentialLeakType;
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kPasswordBreachDialog);
-  [handler showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
-               self.baseViewController];
+
+  [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
+                                       showCancelButton:NO
+                                     startPasswordCheck:YES];
 }
 
 @end

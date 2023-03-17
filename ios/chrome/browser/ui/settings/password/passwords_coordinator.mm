@@ -169,6 +169,11 @@ using password_manager::WarningType;
 
   [self.baseNavigationController pushViewController:self.passwordsViewController
                                            animated:YES];
+
+  // When kIOSPasswordCheckup is enabled, start a password check.
+  if (password_manager::features::IsPasswordCheckupEnabled()) {
+    [self checkSavedPasswords];
+  }
 }
 
 - (void)stop {

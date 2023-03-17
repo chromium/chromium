@@ -141,6 +141,7 @@ source_set("scene") {
     "//components/breadcrumbs/core:feature_flags",
     "//components/feature_engagement/public",
     "//components/infobars/core",
+    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/previous_session_info",

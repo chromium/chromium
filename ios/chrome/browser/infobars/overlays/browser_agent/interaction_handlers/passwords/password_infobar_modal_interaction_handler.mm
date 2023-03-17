@@ -49,7 +49,8 @@ void PasswordInfobarModalInteractionHandler::PresentPasswordsSettings(
   id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
       browser_->GetCommandDispatcher(), ApplicationSettingsCommands);
   [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
-                                                        showCancelButton:YES];
+                                                        showCancelButton:YES
+                                                      startPasswordCheck:NO];
 
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",

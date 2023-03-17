@@ -72,16 +72,18 @@
 - (void)confirmationAlertPrimaryAction {
   self.completion(safe_browsing::WarningAction::CHANGE_PASSWORD);
   // Opening Password page will stop the presentation. No need to send `stop`.
-  [self startPasswordCheck];
+  [self openSavedPasswordsSettings];
 }
 
 #pragma mark - Private
 
-- (void)startPasswordCheck {
+- (void)openSavedPasswordsSettings {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [handler showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
-               self.baseViewController];
+
+  [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
+                                       showCancelButton:NO
+                                     startPasswordCheck:YES];
 }
 
 @end

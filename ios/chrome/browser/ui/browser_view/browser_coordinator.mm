@@ -1868,7 +1868,8 @@ enum class ToolbarKind {
   } else {
     [HandlerForProtocol(self.dispatcher, ApplicationCommands)
         showSavedPasswordsSettingsFromViewController:self.viewController
-                                    showCancelButton:YES];
+                                    showCancelButton:YES
+                                  startPasswordCheck:NO];
   }
 }
 

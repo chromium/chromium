@@ -2529,7 +2529,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)displaySavedPasswordList {
   [self.applicationCommandsHandler
       showSavedPasswordsSettingsFromViewController:self
-                                  showCancelButton:YES];
+                                  showCancelButton:YES
+                                startPasswordCheck:NO];
 }
 
 #pragma mark - WebStateContainerViewProvider
