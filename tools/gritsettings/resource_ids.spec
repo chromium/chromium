@@ -18,7 +18,6 @@
 # - components/
 # - ios/ (overlaps with chrome/)
 # - content/
-# - ios/web/ (overlaps with content/)
 # - everything else
 #
 # The range of ID values, which is used by pak files, is from 0 to 2^16 - 1.
@@ -886,12 +885,18 @@
     "META": {"join": 2},
     "messages": [800],
   },
-  # END ios/ section.
-
-  # START ios_internal/ section.
   "ios/chrome/widget_kit_extension/strings/ios_widget_kit_extension_strings.grd": {
     "messages": [820],
   },
+  "ios/web/ios_web_resources.grd": {
+    "includes": [825],
+  },
+  "ios/web/test/test_resources.grd": {
+    "includes": [830],
+  },
+  # END ios/ section.
+
+  # START ios_internal/ section.
   "ios_internal/chrome/app/ios_internal_strings.grd": {
     "messages": [840],
   },
@@ -908,7 +913,6 @@
   # END ios_internal/ section.
 
   # START content/ section.
-  # content/ and ios/web/ must start at the same id.
   "content/content_resources.grd": {
     # Big alignment at start of section.
     "META": {"join": 2, "align": 100},
@@ -928,24 +932,11 @@
   },
   # END content/ section.
 
-  # START ios/web/ section.
-  # content/ and ios/web/ must start at the same id.
-  # App only use one file depending on whether it is iOS or other platform.
-  "ios/web/ios_web_resources.grd": {
-    # Big alignment at start of section.
-    "META": {"align": 100},
-    "includes": [3800],
-  },
-  "ios/web/test/test_resources.grd": {
-    "includes": [3820],
-  },
-  # END ios/web/ section.
-
   # START "everything else" section.
   # Everything but chrome/, chromeos/, components/, content/, and ios/
   "ash/ash_strings.grd": {
     # Big alignment at start of section.
-    "META": {"join": 2, "align": 100},
+    "META": {"align": 100},
     "messages": [3960],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/resources/ash_os_feedback_resources.grd": {
