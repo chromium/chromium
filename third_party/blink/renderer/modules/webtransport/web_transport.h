@@ -128,7 +128,9 @@ class MODULES_EXPORT WebTransport final
 
   WebTransport(ScriptState*, const String& url, ExecutionContext* context);
 
-  void Init(const String& url, const WebTransportOptions&, ExceptionState&);
+  void Init(const String& url_for_diagnostics,
+            const WebTransportOptions&,
+            ExceptionState&);
 
   void Dispose();
   void Cleanup(v8::Local<v8::Value> reason,
