@@ -116,8 +116,7 @@ source_set("xml_parser_fuzzer_deps") {
   visibility = [
     ":run_xml_parser_fuzzer",
     ":xml_parser_fuzzer",
-    ":xml_parser_fuzzer_arch_executable",
-    ":xml_parser_fuzzer_arch_executable_sources",
+    ":xml_parser_fuzzer_executable",
   ]
   public_deps = [
     ":lib",

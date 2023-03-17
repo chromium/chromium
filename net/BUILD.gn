@@ -3678,8 +3678,7 @@ if (use_fuzzing_engine) {
     testonly = true
     visibility = [
       ":net_web_socket_encoder_fuzzer",
-      ":net_web_socket_encoder_fuzzer_arch_executable",
-      ":net_web_socket_encoder_fuzzer_arch_executable_sources",
+      ":net_web_socket_encoder_fuzzer_executable",
       ":run_net_web_socket_encoder_fuzzer",
     ]
     public_deps = [
