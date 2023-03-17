@@ -25,6 +25,7 @@ class WebLayerPingManagerFactory : public BrowserContextKeyedServiceFactory {
 
  private:
   friend class base::NoDestructor<WebLayerPingManagerFactory>;
+  friend class WeblayerPingManagerFactoryTest;
 
   WebLayerPingManagerFactory();
   ~WebLayerPingManagerFactory() override;
