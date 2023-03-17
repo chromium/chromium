@@ -297,6 +297,11 @@ std::unique_ptr<content::WebContents> CoreTabHelper::SwapWebContents(
 // static
 bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
                                                 content::WebContents* source) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED() << "If this ends up being used on Android update "
+               << "ChromeContentBrowserClient::OverrideURLLoaderFactoryParams.";
+  return false;
+#else
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* guest_manager = guest_view::GuestViewManager::FromBrowserContext(
       source->GetBrowserContext());
@@ -394,6 +399,7 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
 #else  // !BUILDFLAG(ENABLE_EXTENSIONS)
   return false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
