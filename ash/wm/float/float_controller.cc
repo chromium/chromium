@@ -193,10 +193,20 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 
   void OnUntuckAnimationEnded() { scoped_window_tucker_.reset(); }
 
-  void MaybeUntuckWindow() {
+  void MaybeUntuckWindow(bool animate) {
     // The order here matters: `is_tucked_for_tablet_` must be set to false
-    // before `AnimateUntuck()` gets the untucked window bounds.
+    // before `TabletModeWindowState::UpdateWindowPosition()` or
+    // `AnimateUntuck()` gets the untucked window bounds.
     is_tucked_for_tablet_ = false;
+
+    if (!animate) {
+      scoped_window_tucker_.reset();
+      TabletModeWindowState::UpdateWindowPosition(
+          WindowState::Get(floated_window_),
+          WindowState::BoundsChangeAnimationType::kNone);
+      return;
+    }
+
     if (scoped_window_tucker_) {
       scoped_window_tucker_->AnimateUntuck(
           base::BindOnce(&FloatedWindowInfo::OnUntuckAnimationEnded,
@@ -418,7 +428,7 @@ void FloatController::MaybeUntuckFloatedWindowForTablet(
     aura::Window* floated_window) {
   auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
   DCHECK(floated_window_info);
-  floated_window_info->MaybeUntuckWindow();
+  floated_window_info->MaybeUntuckWindow(/*animate=*/true);
 }
 
 bool FloatController::IsFloatedWindowTuckedForTablet(
@@ -643,7 +653,7 @@ void FloatController::OnTabletModeStarted() {
 
 void FloatController::OnTabletModeEnding() {
   for (auto& [window, info] : floated_window_info_map_)
-    info->MaybeUntuckWindow();
+    info->MaybeUntuckWindow(/*animate=*/true);
 }
 
 void FloatController::OnTabletControllerDestroyed() {
@@ -657,10 +667,17 @@ void FloatController::OnDeskActivationChanged(const Desk* activated,
   // update the floated windows' visibility. Therefore, here we hide the floated
   // window belonging to the deactivated desk, and show the one belonging to the
   // activated desk.
-  if (auto* deactivated_desk_floated_window =
-          FindFloatedWindowOfDesk(deactivated)) {
-    HideFloatedWindow(deactivated_desk_floated_window);
+  auto deactivated_desk_floated_window_info_iter = base::ranges::find_if(
+      floated_window_info_map_, [deactivated](const auto& floated_window_info) {
+        return floated_window_info.second->desk() == deactivated;
+      });
+  if (deactivated_desk_floated_window_info_iter !=
+      floated_window_info_map_.end()) {
+    deactivated_desk_floated_window_info_iter->second->MaybeUntuckWindow(
+        /*animate=*/false);
+    HideFloatedWindow(deactivated_desk_floated_window_info_iter->first);
   }
+
   if (auto* activated_desk_floated_window =
           FindFloatedWindowOfDesk(activated)) {
     ShowFloatedWindow(activated_desk_floated_window);

@@ -1373,6 +1373,33 @@ TEST_F(TabletWindowFloatTest, UntuckWindowOnActivation) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
 }
 
+// Tests that when we switch desks, a tucked window gets untucked.
+TEST_F(TabletWindowFloatTest, UntuckWindowOnDeskChange) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  auto* desks_controller = DesksController::Get();
+  NewDesk();
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  ActivateDesk(desks_controller->desks()[1].get());
+
+  // Create a floated window on the second desk and fling it.
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  const gfx::Rect pre_tucked_bounds = window->bounds();
+  FlingWindow(window.get(), /*left=*/false, /*up=*/false);
+  ASSERT_TRUE(desks_util::BelongsToActiveDesk(window.get()));
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  ASSERT_TRUE(Shell::Get()->float_controller()->IsFloatedWindowTuckedForTablet(
+      window.get()));
+
+  // Activate desk 1. The window is still floated but is hidden and not tucked.
+  ActivateDesk(desks_controller->desks()[0].get());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+  EXPECT_FALSE(window->IsVisible());
+  EXPECT_EQ(pre_tucked_bounds, window->bounds());
+  EXPECT_FALSE(Shell::Get()->float_controller()->IsFloatedWindowTuckedForTablet(
+      window.get()));
+}
+
 // Tests that the tucked window is invisible while it is fully tucked.
 TEST_F(TabletWindowFloatTest, TuckedWindowVisibility) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
