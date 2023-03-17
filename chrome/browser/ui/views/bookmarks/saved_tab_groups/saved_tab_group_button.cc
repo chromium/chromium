@@ -274,31 +274,34 @@ void SavedTabGroupButton::TabMenuItemPressed(const GURL& url, int event_flags) {
 }
 
 void SavedTabGroupButton::MoveGroupToNewWindowPressed(int event_flags) {
-  Browser* browser = nullptr;
+  Browser* const browser_with_local_group_id =
+      local_group_id_.has_value()
+          ? service_->listener()->GetBrowserWithTabGroupId(
+                local_group_id_.value())
+          : base::to_address(browser_);
 
-  if (local_group_id_.has_value()) {
-    // Find the browser which contains `local_group_id_` if it is open already.
-    browser =
-        service_->listener()->GetBrowserWithTabGroupId(local_group_id_.value());
-  } else {
-    // Open the group in the current browser if it is closed.
-    browser = base::to_address(browser_);
-    service_->OpenSavedTabGroupInBrowser(browser, guid_);
+  if (!local_group_id_.has_value()) {
+    // Open the group in the browser the button was pressed.
+    service_->OpenSavedTabGroupInBrowser(browser_with_local_group_id, guid_);
   }
 
   // Move the open group to a new browser window.
   const SavedTabGroup* group = service_->model()->Get(guid_);
-  browser->tab_strip_model()->delegate()->MoveGroupToNewWindow(
-      group->local_group_id().value());
+  browser_with_local_group_id->tab_strip_model()
+      ->delegate()
+      ->MoveGroupToNewWindow(group->local_group_id().value());
 }
 
 void SavedTabGroupButton::DeleteGroupPressed(int event_flags) {
   if (local_group_id_.has_value()) {
+    const Browser* const browser_with_local_group_id =
+        service_->listener()->GetBrowserWithTabGroupId(local_group_id_.value());
+
     // Keep the opened tab group in the tabstrip but remove the SavedTabGroup
     // data from the model.
-    TabGroup* tab_group =
-        browser_->tab_strip_model()->group_model()->GetTabGroup(
-            local_group_id_.value());
+    TabGroup* tab_group = browser_with_local_group_id->tab_strip_model()
+                              ->group_model()
+                              ->GetTabGroup(local_group_id_.value());
 
     service_->UnsaveGroup(local_group_id_.value());
 
