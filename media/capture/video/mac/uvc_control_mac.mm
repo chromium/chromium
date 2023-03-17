@@ -228,8 +228,8 @@ IOUSBDevRequest UvcControl::CreateEmptyCommand(int request_code,
                                                int endpoint_direction,
                                                int control_selector,
                                                int control_command_size) const {
-  DCHECK(interface_);
-  DCHECK((endpoint_direction == kUSBIn) || (endpoint_direction == kUSBOut));
+  CHECK(interface_);
+  CHECK((endpoint_direction == kUSBIn) || (endpoint_direction == kUSBOut));
   UInt8 interface_number;
   (*interface_)->GetInterfaceNumber(interface_, &interface_number);
   IOUSBDevRequest command;

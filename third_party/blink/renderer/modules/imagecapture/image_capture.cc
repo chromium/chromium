@@ -542,8 +542,7 @@ MeteringMode ParseMeteringMode(const String& blink_mode) {
     return MeteringMode::CONTINUOUS;
   if (blink_mode == "none")
     return MeteringMode::NONE;
-  NOTREACHED();
-  return MeteringMode::NONE;
+  NOTREACHED_NORETURN();
 }
 
 FillLightMode ParseFillLightMode(const String& blink_mode) {
@@ -553,8 +552,7 @@ FillLightMode ParseFillLightMode(const String& blink_mode) {
     return FillLightMode::AUTO;
   if (blink_mode == "flash")
     return FillLightMode::FLASH;
-  NOTREACHED();
-  return FillLightMode::OFF;
+  NOTREACHED_NORETURN();
 }
 
 bool ToBooleanMode(BackgroundBlurMode mode) {
@@ -564,6 +562,7 @@ bool ToBooleanMode(BackgroundBlurMode mode) {
     case BackgroundBlurMode::BLUR:
       return true;
   }
+  NOTREACHED_NORETURN();
 }
 
 WebString ToString(MeteringMode value) {
@@ -577,6 +576,7 @@ WebString ToString(MeteringMode value) {
     case MeteringMode::CONTINUOUS:
       return WebString::FromUTF8("continuous");
   }
+  NOTREACHED_NORETURN();
 }
 
 V8FillLightMode ToV8FillLightMode(FillLightMode value) {
@@ -588,6 +588,7 @@ V8FillLightMode ToV8FillLightMode(FillLightMode value) {
     case FillLightMode::FLASH:
       return V8FillLightMode(V8FillLightMode::Enum::kFlash);
   }
+  NOTREACHED_NORETURN();
 }
 
 WebString ToString(RedEyeReduction value) {
@@ -599,6 +600,7 @@ WebString ToString(RedEyeReduction value) {
     case RedEyeReduction::CONTROLLABLE:
       return WebString::FromUTF8("controllable");
   }
+  NOTREACHED_NORETURN();
 }
 
 MediaSettingsRange* ToMediaSettingsRange(
