@@ -99,12 +99,12 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
     -   All policy values need to be mapped into a prefs value before being used
         unless the policy is needed before PrefService initialization.
     -   To map the policy:
-        1.  Create a prefs and register the prefs in **Local State** or
-            **Profile Prefs**. Please note that, this must match the
-            `per_profile` attribute in the `YourPolicyName.yaml`. We also
-            strongly encourage developers to register the prefs with **Profile
-            Prefs** if possible, because this gives admin more flexibility of
-            policy setup.
+        1.  [Create a prefs and register the prefs in **Local State** or
+            **Profile Prefs**.](../../chrome/browser/prefs/README.md)
+            Please note that, this must match the `per_profile` attribute in the
+            `YourPolicyName.yaml`. We also strongly encourage developers to
+            register the prefs with **Profile Prefs** if possible, because
+            this gives admin more flexibility of policy setup.
         2.  Most policies can be mapped to prefs with `kSimplePolicyMap` in
             [configuration_policy_handler_list_factory.cc](https://cs.chromium.org/chromium/src/chrome/browser/policy/configuration_policy_handler_list_factory.cc?type=cs&q=kSimplePolicyMap&g=0&l=150).
             If the policy needs additional verification or processing, please
