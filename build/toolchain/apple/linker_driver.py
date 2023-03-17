@@ -63,19 +63,8 @@ OBJECT_PATH_LTO = 'object_path_lto'
 # -Wcrl,strippath,<strip_path>
 #    Sets the path to the strip to run with -Wcrl,strip, in which case
 #    `xcrun` is not used to invoke it.
-# TODO(crbug.com/1337780): Remove 'persist' when iOS no longer builds universal
-# binaries.
-# -Wcrl,object_path_lto,<persist>(optional)
-#    Creates temporary directory for LTO object files. If `persist` is passed
-#    the directory is named after the linker output and it's expected that a
-#    later invocation will pass `-Wcrl,clean_objects,<output_name>` to clean it
-#    up. Otherwise, the temp directory is deleted at the end of this run.
-# TODO(crbug.com/1337780): Remove this action when iOS no longer builds
-# universal binaries.
-# -Wcrl,clean_objects,<arguments,...>
-#    Cleans up LTO object file directories for the targets in arguments.
-#    For each argument, looks for and deletes a directory at
-#    "{argument}.lto_objects"
+# -Wcrl,object_path_lto
+#    Creates temporary directory for LTO object files.
 
 
 class LinkerDriver(object):
@@ -101,7 +90,6 @@ class LinkerDriver(object):
             ('unstripped,', self.run_save_unstripped),
             ('strippath,', self.set_strip_path),
             ('strip,', self.run_strip),
-            ('clean_objects', self.run_clean_objects),
         ]
 
         # Linker driver actions can modify the these values.
@@ -113,10 +101,6 @@ class LinkerDriver(object):
         self._linker_output = None
         # The temporary directory for intermediate LTO object files. If it
         # exists, it will clean itself up on script exit.
-        self._object_path_lto_temp = None
-        # The path for intermediate LTO object files. This is either the name
-        # of `self._object_path_lto_temp` or a named directory that will be
-        # cleaned up in a future invocation.
         self._object_path_lto = None
 
     def run(self):
@@ -140,7 +124,7 @@ class LinkerDriver(object):
 
         if self._object_path_lto is not None:
             compiler_driver_args.append('-Wl,-object_path_lto,{}'.format(
-                self._object_path_lto))
+                self._object_path_lto.name))
         if self._get_linker_output() is None:
             raise ValueError(
                 'Could not find path to linker output (-o or --output)')
@@ -199,17 +183,8 @@ class LinkerDriver(object):
         # TODO(lgrey): Remove if/when we start running `dsymutil`
         # through the clang driver. See https://crbug.com/1324104
         if sub_arg == OBJECT_PATH_LTO:
-            self._object_path_lto_temp = tempfile.TemporaryDirectory(
+            self._object_path_lto = tempfile.TemporaryDirectory(
                 dir=os.getcwd())
-            self._object_path_lto = self._object_path_lto_temp.name
-            return (OBJECT_PATH_LTO, lambda: [])
-        elif sub_arg.startswith(OBJECT_PATH_LTO):
-            assert sub_arg[len(OBJECT_PATH_LTO):] == ',persist'
-            output = self._get_linker_output()
-            assert output
-            self._object_path_lto = output + '.lto_objects'
-            _remove_path(self._object_path_lto)
-            os.mkdir(self._object_path_lto)
             return (OBJECT_PATH_LTO, lambda: [])
 
         for driver_action in self._actions:
@@ -352,25 +327,6 @@ class LinkerDriver(object):
             No output - this step is run purely for its side-effect.
         """
         self._strip_cmd = [strip_path]
-        return []
-
-    def run_clean_objects(self, args_string):
-        """Linker driver action for -Wcrl,clean_objects,<arguments>.
-
-        For each argument, looks for a directory called "${argument}.lto_objects
-        and deletes it.
-
-        Args:
-            arguments: string, Comma-separated prefixes of LTO object
-            directories to clean up
-
-        Returns:
-            No output
-        """
-        for output in args_string.lstrip(',').split(','):
-            name = output + '.lto_objects'
-            assert os.path.isdir(name)
-            shutil.rmtree(name)
         return []
 
 
