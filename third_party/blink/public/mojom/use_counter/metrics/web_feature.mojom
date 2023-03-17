@@ -3704,7 +3704,7 @@ enum WebFeature {
   kInteractiveWidgetResizesContent = 4367,
   kInteractiveWidgetResizesVisual = 4368,
   kSerivceWorkerFallbackMainResource = 4369,
-  kGetDisplayMediaWithoutUserActivation = 4370,
+  kOBSOLETE_GetDisplayMediaWithoutUserActivation = 4370,
   kBackForwardCacheNotRestoredReasons = 4371,
   // The items above roughly this point are available in the M108 branch.
 

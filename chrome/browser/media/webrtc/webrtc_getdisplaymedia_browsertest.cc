@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -27,6 +28,11 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
@@ -35,6 +41,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -108,6 +115,9 @@ struct TestConfigForHiDpi {
 
 constexpr char kAppWindowTitle[] = "AppWindow Display Capture Test";
 
+constexpr char kEmbeddedTestServerOrigin[] = "http://127.0.0.1";
+constexpr char kOtherOrigin[] = "https://other-origin.com";
+
 std::string DisplaySurfaceTypeAsString(
     DisplaySurfaceType display_surface_type) {
   switch (display_surface_type) {
@@ -127,16 +137,23 @@ void RunGetDisplayMedia(content::WebContents* tab,
                         bool is_fake_ui,
                         bool expect_success,
                         bool is_tab_capture,
-                        const std::string& expected_error = "") {
+                        const std::string& expected_error = "",
+                        bool with_user_gesture = true) {
   DCHECK(!expect_success || expected_error.empty());
 
+  const content::ToRenderFrameHost& adapter = tab->GetPrimaryMainFrame();
+  const std::string script = base::StringPrintf(
+      "runGetDisplayMedia(%s, \"top-level-document\", \"%s\");",
+      constraints.c_str(), expected_error.c_str());
   std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetPrimaryMainFrame(),
-      base::StringPrintf(
-          "runGetDisplayMedia(%s, \"top-level-document\", \"%s\");",
-          constraints.c_str(), expected_error.c_str()),
-      &result));
+
+  if (with_user_gesture) {
+    EXPECT_TRUE(
+        content::ExecuteScriptAndExtractString(adapter, script, &result));
+  } else {
+    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractString(
+        adapter, script, &result));
+  }
 
 #if BUILDFLAG(IS_MAC)
   if (!is_fake_ui && !is_tab_capture &&
@@ -1411,8 +1428,9 @@ class WebRtcScreenCaptureSelectAllScreensTest
     // Enables GetDisplayMedia and GetDisplayMediaSetAutoSelectAllScreens
     // features for multi surface capture.
     // TODO(simonha): remove when feature becomes stable.
-    if (test_config_.enable_select_all_screens)
+    if (test_config_.enable_select_all_screens) {
       command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
+    }
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
@@ -1473,4 +1491,116 @@ INSTANTIATE_TEST_SUITE_P(
         TestConfigForSelectAllScreens{/*display_surface=*/"monitor",
                                       /*enable_select_all_screens=*/false}));
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+
+class GetDisplayMediaTransientActivationRequiredTest
+    : public WebRtcScreenCaptureBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, bool, bool, absl::optional<std::string>>> {
+ public:
+  GetDisplayMediaTransientActivationRequiredTest()
+      : with_user_gesture_(std::get<0>(GetParam())),
+        require_gesture_feature_enabled_(std::get<1>(GetParam())),
+        prefer_current_tab_(std::get<2>(GetParam())),
+        policy_allowlist_value_(std::get<3>(GetParam())) {}
+  ~GetDisplayMediaTransientActivationRequiredTest() override = default;
+
+  static std::string GetDescription(
+      const testing::TestParamInfo<
+          GetDisplayMediaTransientActivationRequiredTest::ParamType>& info) {
+    std::string name = base::StrCat(
+        {std::get<0>(info.param) ? "WithUserGesture_" : "WithoutUserGesture_",
+         std::get<1>(info.param) ? "RequireGestureFeatureEnabled_"
+                                 : "_RequireGestureFeatureDisabled_",
+         std::get<2>(info.param) ? "PreferCurrentTab_"
+                                 : "DontPreferCurrentTab_",
+         std::get<3>(info.param).has_value()
+             ? (*std::get<3>(info.param) == kEmbeddedTestServerOrigin)
+                   ? "Allowlisted"
+                   : "OtherAllowlisted"
+             : "NoPolicySet"});
+    return name;
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    WebRtcScreenCaptureBrowserTest::SetUpInProcessBrowserTestFixture();
+
+    if (require_gesture_feature_enabled_) {
+      feature_list_.InitAndEnableFeature(
+          blink::features::kGetDisplayMediaRequiresUserActivation);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kGetDisplayMediaRequiresUserActivation);
+    }
+
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+
+    DetectErrorsInJavaScript();
+  }
+
+  bool PreferCurrentTab() const override { return prefer_current_tab_; }
+
+ protected:
+  const bool with_user_gesture_;
+  const bool require_gesture_feature_enabled_;
+  const bool prefer_current_tab_;
+  const absl::optional<std::string> policy_allowlist_value_;
+  base::test::ScopedFeatureList feature_list_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaTransientActivationRequiredTest, Check) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  if (policy_allowlist_value_.has_value()) {
+    policy::PolicyMap policy_map;
+    base::Value::List allowed_origins;
+    allowed_origins.Append(base::Value(*policy_allowlist_value_));
+    policy_map.Set(policy::key::kScreenCaptureWithoutGestureAllowedForOrigins,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_PLATFORM,
+                   base::Value(std::move(allowed_origins)), nullptr);
+    policy_provider_.UpdateChromePolicy(policy_map);
+  }
+
+  content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  const bool expect_success =
+      with_user_gesture_ || !require_gesture_feature_enabled_ ||
+      (policy_allowlist_value_ &&
+       *policy_allowlist_value_ == kEmbeddedTestServerOrigin);
+  const std::string expected_error =
+      expect_success
+          ? ""
+          : "InvalidStateError: Failed to execute 'getDisplayMedia' on "
+            "'MediaDevices': getDisplayMedia() requires transient activation "
+            "(user gesture).";
+
+  RunGetDisplayMedia(tab,
+                     GetConstraints(/*video=*/true, /*audio=*/true,
+                                    SelectAllScreens::kUndefined),
+                     /*is_fake_ui=*/true, expect_success,
+                     /*is_tab_capture=*/false, expected_error,
+                     with_user_gesture_);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    GetDisplayMediaTransientActivationRequiredTest,
+    testing::Combine(
+        /*with_user_gesture=*/testing::Bool(),
+        /*require_gesture_feature_enabled=*/testing::Bool(),
+        /*prefer_current_tab=*/testing::Bool(),
+        /*policy_allowlist_value=*/
+        testing::Values(absl::nullopt,
+                        kEmbeddedTestServerOrigin,
+                        kOtherOrigin)),
+    &GetDisplayMediaTransientActivationRequiredTest::GetDescription);

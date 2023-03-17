@@ -690,6 +690,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.autoplay_policy;
   }
 
+  static bool require_transient_activation_for_get_display_media(
+      const blink::web_pref::WebPreferences& r) {
+    return r.require_transient_activation_for_get_display_media;
+  }
+
   static blink::mojom::PreferredColorScheme preferred_color_scheme(
       const blink::web_pref::WebPreferences& r) {
     return r.preferred_color_scheme;

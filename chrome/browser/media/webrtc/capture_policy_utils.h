@@ -68,6 +68,11 @@ bool IsGetDisplayMediaSetSelectAllScreensAllowed(
 bool IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
     content::BrowserContext* context);
 
+#if !BUILDFLAG(IS_ANDROID)
+bool IsTransientActivationRequiredForGetDisplayMedia(
+    content::WebContents* contents);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace capture_policy
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_CAPTURE_POLICY_UTILS_H_

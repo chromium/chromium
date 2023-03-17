@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
@@ -52,6 +53,7 @@
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -176,7 +178,61 @@ void RecordUma(ProduceCropTargetPromiseResult result) {
   base::UmaHistogramEnumeration(
       "Media.RegionCapture.ProduceCropTarget.Promise.Result", result);
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// When `blink::features::kGetDisplayMediaRequiresUserActivation` is enabled,
+// calls to `getDisplayMedia()` will require a transient user activation. This
+// can be bypassed with the `ScreenCaptureWithoutGestureAllowedForOrigins`
+// policy though.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GetDisplayMediaTransientActivation {
+  kPresent = 0,
+  kMissing = 1,
+  kMissingButFeatureDisabled = 2,
+  kMissingButPolicyOverrides = 3,
+  kMaxValue = kMissingButPolicyOverrides
+};
+
+void RecordUma(GetDisplayMediaTransientActivation activation) {
+  base::UmaHistogramEnumeration(
+      "Media.GetDisplayMedia.RequiresUserActivationResult", activation);
+}
+
+bool TransientActivationRequirementSatisfied(LocalDOMWindow* window) {
+  DCHECK(window);
+
+  LocalFrame* const frame = window->GetFrame();
+  if (!frame) {
+    return false;  // Err on the side of caution. Intentionally neglect UMA.
+  }
+
+  const Settings* const settings = frame->GetSettings();
+  if (!settings) {
+    return false;  // Err on the side of caution. Intentionally neglect UMA.
+  }
+
+  if (LocalFrame::HasTransientUserActivation(frame) ||
+      (RuntimeEnabledFeatures::
+           CapabilityDelegationDisplayCaptureRequestEnabled() &&
+       window->IsDisplayCaptureRequestTokenActive())) {
+    RecordUma(GetDisplayMediaTransientActivation::kPresent);
+    return true;
+  }
+
+  if (!RuntimeEnabledFeatures::GetDisplayMediaRequiresUserActivationEnabled()) {
+    RecordUma(GetDisplayMediaTransientActivation::kMissingButFeatureDisabled);
+    return true;
+  }
+
+  if (!settings->GetRequireTransientActivationForGetDisplayMedia()) {
+    RecordUma(GetDisplayMediaTransientActivation::kMissingButPolicyOverrides);
+    return true;
+  }
+
+  RecordUma(GetDisplayMediaTransientActivation::kMissing);
+  return false;
+}
 
 void RecordEnumerateDevicesLatency(base::TimeTicks start_time) {
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
@@ -267,8 +323,9 @@ MediaStreamConstraints* ToMediaStreamConstraints(
 MediaStreamConstraints* ToMediaStreamConstraints(
     const DisplayMediaStreamOptions* source) {
   MediaStreamConstraints* const constraints = MediaStreamConstraints::Create();
-  if (source->hasAudio())
+  if (source->hasAudio()) {
     constraints->setAudio(source->audio());
+  }
   if (source->hasVideo()) {
     constraints->setVideo(source->video());
   }
@@ -520,22 +577,11 @@ ScriptPromise MediaDevices::getDisplayMedia(
     return ScriptPromise();
   }
 
-  const bool has_transient_user_activation =
-      LocalFrame::HasTransientUserActivation(window->GetFrame()) ||
-      (RuntimeEnabledFeatures::
-           CapabilityDelegationDisplayCaptureRequestEnabled() &&
-       window->IsDisplayCaptureRequestTokenActive());
-
-  if (!has_transient_user_activation) {
-    UseCounter::Count(window,
-                      WebFeature::kGetDisplayMediaWithoutUserActivation);
-    if (RuntimeEnabledFeatures::
-            GetDisplayMediaRequiresUserActivationEnabled()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "getDisplayMedia() requires transient activation (user gesture).");
-      return ScriptPromise();
-    }
+  if (!TransientActivationRequirementSatisfied(window)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "getDisplayMedia() requires transient activation (user gesture).");
+    return ScriptPromise();
   }
 
   if (options->hasAutoSelectAllScreens() && options->autoSelectAllScreens()) {

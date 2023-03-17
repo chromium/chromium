@@ -5,11 +5,13 @@
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -163,6 +166,34 @@ bool IsGetDisplayMediaSetSelectAllScreensAllowed(
   return false;
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool IsTransientActivationRequiredForGetDisplayMedia(
+    content::WebContents* contents) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kGetDisplayMediaRequiresUserActivation)) {
+    return false;
+  }
+
+  if (!contents) {
+    return true;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  if (!profile) {
+    return true;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  if (!prefs) {
+    return true;
+  }
+
+  return !policy::IsOriginInAllowlist(
+      contents->GetURL(), prefs,
+      prefs::kScreenCaptureWithoutGestureAllowedForOrigins);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
     const GURL& request_origin,

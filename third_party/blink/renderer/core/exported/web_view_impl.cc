@@ -1712,6 +1712,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetAccessibilityAlwaysShowFocus(prefs.always_show_focus);
   settings->SetAutoplayPolicy(prefs.autoplay_policy);
+  settings->SetRequireTransientActivationForGetDisplayMedia(
+      prefs.require_transient_activation_for_get_display_media);
   settings->SetViewportEnabled(prefs.viewport_enabled);
   settings->SetViewportMetaEnabled(prefs.viewport_meta_enabled);
   settings->SetViewportStyle(prefs.viewport_style);

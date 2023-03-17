@@ -10,12 +10,12 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bad_message.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
@@ -197,9 +197,9 @@ void DisplayMediaAccessHandler::HandleRequest(
     // before sending IPC, but just to be sure double check here as well. This
     // is not treated as a BadMessage because it is possible for the transient
     // user activation to expire between the renderer side check and this check.
-    if (base::FeatureList::IsEnabled(
-            blink::features::kGetDisplayMediaRequiresUserActivation) &&
-        !rfh->HasTransientUserActivation()) {
+    if (!rfh->HasTransientUserActivation() &&
+        capture_policy::IsTransientActivationRequiredForGetDisplayMedia(
+            web_contents)) {
       std::move(callback).Run(
           blink::mojom::StreamDevicesSet(),
           blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,

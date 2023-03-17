@@ -2811,6 +2811,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.GetDisplayMedia.RequiresUserActivationResult"
+    enum="GetDisplayMediaTransientActivation" expires_after="2024-03-14">
+  <owner>eladalon@chromium.org</owner>
+  <owner>fbeaufort@chromium.org</owner>
+  <owner>hendrich@chromium.org</owner>
+  <summary>
+    Records whether getDisplayMedia was called with a user gesture (transient
+    activation) or whether it wasn't required. The requirement is only enforced
+    once `blink::features::kGetDisplayMediaRequiresUserActivation` is enabled
+    and can be bypassed with the `ScreenCaptureWithoutGestureAllowedForOrigins`
+    policy.
+  </summary>
+</histogram>
+
 <histogram name="Media.GlobalMediaControls.DeviceSelectorAvailable"
     enum="Boolean" expires_after="2023-02-12">
   <owner>steimel@chromium.org</owner>

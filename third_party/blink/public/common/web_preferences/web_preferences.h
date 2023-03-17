@@ -293,6 +293,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   blink::mojom::AutoplayPolicy autoplay_policy =
       blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
 
+  // `getDisplayMedia()`'s transient activation requirement can be bypassed via
+  // `ScreenCaptureWithoutGestureAllowedForOrigins` policy.
+  bool require_transient_activation_for_get_display_media;
+
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme
   // to be used based on the supported-color-schemes META tag and CSS property.

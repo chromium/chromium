@@ -1107,6 +1107,7 @@ extern const char kSharedArrayBufferUnrestrictedAccessAllowed[];
 extern const char kAutoplayAllowed[];
 extern const char kAutoplayAllowlist[];
 extern const char kBlockAutoplayEnabled[];
+extern const char kScreenCaptureWithoutGestureAllowedForOrigins[];
 #endif
 extern const char kSandboxExternalProtocolBlocked[];
 

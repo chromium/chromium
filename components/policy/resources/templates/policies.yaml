@@ -1090,6 +1090,8 @@ policies:
   1089: UserAvatarCustomizationSelectorsEnabled
   1090: DefaultThirdPartyStoragePartitioningSetting
   1091: ThirdPartyStoragePartitioningBlockedForOrigins
+  1092: ScreenCaptureWithoutGestureAllowedForOrigins
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess

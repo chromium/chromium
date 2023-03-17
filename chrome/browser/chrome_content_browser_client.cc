@@ -1572,6 +1572,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kAutoplayAllowed, false);
   registry->RegisterListPref(prefs::kAutoplayAllowlist);
+  registry->RegisterListPref(
+      prefs::kScreenCaptureWithoutGestureAllowedForOrigins);
   registry->RegisterIntegerPref(prefs::kFetchKeepaliveDurationOnShutdown, 0);
   registry->RegisterBooleanPref(
       prefs::kSharedArrayBufferUnrestrictedAccessAllowed, false);
@@ -4156,6 +4158,11 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   }
 
   web_prefs->autoplay_policy = GetAutoplayPolicyForWebContents(web_contents);
+#if !BUILDFLAG(IS_ANDROID)
+  web_prefs->require_transient_activation_for_get_display_media =
+      capture_policy::IsTransientActivationRequiredForGetDisplayMedia(
+          web_contents);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   switch (GetWebTheme()->GetPreferredContrast()) {
     case ui::NativeTheme::PreferredContrast::kNoPreference:
@@ -4221,41 +4228,47 @@ bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(
 
 bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
-    WebPreferences* prefs) {
-  const auto autoplay_policy = GetAutoplayPolicyForWebContents(web_contents);
-  const bool new_autoplay_policy_needed =
-      prefs->autoplay_policy != autoplay_policy;
-  if (new_autoplay_policy_needed)
-    prefs->autoplay_policy = autoplay_policy;
+    WebPreferences* web_prefs) {
+  bool prefs_changed = false;
 
-  bool extra_parts_need_update = false;
+  const auto autoplay_policy = GetAutoplayPolicyForWebContents(web_contents);
+  prefs_changed |= (web_prefs->autoplay_policy != autoplay_policy);
+  web_prefs->autoplay_policy = autoplay_policy;
+
+#if !BUILDFLAG(IS_ANDROID)
+  const bool require_transient_activation_for_get_display_media =
+      capture_policy::IsTransientActivationRequiredForGetDisplayMedia(
+          web_contents);
+  prefs_changed |=
+      (web_prefs->require_transient_activation_for_get_display_media !=
+       require_transient_activation_for_get_display_media);
+  web_prefs->require_transient_activation_for_get_display_media =
+      require_transient_activation_for_get_display_media;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   for (ChromeContentBrowserClientParts* parts : extra_parts_) {
-    extra_parts_need_update |=
-        parts->OverrideWebPreferencesAfterNavigation(web_contents, prefs);
+    prefs_changed |=
+        parts->OverrideWebPreferencesAfterNavigation(web_contents, web_prefs);
   }
 
-  bool preferred_color_scheme_updated = UpdatePreferredColorScheme(
-      prefs, web_contents->GetLastCommittedURL(), web_contents, GetWebTheme());
+  prefs_changed |=
+      UpdatePreferredColorScheme(web_prefs, web_contents->GetLastCommittedURL(),
+                                 web_contents, GetWebTheme());
 
 #if BUILDFLAG(IS_ANDROID)
-  bool force_dark_mode_changed = false;
   auto* delegate = TabAndroid::FromWebContents(web_contents)
                        ? static_cast<android::TabWebContentsDelegateAndroid*>(
                              web_contents->GetDelegate())
                        : nullptr;
   if (delegate) {
     bool force_dark_mode_new_state = delegate->IsForceDarkWebContentEnabled();
-    force_dark_mode_changed =
-        prefs->force_dark_mode_enabled != force_dark_mode_new_state;
-    prefs->force_dark_mode_enabled = force_dark_mode_new_state;
+    prefs_changed |=
+        (web_prefs->force_dark_mode_enabled != force_dark_mode_new_state);
+    web_prefs->force_dark_mode_enabled = force_dark_mode_new_state;
   }
 #endif
 
-  return new_autoplay_policy_needed || extra_parts_need_update ||
-#if BUILDFLAG(IS_ANDROID)
-         force_dark_mode_changed ||
-#endif
-         preferred_color_scheme_updated;
+  return prefs_changed;
 }
 
 void ChromeContentBrowserClient::BrowserURLHandlerCreated(

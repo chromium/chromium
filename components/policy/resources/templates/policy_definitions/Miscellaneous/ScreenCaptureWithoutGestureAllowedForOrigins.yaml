@@ -1,0 +1,36 @@
+caption: Allow screen capture without prior user gesture
+desc: |-
+  For security reasons, the
+  <ph name="GET_DISPLAY_MEDIA_API_NAME">getDisplayMedia()</ph> web API requires
+  a prior user gesture ("transient activation") to be called or will otherwise
+  fail.
+
+  With this policy set, admins can specify origins on which this API can be
+  called without prior user gesture.
+
+  For detailed information on valid url patterns, please see
+  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * is
+  not an accepted value for this policy.
+
+  If this policy is unset, all origins will require a prior user gesture to call
+  this API.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://third_party/blink/renderer/modules/mediastream/OWNERS
+- hendrich@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:113-
+- chrome_os:113-
+future_on:
+- fuchsia
+tags: []
+type: list

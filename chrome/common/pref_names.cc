@@ -3211,6 +3211,11 @@ const char kAutoplayAllowlist[] = "media.autoplay_whitelist";
 
 // Boolean that specifies whether autoplay blocking is enabled.
 const char kBlockAutoplayEnabled[] = "media.block_autoplay";
+
+// Holds URL patterns that specify origins that will be allowed to call
+// `getDisplayMedia()` without prior user gesture.
+const char kScreenCaptureWithoutGestureAllowedForOrigins[] =
+    "media.screen_capture_without_gesture_allowed_for_origins";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Boolean allowing Chrome to block external protocol navigation in sandboxed

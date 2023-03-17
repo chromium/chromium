@@ -201,6 +201,7 @@ WebPreferences::WebPreferences()
       do_not_update_selection_on_mutating_selection_range(false),
       autoplay_policy(
           blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired),
+      require_transient_activation_for_get_display_media(true),
       low_priority_iframes_threshold(
           EffectiveConnectionType::kEffectiveConnectionUnknownType),
       picture_in_picture_enabled(true),

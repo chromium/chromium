@@ -884,6 +884,13 @@
       initial: "AutoplayPolicy::Type::kNoUserGestureRequired",
     },
 
+    // `getDisplayMedia()`'s transient activation requirement can be bypassed via
+    // `ScreenCaptureWithoutGestureAllowedForOrigins` policy.
+    {
+      name: "requireTransientActivationForGetDisplayMedia",
+      initial: true,
+    },
+
     //
     // Dark mode
     //

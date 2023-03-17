@@ -33037,6 +33037,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1089" label="UserAvatarCustomizationSelectorsEnabled"/>
   <int value="1090" label="DefaultThirdPartyStoragePartitioningSetting"/>
   <int value="1091" label="ThirdPartyStoragePartitioningBlockedForOrigins"/>
+  <int value="1092" label="ScreenCaptureWithoutGestureAllowedForOrigins"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -42347,7 +42348,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4367" label="InteractiveWidgetResizesContent"/>
   <int value="4368" label="InteractiveWidgetResizesVisual"/>
   <int value="4369" label="SerivceWorkerFallbackMainResource"/>
-  <int value="4370" label="GetDisplayMediaWithoutUserActivation"/>
+  <int value="4370" label="OBSOLETE_GetDisplayMediaWithoutUserActivation"/>
   <int value="4371" label="BackForwardCacheNotRestoredReasons"/>
   <int value="4372" label="CSSNesting"/>
   <int value="4373" label="SandboxIneffectiveAllowOriginAllowScript"/>
@@ -47898,6 +47899,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Not specified"/>
   <int value="1" label="Include"/>
   <int value="2" label="Exclude"/>
+</enum>
+
+<enum name="GetDisplayMediaTransientActivation">
+  <int value="0" label="Present"/>
+  <int value="1" label="Missing"/>
+  <int value="2" label="MissingButFeatureDisabled"/>
+  <int value="3" label="MissingButPolicyOverrides"/>
 </enum>
 
 <enum name="GetEncryptionKeyAction">
