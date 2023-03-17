@@ -31,6 +31,7 @@ class NET_EXPORT_PRIVATE PollingProxyConfigService : public ProxyConfigService {
   ConfigAvailability GetLatestProxyConfig(
       ProxyConfigWithAnnotation* config) override;
   void OnLazyPoll() override;
+  bool UsesPolling() override;
 
  protected:
   // Function for retrieving the current proxy configuration.

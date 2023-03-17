@@ -104,6 +104,10 @@ void ProxyConfigServiceImpl::OnLazyPoll() {
     base_service_->OnLazyPoll();
 }
 
+bool ProxyConfigServiceImpl::UsesPolling() {
+  return base_service_ && base_service_->UsesPolling();
+}
+
 void ProxyConfigServiceImpl::UpdateProxyConfig(
     ProxyPrefs::ConfigState config_state,
     const net::ProxyConfigWithAnnotation& config) {

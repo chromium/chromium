@@ -141,4 +141,8 @@ ProxyConfigService::CreateSystemProxyConfigService(
 #endif
 }
 
+bool ProxyConfigService::UsesPolling() {
+  return false;
+}
+
 }  // namespace net

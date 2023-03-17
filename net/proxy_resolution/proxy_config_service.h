@@ -70,6 +70,10 @@ class NET_EXPORT ProxyConfigService {
   // the disadvantage of doing continuous work even during idle periods.
   virtual void OnLazyPoll() {}
 
+  // True if this implementation uses polling, i.e. needs `OnLazyPoll` to be
+  // called.
+  virtual bool UsesPolling();
+
   // Creates a config service appropriate for this platform that fetches the
   // system proxy settings. |main_task_runner| is the sequence where the
   // consumer of the ProxyConfigService will live.

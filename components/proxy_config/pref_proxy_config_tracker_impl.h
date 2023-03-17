@@ -47,6 +47,7 @@ class ProxyConfigServiceImpl : public net::ProxyConfigService,
   ConfigAvailability GetLatestProxyConfig(
       net::ProxyConfigWithAnnotation* config) override;
   void OnLazyPoll() override;
+  bool UsesPolling() override;
 
   // Method on IO thread that receives the preference proxy settings pushed from
   // PrefProxyConfigTrackerImpl.

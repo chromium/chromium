@@ -178,6 +178,10 @@ void PollingProxyConfigService::OnLazyPoll() {
   core_->OnLazyPoll();
 }
 
+bool PollingProxyConfigService::UsesPolling() {
+  return true;
+}
+
 PollingProxyConfigService::PollingProxyConfigService(
     base::TimeDelta poll_interval,
     GetConfigFunction get_config_func,
