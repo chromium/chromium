@@ -1199,15 +1199,10 @@ IsolationInfo URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
     frame_origin = top_frame_origin;
   }
 
-  const base::UnguessableToken* nonce =
-      network_anonymization_key.GetNonce()
-          ? &network_anonymization_key.GetNonce().value()
-          : nullptr;
-
   auto isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kOther, top_frame_origin,
       frame_origin.value(), SiteForCookies(),
-      /*party_context=*/absl::nullopt, nonce);
+      /*party_context=*/absl::nullopt, network_anonymization_key.GetNonce());
   // TODO(crbug/1343856): DCHECK isolation info is fully populated.
   return isolation_info;
 }

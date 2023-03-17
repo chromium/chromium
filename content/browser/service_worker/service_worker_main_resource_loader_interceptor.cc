@@ -217,9 +217,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   isolation_info_ = net::IsolationInfo::Create(
       isolation_info_.request_type(),
       isolation_info_.top_frame_origin().value(), new_origin,
-      new_site_for_cookies, absl::nullopt,
-      isolation_info_.nonce().has_value() ? &(isolation_info_.nonce().value())
-                                          : nullptr);
+      new_site_for_cookies, absl::nullopt, isolation_info_.nonce());
 
   // Attempt to get the storage key from |RenderFrameHostImpl|. This correctly
   // accounts for extension URLs. The absence of this logic was a potential

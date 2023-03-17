@@ -47,7 +47,7 @@ TEST(NetworkIsolationKeyTest, KeyWithNonce) {
   SchemefulSite site1 = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site2 = SchemefulSite(GURL("http://b.test/"));
   base::UnguessableToken nonce = base::UnguessableToken::Create();
-  NetworkIsolationKey key(site1, site2, &nonce);
+  NetworkIsolationKey key(site1, site2, nonce);
   EXPECT_TRUE(key.IsFullyPopulated());
   EXPECT_EQ(absl::nullopt, key.ToCacheKeyString());
   EXPECT_TRUE(key.IsTransient());
@@ -57,13 +57,13 @@ TEST(NetworkIsolationKeyTest, KeyWithNonce) {
 
   // Create another NetworkIsolationKey with the same input parameters, and
   // check that it is equal.
-  NetworkIsolationKey same_key(site1, site2, &nonce);
+  NetworkIsolationKey same_key(site1, site2, nonce);
   EXPECT_EQ(key, same_key);
 
   // Create another NetworkIsolationKey with a different nonce and check that
   // it's different.
   base::UnguessableToken nonce2 = base::UnguessableToken::Create();
-  NetworkIsolationKey key2(site1, site2, &nonce2);
+  NetworkIsolationKey key2(site1, site2, nonce2);
   EXPECT_NE(key, key2);
   EXPECT_NE(key.ToDebugString(), key2.ToDebugString());
 }
@@ -104,9 +104,9 @@ TEST(NetworkIsolationKeyTest, Operators) {
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
                           SchemefulSite(GURL("https://a.test/"))),
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
-                          SchemefulSite(GURL("https://a.test/")), &nonce1),
+                          SchemefulSite(GURL("https://a.test/")), nonce1),
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
-                          SchemefulSite(GURL("https://a.test/")), &nonce2),
+                          SchemefulSite(GURL("https://a.test/")), nonce2),
   };
 
   for (size_t first = 0; first < std::size(kKeys); ++first) {

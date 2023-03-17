@@ -370,13 +370,11 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       worker_process_host->GetID(), host->token(), host->instance().url(),
       &creator, &creator, net::SiteForCookies::FromOrigin(worker_origin),
       host->instance().storage_key().origin(), host->instance().storage_key(),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kOther, worker_origin, worker_origin,
-          net::SiteForCookies::FromOrigin(worker_origin),
-          /*party_context=*/absl::nullopt,
-          host->instance().storage_key().nonce().has_value()
-              ? &host->instance().storage_key().nonce().value()
-              : nullptr),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 worker_origin, worker_origin,
+                                 net::SiteForCookies::FromOrigin(worker_origin),
+                                 /*party_context=*/absl::nullopt,
+                                 host->instance().storage_key().nonce()),
       creator.BuildClientSecurityStateForWorkers(), credentials_mode,
       std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker,

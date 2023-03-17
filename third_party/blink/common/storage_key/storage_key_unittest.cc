@@ -1433,7 +1433,7 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                 net::SiteForCookies::FromOrigin(origin), absl::nullopt,
-                nullptr),
+                /*nonce=*/absl::nullopt),
             blink::StorageKey::Create(origin, site,
                                       mojom::AncestorChainBit::kSameSite),
         },
@@ -1442,7 +1442,8 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
             other_origin,
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, other_origin,
-                origin, net::SiteForCookies(), absl::nullopt, nullptr),
+                origin, net::SiteForCookies(), absl::nullopt,
+                /*nonce=*/absl::nullopt),
             blink::StorageKey::Create(other_origin, other_site,
                                       mojom::AncestorChainBit::kCrossSite),
         },
@@ -1452,7 +1453,7 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                 net::SiteForCookies::FromOrigin(origin), absl::nullopt,
-                nullptr),
+                /*nonce=*/absl::nullopt),
             blink::StorageKey::Create(other_origin, site,
                                       mojom::AncestorChainBit::kCrossSite),
         },
@@ -1462,7 +1463,7 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, opaque_origin,
                 opaque_origin, net::SiteForCookies::FromOrigin(opaque_origin),
-                absl::nullopt, nullptr),
+                absl::nullopt, /*nonce=*/absl::nullopt),
             blink::StorageKey::Create(origin, opaque_site,
                                       mojom::AncestorChainBit::kCrossSite),
         },
@@ -1472,7 +1473,7 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, other_origin,
                 other_origin, net::SiteForCookies::FromOrigin(other_origin),
-                absl::nullopt, &nonce),
+                absl::nullopt, nonce),
             blink::StorageKey::CreateWithNonce(origin, nonce),
         },
         // Opaque context.
@@ -1481,7 +1482,7 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                 net::SiteForCookies::FromOrigin(origin), absl::nullopt,
-                nullptr),
+                /*nonce=*/absl::nullopt),
             blink::StorageKey::Create(opaque_origin, site,
                                       mojom::AncestorChainBit::kCrossSite),
         },

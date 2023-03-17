@@ -25,11 +25,11 @@ TEST(NetworkIsolationKeyMojomTraitsTest, SerializeAndDeserialize) {
       net::NetworkIsolationKey(
           net::SchemefulSite(url::Origin::Create(GURL("http://a.test/"))),
           net::SchemefulSite(url::Origin::Create(GURL("http://b.test/"))),
-          &token),
+          token),
       net::NetworkIsolationKey(
           net::SchemefulSite(url::Origin::Create(GURL("http://foo.a.test/"))),
           net::SchemefulSite(url::Origin::Create(GURL("http://bar.b.test/"))),
-          &token)};
+          token)};
 
   for (auto original : keys) {
     SCOPED_TRACE(original.ToDebugString());

@@ -32,10 +32,9 @@ TEST_F(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
   SchemefulSite opaque = SchemefulSite(url::Origin());
   base::UnguessableToken nik_nonce = base::UnguessableToken::Create();
 
-  NetworkIsolationKey populated_cross_site_nik(site_a, site_b, &nik_nonce);
-  NetworkIsolationKey populated_same_site_nik(site_a, site_a, &nik_nonce);
-  NetworkIsolationKey populated_same_site_opaque_nik(opaque, opaque,
-                                                     &nik_nonce);
+  NetworkIsolationKey populated_cross_site_nik(site_a, site_b, nik_nonce);
+  NetworkIsolationKey populated_same_site_nik(site_a, site_a, nik_nonce);
+  NetworkIsolationKey populated_same_site_opaque_nik(opaque, opaque, nik_nonce);
   NetworkIsolationKey empty_nik;
 
   NetworkAnonymizationKey nak_from_same_site_nik =

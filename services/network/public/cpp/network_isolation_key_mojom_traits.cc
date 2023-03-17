@@ -32,9 +32,8 @@ bool StructTraits<network::mojom::FrameSiteEnabledNetworkIsolationKeyDataView,
     return false;
   }
 
-  *out = net::NetworkIsolationKey(
-      net::NetworkIsolationKey::SerializationPasskey(),
-      std::move(top_frame_site), std::move(frame_site), std::move(nonce));
+  *out = net::NetworkIsolationKey(std::move(top_frame_site),
+                                  std::move(frame_site), std::move(nonce));
   return true;
 }
 

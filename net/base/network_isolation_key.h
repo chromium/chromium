@@ -36,25 +36,18 @@ class NET_EXPORT NetworkIsolationKey {
     ~SerializationPasskey() = default;
   };
 
-  // This constructor is used for deserialization when `GetMode()` returns
-  // `kFrameSiteEnabled`.
-  // TODO(mmenke): This can be removed once the other constructors that accept a
-  // nonce are updated to accept absl::optionals instead of pointers.
-  NetworkIsolationKey(SerializationPasskey,
-                      SchemefulSite top_frame_site,
-                      SchemefulSite frame_site,
-                      absl::optional<base::UnguessableToken> nonce);
-
   // Full constructor.  When a request is initiated by the top frame, it must
   // also populate the |frame_site| parameter when calling this constructor.
-  NetworkIsolationKey(const SchemefulSite& top_frame_site,
-                      const SchemefulSite& frame_site,
-                      const base::UnguessableToken* nonce = nullptr);
+  NetworkIsolationKey(
+      const SchemefulSite& top_frame_site,
+      const SchemefulSite& frame_site,
+      const absl::optional<base::UnguessableToken>& nonce = absl::nullopt);
 
   // Alternative constructor that takes ownership of arguments, to save copies.
-  NetworkIsolationKey(SchemefulSite&& top_frame_site,
-                      SchemefulSite&& frame_site,
-                      const base::UnguessableToken* nonce = nullptr);
+  NetworkIsolationKey(
+      SchemefulSite&& top_frame_site,
+      SchemefulSite&& frame_site,
+      absl::optional<base::UnguessableToken>&& nonce = absl::nullopt);
 
   // Legacy constructor.
   // TODO(https://crbug.com/1145294):  Remove this in favor of above

@@ -2315,12 +2315,12 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionKeyWithNonce) {
       std::set<net::SchemefulSite>();
   const net::IsolationInfo kNoncedIsolationInfo = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kMainFrame, kTopFrameOrigin,
-      kTopFrameOrigin, kSiteForCookies, kPartyContextEmpty, &kNonce);
+      kTopFrameOrigin, kSiteForCookies, kPartyContextEmpty, kNonce);
 
   const absl::optional<net::CookiePartitionKey> kNoncedPartitionKey =
       net::CookiePartitionKey::FromNetworkIsolationKey(
           net::NetworkIsolationKey(net::SchemefulSite(kTopFrameURL),
-                                   net::SchemefulSite(kTopFrameURL), &kNonce));
+                                   net::SchemefulSite(kTopFrameURL), kNonce));
 
   const net::IsolationInfo kUnnoncedIsolationInfo =
       net::IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);

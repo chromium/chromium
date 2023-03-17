@@ -12888,7 +12888,7 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNak) {
       IsolationInfo::Create(IsolationInfo::RequestType::kOther,
                             url::Origin::Create(GURL("https://a.com/")),
                             url::Origin(), SiteForCookies(),
-                            /*party_context=*/absl::nullopt, &nak_nonce);
+                            /*party_context=*/absl::nullopt, nak_nonce);
 
   auto populated_same_site_nak = NetworkAnonymizationKey::CreateFromParts(
       site_a, /*is_cross_site=*/false, nak_nonce);
@@ -12897,7 +12897,7 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNak) {
                             url::Origin::Create(GURL("https://a.com/")),
                             url::Origin::Create(GURL("https://a.com/")),
                             SiteForCookies(),
-                            /*party_context=*/absl::nullopt, &nak_nonce);
+                            /*party_context=*/absl::nullopt, nak_nonce);
 
   NetworkAnonymizationKey empty_nak;
   GURL original_url("http://localhost");

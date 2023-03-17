@@ -74,10 +74,7 @@ void BackgroundFetchServiceImpl::CreateForWorker(
               net::IsolationInfo::RequestType::kOther,
               url::Origin::Create(info.storage_key.top_level_site().GetURL()),
               info.storage_key.origin(), info.storage_key.ToNetSiteForCookies(),
-              /*party_context=*/absl::nullopt,
-              info.storage_key.nonce().has_value()
-                  ? &info.storage_key.nonce().value()
-                  : nullptr),
+              /*party_context=*/absl::nullopt, info.storage_key.nonce()),
           render_process_host, /*rfh=*/nullptr),
       std::move(receiver));
 }

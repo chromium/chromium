@@ -3988,9 +3988,9 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
 
   absl::optional<base::UnguessableToken> nonce =
       ComputeNonce(is_credentialless, fenced_frame_nonce_for_navigation);
-  return net::IsolationInfo::Create(
-      request_type, top_frame_origin, frame_origin, candidate_site_for_cookies,
-      std::move(party_context), nonce ? &nonce.value() : nullptr);
+  return net::IsolationInfo::Create(request_type, top_frame_origin,
+                                    frame_origin, candidate_site_for_cookies,
+                                    std::move(party_context), nonce);
 }
 
 absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(

@@ -2029,10 +2029,8 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
           net::IsolationInfo::RequestType::kOther,
           url::Origin::Create(storage_key.top_level_site().GetURL()),
           storage_key.origin(), storage_key.ToNetSiteForCookies(),
-          /*party_context=*/absl::nullopt,
-          storage_key.nonce().has_value() ? &storage_key.nonce().value()
-                                          : nullptr),
-      true /* is_service_worker */, GetID(), MSG_ROUTING_NONE,
+          /*party_context=*/absl::nullopt, storage_key.nonce()),
+      /*is_service_worker=*/true, GetID(), MSG_ROUTING_NONE,
       net::CookieSettingOverrides(), std::move(receiver),
       storage_partition_impl_->CreateCookieAccessObserverForServiceWorker());
 }
@@ -2142,9 +2140,7 @@ void RenderProcessHostImpl::CreateWebSocketConnector(
               net::IsolationInfo::RequestType::kOther,
               url::Origin::Create(storage_key.top_level_site().GetURL()),
               storage_key.origin(), storage_key.ToNetSiteForCookies(),
-              /*party_context=*/absl::nullopt,
-              storage_key.nonce().has_value() ? &storage_key.nonce().value()
-                                              : nullptr)),
+              /*party_context=*/absl::nullopt, storage_key.nonce())),
       std::move(receiver));
 }
 
