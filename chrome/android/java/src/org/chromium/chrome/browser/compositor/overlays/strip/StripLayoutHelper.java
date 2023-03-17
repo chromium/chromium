@@ -1313,7 +1313,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             CompositorAnimator newTabButtonOffsetAnimator = updateNewTabButtonState(true);
             if (newTabButtonOffsetAnimator != null) {
                 tabStripAnimators.add(newTabButtonOffsetAnimator);
-            };
+            }
         }
 
         // 5. Add animation completion listener and start animations.
@@ -1750,10 +1750,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private CompositorAnimator updateNewTabButtonState(boolean animate) {
-        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            // 1. The new tab button is faded out/in when entering/exiting reorder mode.
-            if (mInReorderMode || mStripTabs.length == 0) return null;
+        // 1. The NTB is faded out upon entering reorder mode and hidden when the model is empty.
+        boolean isEmpty = mStripTabs.length == 0;
+        mNewTabButton.setVisible(!isEmpty);
+        if (mInReorderMode || isEmpty) return null;
 
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             // 2. Get offset from strip stacker.
             float offset = mStripStacker.computeNewTabButtonOffset(mStripTabs, mTabOverlapWidth,
                     mLeftMargin, mRightMargin, mWidth, mNewTabButtonWidth,
