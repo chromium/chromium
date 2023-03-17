@@ -65,7 +65,10 @@ Color ForcedForegroundColor(PseudoId pseudo,
     case kPseudoIdHighlight:
       keyword = CSSValueID::kHighlighttext;
       break;
-    // TODO(crbug.com/1035708) add cases for ::{spelling,grammar}-error
+    case kPseudoIdSpellingError:
+    case kPseudoIdGrammarError:
+      keyword = CSSValueID::kCanvastext;
+      break;
     default:
       NOTREACHED();
       break;
@@ -88,7 +91,10 @@ Color ForcedBackgroundColor(PseudoId pseudo,
     case kPseudoIdHighlight:
       keyword = CSSValueID::kHighlight;
       break;
-    // TODO(crbug.com/1035708) add cases for ::{spelling,grammar}-error
+    case kPseudoIdSpellingError:
+    case kPseudoIdGrammarError:
+      keyword = CSSValueID::kCanvas;
+      break;
     default:
       NOTREACHED();
       break;

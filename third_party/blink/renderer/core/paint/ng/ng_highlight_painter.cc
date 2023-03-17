@@ -561,8 +561,7 @@ NGHighlightPainter::NGHighlightPainter(
             layers[i],
             HighlightPaintingUtils::HighlightPseudoStyle(
                 node_, originating_style_, layers[i].PseudoId(),
-                layers[i].PseudoArgument())
-                .get(),
+                layers[i].PseudoArgument()),
             HighlightPaintingUtils::HighlightPaintingStyle(
                 document, originating_style_, node_, layers[i].PseudoId(),
                 layers_[i - 1].text_style, paint_info_,
@@ -1155,7 +1154,7 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
         decoration_info->SetHighlightOverrideColor(
             HighlightPaintingUtils::ResolveColor(
                 layout_object_->GetDocument(), originating_style_,
-                decoration_layer.style, decoration_layer.id.PseudoId(),
+                decoration_layer.style.get(), decoration_layer.id.PseudoId(),
                 GetCSSPropertyTextDecorationColor(),
                 layers_[decoration_layer_index - 1].text_style.current_color));
       }
@@ -1220,7 +1219,7 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
         decoration_info->SetHighlightOverrideColor(
             HighlightPaintingUtils::ResolveColor(
                 layout_object_->GetDocument(), originating_style_,
-                decoration_layer.style, decoration_layer.id.PseudoId(),
+                decoration_layer.style.get(), decoration_layer.id.PseudoId(),
                 GetCSSPropertyTextDecorationColor(),
                 layers_[decoration_layer_index - 1].text_style.current_color));
       }
@@ -1282,7 +1281,7 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
 
 NGHighlightPainter::LayerPaintState::LayerPaintState(
     NGHighlightOverlay::HighlightLayer id,
-    const ComputedStyle* style,
+    const scoped_refptr<const ComputedStyle> style,
     TextPaintStyle text_style)
     : id(id),
       style(style),

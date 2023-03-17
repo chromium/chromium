@@ -202,7 +202,7 @@ class CORE_EXPORT NGHighlightPainter {
 
    public:
     LayerPaintState(NGHighlightOverlay::HighlightLayer id,
-                    const ComputedStyle* style,
+                    const scoped_refptr<const ComputedStyle> style,
                     TextPaintStyle text_style);
 
     // Equality on HighlightLayer id only, for Vector::Find.
@@ -212,7 +212,7 @@ class CORE_EXPORT NGHighlightPainter {
     bool operator!=(const NGHighlightOverlay::HighlightLayer&) const;
 
     const NGHighlightOverlay::HighlightLayer id;
-    const ComputedStyle* style;
+    const scoped_refptr<const ComputedStyle> style;
     const TextPaintStyle text_style;
     const TextDecorationLine decorations_in_effect;
   };

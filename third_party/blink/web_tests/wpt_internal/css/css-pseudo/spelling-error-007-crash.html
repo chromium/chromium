@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: spelling error crash with forced colors mode</title>
+<link rel="author" name="Delan Azabani" href="mailto:dazabani@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-ua-styles">
+<link rel="help" href="https://crbug.com/1423540">
+<meta name="assert" value="Checks that default spelling errors will not cause a crash, even when the test is run with forced colors mode.">
+<body contenteditable spellcheck>quikc
+<script>
+    const range = new Range;
+    range.setStart(document.body.firstChild, 0);
+    range.setEnd(document.body.firstChild, 5);
+    internals.setMarker(document, range, "spelling");
+</script>
