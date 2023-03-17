@@ -26,6 +26,7 @@ include_rules = [
   "+components/search_engines",
   "+components/signin/public/identity_manager/identity_manager.h",
   "+components/suggestions",
+  "+components/sync/base",
   "+components/sync/driver",
   "+components/ukm/ios",
   "+components/unified_consent",

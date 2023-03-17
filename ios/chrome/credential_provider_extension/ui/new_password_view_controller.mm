@@ -12,6 +12,7 @@
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_footer_view.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_table_cell.h"
 #import "ios/chrome/credential_provider_extension/ui/password_note_cell.h"
@@ -32,13 +33,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierNote,
   SectionIdentifierNumSections
 };
-
-// TODO(crbug.com/1414897): Replace with checking feature flag value when build
-// deps are resolved (as currenly importing feature file would add deps
-// disallowed in extensions).
-bool IsPasswordNotesWithBackupEnabled() {
-  return false;
-}
 
 }  // namespace
 

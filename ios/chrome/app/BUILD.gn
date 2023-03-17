@@ -456,6 +456,7 @@ source_set("app_internal") {
     "//components/previous_session_info",
     "//components/proxy_config",
     "//components/sync",
+    "//components/sync/base",
     "//components/web_resource",
     "//ios/chrome/app/application_delegate",
     "//ios/chrome/app/application_delegate:application_delegate_internal",

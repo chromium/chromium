@@ -41,6 +41,9 @@ inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
 // by legacy clients not supporting password notes.
 // This feature is added here instead of the password manager codebase to avoid
 // cycle dependencies.
+// This feature is used in Credential Provider Extension on iOS. Keep the
+// default value in sync with the default value in
+// ios/chrome/credential_provider_extension/ui/feature_flags.mm.
 BASE_DECLARE_FEATURE(kPasswordNotesWithBackup);
 // Decides how long the user does not require reuathentication after
 // successfully authenticated.

@@ -40,13 +40,6 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
   NumRows
 };
 
-// TODO(crbug.com/1414897): Replace with checking feature flag value when build
-// deps are resolved (as currenly importing feature file would add deps
-// disallowed in extensions).
-bool IsPasswordNotesWithBackupEnabled() {
-  return false;
-}
-
 }  // namespace
 
 @interface CredentialDetailsViewController () <TooltipViewDelegate,
