@@ -4,11 +4,13 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {FakeInputDeviceSettingsProvider, fakeMice, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceMouseSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeMice, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceMouseSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+const MOUSE_ACCELERATION_SETTING_ID = 408;
 
 suite('PerDeviceMouseSubsection', function() {
   /**
@@ -174,5 +176,51 @@ suite('PerDeviceMouseSubsection', function() {
     mouseScrollSpeedSlider =
         subsection.shadowRoot.querySelector('#mouseScrollSpeedSlider');
     assertFalse(isVisible(mouseScrollSpeedSlider));
+  });
+
+  /**
+   * Verify entering the page with search tags matched will auto focus the
+   * searched element.
+   */
+  test('deep linking mixin focus on the first searched element', async () => {
+    await initializePerDeviceMouseSubsection();
+    const mouseAccelerationToggle =
+        subsection.shadowRoot.querySelector('#mouseAcceleration');
+    subsection.mouseIndex = 0;
+    // Enter the page from auto repeat search tag.
+    const url = new URLSearchParams(
+        'search=mouse+accel&settingId=' +
+        encodeURIComponent(MOUSE_ACCELERATION_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_MOUSE,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
+
+    await waitAfterNextRender(mouseAccelerationToggle);
+    assertTrue(!!mouseAccelerationToggle);
+    assertEquals(subsection.shadowRoot.activeElement, mouseAccelerationToggle);
+  });
+
+  /**
+   * Verify entering the page with search tags matched wll not auto focus the
+   * searched element if it's not the first keyboard displayed.
+   */
+  test('deep linkng mixin does not focus on second element', async () => {
+    await initializePerDeviceMouseSubsection();
+    const mouseAccelerationToggle =
+        subsection.shadowRoot.querySelector('#mouseAcceleration');
+    subsection.mouseIndex = 1;
+    // Enter the page from auto repeat search tag.
+    const url = new URLSearchParams(
+        'search=mouse+accel&settingId=' +
+        encodeURIComponent(MOUSE_ACCELERATION_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_MOUSE,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
+    await flushTasks();
+
+    assertTrue(!!mouseAccelerationToggle);
+    assertFalse(!!subsection.shadowRoot.activeElement);
   });
 });

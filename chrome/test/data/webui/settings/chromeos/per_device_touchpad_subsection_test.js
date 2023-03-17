@@ -4,11 +4,13 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {FakeInputDeviceSettingsProvider, fakeTouchpads, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceTouchpadSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeTouchpads, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceTouchpadSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+const TOUCHPAD_SPEED_SETTING_ID = 405;
 
 suite('PerDeviceTouchpadSubsection', function() {
   /**
@@ -281,5 +283,52 @@ suite('PerDeviceTouchpadSubsection', function() {
     hapticFeedbackToggleButton =
         subsection.shadowRoot.querySelector('#touchpadHapticFeedbackToggle');
     assertFalse(isVisible(hapticFeedbackToggleButton));
+  });
+
+  /**
+   * Verify entering the page with search tags matched will auto focus the
+   * searched element.
+   */
+  test('deep linking mixin focus on the first searched element', async () => {
+    await initializePerDeviceTouchpadSubsection();
+    const touchpadSensitivitySlider =
+        subsection.shadowRoot.querySelector('#touchpadSensitivity');
+    subsection.touchpadIndex = 0;
+    // Enter the page from auto repeat search tag.
+    const url = new URLSearchParams(
+        'search=touchpad+speed&settingId=' +
+        encodeURIComponent(TOUCHPAD_SPEED_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_TOUCHPAD,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
+
+    await waitAfterNextRender(touchpadSensitivitySlider);
+    assertTrue(!!touchpadSensitivitySlider);
+    assertEquals(
+        subsection.shadowRoot.activeElement, touchpadSensitivitySlider);
+  });
+
+  /**
+   * Verify entering the page with search tags matched wll not auto focus the
+   * searched element if it's not the first keyboard displayed.
+   */
+  test('deep linkng mixin does not focus on second element', async () => {
+    await initializePerDeviceTouchpadSubsection();
+    const touchpadSensitivitySlider =
+        subsection.shadowRoot.querySelector('#touchpadSensitivity');
+    subsection.touchpadIndex = 1;
+    // Enter the page from auto repeat search tag.
+    const url = new URLSearchParams(
+        'search=touchpad+speed&settingId=' +
+        encodeURIComponent(TOUCHPAD_SPEED_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_TOUCHPAD,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
+    await flushTasks();
+
+    assertTrue(!!touchpadSensitivitySlider);
+    assertFalse(!!subsection.shadowRoot.activeElement);
   });
 });

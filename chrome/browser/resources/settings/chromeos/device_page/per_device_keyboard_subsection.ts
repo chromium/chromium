@@ -174,7 +174,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       return;
     }
 
-    // If there is more than one keyboard, focus on the first one.
+    // If multiple keyboards are available, focus on the first one.
     if (this.keyboardIndex === 0) {
       this.attemptDeepLink();
     }

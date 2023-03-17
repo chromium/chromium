@@ -24,13 +24,18 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {routes} from '../os_settings_routes.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route} from '../router.js';
+
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Touchpad} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_touchpad_subsection.html.js';
 
 const SettingsPerDeviceTouchpadSubsectionElementBase =
-    I18nMixin(PolymerElement);
-
+    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
 export class SettingsPerDeviceTouchpadSubsectionElement extends
     SettingsPerDeviceTouchpadSubsectionElementBase {
   static get is(): string {
@@ -169,6 +174,27 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
       },
 
       touchpad: {type: Object},
+
+      /**
+       * Used by DeepLinkingMixin to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>([
+          Setting.kTouchpadTapToClick,
+          Setting.kTouchpadTapDragging,
+          Setting.kTouchpadReverseScrolling,
+          Setting.kTouchpadAcceleration,
+          Setting.kTouchpadScrollAcceleration,
+          Setting.kTouchpadSpeed,
+          Setting.kTouchpadHapticFeedback,
+          Setting.kTouchpadHapticClickSensitivity,
+        ]),
+      },
+
+      touchpadIndex: {
+        type: Number,
+      },
     };
   }
 
@@ -187,6 +213,18 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
     ];
   }
 
+  override currentRouteChanged(route: Route): void {
+    // Does not apply to this page.
+    if (route !== routes.PER_DEVICE_TOUCHPAD) {
+      return;
+    }
+
+    // If multiple touchpads are available, focus on the first one.
+    if (this.touchpadIndex === 0) {
+      this.attemptDeepLink();
+    }
+  }
+
   private touchpad: Touchpad;
   private enableTapToClickPref: chrome.settingsPrivate.PrefObject;
   private enableTapDraggingPref: chrome.settingsPrivate.PrefObject;
@@ -200,6 +238,7 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   private isInitialized: boolean = false;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
+  private touchpadIndex: number;
 
   private updateSettingsToCurrentPrefs(): void {
     this.set(

@@ -1,4 +1,6 @@
-<template is="dom-repeat" items="[[touchpads]]" as="touchpad" restamp>
-  <settings-per-device-touchpad-subsection touchpad="[[touchpad]]">
+<template is="dom-repeat" items="[[touchpads]]"
+    as="touchpad" index-as="index" restamp>
+  <settings-per-device-touchpad-subsection
+      touchpad="[[touchpad]]" touchpad-index="[[index]]">
   </settings-per-device-touchpad-subsection>
 </template>

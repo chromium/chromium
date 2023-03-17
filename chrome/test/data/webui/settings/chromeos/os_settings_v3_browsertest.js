@@ -449,14 +449,21 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
  ],
  ['PerDeviceMouse', 'per_device_mouse_test.js'],
- ['PerDeviceMouseSubsection', 'per_device_mouse_subsection_test.js'],
+ [
+   'PerDeviceMouseSubsection', 'per_device_mouse_subsection_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
  ['PerDevicePointingStick', 'per_device_pointing_stick_test.js'],
  [
    'PerDevicePointingStickSubsection',
-   'per_device_pointing_stick_subsection_test.js'
+   'per_device_pointing_stick_subsection_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  ['PerDeviceTouchpad', 'per_device_touchpad_test.js'],
- ['PerDeviceTouchpadSubsection', 'per_device_touchpad_subsection_test.js'],
+ [
+   'PerDeviceTouchpadSubsection', 'per_device_touchpad_subsection_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
  [
    'PersonalizationPageWithPersonalizationHub',
    'personalization_page_with_personalization_hub_test.js',

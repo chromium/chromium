@@ -1,5 +1,7 @@
-<template is="dom-repeat" items="[[pointingSticks]]" as="pointingStick" restamp>
+<template is="dom-repeat" items="[[pointingSticks]]"
+    as="pointingStick" index-as="index" restamp>
   <settings-per-device-pointing-stick-subsection
-      pointing-stick="[[pointingStick]]">
+      pointing-stick="[[pointingStick]]"
+      pointing-stick-index="[[index]]">
   </settings-per-device-pointing-stick-subsection>
 </template>

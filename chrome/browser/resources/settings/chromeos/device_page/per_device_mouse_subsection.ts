@@ -23,11 +23,20 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {routes} from '../os_settings_routes.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route} from '../router.js';
+
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Mouse} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_mouse_subsection.html.js';
 
-export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
+const SettingsPerDeviceMouseSubsectionElementBase =
+    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
+export class SettingsPerDeviceMouseSubsectionElement extends
+    SettingsPerDeviceMouseSubsectionElementBase {
   static get is(): string {
     return 'settings-per-device-mouse-subsection';
   }
@@ -140,6 +149,24 @@ export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
       mouse: {
         type: Object,
       },
+
+      /**
+       * Used by DeepLinkingMixin to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>([
+          Setting.kMouseSwapPrimaryButtons,
+          Setting.kMouseReverseScrolling,
+          Setting.kMouseAcceleration,
+          Setting.kMouseScrollAcceleration,
+          Setting.kMouseSpeed,
+        ]),
+      },
+
+      mouseIndex: {
+        type: Number,
+      },
     };
   }
 
@@ -155,6 +182,18 @@ export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
     ];
   }
 
+  override currentRouteChanged(route: Route): void {
+    // Does not apply to this page.
+    if (route !== routes.PER_DEVICE_MOUSE) {
+      return;
+    }
+
+    // If multiple mice are available, focus on the first one.
+    if (this.mouseIndex === 0) {
+      this.attemptDeepLink();
+    }
+  }
+
   private mouse: Mouse;
   private primaryRightPref: chrome.settingsPrivate.PrefObject;
   private accelerationPref: chrome.settingsPrivate.PrefObject;
@@ -165,6 +204,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
   private isInitialized: boolean = false;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
+  private mouseIndex: number;
 
   private updateSettingsToCurrentPrefs(): void {
     this.set('primaryRightPref.value', this.mouse.settings.swapRight);

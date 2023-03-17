@@ -24,13 +24,15 @@
       <settings-dropdown-menu id="mouseSwapButtonDropdown"
           aria-labeledby="mouseSwapButtonLabel"
           pref="{{primaryRightPref}}"
-          menu-options="[[swapPrimaryOptions]]">
+          menu-options="[[swapPrimaryOptions]]"
+          deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
       </settings-dropdown-menu>
     </div>
     <settings-toggle-button id="mouseAcceleration"
         class="hr"
         pref="{{accelerationPref}}"
-        label="$i18n{mouseAccelerationLabel}">
+        label="$i18n{mouseAccelerationLabel}"
+        deep-link-focus-id$="[[Setting.kMouseAcceleration]]">
     </settings-toggle-button>
     <div class="settings-box">
       <div class="start" id="mouseSpeedLabel" aria-hidden="true">
@@ -41,14 +43,16 @@
           ticks="[[sensitivityValues_]]"
           label-aria="$i18n{mouseSpeed}"
           label-min="$i18n{pointerSlow}"
-          label-max="$i18n{pointerFast}">
+          label-max="$i18n{pointerFast}"
+          deep-link-focus-id$="[[Setting.kMouseSpeed]]">
       </settings-slider>
     </div>
     <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
       <settings-toggle-button id="mouseScrollAcceleration"
           class="hr"
           pref="{{scrollAccelerationPref}}"
-          label="$i18n{mouseScrollAccelerationLabel}">
+          label="$i18n{mouseScrollAccelerationLabel}"
+          deep-link-focus-id$="[[Setting.kMouseScrollAcceleration]]">
       </settings-toggle-button>
       <div class="settings-box">
         <div class="start" id="mouseScrollSpeedLabel" aria-hidden="true">
@@ -75,7 +79,8 @@
       </div>
       <cr-toggle id="mouseReverseScroll"
           checked="{{reverseScrollValue}}"
-          aria-labelledby="enableMouseReverseScrollingLabel">
+          aria-labelledby="enableMouseReverseScrollingLabel"
+          deep-link-focus-id$="[[Setting.kMouseReverseScrolling]]">
       </cr-toggle>
     </div>
   </div>
