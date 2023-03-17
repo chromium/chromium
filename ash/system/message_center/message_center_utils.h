@@ -85,6 +85,12 @@ void SlideOutView(views::View* view,
                   gfx::Tween::Type tween_type = gfx::Tween::LINEAR,
                   const std::string& animation_histogram_name = std::string());
 
+// Returns the resized image if the binary size of `input_image` is greater than
+// `size_limit_in_byte`. Otherwise, returns `absl::nullopt`.
+[[nodiscard]] ASH_EXPORT absl::optional<gfx::ImageSkia>
+ResizeImageIfExceedSizeLimit(const gfx::ImageSkia& input_image,
+                             size_t size_limit_in_byte);
+
 }  // namespace message_center_utils
 
 }  // namespace ash

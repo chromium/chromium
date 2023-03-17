@@ -99,8 +99,12 @@
 namespace {
 
 // Used when encoding a notification drop image into binary data. The drop image
-// should be resized if either its length or its width exceeds this threshold.
-constexpr int kMaxDragImageSizeInDIP = 2000;
+// should be resized if its binary size exceeds this limit.
+// Use 1 MB as the size limit. On a 256 color image, each pixel takes four bytes
+// (RGB + Alpha). The size limit of 1 MB means the maximum pixel count being
+// 250K, which should be enough for most notification images without file
+// backing.
+constexpr size_t kMaxImageSizeInByte = 1000000;
 
 constexpr auto kNotificationViewPadding = gfx::Insets(4);
 constexpr int kMainRightViewVerticalSpacing = 4;
@@ -2076,17 +2080,10 @@ void AshNotificationView::AttachBinaryImageAsDropData(
           ->original_image();
   DCHECK(!image.size().IsEmpty());
 
-  // Shrink `image` if it is too big.
-  const float ratio = static_cast<float>(kMaxDragImageSizeInDIP) /
-                      std::max(image.size().width(), image.size().height());
-  absl::optional<gfx::ImageSkia> resized_image;
-  if (!cc::MathUtil::IsWithinEpsilon(ratio, 1.f) && ratio < 1.f) {
-    gfx::SizeF resized_size(image.size());
-    resized_size.Scale(ratio);
-    resized_image.emplace(gfx::ImageSkiaOperations::CreateResizedImage(
-        image, skia::ImageOperations::RESIZE_BEST,
-        gfx::ToFlooredSize(resized_size)));
-  }
+  // Resize `image` if necessary.
+  absl::optional<gfx::ImageSkia> resized_image =
+      message_center_utils::ResizeImageIfExceedSizeLimit(image,
+                                                         kMaxImageSizeInByte);
 
   // Add the drop data in the format of HTML.
   if (const absl::optional<std::u16string> html_snippet = GetHtmlForBitmap(

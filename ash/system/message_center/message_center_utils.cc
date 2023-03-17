@@ -21,6 +21,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/view.h"
@@ -257,6 +258,25 @@ void SlideOutView(views::View* view,
       .At(base::Milliseconds(delay_in_ms))
       .SetDuration(base::Milliseconds(duration_in_ms))
       .SetTransform(view->layer(), transform);
+}
+
+absl::optional<gfx::ImageSkia> ResizeImageIfExceedSizeLimit(
+    const gfx::ImageSkia& input_image,
+    size_t size_limit_in_byte) {
+  const size_t image_size_in_bytes = input_image.bitmap()->computeByteSize();
+  if (image_size_in_bytes <= size_limit_in_byte) {
+    return absl::nullopt;
+  }
+
+  // Calculate the image size after resize.
+  gfx::SizeF resized_size(input_image.size());
+  const float multiple =
+      image_size_in_bytes / static_cast<float>(size_limit_in_byte);
+  resized_size.Scale(1 / std::sqrt(multiple));
+
+  return gfx::ImageSkiaOperations::CreateResizedImage(
+      input_image, skia::ImageOperations::RESIZE_BEST,
+      gfx::ToFlooredSize(resized_size));
 }
 
 }  // namespace message_center_utils
