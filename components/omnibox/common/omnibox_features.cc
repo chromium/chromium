@@ -394,9 +394,10 @@ BASE_FEATURE(kOmniboxFuzzyUrlSuggestions,
              enabled_by_default_desktop_only);
 
 // Feature used to enable the default browser pedal.
+// TODO(orinj): Enabled by default 2023-03-17; clean up after M113 settles.
 BASE_FEATURE(kOmniboxDefaultBrowserPedal,
              "OmniboxDefaultBrowserPedal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature used to synchronize the toolbar's and status bar's color.
 BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
