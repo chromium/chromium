@@ -4,6 +4,9 @@
 
 #include "third_party/blink/public/common/manifest/manifest.h"
 
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
+
 namespace blink {
 
 Manifest::ImageResource::ImageResource() = default;
@@ -73,6 +76,10 @@ bool Manifest::RelatedApplication::operator==(
   };
   return AsTuple(*this) == AsTuple(other);
 }
+
+Manifest::LaunchHandler::LaunchHandler() : client_mode(ClientMode::kAuto) {}
+Manifest::LaunchHandler::LaunchHandler(ClientMode client_mode)
+    : client_mode(client_mode) {}
 
 bool Manifest::LaunchHandler::operator==(const LaunchHandler& other) const {
   return client_mode == other.client_mode;

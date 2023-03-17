@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
@@ -239,6 +240,8 @@ enum class OsIntegrationState {
   kDisabled = 1,
 };
 
+// TODO(b/274172447): Remove these and the manifest.h include after refactoring
+// away blink::Manifest and moving the inner classes to regular classes
 using LaunchHandler = blink::Manifest::LaunchHandler;
 using TabStrip = blink::Manifest::TabStrip;
 
