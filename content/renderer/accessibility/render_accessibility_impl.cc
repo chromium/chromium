@@ -275,7 +275,8 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
 }
 
 void RenderAccessibilityImpl::FireLoadCompleteIfLoaded() {
-  if (GetMainDocument().GetFrame()->GetEmbeddingToken()) {
+  if (GetMainDocument().IsLoaded() &&
+      GetMainDocument().GetFrame()->GetEmbeddingToken()) {
     DCHECK(ax_context_);
     ax_context_->UpdateAXForAllDocuments();
     ax_context_->FireLoadCompleteIfLoaded();
