@@ -8,6 +8,8 @@
 #include "base/values.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 // Helper for applying the HttpAllowlist enterprise policy. Checks if the
 // hostname of `url` matches any of the hostnames or hostname patterns in the
 // `allowed_hosts` list. Does not allow blanket host wildcards (i.e., "*" which
@@ -15,7 +17,10 @@
 // "[*.]example.com"). Entries in `allowed_hosts` should follow the rules in
 // https://chromeenterprise.google/policies/url-patterns/ (or they'll be
 // ignored).
-bool IsHostnameInAllowlist(const GURL& url,
-                           const base::Value::List& allowed_hosts);
+bool IsHostnameInHttpAllowlist(const GURL& url, PrefService* prefs);
+
+// Adds `hostnames` to the HttpAllowlist enterprise policy for testing.
+void AllowHttpForHostnamesForTesting(const std::vector<std::string>& hostnames,
+                                     PrefService* prefs);
 
 #endif  // CHROME_BROWSER_SSL_HTTPS_UPGRADES_UTIL_H_
