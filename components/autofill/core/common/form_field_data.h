@@ -224,7 +224,7 @@ struct FormFieldData {
 
   bool DidUserType() const;
   bool HadFocus() const;
-  bool WasAutofilled() const;
+  bool WasPasswordAutofilled() const;
 
   // NOTE: update SameFieldAs()            if needed when adding new a member.
   // NOTE: update SimilarFieldAs()         if needed when adding new a member.

@@ -422,7 +422,7 @@ bool FormFieldData::HadFocus() const {
   return properties_mask & kHadFocus;
 }
 
-bool FormFieldData::WasAutofilled() const {
+bool FormFieldData::WasPasswordAutofilled() const {
   return properties_mask & kAutofilled;
 }
 

@@ -602,7 +602,7 @@ void PasswordFormMetricsRecorder::CalculateJsOnlyInput(
     if (field.HadFocus())
       had_focus = true;
     if (field.IsPasswordInputElement() &&
-        (field.DidUserType() || field.WasAutofilled())) {
+        (field.DidUserType() || field.WasPasswordAutofilled())) {
       had_user_input_or_autofill_on_password = true;
     }
   }
