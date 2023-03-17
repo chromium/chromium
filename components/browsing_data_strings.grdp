@@ -63,12 +63,22 @@
     =1 {and 1 more}
     other {and # more}}
   </message>
-  <message name="IDS_DEL_SIGNIN_DATA_COUNTER" desc="A counter showing how many sign-in data items the user has.">
-    {COUNT, plural,
-     =0 {None}
-     =1 {sign-in data for 1 account}
-     other {sign-in data for # accounts}}
-  </message>
+  <if expr="not is_macosx">
+    <message name="IDS_DEL_SIGNIN_DATA_COUNTER" desc="A counter showing how many sign-in data items the user has.">
+      {COUNT, plural,
+       =0 {None}
+       =1 {sign-in data for 1 account}
+       other {sign-in data for # accounts}}
+    </message>
+  </if>
+  <if expr="is_macosx">
+    <message name="IDS_DEL_SIGNIN_DATA_COUNTER" desc="A counter showing how many passkeys the user has. Refer to Glossary for the meaning of passkey. Do not translate as 'password'.">
+      {COUNT, plural,
+       =0 {None}
+       =1 {1 passkey}
+       other {# passkeys}}
+    </message>
+  </if>
   <message name="IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_NONE" desc="A counter showing that the user has no passwords or other sign-in data.">
     None
   </message>

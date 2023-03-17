@@ -1384,9 +1384,16 @@
   <message name="IDS_SETTINGS_CLEAR_COOKIES" desc="Checkbox for deleting Cookies and other site data">
     Cookies and other site data
   </message>
-  <message name="IDS_SETTINGS_CLEAR_PASSWORDS" desc="Checkbox for deleting Passwords and other sign-in data">
-    Passwords and other sign-in data
-  </message>
+  <if expr="not is_macosx">
+    <message name="IDS_SETTINGS_CLEAR_PASSWORDS" desc="Checkbox for deleting Passwords and other sign-in data">
+      Passwords and other sign-in data
+    </message>
+  </if>
+  <if expr="is_macosx">
+    <message name="IDS_SETTINGS_CLEAR_PASSWORDS" desc="Checkbox for deleting Passwords and passkeys. Refer to Glossary for the translation of passkey.">
+      Passwords and passkeys
+    </message>
+  </if>
   <message name="IDS_SETTINGS_CLEAR_FORM_DATA" desc="Checkbox for deleting form data saved for Autofill">
     Autofill form data
   </message>
