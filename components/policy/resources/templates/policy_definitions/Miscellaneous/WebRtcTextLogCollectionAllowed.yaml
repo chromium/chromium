@@ -9,8 +9,6 @@ features:
   per_profile: true
 future_on:
   - fuchsia
-  - chrome.*
-  - chrome_os
 items:
   - caption: Allow WebRTC text log collection from Google Services
     value: true
@@ -21,6 +19,9 @@ owners:
   - file://chrome/browser/media/webrtc/OWNERS
 schema:
   type: boolean
+supported_on:
+  - chrome.*:113-
+  - chrome_os:113-
 tags:
   - google-sharing
 type: main
