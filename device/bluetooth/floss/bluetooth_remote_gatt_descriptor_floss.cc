@@ -121,7 +121,6 @@ void BluetoothRemoteGattDescriptorFloss::GattDescriptorRead(
 
     std::move(pending_read_callback_)
         .Run(/*error_code=*/absl::nullopt, cached_data_);
-    NotifyValueChanged();
   } else {
     std::move(pending_read_callback_)
         .Run(BluetoothGattServiceFloss::GattStatusToServiceError(status), {});
@@ -147,7 +146,6 @@ void BluetoothRemoteGattDescriptorFloss::GattDescriptorWrite(
     cached_data_ = data;
 
     std::move(callback).Run();
-    NotifyValueChanged();
   } else {
     std::move(error_callback)
         .Run(BluetoothGattServiceFloss::GattStatusToServiceError(status));
