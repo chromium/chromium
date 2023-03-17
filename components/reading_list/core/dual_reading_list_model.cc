@@ -507,10 +507,11 @@ void DualReadingListModel::ReadingListWillRemoveEntry(
     // the entry also exists in `local_or_syncable_model_` means the result is
     // not an actual deletion but, at most, an update.
     NotifyObserversWithWillUpdateEntry(url);
-    return;
+  } else {
+    NotifyObserversWithWillRemoveEntry(url);
   }
 
-  NotifyObserversWithWillRemoveEntry(url);
+  UpdateEntryStateCountersOnEntryRemoval(*GetEntryByURL(url));
 }
 
 void DualReadingListModel::ReadingListDidRemoveEntry(
@@ -526,6 +527,7 @@ void DualReadingListModel::ReadingListDidRemoveEntry(
     // The entry is still present in `local_or_syncable_model_`, so this is an
     // update rather than a deletion.
     DCHECK(model == account_model_.get());
+    UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
     NotifyObserversWithDidUpdateEntry(url);
     return;
   }
