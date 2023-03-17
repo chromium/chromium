@@ -340,7 +340,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textEditItemBothIcons.fieldNameLabelText = @"Edit Text Item";
   textEditItemBothIcons.textFieldValue = @" with edit and custom icons";
   textEditItemBothIcons.identifyingIcon =
-      [UIImage imageNamed:@"table_view_cell_check_mark"];
+      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
   textEditItemBothIcons.textFieldEnabled = YES;
   [model addItem:textEditItemBothIcons
       toSectionWithIdentifier:SectionIdentifierText];
@@ -350,7 +350,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textEditItemIconButton.fieldNameLabelText = @"Edit Text Item";
   textEditItemIconButton.textFieldValue = @" icon is a button.";
   textEditItemIconButton.identifyingIcon =
-      [UIImage imageNamed:@"table_view_cell_check_mark"];
+      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
   textEditItemIconButton.identifyingIconEnabled = YES;
   textEditItemIconButton.textFieldEnabled = NO;
   [model addItem:textEditItemIconButton
@@ -478,7 +478,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkFinished.enabled = YES;
   checkFinished.indicatorHidden = YES;
   checkFinished.trailingImage =
-      [UIImage imageNamed:@"table_view_cell_check_mark"];
+      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
   [model addItem:checkFinished
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -493,7 +493,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkFinishedWithLeadingImage.enabled = YES;
   checkFinishedWithLeadingImage.indicatorHidden = YES;
   checkFinishedWithLeadingImage.trailingImage =
-      [UIImage imageNamed:@"table_view_cell_check_mark"];
+      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
   [model addItem:checkFinishedWithLeadingImage
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -654,7 +654,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithBadgeImage];
   item.title = @"Photos - Google Photos";
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://photos.google.com/")];
-  item.badgeImage = [UIImage imageNamed:@"table_view_cell_check_mark"];
+  item.badgeImage =
+      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item =

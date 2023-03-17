@@ -79,12 +79,7 @@ const CGFloat kSymbolSize = 15;
 
 // Returns the error icon image.
 - (UIImage*)errorImage {
-  if (UseSymbols()) {
-    return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
-  } else {
-    return [[UIImage imageNamed:@"table_view_cell_error_icon"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
+  return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
 }
 
 @end

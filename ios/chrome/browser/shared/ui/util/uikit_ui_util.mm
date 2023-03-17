@@ -347,24 +347,18 @@ NSAttributedString* TextForTabCount(int count, CGFloat font_size) {
     string = [NSString stringWithFormat:@"%d", count];
   }
 
-  if (UseSymbols()) {
-    UIFontWeight weight = UIAccessibilityIsBoldTextEnabled() ? UIFontWeightHeavy
-                                                             : UIFontWeightBold;
-    UIFont* font = [UIFont systemFontOfSize:font_size weight:weight];
-    UIFontDescriptor* descriptor = [font.fontDescriptor
-        fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
-    font = [UIFont fontWithDescriptor:descriptor size:font_size];
+  UIFontWeight weight =
+      UIAccessibilityIsBoldTextEnabled() ? UIFontWeightHeavy : UIFontWeightBold;
+  UIFont* font = [UIFont systemFontOfSize:font_size weight:weight];
+  UIFontDescriptor* descriptor = [font.fontDescriptor
+      fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
+  font = [UIFont fontWithDescriptor:descriptor size:font_size];
 
-    return [[NSAttributedString alloc] initWithString:string
-                                           attributes:@{
-                                             NSFontAttributeName : font,
-                                             NSKernAttributeName : @(-0.8),
-                                           }];
-  }
-  UIFont* font = [UIFont systemFontOfSize:font_size weight:UIFontWeightBold];
-  return
-      [[NSAttributedString alloc] initWithString:string
-                                      attributes:@{NSFontAttributeName : font}];
+  return [[NSAttributedString alloc] initWithString:string
+                                         attributes:@{
+                                           NSFontAttributeName : font,
+                                           NSKernAttributeName : @(-0.8),
+                                         }];
 }
 
 void RegisterEditMenuItem(UIMenuItem* item) {

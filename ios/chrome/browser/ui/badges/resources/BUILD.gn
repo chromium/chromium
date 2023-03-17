@@ -4,34 +4,10 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("incognito_badge") {
-  sources = [
-    "incognito_badge.imageset/Contents.json",
-    "incognito_badge.imageset/incognito_badge@2x.png",
-    "incognito_badge.imageset/incognito_badge@3x.png",
-  ]
-}
-
 imageset("incognito_badge_ios14") {
   sources = [
     "incognito_badge_ios14.imageset/Contents.json",
     "incognito_badge_ios14.imageset/incognito_badge_ios14@2x.png",
     "incognito_badge_ios14.imageset/incognito_badge_ios14@3x.png",
-  ]
-}
-
-imageset("incognito_small_badge") {
-  sources = [
-    "incognito_small_badge.imageset/Contents.json",
-    "incognito_small_badge.imageset/incognito_small_badge@2x.png",
-    "incognito_small_badge.imageset/incognito_small_badge@3x.png",
-  ]
-}
-
-imageset("wrench_badge") {
-  sources = [
-    "wrench_badge.imageset/Contents.json",
-    "wrench_badge.imageset/wrench_badge@2x.png",
-    "wrench_badge.imageset/wrench_badge@3x.png",
   ]
 }

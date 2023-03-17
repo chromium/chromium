@@ -337,13 +337,7 @@ const int kMaxNoteCharAmount = 1000;
         IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION_WITHOUT_USERNAME,
         base::SysNSStringToUTF16(self.websiteTextItem.textFieldValue));
   }
-  if (UseSymbols()) {
-    item.image =
-        DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
-  } else {
-    item.image = [[UIImage imageNamed:@"table_view_cell_error_icon"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
+  item.image = DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
   item.imageViewTintColor = [UIColor colorNamed:kRedColor];
   return item;
 }

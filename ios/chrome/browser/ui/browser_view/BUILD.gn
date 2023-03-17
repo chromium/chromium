@@ -104,7 +104,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/autofill:autofill",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/ui/autofill/manual_fill",
-    "//ios/chrome/browser/ui/badges:badges_popup_menu",
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/browser_container",
     "//ios/chrome/browser/ui/browser_container:ui",

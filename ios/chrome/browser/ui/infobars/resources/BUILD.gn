@@ -38,28 +38,12 @@ imageset("infobar_hide_password_icon") {
   ]
 }
 
-imageset("infobar_translate_icon") {
-  sources = [
-    "infobar_translate_icon.imageset/Contents.json",
-    "infobar_translate_icon.imageset/infobar_translate_icon@2x.png",
-    "infobar_translate_icon.imageset/infobar_translate_icon@3x.png",
-  ]
-}
-
 imageset("infobar_settings_icon") {
   sources = [
     "infobar_settings_icon.imageset/Contents.json",
     "infobar_settings_icon.imageset/infobar_settings_icon.png",
     "infobar_settings_icon.imageset/infobar_settings_icon@2x.png",
     "infobar_settings_icon.imageset/infobar_settings_icon@3x.png",
-  ]
-}
-
-imageset("infobar_save_card_icon") {
-  sources = [
-    "infobar_save_card_icon.imageset/Contents.json",
-    "infobar_save_card_icon.imageset/infobar_save_card_icon@2x.png",
-    "infobar_save_card_icon.imageset/infobar_save_card_icon@3x.png",
   ]
 }
 

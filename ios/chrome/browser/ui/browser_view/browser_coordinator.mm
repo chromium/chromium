@@ -85,7 +85,6 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
-#import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
@@ -280,10 +279,6 @@ enum class ToolbarKind {
 
 // Presents a QLPreviewController in order to display USDZ format 3D models.
 @property(nonatomic, strong) ARQuickLookCoordinator* ARQuickLookCoordinator;
-
-// Coordinator for the badge popup menu.
-@property(nonatomic, strong)
-    BadgePopupMenuCoordinator* badgePopupMenuCoordinator;
 
 // Coordinator-ish provider for context menus.
 @property(nonatomic, strong)
@@ -581,14 +576,6 @@ enum class ToolbarKind {
 
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
-}
-
-- (void)displayPopupMenuWithBadgeItems:(NSArray<id<BadgeItem>>*)badgeItems {
-  self.badgePopupMenuCoordinator = [[BadgePopupMenuCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.badgePopupMenuCoordinator setBadgeItemsToShow:badgeItems];
-  [self.badgePopupMenuCoordinator start];
 }
 
 #pragma mark - Private
@@ -1518,10 +1505,6 @@ enum class ToolbarKind {
   DCHECK(_sendTabToSelfCoordinator);
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = nil;
-}
-
-- (void)dismissBadgePopupMenu {
-  [self.badgePopupMenuCoordinator stop];
 }
 
 #if !defined(NDEBUG)

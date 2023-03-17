@@ -86,11 +86,8 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
       self.distillationBadgeTintColor = [UIColor colorNamed:kGrey600Color];
       break;
     case ReadingListUIDistillationStatusSuccess:
-      self.distillationBadgeImage =
-          UseSymbols()
-              ? DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
-                                                   kSymbolBadgeImagePointSize)
-              : [UIImage imageNamed:@"table_view_cell_check_mark"];
+      self.distillationBadgeImage = DefaultSymbolTemplateWithPointSize(
+          kCheckmarkCircleFillSymbol, kSymbolBadgeImagePointSize);
       self.distillationBadgeTintColor = [UIColor colorNamed:kGreen500Color];
       break;
     case ReadingListUIDistillationStatusPending:

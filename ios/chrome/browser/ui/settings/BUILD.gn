@@ -165,7 +165,6 @@ source_set("settings") {
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/shared/ui/table_view/cells/resources:table_view_cell_check_mark",
     "//ios/chrome/browser/shared/ui/util:terms_util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",

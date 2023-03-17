@@ -62,12 +62,6 @@ class GURL;
 // Shows the online help page in a tab.
 - (void)showHelpPage;
 
-// Displays the Badge popup menu showing `badgeItems`.
-- (void)displayPopupMenuWithBadgeItems:(NSArray<id<BadgeItem>>*)badgeItems;
-
-// Dismisses the Badge popup menu.
-- (void)dismissBadgePopupMenu;
-
 // Shows the activity indicator overlay that appears over the view to prevent
 // interaction with the web page.
 - (void)showActivityOverlay;

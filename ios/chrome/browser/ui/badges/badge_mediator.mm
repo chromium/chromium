@@ -291,20 +291,6 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   // Log overflow badge tap.
   base::RecordAction(
       base::UserMetricsAction(kInfobarOverflowBadgeTappedUserAction));
-  if (!UseSymbols()) {
-    NSMutableArray<id<BadgeItem>>* popupMenuBadges =
-        [[NSMutableArray alloc] init];
-    // Get all non-fullscreen badges.
-    for (id<BadgeItem> item in self.badges) {
-      if (!item.fullScreen) {
-        // Mark each badge as read since the overflow menu is about to be
-        // displayed.
-        [self onBadgeItemRead:item];
-        [popupMenuBadges addObject:item];
-      }
-    }
-    [self.dispatcher displayPopupMenuWithBadgeItems:popupMenuBadges];
-  }
   [self updateConsumerReadStatus];
 }
 
@@ -357,7 +343,6 @@ const char kInfobarOverflowBadgeShownUserAction[] =
     // Since there is only one non-fullscreen badge, it will be fixed as the
     // displayed badge, so mark it as read.
     [self onBadgeItemRead:displayedBadge];
-    [self.dispatcher dismissBadgePopupMenu];
   }
 
   if (displayedBadge.badgeType == kBadgeTypeOverflow) {

@@ -15,9 +15,9 @@ source_set("badges") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/badges",
-    "//ios/chrome/browser/ui/badges:badges_popup_menu",
     "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/badges:util",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/common/ui/util",
     "//ios/showcase/common",
   ]

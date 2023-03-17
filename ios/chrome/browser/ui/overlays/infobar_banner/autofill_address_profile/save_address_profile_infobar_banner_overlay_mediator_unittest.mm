@@ -75,13 +75,9 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.buttonText);
   EXPECT_NSEQ(base::SysUTF16ToNSString(delegate->GetDescription()),
               consumer.subtitleText);
-  if (UseSymbols()) {
-    EXPECT_NSEQ(
-        CustomSymbolWithPointSize(kLocationFillSymbol, kInfobarSymbolPointSize),
-        consumer.iconImage);
-  } else {
-    EXPECT_NSEQ([UIImage imageNamed:@"ic_place"], consumer.iconImage);
-  }
+  EXPECT_NSEQ(
+      CustomSymbolWithPointSize(kLocationFillSymbol, kInfobarSymbolPointSize),
+      consumer.iconImage);
 }
 
 // Tests that the modal is shown when infobar button is pressed.

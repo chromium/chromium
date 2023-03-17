@@ -23,13 +23,6 @@
 
 using translate_infobar_overlays::TranslateBannerRequestConfig;
 
-namespace {
-
-// The name of the translate icon image.
-NSString* const kTranslateImageName = @"infobar_translate_icon";
-
-}  // namespace
-
 @interface TranslateInfobarBannerOverlayMediator ()
 // The translate banner config from the request.
 @property(nonatomic, readonly) TranslateBannerRequestConfig* config;
@@ -62,10 +55,8 @@ NSString* const kTranslateImageName = @"infobar_translate_icon";
   [self.consumer setBannerAccessibilityLabel:[self bannerTitleText]];
   [self.consumer setButtonText:[self infobarButtonText]];
 
-  UIImage* iconImage = UseSymbols()
-                           ? CustomSymbolTemplateWithPointSize(
-                                 kTranslateSymbol, kInfobarSymbolPointSize)
-                           : [UIImage imageNamed:kTranslateImageName];
+  UIImage* iconImage = CustomSymbolTemplateWithPointSize(
+      kTranslateSymbol, kInfobarSymbolPointSize);
   [self.consumer setIconImage:iconImage];
   [self.consumer setPresentsModal:YES];
   [self.consumer setTitleText:[self bannerTitleText]];

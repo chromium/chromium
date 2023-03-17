@@ -109,14 +109,8 @@ const CGFloat kInfoSymbolSize = 22;
     [self.contentView addSubview:_statusTextLabel];
 
     _trailingButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    UIImage* infoImage;
-    if (UseSymbols()) {
-      infoImage = DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
-                                                     kInfoSymbolSize);
-    } else {
-      infoImage = [[UIImage imageNamed:@"table_view_cell_info"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    UIImage* infoImage =
+        DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol, kInfoSymbolSize);
     [_trailingButton setImage:infoImage forState:UIControlStateNormal];
     _trailingButton.tintColor = [UIColor colorNamed:kBlueColor];
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;

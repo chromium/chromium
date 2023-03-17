@@ -434,22 +434,12 @@ const CGFloat kSymbolSize = 15;
 
 // Returns the edit icon image.
 - (UIImage*)editImage {
-  if (UseSymbols()) {
-    return DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolSize);
-  } else {
-    return [[UIImage imageNamed:@"table_view_cell_edit_icon"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
+  return DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolSize);
 }
 
 // Returns the error icon image.
 - (UIImage*)errorImage {
-  if (UseSymbols()) {
-    return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
-  } else {
-    return [[UIImage imageNamed:@"table_view_cell_error_icon"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
+  return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
 }
 
 @end

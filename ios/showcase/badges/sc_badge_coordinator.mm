@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/ui/badges/badge_button_factory.h"
 #import "ios/chrome/browser/ui/badges/badge_consumer.h"
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
-#import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_tappable_item.h"
 #import "ios/chrome/browser/ui/badges/badge_type.h"
 #import "ios/chrome/browser/ui/badges/badge_view_controller.h"
@@ -21,8 +20,6 @@
 @property(nonatomic, strong)
     SCBadgeContainerViewController* containerViewController;
 @property(nonatomic, weak, readonly) id<BadgeConsumer> consumer;
-@property(nonatomic, strong)
-    BadgePopupMenuCoordinator* badgePopupMenuCoordinator;
 @end
 
 @implementation SCBadgeCoordinator
@@ -59,15 +56,6 @@
 }
 
 - (void)overflowBadgeButtonTapped:(id)sender {
-  if (!self.containerViewController.useNewPopupUI) {
-    self.badgePopupMenuCoordinator = [[BadgePopupMenuCoordinator alloc]
-        initWithBaseViewController:self.containerViewController
-                           browser:nil];
-    NSArray* badgeItems = @[ [[BadgeTappableItem alloc]
-        initWithBadgeType:kBadgeTypePasswordSave] ];
-    [self.badgePopupMenuCoordinator setBadgeItemsToShow:badgeItems];
-    [self.badgePopupMenuCoordinator start];
-  }
   [self.consumer markDisplayedBadgeAsRead:YES];
 }
 

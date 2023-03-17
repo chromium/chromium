@@ -61,8 +61,7 @@ using ::showcase_utils::Close;
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that the overflow badge presents and that the popup menu is presented
-// when it is tapped.
+// Tests that the overflow badge presents the popup menu when enabled.
 - (void)testOverflowBadge {
   // Tap on button to show the overflow badge.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -84,62 +83,6 @@ using ::showcase_utils::Close;
       selectElementWithMatcher:grey_accessibilityID(
                                    kBadgeButtonOverflowAccessibilityIdentifier)]
       performAction:grey_tap()];
-
-  // Assert that the badge overflow popup menu is being presented.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kBadgePopupMenuTableViewAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Dismiss popup menu by tapping outside of the menu. Tapping the displayed
-  // badge is sufficient here. Assert that the unread indicator is not there
-  // anymore.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kBadgeButtonOverflowAccessibilityIdentifier)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityID(
-                                kBadgeUnreadIndicatorAccessibilityIdentifier),
-                            grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notVisible()];
-}
-
-// Tests that the overflow badge presents the new popup menu when enabled.
-- (void)testOverflowBadgeWithNewPopupUI {
-  // Tap on the switch to enable new popup UI.
-  [[EarlGrey selectElementWithMatcher:grey_switchWithOnState(NO)]
-      performAction:grey_turnSwitchOn(YES)];
-  // Tap on button to show the overflow badge.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSCShowOverflowDisplayedBadgeButton)]
-      performAction:grey_tap()];
-
-  // Assert that overflow badge and the unread indicator is shown and tap on it.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityID(
-                                kBadgeButtonOverflowAccessibilityIdentifier),
-                            grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityID(
-                                kBadgeUnreadIndicatorAccessibilityIdentifier),
-                            grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kBadgeButtonOverflowAccessibilityIdentifier)]
-      performAction:grey_tap()];
-
-  // Assert that the legacy badge overflow popup menu is NOT being presented.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kBadgePopupMenuTableViewAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
 
   // Assert that the new badge overflow popup menu is being presented.
   [[EarlGrey selectElementWithMatcher:grey_allOf(grey_text(@"Save password"),

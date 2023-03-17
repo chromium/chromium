@@ -18,9 +18,6 @@
 // The consumer being set up by the showcase badge coordinator.
 @property(nonatomic, weak) id<BadgeConsumer> consumer;
 
-// Whether new popup UI is enabled.
-@property(nonatomic, readonly) BOOL useNewPopupUI;
-
 @end
 
 #endif  // IOS_SHOWCASE_BADGES_SC_BADGE_CONTAINER_VIEW_CONTROLLER_H_

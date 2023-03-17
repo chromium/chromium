@@ -53,13 +53,6 @@ typedef NS_ENUM(NSInteger, PopupMenuAction) {
   PopupMenuActionNeverTranslateSourceLanguage,
   PopupMenuActionNeverTranslateSite,
   PopupMenuActionChangeSourceLanguage,
-  // Badge overflow popup menu
-  PopupMenuActionShowSavePasswordOptions,
-  PopupMenuActionShowUpdatePasswordOptions,
-  PopupMenuActionShowSaveAddressProfileOptions,
-  PopupMenuActionShowSaveCardOptions,
-  PopupMenuActionShowTranslateOptions,
-  PopupMenuActionShowPermissionsOptions,
   // Textual popup menu
   PopupMenuActionEnterpriseInfoMessage,
 };

@@ -371,17 +371,13 @@
     if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
                                                        ->GetVirtualURL()]) {
       title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
-      if (UseSymbols()) {
-        if (@available(iOS 15, *)) {
-          image =
-              SymbolWithPalette(CustomSymbolWithPointSize(
-                                    kIncognitoSymbol, kInfobarSymbolPointSize),
-                                @[ UIColor.whiteColor ]);
-        } else {
-          image = [UIImage imageNamed:@"incognito_badge_ios14"];
-        }
+      if (@available(iOS 15, *)) {
+        image =
+            SymbolWithPalette(CustomSymbolWithPointSize(
+                                  kIncognitoSymbol, kInfobarSymbolPointSize),
+                              @[ UIColor.whiteColor ]);
       } else {
-        image = [UIImage imageNamed:@"incognito_badge"];
+        image = [UIImage imageNamed:@"incognito_badge_ios14"];
       }
     } else {
       title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());

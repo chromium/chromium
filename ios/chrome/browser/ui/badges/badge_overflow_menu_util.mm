@@ -23,13 +23,8 @@ namespace {
 
 // The image used for password related badges.
 UIImage* GetPasswordImage() {
-  if (UseSymbols()) {
-    return CustomSymbolTemplateWithPointSize(kPasswordSymbol,
-                                             kInfobarSymbolPointSize);
-  } else {
-    return [[UIImage imageNamed:@"password_key"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
+  return CustomSymbolTemplateWithPointSize(kPasswordSymbol,
+                                           kInfobarSymbolPointSize);
 }
 
 // The menu element for `badgeType` shown in the overflow menu when the overflow
@@ -61,36 +56,28 @@ UIAction* GetOverflowMenuElementForBadgeType(
       action_identifier = kBadgeButtonSaveAddressProfileActionIdentifier;
       title =
           l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
-
-      image = UseSymbols() ? CustomSymbolWithPointSize(kLocationSymbol,
-                                                       kInfobarSymbolPointSize)
-                           : [UIImage imageNamed:@"ic_place"];
-      image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      image =
+          CustomSymbolWithPointSize(kLocationSymbol, kInfobarSymbolPointSize);
       histogram_type = MobileMessagesInfobarType::AutofillSaveAddressProfile;
       break;
     case kBadgeTypeSaveCard:
       action_identifier = kBadgeButtonSaveCardActionIdentifier;
       title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
-      image = UseSymbols() ? DefaultSymbolWithPointSize(kCreditCardSymbol,
-                                                        kInfobarSymbolPointSize)
-                           : [UIImage imageNamed:@"infobar_save_card_icon"];
-      image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      image = DefaultSymbolWithPointSize(kCreditCardSymbol,
+                                         kInfobarSymbolPointSize);
       histogram_type = MobileMessagesInfobarType::SaveCard;
       break;
     case kBadgeTypeTranslate:
       action_identifier = kBadgeButtonTranslateActionIdentifier;
       title = l10n_util::GetNSString(IDS_IOS_TRANSLATE_INFOBAR_MODAL_TITLE);
-      image = UseSymbols() ? CustomSymbolWithPointSize(kTranslateSymbol,
-                                                       kInfobarSymbolPointSize)
-                           : [UIImage imageNamed:@"infobar_translate_icon"];
-      image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      image =
+          CustomSymbolWithPointSize(kTranslateSymbol, kInfobarSymbolPointSize);
       break;
     case kBadgeTypePermissionsCamera:
       action_identifier = kBadgeButtonPermissionsActionIdentifier;
       title = l10n_util::GetNSString(
           IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE);
-      image = [CustomSymbolWithPointSize(kCameraSymbol, kInfobarSymbolPointSize)
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      image = CustomSymbolWithPointSize(kCameraSymbol, kInfobarSymbolPointSize);
       histogram_type = MobileMessagesInfobarType::Permissions;
       break;
     case kBadgeTypePermissionsMicrophone:

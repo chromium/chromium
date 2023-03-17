@@ -57,9 +57,6 @@ NSString* const
     kBadgeButtonPermissionsMicrophoneAcceptedAccessibilityIdentifier =
         @"badgeButtonPermissionsMicrophoneAcceptedAXID";
 
-NSString* const kBadgePopupMenuTableViewAccessibilityIdentifier =
-    @"badgePopupMenuOverflowAXID";
-
 NSString* const kBadgeUnreadIndicatorAccessibilityIdentifier =
     @"badgeUnreadIndicatorAXID";
 

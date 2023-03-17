@@ -59,10 +59,6 @@ source_set("cells") {
 
   deps = [
     "resources:table_view_cell_chevron",
-    "resources:table_view_cell_edit_icon",
-    "resources:table_view_cell_error_icon",
-    "resources:table_view_cell_favicon_background",
-    "resources:table_view_cell_info",
     "//base",
     "//base:i18n",
     "//components/url_formatter",

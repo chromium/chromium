@@ -222,10 +222,6 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
                      self.view.transform = CGAffineTransformIdentity;
                    }
                    completion:nil];
-
-  // Register the badge with the layout guide center.
-  [self.layoutGuideCenter referenceView:_displayedBadge
-                              underName:kBadgeOverflowMenuGuide];
 }
 
 - (void)setFullScreenBadge:(BadgeButton*)fullScreenBadge {

@@ -5,6 +5,7 @@
 #import "ios/showcase/infobars/sc_infobar_modal_save_card_coordinator.h"
 
 #import "ios/chrome/browser/ui/autofill/save_card_message_with_links.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_delegate.h"
@@ -105,7 +106,8 @@ class GURL;
 
   NSDictionary* prefs = @{
     kCardholderNamePrefKey : @"Visa",
-    kCardIssuerIconNamePrefKey : [UIImage imageNamed:@"infobar_save_card_icon"],
+    kCardIssuerIconNamePrefKey :
+        DefaultSymbolTemplateWithPointSize(kCreditCardSymbol, 18),
     kCardNumberPrefKey : @"•••• 1234",
     kExpirationMonthPrefKey : @"09",
     kExpirationYearPrefKey : @"2023",

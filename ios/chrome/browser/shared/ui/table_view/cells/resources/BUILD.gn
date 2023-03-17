@@ -4,52 +4,11 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("table_view_cell_check_mark") {
-  sources = [
-    "table_view_cell_check_mark.imageset/Contents.json",
-    "table_view_cell_check_mark.imageset/table_view_cell_check_mark@2x.png",
-    "table_view_cell_check_mark.imageset/table_view_cell_check_mark@3x.png",
-  ]
-}
-
 imageset("table_view_cell_chevron") {
   sources = [
     "table_view_cell_chevron.imageset/Contents.json",
     "table_view_cell_chevron.imageset/table_view_cell_chevron.png",
     "table_view_cell_chevron.imageset/table_view_cell_chevron@2x.png",
     "table_view_cell_chevron.imageset/table_view_cell_chevron@3x.png",
-  ]
-}
-
-imageset("table_view_cell_favicon_background") {
-  sources = [
-    "table_view_cell_favicon_background.imageset/Contents.json",
-    "table_view_cell_favicon_background.imageset/table_view_cell_favicon_background.png",
-    "table_view_cell_favicon_background.imageset/table_view_cell_favicon_background@2x.png",
-    "table_view_cell_favicon_background.imageset/table_view_cell_favicon_background@3x.png",
-  ]
-}
-
-imageset("table_view_cell_edit_icon") {
-  sources = [
-    "table_view_cell_edit_icon.imageset/Contents.json",
-    "table_view_cell_edit_icon.imageset/table_view_cell_edit_icon@2x.png",
-    "table_view_cell_edit_icon.imageset/table_view_cell_edit_icon@3x.png",
-  ]
-}
-
-imageset("table_view_cell_error_icon") {
-  sources = [
-    "table_view_cell_error_icon.imageset/Contents.json",
-    "table_view_cell_error_icon.imageset/table_view_cell_error_icon@2x.png",
-    "table_view_cell_error_icon.imageset/table_view_cell_error_icon@3x.png",
-  ]
-}
-
-imageset("table_view_cell_info") {
-  sources = [
-    "table_view_cell_info.imageset/Contents.json",
-    "table_view_cell_info.imageset/table_view_cell_info@2x.png",
-    "table_view_cell_info.imageset/table_view_cell_info@3x.png",
   ]
 }

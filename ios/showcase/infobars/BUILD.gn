@@ -18,6 +18,7 @@ source_set("infobars") {
     "//base",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/ui/autofill:autofill_message",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/infobars/modals",

@@ -29,9 +29,6 @@ extern NSString* const kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier;
 extern NSString* const
     kBadgeButtonPermissionsMicrophoneAcceptedAccessibilityIdentifier;
 
-// A11y identifier for the Badge Popup Menu Table View.
-extern NSString* const kBadgePopupMenuTableViewAccessibilityIdentifier;
-
 // A11y identifier for the unread indicator above the displayed badge.
 extern NSString* const kBadgeUnreadIndicatorAccessibilityIdentifier;
 
