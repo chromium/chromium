@@ -193,6 +193,22 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownTargetArea) {
   ASSERT_FALSE(GetMultitaskMenu());
 }
 
+// Tests that a slight touch moved in the menu will trigger a button press.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, PressMoveAndReleaseTouch) {
+  auto window = CreateAppWindow(gfx::Rect(800, 600));
+  ShowMultitaskMenu(*window);
+
+  // Press and move the touch slightly to mimic a real tap.
+  auto* half_button =
+      GetMultitaskMenuView(GetMultitaskMenu())->half_button_for_testing();
+  GetEventGenerator()->set_current_screen_location(
+      half_button->GetBoundsInScreen().left_center());
+  GetEventGenerator()->PressMoveAndReleaseTouchBy(0, 3);
+
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(window.get())->GetStateType());
+}
+
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInSplitView) {
   // Create two windows snapped in split view.
   auto window1 = CreateTestWindow(gfx::Rect(800, 600));

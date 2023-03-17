@@ -25,6 +25,10 @@ namespace {
 // The dimensions of the area that can activate the multitask menu.
 constexpr gfx::SizeF kTargetAreaSize(200.f, 16.f);
 
+// The minimum distance a touch has to be moved by before it is considered to be
+// a drag on the menu.
+constexpr int kDragYThreshold = 8;
+
 }  // namespace
 
 TabletModeMultitaskMenuEventHandler::TabletModeMultitaskMenuEventHandler() {
@@ -100,6 +104,10 @@ void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
       }
       const gfx::Vector2dF scroll =
           screen_location - initial_drag_data_->initial_location;
+      if (multitask_menu_ && std::fabs(scroll.y()) < kDragYThreshold) {
+        // The scroll might not have moved enough for us to process a drag yet.
+        return;
+      }
       const bool down = scroll.y() >= 0;
       // Save the window coordinates to pass to the menu. For us to arrive here
       // the event target must be the active window now.
