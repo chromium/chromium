@@ -26,7 +26,6 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
-#include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -149,10 +148,8 @@ void DropCompletionCallback(WebDragDest* drag_dest,
 - (NSPoint)flipWindowPointToScreen:(const NSPoint&)windowPoint
                               view:(NSView*)view {
   DCHECK(view);
-  NSPoint screenPoint =
-      ui::ConvertPointFromWindowToScreen([view window], windowPoint);
-  NSScreen* screen = [[view window] screen];
-  NSRect screenFrame = [screen frame];
+  NSPoint screenPoint = [view.window convertPointToScreen:windowPoint];
+  NSRect screenFrame = view.window.screen.frame;
   screenPoint.y = screenFrame.size.height - screenPoint.y;
   return screenPoint;
 }

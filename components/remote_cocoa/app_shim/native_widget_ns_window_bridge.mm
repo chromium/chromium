@@ -34,7 +34,6 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
-#include "ui/base/cocoa/cocoa_base_utils.h"
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 #include "ui/base/cocoa/cursor_utils.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
@@ -1567,8 +1566,7 @@ void NativeWidgetNSWindowBridge::ClearTouchBar() {
 }
 
 void NativeWidgetNSWindowBridge::UpdateTooltip() {
-  NSPoint nspoint =
-      ui::ConvertPointFromScreenToWindow(window_, [NSEvent mouseLocation]);
+  NSPoint nspoint = [window_ convertPointFromScreen:NSEvent.mouseLocation];
   // Note: flip in the view's frame, which matches the window's contentRect.
   gfx::Point point(nspoint.x, NSHeight([bridged_view_ frame]) - nspoint.y);
   [bridged_view_ updateTooltipIfRequiredAt:point];

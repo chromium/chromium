@@ -11,7 +11,6 @@
 #import "base/message_loop/message_pump_mac.h"
 #include "base/numerics/safe_conversions.h"
 #import "skia/ext/skia_utils_mac.h"
-#import "ui/base/cocoa/cocoa_base_utils.h"
 #import "ui/base/cocoa/menu_controller.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -125,8 +124,8 @@ NSEvent* EventForPositioningContextMenu(const gfx::Rect& anchor,
     default:
       break;
   }
-  NSPoint location_in_window = ui::ConvertPointFromScreenToWindow(
-      window, gfx::ScreenPointToNSPoint(anchor.CenterPoint()));
+  NSPoint location_in_window = [window
+      convertPointFromScreen:gfx::ScreenPointToNSPoint(anchor.CenterPoint())];
   return [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
                             location:location_in_window
                        modifierFlags:0

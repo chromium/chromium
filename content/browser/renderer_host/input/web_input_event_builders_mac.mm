@@ -40,7 +40,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #import "ui/events/cocoa/cocoa_event_utils.h"
@@ -123,11 +122,12 @@ void SetWebEventLocationFromEventInView(blink::WebMouseEvent* result,
                                         NSEvent* event,
                                         NSView* view,
                                         bool unacceleratedMovement = false) {
-  NSPoint screen_local = ui::ConvertPointFromWindowToScreen(
-      [view window], [event locationInWindow]);
+  NSPoint screen_local =
+      [view.window convertPointToScreen:event.locationInWindow];
   NSScreen* primary_screen = ([[NSScreen screens] count] > 0)
                                  ? [[NSScreen screens] firstObject]
                                  : nil;
+
   // Flip y conditionally.
   result->SetPositionInScreen(
       screen_local.x, primary_screen

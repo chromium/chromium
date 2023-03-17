@@ -17,7 +17,6 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #import "ui/base/cocoa/appkit_utils.h"
-#include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/base/cocoa/find_pasteboard.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_mac.h"
@@ -48,11 +47,10 @@ gfx::Point MovePointToWindow(const NSPoint& point,
                              NSWindow* source_window,
                              NSWindow* target_window) {
   NSPoint point_in_screen =
-      source_window ? ui::ConvertPointFromWindowToScreen(source_window, point)
-                    : point;
-
+      source_window ? [source_window convertPointToScreen:point] : point;
   NSPoint point_in_window =
-      ui::ConvertPointFromScreenToWindow(target_window, point_in_screen);
+      [target_window convertPointFromScreen:point_in_screen];
+
   NSRect content_rect =
       [target_window contentRectForFrameRect:[target_window frame]];
   return gfx::Point(point_in_window.x,
@@ -67,12 +65,10 @@ gfx::Point MovePointToView(const NSPoint& point,
                            NSWindow* source_window,
                            NSView* target_view) {
   NSPoint point_in_screen =
-      source_window ? ui::ConvertPointFromWindowToScreen(source_window, point)
-                    : point;
-
-  NSWindow* target_window = [target_view window];
+      source_window ? [source_window convertPointToScreen:point] : point;
   NSPoint point_in_window =
-      ui::ConvertPointFromScreenToWindow(target_window, point_in_screen);
+      [target_view.window convertPointFromScreen:point_in_screen];
+
   NSPoint point_in_view = [target_view convertPoint:point_in_window
                                            fromView:nil];
   return gfx::Point(point_in_window.x,

@@ -33,7 +33,6 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
@@ -309,10 +308,9 @@ void WebContentsViewMac::OnMenuClosed() {
 
 gfx::Rect WebContentsViewMac::GetViewBounds() const {
   NSRect window_bounds =
-      [GetInProcessNSView() convertRect:[GetInProcessNSView() bounds]
-                                 toView:nil];
-  window_bounds.origin = ui::ConvertPointFromWindowToScreen(
-      [GetInProcessNSView() window], window_bounds.origin);
+      [GetInProcessNSView() convertRect:GetInProcessNSView().bounds toView:nil];
+  window_bounds.origin =
+      [GetInProcessNSView().window convertPointToScreen:window_bounds.origin];
   return gfx::ScreenRectFromNSRect(window_bounds);
 }
 

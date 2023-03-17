@@ -28,14 +28,6 @@ WindowOpenDisposition WindowOpenDispositionFromNSEventWithFlags(
     NSEvent* event,
     NSUInteger flags);
 
-// Converts a point from window coordinates to screen coordinates.
-COMPONENT_EXPORT(UI_BASE)
-NSPoint ConvertPointFromWindowToScreen(NSWindow* window, NSPoint point);
-
-// Converts a point from screen coordinates to window coordinates.
-COMPONENT_EXPORT(UI_BASE)
-NSPoint ConvertPointFromScreenToWindow(NSWindow* window, NSPoint point);
-
 }  // namespace ui
 
 #endif  // UI_BASE_COCOA_COCOA_BASE_UTILS_H_

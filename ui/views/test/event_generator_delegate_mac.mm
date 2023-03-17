@@ -11,7 +11,6 @@
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
-#include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -650,7 +649,7 @@ CreateEventGeneratorDelegateMac(ui::test::EventGenerator* owner,
   gfx::Point point_in_root = generator->current_screen_location();
   NSWindow* window = EventGeneratorDelegateMac::instance()->target_window();
   NSPoint point_in_window = ConvertRootPointToTarget(window, point_in_root);
-  return ui::ConvertPointFromWindowToScreen(window, point_in_window);
+  return [window convertPointToScreen:point_in_window];
 }
 
 @end

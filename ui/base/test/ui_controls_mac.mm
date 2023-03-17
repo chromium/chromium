@@ -15,7 +15,6 @@
 #include "base/task/current_thread.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/gfx/geometry/point.h"
@@ -335,8 +334,9 @@ bool SendMouseMoveNotifyWhenDone(int x,
                                  : WindowAtCurrentMouseLocation();
 
   NSPoint pointInWindow = g_mouse_location;
-  if (window)
-    pointInWindow = ui::ConvertPointFromScreenToWindow(window, pointInWindow);
+  if (window) {
+    pointInWindow = [window convertPointFromScreen:pointInWindow];
+  }
   NSTimeInterval timestamp = TimeIntervalSinceSystemStartup();
 
   NSEventType event_type = NSEventTypeMouseMoved;
@@ -419,8 +419,9 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
                                  : WindowAtCurrentMouseLocation();
 
   NSPoint pointInWindow = g_mouse_location;
-  if (window)
-    pointInWindow = ui::ConvertPointFromScreenToWindow(window, pointInWindow);
+  if (window) {
+    pointInWindow = [window convertPointFromScreen:pointInWindow];
+  }
 
   // Process the accelerator key state.
   NSEventModifierFlags modifier = 0;

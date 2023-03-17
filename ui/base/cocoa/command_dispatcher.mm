@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/base/cocoa/cocoa_base_utils.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 
 // Expose -[NSWindow hasKeyAppearance], which determines whether the traffic
@@ -22,37 +21,34 @@ namespace {
 
 // Duplicate the given key event, but changing the associated window.
 NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
-  NSEventType event_type = [event type];
+  NSEventType event_type = event.type;
 
   // Convert the event's location from the original window's coordinates into
   // our own.
-  NSPoint location = [event locationInWindow];
-  location = ui::ConvertPointFromWindowToScreen([event window], location);
-  location = ui::ConvertPointFromScreenToWindow(window, location);
+  NSPoint location = event.locationInWindow;
+  location = [event.window convertPointToScreen:location];
+  location = [window convertPointFromScreen:location];
 
   // Various things *only* apply to key down/up.
   bool is_a_repeat = false;
   NSString* characters = nil;
-  NSString* charactors_ignoring_modifiers = nil;
+  NSString* characters_ignoring_modifiers = nil;
   if (event_type == NSEventTypeKeyDown || event_type == NSEventTypeKeyUp) {
-    is_a_repeat = [event isARepeat];
-    characters = [event characters];
-    charactors_ignoring_modifiers = [event charactersIgnoringModifiers];
+    is_a_repeat = event.ARepeat;
+    characters = event.characters;
+    characters_ignoring_modifiers = event.charactersIgnoringModifiers;
   }
 
-  // This synthesis may be slightly imperfect: we provide nil for the context,
-  // since I (viettrungluu) am sceptical that putting in the original context
-  // (if one is given) is valid.
   return [NSEvent keyEventWithType:event_type
                           location:location
-                     modifierFlags:[event modifierFlags]
-                         timestamp:[event timestamp]
-                      windowNumber:[window windowNumber]
+                     modifierFlags:event.modifierFlags
+                         timestamp:event.timestamp
+                      windowNumber:window.windowNumber
                            context:nil
                         characters:characters
-       charactersIgnoringModifiers:charactors_ignoring_modifiers
+       charactersIgnoringModifiers:characters_ignoring_modifiers
                          isARepeat:is_a_repeat
-                           keyCode:[event keyCode]];
+                           keyCode:event.keyCode];
 }
 
 }  // namespace
