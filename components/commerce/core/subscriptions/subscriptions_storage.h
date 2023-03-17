@@ -8,6 +8,7 @@
 #include <queue>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
@@ -74,13 +75,20 @@ class SubscriptionsStorage {
   virtual void IsSubscribed(CommerceSubscription subscription,
                             base::OnceCallback<void(bool)> callback);
 
+  // Checks if a subscription exists from the in-memory cache. Use of the
+  // callback-based version |IsSubscribed| is preferred. Information provided
+  // by this API is not guaranteed to be correct as it doesn't query the
+  // backend.
+  virtual bool IsSubscribedFromCache(const CommerceSubscription& subscription);
+
   // Get all subscriptions that match the provided |type|.
   virtual void LoadAllSubscriptionsForType(
       SubscriptionType type,
       GetLocalSubscriptionsCallback callback);
 
-  // Load all subscriptions regardless of type.
-  virtual void LoadAllSubscriptions(GetLocalSubscriptionsCallback callback);
+ protected:
+  // Default constructor for testing.
+  SubscriptionsStorage();
 
  private:
   void SaveSubscription(CommerceSubscription subscription,
@@ -112,13 +120,21 @@ class SubscriptionsStorage {
       std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions,
       std::unique_ptr<std::vector<CommerceSubscription>> local_subscriptions);
 
+  // Load all subscriptions regardless of type.
+  void LoadAllSubscriptions(GetLocalSubscriptionsCallback callback);
+
   void HandleLoadCompleted(GetLocalSubscriptionsCallback callback,
                            bool succeeded,
                            CommerceSubscriptions data);
 
   raw_ptr<SessionProtoStorage<CommerceSubscriptionProto>> proto_db_;
 
-  base::WeakPtrFactory<SubscriptionsStorage> weak_ptr_factory_;
+  // An in-memory cache of subscriptions that can be accessed synchronously.
+  // This may not have the most up-to-date information as it does not check
+  // the backend.
+  std::unordered_set<std::string> subscriptions_cache_;
+
+  base::WeakPtrFactory<SubscriptionsStorage> weak_ptr_factory_{this};
 };
 
 }  // namespace commerce

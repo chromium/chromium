@@ -102,6 +102,14 @@ MockDbLoadResponse() {
       {kKey2, proto1}, {kKey3, proto2}};
 }
 
+// Return one subscription with given id.
+commerce::CommerceSubscription BuildSubscription(std::string subscription_id) {
+  return commerce::CommerceSubscription(
+      commerce::SubscriptionType::kPriceTrack,
+      commerce::IdentifierType::kProductClusterId, subscription_id,
+      commerce::ManagementType::kUserManaged);
+}
+
 class MockProtoStorage
     : public SessionProtoStorage<commerce::CommerceSubscriptionProto> {
  public:
@@ -174,6 +182,15 @@ class MockProtoStorage
             });
   }
 
+  void MockLoadAllResponse() {
+    ON_CALL(*this, LoadAllEntries)
+        .WillByDefault(
+            [](SessionProtoStorage<
+                commerce::CommerceSubscriptionProto>::LoadCallback callback) {
+              std::move(callback).Run(true, MockDbLoadResponse());
+            });
+  }
+
   void MockOperationResult(bool succeeded) {
     ON_CALL(*this, InsertContent)
         .WillByDefault(
@@ -192,6 +209,11 @@ class MockProtoStorage
                     OperationCallback callback) {
               std::move(callback).Run(succeeded);
             });
+    ON_CALL(*this, DeleteAllContent)
+        .WillByDefault(
+            [succeeded](SessionProtoStorage<
+                        commerce::CommerceSubscriptionProto>::OperationCallback
+                            callback) { std::move(callback).Run(succeeded); });
   }
 
   void MockLoadOneEntryResponse(bool succeeded, bool empty_response) {
@@ -222,6 +244,7 @@ class SubscriptionsStorageTest : public testing::Test {
 
   void SetUp() override {
     proto_db_ = std::make_unique<MockProtoStorage>();
+    proto_db_->MockLoadAllResponse();
     storage_ = std::make_unique<SubscriptionsStorage>(proto_db_.get());
   }
 
@@ -282,70 +305,113 @@ TEST_F(SubscriptionsStorageTest, TestGetUniqueExistingSubscriptions) {
 }
 
 TEST_F(SubscriptionsStorageTest, TestDeleteAll) {
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
+
+  proto_db_->MockOperationResult(true);
   EXPECT_CALL(*proto_db_, DeleteAllContent).Times(1);
   storage_->DeleteAll();
+
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
+}
+
+TEST_F(SubscriptionsStorageTest, TestDeleteAll_Failed) {
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
+
+  proto_db_->MockOperationResult(false);
+  EXPECT_CALL(*proto_db_, DeleteAllContent).Times(1);
+  storage_->DeleteAll();
+
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
 }
 
 TEST_F(SubscriptionsStorageTest, TestUpdateStorage) {
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
+
   proto_db_->MockLoadResponse(true);
   proto_db_->MockOperationResult(true);
 
-    EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
-    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
-    EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
-    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(0);
-    EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(0);
+  EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
+  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
+  EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
+  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(0);
+  EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(0);
 
-    base::RunLoop run_loop;
-    storage_->UpdateStorage(
-        SubscriptionType::kPriceTrack,
-        base::BindOnce(
-            [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
-              ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
-              run_loop->Quit();
-            },
-            &run_loop),
-        MockRemoteSubscriptions());
-    run_loop.Run();
+  base::RunLoop run_loop;
+  storage_->UpdateStorage(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
+            ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
+            run_loop->Quit();
+          },
+          &run_loop),
+      MockRemoteSubscriptions());
+  run_loop.Run();
+
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
 }
 
 TEST_F(SubscriptionsStorageTest,
        TestUpdateStorage_OneWithSameKeyDifferentTimestamp) {
-    // Mock that one local subscription has the same key but different timestamp
-    // from a server-side subscription, in which case we need to delete the
-    // local one and re-insert the server one.
-    auto remote_subscriptions =
-        std::make_unique<std::vector<CommerceSubscription>>();
-    remote_subscriptions->push_back(CommerceSubscription(
-        SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
-        kMockId1, ManagementType::kUserManaged, kMockTimestamp1));
-    remote_subscriptions->push_back(CommerceSubscription(
-        SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
-        kMockId2, ManagementType::kUserManaged, kMockTimestamp4));
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
 
-    proto_db_->MockLoadResponse(true);
-    proto_db_->MockOperationResult(true);
+  // Mock that one local subscription has the same key but different timestamp
+  // from a server-side subscription, in which case we need to delete the
+  // local one and re-insert the server one.
+  auto remote_subscriptions =
+      std::make_unique<std::vector<CommerceSubscription>>();
+  remote_subscriptions->push_back(CommerceSubscription(
+      SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+      kMockId1, ManagementType::kUserManaged, kMockTimestamp1));
+  remote_subscriptions->push_back(CommerceSubscription(
+      SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+      kMockId2, ManagementType::kUserManaged, kMockTimestamp4));
 
-    EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
-    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
-    EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
-    EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(1);
-    EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(1);
+  proto_db_->MockLoadResponse(true);
+  proto_db_->MockOperationResult(true);
 
-    base::RunLoop run_loop;
-    storage_->UpdateStorage(
-        SubscriptionType::kPriceTrack,
-        base::BindOnce(
-            [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
-              ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
-              run_loop->Quit();
-            },
-            &run_loop),
-        std::move(remote_subscriptions));
-    run_loop.Run();
+  EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
+  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
+  EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
+  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(1);
+  EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(1);
+
+  base::RunLoop run_loop;
+  storage_->UpdateStorage(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, SubscriptionsRequestStatus status) {
+            ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
+            run_loop->Quit();
+          },
+          &run_loop),
+      std::move(remote_subscriptions));
+  run_loop.Run();
+
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
 }
 
 TEST_F(SubscriptionsStorageTest, TestUpdateStorage_LoadFailed) {
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
+
   proto_db_->MockLoadResponse(false);
   proto_db_->MockOperationResult(true);
 
@@ -368,9 +434,17 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage_LoadFailed) {
           &run_loop),
       MockRemoteSubscriptions());
   run_loop.Run();
+
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
 }
 
 TEST_F(SubscriptionsStorageTest, TestUpdateStorage_OperationFailed) {
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
+
   proto_db_->MockLoadResponse(true);
   proto_db_->MockOperationResult(false);
 
@@ -392,9 +466,15 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage_OperationFailed) {
           &run_loop),
       MockRemoteSubscriptions());
   run_loop.Run();
+
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
 }
 
 TEST_F(SubscriptionsStorageTest, TestIsSubscribed) {
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+
   proto_db_->MockLoadOneEntryResponse(true, false);
   EXPECT_CALL(*proto_db_, LoadOneEntry(kKey1, _)).Times(1);
 
@@ -411,9 +491,13 @@ TEST_F(SubscriptionsStorageTest, TestIsSubscribed) {
           },
           &run_loop));
   run_loop.Run();
+
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
 }
 
 TEST_F(SubscriptionsStorageTest, TestIsSubscribed_Failed) {
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+
   proto_db_->MockLoadOneEntryResponse(false, false);
   EXPECT_CALL(*proto_db_, LoadOneEntry(kKey1, _)).Times(1);
 
@@ -430,16 +514,20 @@ TEST_F(SubscriptionsStorageTest, TestIsSubscribed_Failed) {
           },
           &run_loop));
   run_loop.Run();
+
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
 }
 
 TEST_F(SubscriptionsStorageTest, TestIsSubscribed_EmptyResponse) {
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+
   proto_db_->MockLoadOneEntryResponse(true, true);
-  EXPECT_CALL(*proto_db_, LoadOneEntry(kKey1, _)).Times(1);
+  EXPECT_CALL(*proto_db_, LoadOneEntry(kKey2, _)).Times(1);
 
   base::RunLoop run_loop;
   storage_->IsSubscribed(
       CommerceSubscription(SubscriptionType::kPriceTrack,
-                           IdentifierType::kProductClusterId, kMockId1,
+                           IdentifierType::kProductClusterId, kMockId2,
                            ManagementType::kUserManaged),
       base::BindOnce(
           [](base::RunLoop* run_loop, bool is_subscribed) {
@@ -449,6 +537,8 @@ TEST_F(SubscriptionsStorageTest, TestIsSubscribed_EmptyResponse) {
           },
           &run_loop));
   run_loop.Run();
+
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
 }
 
 }  // namespace commerce

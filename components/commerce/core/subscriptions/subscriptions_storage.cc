@@ -17,7 +17,23 @@ namespace commerce {
 
 SubscriptionsStorage::SubscriptionsStorage(
     SessionProtoStorage<CommerceSubscriptionProto>* subscription_proto_db)
-    : proto_db_(subscription_proto_db), weak_ptr_factory_(this) {}
+    : proto_db_(subscription_proto_db) {
+  // Populate the cache from local storage.
+  LoadAllSubscriptions(base::BindOnce(
+      [](base::WeakPtr<SubscriptionsStorage> storage,
+         std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
+        if (!storage) {
+          return;
+        }
+        for (auto& sub : *subscriptions) {
+          storage->subscriptions_cache_.insert(
+              GetStorageKeyForSubscription(sub));
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+SubscriptionsStorage::SubscriptionsStorage() = default;
 SubscriptionsStorage::~SubscriptionsStorage() = default;
 
 void SubscriptionsStorage::GetUniqueNonExistingSubscriptions(
@@ -55,10 +71,19 @@ void SubscriptionsStorage::UpdateStorage(
 }
 
 void SubscriptionsStorage::DeleteAll() {
-  proto_db_->DeleteAllContent(base::BindOnce([](bool succeeded) {
-    if (!succeeded)
-      VLOG(1) << "Fail to delete all subscriptions";
-  }));
+  proto_db_->DeleteAllContent(base::BindOnce(
+      [](base::WeakPtr<SubscriptionsStorage> storage, bool succeeded) {
+        if (!succeeded) {
+          VLOG(1) << "Fail to delete all subscriptions";
+        }
+        // Just clear the cache regardless of whether the storage is
+        // successfully cleared or not, as it is possible that only part of the
+        // data got deleted.
+        if (storage) {
+          storage->subscriptions_cache_.clear();
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SubscriptionsStorage::SaveSubscription(
@@ -206,12 +231,18 @@ void SubscriptionsStorage::PerformUpdateStorage(
   bool all_succeeded = true;
   for (auto& kv : local_map) {
     if (remote_map.find(kv.first) == remote_map.end()) {
-      DeleteSubscription(std::move(kv.second),
-                         base::BindOnce(
-                             [](bool* all_succeeded, bool succeeded) {
-                               *all_succeeded = (*all_succeeded) && succeeded;
-                             },
-                             &all_succeeded));
+      std::string key = GetStorageKeyForSubscription(kv.second);
+      DeleteSubscription(
+          std::move(kv.second),
+          base::BindOnce(
+              [](base::WeakPtr<SubscriptionsStorage> storage, std::string key,
+                 bool* all_succeeded, bool succeeded) {
+                *all_succeeded = (*all_succeeded) && succeeded;
+                if (storage && succeeded) {
+                  storage->subscriptions_cache_.erase(key);
+                }
+              },
+              weak_ptr_factory_.GetWeakPtr(), key, &all_succeeded));
     }
   }
   for (auto& kv : remote_map) {
@@ -232,12 +263,18 @@ void SubscriptionsStorage::PerformUpdateStorage(
                              },
                              &all_succeeded));
     }
-    SaveSubscription(std::move(kv.second),
-                     base::BindOnce(
-                         [](bool* all_succeeded, bool succeeded) {
-                           *all_succeeded = (*all_succeeded) && succeeded;
-                         },
-                         &all_succeeded));
+    std::string key_to_insert = GetStorageKeyForSubscription(kv.second);
+    SaveSubscription(
+        std::move(kv.second),
+        base::BindOnce(
+            [](base::WeakPtr<SubscriptionsStorage> storage, std::string key,
+               bool* all_succeeded, bool succeeded) {
+              *all_succeeded = (*all_succeeded) && succeeded;
+              if (storage && succeeded) {
+                storage->subscriptions_cache_.insert(key);
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr(), key_to_insert, &all_succeeded));
   }
   std::move(callback).Run(all_succeeded
                               ? SubscriptionsRequestStatus::kSuccess
@@ -247,14 +284,28 @@ void SubscriptionsStorage::PerformUpdateStorage(
 void SubscriptionsStorage::IsSubscribed(
     CommerceSubscription subscription,
     base::OnceCallback<void(bool)> callback) {
+  std::string key = GetStorageKeyForSubscription(subscription);
   proto_db_->LoadOneEntry(
-      GetStorageKeyForSubscription(subscription),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool)> callback, bool succeeded,
-             CommerceSubscriptions data) {
-            std::move(callback).Run(succeeded && data.size() > 0);
-          },
-          std::move(callback)));
+      key, base::BindOnce(
+               [](base::WeakPtr<SubscriptionsStorage> storage, std::string key,
+                  base::OnceCallback<void(bool)> callback, bool succeeded,
+                  CommerceSubscriptions data) {
+                 if (storage && succeeded) {
+                   if (data.size() > 0) {
+                     storage->subscriptions_cache_.insert(key);
+                   } else {
+                     storage->subscriptions_cache_.erase(key);
+                   }
+                 }
+                 std::move(callback).Run(succeeded && data.size() > 0);
+               },
+               weak_ptr_factory_.GetWeakPtr(), key, std::move(callback)));
+}
+
+bool SubscriptionsStorage::IsSubscribedFromCache(
+    const CommerceSubscription& subscription) {
+  return subscriptions_cache_.contains(
+      GetStorageKeyForSubscription(subscription));
 }
 
 }  // namespace commerce

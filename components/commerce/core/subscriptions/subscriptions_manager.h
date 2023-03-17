@@ -8,7 +8,6 @@
 #include <queue>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
@@ -279,11 +278,6 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   raw_ptr<AccountChecker> account_checker_;
 
   base::ObserverList<SubscriptionsObserver>::Unchecked observers_;
-
-  // An in-memory cache of subscriptions that can be accessed synchronously.
-  // This may not have the most up-to-date information as it does not check
-  // the backend.
-  std::unordered_set<std::string> subscriptions_cache_;
 
   base::WeakPtrFactory<SubscriptionsManager> weak_ptr_factory_{this};
 };

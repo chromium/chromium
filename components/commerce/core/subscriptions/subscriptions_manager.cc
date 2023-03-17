@@ -55,20 +55,6 @@ SubscriptionsManager::SubscriptionsManager(
       storage_(std::move(storage)),
       account_checker_(account_checker),
       observers_(base::ObserverListPolicy::EXISTING_ONLY) {
-  // Populate the cache from local stoarge.
-  storage_->LoadAllSubscriptions(base::BindOnce(
-      [](base::WeakPtr<SubscriptionsManager> manager,
-         std::unique_ptr<std::vector<CommerceSubscription>> subscriptions) {
-        if (!manager) {
-          return;
-        }
-        for (auto& sub : *subscriptions) {
-          manager->subscriptions_cache_.insert(
-              GetStorageKeyForSubscription(sub));
-        }
-      },
-      weak_ptr_factory_.GetWeakPtr()));
-
   SyncSubscriptions();
   scoped_identity_manager_observation_.Observe(identity_manager);
 }
@@ -135,8 +121,7 @@ void SubscriptionsManager::IsSubscribed(
 
 bool SubscriptionsManager::IsSubscribedFromCache(
     const CommerceSubscription& subscription) {
-  return subscriptions_cache_.contains(
-      GetStorageKeyForSubscription(subscription));
+  return storage_->IsSubscribedFromCache(subscription);
 }
 
 void SubscriptionsManager::GetAllSubscriptions(
@@ -243,11 +228,6 @@ void SubscriptionsManager::OnSubscribeStatusFetched(
   base::UmaHistogramEnumeration(kTrackResultHistogramName, result);
   bool succeeded = result == SubscriptionsRequestStatus::kSuccess ||
                    result == SubscriptionsRequestStatus::kNoOp;
-  if (succeeded) {
-    for (auto& sub : notified_subscriptions) {
-      subscriptions_cache_.insert(GetStorageKeyForSubscription(sub));
-    }
-  }
   for (SubscriptionsObserver& observer : observers_) {
     observer.OnSubscribe(notified_subscriptions, succeeded);
   }
@@ -310,11 +290,6 @@ void SubscriptionsManager::OnUnsubscribeStatusFetched(
   base::UmaHistogramEnumeration(kUntrackResultHistogramName, result);
   bool succeeded = result == SubscriptionsRequestStatus::kSuccess ||
                    result == SubscriptionsRequestStatus::kNoOp;
-  if (succeeded) {
-    for (auto& sub : notified_subscriptions) {
-      subscriptions_cache_.erase(GetStorageKeyForSubscription(sub));
-    }
-  }
   for (SubscriptionsObserver& observer : observers_) {
     observer.OnUnsubscribe(notified_subscriptions, succeeded);
   }
@@ -363,14 +338,6 @@ void SubscriptionsManager::HandleGetSubscriptionsResponse(
   if (status != SubscriptionsRequestStatus::kSuccess) {
     std::move(callback).Run(status);
   } else {
-    // TODO(b/268383748): This assumes we get the whole list of subscriptions
-    //                    every time. Once observation of subscriptions from
-    //                    other devices is available, we should switch to that.
-    subscriptions_cache_.clear();
-    for (auto& sub : *remote_subscriptions) {
-      subscriptions_cache_.insert(GetStorageKeyForSubscription(sub));
-    }
-
     storage_->UpdateStorage(type, std::move(callback),
                             std::move(remote_subscriptions));
   }
@@ -438,7 +405,6 @@ void SubscriptionsManager::HandleCheckTimestampOnBookmarkChange(
 void SubscriptionsManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   storage_->DeleteAll();
-  subscriptions_cache_.clear();
   SyncSubscriptions();
 }
 
