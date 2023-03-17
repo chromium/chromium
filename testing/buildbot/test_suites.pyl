@@ -7234,24 +7234,24 @@
     'ios_simulator_multi_window_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPAD_AIR_2_15_5',
+          'SIM_IPAD_AIR_3RD_GEN_16_2',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPAD_AIR_2_15_5',
+          'SIM_IPAD_AIR_3RD_GEN_16_2',
         ]
       },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPAD_AIR_2_15_5',
+          'SIM_IPAD_AIR_3RD_GEN_16_2',
         ]
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPAD_AIR_2_15_5',
+          'SIM_IPAD_AIR_3RD_GEN_16_2',
         ]
       }
     },
