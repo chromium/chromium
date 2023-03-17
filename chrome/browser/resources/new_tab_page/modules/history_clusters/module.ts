@@ -62,22 +62,15 @@ export class HistoryClustersModuleElement extends I18nMixin
       cluster: Object,
 
       searchResultPage: Object,
-
-      title_: {
-        type: String,
-        computed: 'computeClusterTitle_(cluster)',
-      },
     };
   }
 
-  private title_: string;
   cluster: Cluster;
   layoutType: HistoryClusterLayoutType;
   searchResultPage: URLVisit;
 
-  private computeClusterTitle_() {
-    return this.cluster.label ? this.cluster.label :
-                                this.searchResultPage.pageTitle;
+  private isLayout_(type: HistoryClusterLayoutType): boolean {
+    return type === this.layoutType;
   }
 
   private onVisitTileClick_(e: Event) {
@@ -105,10 +98,6 @@ export class HistoryClustersModuleElement extends I18nMixin
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
-  private isLayout_(type: HistoryClusterLayoutType): boolean {
-    return type === this.layoutType;
-  }
-
   private onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
@@ -128,8 +117,8 @@ export class HistoryClustersModuleElement extends I18nMixin
       bubbles: true,
       composed: true,
       detail: {
-        message:
-            loadTimeData.getStringF('dismissModuleToastMessage', this.title_),
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage', this.cluster.label),
       },
     }));
   }
@@ -140,7 +129,7 @@ export class HistoryClustersModuleElement extends I18nMixin
 
   private onShowAllClick_() {
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
-        this.cluster.label || '');
+        this.cluster.label);
   }
 }
 

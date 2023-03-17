@@ -212,7 +212,7 @@ TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
   ASSERT_TRUE(cluster_mojom);
   ASSERT_EQ(1u, cluster_mojom->id);
   ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.label.value()),
-            cluster_mojom->label.value());
+            cluster_mojom->label);
   ASSERT_EQ(3u, cluster_mojom->visits.size());
   ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.visits[0].url_for_display),
             cluster_mojom->visits[0]->url_for_display);
@@ -275,7 +275,7 @@ TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
   ASSERT_TRUE(cluster_mojom);
   ASSERT_EQ(1u, cluster_mojom->id);
   ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.label.value()),
-            cluster_mojom->label.value());
+            cluster_mojom->label);
   ASSERT_EQ(3u, cluster_mojom->visits.size());
   ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.visits[0].url_for_display),
             cluster_mojom->visits[0]->url_for_display);

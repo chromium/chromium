@@ -70,7 +70,7 @@ suite('history-clusters', () => {
     const cluster1: Cluster = {
       id: BigInt(111),
       visits: [urlVisit1],
-      label: undefined,
+      label: '',
       labelMatchPositions: [],
       relatedSearches: [],
       imageUrl: undefined,
@@ -81,7 +81,7 @@ suite('history-clusters', () => {
     const cluster2: Cluster = {
       id: BigInt(222),
       visits: [],
-      label: undefined,
+      label: '',
       labelMatchPositions: [],
       relatedSearches: [],
       imageUrl: undefined,

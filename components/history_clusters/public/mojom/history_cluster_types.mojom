@@ -110,9 +110,8 @@ struct Cluster {
   // "top visit" if the UI needs to specially display a "top visit".
   array<URLVisit> visits;
 
-  // An optional label for the whole cluster. If this is not defined or empty,
-  // the first visit should be displayed prominently instead.
-  string? label;
+  // A label for the whole cluster.
+  string label;
 
   // The positions within `label` that match the search terms. Used for bolding
   // in the WebUI.

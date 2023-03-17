@@ -57,7 +57,7 @@ function createSampleCluster(
       {
         id: BigInt(111),
         visits: createLayoutSuitableSampleVisits(layout),
-        label: undefined,
+        label: '',
         labelMatchPositions: [],
         relatedSearches: createRelatedSearches(numRelatedSearches),
         imageUrl: undefined,
@@ -239,17 +239,6 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
 
     // Assert.
     assertTrue(!!$$(moduleElement, 'ntp-info-dialog'));
-  });
-
-  test('Header title falls back to Visit title', async () => {
-    // Arrange.
-    const moduleElement = await initializeModule(createSampleCluster());
-
-    // Assert.
-    assertTrue(!!moduleElement);
-    const headerElement = $$(moduleElement, 'ntp-module-header');
-    assertTrue(!!headerElement);
-    assertModuleHeaderTitle(headerElement, 'Resume your journey for SRP');
   });
 
   test('Backend is notified when module is dismissed', async () => {

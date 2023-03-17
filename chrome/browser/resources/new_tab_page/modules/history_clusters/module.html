@@ -53,16 +53,16 @@
       disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesJourneyDisable')]]"
-      dismiss-text="[[i18n('modulesDismissButtonText', title_)]]"
+      dismiss-text="[[i18n('modulesDismissButtonText', cluster.label)]]"
       show-info-button show-dismiss-button
       on-disable-button-click="onDisableButtonClick_"
       on-dismiss-button-click="onDismissButtonClick_"
       on-info-button-click="onInfoButtonClick_"
       icon-src="chrome://resources/images/icon_journeys.svg">
-    [[i18n('modulesJourneysResumeJourney', title_)]]
+    [[i18n('modulesJourneysResumeJourney', cluster.label)]]
     <button id="showAllButton" type="button" on-click="onShowAllClick_"
         slot="title-actions"
-        aria-label$="[[i18n('modulesJourneysShowAllAcc', title_)]]">
+        aria-label$="[[i18n('modulesJourneysShowAllAcc', cluster.label)]]">
       [[i18n('modulesJourneysShowAll')]]
     </button>
   </ntp-module-header>
