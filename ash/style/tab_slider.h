@@ -43,6 +43,8 @@ class ASH_EXPORT TabSlider : public views::View {
   TabSlider& operator=(const TabSlider&) = delete;
   ~TabSlider() override;
 
+  views::View* GetSelectorView();
+
   // Add a button with the button's unique pointer. For example
   // AddButton(std::make_unique<SliderButtonType>(...)).
   template <typename T>

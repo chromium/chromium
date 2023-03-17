@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/gestures/wm_fling_handler.h"
-#include "ash/wm/window_cycle/window_cycle_tab_slider.h"
 #include "base/containers/flat_set.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,7 +25,9 @@ class Label;
 }
 
 namespace ash {
+class LabelSliderButton;
 class SystemShadow;
+class TabSlider;
 class WindowCycleItemView;
 
 // A view that shows a collection of windows the user can cycle through.
@@ -95,11 +96,11 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // Called when a fling ends, cleans up fling state.
   void OnFlingEnd();
 
-  // Sets whether the `tab_slider_container_` is focused.
+  // Sets whether the `tab_slider_` is focused.
   void SetFocusTabSlider(bool focus);
 
-  // Returns whether the `tab_slider_container_` is focused.
-  bool IsTabSliderFocused();
+  // Returns whether the `tab_slider_` is focused.
+  bool IsTabSliderFocused() const;
 
   // Returns the corresponding window for the `WindowCycleItemView` located at
   // `screen_point`.
@@ -141,9 +142,16 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // A container that houses and lays out all the `WindowCycleItemView`s.
   views::View* mirror_container_ = nullptr;
 
-  // Tab slider and no recent items are only used when Bento is enabled.
-  WindowCycleTabSlider* tab_slider_container_ = nullptr;
+  // Tells users that there are no app windows on the active desk. It only shows
+  // when there're more than 1 desk.
   views::Label* no_recent_items_label_ = nullptr;
+
+  // The `tab_slider_` only shows when there're more than 1 desk. It contains
+  // `all_desks_tab_slider_button_` and `current_desk_tab_slider_button_` which
+  // user can tab through or toggle between.
+  TabSlider* tab_slider_ = nullptr;
+  LabelSliderButton* all_desks_tab_slider_button_ = nullptr;
+  LabelSliderButton* current_desk_tab_slider_button_ = nullptr;
 
   // The |target_window_| is the window that has the focus ring. When the user
   // completes cycling the |target_window_| is activated.
@@ -179,6 +187,11 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   std::unique_ptr<WmFlingHandler> fling_handler_;
 
   std::unique_ptr<SystemShadow> shadow_;
+
+  // Indicates whether the selector view on `tab_slider_` is focused or not. We
+  // need to manually schedule paint for the focus ring since the tab slider
+  // buttons are not focusable.
+  bool is_tab_slider_focused_ = false;
 
   // True once `DestroyContents` is called. Used to prevent `Layout` from being
   // called once all the child views have been removed. See

@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
-#include "ash/wm/window_cycle/window_cycle_tab_slider.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"

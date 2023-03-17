@@ -111,6 +111,10 @@ TabSlider::TabSlider(bool has_background,
 
 TabSlider::~TabSlider() = default;
 
+views::View* TabSlider::GetSelectorView() {
+  return selector_view_;
+}
+
 void TabSlider::SetCustomLayout(const LayoutParams& layout_params) {
   use_button_recommended_layout_ = false;
 
