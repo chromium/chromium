@@ -3761,7 +3761,7 @@ void LayoutObject::InsertedIntoTree() {
     flow_thread->FlowThreadDescendantWasInserted(this);
 
   if (const Element* element = DynamicTo<Element>(GetNode());
-      element && element->HasAnchoredPopover()) {
+      element && element->HasImplicitlyAnchoredElement()) {
     MarkMayHaveAnchorQuery();
   } else if (MayHaveAnchorQuery()) {
     Parent()->MarkMayHaveAnchorQuery();

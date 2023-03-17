@@ -413,8 +413,9 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
     return true;
 
   if (const Element* element = DynamicTo<Element>(GetNode())) {
-    if (element->HasAnchoredPopover())
+    if (element->HasImplicitlyAnchoredElement()) {
       return true;
+    }
   }
 
   return ComputeIsAbsoluteContainer(&style) ||

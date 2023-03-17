@@ -54,6 +54,7 @@
 
 namespace blink {
 
+class AnchorElementObserver;
 class AnchorScrollData;
 class ContainerQueryData;
 class Element;
@@ -287,12 +288,21 @@ class ElementRareData final : public ElementRareDataBase {
     ClearElementFlag(ElementFlags::kTabIndexWasSetExplicitly);
   }
 
-  void IncrementAnchoredPopoverCount() override { ++anchored_popover_count_; }
-  void DecrementAnchoredPopoverCount() override {
-    DCHECK(anchored_popover_count_);
-    --anchored_popover_count_;
+  AnchorElementObserver* GetAnchorElementObserver() const override {
+    return anchor_element_observer_;
   }
-  bool HasAnchoredPopover() const override { return anchored_popover_count_; }
+  AnchorElementObserver& EnsureAnchorElementObserver(HTMLElement*) override;
+
+  void IncrementImplicitlyAnchoredElementCount() override {
+    ++implicitly_anchored_element_count_;
+  }
+  void DecrementImplicitlyAnchoredElementCount() override {
+    DCHECK(implicitly_anchored_element_count_);
+    --implicitly_anchored_element_count_;
+  }
+  bool HasImplicitlyAnchoredElement() const override {
+    return implicitly_anchored_element_count_;
+  }
 
   void Trace(blink::Visitor*) const override;
 
@@ -325,9 +335,10 @@ class ElementRareData final : public ElementRareDataBase {
   Member<PopoverData> popover_data_;
   Member<CSSToggleMap> toggle_map_;
   Member<AnchorScrollData> anchor_scroll_data_;
+  Member<AnchorElementObserver> anchor_element_observer_;
 
   ScrollOffset saved_layer_scroll_offset_;
-  wtf_size_t anchored_popover_count_ = 0;
+  wtf_size_t implicitly_anchored_element_count_ = 0;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {

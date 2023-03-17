@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -68,6 +69,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/html/anchor_element_observer.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -819,10 +821,8 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
     GetDocument().UpdateStyleAndLayoutTreeForNode(this);
     if (!SupportsFocus())
       blur();
-  } else if (params.name == html_names::kAnchorAttr && HasPopoverAttribute()) {
-    DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-        GetDocument().GetExecutionContext()));
-    ResetPopoverAnchorObserver();
+  } else if (params.name == html_names::kAnchorAttr) {
+    NotifyAnchorElementObserver();
   }
 }
 
@@ -1264,7 +1264,6 @@ void HTMLElement::UpdatePopoverAttribute(String value) {
   DCHECK_EQ(type, GetPopoverTypeFromAttributeValue(
                       FastGetAttribute(html_names::kPopoverAttr)));
   EnsurePopoverData()->setType(type);
-  ResetPopoverAnchorObserver();
 }
 
 bool HTMLElement::HasPopoverAttribute() const {
@@ -2067,52 +2066,29 @@ void HTMLElement::InvokePopover(Element* invoker) {
 }
 
 Element* HTMLElement::anchorElement() {
+  // TODO(crbug.com/1425215): Fix GetElementAttribute() for out-of-tree-scope
+  // elements, so that we can remove the hack below.
+  if (!IsInTreeScope()) {
+    return nullptr;
+  }
   Element* element = GetElementAttribute(html_names::kAnchorAttr);
-  DCHECK(!GetPopoverData() || element == GetPopoverData()->anchorElement());
   return element;
 }
 
 void HTMLElement::setAnchorElement(Element* new_element) {
   SetElementAttribute(html_names::kAnchorAttr, new_element);
-  if (GetPopoverData()) {
-    ResetPopoverAnchorObserver();
-  }
+  NotifyAnchorElementObserver();
 }
 
-void HTMLElement::ResetPopoverAnchorObserver() {
-  DCHECK(GetPopoverData());
-  DCHECK(HasPopoverAttribute());
-  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-      GetDocument().GetExecutionContext()));
-  // This attaches an idref observer on the target idref. If an element
-  // reference is set instead of an idref, the observer will be detached.
-  const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
-  GetPopoverData()->setAnchorObserver(
-      IsInTreeScope() && anchor_id
-          ? MakeGarbageCollected<PopoverAnchorObserver>(anchor_id, this)
-          : nullptr);
-  PopoverAnchorElementChanged();
-}
-
-void HTMLElement::PopoverAnchorElementChanged() {
-  DCHECK(GetPopoverData());
-  DCHECK(HasPopoverAttribute());
-  Element* new_anchor = nullptr;
-  if (IsInTreeScope()) {
-    new_anchor = GetElementAttribute(html_names::kAnchorAttr);
+void HTMLElement::NotifyAnchorElementObserver() {
+  if (!GetAnchorElementObserver()) {
+    bool needs_observer =
+        FastHasAttribute(html_names::kAnchorAttr) || anchorElement();
+    if (!needs_observer) {
+      return;
+    }
   }
-  Element* old_anchor = GetPopoverData()->anchorElement();
-  if (new_anchor == old_anchor)
-    return;
-  if (old_anchor)
-    old_anchor->DecrementAnchoredPopoverCount();
-  if (new_anchor)
-    new_anchor->IncrementAnchoredPopoverCount();
-  GetPopoverData()->setAnchorElement(new_anchor);
-  if (GetLayoutObject()) {
-    GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
-        layout_invalidation_reason::kAnchorPositioning);
-  }
+  EnsureAnchorElementObserver().Notify();
 }
 
 void HTMLElement::CheckAndPossiblyClosePopoverStack() {
@@ -2574,15 +2550,13 @@ Node::InsertionNotificationRequest HTMLElement::InsertedInto(
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().InsertedInto(insertion_point);
 
-  if (HasPopoverAttribute())
-    ResetPopoverAnchorObserver();
+  NotifyAnchorElementObserver();
 
   return kInsertionDone;
 }
 
 void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
   if (HasPopoverAttribute()) {
-    ResetPopoverAnchorObserver();
     // If a popover is removed from the document, make sure it gets
     // removed from the popover element stack and the top layer.
     bool was_in_document = insertion_point.isConnected();
@@ -2597,6 +2571,8 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
   Element::RemovedFrom(insertion_point);
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().RemovedFrom(insertion_point);
+
+  NotifyAnchorElementObserver();
 }
 
 void HTMLElement::DidMoveToNewDocument(Document& old_document) {
