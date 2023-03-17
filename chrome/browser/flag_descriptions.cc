@@ -2455,6 +2455,12 @@ const char kPageImageServiceSuggestPoweredImagesName[] =
 const char kPageImageServiceSuggestPoweredImagesDescription[] =
     "Enables the PageImageService fetching images from the Suggest source.";
 
+const char kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs[] =
+    "'About this site' keep side panel on same tab navs";
+const char kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavsDescription[] =
+    "Keeps the 'About this site' side panel open and updated on same tab "
+    "navigations.";
+
 const char kPageInfoAboutThisSiteNewIconName[] = "'About this site' new icon";
 const char kPageInfoAboutThisSiteNewIconDescription[] =
     "Shows the 'About this site' section in the page info UI with a new google "

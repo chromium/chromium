@@ -7437,6 +7437,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageInfoboutThisPagePersistentEntryDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(page_info::kAboutThisSitePersistentSidePanelEntry)},
+
+    {"page-info-about-this-site-keep-side-panel-open-on-same-tab-navs",
+     flag_descriptions::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs,
+     flag_descriptions::
+         kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

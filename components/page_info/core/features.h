@@ -45,6 +45,10 @@ extern const base::FeatureParam<bool> kShowSampleContent;
 BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteMoreInfo);
 
 #if !BUILDFLAG(IS_ANDROID)
+// Keeps the 'About this site' side panel open and updated on same tab
+// navigations
+BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs);
+
 // Experiment with different secondary icons.
 BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteSecondaryIcon);
 // Parameter to select one of the icons from AboutThisSiteSeconaryIcon;

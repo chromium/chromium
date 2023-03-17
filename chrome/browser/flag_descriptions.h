@@ -1373,6 +1373,9 @@ extern const char kPageImageServiceOptimizationGuideSalientImagesDescription[];
 extern const char kPageImageServiceSuggestPoweredImagesName[];
 extern const char kPageImageServiceSuggestPoweredImagesDescription[];
 
+extern const char kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs[];
+extern const char kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavsDescription[];
+
 extern const char kPageInfoAboutThisSiteNewIconName[];
 extern const char kPageInfoAboutThisSiteNewIconDescription[];
 

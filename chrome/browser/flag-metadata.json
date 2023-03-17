@@ -5696,6 +5696,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "page-info-about-this-site-keep-side-panel-open-on-same-tab-navs",
+    "owners": [ "dullweber", "fsenra@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "page-info-about-this-site-new-icon",
     "owners": [ "dullweber", "fsenra@google.com"],
     "expiry_milestone": 115

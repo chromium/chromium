@@ -59473,6 +59473,8 @@ from previous Chrome versions.
       label="OmniboxUIExperimentShowPlaceholderWhenCaretShowing:disabled"/>
   <int value="-1454479680" label="FileHandlingAPI:enabled"/>
   <int value="-1454397907" label="OptimizationHints:disabled"/>
+  <int value="-1454327921"
+      label="PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs:disabled"/>
   <int value="-1454264660" label="ProminentDarkModeActiveTabTitle:disabled"/>
   <int value="-1453647118" label="PasswordLeakDetection:disabled"/>
   <int value="-1452786530" label="ChromeOSZramWriteback:enabled"/>
@@ -62307,6 +62309,8 @@ from previous Chrome versions.
   <int value="114480372" label="DeprecateAltClick:enabled"/>
   <int value="114541256" label="HomepagePromoCard:disabled"/>
   <int value="114657517" label="SecurePaymentConfirmationDebug:disabled"/>
+  <int value="115852043"
+      label="PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs:enabled"/>
   <int value="115915570"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRef:enabled"/>
   <int value="115999065" label="ContextualSearchForceCaption:disabled"/>
