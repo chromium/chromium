@@ -147,6 +147,7 @@ class DualReadingListModel : public ReadingListModel,
 
   // Update the unseen/unread/read entry counts considering addition/removal of
   // `entry` and updates applied to it.
+  void UpdateEntryStateCountersOnEntryRemoval(const ReadingListEntry& entry);
   void UpdateEntryStateCountersOnEntryInsertion(const ReadingListEntry& entry);
 
   const std::unique_ptr<ReadingListModelImpl> local_or_syncable_model_;

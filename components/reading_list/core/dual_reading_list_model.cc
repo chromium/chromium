@@ -249,6 +249,8 @@ void DualReadingListModel::RemoveEntryByURL(const GURL& url) {
 
   NotifyObserversWithWillRemoveEntry(url);
 
+  UpdateEntryStateCountersOnEntryRemoval(*entry);
+
   {
     base::AutoReset<bool> auto_reset_suppress_observer_notifications(
         &suppress_observer_notifications_, true);
@@ -686,6 +688,18 @@ const ReadingListModelImpl* DualReadingListModel::ToReadingListModelImpl(
   // `local_or_syncable_model_` are ReadingListModelImpl, and hence it is also
   // the case for model.
   return static_cast<const ReadingListModelImpl*>(model);
+}
+
+void DualReadingListModel::UpdateEntryStateCountersOnEntryRemoval(
+    const ReadingListEntry& entry) {
+  if (!entry.HasBeenSeen()) {
+    unseen_entry_count_--;
+  }
+  if (entry.IsRead()) {
+    read_entry_count_--;
+  } else {
+    unread_entry_count_--;
+  }
 }
 
 void DualReadingListModel::UpdateEntryStateCountersOnEntryInsertion(
