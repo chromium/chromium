@@ -97,12 +97,12 @@ class SortComparator {
 // Delegate that does nothing.
 class EmptyUndoDelegate : public BookmarkUndoDelegate {
  public:
-  EmptyUndoDelegate() {}
+  EmptyUndoDelegate() = default;
 
   EmptyUndoDelegate(const EmptyUndoDelegate&) = delete;
   EmptyUndoDelegate& operator=(const EmptyUndoDelegate&) = delete;
 
-  ~EmptyUndoDelegate() override {}
+  ~EmptyUndoDelegate() override = default;
 
  private:
   // BookmarkUndoDelegate:

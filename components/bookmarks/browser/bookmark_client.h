@@ -41,7 +41,7 @@ class BookmarkClient {
   // been typed by the user in the Omnibox.
   using UrlTypedCountMap = std::unordered_map<const GURL*, int>;
 
-  virtual ~BookmarkClient() {}
+  virtual ~BookmarkClient() = default;
 
   // Called during initialization of BookmarkModel.
   virtual void Init(BookmarkModel* model);

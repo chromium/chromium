@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -35,7 +36,7 @@ class BookmarkUndoOperation : public UndoOperation {
  public:
   explicit BookmarkUndoOperation(BookmarkModel* bookmark_model)
       : bookmark_model_(bookmark_model) {}
-  ~BookmarkUndoOperation() override {}
+  ~BookmarkUndoOperation() override = default;
 
   BookmarkModel* bookmark_model() { return bookmark_model_; }
 
@@ -55,7 +56,7 @@ class BookmarkAddOperation : public BookmarkUndoOperation {
   BookmarkAddOperation(const BookmarkAddOperation&) = delete;
   BookmarkAddOperation& operator=(const BookmarkAddOperation&) = delete;
 
-  ~BookmarkAddOperation() override {}
+  ~BookmarkAddOperation() override = default;
 
   // UndoOperation:
   void Undo() override;
@@ -135,8 +136,7 @@ BookmarkRemoveOperation::BookmarkRemoveOperation(
       index_(index),
       node_(std::move(node)) {}
 
-BookmarkRemoveOperation::~BookmarkRemoveOperation() {
-}
+BookmarkRemoveOperation::~BookmarkRemoveOperation() = default;
 
 void BookmarkRemoveOperation::Undo() {
   DCHECK(node_);
@@ -167,7 +167,7 @@ class BookmarkEditOperation : public BookmarkUndoOperation {
   BookmarkEditOperation(const BookmarkEditOperation&) = delete;
   BookmarkEditOperation& operator=(const BookmarkEditOperation&) = delete;
 
-  ~BookmarkEditOperation() override {}
+  ~BookmarkEditOperation() override = default;
 
   // UndoOperation:
   void Undo() override;
@@ -222,7 +222,7 @@ class BookmarkMoveOperation : public BookmarkUndoOperation {
   BookmarkMoveOperation(const BookmarkMoveOperation&) = delete;
   BookmarkMoveOperation& operator=(const BookmarkMoveOperation&) = delete;
 
-  ~BookmarkMoveOperation() override {}
+  ~BookmarkMoveOperation() override = default;
   int GetUndoLabelId() const override;
   int GetRedoLabelId() const override;
 
@@ -312,8 +312,7 @@ BookmarkReorderOperation::BookmarkReorderOperation(
                           &BookmarkNode::id);
 }
 
-BookmarkReorderOperation::~BookmarkReorderOperation() {
-}
+BookmarkReorderOperation::~BookmarkReorderOperation() = default;
 
 void BookmarkReorderOperation::Undo() {
   BookmarkModel* model = bookmark_model();
@@ -322,9 +321,9 @@ void BookmarkReorderOperation::Undo() {
   DCHECK(parent);
 
   std::vector<const BookmarkNode*> ordered_nodes;
-  for (size_t i = 0; i < ordered_bookmarks_.size(); ++i) {
+  for (int64_t ordered_bookmark : ordered_bookmarks_) {
     ordered_nodes.push_back(
-        bookmarks::GetBookmarkNodeByID(model, ordered_bookmarks_[i]));
+        bookmarks::GetBookmarkNodeByID(model, ordered_bookmark));
   }
 
   model->ReorderChildren(parent, ordered_nodes);
@@ -344,8 +343,7 @@ int BookmarkReorderOperation::GetRedoLabelId() const {
 
 BookmarkUndoService::BookmarkUndoService() : model_(nullptr) {}
 
-BookmarkUndoService::~BookmarkUndoService() {
-}
+BookmarkUndoService::~BookmarkUndoService() = default;
 
 void BookmarkUndoService::Start(BookmarkModel* model) {
   DCHECK(!model_);
