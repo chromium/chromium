@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 
 #import "base/test/metrics/user_action_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -26,7 +25,6 @@
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -169,6 +167,11 @@ class KeyCommandsProviderTest : public PlatformTest {
   KeyCommandsProvider* provider_;
 };
 
+// Checks that KeyCommandsProvider returns key commands.
+TEST_F(KeyCommandsProviderTest, ReturnsKeyCommands) {
+  EXPECT_NE(0u, provider_.keyCommands.count);
+}
+
 #pragma mark - Responder Chain Tests
 
 // Checks that the nextResponder is nil by default.
@@ -194,30 +197,6 @@ TEST_F(KeyCommandsProviderTest, NextResponderReset) {
   [provider_ respondBetweenViewController:nil andResponder:nil];
 
   EXPECT_EQ(provider_.nextResponder, nil);
-}
-
-#pragma mark - Finch Feature Tests
-
-// Checks that KeyCommandsProvider returns key commands when the Keyboard
-// Shortcuts Menu feature is enabled.
-TEST_F(KeyCommandsProviderTest, ReturnsKeyCommands_MenuEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kKeyboardShortcutsMenu},
-      /*disabled_features=*/{});
-
-  EXPECT_NE(0u, provider_.keyCommands.count);
-}
-
-// Checks that KeyCommandsProvider returns key commands when the Keyboard
-// Shortcuts Menu feature is disabled.
-TEST_F(KeyCommandsProviderTest, ReturnsKeyCommands_MenuDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kKeyboardShortcutsMenu});
-
-  EXPECT_NE(0u, provider_.keyCommands.count);
 }
 
 #pragma mark - CanPerform Tests

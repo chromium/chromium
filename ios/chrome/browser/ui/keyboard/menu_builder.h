@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 // Builds a non-contextual menu of keyboard commands during application launch.
+API_AVAILABLE(ios(15.0))
 @interface MenuBuilder : NSObject
 
 // Configures the builder with the relevant keyboard commands.

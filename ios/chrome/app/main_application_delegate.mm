@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
-#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/keyboard/menu_builder.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
@@ -384,7 +383,7 @@ const int kMainIntentCheckDelay = 1;
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
   [super buildMenuWithBuilder:builder];
 
-  if (IsKeyboardShortcutsMenuEnabled()) {
+  if (@available(iOS 15, *)) {
     [MenuBuilder buildMainMenuWithBuilder:builder];
   }
 }

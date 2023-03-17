@@ -43,7 +43,6 @@
 #import "ios/chrome/app/fast_app_terminate_buildflags.h"
 #import "ios/chrome/app/feed_app_agent.h"
 #import "ios/chrome/app/first_run_app_state_agent.h"
-#import "ios/chrome/app/keyboard_shortcuts_menu_app_agent.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/post_restore_app_agent.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
@@ -759,7 +758,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
   [appState addAgent:[[FeedAppAgent alloc] init]];
   [appState addAgent:[[VariationsAppStateAgent alloc] init]];
-  [appState addAgent:[[KeyboardShortcutsMenuAppAgent alloc] init]];
 
   // Create the window accessibility agent only when multiple windows are
   // possible.

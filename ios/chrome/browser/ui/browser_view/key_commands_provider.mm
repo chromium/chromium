@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -104,7 +103,7 @@ using base::UserMetricsAction;
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
-  if (IsKeyboardShortcutsMenuEnabled()) {
+  if (@available(iOS 15, *)) {
     // Return the key commands that are not already present in the menu (see
     // i/c/b/ui/keyboard/menu_builder.h).
     return @[
