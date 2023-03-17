@@ -2913,9 +2913,8 @@ TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
               blink::mojom::QuotaStatusCode::kOk);
 
     auto storage_keys = GetStorageKeys(owner);
-    EXPECT_EQ(2ULL, storage_keys.size());
-    EXPECT_NE(storage_keys[0], storage_key1_);
-    EXPECT_NE(storage_keys[1], storage_key1_);
+    ASSERT_EQ(1ULL, storage_keys.size());
+    EXPECT_EQ(storage_keys[0], storage_key2_);
 
     EXPECT_EQ(DeleteStorageKeyData(partitioned_storage_key1, owner),
               blink::mojom::QuotaStatusCode::kOk);

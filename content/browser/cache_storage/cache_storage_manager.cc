@@ -455,6 +455,34 @@ void OneStorageKeySizeReported(
                                     storage_key, size, last_modified)));
 }
 
+// Match a bucket for deletion if its storage key matches any of the given
+// storage keys.
+//
+// This function considers a bucket to match a storage key if it is the default
+// bucket and either the bucket's key's origin matches the storage key's origin
+// or the bucket's key is third-party and its top-level site matches the origin.
+bool BucketMatchesStorageKeysForDeletion(
+    const storage::BucketLocator& bucket_locator,
+    const std::set<blink::StorageKey>& storage_keys) {
+  // Non-default buckets never match.
+  if (!bucket_locator.is_default) {
+    return false;
+  }
+  auto& bucket_key = bucket_locator.storage_key;
+
+  for (auto& storage_key : storage_keys) {
+    // Only the origin from the storage key is relevant to deletion.
+    auto requested_origin = storage_key.origin();
+    if (bucket_key.origin() == requested_origin ||
+        (bucket_key.IsThirdPartyContext() &&
+         bucket_key.top_level_site() == net::SchemefulSite(requested_origin))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -826,8 +854,7 @@ void CacheStorageManager::DeleteStorageKeysDataGotAllBucketInfo(
                         storage::mojom::StorageUsageInfoPtr>& usage_tuple :
        usage_tuples) {
     const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
-    if (!bucket_locator.is_default ||
-        !storage_keys.contains(bucket_locator.storage_key)) {
+    if (!BucketMatchesStorageKeysForDeletion(bucket_locator, storage_keys)) {
       continue;
     }
     instance_count += 1;
@@ -841,8 +868,7 @@ void CacheStorageManager::DeleteStorageKeysDataGotAllBucketInfo(
                         storage::mojom::StorageUsageInfoPtr>& usage_tuple :
        usage_tuples) {
     const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
-    if (!bucket_locator.is_default ||
-        !storage_keys.contains(bucket_locator.storage_key)) {
+    if (!BucketMatchesStorageKeysForDeletion(bucket_locator, storage_keys)) {
       continue;
     }
     if (!bucket_locator.is_null()) {
@@ -860,6 +886,13 @@ void CacheStorageManager::DeleteStorageKeysDataGotAllBucketInfo(
           base::BindOnce(&DeleteBucketDidDeleteDir, barrier_callback));
     }
   }
+}
+
+void CacheStorageManager::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
+    storage::mojom::CacheStorageOwner owner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DeleteStorageKeyData(storage_key, owner, base::DoNothing());
 }
 
 void CacheStorageManager::DeleteStorageKeyData(
@@ -885,14 +918,13 @@ void CacheStorageManager::DeleteStorageKeyData(
     to_delete.reserve(storage_keys.size());
 
     // Note: since the number of CacheStorage instances is usually small, just
-    // search for the corresponding `storage::BucketLocator` key given a
+    // search for the corresponding `storage::BucketLocator` keys, given a
     // `blink::StorageKey`.
     for (const auto& key_value : cache_storage_map_) {
       if (key_value.first.second != owner)
         continue;
       const storage::BucketLocator& bucket_locator = key_value.first.first;
-      if (!bucket_locator.is_default ||
-          !storage_keys.contains(bucket_locator.storage_key)) {
+      if (!BucketMatchesStorageKeysForDeletion(bucket_locator, storage_keys)) {
         continue;
       }
       to_delete.emplace_back(bucket_locator,
@@ -994,15 +1026,6 @@ void CacheStorageManager::DeleteBucketDataDidGetExists(
       base::BindOnce(&CacheStorageManager::DeleteBucketDidClose,
                      weak_ptr_factory_.GetWeakPtr(), bucket_locator, owner,
                      std::move(callback), base::WrapUnique(cache_storage)));
-}
-
-// Note: This only deletes data associated with the default bucket for a given
-// `blink::StorageKey`.
-void CacheStorageManager::DeleteStorageKeyData(
-    const blink::StorageKey& storage_key,
-    storage::mojom::CacheStorageOwner owner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DeleteStorageKeyData(storage_key, owner, base::DoNothing());
 }
 
 void CacheStorageManager::AddObserver(
