@@ -4198,12 +4198,24 @@
       },
     },
 
-    # TODO(crbug.com/1204231): Re-enable vaapi_unittest.
     'lacros_device_or_vm_gtests': {
       'aura_unittests': {},
       'cc_unittests': {},
       'interactive_ui_tests': {},
       'ozone_unittests': {},
+      'vaapi_unittest': {
+        'args': [
+          '--stop-ui',
+          # Tell libva to do dummy encoding/decoding. For more info, see:
+          # https://github.com/intel/libva/blob/master/va/va_fool.c#L47
+          '--env-var', 'LIBVA_DRIVERS_PATH', './',
+          '--env-var', 'LIBVA_DRIVER_NAME', 'libfake',
+          '--env-var', 'LIBVA_FOOL_DECODE', '1',
+          '--env-var', 'LIBVA_FOOL_POSTP', '1',
+          '--gtest_filter="VaapiTest.*"',
+        ],
+	'ci_only': True, # https://crbug.com/1425489
+      },
     },
 
     'lacros_fyi_tast_tests': {
