@@ -3784,32 +3784,84 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator" translateable="false">
           Shortcut is used by <ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>. Press a new shortcut or press the same one again to use it for this action instead.
         </message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_GENERAL" desc="Category named 'General' shown on the navigation sidebar">General</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVICE" desc="Category named 'Device' shown on the navigation sidebar">Device</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_BROWSER" desc="Category named 'Browser' shown on the navigation sidebar">Browser</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TEXT" desc="Category named 'Text' shown on the navigation sidebar">Text</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_WINDOWS_AND_DESKS" desc="Category named 'Windows and Desks' shown on the navigation sidebar">Windows and Desks</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_ACCESSIBILITY" desc="Category named 'Accessibility' shown on the navigation sidebar">Accessibility</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEBUG" desc="Category named 'Debug' shown on the navigation sidebar" translateable="false">Debug</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVELOPER" desc="Category named 'Developer' shown on the navigation sidebar" translateable="false">Developer</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL_CONTROLS" desc="Subcategory named 'GeneralControls' shown within main shortcuts section" translateable="false">General Controls</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_APPS" desc="Subcategory named 'Apps' shown within main shortcuts section" translateable="false">Apps</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_MEDIA" desc="Subcategory named 'Media' shown within main shortcuts section" translateable="false">Media</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_INPUTS" desc="Subcategory named 'Inputs' shown within main shortcuts section" translateable="false">Inputs</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_DISPLAY" desc="Subcategory named 'Display' shown within main shortcuts section" translateable="false">Display</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL" desc="Subcategory named 'General' shown within main shortcuts section" translateable="false">General</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_BROWSER_NAVIGATION" desc="Subcategory named 'BrowserNavigation' shown within main shortcuts section" translateable="false">Browser Navigation</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_PAGES" desc="Subcategory named 'Pages' shown within main shortcuts section" translateable="false">Pages</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_TABS" desc="Subcategory named 'Tabs' shown within main shortcuts section" translateable="false">Tabs</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_BOOKMARKS" desc="Subcategory named 'Bookmarks' shown within main shortcuts section" translateable="false">Bookmarks</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_DEVELOPER_TOOLS" desc="Subcategory named 'DeveloperTools' shown within main shortcuts section" translateable="false">Developer Tools</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_TEXT_NAVIGATION" desc="Subcategory named 'TextNavigation' shown within main shortcuts section" translateable="false">Text Navigation</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_TEXT_EDITING" desc="Subcategory named 'TextEditing' shown within main shortcuts section" translateable="false">Text Editing</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_WINDOWS" desc="Subcategory named 'Windows' shown within main shortcuts section" translateable="false">Windows</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_DESKS" desc="Subcategory named 'Desks' shown within main shortcuts section" translateable="false">Desks</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_CHROMEVOX" desc="Subcategory named 'ChromeVox' shown within main shortcuts section" translateable="false">ChromeVox</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_VISIBILITY" desc="Subcategory named 'Visibility' shown within main shortcuts section" translateable="false">Visibility</message>
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_ACCESSIBILITY_NAVIGATION" desc="Subcategory named 'AccessibilityNavigation' shown within main shortcuts section" translateable="false">Accessibility Navigation</message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_GENERAL" desc="Category named 'General' shown on the navigation sidebar">
+          General
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVICE" desc="Category named 'Device' shown on the navigation sidebar">
+          Device
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_BROWSER" desc="Category named 'Browser' shown on the navigation sidebar">
+          Browser
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TEXT" desc="Category named 'Text' shown on the navigation sidebar">
+          Text
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_WINDOWS_AND_DESKS" desc="Category named 'Windows and Desks' shown on the navigation sidebar">
+          Windows and Desks
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_ACCESSIBILITY" desc="Category named 'Accessibility' shown on the navigation sidebar">
+          Accessibility
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEBUG" desc="Category named 'Debug' shown on the navigation sidebar" translateable="false">
+          Debug
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_DEVELOPER" desc="Category named 'Developer' shown on the navigation sidebar" translateable="false">
+          Developer
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL_CONTROLS" desc="Subcategory named 'GeneralControls' shown within main shortcuts section">
+          General Controls
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_APPS" desc="Subcategory named 'Apps' shown within main shortcuts section">
+          Apps
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_MEDIA" desc="Subcategory named 'Media' shown within main shortcuts section">
+          Media
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_INPUTS" desc="Subcategory named 'Inputs' shown within main shortcuts section">
+          Inputs
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_DISPLAY" desc="Subcategory named 'Display' shown within main shortcuts section">
+          Display
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL" desc="Subcategory named 'General' shown within main shortcuts section">
+          General
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_BROWSER_NAVIGATION" desc="Subcategory named 'BrowserNavigation' shown within main shortcuts section">
+          Browser navigation
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_PAGES" desc="Subcategory named 'Pages' shown within main shortcuts section">
+          Pages
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_TABS" desc="Subcategory named 'Tabs' shown within main shortcuts section">
+          Tabs
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_BOOKMARKS" desc="Subcategory named 'Bookmarks' shown within main shortcuts section">
+          Bookmarks
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_DEVELOPER_TOOLS" desc="Subcategory named 'DeveloperTools' shown within main shortcuts section">
+          Developer tools
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_TEXT_NAVIGATION" desc="Subcategory named 'TextNavigation' shown within main shortcuts section">
+          Text navigation
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_TEXT_EDITING" desc="Subcategory named 'TextEditing' shown within main shortcuts section">
+          Text editing
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_WINDOWS" desc="Subcategory named 'Windows' shown within main shortcuts section">
+          Windows
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_DESKS" desc="Subcategory named 'Desks' shown within main shortcuts section">
+          Desks
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_CHROMEVOX" desc="Subcategory named 'ChromeVox' shown within main shortcuts section">
+          ChromeVox
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_VISIBILITY" desc="Subcategory named 'Visibility' shown within main shortcuts section">
+          Visibility
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_ACCESSIBILITY_NAVIGATION" desc="Subcategory named 'AccessibilityNavigation' shown within main shortcuts section">
+          Accessibility navigation
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_DOWN" desc="The text read aloud by the screen reader describing the keyboard icon 'arrow down'." translateable="false">
           arrow down
         </message>
