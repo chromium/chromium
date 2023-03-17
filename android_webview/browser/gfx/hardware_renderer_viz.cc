@@ -530,8 +530,14 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
   output_surface_provider_.gl_surface()->RecalculateClipAndTransform(
       &viewport, &clip, &transform);
 
-  // ANGLE will restore GL context state for us, so we don't need to call
-  // GrContext::resetContext().
+  // Reset Skia's state if not using ANGLE. For ANGLE, it is in general not
+  // necessary as ANGLE will restore GL context state for us as long as Chrome
+  // hasn't mucked with it outside ANGLE's knowledge. There is only one case
+  // where Chrome does so: the complex clip case. That case is rare and
+  // we can't know a priori whether we are going to hit it for this frame.
+  // Hence, rather than resetting Skia state on every frame for ANGLE, we
+  // instead detect whether this frame has hit the complex clip case at the end
+  // of this function and reset the GR context as needed for ANGLE there.
   if (!gl::GLSurfaceEGL::GetGLDisplayEGL()
            ->IsANGLEExternalContextAndSurfaceSupported()) {
     DCHECK(output_surface_provider_.shared_context_state());
@@ -576,6 +582,22 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
     render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
         draw_constraints, child_frame_->frame_sink_id,
         std::move(timing_details), 0);
+  }
+
+  // If using ANGLE we have not reset Skia's state at the beginning of the draw,
+  // as in general ANGLE will take care of saving/restoring GL state. However,
+  // it is necessary to reset Skia's state in the complex clip case, as Chrome
+  // mucks with GL state outside of ANGLE's knowledge in handling this case. We
+  // need to do this check at the end of the frame as it is only at this point
+  // that we know whether this frame hit the complex clip case. (For non-ANGLE
+  // we need to reset Skia's state at the beginning of each draw in any case, so
+  // doing it here would be redundant).
+  if (gl::GLSurfaceEGL::GetGLDisplayEGL()
+          ->IsANGLEExternalContextAndSurfaceSupported() &&
+      output_surface_provider_.gl_surface()->IsDrawingToFBO()) {
+    DCHECK(output_surface_provider_.shared_context_state());
+    output_surface_provider_.shared_context_state()
+        ->PessimisticallyResetGrContext();
   }
 }
 
