@@ -420,7 +420,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CacheTransparency.MarkedUnusable" units="list index"
-    expires_after="2023-07-09">
+    expires_after="2023-09-10">
+  <obsolete>
+    Removed as of 03/2023, as it is replaced by Network.CacheTransparency2.
+    MarkedUnusable which has a higher range.
+  </obsolete>
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
@@ -431,7 +435,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CacheTransparency.MismatchedChecksums"
-    units="list index" expires_after="2023-07-09">
+    units="list index" expires_after="2023-09-10">
+  <obsolete>
+    Removed as of 03/2023, as it is replaced by Network.CacheTransparency2.
+    MismatchedChecksums which has a higher range.
+  </obsolete>
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
@@ -443,7 +451,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CacheTransparency.SingleKeyedCacheIsUsed"
-    units="list index" expires_after="2023-07-09">
+    units="list index" expires_after="2023-09-10">
+  <obsolete>
+    Removed as of 03/2023, as it is replaced by Network.CacheTransparency2.
+    SingleKeyedCacheIsUsed which has a higher range.
+  </obsolete>
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
@@ -456,7 +468,58 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CacheTransparency.URLMatched" units="list index"
-    expires_after="2023-07-09">
+    expires_after="2023-09-10">
+  <obsolete>
+    Removed as of 03/2023, as it is replaced by
+    Network.CacheTransparency2.URLMatched which has a higher range.
+  </obsolete>
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records whether a requested resource's URL matched with any of the URLs in
+    the pervasive payloads list when a URL request is made. The list index is
+    the index of the URL in the pervasive payloads list.
+  </summary>
+</histogram>
+
+<histogram name="Network.CacheTransparency2.MarkedUnusable" units="list index"
+    expires_after="2023-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records whether a URL in the pervasive payloads list is marked as
+    &quot;unusable&quot; when the cached response is read. The list index is the
+    index of the URL in the pervasive payloads list.
+  </summary>
+</histogram>
+
+<histogram name="Network.CacheTransparency2.MismatchedChecksums"
+    units="list index" expires_after="2023-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records whether a URL in the pervasive payloads list has a different
+    checksum than what is expected when the response checksums are compared in
+    HttpCache::Transaction. The list index is the index of the URL in the
+    pervasive payloads list.
+  </summary>
+</histogram>
+
+<histogram name="Network.CacheTransparency2.SingleKeyedCacheIsUsed"
+    units="list index" expires_after="2023-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records whether the single-keyed cache is used for a URL in the pervasive
+    payloads list (not just when a cache entry is hit because there could be an
+    &quot;unusable&quot; flag set). This is recorded when the response checksum
+    matches the expected checksum in HttpCache::Transaction. The list index is
+    the index of the URL in the pervasive payloads list.
+  </summary>
+</histogram>
+
+<histogram name="Network.CacheTransparency2.URLMatched" units="list index"
+    expires_after="2023-11-01">
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>

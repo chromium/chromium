@@ -6053,7 +6053,7 @@ class CacheTransparencyNavigationBrowserTest : public ContentBrowserTest {
   static constexpr char kPervasivePayload[] =
       "/cache_transparency/pervasive.js";
   static constexpr char kCacheUsedHistogram[] =
-      "Network.CacheTransparency.SingleKeyedCacheIsUsed";
+      "Network.CacheTransparency2.SingleKeyedCacheIsUsed";
 
   base::test::ScopedFeatureList feature_list_;
   GURL pervasive_payload_url_;
