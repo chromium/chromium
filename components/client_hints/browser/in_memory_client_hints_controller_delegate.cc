@@ -57,7 +57,9 @@ void InMemoryClientHintsControllerDelegate::GetAllowedClientHintsFromSource(
     blink::EnabledClientHints* client_hints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_hints);
-  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
+  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+    return;
+  }
 
   const auto& it = accept_ch_cache_.find(origin);
   if (it != accept_ch_cache_.end()) {

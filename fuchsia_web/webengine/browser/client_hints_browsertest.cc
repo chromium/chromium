@@ -4,6 +4,7 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -24,6 +25,7 @@
 #include "fuchsia_web/webengine/test/test_data.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 
 namespace {
@@ -39,6 +41,10 @@ constexpr const char kFullVersionListCH[] = "Sec-CH-UA-Full-Version-List";
 constexpr const char kArchCH[] = "Sec-CH-UA-Arch";
 constexpr const char kBitnessCH[] = "Sec-CH-UA-Bitness";
 constexpr const char kPlatformCH[] = "Sec-CH-UA-Platform";
+
+// Expected Client Hint values that can be hardcoded.
+constexpr const char k64Bitness[] = "\"64\"";
+constexpr const char kFuchsiaPlatform[] = "\"Fuchsia\"";
 
 // |str| is interpreted as a decimal number or integer.
 void ExpectStringIsNonNegativeNumber(std::string& str) {
@@ -210,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsTest, ArchitectureIsArmOrX86) {
 IN_PROC_BROWSER_TEST_F(ClientHintsTest, BitnessIs64) {
   SetClientHintsForTestServerToRequest(kBitnessCH);
   GetAndVerifyClientHint(kBitnessCH, base::BindRepeating([](std::string& str) {
-                           EXPECT_EQ(str, "\"64\"");
+                           EXPECT_EQ(str, k64Bitness);
                          }));
 }
 
@@ -218,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsTest, PlatformIsFuchsia) {
   // Platform is a low-entropy Client Hint, so no need for test server to
   // request it.
   GetAndVerifyClientHint(kPlatformCH, base::BindRepeating([](std::string& str) {
-                           EXPECT_EQ(str, "\"Fuchsia\"");
+                           EXPECT_EQ(str, kFuchsiaPlatform);
                          }));
 }
 
@@ -284,9 +290,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsTest, WithUrlRedirectRules) {
   http2_server.RegisterRequestMonitor(
       base::BindRepeating([](const net::test_server::HttpRequest& request) {
         EXPECT_TRUE(request.headers.contains(kBitnessCH));
-        EXPECT_EQ(request.headers.at(kBitnessCH), "\"64\"");
+        EXPECT_EQ(request.headers.at(kBitnessCH), k64Bitness);
         EXPECT_TRUE(request.headers.contains(kPlatformCH));
-        EXPECT_EQ(request.headers.at(kPlatformCH), "\"Fuchsia\"");
+        EXPECT_EQ(request.headers.at(kPlatformCH), kFuchsiaPlatform);
       }));
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
@@ -315,4 +321,57 @@ IN_PROC_BROWSER_TEST_F(ClientHintsTest, WithUrlRedirectRules) {
   frame_for_test_.navigation_listener().RunUntilLoaded();
   EXPECT_EQ(frame_for_test_.navigation_listener().current_state()->url(),
             url.spec() + "?foo=1&bar=2");
+}
+
+// Used as a HandleRequestCallback for EmbeddedTestServer to test Client Hint
+// behavior in a sandboxed page. Defines two endpoints:
+//
+//   - /set sends back a response with `Accept-CH` header set as
+//   `client_hint_type`.
+//   - /get sends back a response body with the value of the `client_hint_type`
+//   header from the request.
+std::unique_ptr<net::test_server::HttpResponse>
+SandboxedClientHintsRequestHandler(
+    const std::string client_hint_type,
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->AddCustomHeader("Content-Security-Policy", "sandbox allow-scripts");
+
+  if (request.relative_url == "/set") {
+    response->AddCustomHeader("Accept-CH", client_hint_type);
+  } else if (request.relative_url == "/get") {
+    auto it = request.headers.find(client_hint_type);
+    if (it != request.headers.end()) {
+      response->set_content(it->second);
+    }
+  } else {
+    return nullptr;
+  }
+  return std::move(response);
+}
+
+// Ensure that client hints can be fetched from pages where the origin is
+// opaque. This has caused crashes in the past, see crbug.com/1337431 for
+// context.
+IN_PROC_BROWSER_TEST_F(ClientHintsTest, HintsAreSentFromSandboxedPage) {
+  net::EmbeddedTestServer http_server;
+  http_server.RegisterRequestHandler(
+      base::BindRepeating(&SandboxedClientHintsRequestHandler, kBitnessCH));
+
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle = http_server.StartAndReturnHandle());
+
+  GURL url = http_server.GetURL("/set");
+  LoadUrlAndExpectResponse(frame_for_test_.GetNavigationController(), {},
+                           url.spec());
+  frame_for_test_.navigation_listener().RunUntilUrlEquals(url);
+
+  url = http_server.GetURL("/get");
+  LoadUrlAndExpectResponse(frame_for_test_.GetNavigationController(), {},
+                           url.spec());
+  frame_for_test_.navigation_listener().RunUntilUrlEquals(url);
+
+  absl::optional<base::Value> value =
+      ExecuteJavaScript(frame_for_test_.get(), "document.body.innerText;");
+  EXPECT_EQ(value->GetString(), k64Bitness);
 }
