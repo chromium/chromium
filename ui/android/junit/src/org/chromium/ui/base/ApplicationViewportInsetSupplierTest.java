@@ -61,16 +61,23 @@ public class ApplicationViewportInsetSupplierTest {
                 mWindowApplicationInsetSupplier.get());
         assertEquals("Initial value for viewVisibleHeightInset is incorrect.", 0,
                 mWindowApplicationInsetSupplier.get().viewVisibleHeightInset);
+        assertEquals("Initial value for webContentsHeightInset is incorrect.", 0,
+                mWindowApplicationInsetSupplier.get().webContentsHeightInset);
         assertEquals("Initial value for visualViewportBottomInset is incorrect.", 0,
                 mWindowApplicationInsetSupplier.get().visualViewportBottomInset);
     }
 
     @Test
     public void testKeyboardTriggersObserver() {
+        mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
+
         mKeyboardInsetSupplier.set(5);
+
         assertEquals("Keyboard does not insets the View's visible height.", 0,
                 mInsetObserver.getCapturedValue().viewVisibleHeightInset);
-        assertEquals("Keyboard insets the visual viewport in RESIZES_VISUAL mode.", 5,
+        assertEquals("Keyboard outsets the WebContents' visible height in RESIZES_VISUAL.", -5,
+                mInsetObserver.getCapturedValue().webContentsHeightInset);
+        assertEquals("Keyboard insets the visual viewport in RESIZES_VISUAL.", 5,
                 mInsetObserver.getCapturedValue().visualViewportBottomInset);
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(
@@ -78,21 +85,27 @@ public class ApplicationViewportInsetSupplierTest {
 
         assertEquals("Keyboard does not inset the View's visible height.", 0,
                 mInsetObserver.getCapturedValue().viewVisibleHeightInset);
-        assertEquals("Keyboard does not inset the visual viewport in OVERLAYS_CONTENT mode.", 0,
+        assertEquals("Keyboard outsets WebContents' visible height in OVERLAYS_CONTENT.", -5,
+                mInsetObserver.getCapturedValue().webContentsHeightInset);
+        assertEquals("Keyboard does not inset the visual viewport in OVERLAYS_CONTENT.", 0,
                 mInsetObserver.getCapturedValue().visualViewportBottomInset);
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
 
         assertEquals("Keyboard does not insetsthe View's visible height.", 0,
                 mInsetObserver.getCapturedValue().viewVisibleHeightInset);
-        assertEquals("Keyboard does not inset the visual viewport in RESIZES_CONTENT mode.", 0,
+        assertEquals("Keyboard does not inset the WebContents' visible height.", 0,
+                mInsetObserver.getCapturedValue().webContentsHeightInset);
+        assertEquals("Keyboard does not inset the visual viewport in RESIZES_CONTENT.", 0,
                 mInsetObserver.getCapturedValue().visualViewportBottomInset);
 
         mKeyboardInsetSupplier.set(10);
 
         assertEquals("Keyboard does not inset the View's visible height.", 0,
                 mInsetObserver.getCapturedValue().viewVisibleHeightInset);
-        assertEquals("Keyboard does not inset the visual viewport in RESIZES_CONTENT mode.", 0,
+        assertEquals("Keyboard does not inset the WebContents' visible height.", 0,
+                mInsetObserver.getCapturedValue().webContentsHeightInset);
+        assertEquals("Keyboard does not inset the visual viewport in RESIZES_CONTENT.", 0,
                 mInsetObserver.getCapturedValue().visualViewportBottomInset);
     }
 
@@ -106,6 +119,9 @@ public class ApplicationViewportInsetSupplierTest {
 
         assertEquals("Only accessory insets the View's visible height.", 5,
                 mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals(
+                "Keyboard outsets WebContents' height; accessory has no effect in RESIZES_VISUAL.",
+                -10, mInsetObserver.getCapturedValue().webContentsHeightInset);
         assertEquals("Both keyboard and accessory inset the visual viewport in RESIZES_VISUAL.", 15,
                 mInsetObserver.getCapturedValue().visualViewportBottomInset);
 
@@ -113,9 +129,11 @@ public class ApplicationViewportInsetSupplierTest {
 
         assertEquals("Only accessory insets the View's visible height.", 5,
                 mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("Only the accessory insets WebContents' visible height.", 5,
+                mInsetObserver.getCapturedValue().webContentsHeightInset);
         assertEquals(
-                "Neither keyboard nor accessory resize the visual viewport in RESIZES_CONTENT mode.",
-                0, mInsetObserver.getCapturedValue().visualViewportBottomInset);
+                "Neither keyboard nor accessory resize the visual viewport in RESIZES_CONTENT.", 0,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
     }
 
     @Test
@@ -156,6 +174,8 @@ public class ApplicationViewportInsetSupplierTest {
 
         assertEquals("View inset is correct.", 5,
                 mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("WebContents inset is correct.", -10,
+                mInsetObserver.getCapturedValue().webContentsHeightInset);
         assertEquals("VisualViewport inset is correct.", 15,
                 mInsetObserver.getCapturedValue().visualViewportBottomInset);
 
@@ -164,6 +184,8 @@ public class ApplicationViewportInsetSupplierTest {
 
         assertEquals("View inset should be 0 with no suppliers attached.", 0,
                 mInsetObserver.getCapturedValue().viewVisibleHeightInset);
+        assertEquals("WebContentsinset should be 0 with no suppliers attached.", 0,
+                mInsetObserver.getCapturedValue().webContentsHeightInset);
         assertEquals("VisualViewport inset should be 0 with no suppliers attached.", 0,
                 mInsetObserver.getCapturedValue().visualViewportBottomInset);
     }
@@ -272,23 +294,26 @@ public class ApplicationViewportInsetSupplierTest {
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
 
-        // Clear the observer so we can tell if it gets called.
-        mInsetObserver.onResult(null);
+        assertEquals("Initial webContentsHeightInset value is correct", 15,
+                mInsetObserver.getCapturedValue().webContentsHeightInset);
+        assertEquals("Initial visualViewportBottomInset value is correct", 0,
+                mInsetObserver.getCapturedValue().visualViewportBottomInset);
 
+        // Clear the observer so we can confirm it gets called.
+        mInsetObserver.onResult(null);
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(
                 VirtualKeyboardMode.OVERLAYS_CONTENT);
 
-        assertNull("Changing to OVERLAYS_CONTENT doesn't trigger observer",
-                mInsetObserver.getCapturedValue());
+        assertEquals("Changing to OVERLAYS_CONTENT triggers observer", -30,
+                mInsetObserver.getCapturedValue().webContentsHeightInset);
 
+        mInsetObserver.onResult(null);
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
 
         assertEquals("Changing to RESIZES_VISUAL triggers observer", 45,
                 mInsetObserver.getCapturedValue().visualViewportBottomInset);
 
-        // Clear the observer so we can tell if it gets called.
         mInsetObserver.onResult(null);
-
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
 
         assertEquals("Changing from RESIZES_VISUAL triggers observer", 0,

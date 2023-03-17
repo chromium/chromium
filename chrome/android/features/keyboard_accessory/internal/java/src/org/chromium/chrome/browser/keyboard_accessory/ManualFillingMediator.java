@@ -77,7 +77,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
-import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.util.HashSet;
 
@@ -386,31 +385,22 @@ class ManualFillingMediator
 
     private boolean hasSufficientSpace() {
         if (mActivity == null) return false;
+        // TODO(bokan): Once mApplicationViewportInsetSupplier includes browser controls, we can use
+        // CompositorViewHolder instead of WebContents and simply apply the viewVisibleHeightInset
+        // to it, rather than awkwardly undoing the webContentsHeightInset.
         WebContents webContents = mActivity.getCurrentWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
         float height = webContents.getHeight(); // In dip. Already insetted by top/bottom controls.
 
-        // TODO(https://crbug.com/1211066): This class shouldn't know about virtual keyboard mode.
-        // Move the browser controls into ApplicationViewportInsetSupplier and then do a simple
-        // inset on the CompositorViewHolder size (rather than WebContents) to remove this
-        // dependency.
-        if (mApplicationViewportInsetSupplier.getVirtualKeyboardMode()
-                == VirtualKeyboardMode.RESIZES_CONTENT) {
-            // If RESIZES_CONTENT is set, the soft keyboard and accessory *do* resize the
-            // webContents. Don't consider the impact of the accessory as shown already. If we have
-            // space for a bar, we continue to have it. The sheet is never bigger than an open
-            // keyboard — so if an open sheet affects the inset, we can safely ignore it, too.
-            height += mBottomInsetSupplier.get() / mWindowAndroid.getDisplay().getDipScale();
-        } else {
-            // If the mode is RESIZES_VISUAL or OVERLAYS_CONTENT then WebContents is not resized by
-            // the soft keyboard or the accessory. Subtract the keyboard height to get the visible
-            // area but ignore the accessory height for the reasons in the above comment.
-            if (getContentView() != null && getContentView().getRootView() != null) {
-                height -= mSoftKeyboardDelegate.calculateSoftKeyboardHeight(
-                                  getContentView().getRootView())
-                        / mWindowAndroid.getDisplay().getDipScale();
-            }
-        }
+        // Un-inset the keyboard-related WebContents inset to get back to the CompositorViewHolder
+        // viewport height (minus browser controls). This will correctly account for the virtual
+        // keyboard mode which is baked into webContents' height. The CompositorViewHolder is
+        // resized by the soft keyboard. Don't consider the impact of the accessory as
+        // shown already. If we have space for a bar, we continue to have it. The sheet is never
+        // bigger than an open keyboard — so if an open sheet affects the inset, we can safely
+        // ignore it, too.
+        height += mApplicationViewportInsetSupplier.get().webContentsHeightInset
+                / mWindowAndroid.getDisplay().getDipScale();
 
         return height >= MINIMAL_AVAILABLE_VERTICAL_SPACE // Allows for a bar if not shown yet.
                 && webContents.getWidth() >= MINIMAL_AVAILABLE_HORIZONTAL_SPACE;
@@ -723,27 +713,28 @@ class ManualFillingMediator
      */
     private void restrictAccessorySheetHeight() {
         if (!is(FLOATING_SHEET) && !is(REPLACING_KEYBOARD)) return;
+        // TODO(bokan): Once mApplicationViewportInsetSupplier includes browser controls, we can use
+        // CompositorViewHolder instead of WebContents and simply apply the viewVisibleHeightInset
+        // to it, rather than awkwardly undoing the webContentsHeightInset.
         WebContents webContents = mActivity.getCurrentWebContents();
         if (webContents == null || webContents.isDestroyed()) return;
         float density = mWindowAndroid.getDisplay().getDipScale();
-        // The maximal height for the sheet ensures a minimal amount of WebContents space.
+        // Ensure the sheet height is adjusted, if needed, to leave a minimal amount of WebContents
+        // space.
         @Px
         int visibleViewportHeightPx = Math.round(density * webContents.getHeight());
-        // TODO(bokan): This class shouldn't know about virtual keyboard mode. Move the browser
-        // controls into ApplicationViewportInsetSupplier and then do a simple inset on the
-        // CompositorViewHolder size (rather than WebContents) to remove this dependency.
-        // https://crbug.com/1211066.
-        if (mApplicationViewportInsetSupplier.getVirtualKeyboardMode()
-                != VirtualKeyboardMode.RESIZES_CONTENT) {
-            // If the mode is RESIZES_VISUAL or OVERLAYS_CONTENT then WebContents is not resized by
-            // the soft keyboard or the accessory.
-            if (getContentView() != null && getContentView().getRootView() != null) {
-                visibleViewportHeightPx -= mSoftKeyboardDelegate.calculateSoftKeyboardHeight(
-                        getContentView().getRootView());
-                visibleViewportHeightPx -= mBottomInsetSupplier.get();
-            }
-        }
+
+        // Un-inset the keyboard-related WebContents inset to get back to the CompositorViewHolder
+        // viewport height (minus browser controls). This will correctly account for the virtual
+        // keyboard mode which is baked into webContents' height. The CompositorViewHolder is
+        // resized by the soft keyboard.
+        visibleViewportHeightPx += mApplicationViewportInsetSupplier.get().webContentsHeightInset;
+
+        // Now remove the insets coming from this class. This will already include the sheet height.
+        visibleViewportHeightPx -= mBottomInsetSupplier.get();
+
         int minimumVerticalSpacePx = Math.round(density * MINIMAL_AVAILABLE_VERTICAL_SPACE);
+
         if (visibleViewportHeightPx >= minimumVerticalSpacePx) return; // Sheet height needs no adjustment!
 
         // Adjust the height such that the new visible height will be exactly

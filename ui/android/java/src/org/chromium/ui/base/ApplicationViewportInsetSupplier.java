@@ -98,20 +98,7 @@ public class ApplicationViewportInsetSupplier
         int oldMode = mVirtualKeyboardMode;
         mVirtualKeyboardMode = mode;
 
-        // The VirtualKeyboardMode affects only the visual viewport inset and only if moving to or
-        // from RESIZES_VISUAL.
-        if (oldMode == VirtualKeyboardMode.RESIZES_VISUAL
-                || mode == VirtualKeyboardMode.RESIZES_VISUAL) {
-            computeInsets();
-        }
-    }
-
-    // TODO(bokan): Temporarily needed for ManualFillingMediator#hasSufficientSpace, do not use
-    // elsewhere. Once this class also includes top/bottom browser controls hasSufficientSpace can
-    // use CompositorViewHolder's size instead of WebContents size and apply the inset from this
-    // class without reference to the virtual keyboard mode. https://crbug.com/1211066.
-    public @VirtualKeyboardMode.EnumType int getVirtualKeyboardMode() {
-        return mVirtualKeyboardMode;
+        computeInsets();
     }
 
     /**
@@ -163,13 +150,35 @@ public class ApplicationViewportInsetSupplier
 
     /** Compute the new total inset based on all registered suppliers. */
     private void computeInsets() {
-        int totalKeyboardInset = intFromSupplier(mKeyboardInsetSupplier)
-                + intFromSupplier(mKeyboardAccessoryInsetSupplier);
-
         ViewportInsets newValues = new ViewportInsets();
-        newValues.viewVisibleHeightInset = intFromSupplier(mKeyboardAccessoryInsetSupplier);
+
+        int keyboardInset = intFromSupplier(mKeyboardInsetSupplier);
+        int accessoryInset = intFromSupplier(mKeyboardAccessoryInsetSupplier);
+        int totalKeyboardInset = keyboardInset + accessoryInset;
+
+        newValues.viewVisibleHeightInset = accessoryInset;
         newValues.visualViewportBottomInset =
                 mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL ? totalKeyboardInset : 0;
+
+        // If the VirtualKeyboardMode is set to OVERLAYS_CONTENT or RESIZES_VISUAL, the
+        // WebContents size will not match the View size when the keyboard is showing (these
+        // modes mean "keyboard doesn't resize web content"). In that case, *outset* by the shown
+        // keyboard height to keep the WebContents from being resized.
+        boolean vkModeOutsetsWebContentsHeight =
+                mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT
+                || mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL;
+        int webContentsInset = 0;
+        if (vkModeOutsetsWebContentsHeight) {
+            // Avoid insetting by the accessory and outset by the keyboard to counter the View
+            // resize.
+            webContentsInset = -keyboardInset;
+        } else {
+            // The keyboard should cause the WebContents to resize. The keyboard itself is already
+            // accounted for in the View height so just add the accessory.
+            webContentsInset = accessoryInset;
+        }
+
+        newValues.webContentsHeightInset = webContentsInset;
 
         super.set(newValues);
     }

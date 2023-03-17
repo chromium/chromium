@@ -460,7 +460,7 @@ public class CompositorViewHolder extends FrameLayout
         // contents.
         //
         // [1] - https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_FULLSCREEN
-        if (mShowingFullscreen && mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT
+        if (mShowingFullscreen
                 && KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(getContext(), this)) {
             getWindowVisibleDisplayFrame(mCacheRect);
 
@@ -895,49 +895,22 @@ public class CompositorViewHolder extends FrameLayout
             controlsInsets = mControlsResizeView ? controlsHeight : controlsMinHeight;
         }
 
-        // The system keyboard itself has already shrunk the View so its contribution is already
-        // included in `height`; viewVisibleHeightInset includes only the accessory inset.
-        // TODO(bokan): This method currently applies logic, based on mVirtualKeyboardMode, to
-        // compute the right inset/outset to use for the WebContents size. Move this logic into
-        // ApplicationViewportInsetSupplier.
-        int keyboardAccessoryInset = mApplicationBottomInsetSupplier != null
-                ? mApplicationBottomInsetSupplier.get().viewVisibleHeightInset
+        int keyboardInset = mApplicationBottomInsetSupplier != null
+                ? mApplicationBottomInsetSupplier.get().webContentsHeightInset
                 : 0;
 
-        int viewportInsets = controlsInsets + keyboardAccessoryInset;
+        int viewportInsets = controlsInsets + keyboardInset;
 
         if (isAttachedToWindow(view)) {
-            int keyboardHeight = 0;
-
-            // If the VirtualKeyboardMode is set to OVERLAYS_CONTENT or RESIZES_VISUAL, the
-            // WebContents size will not match the View size when the keyboard is showing (these
-            // modes mean "keyboard doesn't resize web content"). In that case, add the shown
-            // keyboard height to the WebContents size to keep it from being resized.
-            boolean vkModePreservesWebContentsHeight =
-                    mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT
-                    || mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL;
-
-            // In fullscreen, the keyboard doesn't resize the view so there's no need to adjust the
-            // layout height by the keyboard height to keep it from changing in response (but we do
-            // have to add back in keyboardAccessoryInset to avoid insetting by it).
-            if (vkModePreservesWebContentsHeight) {
-                // TODO(bokan): We could probably remove this special case if we remove the
-                // RESIZES_CONTENT case in getViewport. Then ApplicationViewportInsetSupplier can
-                // compute this outset for us.
-                if (!mShowingFullscreen) {
-                    keyboardHeight =
-                            KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(
-                                    this.getRootView());
-                }
-                height += keyboardHeight + keyboardAccessoryInset;
-            }
-
             webContents.setSize(width, height - viewportInsets);
 
             // Dispatch the geometrychange JavaScript event to the page.
             // TODO(bokan): This doesn't belong in updateWebContentsSize. Ideally the content/ layer
             // would listen to changes in keyboard state and dispatch this event itself.
             if (mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT) {
+                int keyboardHeight =
+                        KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(
+                                this.getRootView());
                 notifyVirtualKeyboardOverlayGeometryChangeEvent(width, keyboardHeight, webContents);
             }
         } else {

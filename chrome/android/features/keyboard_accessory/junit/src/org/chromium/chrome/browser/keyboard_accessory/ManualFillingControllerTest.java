@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -108,7 +109,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY,
         ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
 public class ManualFillingControllerTest {
-    private static final int sFakeKeyboardInsetPx = 200;
+    private static final int sKeyboardHeightDp = 100;
+    private static final int sAccessoryHeightDp = 48;
+    private static final int sKeyboardAndAccessoryDp = sKeyboardHeightDp + sAccessoryHeightDp;
 
     @Mock
     private ChromeWindow mMockWindow;
@@ -150,6 +153,8 @@ public class ManualFillingControllerTest {
     private final UserDataHost mUserDataHost = new UserDataHost();
     private final ApplicationViewportInsetSupplier mInsetSupplier =
             ApplicationViewportInsetSupplier.createForTests();
+    private final ObservableSupplierImpl<Integer> mKeyboardInsetSupplier =
+            new ObservableSupplierImpl<>();
 
     private static class MockActivityTabProvider extends ActivityTabProvider {
         public Tab mTab;
@@ -305,6 +310,8 @@ public class ManualFillingControllerTest {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
+        mInsetSupplier.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
+        mInsetSupplier.setKeyboardAccessoryInsetSupplier(mController.getBottomInsetSupplier());
         when(mMockWindow.getApplicationBottomInsetSupplier()).thenReturn(mInsetSupplier);
         when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any())).thenReturn(0);
         when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
@@ -326,7 +333,8 @@ public class ManualFillingControllerTest {
         mLastMockWebContents = mock(WebContents.class);
         when(mMockActivity.getCurrentWebContents()).then(i -> mLastMockWebContents);
         InsetObserverViewSupplier.setInstanceForTesting(mInsetObserver);
-        setContentAreaDimensions(2.f, 80, 300);
+        simulateLayoutSizeChange(
+                2.f, 80, 128, /*keyboardShown=*/false, VirtualKeyboardMode.RESIZES_VISUAL);
         Configuration config = new Configuration();
         config.hardKeyboardHidden = HARDKEYBOARDHIDDEN_UNDEFINED;
         when(mMockResources.getConfiguration()).thenReturn(config);
@@ -695,6 +703,9 @@ public class ManualFillingControllerTest {
         mController.registerSheetDataProvider(
                 mLastMockWebContents, AccessoryTabType.PASSWORDS, tabHelper.getSheetDataProvider());
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any(), any())).thenReturn(true);
+        mKeyboardInsetSupplier.set(sKeyboardHeightDp * /*density=*/2);
+        when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any()))
+                .thenReturn(sKeyboardHeightDp * /*density=*/2);
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Show the accessory bar for the default dimensions (300x128@2.f).
@@ -702,7 +713,34 @@ public class ManualFillingControllerTest {
         verify(mMockKeyboardAccessory).show();
 
         // The accessory is shown and the content area plus bar size don't exceed the threshold.
-        simulateLayoutSizeChange(3.f, 180, 128);
+        simulateLayoutSizeChange(
+                2.f, 180, 128, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_VISUAL);
+
+        verify(mMockKeyboardAccessory, never()).dismiss();
+    }
+
+    @Test
+    public void testDisplaysAccessoryOnlyWhenSpaceIsSufficient_KeyboardResizesContent() {
+        mInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+        reset(mMockKeyboardAccessory);
+
+        addBrowserTab(mMediator, 1234, null);
+        SheetProviderHelper tabHelper = new SheetProviderHelper();
+        mController.registerSheetDataProvider(
+                mLastMockWebContents, AccessoryTabType.PASSWORDS, tabHelper.getSheetDataProvider());
+        when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any(), any())).thenReturn(true);
+        mKeyboardInsetSupplier.set(sKeyboardHeightDp * /*density=*/2);
+        when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any()))
+                .thenReturn(sKeyboardHeightDp * /*density=*/2);
+        when(mMockKeyboardAccessory.empty()).thenReturn(false);
+
+        // Show the accessory bar for the default dimensions (300x128@2.f).
+        mController.show(true);
+        verify(mMockKeyboardAccessory).show();
+
+        // The accessory is shown and the content area plus bar size don't exceed the threshold.
+        simulateLayoutSizeChange(
+                2.f, 180, 128, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_CONTENT);
 
         verify(mMockKeyboardAccessory, never()).dismiss();
     }
@@ -740,31 +778,37 @@ public class ManualFillingControllerTest {
                 mLastMockWebContents, AccessoryTabType.PASSWORDS, tabHelper.getSheetDataProvider());
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(eq(mMockActivity), any()))
                 .thenReturn(true);
+        mKeyboardInsetSupplier.set(sKeyboardHeightDp * /*density=*/2);
+        when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any()))
+                .thenReturn(sKeyboardHeightDp * /*density=*/2);
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Show the accessory bar for the dimensions exactly at the threshold: 300x128@2.f.
-        simulateLayoutSizeChange(2.0f, 300, 128);
+        simulateLayoutSizeChange(
+                2.0f, 300, 128, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_CONTENT);
         mController.show(true);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
         verify(mMockKeyboardAccessory).show();
 
         // The height is now reduced by the 48dp high accessory -- it should remain visible.
-        simulateLayoutSizeChange(2.0f, 300, 80);
+        simulateLayoutSizeChange(
+                2.0f, 300, 128, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_CONTENT);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
 
         // Use a height that is too small but with a valid width (e.g. resized multi-window window).
-        simulateLayoutSizeChange(2.0f, 300, 79);
+        simulateLayoutSizeChange(
+                2.0f, 300, 127, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_CONTENT);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
 
         // Also test in RESIZES_VISUAL mode where the keyboard and accessory won't resize the
         // WebContents.
         mInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
-        when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any()))
-                .thenReturn(sFakeKeyboardInsetPx);
-        simulateLayoutSizeChange(2.0f, 300, sFakeKeyboardInsetPx / 2 + 48 + 79);
+        simulateLayoutSizeChange(
+                2.0f, 300, 127, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_VISUAL);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
 
-        simulateLayoutSizeChange(2.0f, 300, sFakeKeyboardInsetPx / 2 + 48 + 80);
+        simulateLayoutSizeChange(
+                2.0f, 300, 128, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_VISUAL);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
     }
 
@@ -781,12 +825,14 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
 
         // Show the accessory bar for the dimensions exactly at the threshold: 180x128@2.f.
-        simulateLayoutSizeChange(2.0f, 180, 128);
+        simulateLayoutSizeChange(
+                2.0f, 180, 128, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_VISUAL);
         mController.show(true);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), not(is(HIDDEN)));
 
         // Use a width that is too small but with a valid height (e.g. resized multi-window window).
-        simulateLayoutSizeChange(2.0f, 179, 128);
+        simulateLayoutSizeChange(
+                2.0f, 179, 128, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_VISUAL);
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
     }
 
@@ -800,14 +846,16 @@ public class ManualFillingControllerTest {
         final int density = 2;
         final int accessorySheetHeightDp = 100; // The height of a large keyboard.
         final int minimumVisibleHeightDp = 128; // This is a constant from ManualFillingMediator.
+        final int initialWidthDp = 200;
+        final int initialHeightDp = 300;
 
         addBrowserTab(mMediator, 1234, null);
 
-        // Resize the screen from 128x300@2.f to 200x300@2.f.
-        setContentAreaDimensions(density, 200, 300);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 400, 600, 0, 0, 256, 600);
+        // Resize the screen to 200x300@2.f.
+        simulateLayoutSizeChange(density, initialWidthDp, initialHeightDp, /*keyboardShown=*/false,
+                VirtualKeyboardMode.RESIZES_VISUAL);
 
-        // No simulate showing the accessory sheet.
+        // Now simulate showing the accessory sheet.
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
         when(mMockKeyboardAccessory.isShown()).thenReturn(true);
         when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(true);
@@ -828,11 +876,14 @@ public class ManualFillingControllerTest {
         // we're in the default RESIZES_VISUAL VirtualKeyboardMode. Even though contentsHeightDp >
         // minimumVisibleHeightDp, test that the visible area is correctly deduced to be 200 - 100 <
         // minimumVisibleHeightDp so the sheet should be restricted in height.
-        setContentAreaDimensions(density, 300, 200);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 600, 400, 0, 0, 400, 600);
+        assertEquals(
+                (int) mController.getBottomInsetSupplier().get(), accessorySheetHeightDp * density);
+        simulateLayoutSizeChange(density, initialHeightDp, initialWidthDp, /*keyboardShown=*/false,
+                VirtualKeyboardMode.RESIZES_VISUAL);
+        assertEquals(mLastMockWebContents.getHeight(), initialWidthDp);
 
         // 200 - 128 = 72
-        int expectedSheetHeightDp = 200 - minimumVisibleHeightDp;
+        int expectedSheetHeightDp = initialWidthDp - minimumVisibleHeightDp;
         verify(mMockAccessorySheet).setHeight(density * expectedSheetHeightDp);
     }
 
@@ -849,14 +900,16 @@ public class ManualFillingControllerTest {
         final int density = 2;
         final int accessorySheetHeightDp = 100; // The height of a large keyboard.
         final int minimumVisibleHeightDp = 128; // This is a constant from ManualFillingMediator.
+        final int initialWidthDp = 200;
+        final int initialHeightDp = 300;
 
         mInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
         addBrowserTab(mMediator, 1234, null);
-        // Resize the screen from 128x300@2.f to 200x300@2.f.
-        setContentAreaDimensions(density, 200, 300);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 400, 600, 0, 0, 256, 600);
+        // Resize the screen to 200x300@2.f.
+        simulateLayoutSizeChange(density, initialWidthDp, initialHeightDp, /*keyboardShown=*/false,
+                VirtualKeyboardMode.RESIZES_CONTENT);
 
-        // No simulate showing the accessory sheet.
+        // Now simulate showing the accessory sheet.
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
         when(mMockKeyboardAccessory.isShown()).thenReturn(true);
         when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(true);
@@ -873,16 +926,17 @@ public class ManualFillingControllerTest {
         when(mMockAccessorySheet.isShown()).thenReturn(true);
         when(mMockAccessorySheet.getHeight()).thenReturn(accessorySheetHeightDp * density);
 
-        // Set layout as if it was rotated: 300x200@2f. The sheet causes a resize to the web
-        // contents so subtract the sheet height. contentsHeightDp < minimumVisibleHeightDp so the
-        // sheet should be restricted in height.
-        int contentsHeightDp = 200 - accessorySheetHeightDp;
-        setContentAreaDimensions(density, 300, contentsHeightDp);
-        mMediator.onLayoutChange(mMockContentView, 0, 0, 600, 400, 0, 0, 400, 600);
+        // Set layout as if it was rotated: 300x200@2f. Since we're in RESIZES_CONTENT mode, the
+        // sheet will cause a resize to the web contents.  WebContents.getHeight <
+        // minimumVisibleHeightDp so the sheet should be restricted in height.
+        assertEquals(
+                (int) mController.getBottomInsetSupplier().get(), accessorySheetHeightDp * density);
+        simulateLayoutSizeChange(density, initialHeightDp, initialWidthDp, /*keyboardShown=*/false,
+                VirtualKeyboardMode.RESIZES_CONTENT);
+        assertEquals(mLastMockWebContents.getHeight(), initialWidthDp - accessorySheetHeightDp);
 
-        // 100 + 100 - 128 = 72
-        int expectedSheetHeightDp =
-                contentsHeightDp + accessorySheetHeightDp - minimumVisibleHeightDp;
+        // 200 - 128 = 72
+        int expectedSheetHeightDp = initialWidthDp - minimumVisibleHeightDp;
         verify(mMockAccessorySheet).setHeight(density * expectedSheetHeightDp);
     }
 
@@ -1260,7 +1314,9 @@ public class ManualFillingControllerTest {
                 tab, FROM_BROWSER_ACTIONS, TabCreationState.LIVE_IN_FOREGROUND, false);
         mediator.getTabObserverForTesting().onShown(tab, FROM_NEW);
         mediator.getTabModelObserverForTesting().didSelectTab(tab, FROM_NEW, lastId);
-        setContentAreaDimensions(2.f, 300, 128);
+        mInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
+        simulateLayoutSizeChange(
+                2.f, 300, 128, /*keyboardShown=*/true, VirtualKeyboardMode.RESIZES_VISUAL);
         return tab;
     }
 
@@ -1298,6 +1354,10 @@ public class ManualFillingControllerTest {
         mediator.getTabObserverForTesting().onDestroyed(tabToBeClosed);
     }
 
+    /**
+     * Prefer to use simulateLayoutSizeChange which more faithfully sets the WebContents and layout
+     * sizes in the presence of a keyboard.
+     */
     private void setContentAreaDimensions(float density, int widthDp, int heightDp) {
         setContentAreaDimensions(density, widthDp, heightDp, Surface.ROTATION_0);
     }
@@ -1315,18 +1375,40 @@ public class ManualFillingControllerTest {
 
     /**
      * This function initializes mocks and then calls the given mediator events in the order of a
-     * layout resize event (e.g. when extending/shrinking a multi-window window).
-     * It mains sets the {@link WebContents} size and calls |onLayoutChange| with the new bounds.
+     * layout resize event (e.g. when extending/shrinking a multi-window window).  It sets the
+     * correct {@link WebContents} size according to the current VirtualKeyboardMode and calls
+     * |onLayoutChange| with the new bounds.
      * @param density The logical screen density (e.g. 1.f).
-     * @param width The new {@link WebContents} width in dp.
-     * @param height The new {@link WebContents} height in dp.
+     * @param width The new mediator layout width in dp.
+     * @param height The new mediator layout height in dp.
+     * @param keyboardShown Whether the keyboard is considered shown - if true, the WebContents will
+     *        be adjusted by the sKeyboardHeightDp depending on the vkMode.
+     * @param vkMode The current virtual keyboard mode, affecting how WebContents reacts to the View
+     *         size.
      */
-    private void simulateLayoutSizeChange(float density, int width, int height) {
+    private void simulateLayoutSizeChange(float density, int width, int height,
+            boolean keyboardShown, @VirtualKeyboardMode.EnumType int vkMode) {
+        mInsetSupplier.setVirtualKeyboardMode(vkMode);
         int oldHeight = mLastMockWebContents.getHeight();
         int oldWidth = mLastMockWebContents.getWidth();
+
+        int webContentsHeight = height;
+        // In VISUAL/OVERLAYS, the keyboard shouldn't resize the WebContents so it must be
+        // outsetted from the layout height by the keyboard. Otherwise, we must add to the
+        // View's existing keyboard inset by insetting the accessory height as well. See
+        // ApplicationViewportInsetSupplier for details on how this works.
+        if (vkMode == VirtualKeyboardMode.RESIZES_VISUAL
+                || vkMode == VirtualKeyboardMode.OVERLAYS_CONTENT) {
+            webContentsHeight += keyboardShown ? sKeyboardHeightDp : 0;
+        } else {
+            int manualFillingInset =
+                    Math.round(mController.getBottomInsetSupplier().get() / density);
+            webContentsHeight -= manualFillingInset;
+        }
+        setContentAreaDimensions(2.f, width, webContentsHeight);
+
         int newHeight = (int) (density * height);
         int newWidth = (int) (density * width);
-        setContentAreaDimensions(2.f, width, height);
         mMediator.onLayoutChange(
                 mMockContentView, 0, 0, newWidth, newHeight, 0, 0, oldWidth, oldHeight);
     }
