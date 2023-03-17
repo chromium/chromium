@@ -211,6 +211,8 @@ MirroringActivity::MirroringActivity(
       on_stop_(std::move(callback)) {}
 
 MirroringActivity::~MirroringActivity() {
+  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(host_));
+
   if (!did_start_mirroring_timestamp_) {
     return;
   }
@@ -241,8 +243,6 @@ MirroringActivity::~MirroringActivity() {
     base::UmaHistogramLongTimes(kHistogramSessionLengthAccessCode,
                                 cast_duration);
   }
-
-  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(host_));
 }
 
 void MirroringActivity::CreateMojoBindings(mojom::MediaRouter* media_router) {
