@@ -4516,6 +4516,12 @@ chromium-metrics-reviews@google.com.
   <suffix name="V8.Main.Heap.ReadOnlySpace.AllocatedObjects"
       label="Only counting objects allocated in the read-only-space of V8
              heap"/>
+  <suffix name="Vulkan"
+      label="Total memory allocated by the Vulkan Memory Allocator. Only
+             reported when Vulkan is used for rendering."/>
+  <suffix name="Vulkan.AllocatedObjects"
+      label="Total memory allocated by clients from the Vulkan Memory
+             Allocator. Only reported when Vulkan is used for rendering."/>
   <affected-histogram name="Memory.Experimental.Browser2"/>
   <affected-histogram name="Memory.Experimental.Extension2"/>
   <affected-histogram name="Memory.Experimental.Gpu2"/>

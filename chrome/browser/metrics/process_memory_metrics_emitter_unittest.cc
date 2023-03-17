@@ -155,6 +155,8 @@ OSMemDumpPtr GetFakeOSMemDump(MetricMap& metrics_mb) {
 
 constexpr uint64_t kGpuSharedImagesSizeMB = 32;
 constexpr uint64_t kGpuSkiaGpuResourcesMB = 87;
+constexpr uint64_t kGpuVulkanResourcesMB = 120;
+constexpr uint64_t kGpuVulkanUsedResourcesMB = 52;
 constexpr uint64_t kGpuCommandBufferMB = 240;
 constexpr uint64_t kGpuTotalMemory =
     kGpuCommandBufferMB + kGpuSharedImagesSizeMB + kGpuSkiaGpuResourcesMB;
@@ -393,12 +395,18 @@ void PopulateGpuMetrics(GlobalMemoryDumpPtr& global_dump,
                          metrics_mb["Malloc"] * 1024 * 1024);
   SetAllocatorDumpMetric(pmd, "gpu/gl", "effective_size",
                          metrics_mb["CommandBuffer"] * 1024 * 1024);
-  // These two categories are required for total gpu memory, but do not
-  // have a UKM value set for them, so don't appear in metrics_mb.
+  // These categories are required for total gpu memory, but do not have a UKM
+  // value set for them, so don't appear in metrics_mb.
   SetAllocatorDumpMetric(pmd, "gpu/shared_images", "effective_size",
                          kGpuSharedImagesSizeMB * 1024 * 1024);
   SetAllocatorDumpMetric(pmd, "skia/gpu_resources", "effective_size",
                          kGpuSkiaGpuResourcesMB * 1024 * 1024);
+
+  SetAllocatorDumpMetric(pmd, "gpu/vulkan", "allocated_size",
+                         kGpuVulkanResourcesMB * 1024 * 1024);
+  SetAllocatorDumpMetric(pmd, "gpu/vulkan", "used_size",
+                         kGpuVulkanUsedResourcesMB * 1024 * 1024);
+
   OSMemDumpPtr os_dump = GetFakeOSMemDump(metrics_mb);
   pmd->os_dump = std::move(os_dump);
   global_dump->process_dumps.push_back(std::move(pmd));
@@ -1000,6 +1008,32 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
       "Memory.Total.RendererPrivateMemoryFootprintVisibleOrHigherPriority", 0,
       1);
 #endif
+}
+
+TEST_F(ProcessMemoryMetricsEmitterTest, GpuHistogramsAreRecorded) {
+  // Take a snapshot of the current state of the histograms.
+  base::HistogramTester histograms;
+
+  GlobalMemoryDumpPtr global_dump(
+      memory_instrumentation::mojom::GlobalMemoryDump::New());
+  global_dump->aggregated_metrics =
+      memory_instrumentation::mojom::AggregatedMetrics::New();
+  MetricMap expected_metrics = GetExpectedGpuMetrics();
+  PopulateGpuMetrics(global_dump, expected_metrics);
+
+  // Simulate some metrics emission.
+  auto emitter =
+      base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
+  emitter->ReceivedMemoryDump(
+      true, GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+  emitter->ReceivedProcessInfos(GetProcessInfo(test_ukm_recorder_));
+
+  // Check that the expected values have been emitted to histograms.
+  histograms.ExpectBucketCount("Memory.Experimental.Gpu2.Vulkan",
+                               kGpuVulkanResourcesMB, 1);
+  histograms.ExpectBucketCount(
+      "Memory.Experimental.Gpu2.Vulkan.AllocatedObjects",
+      kGpuVulkanUsedResourcesMB, 1);
 }
 
 TEST_F(ProcessMemoryMetricsEmitterTest, MainFramePMFEmitted) {

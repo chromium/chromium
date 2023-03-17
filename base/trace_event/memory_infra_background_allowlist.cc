@@ -59,6 +59,7 @@ constexpr auto kDumpProviderAllowlist =
         "gpu::SharedImageStub",
         "gpu::TextureManager",
         "hibernated_canvas",
+        "vulkan",
         "IPCChannel",
         "InMemoryURLIndex",
         "IndexedDBBackingStore",
@@ -153,6 +154,7 @@ constexpr auto kAllocatorDumpNameAllowlist = base::MakeFixedFlatSet<
         "gpu/shared_images",
         "gpu/transfer_cache/cache_0x?",
         "gpu/transfer_cache/cache_0x?/avg_image_size",
+        "gpu/vulkan/vma_allocator_0x?",
         "history/delta_file_service/leveldb_0x?",
         "history/usage_reports_buffer/leveldb_0x?",
 #if BUILDFLAG(IS_MAC)
