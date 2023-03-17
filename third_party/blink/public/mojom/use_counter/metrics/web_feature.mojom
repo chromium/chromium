@@ -3085,7 +3085,7 @@ enum WebFeature {
   kV8TCPSocket_RemoteAddress_AttributeGetter = 3778,
   kV8TCPSocket_RemotePort_AttributeGetter = 3779,
   kCSSSelectorTargetText = 3780,
-  kPopoverAttribute = 3781,
+  kOBSOLETE_PopoverAttribute = 3781,
   kOBSOLETE_V8HTMLPopupElement_Show_Method = 3782,
   kOBSOLETE_V8HTMLPopupElement_Hide_Method = 3783,
   kOBSOLETE_WindowOpenWithAdditionalBoolParameter = 3784,
