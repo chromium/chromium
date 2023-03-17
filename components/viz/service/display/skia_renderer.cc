@@ -903,7 +903,7 @@ void SkiaRenderer::FinishDrawingFrame() {
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
     }
   } else {
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_APPLE)
     // If there's no primary plane on these platforms it mean's we're delegating
     // to the system compositor, and don't need the buffers anymore. If those
     // buffers are managed by buffer_queue_, we can tell it to destroy them.
@@ -912,7 +912,7 @@ void SkiaRenderer::FinishDrawingFrame() {
     if (buffer_queue_) {
       buffer_queue_->DestroyBuffers();
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_APPLE)
   }
 
   ScheduleOverlays();

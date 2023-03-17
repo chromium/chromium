@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 
 #if defined(__OBJC__)
+#import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
 #endif  // __OBJC__
 
@@ -42,6 +43,9 @@ typedef uint32_t CAContextID;
 + (instancetype)contextWithCGSConnection:(CAContextID)contextId
                                  options:(NSDictionary*)optionsDict;
 #endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_IOS)
++ (instancetype)remoteContextWithOptions:(NSDictionary*)optionsDict;
+#endif  // BUILDFLAG(IS_IOS)
 @property(readonly) CAContextID contextId;
 @property(retain) CALayer *layer;
 @end
@@ -55,7 +59,14 @@ typedef uint32_t CAContextID;
 @property CAContextID contextId;
 @end
 
-#endif // __OBJC__
+#if BUILDFLAG(IS_IOS)
+
+extern NSString* const kCAContextDisplayId;
+extern NSString* const kCAContextIgnoresHitTest;
+
+#endif  // BUILDFLAG(IS_IOS)
+
+#endif  // __OBJC__
 
 namespace ui {
 

@@ -37,7 +37,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT DisplayCALayerTree
  private:
   void GotCALayerFrame(uint32_t ca_context_id);
   void GotIOSurfaceFrame(base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-                         const gfx::Size& dip_size,
+                         const gfx::Size& pixel_size,
                          float scale_factor);
 
   // The root layer of the tree specified at creation time.

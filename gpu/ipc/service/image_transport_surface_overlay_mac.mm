@@ -78,11 +78,15 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
     CGSConnectionID connection_id = CGSMainConnectionID();
     ca_context_.reset([[CAContext contextWithCGSConnection:connection_id
                                                    options:@{}] retain]);
-    [ca_context_ setLayer:ca_layer_tree_coordinator_->GetCALayerForDisplay()];
 #else
-    // TODO(crbug.com/1418775): remote layer api is not ready for iOS yet.
-    NOTREACHED();
+    // Use a very large display ID to ensure that the context is never put
+    // on-screen without being explicitly parented.
+    ca_context_.reset([[CAContext remoteContextWithOptions:@{
+      kCAContextIgnoresHitTest : @YES,
+      kCAContextDisplayId : @10000
+    }] retain]);
 #endif
+    [ca_context_ setLayer:ca_layer_tree_coordinator_->GetCALayerForDisplay()];
   }
 }
 
@@ -165,13 +169,9 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
     TRACE_EVENT_INSTANT2("test_gpu", "SwapBuffers", TRACE_EVENT_SCOPE_THREAD,
                          "GLImpl", static_cast<int>(gl::GetGLImplementation()),
                          "width", pixel_size_.width());
-#if BUILDFLAG(IS_MAC)
     if (use_remote_layer_api_) {
       params.ca_context_id = [ca_context_ contextId];
     } else {
-#else
-    if (true) {
-#endif
       IOSurfaceRef io_surface =
           ca_layer_tree_coordinator_->GetIOSurfaceForDisplay();
       if (io_surface) {

@@ -21,7 +21,14 @@ CALayerTreeCoordinator::CALayerTreeCoordinator(
           allow_av_sample_buffer_display_layer) {
   if (allow_remote_layers_) {
     root_ca_layer_.reset([[CALayer alloc] init]);
+#if BUILDFLAG(IS_MAC)
+    // iOS' UIKit has default coordinate system where the origin is at the upper
+    // left of the drawing area. In contrast, AppKit and Core Graphics that
+    // macOS uses has its origin at the lower left of the drawing area. Thus, we
+    // don't need to flip the coordinate system on iOS as it's already set the
+    // way we want it to be.
     [root_ca_layer_ setGeometryFlipped:YES];
+#endif
     [root_ca_layer_ setOpaque:YES];
   }
 }

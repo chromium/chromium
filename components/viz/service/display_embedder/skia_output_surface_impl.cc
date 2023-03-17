@@ -1059,7 +1059,7 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
   auto backend_format = gr_context_thread_safe_->defaultBackendFormat(
       color_type, GrRenderable::kYes);
   DCHECK(backend_format.isValid());
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   if (is_overlay) {
     DCHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
     // For overlay, IOSurface will be used, and we may need using
