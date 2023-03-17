@@ -22,6 +22,7 @@
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 
 namespace ui {
+class DisplayCALayerTree;
 enum class DomCode;
 }  // namespace ui
 
@@ -199,6 +200,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
 
   std::unique_ptr<BrowserCompositorIOS> browser_compositor_;
   std::unique_ptr<UIViewHolder> ui_view_;
+  std::unique_ptr<ui::DisplayCALayerTree> display_tree_;
   base::WeakPtrFactory<RenderWidgetHostViewIOS> weak_factory_{this};
 };
 

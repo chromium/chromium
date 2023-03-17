@@ -365,12 +365,7 @@ BASE_FEATURE(kHDRUnderlays,
 }  // namespace
 
 CALayerOverlayProcessor::CALayerOverlayProcessor()
-    :
-#if BUILDFLAG(IS_MAC)
-      overlays_allowed_(ui::RemoteLayerAPISupported()),
-#else
-      overlays_allowed_(false),
-#endif
+    : overlays_allowed_(ui::RemoteLayerAPISupported()),
       enable_ca_renderer_(base::FeatureList::IsEnabled(kCARenderer)),
       enable_hdr_underlays_(base::FeatureList::IsEnabled(kHDRUnderlays)) {
   if (base::FeatureList::IsEnabled(features::kMacCAOverlayQuad)) {

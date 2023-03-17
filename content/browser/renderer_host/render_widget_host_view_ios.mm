@@ -20,15 +20,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
-#include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
-#include "ui/gfx/geometry/dip_util.h"
-
-@interface CALayer (PrivateAPI)
-- (void)setContentsChanged;
-@end
 
 // TODO(dtapuska): Change this to be UITextInput and handle the other
 // events to implement the composition and selection ranges.
@@ -235,7 +229,6 @@ namespace content {
 class UIViewHolder {
  public:
   base::scoped_nsobject<RenderWidgetUIView> view_;
-  base::scoped_nsobject<CALayer> io_surface_layer_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -251,6 +244,9 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
   ui_view_ = std::make_unique<UIViewHolder>();
   ui_view_->view_ = base::scoped_nsobject<RenderWidgetUIView>(
       [[RenderWidgetUIView alloc] initWithWidget:this]);
+
+  display_tree_ =
+      std::make_unique<ui::DisplayCALayerTree>([ui_view_->view_ layer]);
 
   browser_compositor_ = std::make_unique<BrowserCompositorIOS>(
       ui_view_->view_.get(), this, host()->is_hidden(),
@@ -452,37 +448,8 @@ void RenderWidgetHostViewIOS::UpdateScreenInfo() {
 
 void RenderWidgetHostViewIOS::UpdateCALayerTree(
     const gfx::CALayerParams& ca_layer_params) {
-  ScopedCAActionDisabler disabler;
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-      IOSurfaceLookupFromMachPort(ca_layer_params.io_surface_mach_port));
-  if (!io_surface) {
-    return;
-  }
-
-  if (!ui_view_->io_surface_layer_) {
-    ui_view_->io_surface_layer_ =
-        base::scoped_nsobject<CALayer>([[CALayer alloc] init]);
-    [[ui_view_->view_ layer] addSublayer:ui_view_->io_surface_layer_];
-    [[ui_view_->view_ layer] setDrawsAsynchronously:YES];
-  }
-
-  id new_contents = static_cast<id>(io_surface.get());
-  if (new_contents && new_contents == [ui_view_->io_surface_layer_ contents]) {
-    [ui_view_->io_surface_layer_ setContentsChanged];
-  } else {
-    [ui_view_->io_surface_layer_ setContents:new_contents];
-  }
-
-  // TODO(danakj): We should avoid lossy conversions to integer DIPs. The OS
-  // wants a floating point value.
-  gfx::Size bounds_dip = gfx::ToFlooredSize(gfx::ConvertSizeToDips(
-      ca_layer_params.pixel_size, ca_layer_params.scale_factor));
-  [ui_view_->io_surface_layer_
-      setFrame:CGRectMake(0, 0, bounds_dip.width(), bounds_dip.height())];
-  if ([ui_view_->io_surface_layer_ contentsScale] !=
-      ca_layer_params.scale_factor) {
-    [ui_view_->io_surface_layer_ setContentsScale:ca_layer_params.scale_factor];
-  }
+  DCHECK(display_tree_);
+  display_tree_->UpdateCALayerTree(ca_layer_params);
 }
 
 void RenderWidgetHostViewIOS::DidNavigate() {

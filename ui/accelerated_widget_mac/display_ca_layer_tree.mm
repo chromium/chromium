@@ -4,14 +4,14 @@
 
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 
-#import <Cocoa/Cocoa.h>
-#include <IOSurface/IOSurface.h>
+#import <QuartzCore/QuartzCore.h>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -37,20 +37,26 @@ DisplayCALayerTree::DisplayCALayerTree(CALayer* root_layer)
 
   // Add a flipped transparent layer as a child, so that we don't need to
   // fiddle with the position of sub-layers -- they will always be at the
-  // origin.
-  flipped_layer_.reset([[CALayer alloc] init]);
-  [flipped_layer_ setGeometryFlipped:YES];
-  [flipped_layer_ setAnchorPoint:CGPointMake(0, 0)];
-  [flipped_layer_
+  // origin. Note that flipping is only applicable to macOS.
+  maybe_flipped_layer_.reset([[CALayer alloc] init]);
+#if BUILDFLAG(IS_MAC)
+  [maybe_flipped_layer_ setGeometryFlipped:YES];
+  [maybe_flipped_layer_
       setAutoresizingMask:kCALayerWidthSizable | kCALayerHeightSizable];
-  [root_layer_ addSublayer:flipped_layer_];
+#endif
+  [maybe_flipped_layer_ setAnchorPoint:CGPointZero];
+  [root_layer_ addSublayer:maybe_flipped_layer_];
+
+#if BUILDFLAG(IS_IOS)
+  [root_layer_ setDrawsAsynchronously:YES];
+#endif
 }
 
 DisplayCALayerTree::~DisplayCALayerTree() {
   // Disable the fade-out animation as the view is removed.
   ScopedCAActionDisabler disabler;
 
-  [flipped_layer_ removeFromSuperlayer];
+  [maybe_flipped_layer_ removeFromSuperlayer];
   [remote_layer_ removeFromSuperlayer];
   [io_surface_layer_ removeFromSuperlayer];
   remote_layer_.reset();
@@ -59,6 +65,20 @@ DisplayCALayerTree::~DisplayCALayerTree() {
 
 void DisplayCALayerTree::UpdateCALayerTree(
     const gfx::CALayerParams& ca_layer_params) {
+  // TODO(danakj): We should avoid lossy conversions to integer DIPs. The OS
+  // wants a floating point value.
+  gfx::Size dip_size = gfx::ToFlooredSize(gfx::ConvertSizeToDips(
+      ca_layer_params.pixel_size, ca_layer_params.scale_factor));
+
+  // iOS doesn't support autoresizing mask. Thus, adjust the bounds.
+#if BUILDFLAG(IS_IOS)
+  [maybe_flipped_layer_
+      setBounds:CGRectMake(0, 0, dip_size.width(), dip_size.height())];
+
+  if ([maybe_flipped_layer_ contentsScale] != ca_layer_params.scale_factor) {
+    [maybe_flipped_layer_ setContentsScale:ca_layer_params.scale_factor];
+  }
+#endif
   // Remote layers are the most common case.
   if (ca_layer_params.ca_context_id) {
     GotCALayerFrame(ca_layer_params.ca_context_id);
@@ -71,8 +91,7 @@ void DisplayCALayerTree::UpdateCALayerTree(
     base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
         IOSurfaceLookupFromMachPort(ca_layer_params.io_surface_mach_port));
     if (io_surface) {
-      GotIOSurfaceFrame(io_surface, ca_layer_params.pixel_size,
-                        ca_layer_params.scale_factor);
+      GotIOSurfaceFrame(io_surface, dip_size, ca_layer_params.scale_factor);
       return;
     }
     LOG(ERROR) << "Unable to open IOSurface for frame.";
@@ -110,11 +129,13 @@ void DisplayCALayerTree::GotCALayerFrame(uint32_t ca_context_id) {
   base::scoped_nsobject<CALayerHost> new_remote_layer(
       [[CALayerHost alloc] init]);
   [new_remote_layer setContextId:ca_context_id];
+#if BUILDFLAG(IS_MAC)
   [new_remote_layer
       setAutoresizingMask:kCALayerMaxXMargin | kCALayerMaxYMargin];
+#endif
 
   // Update the local CALayer tree.
-  [flipped_layer_ addSublayer:new_remote_layer];
+  [maybe_flipped_layer_ addSublayer:new_remote_layer];
   [remote_layer_ removeFromSuperlayer];
   remote_layer_ = new_remote_layer;
 
@@ -127,7 +148,7 @@ void DisplayCALayerTree::GotCALayerFrame(uint32_t ca_context_id) {
 
 void DisplayCALayerTree::GotIOSurfaceFrame(
     base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-    const gfx::Size& pixel_size,
+    const gfx::Size& dip_size,
     float scale_factor) {
   DCHECK(io_surface);
   TRACE_EVENT0("ui", "DisplayCALayerTree::GotIOSurfaceFrame");
@@ -137,22 +158,20 @@ void DisplayCALayerTree::GotIOSurfaceFrame(
   if (!io_surface_layer_) {
     io_surface_layer_.reset([[CALayer alloc] init]);
     [io_surface_layer_ setContentsGravity:kCAGravityTopLeft];
-    [io_surface_layer_ setAnchorPoint:CGPointMake(0, 0)];
-    [flipped_layer_ addSublayer:io_surface_layer_];
+    [io_surface_layer_ setAnchorPoint:CGPointZero];
+    [maybe_flipped_layer_ addSublayer:io_surface_layer_];
   }
   id new_contents = static_cast<id>(io_surface.get());
   if (new_contents && new_contents == [io_surface_layer_ contents])
     [io_surface_layer_ setContentsChanged];
   else
     [io_surface_layer_ setContents:new_contents];
-  // TODO(danakj): We should avoid lossy conversions to integer DIPs. The OS
-  // wants a floating point value.
-  gfx::Size bounds_dip =
-      gfx::ToFlooredSize(gfx::ConvertSizeToDips(pixel_size, scale_factor));
+
   [io_surface_layer_
-      setBounds:CGRectMake(0, 0, bounds_dip.width(), bounds_dip.height())];
-  if ([io_surface_layer_ contentsScale] != scale_factor)
+      setBounds:CGRectMake(0, 0, dip_size.width(), dip_size.height())];
+  if ([io_surface_layer_ contentsScale] != scale_factor) {
     [io_surface_layer_ setContentsScale:scale_factor];
+  }
 
   // Ensure that the remote layer be removed.
   if (remote_layer_) {

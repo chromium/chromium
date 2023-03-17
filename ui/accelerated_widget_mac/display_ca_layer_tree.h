@@ -37,7 +37,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT DisplayCALayerTree
  private:
   void GotCALayerFrame(uint32_t ca_context_id);
   void GotIOSurfaceFrame(base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-                         const gfx::Size& pixel_size,
+                         const gfx::Size& dip_size,
                          float scale_factor);
 
   // The root layer of the tree specified at creation time.
@@ -49,7 +49,14 @@ class ACCELERATED_WIDGET_MAC_EXPORT DisplayCALayerTree
   // impossible when using remote layers, as their size change cannot be
   // synchronized with the window). This indirection is needed because flipping
   // hosted layers (like |background_layer_|) leads to unpredictable behavior.
-  base::scoped_nsobject<CALayer> flipped_layer_;
+  //
+  // Please note that this is only applicable to macOS as iOS' UIKit has default
+  // coordinate system where the origin is at the upper left of the drawing
+  // area. In contrast, AppKit and Core Graphics that macOS uses has its origin
+  // at the lower left of the drawing area. Thus, we don't need to flip the
+  // coordinate system on iOS as it's already set the way we want it to be. But
+  // this layer is still used for robustness.
+  base::scoped_nsobject<CALayer> maybe_flipped_layer_;
 
   // A remote CALayer with content provided by the output surface.
   base::scoped_nsobject<CALayerHost> remote_layer_;

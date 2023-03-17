@@ -73,9 +73,7 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
 
   base::WeakPtr<ImageTransportSurfaceDelegate> delegate_;
 
-#if BUILDFLAG(IS_MAC)
-  bool use_remote_layer_api_;
-#endif
+  const bool use_remote_layer_api_;
   base::scoped_nsobject<CAContext> ca_context_;
   std::unique_ptr<ui::CALayerTreeCoordinator> ca_layer_tree_coordinator_;
 

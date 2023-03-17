@@ -15,7 +15,13 @@ namespace {
 // GPU process on Mac.
 BASE_FEATURE(kRemoteCoreAnimationAPI,
              "RemoteCoreAnimationAPI",
+#if BUILDFLAG(IS_IOS)
+             // TODO(crbug.com/1418775): forcibly disable remote layer api as
+             // it's not ready for iOS yet.
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
 }  // namespace
 
 bool RemoteLayerAPISupported() {
@@ -30,8 +36,10 @@ bool RemoteLayerAPISupported() {
   // Note that because the contextId and layer properties are dynamic,
   // instancesRespondToSelector will return NO for them.
   static bool caContextClassValid =
-      [caContextClass respondsToSelector:
-          @selector(contextWithCGSConnection:options:)] &&
+#if BUILDFLAG(IS_MAC)
+      [caContextClass
+          respondsToSelector:@selector(contextWithCGSConnection:options:)] &&
+#endif  // BUILDFLAG(IS_MAC)
       class_getProperty(caContextClass, "contextId") &&
       class_getProperty(caContextClass, "layer");
   if (!caContextClassValid)

@@ -13,6 +13,8 @@ component("accelerated_widget_mac") {
     "ca_layer_tree_coordinator.mm",
     "ca_renderer_layer_tree.h",
     "ca_renderer_layer_tree.mm",
+    "display_ca_layer_tree.h",
+    "display_ca_layer_tree.mm",
   ]
 
   defines = [
@@ -41,8 +43,6 @@ component("accelerated_widget_mac") {
       "accelerated_widget_mac_export.h",
       "ca_transaction_observer.h",
       "ca_transaction_observer.mm",
-      "display_ca_layer_tree.h",
-      "display_ca_layer_tree.mm",
       "io_surface_context.h",
       "io_surface_context.mm",
       "window_resize_helper_mac.cc",

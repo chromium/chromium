@@ -317,8 +317,6 @@ component("base") {
       "cocoa/permissions_utils.mm",
       "cocoa/remote_accessibility_api.h",
       "cocoa/remote_accessibility_api.mm",
-      "cocoa/remote_layer_api.h",
-      "cocoa/remote_layer_api.mm",
       "cocoa/secure_password_input.h",
       "cocoa/secure_password_input.mm",
       "cocoa/text_services_context_menu.h",
@@ -353,6 +351,8 @@ component("base") {
     sources += [
       "cocoa/quartz_util.h",
       "cocoa/quartz_util.mm",
+      "cocoa/remote_layer_api.h",
+      "cocoa/remote_layer_api.mm",
     ]
   }
 

@@ -5,13 +5,16 @@
 #ifndef UI_BASE_COCOA_REMOTE_LAYER_API_H_
 #define UI_BASE_COCOA_REMOTE_LAYER_API_H_
 
-#if defined(__OBJC__)
-#import <Cocoa/Cocoa.h>
-#endif  // __OBJC__
-
 #include <stdint.h>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
+
+#if defined(__OBJC__)
+#import <QuartzCore/QuartzCore.h>
+#endif  // __OBJC__
+
+#if BUILDFLAG(IS_MAC)
 
 // The CGSConnectionID is used to create the CAContext in the process that is
 // going to share the CALayers that it is rendering to another process to
@@ -20,6 +23,8 @@ extern "C" {
 typedef uint32_t CGSConnectionID;
 CGSConnectionID CGSMainConnectionID(void);
 }
+
+#endif  // BUIDLFAG(IS_MAC)
 
 // The CAContextID type identifies a CAContext across processes. This is the
 // token that is passed from the process that is sharing the CALayer that it is
@@ -33,8 +38,10 @@ typedef uint32_t CAContextID;
 // content displayed by that CALayerHost will be the content of the CALayer
 // that is set as the |layer| property on the CAContext.
 @interface CAContext : NSObject
+#if BUILDFLAG(IS_MAC)
 + (instancetype)contextWithCGSConnection:(CAContextID)contextId
                                  options:(NSDictionary*)optionsDict;
+#endif  // BUILDFLAG(IS_MAC)
 @property(readonly) CAContextID contextId;
 @property(retain) CALayer *layer;
 @end
