@@ -7038,7 +7038,12 @@ void RenderFrameHostImpl::UpdateUserActivationState(
 }
 
 void RenderFrameHostImpl::DidConsumeHistoryUserActivation() {
-  owner_->DidConsumeHistoryUserActivation();
+  // owner_ may be null for IsPendingDeletion() or IsInBackForwardCache(), in
+  // which case the history user activation is managed by a different active
+  // RenderFrameHost.
+  if (owner_) {
+    owner_->DidConsumeHistoryUserActivation();
+  }
 }
 
 void RenderFrameHostImpl::HadStickyUserActivationBeforeNavigationChanged(
