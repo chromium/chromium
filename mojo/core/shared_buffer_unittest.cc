@@ -344,7 +344,15 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndPassReadOnlyBuffer,
   MojoClose(b);
 }
 
-TEST_F(SharedBufferTest, CreateAndPassFromChildReadOnlyBuffer) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1418597): Test currently fails on iOS.
+#define MAYBE_CreateAndPassFromChildReadOnlyBuffer \
+  DISABLED_CreateAndPassFromChildReadOnlyBuffer
+#else
+#define MAYBE_CreateAndPassFromChildReadOnlyBuffer \
+  CreateAndPassFromChildReadOnlyBuffer
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(SharedBufferTest, MAYBE_CreateAndPassFromChildReadOnlyBuffer) {
   RunTestClient("CreateAndPassReadOnlyBuffer", [&](MojoHandle h) {
     MojoHandle b;
     EXPECT_EQ("", ReadMessageWithHandles(h, &b, 1));
