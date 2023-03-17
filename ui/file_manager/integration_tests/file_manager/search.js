@@ -6,7 +6,7 @@ import {FilesAppState} from '../files_app_state.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {mountCrostini, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
@@ -650,5 +650,20 @@ testcase.searchFromMyFiles = async () => {
   await remoteCall.typeSearchText(appId, 'hello');
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
     ENTRIES.hello,
+  ]));
+
+  // Add Linux files.
+  await mountCrostini(appId);
+  // Add some Linux specific files.
+  await addEntries(['crostini'], [ENTRIES.debPackage]);
+  // Navigate back to /My files
+  await navigateWithDirectoryTree(appId, '/My files');
+
+  // Search for files containing ack (should include debPackage.
+  await remoteCall.typeSearchText(appId, 'ack');
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.desktop,
+    ENTRIES.desktop,
+    ENTRIES.debPackage,
   ]));
 };

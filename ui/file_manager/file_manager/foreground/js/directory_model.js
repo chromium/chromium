@@ -1502,8 +1502,7 @@ export class DirectoryModel extends EventTarget {
       if (query) {
         return () => {
           return new SearchV2ContentScanner(
-              locationInfo ? locationInfo.rootType : null,
-              /** @type {!DirectoryEntry} */ (entry), query, opt_options);
+              this.volumeManager_, entry, query, opt_options);
         };
       }
     }
