@@ -138,11 +138,11 @@ const NSUInteger kPartialTranslateCharactersLimit = 500;
     return NO;
   }
   return tabHelper->CanRetrieveSelectedText() &&
-         PartialTranslateLimitMaxCharacters() > 0u;
+         ios::provider::PartialTranslateLimitMaxCharacters() > 0u;
 }
 
 - (BOOL)shouldInstallPartialTranslate {
-  if (PartialTranslateLimitMaxCharacters() == 0u) {
+  if (ios::provider::PartialTranslateLimitMaxCharacters() == 0u) {
     // Feature is not available.
     return NO;
   }
@@ -214,7 +214,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 500;
   base::UmaHistogramCounts10000("IOS.PartialTranslate.SelectionLength",
                                 response.selectedText.length);
   if (response.selectedText.length >
-      std::min(PartialTranslateLimitMaxCharacters(),
+      std::min(ios::provider::PartialTranslateLimitMaxCharacters(),
                kPartialTranslateCharactersLimit)) {
     return [self switchToFullTranslateWithError:PartialTranslateError::
                                                     kSelectionTooLong];
@@ -227,7 +227,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 500;
         switchToFullTranslateWithError:PartialTranslateError::kSelectionEmpty];
   }
   __weak __typeof(self) weakSelf = self;
-  self.controller = NewPartialTranslateController(
+  self.controller = ios::provider::NewPartialTranslateController(
       response.selectedText, response.sourceRect, self.incognito);
   [self.controller
       presentOnViewController:self.baseViewController

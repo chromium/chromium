@@ -27,15 +27,3 @@ NSUInteger PartialTranslateLimitMaxCharacters() {
 
 }  // namespace provider
 }  // namespace ios
-
-id<PartialTranslateController> NewPartialTranslateController(
-    NSString* source_text,
-    const CGRect& anchor,
-    BOOL incognito) {
-  return ios::provider::NewPartialTranslateController(source_text, anchor,
-                                                      incognito);
-}
-
-NSUInteger PartialTranslateLimitMaxCharacters() {
-  return ios::provider::PartialTranslateLimitMaxCharacters();
-}

@@ -175,7 +175,7 @@ class PartialTranslateMediatorTest : public PlatformTest {
   void TearDown() override {
     [mediator_ shutdown];
     // Reset the factory
-    SetPartialTranslateControllerFactory(nil);
+    ios::provider::test::SetPartialTranslateControllerFactory(nil);
     PlatformTest::TearDown();
   }
 
@@ -187,7 +187,7 @@ class PartialTranslateMediatorTest : public PlatformTest {
     FakePartialTranslateControllerFactory* factory =
         [[FakePartialTranslateControllerFactory alloc]
             initWithSuccess:shouldSucceed];
-    SetPartialTranslateControllerFactory(factory);
+    ios::provider::test::SetPartialTranslateControllerFactory(factory);
     return factory;
   }
 

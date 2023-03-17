@@ -32,7 +32,4 @@ void SetPartialTranslateControllerFactory(
 }  // namespace provider
 }  // namespace ios
 
-void SetPartialTranslateControllerFactory(
-    id<PartialTranslateControllerFactory> factory);
-
 #endif  // IOS_CHROME_TEST_PROVIDERS_PARTIAL_TRANSLATE_TEST_PARTIAL_TRANSLATE_H_

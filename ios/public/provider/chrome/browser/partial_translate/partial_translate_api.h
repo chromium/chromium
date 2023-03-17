@@ -41,10 +41,4 @@ NSUInteger PartialTranslateLimitMaxCharacters();
 }  // namespace provider
 }  // namespace ios
 
-id<PartialTranslateController> NewPartialTranslateController(
-    NSString* source_text,
-    const CGRect& anchor,
-    BOOL incognito);
-NSUInteger PartialTranslateLimitMaxCharacters();
-
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_API_H_
