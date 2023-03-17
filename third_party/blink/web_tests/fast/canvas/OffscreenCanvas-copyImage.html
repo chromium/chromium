@@ -32,26 +32,22 @@ function initTest() {
   ctx.fillStyle = "#ff0";
   ctx.fillRect(128, 128, 128, 128);
 
-  requestAnimationFrame(runTest);
-}
-
-function runTest() {
-  // We need a frame barrier for the image frame to be propagated to the
-  // placeholder canvas.
-  requestAnimationFrame(() => {
-    requestAnimationFrame(copyImage);
-  });
+  copyImage();
 }
 
 function copyImage() {
   testRunner.copyImageThen(128, 128,
-    t.step_func_done((width, height, snapshot) => {
+    t.step_func((width, height, snapshot) => {
+      const data = new Uint8Array(snapshot);
+      const pixelLeftTop = data.subarray(0, 4);
+      if (pixelLeftTop[3] == 0) {
+        // Screen not yet updated, wait another rAF cycle
+        requestAnimationFrame(copyImage);
+        return;
+      }
       assert_equals(width, 256, "The copied image has a width of 256.");
       assert_equals(height, 256, "The copied image has a height of 256.");
 
-      const data = new Uint8Array(snapshot);
-
-      const pixelLeftTop = data.subarray(0, 4);
       assert_array_equals(pixelLeftTop, [255, 0, 0, 255],
         "The copied image's top left is red");
 
@@ -67,6 +63,7 @@ function copyImage() {
         4 * 256 * 128 + 4 * 128 + 4);
       assert_array_equals(pixelRightBottom, [255, 255, 0, 255],
         "The copied image's bottom right is yellow");
+      t.done();
     }));
 }
 

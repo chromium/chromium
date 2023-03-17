@@ -285,9 +285,6 @@ crbug.com/713049 [ Mac ] virtual/gpu-rasterization/images/color-profile-reflecti
 # This test was attributed to site isolation but times out with or without it. Broken test?
 crbug.com/1050826 external/wpt/mixed-content/gen/top.http-rp/opt-in/object-tag.https.html [ Skip Timeout ]
 
-crbug.com/1098369 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
-
-
 crbug.com/1237275 fast/canvas/layers-lonebeginlayer.html [ Failure Pass ]
 crbug.com/1237275 fast/canvas/layers-unmatched-beginlayer.html [ Failure Pass ]
 
