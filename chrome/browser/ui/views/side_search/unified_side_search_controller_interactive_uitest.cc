@@ -52,10 +52,6 @@ class SideSearchV2Test : public SideSearchBrowserTest {
     SideSearchBrowserTest::SetUp();
   }
 
-  SidePanel* GetSidePanelFor(Browser* browser) override {
-    return BrowserViewFor(browser)->unified_side_panel();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -830,10 +826,6 @@ class SideSearchFeatureEngagementTest : public SideSearchBrowserTest {
             BrowserContextDependencyManager::GetInstance()
                 ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
                     &SideSearchFeatureEngagementTest::RegisterTestTracker))) {}
-
-  SidePanel* GetSidePanelFor(Browser* browser) override {
-    return BrowserViewFor(browser)->unified_side_panel();
-  }
 
   // Navigates one page backwards in navigation history and waits for the
   // navigation to complete.

@@ -35,6 +35,7 @@ SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
                           base::Unretained(this)));
 
   UpdateToolbarButtonIcon();
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);

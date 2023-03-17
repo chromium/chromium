@@ -187,7 +187,7 @@ views::Button* SideSearchBrowserTest::GetSideButtonClosePanelFor(
 }
 
 SidePanel* SideSearchBrowserTest::GetSidePanelFor(Browser* browser) {
-  return BrowserViewFor(browser)->side_search_side_panel_for_testing();
+  return BrowserViewFor(browser)->unified_side_panel();
 }
 
 content::WebContents* SideSearchBrowserTest::GetSidePanelContentsFor(

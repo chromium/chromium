@@ -61,7 +61,6 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* toolbar,
                     InfoBarContainerView* infobar_container,
                     views::View* contents_container,
-                    views::View* side_search_side_panel,
                     views::View* left_aligned_side_panel_separator,
                     views::View* unified_side_panel,
                     views::View* right_aligned_side_panel_separator,
@@ -184,7 +183,6 @@ class BrowserViewLayout : public views::LayoutManager {
   const raw_ptr<views::View, DanglingUntriaged> toolbar_;
   const raw_ptr<InfoBarContainerView, DanglingUntriaged> infobar_container_;
   const raw_ptr<views::View, DanglingUntriaged> contents_container_;
-  const raw_ptr<views::View, DanglingUntriaged> side_search_side_panel_;
   const raw_ptr<views::View, DanglingUntriaged>
       left_aligned_side_panel_separator_;
   const raw_ptr<views::View, DanglingUntriaged> unified_side_panel_;

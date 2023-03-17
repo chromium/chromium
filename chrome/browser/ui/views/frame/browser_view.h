@@ -207,10 +207,6 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* unified_side_panel() { return unified_side_panel_; }
 
-  SidePanel* side_search_side_panel_for_testing() {
-    return side_search_side_panel_;
-  }
-
   SidePanelCoordinator* side_panel_coordinator() {
     return side_panel_coordinator_.get();
   }
@@ -786,8 +782,6 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   class AccessibilityModeObserver;
-  class SidePanelButtonHighlighter;
-  class SidePanelVisibilityController;
 
   // If the browser is in immersive full screen mode, it will reveal the
   // tabstrip for a short duration. This is useful for shortcuts that perform
@@ -1088,26 +1082,10 @@ class BrowserView : public BrowserWindow,
       nullptr;
 
   // The side search side panel.
-  raw_ptr<SidePanel, DanglingUntriaged> side_search_side_panel_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> left_aligned_side_panel_separator_ =
       nullptr;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
-
-  // TODO(pbos): Move this functionality into SidePanel when multiple "panels"
-  // are managed within the same object.
-  // Observer object managing the button highlight of the side-panel button
-  // inside ToolbarView. Must outlive the button whose highlight it's managing
-  // as well as the side panels it's observing.
-  std::unique_ptr<SidePanelButtonHighlighter> side_panel_button_highlighter_;
-
-  // TODO(tluk): Move this functionality into SidePanelCoordinator when the side
-  // panel v2 project rolls out.
-  // This controller manages the visibility of the read later, side search and
-  // lens side panels. It ensures only one panel is visible at a given time and
-  // the contextual panel interacts as expected with the global panels.
-  std::unique_ptr<SidePanelVisibilityController>
-      side_panel_visibility_controller_;
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

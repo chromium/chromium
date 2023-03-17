@@ -862,3 +862,17 @@ void SidePanelCoordinator::UpdateNewTabButtonState() {
         current_entry_->GetOpenInNewTabURL().is_valid());
   }
 }
+
+void SidePanelCoordinator::UpdateToolbarButtonHighlight(
+    bool side_panel_visible) {
+  auto* side_panel_button = browser_view_->toolbar()->side_panel_button();
+  side_panel_button->SetHighlighted(side_panel_visible);
+  side_panel_button->SetTooltipText(l10n_util::GetStringUTF16(
+      side_panel_visible ? IDS_TOOLTIP_SIDE_PANEL_HIDE
+                         : IDS_TOOLTIP_SIDE_PANEL_SHOW));
+}
+
+void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
+                                                   views::View* starting_from) {
+  UpdateToolbarButtonHighlight(observed_view->GetVisible());
+}

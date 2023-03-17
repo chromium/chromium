@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/views/view_observer.h"
 
 class Browser;
 class BrowserView;
@@ -40,7 +41,8 @@ class View;
 // the side panel is closed and |last_active_global_entry_id_| is used to
 // determine what entry is seen when the panel is reopened.
 class SidePanelCoordinator final : public SidePanelRegistryObserver,
-                                   public TabStripModelObserver {
+                                   public TabStripModelObserver,
+                                   public views::ViewObserver {
  public:
   explicit SidePanelCoordinator(BrowserView* browser_view);
   SidePanelCoordinator(const SidePanelCoordinator&) = delete;
@@ -138,6 +140,12 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Clear cached views for registry entries for global and contextual
   // registries.
   void ClearCachedEntryViews();
+
+  void UpdateToolbarButtonHighlight(bool side_panel_visible);
+
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_from) override;
 
   // Returns the last active entry or the reading list entry if no last active
   // entry exists.
