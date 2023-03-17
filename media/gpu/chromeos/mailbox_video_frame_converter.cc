@@ -312,6 +312,10 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
       [](scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
          base::WeakPtr<MailboxVideoFrameConverter> gpu_weak_ptr,
          scoped_refptr<VideoFrame> frame, const gpu::SyncToken& sync_token) {
+        if (!sync_token.HasData()) {
+          return;
+        }
+
         if (gpu_task_runner->RunsTasksInCurrentSequence()) {
           if (gpu_weak_ptr) {
             gpu_weak_ptr->WaitOnSyncTokenAndReleaseFrameOnGPUThread(
