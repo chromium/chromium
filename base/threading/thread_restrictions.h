@@ -333,7 +333,7 @@ class ScopedIPCSupport;
 namespace ipcz_driver {
 class MojoTrap;
 }
-}
+}  // namespace core
 }  // namespace mojo
 namespace printing {
 class LocalPrinterHandlerDefault;
@@ -391,6 +391,7 @@ namespace remoting {
 class AutoThread;
 class ScopedBypassIOThreadRestrictions;
 namespace protocol {
+class ScopedAllowSyncPrimitivesForWebRtcDataStreamAdapter;
 class ScopedAllowSyncPrimitivesForWebRtcTransport;
 class ScopedAllowThreadJoinForWebRtcTransport;
 }  // namespace protocol
@@ -419,7 +420,7 @@ class SystemctlLauncherScopedAllowBaseSyncPrimitives;
 namespace viz {
 class HostGpuMemoryBufferManager;
 class ClientGpuMemoryBufferManager;
-}
+}  // namespace viz
 
 namespace vr {
 class VrShell;
@@ -449,7 +450,7 @@ class TaskQueueImpl;
 namespace android {
 class JavaHandlerThread;
 class ScopedAllowBlockingForImportantFileWriter;
-}
+}  // namespace android
 
 namespace internal {
 class GetAppOutputScopedAllowBaseSyncPrimitives;
@@ -469,7 +470,7 @@ class StackTrace;
 namespace win {
 class OSInfo;
 class ScopedAllowBlockingForUserAccountControl;
-}
+}  // namespace win
 
 class AdjustOOMScoreHelper;
 class ChromeOSVersionInfo;
@@ -874,6 +875,8 @@ class BASE_EXPORT
   friend class proxy_resolver::
       ScopedAllowThreadJoinForProxyResolverV8Tracing;  // http://crbug.com/69710
   friend class remoting::AutoThread;  // https://crbug.com/944316
+  friend class remoting::protocol::
+      ScopedAllowSyncPrimitivesForWebRtcDataStreamAdapter;  // http://b/233844893
   friend class remoting::protocol::
       ScopedAllowSyncPrimitivesForWebRtcTransport;  // http://crbug.com/1198501
   friend class remoting::protocol::

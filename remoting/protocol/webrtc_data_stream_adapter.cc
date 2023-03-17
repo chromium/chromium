@@ -19,6 +19,12 @@
 
 namespace remoting::protocol {
 
+// On ChromeOS `channel_` is actually a sctp data channel which ends up
+// posting all accessors to a different task, and wait for the response
+// (See `MethodCall::Marshal` inside third_party/webrtc/pc/proxy.h).
+class ScopedAllowSyncPrimitivesForWebRtcDataStreamAdapter
+    : public base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {};
+
 WebrtcDataStreamAdapter::WebrtcDataStreamAdapter(
     rtc::scoped_refptr<webrtc::DataChannelInterface> channel)
     : channel_(channel.get()) {
@@ -60,6 +66,8 @@ void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
 }
 
 void WebrtcDataStreamAdapter::SendMessagesIfReady() {
+  ScopedAllowSyncPrimitivesForWebRtcDataStreamAdapter allow_wait;
+
   // We use our own send queue instead of queuing multiple messages in the
   // data-channel queue so we can invoke the done callback as close to the
   // message actually being sent as possible and avoid overrunning the data-
