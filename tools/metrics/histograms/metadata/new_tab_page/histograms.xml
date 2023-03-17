@@ -1238,7 +1238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.Disabled{Interaction}" enum="NtpModules"
-    expires_after="2023-03-20">
+    expires_after="2023-09-01">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1366,7 +1366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.Hover" enum="NtpModules"
-    expires_after="2023-04-16">
+    expires_after="2023-09-01">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1414,7 +1414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.InfoButtonClicked" enum="NtpModules"
-    expires_after="2023-04-16">
+    expires_after="2023-09-01">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1461,7 +1461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.LoadedWith.{NtpModule}" enum="NtpModules"
-    expires_after="2023-03-20">
+    expires_after="2023-09-01">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2072,7 +2072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TileType" enum="NTPTileVisualType"
-    expires_after="2023-03-19">
+    expires_after="2023-09-01">
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
