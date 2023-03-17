@@ -183,6 +183,8 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Creates a new desk. CanCreateDesks() must be checked before calling this.
   void NewDesk(DesksCreationRemovalSource source);
 
+  bool HasDesk(const Desk* desk) const;
+
   // Removes and deletes the given `desk`. `desk` must already exist, and
   // CanRemoveDesks() must be checked before this.
   // This will trigger the `DeskRemovalAnimation` if the active desk is being
@@ -393,8 +395,6 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   friend class DesksTestApi;
 
   void OnAnimationFinished(DeskAnimationBase* animation);
-
-  bool HasDesk(const Desk* desk) const;
 
   bool HasDeskWithName(const std::u16string& desk_name) const;
 

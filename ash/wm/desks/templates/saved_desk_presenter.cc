@@ -59,6 +59,47 @@ desks_storage::DeskModel* GetDeskModel() {
   return desk_model;
 }
 
+// Shows the saved desk library view and remove the active desk if `remove_desk`
+// is true.
+void ShowLibrary(aura::Window* const root_window,
+                 const std::u16string& saved_desk_name,
+                 const base::GUID& uuid,
+                 bool remove_desk) {
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+
+  OverviewSession* overview_session = overview_controller->overview_session();
+  if (!overview_session) {
+    if (!overview_controller->StartOverview(
+            OverviewStartAction::kOverviewButton,
+            OverviewEnterExitType::kImmediateEnterWithoutFocus)) {
+      // If for whatever reason we didn't enter overview mode, bail.
+      return;
+    }
+
+    overview_session = overview_controller->overview_session();
+    DCHECK(overview_session);
+  }
+
+  // Show the library, this should highlight the newly saved item.
+  overview_session->ShowSavedDeskLibrary(uuid, saved_desk_name, root_window);
+
+  // Remove the current desk, this will be done without animation.
+  if (remove_desk) {
+    auto* desks_controller = DesksController::Get();
+    const Desk* desk_to_remove = desks_controller->active_desk();
+    if (desks_controller->HasDesk(desk_to_remove)) {
+      if (!desks_controller->CanRemoveDesks()) {
+        desks_controller->NewDesk(
+            DesksCreationRemovalSource::kEnsureDefaultDesk);
+      }
+
+      desks_controller->RemoveDesk(desk_to_remove,
+                                   DesksCreationRemovalSource::kSaveAndRecall,
+                                   DeskCloseType::kCloseAllWindows);
+    }
+  }
+}
+
 // The WindowCloseObserver helper is used in the Save & Recall save flow. When
 // the user saves a desk, we will try to close all windows on that desk, and
 // then finally remove the desk. This is an asynchronous task that may trigger
@@ -107,13 +148,10 @@ class WindowCloseObserver : public aura::WindowObserver {
     // things a bit differently.
     has_arc_app_ = base::ranges::any_of(windows, &IsArcWindow);
 
-    // Observe the windows that we are going to close.
+    // Observe the windows that we are going to close. Since `windows` here are
+    // all non-all-desks windows or non-transient windows, we can observe all
+    // of them.
     for (aura::Window* window : windows) {
-      // Save desk for later would not close all desk windows, thus no need to
-      // observe here.
-      if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
-        continue;
-
       window_observer_.AddObservation(window);
     }
 
@@ -229,46 +267,9 @@ class WindowCloseObserver : public aura::WindowObserver {
   }
 
   void ShowLibrary(bool remove_desk) {
-    OverviewController* overview_controller =
-        Shell::Get()->overview_controller();
     window_observer_.RemoveAllObservations();
-
-    OverviewSession* overview_session = overview_controller->overview_session();
-    if (!overview_session) {
-      if (!overview_controller->StartOverview(
-              OverviewStartAction::kOverviewButton,
-              OverviewEnterExitType::kImmediateEnterWithoutFocus)) {
-        // If for whatever reason we didn't enter overview mode, bail.
-        return;
-      }
-
-      overview_session = overview_controller->overview_session();
-      DCHECK(overview_session);
-    }
-
-    // Show the library, this should highlight the newly saved item.
-    overview_session->ShowSavedDeskLibrary(saved_desk_guid_, saved_desk_name_,
-                                           root_window_);
-
-    // Remove the current desk, this will be done without animation.
-    if (remove_desk) {
-      auto* desks_controller = DesksController::Get();
-      if (DeskExists(desks_controller, desk_to_remove_)) {
-        if (!desks_controller->CanRemoveDesks())
-          desks_controller->NewDesk(
-              DesksCreationRemovalSource::kEnsureDefaultDesk);
-
-        desks_controller->RemoveDesk(desk_to_remove_,
-                                     DesksCreationRemovalSource::kSaveAndRecall,
-                                     DeskCloseType::kCloseAllWindows);
-      }
-    }
-  }
-
-  bool DeskExists(DesksController* desks_controller, const Desk* desk) {
-    return base::Contains(
-        desks_controller->desks(), desk,
-        [](const std::unique_ptr<Desk>& desk) { return desk.get(); });
+    ::ash::ShowLibrary(root_window_, saved_desk_name_, saved_desk_guid_,
+                       remove_desk);
   }
 
   void Terminate() { delete this; }
@@ -683,26 +684,30 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
       std::vector<aura::Window*> windows =
           Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
 
-      // Get rid of transient windows.
+      // Get rid of transient windows and all-desks windows.
       base::EraseIf(windows, [](aura::Window* window) {
-        return wm::GetTransientParent(window) != nullptr;
+        return wm::GetTransientParent(window) != nullptr ||
+               desks_util::IsWindowVisibleOnAllWorkspaces(window);
       });
 
-      // Start observing current windows.
       if (g_window_close_observer)
         delete g_window_close_observer;
-      g_window_close_observer = new WindowCloseObserver(
-          root_window, saved_desk->uuid(), saved_desk_name, windows);
 
-      // Go through windows and attempt to close them.
-      for (aura::Window* window : windows) {
-        // Save desk for later would not close all desk windows, thus skip here.
-        if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
-          continue;
+      if (windows.empty()) {
+        // Show library and remove desk when the windows are all all-desks.
+        ShowLibrary(root_window, saved_desk_name, saved_desk->uuid(),
+                    /*remove_desk=*/true);
+      } else {
+        // Only create the observer when we have closing windows.
+        g_window_close_observer = new WindowCloseObserver(
+            root_window, saved_desk->uuid(), saved_desk_name, windows);
 
-        if (views::Widget* widget =
-                views::Widget::GetWidgetForNativeView(window)) {
-          widget->Close();
+        // Go through windows and attempt to close them.
+        for (aura::Window* window : windows) {
+          if (views::Widget* widget =
+                  views::Widget::GetWidgetForNativeView(window)) {
+            widget->Close();
+          }
         }
       }
 

@@ -614,6 +614,10 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   }
 }
 
+bool DesksController::HasDesk(const Desk* desk) const {
+  return base::Contains(desks_, desk, &std::unique_ptr<Desk>::get);
+}
+
 void DesksController::RemoveDesk(const Desk* desk,
                                  DesksCreationRemovalSource source,
                                  DeskCloseType close_type) {
@@ -1575,10 +1579,6 @@ void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {
   DCHECK_EQ(animation_.get(), animation);
   metrics_helper_->OnAnimationFinished(animation->visible_desk_changes());
   animation_.reset();
-}
-
-bool DesksController::HasDesk(const Desk* desk) const {
-  return base::Contains(desks_, desk, &std::unique_ptr<Desk>::get);
 }
 
 bool DesksController::HasDeskWithName(const std::u16string& desk_name) const {

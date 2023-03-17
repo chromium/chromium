@@ -369,7 +369,8 @@ class SavedDeskTest : public OverviewTestBase {
 
   // Opens overview mode and then clicks the "save desk for later" button. This
   // should create a new saved desk and open the library page.
-  void OpenOverviewAndSaveDeskForLater(aura::Window* root) {
+  void OpenOverviewAndSaveDeskForLater(aura::Window* root,
+                                       bool observe_closing_windows = true) {
     if (!GetOverviewSession()) {
       ToggleOverview();
     }
@@ -379,7 +380,11 @@ class SavedDeskTest : public OverviewTestBase {
         GetOverviewGridForRoot(root)->IsSaveDeskForLaterButtonVisible());
     LeftClickOn(save_desk_button);
     WaitForSavedDeskUI();
-    WaitForSavedDeskUI();
+
+    // Wait for one more time only when we have closing windows.
+    if (observe_closing_windows) {
+      WaitForSavedDeskUI();
+    }
 
     // Clicking the save desk button selects the newly saved desk's name
     // field. We can press enter or escape or click to select out of it.
@@ -4300,6 +4305,29 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithAllDeskWindow) {
   OverviewItem* all_desk_window_overview_item =
       GetOverviewItemForWindow(tracker.windows().front());
   EXPECT_FALSE(all_desk_window_overview_item->item_widget()->IsVisible());
+}
+
+// Tests that when saving a desk with only all desk window, it can show the
+// library view and remove the desk. More details about the bug from
+// b/272343211.
+TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterForAllDeskWindowOnDesk) {
+  DesksController* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  EXPECT_EQ(2ul, desks_controller->desks().size());
+
+  // Create an all desk window.
+  auto all_desk_window = CreateAppWindow(gfx::Rect(300, 300));
+  auto* all_desk_widget =
+      views::Widget::GetWidgetForNativeWindow(all_desk_window.get());
+  all_desk_widget->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(
+      desks_util::IsWindowVisibleOnAllWorkspaces(all_desk_window.get()));
+
+  // When there is only all desk window, no window would be closed. Therefore we
+  // do not need to wait.
+  OpenOverviewAndSaveDeskForLater(Shell::Get()->GetPrimaryRootWindow(),
+                                  /*observe_closing_windows=*/false);
+  EXPECT_EQ(1ul, desks_controller->desks().size());
 }
 
 TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
