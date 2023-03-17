@@ -5020,6 +5020,7 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Failed to attach loop device"/>
   <int value="3" label="Failed to mount migration destination"/>
   <int value="4" label="Failed to create thread for migration"/>
+  <int value="5" label="Failed to create /data/media with casefold flag"/>
 </enum>
 
 <enum name="ArcVmDataMigrationStatus">
