@@ -103,6 +103,7 @@ class KSAgentApp : public App {
       CreateUpdateServiceProxy(UpdaterScope::kSystem);
   scoped_refptr<UpdateService> user_service_proxy_ =
       CreateUpdateServiceProxy(UpdaterScope::kUser);
+  bool update_successful_ = true;  // True when all updates succeed.
   int successful_install_count_ = 0;
   ScopedIPCSupportWrapper ipc_support_;
 };
@@ -138,11 +139,21 @@ std::string KSAgentApp::SwitchValue(const std::string& arg) const {
 
 void KSAgentApp::RecordUpdateResult(
     const UpdateService::UpdateState& update_state) {
-  if (update_state.state == UpdateService::UpdateState::State::kUpdated) {
-    // We don't need an accurate number of successful installations. A positive
-    // integer is enough to indicate that some updates are installed.
-    VLOG(0) << "An app update is installed successfully.";
-    successful_install_count_ += 1;
+  switch (update_state.state) {
+    case UpdateService::UpdateState::State::kUpdated:
+      // An accurate number of successful installations is not needed.
+      // A positive integer is enough to indicate that some updates are
+      // installed.
+      VLOG(0) << "An app update is installed successfully.";
+      successful_install_count_ += 1;
+      break;
+    case UpdateService::UpdateState::State::kUpdateError:
+      VLOG(1) << "Update error: " << update_state.error_code
+              << ", extra_code1: " << update_state.extra_code1;
+      update_successful_ = false;
+      break;
+    default:
+      break;
   }
 }
 
@@ -152,13 +163,14 @@ void KSAgentApp::PrintUpdateResultAndShutDown(UpdateService::Result result) {
   // framework parses the agent outputs and broadcasts the parsed results via
   // macOS notification center. Apps (like Chrome) can monitor the notification
   // center and update the UI accordingly.
-  std::cout << "updateCheckSuccessful_="
-            << (result == UpdateService::Result::kSuccess ? "YES" : "NO")
-            << std::endl;
-  std::cout << "successfulInstallCount_=" << successful_install_count_
+  const bool update_ok =
+      result == UpdateService::Result::kSuccess && update_successful_;
+  std::cout << "updateCheckSuccessful_=" << (update_ok ? "YES" : "NO")
+            << std::endl
+            << "successfulInstallCount_=" << successful_install_count_
             << std::endl;
 
-  Shutdown(result == UpdateService::Result::kSuccess ? 0 : 1);
+  Shutdown(update_ok ? 0 : 1);
 }
 
 void KSAgentApp::UpdateApp(const std::string& app_id) {
