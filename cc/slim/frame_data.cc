@@ -6,8 +6,9 @@
 
 namespace cc::slim {
 
-FrameData::FrameData(std::vector<viz::HitTestRegion>& regions)
-    : hit_test_regions(regions) {}
+FrameData::FrameData(viz::CompositorFrame& frame,
+                     std::vector<viz::HitTestRegion>& regions)
+    : frame(frame), hit_test_regions(regions) {}
 
 FrameData::~FrameData() = default;
 

@@ -431,8 +431,8 @@ void LayerTreeImpl::GenerateCompositorFrame(
   top_controls_visible_height_.reset();
   out_frame.metadata.display_transform_hint = display_transform_hint_;
 
-  FrameData frame_data(out_hit_test_region_list.regions);
-  Draw(*root_, out_frame, *render_pass, frame_data,
+  FrameData frame_data(out_frame, out_hit_test_region_list.regions);
+  Draw(*root_, *render_pass, frame_data,
        /*parent_transform_to_root=*/gfx::Transform(),
        /*parent_transform_to_target=*/gfx::Transform(),
        /*parent_clip_in_target=*/nullptr, gfx::RectF(device_viewport_rect_),
@@ -466,7 +466,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
 }
 
 void LayerTreeImpl::Draw(Layer& layer,
-                         viz::CompositorFrame& frame,
                          viz::CompositorRenderPass& parent_pass,
                          FrameData& data,
                          const gfx::Transform& parent_transform_to_root,
@@ -530,10 +529,9 @@ void LayerTreeImpl::Draw(Layer& layer,
         }
       }
 
-      DrawChildrenAndAppendQuads(layer, frame, parent_pass, data,
-                                 transform_to_root, transform_to_target,
-                                 clip_in_target, clip_in_layer,
-                                 parent_opacity * layer.opacity());
+      DrawChildrenAndAppendQuads(
+          layer, parent_pass, data, transform_to_root, transform_to_target,
+          clip_in_target, clip_in_layer, parent_opacity * layer.opacity());
       return;
     }
   }
@@ -602,7 +600,7 @@ void LayerTreeImpl::Draw(Layer& layer,
   {
     SimpleEnclosedRegion parent_pass_occlusion = data.occlusion_in_target;
     data.occlusion_in_target.Clear();
-    DrawChildrenAndAppendQuads(layer, frame, *new_pass, data, transform_to_root,
+    DrawChildrenAndAppendQuads(layer, *new_pass, data, transform_to_root,
                                transform_to_target, clip_in_target,
                                clip_in_layer,
                                /*opacity=*/1.0f);
@@ -671,12 +669,11 @@ void LayerTreeImpl::Draw(Layer& layer,
   // `has_damage_from_contributing_content`.
   new_pass->output_rect = content_rect;
   new_pass->damage_rect = content_rect;
-  frame.render_pass_list.push_back(std::move(new_pass));
+  data.frame.render_pass_list.push_back(std::move(new_pass));
 }
 
 void LayerTreeImpl::DrawChildrenAndAppendQuads(
     Layer& layer,
-    viz::CompositorFrame& frame,
     viz::CompositorRenderPass& render_pass,
     FrameData& data,
     const gfx::Transform& transform_to_root,
@@ -685,8 +682,8 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
     const gfx::RectF& clip_in_layer,
     float opacity) {
   for (auto& child : base::Reversed(layer.children())) {
-    Draw(*child, frame, render_pass, data, transform_to_root,
-         transform_to_target, clip_in_target, clip_in_layer, opacity);
+    Draw(*child, render_pass, data, transform_to_root, transform_to_target,
+         clip_in_target, clip_in_layer, opacity);
   }
 
   gfx::Rect integer_clip_in_target;

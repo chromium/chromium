@@ -13,6 +13,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
+class CompositorFrame;
 struct HitTestRegion;
 }  // namespace viz
 
@@ -20,9 +21,11 @@ namespace cc::slim {
 
 // Modifiable data passed to AppendQuads during tree walk.
 struct FrameData {
-  explicit FrameData(std::vector<viz::HitTestRegion>& regions);
+  FrameData(viz::CompositorFrame& frame,
+            std::vector<viz::HitTestRegion>& regions);
   ~FrameData();
 
+  viz::CompositorFrame& frame;
   std::vector<viz::HitTestRegion>& hit_test_regions;
   base::flat_set<viz::SurfaceId> activation_dependencies;
   absl::optional<uint32_t> deadline_in_frames;
