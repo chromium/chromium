@@ -349,6 +349,13 @@ BASE_FEATURE(kClipboardHistoryReorder,
              "ClipboardHistoryReorder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
+// will cause the clipboard history menu to show. From there, the user can
+// select a clipboard history item to replace the initially pasted content.
+BASE_FEATURE(kClipboardHistorySelector,
+             "ClipboardHistorySelector",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled and account falls under the new deal, will be allowed to toggle
 // auto updates.
 BASE_FEATURE(kConsumerAutoUpdateToggleAllowed,
@@ -2424,6 +2431,10 @@ bool IsClipboardHistoryRefreshEnabled() {
 
 bool IsClipboardHistoryReorderEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryReorder);
+}
+
+bool IsClipboardHistorySelectorEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistorySelector);
 }
 
 bool IsCryptauthAttestationSyncingEnabled() {
