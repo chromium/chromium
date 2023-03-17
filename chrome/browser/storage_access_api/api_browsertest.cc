@@ -69,6 +69,10 @@ constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
 // Path for URL of custom response
 const char* kEchoCookiesWithCorsPath = "/echocookieswithcors";
 
+constexpr char kQueryStorageAccessPermission[] =
+    "navigator.permissions.query({name: 'storage-access'}).then("
+    "  (permission) => permission.state);";
+
 enum class TestType { kFrame, kWorker };
 
 // Helpers to express expected
@@ -130,6 +134,11 @@ HandleEchoCookiesWithCorsRequest(const net::test_server::HttpRequest& request) {
   http_response->set_content(content);
 
   return http_response;
+}
+
+std::string QueryPermission(content::RenderFrameHost* render_frame_host) {
+  return content::EvalJs(render_frame_host, kQueryStorageAccessPermission)
+      .ExtractString();
 }
 
 class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
@@ -1175,6 +1184,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
                   kRequestOutcomeHistogram,
                   5 /*RequestOutcome::kDeniedByPrerequisites*/),
               Gt(0));
+  // Ensure that the denied state is not exposed to developers, per the spec.
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,

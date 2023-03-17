@@ -409,6 +409,43 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
             1);
 }
 
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
+       ExplicitGrantDenialNotExposedViaQuery) {
+  StorageAccessGrantPermissionContext permission_context(profile());
+  permissions::PermissionRequestID fake_id = CreateFakeID();
+  ExhaustImplicitGrants(GetRequesterURL(), permission_context);
+
+  // Set the content setting to blocked, mimicking a prompt rejection by the
+  // user.
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  settings_map->SetContentSettingDefaultScope(
+      GetRequesterURL(), GetTopLevelURL(), ContentSettingsType::STORAGE_ACCESS,
+      CONTENT_SETTING_BLOCK);
+
+  base::test::TestFuture<ContentSetting> future;
+  permission_context.DecidePermissionForTesting(
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
+      /*user_gesture=*/true, future.GetCallback());
+
+  // Ensure the prompt is not shown.
+  base::RunLoop().RunUntilIdle();
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  ASSERT_TRUE(manager);
+  ASSERT_FALSE(manager->IsRequestInProgress());
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
+
+  // However, ensure that the user's denial is not exposed when querying the
+  // permission, per the spec.
+  EXPECT_EQ(
+      CONTENT_SETTING_ASK,
+      permission_context
+          .GetPermissionStatus(nullptr, GetRequesterURL(), GetTopLevelURL())
+          .content_setting);
+}
+
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {
   histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
   histogram_tester().ExpectTotalCount(kPromptResultHistogram, 0);
