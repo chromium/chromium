@@ -131,11 +131,7 @@ template("ios_test_runner_wrapper") {
       _wrapper_output_name = wrapper_output_name
     }
 
-    # Test targets may attempt to generate multiple wrappers for a suite with
-    # multiple different toolchains when running with additional_target_cpus.
-    # Generate the wrapper script into root_out_dir rather than root_build_dir
-    # to ensure those wrappers are distinct.
-    wrapper_script = "${root_out_dir}/bin/${_wrapper_output_name}"
+    wrapper_script = "${root_build_dir}/bin/${_wrapper_output_name}"
 
     data = []
     if (defined(invoker.data)) {

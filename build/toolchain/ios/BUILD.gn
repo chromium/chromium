@@ -18,7 +18,6 @@ template("ios_toolchain") {
     deployment_target = ios_deployment_target
     target_environment = target_environment
     bin_path = ios_bin_path
-    strip_with_lipo = true
 
     toolchain_args = {
       forward_variables_from(invoker.toolchain_args, "*")
@@ -41,14 +40,6 @@ ios_toolchain("ios_clang_arm64_13_4") {
   }
 }
 
-ios_toolchain("ios_clang_arm64_fat_arm") {
-  toolchain_args = {
-    current_cpu = "arm"
-    is_fat_secondary_toolchain = true
-    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_arm64"
-  }
-}
-
 ios_toolchain("ios_clang_arm") {
   toolchain_args = {
     current_cpu = "arm"
@@ -61,35 +52,10 @@ ios_toolchain("ios_clang_x64") {
   }
 }
 
-ios_toolchain("ios_clang_x64_fat_arm64") {
-  toolchain_args = {
-    current_cpu = "arm64"
-    is_fat_secondary_toolchain = true
-    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_x64"
-  }
-}
-
 ios_toolchain("ios_clang_x64_13_4") {
   toolchain_args = {
     current_cpu = "x64"
     ios_deployment_target = "13.4"
-  }
-}
-
-ios_toolchain("ios_clang_x64_13_4_fat_arm64") {
-  toolchain_args = {
-    current_cpu = "arm64"
-    is_fat_secondary_toolchain = true
-    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_x64_13_4"
-    ios_deployment_target = "13.4"
-  }
-}
-
-ios_toolchain("ios_clang_x64_fat_x86") {
-  toolchain_args = {
-    current_cpu = "x86"
-    is_fat_secondary_toolchain = true
-    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_x64"
   }
 }
 

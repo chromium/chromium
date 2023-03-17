@@ -704,14 +704,10 @@ config("compiler") {
       # of "all" which means number of hardware threads) is faster.
       ldflags += [ "-Wl,--thinlto-jobs=all" ]
       if (is_apple) {
-        _object_path_suffix = ""
-        if (is_ios) {
-          _object_path_suffix = ",persist"
-        }
         ldflags += [
           "-Wl,-cache_path_lto," +
               rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
-          "-Wcrl,object_path_lto" + _object_path_suffix,
+          "-Wcrl,object_path_lto",
         ]
       } else {
         ldflags +=

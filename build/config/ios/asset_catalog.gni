@@ -48,69 +48,63 @@ template("asset_catalog") {
   assert(defined(invoker.asset_type) && invoker.asset_type != "",
          "asset_type must be defined and not empty for $target_name")
 
-  if (is_fat_secondary_toolchain) {
-    group(target_name) {
-      public_deps = [ ":$target_name($primary_fat_toolchain_name)" ]
-    }
-  } else {
-    _copy_target_name = target_name + "__copy"
-    _data_target_name = target_name
+  _copy_target_name = target_name + "__copy"
+  _data_target_name = target_name
 
-    _sources = invoker.sources
-    _outputs = []
+  _sources = invoker.sources
+  _outputs = []
 
-    # The compilation of resources into Assets.car is enabled automatically
-    # by the "create_bundle" target if any of the "bundle_data" sources's
-    # path is in a .xcassets directory and matches one of the know asset
-    # catalog type.
-    _xcassets_dir = "$target_gen_dir/${target_name}.xcassets"
-    _output_dir = "$_xcassets_dir/" +
-                  get_path_info(get_path_info(_sources[0], "dir"), "file")
+  # The compilation of resources into Assets.car is enabled automatically
+  # by the "create_bundle" target if any of the "bundle_data" sources's
+  # path is in a .xcassets directory and matches one of the know asset
+  # catalog type.
+  _xcassets_dir = "$target_gen_dir/${target_name}.xcassets"
+  _output_dir = "$_xcassets_dir/" +
+                get_path_info(get_path_info(_sources[0], "dir"), "file")
 
-    foreach(_source, invoker.sources) {
-      _dir = get_path_info(_source, "dir")
-      _outputs += [ "$_output_dir/" + get_path_info(_source, "file") ]
+  foreach(_source, invoker.sources) {
+    _dir = get_path_info(_source, "dir")
+    _outputs += [ "$_output_dir/" + get_path_info(_source, "file") ]
 
-      assert(get_path_info(_dir, "extension") == invoker.asset_type,
-             "$_source dirname must have .${invoker.asset_type} extension")
-    }
+    assert(get_path_info(_dir, "extension") == invoker.asset_type,
+           "$_source dirname must have .${invoker.asset_type} extension")
+  }
 
-    action(_copy_target_name) {
-      # Forward "deps", "public_deps" and "testonly" in case some of the
-      # source files are generated.
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "public_deps",
-                               "testonly",
-                             ])
+  action(_copy_target_name) {
+    # Forward "deps", "public_deps" and "testonly" in case some of the
+    # source files are generated.
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "testonly",
+                           ])
 
-      script = "//build/config/ios/hardlink.py"
+    script = "//build/config/ios/hardlink.py"
 
-      visibility = [ ":$_data_target_name" ]
-      sources = _sources
-      outputs = _outputs + [ _xcassets_dir ]
+    visibility = [ ":$_data_target_name" ]
+    sources = _sources
+    outputs = _outputs + [ _xcassets_dir ]
 
-      args = [
-        rebase_path(get_path_info(_sources[0], "dir"), root_build_dir),
-        rebase_path(_output_dir, root_build_dir),
-      ]
-    }
+    args = [
+      rebase_path(get_path_info(_sources[0], "dir"), root_build_dir),
+      rebase_path(_output_dir, root_build_dir),
+    ]
+  }
 
-    bundle_data(_data_target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "deps",
-                               "outputs",
-                               "public_deps",
-                               "sources",
-                             ])
+  bundle_data(_data_target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "deps",
+                             "outputs",
+                             "public_deps",
+                             "sources",
+                           ])
 
-      sources = _outputs
-      outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
-      public_deps = [ ":$_copy_target_name" ]
-    }
+    sources = _outputs
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+    public_deps = [ ":$_copy_target_name" ]
   }
 }
 

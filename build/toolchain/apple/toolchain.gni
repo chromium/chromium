@@ -223,18 +223,8 @@ template("single_apple_toolchain") {
     _strippath = invoker.bin_path + "strip"
     _installnametoolpath = invoker.bin_path + "install_name_tool"
     linker_driver += " -Wcrl,strippath,${_strippath} -Wcrl,installnametoolpath,${_installnametoolpath}"
-
-    # On iOS, the final applications are assembled using lipo (to support fat
-    # builds). The correct flags are passed to the linker_driver.py script
-    # directly during the lipo call. The test is against the target_os because
-    # there is no need to create .dSYMs for targets compiled for the host.
-    if (defined(invoker.strip_with_lipo) && invoker.strip_with_lipo) {
-      _enable_dsyms = false
-      _save_unstripped_output = false
-    } else {
-      _enable_dsyms = enable_dsyms
-      _save_unstripped_output = save_unstripped_output
-    }
+    _enable_dsyms = enable_dsyms
+    _save_unstripped_output = save_unstripped_output
 
     # Make these apply to all tools below.
     lib_switch = "-l"

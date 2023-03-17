@@ -52,37 +52,9 @@ declare_args() {
   # identity description and app bundle id prefix.
   ios_mobileprovision_files = []
 
-  # If non-empty, this list must contain valid cpu architecture, and the final
-  # build will be a multi-architecture build (aka fat build) supporting the
-  # main $target_cpu architecture and all of $additional_target_cpus.
-  #
-  # For example to build an application that will run on both arm64 and armv7
-  # devices, you would use the following in args.gn file when running "gn args":
-  #
-  #   target_os = "ios"
-  #   target_cpu = "arm64"
-  #   additional_target_cpus = [ "arm" ]
-  #
-  # You can also pass the value via "--args" parameter for "gn gen" command by
-  # using the syntax --args='additional_target_cpus=["arm"] target_cpu="arm64"'.
-  additional_target_cpus = []
-
   # Set to true if all test apps should use the same bundle id.
   ios_use_shared_bundle_id_for_test_apps = true
 }
-
-declare_args() {
-  # This variable is set by the toolchain. It is set to true if the toolchain
-  # is a secondary toolchain as part of a "fat" build.
-  is_fat_secondary_toolchain = false
-
-  # This variable is set by the toolchain. It is the name of the primary
-  # toolchain for the fat build (could be current_toolchain).
-  primary_fat_toolchain_name = ""
-}
-
-assert(custom_toolchain == "" || additional_target_cpus == [],
-       "cannot define both custom_toolchain and additional_target_cpus")
 
 # If codesigning is enabled, use must configure either a codesigning identity
 # or a filter to automatically select the codesigning identity.
@@ -94,25 +66,6 @@ if (target_environment == "device" && ios_enable_code_signing) {
              "automatically (via find_signing_identity.py which use the " +
              "variable ios_code_signing_identity_description to set the " +
              "pattern to match the identity to use).")
-}
-
-# Initialize additional_toolchains from additional_target_cpus. Assert here
-# that the list does not contains $target_cpu nor duplicates as this would
-# cause weird errors during the build.
-additional_toolchains = []
-if (additional_target_cpus != [] && !is_fat_secondary_toolchain) {
-  foreach(_additional_target_cpu, additional_target_cpus) {
-    assert(_additional_target_cpu != target_cpu,
-           "target_cpu must not be listed in additional_target_cpus")
-
-    _toolchain = "${current_toolchain}_fat_${_additional_target_cpu}"
-    foreach(_additional_toolchain, additional_toolchains) {
-      assert(_toolchain != _additional_toolchain,
-             "additional_target_cpus must not contains duplicate values")
-    }
-
-    additional_toolchains += [ _toolchain ]
-  }
 }
 
 if (ios_sdk_path == "") {
