@@ -111,6 +111,9 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
   // Fill spatial/temporal layers variables.
   rc_cfg.ss_number_layers = num_spatial_layers;
   rc_cfg.ts_number_layers = num_temporal_layers;
+  for (size_t tid = 0; tid < num_temporal_layers; ++tid) {
+    rc_cfg.ts_rate_decimator[tid] = 1u << (num_temporal_layers - tid - 1);
+  }
   for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
     int gcd =
         GCD(encode_size.height(), spatial_layer_resolutions[sid].height());
@@ -124,7 +127,6 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
       rc_cfg.min_quantizers[idx] = rc_cfg.min_quantizer;
       bitrate_sum += bitrate_allocation.GetBitrateBps(sid, tid);
       rc_cfg.layer_target_bitrate[idx] = bitrate_sum / 1000;
-      rc_cfg.ts_rate_decimator[tid] = 1u << (num_temporal_layers - tid - 1);
     }
   }
   return rc_cfg;
