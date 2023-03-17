@@ -13,7 +13,7 @@ import time
 from contextlib import AbstractContextManager
 from typing import Iterable, Optional, TextIO
 
-from common import read_package_paths, register_common_args, \
+from common import catch_sigterm, read_package_paths, register_common_args, \
                    register_device_args, run_continuous_ffx_command, \
                    run_ffx_command
 from ffx_integration import ScopedFfxConfig, run_symbolizer
@@ -131,6 +131,7 @@ def main():
     Runs until the process is killed or interrupted (i.e. user presses CTRL-C).
     """
 
+    catch_sigterm()
     parser = argparse.ArgumentParser()
     register_common_args(parser)
     register_device_args(parser)

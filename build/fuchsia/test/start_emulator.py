@@ -9,7 +9,7 @@ import logging
 import sys
 import time
 
-from common import register_log_args
+from common import catch_sigterm, register_log_args
 from ffx_integration import FfxEmulator
 
 
@@ -54,6 +54,7 @@ def create_emulator_from_args(args: argparse.Namespace) -> FfxEmulator:
 def main():
     """Stand-alone function for starting an emulator."""
 
+    catch_sigterm()
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser()
     register_emulator_args(parser, True)

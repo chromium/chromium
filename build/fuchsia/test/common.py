@@ -7,7 +7,9 @@ import json
 import logging
 import os
 import re
+import signal
 import subprocess
+import sys
 import time
 
 from argparse import ArgumentParser
@@ -312,3 +314,11 @@ def find_image_in_sdk(product_name: str) -> Optional[str]:
     if path:
         return find_in_dir('images', parent_dir=path)
     return path
+
+
+def catch_sigterm() -> None:
+    """Catches the kill signal and allows the process to exit cleanly."""
+    def _sigterm_handler(*_):
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, _sigterm_handler)
