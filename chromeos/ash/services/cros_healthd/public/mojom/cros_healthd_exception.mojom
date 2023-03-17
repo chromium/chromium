@@ -28,14 +28,13 @@ module ash.cros_healthd.mojom;
 // }
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable]
 struct Exception {
   // The type of this exception.
   // Only add new types when it will be used for most features and will be
   // useful without specifying the reason. Otherwise, simply use reason.
   // When we raise Exception through a mojo disconnection, this will be the
   // mojo error code.
-  [Stable, Extensible]
+  [Extensible]
   enum Type {
     // This is required for backwards compatibility. Don't raise this.
     // Set to 1 because 0 is reserved for kMojoDisconnectWithoutReason.
@@ -58,7 +57,7 @@ struct Exception {
   // Only add a new reason if there is a client handling that reason. Don’t add
   // reasons like kServiceUnavailable, but something like
   // kFailedToCallFooService, to make it specific.
-  [Stable, Extensible]
+  [Extensible]
   enum Reason {
     // This is required for backwards compatibility. Don't raise this.
     [Default] kUnmappedEnumField = 0,

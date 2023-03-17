@@ -726,7 +726,6 @@ interface CrosHealthdDiagnosticsService {
 // Event interface exposed by the cros_healthd daemon.
 //
 // NextMinVersion: 4, NextIndex: 9
-[Stable]
 interface CrosHealthdEventService {
   // Adds an observer to be notified on Bluetooth events. The caller can remove
   // the observer created by this call by closing their end of the message pipe.
