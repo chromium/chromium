@@ -11,7 +11,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -22,7 +21,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
@@ -329,10 +327,7 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
     DowngradeMetricsReportingToRecommendedPolicy(
         &provided_bundle.Get(chrome_namespace));
 #if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            policy::features::kDefaultChromeAppsMigration)) {
-      chrome_apps_migrator.Migrate(&provided_bundle.Get(chrome_namespace));
-    }
+    chrome_apps_migrator.Migrate(&provided_bundle.Get(chrome_namespace));
 #endif  // BUILDFLAG(IS_CHROMEOS)
     bundle.MergeFrom(provided_bundle);
   }

@@ -1358,11 +1358,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "default-chrome-apps-migration",
-    "owners": ["vkovalova"],
-    "expiry_milestone": 104
-  },
-  {
     "name": "deprecate-alt-based-six-pack",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

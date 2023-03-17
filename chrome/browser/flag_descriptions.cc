@@ -180,12 +180,6 @@ const char kDebugHistoryInterventionNoUserActivationDescription[] =
     "is able to work around the history intervention which is not the expected "
     "behavior";
 
-extern const char kDefaultChromeAppsMigrationName[] =
-    "Default Chrome apps policy migration";
-extern const char kDefaultChromeAppsMigrationDescription[] =
-    "Enable replacing policies to force install Chrome apps with policies to "
-    "force install PWAs";
-
 const char kDocumentPictureInPictureApiName[] =
     "Document Picture-in-Picture API";
 const char kDocumentPictureInPictureApiDescription[] =

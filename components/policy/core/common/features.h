@@ -14,9 +14,6 @@
 namespace policy {
 namespace features {
 
-// Enable force installed Chrome apps policy migration.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kDefaultChromeAppsMigration);
-
 // Enable reporting Login events to the reporting connector when the Password
 // Manager detects that the user logged in to a web page.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kLoginEventReporting);

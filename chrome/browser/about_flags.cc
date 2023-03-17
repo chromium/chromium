@@ -7991,11 +7991,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"default-chrome-apps-migration",
-     flag_descriptions::kDefaultChromeAppsMigrationName,
-     flag_descriptions::kDefaultChromeAppsMigrationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(policy::features::kDefaultChromeAppsMigration)},
-
     {"messages-preinstall", flag_descriptions::kMessagesPreinstallName,
      flag_descriptions::kMessagesPreinstallDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(web_app::kMessagesPreinstall)},

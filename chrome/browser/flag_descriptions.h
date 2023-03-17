@@ -119,9 +119,6 @@ extern const char KCustomizeChromeSidePanelDescription[];
 extern const char kDebugHistoryInterventionNoUserActivationName[];
 extern const char kDebugHistoryInterventionNoUserActivationDescription[];
 
-extern const char kDefaultChromeAppsMigrationName[];
-extern const char kDefaultChromeAppsMigrationDescription[];
-
 extern const char kDocumentPictureInPictureApiName[];
 extern const char kDocumentPictureInPictureApiDescription[];
 
