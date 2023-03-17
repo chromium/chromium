@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Cast Linux",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -32,7 +32,7 @@
         {
           "bucket": "ci",
           "builder": "Cast Linux",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ],
       "mirroring_builder_group_and_names": [

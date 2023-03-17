@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Builder (dbg)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -30,7 +30,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Tests (dbg)(1)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -50,7 +50,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           }
@@ -60,14 +60,14 @@
         {
           "bucket": "ci",
           "builder": "Linux Builder (dbg)",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Linux Tests (dbg)(1)",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ],
       "mirroring_builder_group_and_names": [

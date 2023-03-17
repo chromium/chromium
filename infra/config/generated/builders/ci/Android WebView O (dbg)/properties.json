@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android WebView O (dbg)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -37,7 +37,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           },
@@ -45,7 +45,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android arm64 Builder (dbg)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -77,7 +77,7 @@
         {
           "bucket": "ci",
           "builder": "Android WebView O (dbg)",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ]
     }

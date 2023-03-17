@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -31,7 +31,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac11-arm64-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -52,7 +52,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "mac-arm64-rel",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           }
@@ -62,7 +62,7 @@
         {
           "bucket": "ci",
           "builder": "mac11-arm64-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ]
     }

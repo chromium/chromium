@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-cronet-arm-rel",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -40,7 +40,7 @@
         {
           "bucket": "ci",
           "builder": "android-cronet-arm-rel",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ],
       "is_compile_only": true

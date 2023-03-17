@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Builder (dbg)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -31,7 +31,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac12 Tests (dbg)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -52,7 +52,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           }
@@ -62,7 +62,7 @@
         {
           "bucket": "ci",
           "builder": "Mac12 Tests (dbg)",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ],
       "mirroring_builder_group_and_names": [

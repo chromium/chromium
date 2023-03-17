@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android WebView N (dbg)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -37,7 +37,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           },
@@ -45,7 +45,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android WebView O (dbg)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -75,7 +75,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           },
@@ -83,7 +83,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android WebView P (dbg)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -113,7 +113,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           },
@@ -121,7 +121,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android arm64 Builder (dbg)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -151,7 +151,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Nougat Phone Tester",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -178,7 +178,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           },
@@ -186,7 +186,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Oreo Phone Tester",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -213,7 +213,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           },
@@ -221,7 +221,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-pie-arm64-dbg",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -248,7 +248,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m112"
               }
             }
           }
@@ -258,39 +258,39 @@
         {
           "bucket": "ci",
           "builder": "Android arm64 Builder (dbg)",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Android WebView N (dbg)",
-          "project": "chromium"
+          "project": "chromium-m112"
         },
         {
           "bucket": "ci",
           "builder": "Android WebView O (dbg)",
-          "project": "chromium"
+          "project": "chromium-m112"
         },
         {
           "bucket": "ci",
           "builder": "Android WebView P (dbg)",
-          "project": "chromium"
+          "project": "chromium-m112"
         },
         {
           "bucket": "ci",
           "builder": "Nougat Phone Tester",
-          "project": "chromium"
+          "project": "chromium-m112"
         },
         {
           "bucket": "ci",
           "builder": "Oreo Phone Tester",
-          "project": "chromium"
+          "project": "chromium-m112"
         },
         {
           "bucket": "ci",
           "builder": "android-pie-arm64-dbg",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ],
       "mirroring_builder_group_and_names": [

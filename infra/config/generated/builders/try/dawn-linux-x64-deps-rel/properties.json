@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Linux x64 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -32,7 +32,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Linux x64 DEPS Release (Intel UHD 630)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -53,7 +53,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Linux x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m112"
               },
               "run_tests_serially": true
             }
@@ -62,7 +62,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Linux x64 DEPS Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -83,7 +83,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Linux x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m112"
               },
               "run_tests_serially": true
             }
@@ -94,19 +94,19 @@
         {
           "bucket": "ci",
           "builder": "Dawn Linux x64 DEPS Builder",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Dawn Linux x64 DEPS Release (Intel UHD 630)",
-          "project": "chromium"
+          "project": "chromium-m112"
         },
         {
           "bucket": "ci",
           "builder": "Dawn Linux x64 DEPS Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ]
     }

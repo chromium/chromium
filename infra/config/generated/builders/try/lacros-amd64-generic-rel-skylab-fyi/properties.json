@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "try",
               "builder": "lacros-amd64-generic-rel-skylab-fyi",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-fyi-archive",
@@ -46,7 +46,7 @@
         {
           "bucket": "try",
           "builder": "lacros-amd64-generic-rel-skylab-fyi",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ]
     }

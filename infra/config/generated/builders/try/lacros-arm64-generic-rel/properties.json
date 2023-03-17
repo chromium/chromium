@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "lacros-arm64-generic-rel",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -41,7 +41,7 @@
         {
           "bucket": "ci",
           "builder": "lacros-arm64-generic-rel",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ]
     }

@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x64 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -32,7 +32,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x64 DEPS Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m112"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -53,7 +53,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Win10 x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m112"
               },
               "run_tests_serially": true
             }
@@ -64,7 +64,7 @@
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x64 DEPS Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m112"
         }
       ],
       "mirroring_builder_group_and_names": [
