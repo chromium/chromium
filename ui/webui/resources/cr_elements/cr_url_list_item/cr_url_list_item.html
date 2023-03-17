@@ -339,19 +339,22 @@
 
 <slot name="prefix"></slot>
 <div id="iconContainer">
-  <div class="favicon" hidden$="[[!shouldShowFavicon_(url, size, imageUrls, count)]]"
+  <div class="favicon" hidden$="[[!shouldShowFavicon_(url, size, imageUrls)]]"
       style$="background-image: [[getFavicon_(url)]];">
   </div>
   <div class="image-container" hidden$="[[!shouldShowUrlImage_(url, size, imageUrls)]]">
     <img class="url-image" is="cr-auto-img" auto-src="[[imageUrls.0]]">
   </div>
   <div class="folder-and-count" hidden$="[[!shouldShowFolderCount_(url, count)]]">
-    <template is="dom-repeat" items="[[imageUrls]]" filter="shouldShowImageUrl_">
-      <div class="image-container">
-        <img is="cr-auto-img" auto-src="[[item]]">
-      </div>
+    <template is="dom-if" if="[[shouldShowFolderImages_(size)]]" restamp>
+      <template is="dom-repeat" items="[[imageUrls]]" filter="shouldShowImageUrl_">
+        <div class="image-container">
+          <img is="cr-auto-img" auto-src="[[item]]">
+        </div>
+      </template>
     </template>
-    <div class="folder cr-icon icon-folder-open" hidden$="[[imageUrls.0]]"></div>
+    <div class="folder cr-icon icon-folder-open"
+        hidden$="[[!shouldShowFolderIcon_(size, imageUrls)]]"></div>
     <div class="count">[[getDisplayedCount_(count)]]</div>
   </div>
 </div>

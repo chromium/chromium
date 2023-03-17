@@ -154,6 +154,15 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
           this.imageUrls.length === 0);
   }
 
+  private shouldShowFolderImages_(): boolean {
+    return this.size !== CrUrlListItemSize.COMPACT;
+  }
+
+  private shouldShowFolderIcon_(): boolean {
+    return this.size === CrUrlListItemSize.COMPACT ||
+        this.imageUrls.length === 0;
+  }
+
   private shouldShowFolderCount_(): boolean {
     return this.url === undefined;
   }

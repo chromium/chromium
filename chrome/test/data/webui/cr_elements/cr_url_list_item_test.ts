@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
-import {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import {CrUrlListItemElement, CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -54,5 +54,20 @@ suite('CrUrlListItemTest', () => {
     assertTrue(element.classList.contains('active'));
     element.dispatchEvent(new PointerEvent('pointerleave'));
     assertFalse(element.classList.contains('active'));
+  });
+
+  test('TogglesFolderIcon', () => {
+    element.url = '';
+    element.imageUrls = ['http://google.com'];
+    element.size = CrUrlListItemSize.COMPACT;
+    const folderIcon =
+        element.shadowRoot!.querySelector<HTMLElement>('.icon-folder-open')!;
+    assertFalse(folderIcon.hidden);
+
+    element.size = CrUrlListItemSize.LARGE;
+    assertTrue(folderIcon.hidden);
+
+    element.imageUrls = [];
+    assertFalse(folderIcon.hidden);
   });
 });
