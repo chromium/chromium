@@ -788,11 +788,7 @@ base::Value::Dict SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
   if (type == DevToolsAgentHost::kTypePage) {
     int tab_id =
         extensions::ExtensionTabUtil::GetTabId(host->GetWebContents());
-    if (tab_id != api::tabs::TAB_ID_NONE) {
-      dictionary.Set(kTargetTabIdField, tab_id);
-    } else {
-      dictionary.Set(kTargetExtensionIdField, host->GetURL().host());
-    }
+    dictionary.Set(kTargetTabIdField, tab_id);
     target_type = kTargetTypePage;
   } else if (type == ChromeDevToolsManagerDelegate::kTypeBackgroundPage) {
     dictionary.Set(kTargetExtensionIdField, host->GetURL().host());
