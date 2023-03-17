@@ -1406,6 +1406,147 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   }
 }
 
+// Tests PinManager::OnSyncingStatusUpdate().
+TEST_F(DriveFsPinManagerTest, OnSyncingStatusUpdate) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kSyncing;
+  manager.progress_.bytes_to_pin = 30000;
+  manager.progress_.required_space = 32768;
+
+  const Id id1 = Id(549);
+  const Path path1 = Path("Path 1");
+
+  const Id id2 = Id(17);
+  const Path path2 = Path("Path 2");
+
+  // Put in place a couple of files to track.
+  {
+    const auto [it, ok] = manager.files_to_track_.try_emplace(
+        id1, PinManager::File{.path = path1, .total = 10000, .pinned = true});
+    ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
+  }
+  {
+    const auto [it, ok] = manager.files_to_track_.try_emplace(
+        id2, PinManager::File{.path = path2, .total = 20000, .pinned = true});
+    ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(2));
+
+  // Prepare a list of syncing status events.
+  SyncingStatus events;
+
+  {
+    // An event with an unknown type is ignored.
+    ItemEventPtr event = ItemEvent::New();
+    event->is_download = true;
+    event->stable_id = static_cast<int64_t>(id2);
+    event->path = path2.value();
+    event->state = ItemEvent::State(-1);
+    event->bytes_to_transfer = -1;
+    event->bytes_transferred = -1;
+    events.item_events.push_back(std::move(event));
+  }
+  {
+    // Mark file 1 as queued.
+    ItemEventPtr event = ItemEvent::New();
+    event->is_download = true;
+    event->stable_id = static_cast<int64_t>(id1);
+    event->path = path1.value();
+    event->state = ItemEvent::State::kQueued;
+    event->bytes_to_transfer = 0;
+    events.item_events.push_back(ItemEvent::New(*event));
+    events.item_events.push_back(std::move(event));
+  }
+  {
+    // Mark file 1 as in progress.
+    ItemEventPtr event = ItemEvent::New();
+    event->is_download = true;
+    event->stable_id = static_cast<int64_t>(id1);
+    event->path = path1.value();
+    event->state = ItemEvent::State::kInProgress;
+    event->bytes_to_transfer = 10000;
+    event->bytes_transferred = 5000;
+    events.item_events.push_back(ItemEvent::New(*event));
+    events.item_events.push_back(std::move(event));
+  }
+  {
+    // Upload events should be ignored.
+    ItemEventPtr event = ItemEvent::New();
+    event->is_download = false;
+    event->stable_id = static_cast<int64_t>(id1);
+    event->path = path1.value();
+    event->state = ItemEvent::State::kInProgress;
+    event->bytes_to_transfer = 30000;
+    event->bytes_transferred = 7000;
+    events.item_events.push_back(ItemEvent::New(*event));
+    events.item_events.push_back(std::move(event));
+  }
+  {
+    // Mark file 1 as completed.
+    ItemEventPtr event = ItemEvent::New();
+    event->is_download = true;
+    event->stable_id = static_cast<int64_t>(id1);
+    event->path = path1.value();
+    event->state = ItemEvent::State::kCompleted;
+    event->bytes_to_transfer = -1;
+    event->bytes_transferred = -1;
+    events.item_events.push_back(ItemEvent::New(*event));
+    events.item_events.push_back(std::move(event));
+  }
+  {
+    // Mark file 2 as failed.
+    ItemEventPtr event = ItemEvent::New();
+    event->is_download = true;
+    event->stable_id = static_cast<int64_t>(id2);
+    event->path = path2.value();
+    event->state = ItemEvent::State::kFailed;
+    event->bytes_to_transfer = -1;
+    event->bytes_transferred = -1;
+    events.item_events.push_back(ItemEvent::New(*event));
+    events.item_events.push_back(std::move(event));
+  }
+
+  manager.OnSyncingStatusUpdate(std::as_const(events));
+
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(manager.progress_.stage, Stage::kSyncing);
+    EXPECT_EQ(progress.syncing_files, 0);
+    EXPECT_EQ(progress.failed_files, 1);
+    EXPECT_EQ(progress.pinned_files, 1);
+    EXPECT_EQ(progress.pinned_bytes, 10000);
+    EXPECT_EQ(progress.bytes_to_pin, 10000);
+    EXPECT_EQ(progress.required_space, 0);
+    EXPECT_EQ(progress.useful_events, 3);
+    EXPECT_EQ(progress.duplicated_events, 8);
+  }
+
+  manager.Stop();
+
+  // Events received when the PinManager is stopped are ignored.
+  manager.OnSyncingStatusUpdate(std::as_const(events));
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+    EXPECT_EQ(progress.syncing_files, 0);
+    EXPECT_EQ(progress.failed_files, 1);
+    EXPECT_EQ(progress.pinned_files, 1);
+    EXPECT_EQ(progress.pinned_bytes, 10000);
+    EXPECT_EQ(progress.bytes_to_pin, 10000);
+    EXPECT_EQ(progress.required_space, 0);
+    EXPECT_EQ(progress.useful_events, 3);
+    EXPECT_EQ(progress.duplicated_events, 8);
+  }
+}
+
 // Tests what happens when PinManager cannot get free space during initial
 // setup.
 TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace1) {
