@@ -4,6 +4,7 @@
 
 #include "content/shell/browser/shell_platform_delegate.h"
 
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell.h"
@@ -33,6 +34,15 @@ bool ShellPlatformDelegate::HandleRequestToLockMouse(
 
 bool ShellPlatformDelegate::ShouldAllowRunningInsecureContent(Shell* shell) {
   return false;
+}
+
+// TODO(crbug.com/1412107: Move it to each platform's delegate for the shell
+// that supports file dialogs.
+void ShellPlatformDelegate::RunFileChooser(
+    RenderFrameHost* render_frame_host,
+    scoped_refptr<FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  listener->FileSelectionCanceled();
 }
 
 }  // namespace content

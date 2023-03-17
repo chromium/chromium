@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -24,9 +26,11 @@
 class GURL;
 
 namespace content {
+class FileSelectListener;
 class JavaScriptDialogManager;
 class Shell;
 class ShellPlatformDataAura;
+class RenderFrameHost;
 class WebContents;
 
 class ShellPlatformDelegate {
@@ -100,6 +104,13 @@ class ShellPlatformDelegate {
   // Destroy the Shell. Returns true if the ShellPlatformDelegate did the
   // destruction. Returns false if the Shell should destroy itself.
   virtual bool DestroyShell(Shell* shell);
+
+  // Called when a file selection is to be done.
+  // This function is responsible for calling listener->FileSelected() or
+  // listener->FileSelectionCanceled().
+  virtual void RunFileChooser(RenderFrameHost* render_frame_host,
+                              scoped_refptr<FileSelectListener> listener,
+                              const blink::mojom::FileChooserParams& params);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Returns the native window. Valid after calling CreatePlatformWindow().

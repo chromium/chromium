@@ -25,6 +25,7 @@
 #include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -43,6 +44,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
 namespace content {
@@ -637,6 +639,12 @@ void Shell::ActivateContents(WebContents* contents) {
   // normal path and have to fake it out in the browser process.
   g_platform->ActivateContents(this, contents);
 #endif
+}
+
+void Shell::RunFileChooser(RenderFrameHost* render_frame_host,
+                           scoped_refptr<FileSelectListener> listener,
+                           const blink::mojom::FileChooserParams& params) {
+  g_platform->RunFileChooser(render_frame_host, std::move(listener), params);
 }
 
 bool Shell::IsBackForwardCacheSupported() {
