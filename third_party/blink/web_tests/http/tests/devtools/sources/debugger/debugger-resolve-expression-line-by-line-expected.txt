@@ -1,0 +1,8 @@
+Tests evaluation in webpack bundled scripts with 'line-by'line' source maps.
+
+Set timer for test function.
+Script execution paused.
+Resolved expression "this.#prop" to ""
+Resolved expression "a" to "a"
+Script execution resumed.
+
