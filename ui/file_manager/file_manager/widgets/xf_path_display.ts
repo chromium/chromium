@@ -57,13 +57,14 @@ function getCSS(): CSSResultGroup {
       flex-direction: row;
       align-items: center;
       width: 100%;
-      height: 2lh;
+      line-height: 20px;
+      padding: 10px 0px;
       border-top: 1px solid var(--cros-separator-color);
       font-family: 'Roboto Medium';
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
       user-select: none;
-      color: var(--cros-text-color-secondary);
+      color: var(--cros-text-color-primary);
     }
     div.folder {
       white-space: nowrap;
@@ -72,6 +73,8 @@ function getCSS(): CSSResultGroup {
       transition: all 300ms;
       flex-shrink: 1;
       min-width: 0;
+      padding: 4px 8px;
+      border-radius: 8px;
     }
     div.folder:hover {
       flex-shrink: 0;
@@ -89,6 +92,7 @@ function getCSS(): CSSResultGroup {
       width: 20px;
       height: 20px;
       padding: 0 2px;
+      flex-grow: 0;
     }
   `;
 }
