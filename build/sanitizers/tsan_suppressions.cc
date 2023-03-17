@@ -68,9 +68,6 @@ char kTSanDefaultSuppressions[] =
     // https://crbug.com/459429
     "race:randomnessPid\n"
 
-    // http://crbug.com/633145
-    "race:third_party/libjpeg_turbo/simd/jsimd_x86_64.c\n"
-
     // http://crbug.com/691029
     "deadlock:libGLX.so*\n"
 
