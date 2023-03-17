@@ -289,11 +289,11 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             new SyncStateChangedListener() {
                 @Override
                 public void syncStateChanged() {
-                    // If mDelegate is null, we will set the top level folders upon its
-                    // initialization (see onBookmarkDelegateInitialized method above).
-                    // if (mDelegate == null) {
-                    //    return;
-                    //}
+                    // If the bookmark model isn't loaded, we will set the top level folders on
+                    // load (see onBookmarkModelLoaded method below).
+                    if (!mBookmarkModel.isBookmarkModelLoaded()) {
+                        return;
+                    }
                     mTopLevelFolders.clear();
                     populateTopLevelFoldersList();
                 }
@@ -1019,5 +1019,9 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
     BookmarkUndoController getUndoControllerForTesting() {
         return mBookmarkUndoController;
+    }
+
+    SyncStateChangedListener getSyncStateChangedListenerForTesting() {
+        return mSyncStateChangedListener;
     }
 }
