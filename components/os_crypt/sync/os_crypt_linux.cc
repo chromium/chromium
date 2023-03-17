@@ -13,6 +13,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,6 +47,10 @@ constexpr size_t kIVBlockSizeAES128 = 16;
 constexpr char kObfuscationPrefixV10[] = "v10";
 constexpr char kObfuscationPrefixV11[] = "v11";
 
+// The UMA metric name for whether the false was decryptable with an empty key.
+constexpr char kMetricDecryptedWithEmptyKey[] =
+    "OSCrypt.Linux.DecryptedWithEmptyKey";
+
 // Generates a newly allocated SymmetricKey object based on a password.
 // Ownership of the key is passed to the caller. Returns null key if a key
 // generation error occurs.
@@ -61,6 +66,20 @@ std::unique_ptr<crypto::SymmetricKey> GenerateEncryptionKey(
   DCHECK(encryption_key);
 
   return encryption_key;
+}
+
+// Decrypt `ciphertext` using `encryption_key` and store the result in
+// `encryption_key`.
+bool DecryptWith(const std::string& ciphertext,
+                 crypto::SymmetricKey* encryption_key,
+                 std::string* plaintext) {
+  const std::string iv(kIVBlockSizeAES128, ' ');
+  crypto::Encryptor encryptor;
+  if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv)) {
+    return false;
+  }
+
+  return encryptor.Decrypt(ciphertext, plaintext);
 }
 
 }  // namespace
@@ -123,8 +142,9 @@ bool OSCryptImpl::EncryptString16(const std::u16string& plaintext,
 bool OSCryptImpl::DecryptString16(const std::string& ciphertext,
                                   std::u16string* plaintext) {
   std::string utf8;
-  if (!DecryptString(ciphertext, &utf8))
+  if (!DecryptString(ciphertext, &utf8)) {
     return false;
+  }
 
   *plaintext = base::UTF8ToUTF16(utf8);
   return true;
@@ -146,16 +166,19 @@ bool OSCryptImpl::EncryptString(const std::string& plaintext,
     obfuscation_prefix = kObfuscationPrefixV10;
   }
 
-  if (!encryption_key)
+  if (!encryption_key) {
     return false;
+  }
 
   const std::string iv(kIVBlockSizeAES128, ' ');
   crypto::Encryptor encryptor;
-  if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv))
+  if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv)) {
     return false;
+  }
 
-  if (!encryptor.Encrypt(plaintext, ciphertext))
+  if (!encryptor.Encrypt(plaintext, ciphertext)) {
     return false;
+  }
 
   // Prefix the cipher text with version information.
   ciphertext->insert(0, obfuscation_prefix);
@@ -194,21 +217,27 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
     return false;
   }
 
-  const std::string iv(kIVBlockSizeAES128, ' ');
-  crypto::Encryptor encryptor;
-  if (!encryptor.Init(encryption_key, crypto::Encryptor::CBC, iv))
-    return false;
-
   // Strip off the versioning prefix before decrypting.
   const std::string raw_ciphertext =
       ciphertext.substr(obfuscation_prefix.length());
 
-  if (!encryptor.Decrypt(raw_ciphertext, plaintext)) {
-    VLOG(1) << "Decryption failed";
-    return false;
+  if (DecryptWith(raw_ciphertext, encryption_key, plaintext)) {
+    base::UmaHistogramBoolean(kMetricDecryptedWithEmptyKey, false);
+    return true;
   }
 
-  return true;
+  // Some clients have encrypted data with an empty key. See
+  // crbug.com/1195256.
+  auto empty_key = GenerateEncryptionKey(std::string());
+  if (DecryptWith(raw_ciphertext, empty_key.get(), plaintext)) {
+    VLOG(1) << "Decryption succeeded after retrying with an empty key";
+    base::UmaHistogramBoolean(kMetricDecryptedWithEmptyKey, true);
+    return true;
+  }
+
+  VLOG(1) << "Decryption failed";
+  base::UmaHistogramBoolean(kMetricDecryptedWithEmptyKey, false);
+  return false;
 }
 
 void OSCryptImpl::SetConfig(std::unique_ptr<os_crypt::Config> config) {
@@ -241,8 +270,9 @@ void OSCryptImpl::SetRawEncryptionKey(const std::string& raw_key) {
 }
 
 std::string OSCryptImpl::GetRawEncryptionKey() {
-  if (crypto::SymmetricKey* key = GetPasswordV11())
+  if (crypto::SymmetricKey* key = GetPasswordV11()) {
     return key->key();
+  }
   return std::string();
 }
 
@@ -256,11 +286,12 @@ void OSCryptImpl::ClearCacheForTesting() {
 void OSCryptImpl::UseMockKeyStorageForTesting(
     base::OnceCallback<std::unique_ptr<KeyStorageLinux>()>
         storage_provider_factory) {
-  if (storage_provider_factory)
+  if (storage_provider_factory) {
     storage_provider_factory_ = std::move(storage_provider_factory);
-  else
+  } else {
     storage_provider_factory_ =
         base::BindOnce(&OSCryptImpl::CreateKeyStorage, base::Unretained(this));
+  }
 }
 
 // Create the KeyStorage. Will be null if no service is found. A Config must be

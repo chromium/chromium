@@ -9101,6 +9101,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.Linux.DecryptedWithEmptyKey" enum="Boolean"
+    expires_after="2023-09-01">
+  <owner>cfroussios@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    True, iff the data was not decryptable with the stored encryption key, but
+    was decryptable with a key generated from an empty string. This is emitted
+    every time OSCrypt attempts to decrypt a value.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.Win.Decrypt.Result" enum="BooleanSuccess"
     expires_after="2023-09-10">
   <owner>wfh@chromium.org</owner>

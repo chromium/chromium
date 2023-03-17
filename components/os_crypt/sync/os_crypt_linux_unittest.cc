@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/os_crypt/sync/key_storage_linux.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker_linux.h"
@@ -96,6 +97,29 @@ TEST_F(OSCryptLinuxTest, SetRawEncryptionKey) {
   OSCrypt::SetRawEncryptionKey(raw_key);
   ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decipheredtext));
   ASSERT_EQ(originaltext, decipheredtext);
+}
+
+// Because of crbug.com/1195256, there might be data that is encrypted with an
+// empty key. These should remain decryptable, even when a proper key is
+// available.
+TEST_F(OSCryptLinuxTest, DecryptWhenEncryptionKeyIsEmpty) {
+  base::HistogramTester histogram_tester;
+  const std::string originaltext = "hello";
+  std::string ciphertext;
+  std::string decipheredtext;
+
+  // Encrypt a value using "" as the key.
+  OSCrypt::SetEncryptionPasswordForTesting("");
+  ASSERT_TRUE(OSCrypt::EncryptString(originaltext, &ciphertext));
+
+  // Set a proper encryption key.
+  OSCrypt::ClearCacheForTesting();
+  OSCrypt::SetEncryptionPasswordForTesting("key");
+  // The text is decryptable.
+  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decipheredtext));
+  EXPECT_EQ(originaltext, decipheredtext);
+  histogram_tester.ExpectUniqueSample("OSCrypt.Linux.DecryptedWithEmptyKey",
+                                      true, 1);
 }
 
 }  // namespace
