@@ -4,6 +4,8 @@
 
 #include "base/threading/watchdog.h"
 
+#include <atomic>
+
 #include "base/logging.h"
 #include "base/test/spin_wait.h"
 #include "base/threading/platform_thread.h"
@@ -17,14 +19,12 @@ namespace {
 //------------------------------------------------------------------------------
 // Provide a derived class to facilitate testing.
 
-class WatchdogCounter : public Watchdog {
+class WatchdogCounter : public Watchdog::Delegate {
  public:
   WatchdogCounter(const TimeDelta& duration,
                   const std::string& thread_watched_name,
                   bool enabled)
-      : Watchdog(duration, thread_watched_name, enabled),
-        alarm_counter_(0) {
-  }
+      : watchdog_(duration, thread_watched_name, enabled, this) {}
 
   WatchdogCounter(const WatchdogCounter&) = delete;
   WatchdogCounter& operator=(const WatchdogCounter&) = delete;
@@ -33,13 +33,15 @@ class WatchdogCounter : public Watchdog {
 
   void Alarm() override {
     alarm_counter_++;
-    Watchdog::Alarm();
+    watchdog_.DefaultAlarm();
   }
 
-  int alarm_counter() { return alarm_counter_; }
+  Watchdog& watchdog() { return watchdog_; }
+  int alarm_counter() { return alarm_counter_.load(); }
 
  private:
-  int alarm_counter_;
+  std::atomic<int> alarm_counter_{0};
+  Watchdog watchdog_;
 };
 
 class WatchdogTest : public testing::Test {
@@ -76,7 +78,7 @@ TEST_F(WatchdogTest, ArmDisarmTest) {
 // Make sure a basic alarm fires when the time has expired.
 TEST_F(WatchdogTest, AlarmTest) {
   WatchdogCounter watchdog(Milliseconds(10), "Enabled", true);
-  watchdog.Arm();
+  watchdog.watchdog().Arm();
   SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(Minutes(5), watchdog.alarm_counter() > 0);
   EXPECT_EQ(1, watchdog.alarm_counter());
 }
@@ -85,7 +87,7 @@ TEST_F(WatchdogTest, AlarmTest) {
 TEST_F(WatchdogTest, AlarmPriorTimeTest) {
   WatchdogCounter watchdog(TimeDelta(), "Enabled2", true);
   // Set a time in the past.
-  watchdog.ArmSomeTimeDeltaAgo(Seconds(2));
+  watchdog.watchdog().ArmSomeTimeDeltaAgo(Seconds(2));
   // It should instantly go off, but certainly in less than 5 minutes.
   SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(Minutes(5), watchdog.alarm_counter() > 0);
 
@@ -95,7 +97,7 @@ TEST_F(WatchdogTest, AlarmPriorTimeTest) {
 // Make sure a disable alarm does nothing, even if we arm it.
 TEST_F(WatchdogTest, ConstructorDisabledTest) {
   WatchdogCounter watchdog(Milliseconds(10), "Disabled", false);
-  watchdog.Arm();
+  watchdog.watchdog().Arm();
   // Alarm should not fire, as it was disabled.
   PlatformThread::Sleep(Milliseconds(500));
   EXPECT_EQ(0, watchdog.alarm_counter());
@@ -106,10 +108,10 @@ TEST_F(WatchdogTest, DisarmTest) {
   WatchdogCounter watchdog(Seconds(1), "Enabled3", true);
 
   TimeTicks start = TimeTicks::Now();
-  watchdog.Arm();
+  watchdog.watchdog().Arm();
   // Sleep a bit, but not past the alarm point.
   PlatformThread::Sleep(Milliseconds(100));
-  watchdog.Disarm();
+  watchdog.watchdog().Disarm();
   TimeTicks end = TimeTicks::Now();
 
   if (end - start > Milliseconds(500)) {
@@ -128,7 +130,7 @@ TEST_F(WatchdogTest, DisarmTest) {
 
   // ...but even after disarming, we can still use the alarm...
   // Set a time greater than the timeout into the past.
-  watchdog.ArmSomeTimeDeltaAgo(Seconds(10));
+  watchdog.watchdog().ArmSomeTimeDeltaAgo(Seconds(10));
   // It should almost instantly go off, but certainly in less than 5 minutes.
   SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(Minutes(5), watchdog.alarm_counter() > 0);
 

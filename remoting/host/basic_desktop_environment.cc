@@ -61,18 +61,24 @@ constexpr base::TimeDelta kWaitForIgnoreXServerGrabsTimeout = base::Seconds(30);
 // This class crashes the host if the IgnoreXServerGrabs() call takes too long,
 // so that the ME2ME daemon process can respawn the host.
 // See: crbug.com/1130090
-class IgnoreXServerGrabsWatchdog : public base::Watchdog {
+class IgnoreXServerGrabsWatchdog : public base::Watchdog::Delegate {
  public:
   IgnoreXServerGrabsWatchdog()
-      : base::Watchdog(kWaitForIgnoreXServerGrabsTimeout,
-                       "IgnoreXServerGrabs Watchdog",
-                       /* enabled= */ true) {}
+      : watchdog_(kWaitForIgnoreXServerGrabsTimeout,
+                  "IgnoreXServerGrabs Watchdog",
+                  /*enabled=*/true,
+                  this) {}
   ~IgnoreXServerGrabsWatchdog() override = default;
+
+  void Arm() { watchdog_.Arm(); }
 
   void Alarm() override {
     // Crash the host if IgnoreXServerGrabs() takes too long.
     CHECK(false) << "IgnoreXServerGrabs() timed out.";
   }
+
+ private:
+  base::Watchdog watchdog_;
 };
 
 }  // namespace
@@ -251,7 +257,6 @@ BasicDesktopEnvironment::BasicDesktopEnvironment(
     IgnoreXServerGrabsWatchdog watchdog;
     watchdog.Arm();
     desktop_capture_options().x_display()->IgnoreXServerGrabs();
-    watchdog.Disarm();
   }
 #elif BUILDFLAG(IS_WIN)
   options_.desktop_capture_options()->set_allow_directx_capturer(

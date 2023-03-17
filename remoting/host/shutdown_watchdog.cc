@@ -16,7 +16,11 @@
 namespace remoting {
 
 ShutdownWatchdog::ShutdownWatchdog(const base::TimeDelta& duration)
-    : base::Watchdog(duration, "Shutdown watchdog", true) {}
+    : watchdog_(duration, "Shutdown watchdog", true, this) {}
+
+void ShutdownWatchdog::Arm() {
+  watchdog_.Arm();
+}
 
 void ShutdownWatchdog::SetExitCode(int exit_code) {
   base::AutoLock lock(lock_);

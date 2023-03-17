@@ -41,19 +41,20 @@ StaticData* GetStaticData() {
 // Start thread running in a Disarmed state.
 Watchdog::Watchdog(const TimeDelta& duration,
                    const std::string& thread_watched_name,
-                   bool enabled)
-  : enabled_(enabled),
-    lock_(),
-    condition_variable_(&lock_),
-    state_(DISARMED),
-    duration_(duration),
-    thread_watched_name_(thread_watched_name),
-    delegate_(this) {
-  if (!enabled_)
+                   bool enabled,
+                   Delegate* delegate)
+    : enabled_(enabled),
+      condition_variable_(&lock_),
+      state_(DISARMED),
+      duration_(duration),
+      thread_watched_name_(thread_watched_name),
+      thread_delegate_(this),
+      delegate_(delegate) {
+  if (!enabled_) {
     return;  // Don't start thread, or doing anything really.
+  }
   enabled_ = PlatformThread::Create(0,  // Default stack size.
-                                    &delegate_,
-                                    &handle_);
+                                    &thread_delegate_, &handle_);
   DCHECK(enabled_);
 }
 
@@ -108,6 +109,14 @@ void Watchdog::Disarm() {
 }
 
 void Watchdog::Alarm() {
+  if (delegate_) {
+    delegate_->Alarm();
+  } else {
+    DefaultAlarm();
+  }
+}
+
+void Watchdog::DefaultAlarm() {
   DVLOG(1) << "Watchdog alarmed for " << thread_watched_name_;
 }
 

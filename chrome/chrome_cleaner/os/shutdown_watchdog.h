@@ -18,7 +18,7 @@ namespace chrome_cleaner {
 // correctly. The triggering of the alarm indicates a sign of trouble, and so
 // the Alarm() method will log some diagnostic information before shutting down
 // the process.
-class ShutdownWatchdog : public base::Watchdog {
+class ShutdownWatchdog : public base::Watchdog::Delegate {
  public:
   // An |AlarmCallback| returns the exit code that should be used when
   // terminating the process.
@@ -34,12 +34,18 @@ class ShutdownWatchdog : public base::Watchdog {
 
   ~ShutdownWatchdog() override;
 
+  void Arm();
+  void Disarm();
+
  private:
+  // base::WatchDog::Delegate implementation:
   // This method is called by the watchdog thread when a timeout occurs.
   void Alarm() override;
 
   // Callback called when the process execution is aborted.
   AlarmCallback callback_;
+
+  base::Watchdog watchdog_;
 };
 
 }  // namespace chrome_cleaner

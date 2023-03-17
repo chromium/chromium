@@ -30,21 +30,12 @@ char kTSanDefaultSuppressions[] =
     // Intentional race in ToolsSanityTest.DataRace in base_unittests.
     "race:base/tools_sanity_unittest.cc\n"
 
-    // Data race on WatchdogCounter [test-only].
-    "race:base/threading/watchdog_unittest.cc\n"
-
     // Data race caused by swapping out the network change notifier with a mock
     // [test-only]. http://crbug.com/927330.
     "race:content/browser/net_info_browsertest.cc\n"
 
-    // http://crbug.com/120808
-    "race:base/threading/watchdog.cc\n"
-
     // http://crbug.com/244856
     "race:libpulsecommon*.so\n"
-
-    // http://crbug.com/308590
-    "race:CustomThreadWatcher::~CustomThreadWatcher\n"
 
     // http://crbug.com/476529
     "deadlock:cc::VideoLayerImpl::WillDraw\n"

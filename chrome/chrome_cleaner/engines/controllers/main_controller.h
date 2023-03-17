@@ -39,6 +39,7 @@ namespace chrome_cleaner {
 class ComponentAPI;
 class RebooterAPI;
 class RegistryLogger;
+class ShutdownWatchdog;
 
 enum class TimedOutStage {
   kScanning,
@@ -228,7 +229,7 @@ class MainController : public ComponentManagerDelegate,
   bool removable_uws_found_ = false;
 
   // Watchdog for terminating if scanning or cleaning takes too long.
-  std::unique_ptr<base::Watchdog> watchdog_;
+  std::unique_ptr<ShutdownWatchdog> watchdog_;
 
   // Quit closure to indicate the current scan & cleanup or validation is done.
   base::OnceClosure quit_closure_;
