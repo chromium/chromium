@@ -98,7 +98,6 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   void AddedToWidget() override;
   void Layout() override;
   void OnKeyEvent(ui::KeyEvent* event) override;
-  void OnThemeChanged() override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
