@@ -504,6 +504,10 @@ vars = {
   # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
   # This has to stay in sync with the version in src/third_party/ninja/README.chromium.
   'ninja_version': 'version:2@1.11.1.chromium.6',
+
+  # Used for src-internal deps into src migration.
+  # TODO(1409738): Remove this post migration.
+  'checkout_chromeos_assistant': False,
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
