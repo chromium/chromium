@@ -2,6 +2,7 @@
 <title>Spellchecker should not keep an unbounded number of detached nodes alive</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
 <body>
 <script>
 // Spins spellchecker until idle. Return whether it's actually run.
@@ -14,25 +15,36 @@ function spinSpellChecker() {
   return spellCheckerIsRun;
 }
 
-test(() => {
-  const n = 100;
+function raf() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+
+promise_setup(async () => {
+  assert_own_property(window, 'internals', 'This test requires internals')
+});
+
+promise_test(async () => {
+  await asyncGC();
+
   const numLiveNodesBefore = internals.numberOfLiveNodes();
 
+  const n = 5;
   for (let i = 0; i < n; ++i) {
-    {
-      let input = document.createElement('input');
-      document.body.appendChild(input);
-      input.focus();
-      assert_true(spinSpellChecker(), 'spellchecker is run');
-      input.remove();
-    }
-    gc();
+    let div = document.createElement('div');
+    div.contentEditable = true;
+    document.body.appendChild(div);
+    div.focus();
+    assert_true(spinSpellChecker(), 'spellchecker is run');
+    div.remove();
+    div = null;
   }
 
-  const numLiveNodesAfter = internals.numberOfLiveNodes();
+  await raf();
+  await raf();
+  await asyncGC();
 
-  // The exact number of retained nodes might vary in runs. Give it a generous leeway.
-  assert_less_than_equal(numLiveNodesAfter, numLiveNodesBefore + 40);
+  const numLiveNodesAfter = internals.numberOfLiveNodes();
+  assert_equals(numLiveNodesAfter, numLiveNodesBefore);
 });
 </script>
 </body>

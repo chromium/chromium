@@ -51,6 +51,8 @@ class ColdModeSpellCheckRequester
     fully_checked_root_editables_.erase(&element);
   }
 
+  void ElementRemoved(Element* element);
+
   void Trace(Visitor*) const;
 
  private:

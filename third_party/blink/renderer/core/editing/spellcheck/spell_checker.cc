@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/spell_check_marker.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/cold_mode_spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
@@ -722,6 +723,10 @@ std::pair<String, int> SpellChecker::FindFirstMisspelling(const Position& start,
     total_length_processed += current_length;
   }
   return std::make_pair(first_found_item, first_found_offset);
+}
+
+void SpellChecker::ElementRemoved(Element* element) {
+  GetIdleSpellCheckController().GetColdModeRequester().ElementRemoved(element);
 }
 
 // static

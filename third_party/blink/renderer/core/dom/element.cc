@@ -2837,6 +2837,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       frame->GetEditor().GetUndoStack().ElementRemoved(this);
     }
     frame->GetEditor().ElementRemoved(this);
+    frame->GetSpellChecker().ElementRemoved(this);
     frame->GetEventHandler().ElementRemoved(this);
   }
 }

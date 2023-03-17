@@ -255,4 +255,13 @@ void ColdModeSpellCheckRequester::RequestLocalChecking(
   GetSpellCheckRequester().RequestCheckingFor(checking_range);
 }
 
+void ColdModeSpellCheckRequester::ElementRemoved(Element* element) {
+  if (!RuntimeEnabledFeatures::DontLeakDetachedInputEnabled()) {
+    return;
+  }
+  if (root_editable_ == element) {
+    ClearProgress();
+  }
+}
+
 }  // namespace blink

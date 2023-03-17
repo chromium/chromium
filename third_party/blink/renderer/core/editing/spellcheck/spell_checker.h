@@ -84,6 +84,8 @@ class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
                                   int from,
                                   int length) const;
 
+  void ElementRemoved(Element*);
+
   // Exposed for testing and idle time spell checker
   SpellCheckRequester& GetSpellCheckRequester() const {
     return *spell_check_requester_;
