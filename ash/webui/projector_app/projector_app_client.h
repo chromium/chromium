@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/values.h"
 
 namespace network {
 namespace mojom {
@@ -21,10 +22,6 @@ class URLLoaderFactory;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace ash {
 
@@ -44,7 +41,7 @@ struct PendingScreencast {
   PendingScreencast& operator=(const PendingScreencast&);
   ~PendingScreencast();
 
-  base::Value ToValue() const;
+  base::Value::Dict ToValue() const;
   bool operator==(const PendingScreencast& rhs) const;
 
   // The container path of the screencast. It's a relative path of drive, looks

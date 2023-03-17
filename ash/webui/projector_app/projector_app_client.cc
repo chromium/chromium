@@ -41,20 +41,19 @@ PendingScreencast& PendingScreencast::operator=(const PendingScreencast&) =
 
 PendingScreencast::~PendingScreencast() = default;
 
-base::Value PendingScreencast::ToValue() const {
-  base::Value val(base::Value::Type::DICT);
-  val.SetKey(kPendingScreencastName, base::Value(name));
+base::Value::Dict PendingScreencast::ToValue() const {
+  base::Value::Dict val;
+  val.Set(kPendingScreencastName, base::Value(name));
   DCHECK_GT(total_size_in_bytes, 0);
   const double upload_progress = static_cast<double>(bytes_transferred) /
                                  static_cast<double>(total_size_in_bytes);
-  val.SetKey(kPendingScreencastUploadProgress,
-             base::Value(upload_progress * 100));
-  val.SetKey(kPendingScreencastCreatedTime,
-             base::Value(created_time.is_null()
-                             ? 0
-                             : created_time.ToJsTimeIgnoringNull()));
+  val.Set(kPendingScreencastUploadProgress, base::Value(upload_progress * 100));
+  val.Set(kPendingScreencastCreatedTime,
+          base::Value(created_time.is_null()
+                          ? 0
+                          : created_time.ToJsTimeIgnoringNull()));
 
-  val.SetKey(kPendingScreencastUploadFailed, base::Value(upload_failed));
+  val.Set(kPendingScreencastUploadFailed, base::Value(upload_failed));
   return val;
 }
 
