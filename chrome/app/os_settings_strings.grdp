@@ -3606,6 +3606,30 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_ESIM_PROFILE_LIMIT_REACHED_ERROR_TOAST" desc="Message in toast displayed when user tries to set up an eSIM profile when they have reached the maximum number of allowed eSIM profiles installed.">
     You can install up to <ph name="PROFILE_LIMIT">$1<ex>5</ex></ph> eSIM profiles on this device. To add another profile, first remove an existing profile.
   </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_POPUP_MENU_ITEM_TITLE" desc="Title for the dropdown menu entry in network settings subpage that shows the network device info dialog.">
+    Device network info
+  </message>
+  <message name="IDS_SETTINGS_MOBILE_DEVICE_INFO_POPUP_TITLE" desc="Title for the Mobile network device info popup dialog that shows mobile network device information.">
+    Device mobile network info
+  </message>
+  <message name="IDS_SETTINGS_MOBILE_DEVICE_INFO_POPUP_DESCRIPTION" desc="Description text in the Mobile network device info popup dialog that tells user about the details that are shown.">
+    These numbers can be used to help activate service
+  </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_EID_LABEL" desc="Label for the EID number of the device shown in the network device info popup dialog.">
+    EID
+  </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_IMEI_LABEL" desc="Label for the IMEI number of the device shown in the network device info popup dialog.">
+    IMEI
+  </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID" desc="A11y label for the network device info popup dialog that's read out when only EID is displayed.">
+    Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph>. This number can be used to help activate service.
+  </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_IMEI" desc="A11y label for the network device info popup dialog that's read out when only IMEI is displayed.">
+    Your device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph>. This number can be used to help activate service.
+  </message>
+  <message name="IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_AND_IMEI" desc="A11y label for the network device info popup dialog that's read out when both EID and IMEI is displayed.">
+    Your device EID is <ph name="EID_NUMBER">$1<ex>123456789</ex></ph> and device IMEI is <ph name="IMEI_NUMBER">$1<ex>123456789</ex></ph>. These numbers can be used to help activate service.
+  </message>
 
   <!-- Users Page (OS Settings) -->
   <message name="IDS_SETTINGS_USERS_MODIFIED_BY_OWNER_LABEL" desc="Label saying settings may only be modified by the device owner.">

@@ -1,0 +1,82 @@
+<style include="settings-shared iron-flex">
+  :host {
+    --cr-dialog-body-padding-horizontal: 24px;
+    --cr-dialog-button-container-padding-bottom: 20px;
+    --cr-dialog-button-container-padding-horizontal: 24px;
+    --cr-dialog-width: 416px;
+    --cr-dialog-title-slot-padding-bottom: 12px;
+    --cr-dialog-title-slot-padding-end: 24px;
+    --cr-dialog-title-slot-padding-start: 24px;
+    --cr-dialog-title-font-size: calc(16 / 13 * 100%);
+  }
+
+  #qrCodeCanvas {
+    display: block;
+    margin: 20px auto 20px auto;
+    max-width: calc(var(--cr-dialog-width) -
+        var(--cr-dialog-title-slot-padding-start) -
+        var(--cr-dialog-title-slot-padding-end));
+  }
+
+  @media(prefers-color-scheme: dark) {
+    /* NOTE: In dark mode a light background is applied to the QR code
+      * canvas as some QR code scanners cannot read an inverted QR code in
+      * which the background is darker than the foreground. */
+    #qrCodeCanvas {
+      background-color: var(--cros-icon-color-primary);
+      padding: 1px;
+    }
+  }
+
+  .info-container {
+    padding-top: 16px;
+  }
+
+  #eidContainer {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  .info-label {
+    font-weight: bold;
+  }
+
+  .info-value {
+    color: var(--cr-primary-text-color);
+  }
+</style>
+<cr-dialog id="deviceInfoDialog" show-on-attach>
+  <div slot="title">$i18n{mobileDeviceInfoPopupTitle}</div>
+  <div slot="body" aria-label="[[getA11yLabel_(deviceState, eid_)]]">
+    <div id="dialogDescription" aria-hidden="true">
+      $i18n{mobileDeviceInfoPopupDescription}
+    </div>
+    <template is="dom-if" if="[[shouldShowEidAndQrCode_(eid_)]]">
+      <div class="info-container" id="eidContainer">
+        <div class="info-label" aria-hidden="true">
+          $i18n{deviceInfoPopupEidLabel}
+        </div>
+        <div class="info-value" id="eid" aria-hidden="true">[[eid_]]</div>
+        <canvas id="qrCodeCanvas"
+            width="[[canvasSize_]]"
+            height="[[canvasSize_]]">
+        </canvas>
+      </div>
+    </template>
+    <template is="dom-if" if="[[shouldShowImei_(deviceState)]]">
+      <div class="info-container">
+        <div class="info-label" aria-hidden="true">
+          $i18n{deviceInfoPopupImeiLabel}
+        </div>
+        <div id="imei" class="info-value" aria-hidden="true">
+          [[deviceState.imei]]
+        </div>
+      </div>
+    </template>
+  </div>
+  <div slot="button-container">
+    <cr-button id="done" class="action-button"
+        on-click="onDonePressed_">
+      $i18n{done}
+    </cr-button>
+  </div>
+</cr-dialog>

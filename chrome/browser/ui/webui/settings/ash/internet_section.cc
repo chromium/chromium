@@ -713,6 +713,14 @@ InternetSection::~InternetSection() = default;
 
 void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"deviceInfoPopupMenuItemTitle",
+       IDS_SETTINGS_DEVICE_INFO_POPUP_MENU_ITEM_TITLE},
+      {"deviceInfoPopupEidLabel", IDS_SETTINGS_DEVICE_INFO_EID_LABEL},
+      {"deviceInfoPopupImeiLabel", IDS_SETTINGS_DEVICE_INFO_IMEI_LABEL},
+      {"deviceInfoPopupA11yEid", IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID},
+      {"deviceInfoPopupA11yImei", IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_IMEI},
+      {"deviceInfoPopupA11yEidAndImei",
+       IDS_SETTINGS_DEVICE_INFO_A11Y_LABEL_EID_AND_IMEI},
       {"internetAddCellular", IDS_SETTINGS_INTERNET_ADD_CELLULAR},
       {"internetAddConnection", IDS_SETTINGS_INTERNET_ADD_CONNECTION},
       {"internetAddConnectionExpandA11yLabel",
@@ -749,6 +757,10 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_FORGET},
       {"knownNetworksMenuButtonTitle",
        IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_BUTTON_TITLE},
+      {"mobileDeviceInfoPopupDescription",
+       IDS_SETTINGS_MOBILE_DEVICE_INFO_POPUP_DESCRIPTION},
+      {"mobileDeviceInfoPopupTitle",
+       IDS_SETTINGS_MOBILE_DEVICE_INFO_POPUP_TITLE},
       {"mobileNetworkScanningLabel", IDS_MOBILE_NETWORK_SCANNING_MESSAGE},
       {"networkAllowDataRoaming",
        IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING},

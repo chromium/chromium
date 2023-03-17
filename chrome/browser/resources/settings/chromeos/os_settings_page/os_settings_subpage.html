@@ -6,7 +6,7 @@
     /* Do not shorten '0px' below to '0' as the calc function requires
      * units. */
     min-height: calc(100vh - var(--cr-toolbar-height) -
-        var(--cr-toolbar-padding-top, 0px));
+        var(--cr-toolbar-padding-top, 0));
     padding-bottom: 60px;
     position: absolute;
     right: 0;
@@ -90,7 +90,6 @@
     </site-favicon>
   </template>
   <h1 class="cr-title-text">[[pageTitle]]</h1>
-  <slot name="subpage-title-extra"></slot>
   <template is="dom-if" if="[[learnMoreUrl]]">
     <cr-icon-button iron-icon="cr:help-outline" dir="ltr"
         aria-label="[[getLearnMoreAriaLabel_(pageTitle)]]" on-click="onHelpClick_">
@@ -106,5 +105,6 @@
     <paper-spinner-lite active title$="[[spinnerTitle]]">
     </paper-spinner-lite>
   </template>
+  <slot name="subpage-title-extra"></slot>
 </div>
 <slot></slot>
