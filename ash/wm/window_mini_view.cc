@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/window_preview_view.h"
-#include "ash/wm/wm_highlight_item_border.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -17,7 +17,10 @@
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -51,8 +54,9 @@ constexpr gfx::Size WindowMiniView::kIconSize;
 constexpr int WindowMiniView::kHeaderPaddingDp;
 
 void WindowMiniView::SetBackdropVisibility(bool visible) {
-  if (!backdrop_view_ && !visible)
+  if (!backdrop_view_ && !visible) {
     return;
+  }
 
   if (!backdrop_view_) {
     backdrop_view_ = AddChildView(std::make_unique<views::View>());
@@ -71,8 +75,9 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
 }
 
 void WindowMiniView::SetShowPreview(bool show) {
-  if (show == !!preview_view_)
+  if (show == !!preview_view_) {
     return;
+  }
 
   if (!show) {
     RemoveChildView(preview_view_);
@@ -81,8 +86,9 @@ void WindowMiniView::SetShowPreview(bool show) {
     return;
   }
 
-  if (!source_window_)
+  if (!source_window_) {
     return;
+  }
 
   preview_view_ = AddChildView(std::make_unique<WindowPreviewView>(
       source_window_,
@@ -93,8 +99,9 @@ void WindowMiniView::SetShowPreview(bool show) {
 }
 
 void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
-  if (!preview_view())
+  if (!preview_view()) {
     return;
+  }
 
   ui::Layer* layer = preview_view()->layer();
   DCHECK(layer);
@@ -106,9 +113,13 @@ void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
   layer->SetIsFastRoundedCorner(true);
 }
 
-void WindowMiniView::UpdateBorderState(bool show) {
-  border_ptr_->SetFocused(show);
-  SchedulePaint();
+void WindowMiniView::UpdateFocusState(bool focus) {
+  if (is_focused_ == focus) {
+    return;
+  }
+
+  is_focused_ = focus;
+  views::FocusRing::Get(this)->SchedulePaint();
 }
 
 gfx::Rect WindowMiniView::GetHeaderBounds() const {
@@ -122,10 +133,14 @@ gfx::Size WindowMiniView::GetPreviewViewSize() const {
   return preview_view_->GetPreferredSize();
 }
 
-WindowMiniView::WindowMiniView(aura::Window* source_window)
+WindowMiniView::WindowMiniView(aura::Window* source_window, int border_inset)
     : source_window_(source_window) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+
+  // TODO(conniekxu|sammiequon): Remove the border once the calculation method
+  // for the bounds of the OverviewItemView is redone.
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(border_inset)));
 
   window_observation_.Observe(source_window);
 
@@ -146,10 +161,16 @@ WindowMiniView::WindowMiniView(aura::Window* source_window)
       kLabelFontDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   layout->SetFlexForView(title_label_, 1);
 
-  auto border =
-      std::make_unique<WmHighlightItemBorder>(kBackdropBorderRoundingDp);
-  border_ptr_ = border.get();
-  SetBorder(std::move(border));
+  // In order to show the focus ring out of the content view, `border_inset`
+  // needs to be counted when setting the insets for the focus ring.
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(kFocusRingHaloInset + border_inset),
+      kBackdropBorderRoundingDp);
+  views::FocusRing::Install(this);
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetHasFocusPredicate(
+      [&](views::View* view) { return is_focused_; });
 }
 
 void WindowMiniView::UpdateIconView() {
@@ -157,10 +178,12 @@ void WindowMiniView::UpdateIconView() {
   aura::Window* transient_root = wm::GetTransientRoot(source_window_);
   // Prefer kAppIconKey over kWindowIconKey as the app icon is typically larger.
   gfx::ImageSkia* icon = transient_root->GetProperty(aura::client::kAppIconKey);
-  if (!icon || icon->size().IsEmpty())
+  if (!icon || icon->size().IsEmpty()) {
     icon = transient_root->GetProperty(aura::client::kWindowIconKey);
-  if (!icon)
+  }
+  if (!icon) {
     return;
+  }
 
   if (!icon_view_) {
     icon_view_ =
@@ -179,8 +202,9 @@ gfx::Rect WindowMiniView::GetContentAreaBounds() const {
 
 void WindowMiniView::Layout() {
   const gfx::Rect content_area_bounds = GetContentAreaBounds();
-  if (backdrop_view_)
+  if (backdrop_view_) {
     backdrop_view_->SetBoundsRect(content_area_bounds);
+  }
 
   if (preview_view_) {
     gfx::Rect preview_bounds = content_area_bounds;
@@ -189,6 +213,7 @@ void WindowMiniView::Layout() {
   }
 
   header_view_->SetBoundsRect(GetHeaderBounds());
+  views::View::Layout();
 }
 
 void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -196,8 +221,9 @@ void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // shortly by the owner (OverviewItem/WindowCycleView) but there may be a
   // small window where `source_window_` is null. Speculative fix for
   // https://crbug.com/1274775.
-  if (!source_window_)
+  if (!source_window_) {
     return;
+  }
 
   node_data->role = ax::mojom::Role::kWindow;
   node_data->SetName(wm::GetTransientRoot(source_window_)->GetTitle());
@@ -214,15 +240,17 @@ void WindowMiniView::OnWindowPropertyChanged(aura::Window* window,
                                              intptr_t old) {
   // Update the icon if it changes in the middle of an overview or alt tab
   // session (due to device scale factor change or other).
-  if (key != aura::client::kAppIconKey && key != aura::client::kWindowIconKey)
+  if (key != aura::client::kAppIconKey && key != aura::client::kWindowIconKey) {
     return;
+  }
 
   UpdateIconView();
 }
 
 void WindowMiniView::OnWindowDestroying(aura::Window* window) {
-  if (window != source_window_)
+  if (window != source_window_) {
     return;
+  }
 
   window_observation_.Reset();
   source_window_ = nullptr;

@@ -20,7 +20,6 @@ class View;
 
 namespace ash {
 class WindowPreviewView;
-class WmHighlightItemBorder;
 
 // WindowMiniView is a view which contains a header and optionally a mirror of
 // the given window. Displaying the mirror is chosen by the subclass by calling
@@ -51,7 +50,7 @@ class ASH_EXPORT WindowMiniView : public views::View,
   void UpdatePreviewRoundedCorners(bool show);
 
   // Shows or hides a focus ring around this view.
-  void UpdateBorderState(bool show);
+  void UpdateFocusState(bool focus);
 
   views::View* header_view() { return header_view_; }
   views::Label* title_label() const { return title_label_; }
@@ -60,7 +59,7 @@ class ASH_EXPORT WindowMiniView : public views::View,
   WindowPreviewView* preview_view() const { return preview_view_; }
 
  protected:
-  explicit WindowMiniView(aura::Window* source_window);
+  explicit WindowMiniView(aura::Window* source_window, int border_inset = 0);
 
   // Updates the icon view by creating it if necessary, and grabbing the correct
   // image from |source_window_|.
@@ -98,16 +97,15 @@ class ASH_EXPORT WindowMiniView : public views::View,
   views::Label* title_label_ = nullptr;
   views::ImageView* icon_view_ = nullptr;
 
-  // Owned by |content_view_| via `View::border_`. This is just a convenient
-  // pointer to it.
-  WmHighlightItemBorder* border_ptr_;
-
   // A view that covers the area except the header. It is null when the window
   // associated is not pillar or letter boxed.
   views::View* backdrop_view_ = nullptr;
 
   // Optionally shows a preview of |window_|.
   WindowPreviewView* preview_view_ = nullptr;
+
+  // True if the window mini view is focused when using keyboard navigation.
+  bool is_focused_ = false;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

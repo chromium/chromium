@@ -357,12 +357,12 @@ void WindowCycleView::SetTargetWindow(aura::Window* target) {
   if (target_window_) {
     auto target_it = window_view_map_.find(target_window_);
     if (target_it != window_view_map_.end())
-      target_it->second->UpdateBorderState(/*show=*/false);
+      target_it->second->UpdateFocusState(/*focus=*/false);
   }
   target_window_ = target;
   auto target_it = window_view_map_.find(target_window_);
   if (target_it != window_view_map_.end())
-    target_it->second->UpdateBorderState(/*show=*/true);
+    target_it->second->UpdateFocusState(/*focus=*/true);
 
   // Focus the target window if the user is not currently switching the mode
   // while ChromeVox is on.
