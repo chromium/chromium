@@ -51,7 +51,7 @@
 <translation id="3984746313391923992">Sua organização exige que a conta permaneça desconectada do Chrome.</translation>
 <translation id="3988789688219830639">O Google Chrome não têm acesso às suas fotos ou vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
 <translation id="417201473131094001">Indisponível no Chrome Canary</translation>
-<translation id="4192781968753717021">Essa senha foi encontrada em uma violação de dados. O Gerenciador de senhas do Google recomenda que você a mude imediatamente.</translation>
+<translation id="4192781968753717021">Essa senha foi encontrada em um vazamento de dados. O Gerenciador de senhas do Google recomenda que você mude essa senha imediatamente.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estava usando o Chrome e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
 <translation id="4249068189593983585">Dica do Chrome. Para ver mais opções de guia, toque no botão "Mostrar guias" na barra de ferramentas localizada na parte superior ou inferior da tela e mantenha-o pressionado.</translation>
@@ -83,7 +83,7 @@
 <translation id="6238746320622508509">Permita que o Chrome bloqueie suas guias anônimas.</translation>
 <translation id="6412673304250309937">Verifica se os URLs estão em uma lista de sites não seguros armazenada no Chrome. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar URLs, incluindo partes do conteúdo da página, para o "Navegação segura".</translation>
 <translation id="6427126399757991875">Sua organização está configurando o Chrome…</translation>
-<translation id="651403856614361404">Essa senha foi encontrada em uma violação de dados. O Chrome recomenda que você a mude imediatamente.</translation>
+<translation id="651403856614361404">Essa senha foi encontrada em um vazamento de dados. O Chrome recomenda que você mude essa senha imediatamente.</translation>
 <translation id="6600954340915313787">Copiado no Chrome</translation>
 <translation id="6632661856876686289">Faça mais com o Chrome</translation>
 <translation id="6634107063912726160">Quando você se desconecta, o Chrome não sincroniza nenhum dado novo com sua Conta do Google. Os dados sincronizados anteriormente permanecem na conta.</translation>
