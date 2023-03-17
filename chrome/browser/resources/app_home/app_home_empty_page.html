@@ -14,6 +14,30 @@
     margin-bottom: 16px;
     margin-top: 0;
 }
+
+cr-button {
+    /* Used to force dark mode */
+    --active-bg: black linear-gradient(rgba(255, 255, 255, .06),
+                                             rgba(255, 255, 255, .06));
+    --active-shadow-rgb: 0, 0, 0;
+    --active-shadow-action-rgb: var(--google-blue-500-rgb);
+    --bg-action: var(--google-blue-300);
+    --border-color: var(--google-grey-700);
+    --disabled-bg-action: var(--google-grey-800);
+    --disabled-bg: transparent;
+    --disabled-border-color: var(--google-grey-800);
+    --disabled-text-color: var(--google-grey-500);
+    --focus-shadow-color: rgba(var(--google-blue-300-rgb), .5);
+    --hover-bg-action: var(--bg-action)
+        linear-gradient(rgba(0, 0, 0, .08), rgba(0, 0, 0, .08));
+    --hover-bg-color: rgba(var(--google-blue-300-rgb), .08);
+    --ink-color-action: black;
+    --ink-color: var(--google-blue-300);
+    --ripple-opacity-action: .16;
+    --ripple-opacity: .16;
+    --text-color-action: var(--google-grey-900);
+    --text-color: var(--google-blue-300);
+}
 </style>
 
 <div class="container">
