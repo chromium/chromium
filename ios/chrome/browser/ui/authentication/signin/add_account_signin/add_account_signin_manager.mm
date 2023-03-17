@@ -31,7 +31,10 @@
 
 @end
 
-@implementation AddAccountSigninManager
+@implementation AddAccountSigninManager {
+  // YES if the add account if done, and the delegate has been called.
+  BOOL _addAccountFlowDone;
+}
 
 #pragma mark - Public
 
@@ -52,6 +55,8 @@
 }
 
 - (void)showSigninWithIntent:(AddAccountSigninIntent)signinIntent {
+  DCHECK(!_addAccountFlowDone);
+  DCHECK(self.identityInteractionManager);
   NSString* userEmail;
   switch (signinIntent) {
     case AddAccountSigninIntentAddSecondaryAccount: {
@@ -94,8 +99,20 @@
 - (void)interruptAddAccountAnimated:(BOOL)animated
                          completion:(ProceduralBlock)completion {
   self.signinInterrupted = YES;
-  [self.identityInteractionManager cancelAuthActivityAnimated:animated
-                                                   completion:completion];
+  __weak __typeof(self) weakSelf = self;
+  [self.identityInteractionManager
+      cancelAuthActivityAnimated:animated
+                      completion:^() {
+                        // If `identityInteractionManager` completion callback
+                        // has not been called yet, the add account needs to be
+                        // fully done by calling:
+                        // `operationCompletedWithIdentity:error:`, before
+                        // calling `completion` See crbug.com/1227658.
+                        [weakSelf operationCompletedWithIdentity:nil error:nil];
+                        if (completion) {
+                          completion();
+                        }
+                      }];
 }
 
 #pragma mark - Private
@@ -104,6 +121,14 @@
 // if the flow is interrupted by a sign-in error.
 - (void)operationCompletedWithIdentity:(id<SystemIdentity>)identity
                                  error:(NSError*)error {
+  if (_addAccountFlowDone) {
+    // When the dialog is interrupted, this method can be called twice.
+    // See: `interruptAddAccountAnimated:completion:`.
+    return;
+  }
+  DCHECK(self.identityInteractionManager);
+  _addAccountFlowDone = YES;
+  self.identityInteractionManager = nil;
   SigninCoordinatorResult signinResult = SigninCoordinatorResultSuccess;
   if (self.signinInterrupted) {
     signinResult = SigninCoordinatorResultInterrupted;
