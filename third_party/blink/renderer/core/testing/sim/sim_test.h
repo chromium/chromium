@@ -33,7 +33,8 @@ class SimTest : public testing::Test {
   void InitializeRemote();
 
   // Create a WebView with a main frame being a fenced frame root.
-  void InitializeFencedFrameRoot(mojom::blink::FencedFrameMode mode);
+  void InitializeFencedFrameRoot(
+      blink::FencedFrame::DeprecatedFencedFrameMode mode);
 
   // Load URL in the local frame root.
   void LoadURL(const String& url);

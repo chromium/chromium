@@ -9,8 +9,8 @@
 <body>
 <script>
 promise_test(async(t) => {
-  const fencedframe = attachFencedFrameContext(
-      {attributes:[['mode', 'opaque-ads']]});
+  const fencedframe = await attachFencedFrameContext(
+      {generator_api: 'fledge'});
   await fencedframe.execute(() => {
     let event = {
       eventType: "reserved.top_navigation",
@@ -22,8 +22,8 @@ promise_test(async(t) => {
 }, 'setReportEventDataForAutomaticBeacons works at the size limit');
 
 promise_test(async(t) => {
-  const fencedframe = attachFencedFrameContext(
-      {attributes:[['mode', 'opaque-ads']]});
+  const fencedframe = await attachFencedFrameContext(
+      {generator_api: 'fledge'});
   await fencedframe.execute(() => {
     let event = {
       eventType: "reserved.top_navigation",
@@ -37,8 +37,8 @@ promise_test(async(t) => {
 }, 'setReportEventDataForAutomaticBeacons fails over the size limit');
 
 promise_test(async(t) => {
-  const fencedframe = attachFencedFrameContext(
-      {attributes:[['mode', 'opaque-ads']]});
+  const fencedframe = await attachFencedFrameContext(
+      {generator_api: 'fledge'});
   await fencedframe.execute(() => {
     let event = {
       eventType: "reserved.top_navigation",

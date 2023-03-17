@@ -980,6 +980,11 @@ class CONTENT_EXPORT NavigationRequest
     return prerender_frame_tree_node_id_.value();
   }
 
+  const absl::optional<FencedFrameProperties>& GetFencedFrameProperties()
+      const {
+    return fenced_frame_properties_;
+  }
+
   // Compute and return the `FencedFrameProperties` that this
   // `NavigationRequest` acts under, i.e. the properties attached to this
   // `NavigationRequest` if present, or the properties attached to the fenced
@@ -988,6 +993,9 @@ class CONTENT_EXPORT NavigationRequest
       const;
 
   const absl::optional<base::UnguessableToken> ComputeFencedFrameNonce() const;
+
+  const absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
+  ComputeDeprecatedFencedFrameMode() const;
 
   void RenderFallbackContentForObjectTag();
 

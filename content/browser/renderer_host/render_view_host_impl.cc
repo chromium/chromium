@@ -520,7 +520,7 @@ bool RenderViewHostImpl::CreateRenderView(
     params->type = mojom::ViewWidgetType::kFencedFrame;
 
     params->fenced_frame_mode =
-        frame_tree_->root()->GetFencedFrameMode().value();
+        frame_tree_->root()->GetDeprecatedFencedFrameMode();
   } else if (is_portal) {
     DCHECK(!is_guest_view);
     params->type = mojom::ViewWidgetType::kPortal;

@@ -44,7 +44,6 @@ FrameTreeNode* CreateDelegateFrameTreeNode(
 
 FencedFrame::FencedFrame(
     base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
-    blink::mojom::FencedFrameMode mode,
     bool was_discarded)
     : web_contents_(static_cast<WebContentsImpl*>(
           WebContents::FromRenderFrameHost(&*owner_render_frame_host))),
@@ -61,8 +60,7 @@ FencedFrame::FencedFrame(
                                       /*render_widget_delegate=*/web_contents_,
                                       /*manager_delegate=*/web_contents_,
                                       /*page_delegate=*/web_contents_,
-                                      FrameTree::Type::kFencedFrame)),
-      mode_(mode) {
+                                      FrameTree::Type::kFencedFrame)) {
   if (was_discarded)
     frame_tree_->root()->set_was_discarded();
 }
@@ -82,18 +80,30 @@ void FencedFrame::Navigate(
   DCHECK_NE(RenderFrameHost::LifecycleState::kPrerendering,
             owner_render_frame_host_->GetLifecycleState());
 
-  if (mode_ == blink::mojom::FencedFrameMode::kDefault &&
-      !blink::IsValidFencedFrameURL(url)) {
+  if (!blink::IsValidUrnUuidURL(url) && !blink::IsValidFencedFrameURL(url)) {
     bad_message::ReceivedBadMessage(owner_render_frame_host_->GetProcess(),
                                     bad_message::FF_NAVIGATION_INVALID_URL);
     return;
   }
 
-  if (mode_ == blink::mojom::FencedFrameMode::kOpaqueAds &&
-      !blink::IsValidUrnUuidURL(url) && !blink::IsValidFencedFrameURL(url)) {
-    bad_message::ReceivedBadMessage(owner_render_frame_host_->GetProcess(),
-                                    bad_message::FF_NAVIGATION_INVALID_URL);
-    return;
+  // Confirm that the navigation does not cause a mismatch with the embedder's
+  // mode, if the embedder is itself a fenced frame. The renderer should prevent
+  // this from happening.
+  DCHECK(outer_delegate_frame_tree_node_);
+  if (outer_delegate_frame_tree_node_->IsInFencedFrameTree()) {
+    bool is_nested_inside_opaque_ads_fenced_frame =
+        outer_delegate_frame_tree_node_->GetDeprecatedFencedFrameMode() ==
+        blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+    bool is_nested_inside_default_fenced_frame =
+        !is_nested_inside_opaque_ads_fenced_frame;
+    if ((is_nested_inside_opaque_ads_fenced_frame &&
+         !blink::IsValidUrnUuidURL(url)) ||
+        (is_nested_inside_default_fenced_frame &&
+         !blink::IsValidFencedFrameURL(url))) {
+      bad_message::ReceivedBadMessage(
+          owner_render_frame_host_->GetProcess(),
+          bad_message::FF_DIFFERENT_MODE_THAN_EMBEDDER);
+    }
   }
 
   GURL validated_url = url;

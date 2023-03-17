@@ -13,11 +13,10 @@ promise_test(async () => {
   const allowed_height = 50;
 
   // Create an opaque-ads fenced frame with an invalid size.
-  const ad_frame = await attachFencedFrameContext({
-      generator_api: "fledge", attributes: [["mode", "opaque-ads"],
-      ["width", allowed_width+1], ["height", allowed_height+1]]});
+  const frame = await attachFencedFrameContext({generator_api: "sharedstorage",
+      attributes: [["width", allowed_width+1], ["height", allowed_height+1]]});
 
-  await ad_frame.execute(async (allowed_width, allowed_height) => {
+  await frame.execute(async (allowed_width, allowed_height) => {
     // Observe that the size gets coerced to the nearest allowed size.
     assert_equals(window.innerWidth, allowed_width,
         "The outer opaque-ads fenced frame has its width coerced.");
@@ -25,9 +24,9 @@ promise_test(async () => {
         "The outer opaque-ads fenced frame has its height coerced.");
 
     // Create a nested (component) opaque-ads fenced frame.
-    const component_ad_frame = attachFencedFrameContext({
-        attributes: [["mode", "opaque-ads"], ["width", allowed_width+1],
-            ["height", allowed_height+1]]});
+    const component_ad_frame = await attachFencedFrameContext({
+        generator_api: "sharedstorage", attributes:
+        [["width", allowed_width+1], ["height", allowed_height+1]]});
 
     await component_ad_frame.execute((allowed_width, allowed_height) => {
       // Observe that the nested frame's size doesn't get coerced.

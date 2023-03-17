@@ -653,7 +653,6 @@ interface LocalFrameHost {
   CreateFencedFrame(
       pending_associated_receiver<blink.mojom.FencedFrameOwnerHost>
         fenced_frame,
-      blink.mojom.FencedFrameMode mode,
       RemoteFrameInterfacesFromRenderer remote_frame_interfaces,
       blink.mojom.RemoteFrameToken frame_token,
       mojo_base.mojom.UnguessableToken devtools_frame_token);

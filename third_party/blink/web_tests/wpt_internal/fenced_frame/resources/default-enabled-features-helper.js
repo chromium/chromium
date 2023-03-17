@@ -8,8 +8,9 @@
 // <script src="/common/get-host-info.sub.js"></script>
 
 async function runDefaultEnabledFeaturesTest(t, should_load, fenced_origin, allow="") {
-  const fencedframe = attachFencedFrameContext({
-      attributes: [["mode", "opaque-ads"], ["allow", allow]],
+  const fencedframe = await attachFencedFrameContext({
+      generator_api: "fledge",
+      attributes: [["allow", allow]],
       origin: fenced_origin});
 
   if (!should_load) {

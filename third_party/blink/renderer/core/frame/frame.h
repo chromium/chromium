@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
@@ -441,7 +442,8 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // Returns the mode set on the fenced frame if the frame is inside a fenced
   // frame tree. Otherwise returns `absl::nullopt`. This should not be called
   // on a detached frame.
-  absl::optional<mojom::blink::FencedFrameMode> GetFencedFrameMode() const;
+  absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
+  GetDeprecatedFencedFrameMode() const;
 
   // Returns all the resources under the frame tree of this node.
   HeapVector<Member<Resource>> AllResourcesUnderFrame();

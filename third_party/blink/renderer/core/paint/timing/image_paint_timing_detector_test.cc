@@ -1293,7 +1293,8 @@ class ImagePaintTimingDetectorFencedFrameTest
         features::kFencedFrames, {{"implementation_type", "mparch"}});
   }
 
-  void InitializeFencedFrameRoot(mojom::blink::FencedFrameMode mode) {
+  void InitializeFencedFrameRoot(
+      blink::FencedFrame::DeprecatedFencedFrameMode mode) {
     web_view_helper_.InitializeWithOpener(/*opener=*/nullptr,
                                           /*frame_client=*/nullptr,
                                           /*view_client=*/nullptr,
@@ -1322,7 +1323,8 @@ INSTANTIATE_PAINT_TEST_SUITE_P(ImagePaintTimingDetectorFencedFrameTest);
 
 TEST_P(ImagePaintTimingDetectorFencedFrameTest, NotReported) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  InitializeFencedFrameRoot(mojom::blink::FencedFrameMode::kDefault);
+  InitializeFencedFrameRoot(
+      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault);
   GetDocument().SetBaseURLOverride(KURL("https://test.com"));
   SetBodyInnerHTML(R"HTML(
       <body></body>

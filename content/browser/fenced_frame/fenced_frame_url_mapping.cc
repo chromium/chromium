@@ -114,6 +114,7 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
   auto& [urn, config] = *it.value();
 
   config.fenced_frame_reporter_ = std::move(fenced_frame_reporter);
+  config.mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
   return urn;
 }
 
@@ -184,6 +185,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
                                  VisibilityToContent::kTransparent);
 
   config.fenced_frame_reporter_ = std::move(fenced_frame_reporter);
+  config.mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
 
   return config.RedactFor(FencedFrameEntity::kEmbedder);
 }
@@ -255,6 +257,7 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     config = FencedFrameConfig(urn_uuid, mapping_result.mapped_url,
                                mapping_result.budget_metadata,
                                std::move(mapping_result.fenced_frame_reporter));
+    config->mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);
   }
 

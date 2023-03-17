@@ -28,8 +28,7 @@ async function createAndValidateWindow() {
 
     // We have to store the frame under 'window' explicitly, because otherwise
     // the variable wouldn't persist between script executions.
-    window.fenced_frame = attachFencedFrameContext({
-        attributes: [["mode", "opaque-ads"]]});
+    window.fenced_frame = await attachFencedFrameContext({generator_api: 'fledge'});
 
     // Wait for the fenced frame to load.
     await window.fenced_frame.execute(async () => {
@@ -324,6 +323,36 @@ promise_test(async () => {
   // exists.
   await frame.execute(() => {});
 }, '_unfencedTop in default fenced frame');
+
+// Test that _unfencedTop behaves like any other target name inside fenced
+// frames that were previously in opaque-ads mode.
+promise_test(async () => {
+  const frame = await attachFencedFrameContext({generator_api: "fledge"});
+  await frame.execute(() => {});
+
+  const navigated_frame = await replaceFrameContext(frame);
+  // Wait for the frame to load to avoid nondeterminism with user activation.
+  await navigated_frame.execute(() => {});
+  await click(frame.element);
+
+  // Use _unfencedTop inside the default mode fenced frame.
+  await navigated_frame.execute(() => {
+    // User activate MPArch.
+    assert_not_equals(eventSender, null);
+    eventSender.mouseDown();
+
+    assert_true(navigator.userActivation.isActive,
+                "The frame should be active before opening a window.");
+    const openee = window.open('resources/dummy.html', '_unfencedTop');
+    assert_false(navigator.userActivation.isActive,
+                 "The frame should be inactive after opening a window.");
+  });
+
+  // In a separate remote context (so that the navigation would have completed
+  // if it were navigating the top-level frame), check that the frame still
+  // exists.
+  await navigated_frame.execute(() => {});
+}, '_unfencedTop in opaque-ads -> default fenced frame');
 
 </script>
 </body>

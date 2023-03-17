@@ -359,8 +359,8 @@ bool Frame::IsFencedFrameRoot() const {
   return IsInFencedFrameTree() && IsMainFrame();
 }
 
-absl::optional<mojom::blink::FencedFrameMode> Frame::GetFencedFrameMode()
-    const {
+absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
+Frame::GetDeprecatedFencedFrameMode() const {
   DCHECK(!IsDetached());
 
   if (!features::IsFencedFramesEnabled())
@@ -369,7 +369,7 @@ absl::optional<mojom::blink::FencedFrameMode> Frame::GetFencedFrameMode()
   if (!IsInFencedFrameTree())
     return absl::nullopt;
 
-  return GetPage()->FencedFrameMode();
+  return GetPage()->DeprecatedFencedFrameMode();
 }
 
 void Frame::SetOwner(FrameOwner* owner) {

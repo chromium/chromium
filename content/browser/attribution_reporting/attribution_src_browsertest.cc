@@ -1231,7 +1231,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcFencedFrameBrowserTest,
 
   RenderFrameHost* fenced_frame_host = fenced_frame_helper_->CreateFencedFrame(
       parent, fenced_frame_url, net::OK,
-      blink::mojom::FencedFrameMode::kOpaqueAds);
+      blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
 
   ASSERT_NE(fenced_frame_host, nullptr);
   EXPECT_TRUE(fenced_frame_host->IsFencedFrameRoot());

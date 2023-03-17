@@ -33,6 +33,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
@@ -132,7 +133,8 @@ class BLINK_EXPORT WebView {
       bool is_hidden,
       bool is_prerendering,
       bool is_inside_portal,
-      absl::optional<blink::mojom::FencedFrameMode> fenced_frame_mode,
+      absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
+          fenced_frame_mode,
       bool compositing_enabled,
       bool widgets_never_composited,
       WebView* opener,

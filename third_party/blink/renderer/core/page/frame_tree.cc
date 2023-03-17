@@ -288,8 +288,8 @@ Frame* FrameTree::FindFrameForNavigationInternal(
     // that this is an _unfencedTop navigation, and return the current frame
     // so that the renderer-side checks will succeed.
     // TODO(crbug.com/1315802): Refactor MPArch _unfencedTop handling.
-    if (this_frame_.Get()->GetFencedFrameMode() ==
-            mojom::blink::FencedFrameMode::kOpaqueAds &&
+    if (this_frame_.Get()->GetDeprecatedFencedFrameMode() ==
+            blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds &&
         request != nullptr) {
       request->SetIsUnfencedTopNavigation(true);
       return this_frame_;

@@ -29,7 +29,7 @@ FencedFrameMPArchDelegate::FencedFrameMPArchDelegate(
 
   RemoteFrame* remote_frame =
       GetElement().GetDocument().GetFrame()->Client()->CreateFencedFrame(
-          &GetElement(), std::move(receiver), GetElement().GetMode());
+          &GetElement(), std::move(receiver));
   DCHECK_EQ(remote_frame, GetElement().ContentFrame());
 }
 

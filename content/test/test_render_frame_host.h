@@ -113,9 +113,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   const std::vector<std::string>& GetConsoleMessages() override;
   int GetHeavyAdIssueCount(HeavyAdIssueType type) override;
   void SimulateManifestURLUpdate(const GURL& manifest_url) override;
-  TestRenderFrameHost* AppendFencedFrame(
-      blink::mojom::FencedFrameMode mode =
-          blink::mojom::FencedFrameMode::kDefault) override;
+  TestRenderFrameHost* AppendFencedFrame() override;
   void CreateWebUsbServiceForTesting(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) override;
 

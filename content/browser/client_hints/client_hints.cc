@@ -606,7 +606,10 @@ struct ClientHintsExtendedData {
       is_1p_origin = true;
     } else if (frame_tree_node->IsInFencedFrameTree()) {
       permissions_policy = blink::PermissionsPolicy::CreateForFencedFrame(
-          resource_origin, frame_tree_node->GetFencedFrameMode().value());
+          resource_origin,
+          /*is_opaque_ads_mode=*/frame_tree_node
+                  ->GetDeprecatedFencedFrameMode() ==
+              blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
     } else {
       RenderFrameHostImpl* outermost_main_frame =
           frame_tree_node->frame_tree().GetMainFrame()->GetOutermostMainFrame();
