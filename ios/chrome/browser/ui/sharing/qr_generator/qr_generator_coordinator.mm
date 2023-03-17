@@ -8,11 +8,9 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
-#import "ios/chrome/browser/ui/sharing/activity_services/activity_service_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_presentation.h"
 #import "ios/chrome/browser/ui/sharing/qr_generator/qr_generator_view_controller.h"
+#import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
@@ -26,9 +24,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface QRGeneratorCoordinator () <SharingPositioner,
-                                      ActivityServicePresentation,
-                                      ConfirmationAlertActionHandler> {
+@interface QRGeneratorCoordinator () <ConfirmationAlertActionHandler> {
   // URL of a page to generate a QR code for.
   GURL _URL;
 }
@@ -39,11 +35,9 @@
 // View controller used to display the QR code and actions.
 @property(nonatomic, strong) QRGeneratorViewController* viewController;
 
-// TODO(crbug.com/1404974): Use a SharingCoordinator instead.
 // Coordinator for the activity view brought up when the user wants to share
 // the QR code.
-@property(nonatomic, strong)
-    ActivityServiceCoordinator* activityServiceCoordinator;
+@property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 
 // Title of a page to generate a QR code for.
 @property(nonatomic, copy) NSString* title;
@@ -91,8 +85,8 @@
   self.viewController = nil;
   self.learnMoreViewController = nil;
 
-  [self.activityServiceCoordinator stop];
-  self.activityServiceCoordinator = nil;
+  [self.sharingCoordinator stop];
+  self.sharingCoordinator = nil;
 
   [super stop];
 }
@@ -113,17 +107,13 @@
       [[SharingParams alloc] initWithImage:self.viewController.content
                                      title:imageTitle
                                   scenario:SharingScenario::QRCodeImage];
-
   // Configure the image sharing scenario.
-  self.activityServiceCoordinator = [[ActivityServiceCoordinator alloc]
+  self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                          params:params];
-
-  self.activityServiceCoordinator.positionProvider = self;
-  self.activityServiceCoordinator.presentationProvider = self;
-
-  [self.activityServiceCoordinator start];
+                          params:params
+                      originView:self.viewController.primaryActionButton];
+  [self.sharingCoordinator start];
 }
 
 - (void)confirmationAlertLearnMoreAction {
@@ -140,23 +130,6 @@
   [self.viewController presentViewController:self.learnMoreViewController
                                     animated:YES
                                   completion:nil];
-}
-
-#pragma mark - SharingPositioner
-
-- (UIView*)sourceView {
-  return self.viewController.primaryActionButton;
-}
-
-- (CGRect)sourceRect {
-  return self.viewController.primaryActionButton.bounds;
-}
-
-#pragma mark - ActivityServicePresentation
-
-- (void)activityServiceDidEndPresenting {
-  [self.activityServiceCoordinator stop];
-  self.activityServiceCoordinator = nil;
 }
 
 @end
