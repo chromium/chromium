@@ -95,7 +95,8 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
   bool is_content_visible = true;
 
   for (const auto& visit : cluster.visits) {
-    if (visit.annotated_visit.content_annotations.has_url_keyed_image) {
+    if (visit.annotated_visit.content_annotations.has_url_keyed_image &&
+        visit.annotated_visit.visit_row.is_known_to_sync) {
       num_visits_with_images++;
     }
     if (!filter_params_->categories_allowlist.empty() &&
