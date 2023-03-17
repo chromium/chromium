@@ -197,8 +197,6 @@ source_set("web_applications") {
     "web_app_database_factory.h",
     "web_app_helpers.cc",
     "web_app_helpers.h",
-    "web_app_icon_downloader.cc",
-    "web_app_icon_downloader.h",
     "web_app_icon_generator.cc",
     "web_app_icon_generator.h",
     "web_app_icon_manager.cc",
@@ -258,6 +256,8 @@ source_set("web_applications") {
     "web_app_utils.h",
     "web_contents/web_app_data_retriever.cc",
     "web_contents/web_app_data_retriever.h",
+    "web_contents/web_app_icon_downloader.cc",
+    "web_contents/web_app_icon_downloader.h",
     "web_contents/web_app_url_loader.cc",
     "web_contents/web_app_url_loader.h",
   ]
@@ -642,7 +642,6 @@ source_set("web_applications_unit_tests") {
     "web_app_command_scheduler_unittest.cc",
     "web_app_database_unittest.cc",
     "web_app_helpers_unittest.cc",
-    "web_app_icon_downloader_unittest.cc",
     "web_app_icon_generator_unittest.cc",
     "web_app_icon_manager_unittest.cc",
     "web_app_install_finalizer_unittest.cc",
@@ -657,6 +656,7 @@ source_set("web_applications_unit_tests") {
     "web_app_unittest.cc",
     "web_app_utils_unittest.cc",
     "web_contents/web_app_data_retriever_unittest.cc",
+    "web_contents/web_app_icon_downloader_unittest.cc",
     "web_contents/web_app_url_loader_unittest.cc",
   ]
 
