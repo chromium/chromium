@@ -872,11 +872,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // the mirrored position of the child Views if the parent View uses a
   // right-to-left UI layout.
 
-  // Convert a point from the coordinate system of one View to another.
+  // Converts a point from the coordinate system of one View to another.
   //
-  // |source| and |target| must be in the same widget, but doesn't need to be in
+  // |source| and |target| must be in the same widget, but don't need to be in
   // the same view hierarchy.
-  // Neither |source| nor |target| can be NULL.
+  // Neither |source| nor |target| can be null.
   static void ConvertPointToTarget(const View* source,
                                    const View* target,
                                    gfx::Point* point);
@@ -885,12 +885,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
                                                        const View* target,
                                                        const gfx::Point& point);
 
-  // Convert |rect| from the coordinate system of |source| to the coordinate
+  // Converts |rect| from the coordinate system of |source| to the coordinate
   // system of |target|.
   //
-  // |source| and |target| must be in the same widget, but doesn't need to be in
+  // |source| and |target| must be in the same widget, but don't need to be in
   // the same view hierarchy.
-  // Neither |source| nor |target| can be NULL.
+  // Neither |source| nor |target| can be null.
   static void ConvertRectToTarget(const View* source,
                                   const View* target,
                                   gfx::RectF* rect);
@@ -898,21 +898,34 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
                                                       const View* target,
                                                       const gfx::RectF& rect);
 
-  // Convert a point from a View's coordinate system to that of its Widget.
+  // Converts |rect| from the coordinate system of |source| to the
+  // coordinate system of |target|.
+  //
+  // |source| and |target| must be in the same widget, but don't need to be in
+  // the same view hierarchy.
+  // Neither |source| nor |target| can be null.
+  //
+  // Returns the enclosed rect with default allowed conversion error
+  // (0.00001f).
+  static gfx::Rect ConvertRectToTarget(const View* source,
+                                       const View* target,
+                                       gfx::Rect& rect);
+
+  // Converts a point from a View's coordinate system to that of its Widget.
   static void ConvertPointToWidget(const View* src, gfx::Point* point);
 
-  // Convert a point from the coordinate system of a View's Widget to that
+  // Converts a point from the coordinate system of a View's Widget to that
   // View's coordinate system.
   static void ConvertPointFromWidget(const View* dest, gfx::Point* p);
 
-  // Convert a point from a View's coordinate system to that of the screen.
+  // Converts a point from a View's coordinate system to that of the screen.
   static void ConvertPointToScreen(const View* src, gfx::Point* point);
 
-  // Convert a point from the screen coordinate system to that View's coordinate
-  // system.
+  // Converts a point from the screen coordinate system to that View's
+  // coordinate system.
   static void ConvertPointFromScreen(const View* dst, gfx::Point* point);
 
-  // Convert a rect from a View's coordinate system to that of the screen.
+  // Converts a rect from a View's coordinate system to that of the screen.
   static void ConvertRectToScreen(const View* src, gfx::Rect* rect);
 
   // Applies transformation on the rectangle, which is in the view's coordinate
@@ -1965,23 +1978,23 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Coordinate conversion -----------------------------------------------------
 
-  // Convert a point in the view's coordinate to an ancestor view's coordinate
+  // Converts a point in the view's coordinate to an ancestor view's coordinate
   // system using necessary transformations. Returns whether the point was
   // successfully converted to the ancestor's coordinate system.
   bool ConvertPointForAncestor(const View* ancestor, gfx::Point* point) const;
 
-  // Convert a point in the ancestor's coordinate system to the view's
+  // Converts a point in the ancestor's coordinate system to the view's
   // coordinate system using necessary transformations. Returns whether the
   // point was successfully converted from the ancestor's coordinate system
   // to the view's coordinate system.
   bool ConvertPointFromAncestor(const View* ancestor, gfx::Point* point) const;
 
-  // Convert a rect in the view's coordinate to an ancestor view's coordinate
+  // Converts a rect in the view's coordinate to an ancestor view's coordinate
   // system using necessary transformations. Returns whether the rect was
   // successfully converted to the ancestor's coordinate system.
   bool ConvertRectForAncestor(const View* ancestor, gfx::RectF* rect) const;
 
-  // Convert a rect in the ancestor's coordinate system to the view's
+  // Converts a rect in the ancestor's coordinate system to the view's
   // coordinate system using necessary transformations. Returns whether the
   // rect was successfully converted from the ancestor's coordinate system
   // to the view's coordinate system.

@@ -3286,6 +3286,8 @@ TEST_F(ViewTest, ConversionsWithTransform) {
   // View used to test a rotation transform.
   TestView* child_2 = new TestView;
 
+  constexpr float kDefaultAllowedConversionError = 0.00001f;
+
   {
     top_view.AddChildView(child);
     child->AddChildView(child_child);
@@ -3349,83 +3351,150 @@ TEST_F(ViewTest, ConversionsWithTransform) {
 
   // Conversions from child->top and top->child.
   {
+    // child->top
     gfx::Point point(5, 5);
     View::ConvertPointToTarget(child, &top_view, &point);
     EXPECT_EQ(22, point.x());
     EXPECT_EQ(39, point.y());
 
-    gfx::RectF rect(5.0f, 5.0f, 10.0f, 20.0f);
-    View::ConvertRectToTarget(child, &top_view, &rect);
-    EXPECT_FLOAT_EQ(22.0f, rect.x());
-    EXPECT_FLOAT_EQ(39.0f, rect.y());
-    EXPECT_FLOAT_EQ(30.0f, rect.width());
-    EXPECT_FLOAT_EQ(80.0f, rect.height());
+    gfx::Rect kSrc(5, 5, 10, 20);
+    gfx::RectF kSrcF(kSrc);
+    gfx::Rect kExpected(22, 39, 30, 80);
 
+    gfx::Rect kActual = View::ConvertRectToTarget(child, &top_view, kSrc);
+    EXPECT_EQ(kActual, kExpected);
+
+    gfx::RectF kActualF = View::ConvertRectToTarget(child, &top_view, kSrcF);
+    EXPECT_TRUE(kActualF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                            kDefaultAllowedConversionError,
+                                            kDefaultAllowedConversionError));
+
+    View::ConvertRectToTarget(child, &top_view, &kSrcF);
+    EXPECT_TRUE(kSrcF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                         kDefaultAllowedConversionError,
+                                         kDefaultAllowedConversionError));
+
+    // top->child
     point.SetPoint(22, 39);
     View::ConvertPointToTarget(&top_view, child, &point);
     EXPECT_EQ(5, point.x());
     EXPECT_EQ(5, point.y());
 
-    rect.SetRect(22.0f, 39.0f, 30.0f, 80.0f);
-    View::ConvertRectToTarget(&top_view, child, &rect);
-    EXPECT_FLOAT_EQ(5.0f, rect.x());
-    EXPECT_FLOAT_EQ(5.0f, rect.y());
-    EXPECT_FLOAT_EQ(10.0f, rect.width());
-    EXPECT_FLOAT_EQ(20.0f, rect.height());
+    kSrc.SetRect(22, 39, 30, 80);
+    kSrcF = gfx::RectF(kSrc);
+    kExpected.SetRect(5, 5, 10, 20);
+
+    kActual = View::ConvertRectToTarget(&top_view, child, kSrc);
+    EXPECT_EQ(kActual, kExpected);
+
+    kActualF = View::ConvertRectToTarget(&top_view, child, kSrcF);
+    EXPECT_TRUE(kActualF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                            kDefaultAllowedConversionError,
+                                            kDefaultAllowedConversionError));
+
+    View::ConvertRectToTarget(&top_view, child, &kSrcF);
+    EXPECT_TRUE(kSrcF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                         kDefaultAllowedConversionError,
+                                         kDefaultAllowedConversionError));
   }
 
   // Conversions from child_child->top and top->child_child.
   {
+    // child_child->top
     gfx::Point point(5, 5);
     View::ConvertPointToTarget(child_child, &top_view, &point);
     EXPECT_EQ(133, point.x());
     EXPECT_EQ(211, point.y());
 
-    gfx::RectF rect(5.0f, 5.0f, 10.0f, 20.0f);
-    View::ConvertRectToTarget(child_child, &top_view, &rect);
-    EXPECT_FLOAT_EQ(133.0f, rect.x());
-    EXPECT_FLOAT_EQ(211.0f, rect.y());
-    EXPECT_FLOAT_EQ(150.0f, rect.width());
-    EXPECT_FLOAT_EQ(560.0f, rect.height());
+    gfx::Rect kSrc(5, 5, 10, 20);
+    gfx::RectF kSrcF(kSrc);
+    gfx::Rect kExpected(133, 211, 150, 560);
 
+    gfx::Rect kActual = View::ConvertRectToTarget(child_child, &top_view, kSrc);
+    EXPECT_EQ(kActual, kExpected);
+
+    gfx::RectF kActualF =
+        View::ConvertRectToTarget(child_child, &top_view, kSrcF);
+    EXPECT_TRUE(kActualF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                            kDefaultAllowedConversionError,
+                                            kDefaultAllowedConversionError));
+
+    View::ConvertRectToTarget(child_child, &top_view, &kSrcF);
+    EXPECT_TRUE(kSrcF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                         kDefaultAllowedConversionError,
+                                         kDefaultAllowedConversionError));
+
+    // top->child_child
     point.SetPoint(133, 211);
     View::ConvertPointToTarget(&top_view, child_child, &point);
     EXPECT_EQ(5, point.x());
     EXPECT_EQ(5, point.y());
 
-    rect.SetRect(133.0f, 211.0f, 150.0f, 560.0f);
-    View::ConvertRectToTarget(&top_view, child_child, &rect);
-    EXPECT_FLOAT_EQ(5.0f, rect.x());
-    EXPECT_FLOAT_EQ(5.0f, rect.y());
-    EXPECT_FLOAT_EQ(10.0f, rect.width());
-    EXPECT_FLOAT_EQ(20.0f, rect.height());
+    kSrc.SetRect(133, 211, 150, 560);
+    kSrcF = gfx::RectF(kSrc);
+    kExpected.SetRect(5, 5, 10, 20);
+
+    kActual = View::ConvertRectToTarget(&top_view, child_child, kSrc);
+    EXPECT_EQ(kActual, kExpected);
+
+    kActualF = View::ConvertRectToTarget(&top_view, child_child, kSrcF);
+    EXPECT_TRUE(kActualF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                            kDefaultAllowedConversionError,
+                                            kDefaultAllowedConversionError));
+
+    View::ConvertRectToTarget(&top_view, child_child, &kSrcF);
+    EXPECT_TRUE(kSrcF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                         kDefaultAllowedConversionError,
+                                         kDefaultAllowedConversionError));
   }
 
   // Conversions from child_child->child and child->child_child
   {
+    // child_child->child
     gfx::Point point(5, 5);
     View::ConvertPointToTarget(child_child, child, &point);
     EXPECT_EQ(42, point.x());
     EXPECT_EQ(48, point.y());
 
-    gfx::RectF rect(5.0f, 5.0f, 10.0f, 20.0f);
-    View::ConvertRectToTarget(child_child, child, &rect);
-    EXPECT_FLOAT_EQ(42.0f, rect.x());
-    EXPECT_FLOAT_EQ(48.0f, rect.y());
-    EXPECT_FLOAT_EQ(50.0f, rect.width());
-    EXPECT_FLOAT_EQ(140.0f, rect.height());
+    gfx::Rect kSrc(5, 5, 10, 20);
+    gfx::RectF kSrcF(kSrc);
+    gfx::Rect kExpected(42, 48, 50, 140);
 
+    gfx::Rect kActual = View::ConvertRectToTarget(child_child, child, kSrc);
+    EXPECT_EQ(kActual, kExpected);
+
+    gfx::RectF kActualF = View::ConvertRectToTarget(child_child, child, kSrcF);
+    EXPECT_TRUE(kActualF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                            kDefaultAllowedConversionError,
+                                            kDefaultAllowedConversionError));
+
+    View::ConvertRectToTarget(child_child, child, &kSrcF);
+    EXPECT_TRUE(kSrcF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                         kDefaultAllowedConversionError,
+                                         kDefaultAllowedConversionError));
+
+    // child->child_child
     point.SetPoint(42, 48);
     View::ConvertPointToTarget(child, child_child, &point);
     EXPECT_EQ(5, point.x());
     EXPECT_EQ(5, point.y());
 
-    rect.SetRect(42.0f, 48.0f, 50.0f, 140.0f);
-    View::ConvertRectToTarget(child, child_child, &rect);
-    EXPECT_FLOAT_EQ(5.0f, rect.x());
-    EXPECT_FLOAT_EQ(5.0f, rect.y());
-    EXPECT_FLOAT_EQ(10.0f, rect.width());
-    EXPECT_FLOAT_EQ(20.0f, rect.height());
+    kSrc.SetRect(42, 48, 50, 140);
+    kSrcF = gfx::RectF(kSrc);
+    kExpected.SetRect(5, 5, 10, 20);
+
+    kActual = View::ConvertRectToTarget(child, child_child, kSrc);
+    EXPECT_EQ(kActual, kExpected);
+
+    kActualF = View::ConvertRectToTarget(child, child_child, kSrcF);
+    EXPECT_TRUE(kActualF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                            kDefaultAllowedConversionError,
+                                            kDefaultAllowedConversionError));
+
+    View::ConvertRectToTarget(child, child_child, &kSrcF);
+    EXPECT_TRUE(kSrcF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                         kDefaultAllowedConversionError,
+                                         kDefaultAllowedConversionError));
   }
 
   // Conversions from top_view to child with a value that should be negative.
@@ -3447,19 +3516,41 @@ TEST_F(ViewTest, ConversionsWithTransform) {
 
   // Rect conversions from top_view->child_2 and child_2->top_view.
   {
-    gfx::RectF rect(50.0f, 55.0f, 20.0f, 30.0f);
-    View::ConvertRectToTarget(child_2, &top_view, &rect);
-    EXPECT_FLOAT_EQ(615.0f, rect.x());
-    EXPECT_FLOAT_EQ(775.0f, rect.y());
-    EXPECT_FLOAT_EQ(30.0f, rect.width());
-    EXPECT_FLOAT_EQ(20.0f, rect.height());
+    // top_view->child_2
+    gfx::Rect kSrc(50, 55, 20, 30);
+    gfx::RectF kSrcF(kSrc);
+    gfx::Rect kExpected(615, 775, 30, 20);
 
-    rect.SetRect(615.0f, 775.0f, 30.0f, 20.0f);
-    View::ConvertRectToTarget(&top_view, child_2, &rect);
-    EXPECT_FLOAT_EQ(50.0f, rect.x());
-    EXPECT_FLOAT_EQ(55.0f, rect.y());
-    EXPECT_FLOAT_EQ(20.0f, rect.width());
-    EXPECT_FLOAT_EQ(30.0f, rect.height());
+    gfx::Rect kActual = View::ConvertRectToTarget(child_2, &top_view, kSrc);
+    EXPECT_EQ(kActual, kExpected);
+
+    gfx::RectF kActualF = View::ConvertRectToTarget(child_2, &top_view, kSrcF);
+    EXPECT_TRUE(kActualF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                            kDefaultAllowedConversionError,
+                                            kDefaultAllowedConversionError));
+
+    View::ConvertRectToTarget(child_2, &top_view, &kSrcF);
+    EXPECT_TRUE(kSrcF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                         kDefaultAllowedConversionError,
+                                         kDefaultAllowedConversionError));
+
+    // child_2->top_view
+    kSrc.SetRect(615, 775, 30, 20);
+    kSrcF = gfx::RectF(kSrc);
+    kExpected.SetRect(50, 55, 20, 30);
+
+    kActual = View::ConvertRectToTarget(&top_view, child_2, kSrc);
+    EXPECT_EQ(kActual, kExpected);
+
+    kActualF = View::ConvertRectToTarget(&top_view, child_2, kSrcF);
+    EXPECT_TRUE(kActualF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                            kDefaultAllowedConversionError,
+                                            kDefaultAllowedConversionError));
+
+    View::ConvertRectToTarget(&top_view, child_2, &kSrcF);
+    EXPECT_TRUE(kSrcF.ApproximatelyEqual(gfx::RectF(kExpected),
+                                         kDefaultAllowedConversionError,
+                                         kDefaultAllowedConversionError));
   }
 }
 

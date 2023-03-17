@@ -1065,6 +1065,16 @@ gfx::RectF View::ConvertRectToTarget(const View* source,
 }
 
 // static
+gfx::Rect View::ConvertRectToTarget(const View* source,
+                                    const View* target,
+                                    gfx::Rect& rect) {
+  constexpr float kDefaultAllowedConversionError = 0.00001f;
+  return gfx::ToEnclosedRectIgnoringError(
+      ConvertRectToTarget(source, target, gfx::RectF(rect)),
+      kDefaultAllowedConversionError);
+}
+
+// static
 void View::ConvertPointToWidget(const View* src, gfx::Point* p) {
   DCHECK(src);
   DCHECK(p);
