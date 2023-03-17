@@ -619,6 +619,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP_SAMEAPP" desc="The name of the command to open a link in a newly created window of the same app the user is currently in">
             Open link in new <ph name="APP">$1<ex>Gmail App</ex> window</ph>
           </message>
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKWEBAPP_NEWTAB" desc="The name of the command to open a link in a new tab of the same app the user is currently in">
+            Open link in new <ph name="APP">$1<ex>Gmail App</ex> tab</ph>
+          </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVELINKAS" desc="The name of the Save Link As command in the content area context menu">
             Save lin&amp;k as...
@@ -884,6 +887,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP_SAMEAPP" desc="In Title Case: The name of the command to open a link in a newly created window of the same app the user is currently in">
             Open Link in new <ph name="APP">$1<ex>Gmail App</ex></ph> Window
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_OPENLINKWEBAPP_NEWTAB" desc="In Title Case: The name of the command to open a link in a new tab of the same app the user is currently in">
+            Open Link in new <ph name="APP">$1<ex>Gmail App</ex> Tab</ph>
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVELINKAS" desc="In Title Case: The name of the Save Link As command in the content area context menu">

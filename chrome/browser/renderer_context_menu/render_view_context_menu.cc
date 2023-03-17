@@ -1695,7 +1695,11 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   const Browser* browser = GetBrowser();
   if (browser && browser->app_name() ==
                      web_app::GenerateApplicationNameFromAppId(*link_app_id)) {
-    open_in_app_string_id = IDS_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP_SAMEAPP;
+    if (provider->registrar_unsafe().IsTabbedWindowModeEnabled(*link_app_id)) {
+      open_in_app_string_id = IDS_CONTENT_CONTEXT_OPENLINKWEBAPP_NEWTAB;
+    } else {
+      open_in_app_string_id = IDS_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP_SAMEAPP;
+    }
   } else {
     open_in_app_string_id = IDS_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP;
   }
