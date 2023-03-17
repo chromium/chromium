@@ -4890,9 +4890,9 @@ const CSSValue* ListStyleType::CSSValueFromComputedStyleInternal(
     return MakeGarbageCollected<CSSStringValue>(
         list_style_type.GetStringValue());
   }
-  // TODO(crbug.com/687225): Return a scoped CSSValue?
-  return MakeGarbageCollected<CSSCustomIdentValue>(
-      list_style_type.GetCounterStyleName());
+  return &MakeGarbageCollected<CSSCustomIdentValue>(
+              list_style_type.GetCounterStyleName())
+              ->PopulateWithTreeScope(list_style_type.GetTreeScope());
 }
 
 void ListStyleType::ApplyValue(StyleResolverState& state,

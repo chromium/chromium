@@ -2807,7 +2807,6 @@ CSSValue* ComputedStyleUtils::ValueForCounterDirectives(
       continue;
     }
 
-    list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(item.key));
     int32_t number = 0;
     switch (type) {
       case CounterNode::kIncrementType:
@@ -2820,8 +2819,11 @@ CSSValue* ComputedStyleUtils::ValueForCounterDirectives(
         number = item.value.SetValue();
         break;
     }
-    list->Append(*CSSNumericLiteralValue::Create(
-        (double)number, CSSPrimitiveValue::UnitType::kInteger));
+    list->Append(*MakeGarbageCollected<CSSValuePair>(
+        MakeGarbageCollected<CSSCustomIdentValue>(item.key),
+        CSSNumericLiteralValue::Create((double)number,
+                                       CSSPrimitiveValue::UnitType::kInteger),
+        CSSValuePair::IdenticalValuesPolicy::kDropIdenticalValues));
   }
 
   if (!list->length()) {
