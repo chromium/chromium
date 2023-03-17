@@ -184,6 +184,11 @@ struct TutorialDescription {
     // take a look at transition_only_on_event in InteractionSequence::Step
     bool transition_only_on_event = false;
 
+    // If set, determines whether the element in question must be visible at the
+    // start of the step. If left empty the interaction sequence will choose a
+    // reasonable default.
+    absl::optional<bool> must_be_visible;
+
     // lambda which is called on the start callback of the InteractionSequence
     // which provides the interaction sequence and the current element that
     // belongs to the step. The intention for this functionality is to name one

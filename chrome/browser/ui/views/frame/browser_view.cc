@@ -2701,7 +2701,16 @@ void BrowserView::ConfirmBrowserCloseWithPendingDownloads(
 
 void BrowserView::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
   frame()->UserChangedTheme(theme_change_type);
+  // Because the theme change may cause the browser frame to be regenerated,
+  // which can mess with tutorials (which expect their bubble anchors to remain
+  // visible), this event is sent after the theme change. It can be used to
+  // advance a tutorial that expects a theme change.
+  if (theme_change_type == BrowserThemeChangeType::kBrowserTheme) {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        kBrowserThemeChangedEventId, this);
+  }
 }
+
 void BrowserView::ShowAppMenu() {
   if (!toolbar_button_provider_->GetAppMenuButton())
     return;

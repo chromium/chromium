@@ -23,8 +23,6 @@ export const CHROME_THEME_ELEMENT_ID =
     'CustomizeChromeUI::kChromeThemeElementId';
 export const CHROME_THEME_BACK_ELEMENT_ID =
     'CustomizeChromeUI::kChromeThemeBackElementId';
-const CHROME_THEME_SELECTED_CUSTOM_EVENT_ID =
-    'kChromeThemeSelectedCustomEventId';
 
 const ThemesElementBase = HelpBubbleMixin(PolymerElement) as
     {new (): PolymerElement & HelpBubbleMixinInterface};
@@ -140,8 +138,6 @@ export class ThemesElement extends ThemesElementBase {
       previewImageUrl,
       collectionId,
     } = e.model.item;
-    this.notifyHelpBubbleAnchorCustomEvent(
-        CHROME_THEME_ELEMENT_ID, CHROME_THEME_SELECTED_CUSTOM_EVENT_ID);
     this.pageHandler_.setBackgroundImage(
         attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl,
         collectionId);

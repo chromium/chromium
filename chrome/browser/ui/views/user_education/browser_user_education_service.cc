@@ -65,7 +65,6 @@ const char kCustomizeChromeTutorialMetricPrefix[] = "CustomizeChromeSidePanel";
 const char kSideSearchTutorialMetricPrefix[] = "SideSearch";
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 constexpr char kReadingListItemElementName[] = "ReadingListItem";
-constexpr char kChangeChromeThemeElementName[] = "ChangeChromeTheme";
 
 class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
  public:
@@ -596,20 +595,17 @@ void MaybeRegisterChromeTutorials(
         HelpBubbleArrow::kRightCenter, ui::CustomElementEventType(),
         /* must_remain_visible =*/false,
         /* transition_only_on_event =*/false,
-        base::BindRepeating(
-            [](ui::InteractionSequence* sequence, ui::TrackedElement* element) {
-              sequence->NameElement(
-                  element, base::StringPiece(kChangeChromeThemeElementName));
-              return true;
-            }),
+        user_education::TutorialDescription::NameElementsCallback(),
         TutorialDescription::ContextMode::kAny);
     customize_chrome_description.steps.emplace_back(select_theme_step);
 
     // Event step - select theme event
     TutorialDescription::Step select_theme_event_step(
         0, 0, ui::InteractionSequence::StepType::kCustomEvent,
-        ui::ElementIdentifier(), kChangeChromeThemeElementName,
-        HelpBubbleArrow::kNone, kChromeThemeSelectedCustomEventId);
+        kBrowserViewElementId, std::string(), HelpBubbleArrow::kNone,
+        kBrowserThemeChangedEventId,
+        /* must_remain_visible =*/false);
+    select_theme_event_step.must_be_visible = false;
     customize_chrome_description.steps.emplace_back(select_theme_event_step);
 
     // Bubble step - back button

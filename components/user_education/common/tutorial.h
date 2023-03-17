@@ -79,6 +79,7 @@ class Tutorial {
     StepBuilder& SetProgress(absl::optional<std::pair<int, int>> progress_);
     StepBuilder& SetIsLastStep(bool is_last_step_);
     StepBuilder& SetMustRemainVisible(bool must_remain_visible_);
+    StepBuilder& SetMustBeVisibleAtStart(bool must_be_visible_);
     StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event_);
     StepBuilder& SetNameElementsCallback(
         TutorialDescription::NameElementsCallback name_elements_callback_);
