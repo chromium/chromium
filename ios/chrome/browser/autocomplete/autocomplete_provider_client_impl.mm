@@ -98,7 +98,8 @@ scoped_refptr<history::TopSites> AutocompleteProviderClientImpl::GetTopSites() {
   return ios::TopSitesFactory::GetForBrowserState(browser_state_);
 }
 
-bookmarks::BookmarkModel* AutocompleteProviderClientImpl::GetBookmarkModel() {
+bookmarks::BookmarkModel*
+AutocompleteProviderClientImpl::GetLocalOrSyncableBookmarkModel() {
   return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
       browser_state_);
 }

@@ -27,13 +27,15 @@ using ::bookmarks::TitledUrlIndex;
 
 BookmarkScoringSignalsAnnotator::BookmarkScoringSignalsAnnotator(
     AutocompleteProviderClient* client) {
-  bookmark_model_ = client ? client->GetBookmarkModel() : nullptr;
+  local_or_syncable_bookmark_model_ =
+      client ? client->GetLocalOrSyncableBookmarkModel() : nullptr;
 }
 
 void BookmarkScoringSignalsAnnotator::AnnotateResult(
     const AutocompleteInput& input,
     AutocompleteResult* result) {
-  if (!bookmark_model_) {
+  // TODO(https://crbug.com/1424825): Add support for account bookmarks.
+  if (!local_or_syncable_bookmark_model_) {
     return;
   }
 
@@ -56,7 +58,8 @@ void BookmarkScoringSignalsAnnotator::AnnotateResult(
     }
 
     std::vector<const bookmarks::BookmarkNode*> nodes;
-    bookmark_model_->GetNodesByURL(match.destination_url, &nodes);
+    local_or_syncable_bookmark_model_->GetNodesByURL(match.destination_url,
+                                                     &nodes);
     if (nodes.empty()) {
       return;
     }

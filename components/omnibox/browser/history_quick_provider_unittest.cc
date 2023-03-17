@@ -210,8 +210,8 @@ void HistoryQuickProviderTest::SetUp() {
       std::make_unique<TemplateURLService>(nullptr, 0));
 
   client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
-      client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
-      history_dir_.GetPath(), SchemeSet()));
+      client_->GetLocalOrSyncableBookmarkModel(), client_->GetHistoryService(),
+      nullptr, history_dir_.GetPath(), SchemeSet()));
   client_->GetInMemoryURLIndex()->Init();
 
   // Block until History has processed InMemoryURLIndex initialization.

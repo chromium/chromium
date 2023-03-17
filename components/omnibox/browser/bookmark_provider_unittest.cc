@@ -196,7 +196,7 @@ BookmarkProviderTest::BookmarkProviderTest() {
 
 void BookmarkProviderTest::SetUp() {
   provider_client_ = std::make_unique<MockAutocompleteProviderClient>();
-  EXPECT_CALL(*provider_client_, GetBookmarkModel())
+  EXPECT_CALL(*provider_client_, GetLocalOrSyncableBookmarkModel())
       .WillRepeatedly(testing::Return(model_.get()));
   EXPECT_CALL(*provider_client_, GetSchemeClassifier())
       .WillRepeatedly(testing::ReturnRef(classifier_));

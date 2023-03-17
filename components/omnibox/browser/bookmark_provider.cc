@@ -35,7 +35,8 @@ using bookmarks::TitledUrlMatch;
 BookmarkProvider::BookmarkProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_BOOKMARK),
       client_(client),
-      bookmark_model_(client ? client_->GetBookmarkModel() : nullptr) {}
+      local_or_syncable_bookmark_model_(
+          client ? client_->GetLocalOrSyncableBookmarkModel() : nullptr) {}
 
 void BookmarkProvider::Start(const AutocompleteInput& input,
                              bool minimal_changes) {
@@ -53,8 +54,10 @@ BookmarkProvider::~BookmarkProvider() = default;
 
 void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // We may not have a bookmark model for some unit tests.
-  if (!bookmark_model_)
+  // TODO(https://crbug.com/1424825): Add support for account bookmarks.
+  if (!local_or_syncable_bookmark_model_) {
     return;
+  }
 
   // Retrieve enough bookmarks so that we have a reasonable probability of
   // suggesting the one that the user desires.
@@ -156,16 +159,16 @@ std::vector<TitledUrlMatch> BookmarkProvider::GetMatchesWithBookmarkPaths(
       GetMatchingAlgorithm(input);
 
   if (counterfactual.empty()) {
-    return bookmark_model_->GetBookmarksMatching(
+    return local_or_syncable_bookmark_model_->GetBookmarksMatching(
         input.text(), kMaxBookmarkMatches, matching_algorithm, match_paths);
   }
 
   std::vector<TitledUrlMatch> matches_without_paths =
-      bookmark_model_->GetBookmarksMatching(input.text(), kMaxBookmarkMatches,
-                                            matching_algorithm);
+      local_or_syncable_bookmark_model_->GetBookmarksMatching(
+          input.text(), kMaxBookmarkMatches, matching_algorithm);
   std::vector<TitledUrlMatch> matches_with_paths =
-      bookmark_model_->GetBookmarksMatching(input.text(), kMaxBookmarkMatches,
-                                            matching_algorithm, true);
+      local_or_syncable_bookmark_model_->GetBookmarksMatching(
+          input.text(), kMaxBookmarkMatches, matching_algorithm, true);
   DCHECK_LE(matches_without_paths.size(), matches_with_paths.size());
 
   // It's unnecessary to compare the matches themselves because all
@@ -300,7 +303,7 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
   // Boost the score if the bookmark's URL is referenced by other bookmarks.
   const int kURLCountBoost[4] = {0, 75, 125, 150};
   std::vector<const BookmarkNode*> nodes;
-  bookmark_model_->GetNodesByURL(url, &nodes);
+  local_or_syncable_bookmark_model_->GetNodesByURL(url, &nodes);
   DCHECK_GE(std::min(std::size(kURLCountBoost), nodes.size()), 1U);
   relevance +=
       kURLCountBoost[std::min(std::size(kURLCountBoost), nodes.size()) - 1];

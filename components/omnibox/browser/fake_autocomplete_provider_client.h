@@ -56,7 +56,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   history::HistoryService* GetHistoryService() override;
   history_clusters::HistoryClustersService* GetHistoryClustersService()
       override;
-  bookmarks::BookmarkModel* GetBookmarkModel() override;
+  bookmarks::BookmarkModel* GetLocalOrSyncableBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
