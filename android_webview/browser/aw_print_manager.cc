@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print.mojom.h"
+#include "components/printing/common/print_params.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "printing/print_job_constants.h"
@@ -111,7 +112,7 @@ void AwPrintManager::ScriptedPrint(
   params->params->document_cookie = scripted_params->cookie;
   params->pages = settings_->ranges();
 
-  if (!params->params->document_cookie || params->params->dpi.IsEmpty()) {
+  if (!printing::PrintMsgPrintParamsIsValid(*params->params)) {
     std::move(callback).Run(nullptr);
     return;
   }

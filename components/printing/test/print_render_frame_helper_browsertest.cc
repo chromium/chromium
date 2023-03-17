@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/printing/common/print.mojom-test-utils.h"
 #include "components/printing/common/print.mojom.h"
+#include "components/printing/common/print_params.h"
 #include "components/printing/test/mock_printer.h"
 #include "components/printing/test/print_test_content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
@@ -341,7 +342,7 @@ class TestPrintManagerHost
     settings->params = printing::mojom::PrintParams::New();
     printer_->ScriptedPrint(params->cookie, params->expected_pages_count,
                             params->has_selection, settings.get());
-    if (!settings->params->document_cookie || settings->params->dpi.IsEmpty()) {
+    if (!PrintMsgPrintParamsIsValid(*settings->params)) {
       std::move(callback).Run(nullptr);
       return;
     }

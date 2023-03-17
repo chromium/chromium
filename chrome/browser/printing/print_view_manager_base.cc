@@ -127,7 +127,7 @@ void OnDidScriptedPrint(
   RenderParamsFromPrintSettings(printer_query->settings(),
                                 params->params.get());
   params->params->document_cookie = printer_query->cookie();
-  if (!params->params->document_cookie || params->params->dpi.IsEmpty()) {
+  if (!PrintMsgPrintParamsIsValid(*params->params)) {
     std::move(callback).Run(nullptr);
     return;
   }

@@ -1392,8 +1392,7 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
 void PrintRenderFrameHelper::PrintWithParams(
     mojom::PrintPagesParamsPtr settings,
     PrintWithParamsCallback callback) {
-  DCHECK(!settings->params->dpi.IsEmpty());
-  DCHECK(settings->params->document_cookie);
+  CHECK(PrintMsgPrintParamsIsValid(*settings->params));
 
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint) {
@@ -2180,9 +2179,7 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
       return;
     }
 
-    CHECK(print_settings->params->document_cookie);
-    CHECK(!print_settings->params->dpi.IsEmpty());
-
+    CHECK(PrintMsgPrintParamsIsValid(*print_settings->params));
     print_settings->params->print_scaling_option =
         print_settings->params->prefer_css_page_size
             ? mojom::PrintScalingOption::kSourceSize
