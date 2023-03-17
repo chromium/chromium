@@ -42,21 +42,6 @@ String NonNullString(const String& string) {
   return string.IsNull() ? g_empty_string16_bit : string;
 }
 
-// This enum is used in UMA. Do not delete or re-order entries. New entries
-// should only be added at the end. Please keep in sync with
-// "ClipboardPastedImageUrls" in //tools/metrics/histograms/enums.xml.
-enum class ClipboardPastedImageUrls {
-  kUnknown = 0,
-  kLocalFileUrls = 1,
-  kHttpUrls = 2,
-  kCidUrls = 3,
-  kOtherUrls = 4,
-  kBase64EncodedImage = 5,
-  kLocalFileUrlWithRtf = 6,
-  kImageLoadError = 7,
-  kMaxValue = kImageLoadError,
-};
-
 // This function is needed to clone a PendingRemote because normally they are
 // not clonable.  The input PendingRemote is "cloned" twice, so one of those
 // copies is intended to replace the original PendingRemote passed in by the
