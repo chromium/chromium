@@ -233,7 +233,7 @@ TEST_F(BaseThreadLocalStorageTest, VerifyAllocatorIsUsedForMultipleChunks) {
   AllocatorMock allocator_mock;
   TLSSystemMock tlsSystem_mock;
 
-  constexpr auto number_of_chunks = 5;
+  constexpr auto number_of_chunks = 3;
 
   EXPECT_CALL(allocator_mock, AllocateMemory(_))
       .Times(number_of_chunks)
@@ -250,7 +250,8 @@ TEST_F(BaseThreadLocalStorageTest, VerifyAllocatorIsUsedForMultipleChunks) {
   auto sut =
       CreateThreadLocalStorage<DataToStore>(allocator_mock, tlsSystem_mock);
 
-  std::array<std::thread, number_of_chunks* decltype(sut)::ItemsPerChunk>
+  std::array<std::thread,
+             (number_of_chunks - 1) * decltype(sut)::ItemsPerChunk + 1>
       threads;
   std::mutex thread_worker_mutex;
   std::condition_variable thread_counter_cv;
