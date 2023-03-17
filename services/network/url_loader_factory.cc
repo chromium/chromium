@@ -172,6 +172,11 @@ corb::PerFactoryState& URLLoaderFactory::GetMutableCorbState() {
   return corb_state_;
 }
 
+bool URLLoaderFactory::DataUseUpdatesEnabled() {
+  return context_->network_service() &&
+         context_->network_service()->data_use_updates_enabled();
+}
+
 void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     int32_t request_id,

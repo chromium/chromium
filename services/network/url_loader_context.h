@@ -53,6 +53,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
   virtual scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const = 0;
   virtual corb::PerFactoryState& GetMutableCorbState() = 0;
+  virtual bool DataUseUpdatesEnabled() = 0;
 
  protected:
   // `protected` destructor = can only destruct via concrete implementations

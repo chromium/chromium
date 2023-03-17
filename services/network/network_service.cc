@@ -771,6 +771,10 @@ void NetworkService::ParseHeaders(
   std::move(callback).Run(PopulateParsedHeaders(headers.get(), url));
 }
 
+void NetworkService::EnableDataUseUpdates(bool enable) {
+  data_use_updates_enabled_ = enable;
+}
+
 #if BUILDFLAG(IS_CT_SUPPORTED)
 void NetworkService::ClearSCTAuditingCache() {
   sct_auditing_cache_->ClearCache();

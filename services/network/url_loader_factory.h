@@ -84,6 +84,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const override;
   corb::PerFactoryState& GetMutableCorbState() override;
+  bool DataUseUpdatesEnabled() override;
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
   // optimization.

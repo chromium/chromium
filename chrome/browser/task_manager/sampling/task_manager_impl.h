@@ -110,6 +110,8 @@ class TaskManagerImpl : public TaskManagerInterface,
       int64_t recv_bytes,
       int64_t sent_bytes);
 
+  bool is_running() const { return is_running_; }
+
  private:
   using PidToTaskGroupMap =
       std::map<base::ProcessId, std::unique_ptr<TaskGroup>>;

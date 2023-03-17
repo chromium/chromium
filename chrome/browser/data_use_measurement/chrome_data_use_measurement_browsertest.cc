@@ -11,9 +11,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class ChromeDataUseMeasurementBrowserTest : public InProcessBrowserTest {
@@ -33,6 +35,11 @@ class ChromeDataUseMeasurementBrowserTest : public InProcessBrowserTest {
     do {
       base::ThreadPoolInstance::Get()->FlushForTesting();
       base::RunLoop().RunUntilIdle();
+      if (base::FeatureList::IsEnabled(
+              network::features::kLessChattyNetworkService)) {
+        content::FetchHistogramsFromChildProcesses();
+        metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+      }
     } while (GetTotalDataUse() == 0);
   }
 

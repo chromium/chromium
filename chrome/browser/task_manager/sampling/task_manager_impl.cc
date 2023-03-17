@@ -36,6 +36,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -643,6 +644,8 @@ void TaskManagerImpl::StartUpdating() {
 
   is_running_ = true;
 
+  content::GetNetworkService()->EnableDataUseUpdates(true);
+
   for (const auto& provider : task_providers_)
     provider->SetObserver(this);
 
@@ -656,6 +659,8 @@ void TaskManagerImpl::StopUpdating() {
     return;
 
   is_running_ = false;
+
+  content::GetNetworkService()->EnableDataUseUpdates(false);
 
   for (const auto& provider : task_providers_)
     provider->ClearObserver();

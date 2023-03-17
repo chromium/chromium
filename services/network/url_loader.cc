@@ -549,7 +549,8 @@ URLLoader::URLLoader(
       allow_http1_for_streaming_upload_(
           request.request_body &&
           request.request_body->AllowHTTP1ForStreamingUpload()),
-      accept_ch_frame_observer_(std::move(accept_ch_frame_observer)) {
+      accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
+      provide_data_use_updates_(context.DataUseUpdatesEnabled()) {
   TRACE_EVENT("loading", "URLLoader::URLLoader",
               perfetto::Flow::FromPointer(this));
   DCHECK(delete_callback_);
@@ -2046,13 +2047,26 @@ void URLLoader::NotifyCompleted(int error_code) {
     upload_progress_tracker_ = nullptr;
   }
 
-  if (url_loader_network_observer_ &&
-      (url_request_->GetTotalReceivedBytes() > 0 ||
-       url_request_->GetTotalSentBytes() > 0)) {
-    url_loader_network_observer_->OnDataUseUpdate(
-        url_request_->traffic_annotation().unique_id_hash_code,
-        url_request_->GetTotalReceivedBytes(),
-        url_request_->GetTotalSentBytes());
+  auto total_received = url_request_->GetTotalReceivedBytes();
+  auto total_sent = url_request_->GetTotalSentBytes();
+  if (base::FeatureList::IsEnabled(features::kLessChattyNetworkService)) {
+    if (total_received > 0) {
+      base::UmaHistogramCustomCounts("DataUse.BytesReceived3.Delegate",
+                                     total_received, 50, 10 * 1000 * 1000, 50);
+    }
+
+    if (total_sent > 0) {
+      UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate", total_sent);
+    }
+  }
+  if ((total_received > 0 || total_sent > 0)) {
+    if (url_loader_network_observer_ &&
+        (!base::FeatureList::IsEnabled(features::kLessChattyNetworkService) ||
+         provide_data_use_updates_)) {
+      url_loader_network_observer_->OnDataUseUpdate(
+          url_request_->traffic_annotation().unique_id_hash_code,
+          total_received, total_sent);
+    }
   }
 
   if (url_loader_client_.Get()) {

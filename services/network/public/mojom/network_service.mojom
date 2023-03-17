@@ -368,4 +368,9 @@ interface NetworkService {
   // Extensions, etc.
   ParseHeaders(url.mojom.Url url, HttpResponseHeaders headers)
       => (ParsedHeaders parsed_headers);
+
+  // Enables or disables whether URLLoaders need to call
+  // URLLoaderNetworkServiceObserver::OnDataUseUpdate. By default it's not
+  // enabled.
+  EnableDataUseUpdates(bool enable);
 };

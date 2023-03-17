@@ -54,6 +54,7 @@ class URLLoaderContextForTests : public URLLoaderContext {
   scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const override;
   corb::PerFactoryState& GetMutableCorbState() override;
+  bool DataUseUpdatesEnabled() override;
 
  private:
   mojom::URLLoaderFactoryParams factory_params_;

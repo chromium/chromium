@@ -194,6 +194,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void ParseHeaders(const GURL& url,
                     const scoped_refptr<net::HttpResponseHeaders>& headers,
                     ParseHeadersCallback callback) override;
+  void EnableDataUseUpdates(bool enable) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void ClearSCTAuditingCache() override;
   void ConfigureSCTAuditing(
@@ -301,6 +302,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
 
   base::Time pins_list_update_time() const { return pins_list_update_time_; }
+
+  bool data_use_updates_enabled() const { return data_use_updates_enabled_; }
 
   mojom::URLLoaderNetworkServiceObserver*
   GetDefaultURLLoaderNetworkServiceObserver();
@@ -439,6 +442,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::vector<net::TransportSecurityState::PinSetInfo> host_pins_;
 
   base::Time pins_list_update_time_;
+
+  bool data_use_updates_enabled_ = false;
 
   // This is used only in tests. It avoids leaky SystemDnsConfigChangeNotifiers
   // leaking stale listeners between tests.

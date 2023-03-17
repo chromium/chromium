@@ -681,6 +681,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   bool allow_cookies_from_browser_ = false;
   std::string cookies_from_browser_;
 
+  const bool provide_data_use_updates_;
+
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };
 

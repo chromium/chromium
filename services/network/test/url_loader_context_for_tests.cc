@@ -70,4 +70,8 @@ corb::PerFactoryState& URLLoaderContextForTests::GetMutableCorbState() {
   return corb_state_;
 }
 
+bool URLLoaderContextForTests::DataUseUpdatesEnabled() {
+  return false;
+}
+
 }  // namespace network
