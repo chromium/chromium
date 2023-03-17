@@ -32,7 +32,7 @@
 namespace media {
 
 namespace {
-base::subtle::AtomicWord g_fake_input_streams_are_muted = 0;
+std::atomic<bool> g_fake_input_streams_are_muted;
 }
 
 AudioInputStream* FakeAudioInputStream::MakeFakeStream(
@@ -133,7 +133,7 @@ double FakeAudioInputStream::GetVolume() {
 
 bool FakeAudioInputStream::IsMuted() {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
-  return base::subtle::NoBarrier_Load(&g_fake_input_streams_are_muted) != 0;
+  return g_fake_input_streams_are_muted.load(std::memory_order_relaxed);
 }
 
 bool FakeAudioInputStream::SetAutomaticGainControl(bool enabled) {
@@ -210,8 +210,7 @@ void FakeAudioInputStream::BeepOnce() {
 }
 
 void FakeAudioInputStream::SetGlobalMutedState(bool is_muted) {
-  base::subtle::NoBarrier_Store(&g_fake_input_streams_are_muted,
-                                (is_muted ? 1 : 0));
+  g_fake_input_streams_are_muted.store(is_muted, std::memory_order_relaxed);
 }
 
 }  // namespace media
