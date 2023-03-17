@@ -6144,10 +6144,9 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
       return false;
     }
 
-    // #8: if doc's origin is same-origin with the top-level origin of doc's
-    // relevant settings object, return true.
-    if (GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
-            &*TopFrameOrigin())) {
+    // #8: if doc's origin is in the first-party context with the top-level
+    // origin of doc's relevant settings object, return true.
+    if (!SiteForCookies().IsNull()) {
       return true;
     }
 

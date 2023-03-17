@@ -886,20 +886,45 @@ IN_PROC_BROWSER_TEST_P(
             NoCookiesWithContent());
 }
 
-// Validate that in a A(B(A)) frame tree, the inner A iframe can obtain cookie
-// access.
+// Validate that in a A(A) frame tree, the inner A iframe can obtain cookie
+// access by default.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
-                       NestedSameOriginCookieAccess) {
+                       EmbeddedSameOriginCookieAccess) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostA));
+
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA),
+            CookieBundleWithContent("cross-site=a.test"));
+}
+
+// Validate that in a A(sub.A) frame tree, the inner A iframe can obtain cookie
+// access by default.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       EmbeddedSameSiteCookieAccess) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostASubdomain));
+
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA),
+            CookieBundleWithContent("cross-site=a.test"));
+}
+
+// Validate that in a A(B(A)) frame tree, the inner A iframe can obtain cookie
+// access after requesting access.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       NestedSameOriginCookieAccess_CrossSiteAncestorChain) {
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostA, "/empty.html");
 
-  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
-  // TODO(https://crbug.com/1422628): document.hasStorageAccess() should agree
-  // with the actual cookie access in practice. If hasStorageAccess is true,
-  // then the frame should have cookie access; if not, it shouldn't.
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA), NoCookies());
 
   EXPECT_TRUE(
@@ -910,9 +935,9 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
 }
 
 // Validate that in a A(B(sub.A)) frame tree, the inner iframe can obtain cookie
-// access.
+// access after requesting access.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
-                       NestedSameSiteCookieAccess) {
+                       NestedSameSiteCookieAccess_CrossSiteAncestorChain) {
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
