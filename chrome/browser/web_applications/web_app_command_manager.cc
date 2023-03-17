@@ -47,7 +47,7 @@ base::Value::Dict CreateLogValue(const WebAppCommand& command,
   base::Value debug_value = command.ToDebugValue();
   bool is_empty_dict = debug_value.is_dict() && debug_value.GetDict().empty();
   if (!debug_value.is_none() && !is_empty_dict) {
-    dict.Set("value", command.ToDebugValue());
+    dict.Set("value", std::move(debug_value));
   }
   if (result) {
     switch (result.value()) {
