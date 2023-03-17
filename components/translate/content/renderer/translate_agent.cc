@@ -264,8 +264,6 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
 
   language_determined_time_ = base::TimeTicks::Now();
 
-  // TODO(crbug.com/1157983): Update the language detection details struct to be
-  // model agnostic.
   details.time = base::Time::Now();
   details.url = web_detection_details.url;
   details.content_language = content_language;
