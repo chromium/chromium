@@ -184,13 +184,6 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // For TCPServerSocket support.
-    // TODO(crbug.com/1408140): remove after TCPServerSocket is fully supported.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "DirectSocketsExperimental");
-  }
-
   void SetUp() override {
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_test_server()->Start());

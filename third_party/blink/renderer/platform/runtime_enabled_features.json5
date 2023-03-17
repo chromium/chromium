@@ -1258,12 +1258,6 @@
       base_feature: "none",
     },
     {
-      name: "DirectSocketsExperimental",
-      status: "test",
-      depends_on: ["DirectSockets"],
-      base_feature: "none",
-    },
-    {
       name: "DisableDifferentOriginSubframeDialogSuppression",
       base_feature: "none",
       origin_trial_feature_name: "DisableDifferentOriginSubframeDialogSuppression",

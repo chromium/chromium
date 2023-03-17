@@ -632,13 +632,6 @@ class DirectSocketsTcpServerBrowserTest : public DirectSocketsTcpBrowserTest {
     chromeos::PermissionBrokerClient::Shutdown();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // For TCPServerSocket support.
-    // TODO(crbug.com/1408140): remove after TCPServerSocket is fully supported.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "DirectSocketsExperimental");
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ExchangeTcpServer) {
