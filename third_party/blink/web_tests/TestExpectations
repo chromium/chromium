@@ -4302,9 +4302,6 @@ crbug.com/1036626 http/tests/devtools/tracing/tracing-record-input-events.js [ F
 crbug.com/1038091 virtual/gpu-rasterization/images/jpeg-yuv-image-decoding.html [ Failure Pass ]
 crbug.com/1038139 [ Win ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
 
-# Broken in https://chromium-review.googlesource.com/c/chromium/src/+/1636716
-crbug.com/963183 http/tests/devtools/sources/debugger-breakpoints/disable-breakpoints.js [ Failure Pass Timeout ]
-
 crbug.com/836300 fast/css3-text/css3-text-decoration/text-decoration-skip-ink-links.html [ Failure Pass ]
 
 # Sheriff 2020-01-14
