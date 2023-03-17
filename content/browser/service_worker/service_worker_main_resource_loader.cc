@@ -44,6 +44,15 @@ std::string ComposeFetchEventResultString(
   return stream.str();
 }
 
+const std::string ComposeNavigationTypeString(
+    const network::ResourceRequest& resource_request) {
+  return (resource_request.request_initiator &&
+          resource_request.request_initiator->IsSameOriginWith(
+              resource_request.url))
+             ? "SameOriginNavigation"
+             : "CrossOriginNavigation";
+}
+
 }  // namespace
 
 // This class waits for completion of a stream response from the service worker.
@@ -608,6 +617,8 @@ void ServiceWorkerMainResourceLoader::
     RecordForwardServiceWorkerToWorkerReadyTiming(
         const net::LoadTimingInfo& load_timing,
         const std::string& initial_worker_status) {
+  const std::string navigation_type_string =
+      ComposeNavigationTypeString(resource_request_);
   UMA_HISTOGRAM_MEDIUM_TIMES(
       "ServiceWorker.LoadTiming.MainFrame.MainResource."
       "ForwardServiceWorkerToWorkerReady2",
@@ -619,17 +630,29 @@ void ServiceWorkerMainResourceLoader::
                     initial_worker_status}),
       load_timing.service_worker_ready_time -
           load_timing.service_worker_start_time);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"ServiceWorker.LoadTiming.MainFrame.MainResource."
+                    "ForwardServiceWorkerToWorkerReady2.",
+                    navigation_type_string}),
+      load_timing.service_worker_ready_time -
+          load_timing.service_worker_start_time);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"ServiceWorker.LoadTiming.MainFrame.MainResource."
+                    "ForwardServiceWorkerToWorkerReady2.",
+                    initial_worker_status, ".", navigation_type_string}),
+      load_timing.service_worker_ready_time -
+          load_timing.service_worker_start_time);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
       "ServiceWorker",
-      base::StrCat(
-          {"ForwardServiceWorkerToWorkerReady.", initial_worker_status})
+      base::StrCat({"ForwardServiceWorkerToWorkerReady.", initial_worker_status,
+                    ".", navigation_type_string})
           .c_str(),
       this, load_timing.service_worker_start_time, "initial_worker_status",
       initial_worker_status);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "ServiceWorker",
-      base::StrCat(
-          {"ForwardServiceWorkerToWorkerReady.", initial_worker_status})
+      base::StrCat({"ForwardServiceWorkerToWorkerReady.", initial_worker_status,
+                    ".", navigation_type_string})
           .c_str(),
       this, load_timing.service_worker_ready_time);
 }

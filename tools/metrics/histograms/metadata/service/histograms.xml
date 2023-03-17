@@ -38,6 +38,16 @@ chromium-metrics-reviews@google.com.
                ServiceWorkerMainResourceLoader was created."/>
 </variants>
 
+<variants name="NavigationType">
+  <variant name="" summary=""/>
+  <variant name=".CrossOriginNavigation"
+      summary="This is only recorded when navigation is cross origin
+               navigation."/>
+  <variant name=".SameOriginNavigation"
+      summary="This is only recorded when navigation is same origin
+               navigation."/>
+</variants>
+
 <variants name="ServiceWorkerCacheClientType">
   <variant name="BackgroundSyncManager"
       summary="Collected from a BackgroundSyncManager instance"/>
@@ -615,7 +625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ServiceWorker.LoadTiming.MainFrame.MainResource.ForwardServiceWorkerToWorkerReady2{EmbeddedWorkerInitialStatus}"
+    name="ServiceWorker.LoadTiming.MainFrame.MainResource.ForwardServiceWorkerToWorkerReady2{EmbeddedWorkerInitialStatus}{NavigationType}"
     units="ms" expires_after="2023-06-30">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -627,10 +637,11 @@ chromium-metrics-reviews@google.com.
     fetch event handler and the fetch event was successfully dispatched to the
     service worker.
 
-    {EmbeddedWorkerInitialStatus}
+    {EmbeddedWorkerInitialStatus}{NavigationType}
   </summary>
   <token key="EmbeddedWorkerInitialStatus"
       variants="EmbeddedWorkerInitialStatus"/>
+  <token key="NavigationType" variants="NavigationType"/>
 </histogram>
 
 <histogram
