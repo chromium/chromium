@@ -455,6 +455,7 @@ void SupervisedUserService::SetActive(bool active) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     pref_change_registrar_.Remove(prefs::kSupervisedUserApprovedExtensions);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+    pref_change_registrar_.Remove(prefs::kSupervisedUserSafeSites);
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualHosts);
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualURLs);
     for (const char* pref : supervised_user::kCustodianInfoPrefs) {
