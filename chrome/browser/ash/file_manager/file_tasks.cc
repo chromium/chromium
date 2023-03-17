@@ -33,6 +33,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -119,7 +120,6 @@ namespace {
 const char kFileBrowserHandlerTaskType[] = "file";
 const char kFileHandlerTaskType[] = "app";
 const char kArcAppTaskType[] = "arc";
-const char kBruschettaAppTaskType[] = "bruschetta";
 const char kCrostiniAppTaskType[] = "crostini";
 const char kPluginVmAppTaskType[] = "pluginvm";
 const char kWebAppTaskType[] = "web";
@@ -471,8 +471,6 @@ TaskType StringToTaskType(const std::string& str) {
     return TASK_TYPE_FILE_HANDLER;
   if (str == kArcAppTaskType)
     return TASK_TYPE_ARC_APP;
-  if (str == kBruschettaAppTaskType)
-    return TASK_TYPE_BRUSCHETTA_APP;
   if (str == kCrostiniAppTaskType)
     return TASK_TYPE_CROSTINI_APP;
   if (str == kWebAppTaskType)
@@ -491,8 +489,6 @@ std::string TaskTypeToString(TaskType task_type) {
       return kFileHandlerTaskType;
     case TASK_TYPE_ARC_APP:
       return kArcAppTaskType;
-    case TASK_TYPE_BRUSCHETTA_APP:
-      return kBruschettaAppTaskType;
     case TASK_TYPE_CROSTINI_APP:
       return kCrostiniAppTaskType;
     case TASK_TYPE_WEB_APP:
@@ -804,8 +800,7 @@ bool ExecuteFileTask(Profile* profile,
       task.task_type == TASK_TYPE_WEB_APP ||
       task.task_type == TASK_TYPE_FILE_HANDLER ||
       (ash::features::ShouldGuestOsFileTasksUseAppService() &&
-       (task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
-        task.task_type == TASK_TYPE_CROSTINI_APP ||
+       (task.task_type == TASK_TYPE_CROSTINI_APP ||
         task.task_type == TASK_TYPE_PLUGIN_VM_APP))) {
     // TODO(petermarshall): Implement GetProfileForExtensionTask in Lacros if
     // necessary, for Chrome Apps.
@@ -819,8 +814,7 @@ bool ExecuteFileTask(Profile* profile,
   }
 
   if (!ash::features::ShouldGuestOsFileTasksUseAppService() &&
-      (task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
-       task.task_type == TASK_TYPE_CROSTINI_APP ||
+      (task.task_type == TASK_TYPE_CROSTINI_APP ||
        task.task_type == TASK_TYPE_PLUGIN_VM_APP)) {
     DCHECK_EQ(kGuestOsAppActionID, task.action_id);
     ExecuteGuestOsTask(profile, task, file_urls, std::move(done));

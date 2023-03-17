@@ -44446,7 +44446,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Crostini App"/>
   <int value="6" label="Web App"/>
   <int value="7" label="Plugin VM App"/>
-  <int value="8" label="Bruschetta App"/>
 </enum>
 
 <enum name="FileManagerTrashDirectorySetupFailedStep">

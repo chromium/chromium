@@ -92,8 +92,6 @@ TaskType GetTaskType(apps::AppType app_type) {
       // because both are executed through App Service, which can tell the
       // difference itself.
       return TASK_TYPE_FILE_HANDLER;
-    case apps::AppType::kBruschetta:
-      return TASK_TYPE_BRUSCHETTA_APP;
     case apps::AppType::kCrostini:
       return TASK_TYPE_CROSTINI_APP;
     case apps::AppType::kPluginVm:
@@ -104,6 +102,7 @@ TaskType GetTaskType(apps::AppType app_type) {
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
+    case apps::AppType::kBruschetta:
       return TASK_TYPE_UNKNOWN;
   }
 }
@@ -250,7 +249,6 @@ void FindAppServiceTasks(Profile* profile,
     supported_app_types.push_back(apps::AppType::kArc);
   }
   if (ash::features::ShouldGuestOsFileTasksUseAppService()) {
-    supported_app_types.push_back(apps::AppType::kBruschetta);
     supported_app_types.push_back(apps::AppType::kCrostini);
     supported_app_types.push_back(apps::AppType::kPluginVm);
   }
@@ -289,8 +287,7 @@ void FindAppServiceTasks(Profile* profile,
         continue;
     }
 
-    if ((app_type == apps::AppType::kBruschetta ||
-         app_type == apps::AppType::kCrostini ||
+    if ((app_type == apps::AppType::kCrostini ||
          app_type == apps::AppType::kPluginVm) &&
         !files_shareable_to_vm) {
       continue;
@@ -356,8 +353,7 @@ void ExecuteAppServiceTask(
          (ash::features::ShouldArcFileTasksUseAppService() &&
           task.task_type == TASK_TYPE_ARC_APP) ||
          (ash::features::ShouldGuestOsFileTasksUseAppService() &&
-          (task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
-           task.task_type == TASK_TYPE_CROSTINI_APP ||
+          (task.task_type == TASK_TYPE_CROSTINI_APP ||
            task.task_type == TASK_TYPE_PLUGIN_VM_APP)));
 
   apps::IntentPtr intent = std::make_unique<apps::Intent>(
