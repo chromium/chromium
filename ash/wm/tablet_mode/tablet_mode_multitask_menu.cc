@@ -4,6 +4,8 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 
+#include <bit>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
@@ -77,8 +79,6 @@ class TabletModeMultitaskMenuView : public views::View {
 
     // Since this menu is only shown for maximizable windows, it can be
     // fullscreened.
-    // TODO(sophiewen): Ensure that there is always 2 buttons or more if this
-    // view is created.
     auto* window_state = WindowState::Get(window);
     DCHECK(window_state);
     DCHECK(window_state->CanMaximize());
@@ -104,8 +104,13 @@ class TabletModeMultitaskMenuView : public views::View {
       buttons |= chromeos::MultitaskMenuView::kPartialSplit;
     }
 
-    if (chromeos::wm::CanFloatWindow(window))
+    if (chromeos::wm::CanFloatWindow(window)) {
       buttons |= chromeos::MultitaskMenuView::kFloat;
+    }
+
+    // TODO(sophiewen): Ensure that there is always 2 buttons or more if this
+    // view is created.
+    DCHECK_GE(std::bitset<4 + 1>(buttons).count(), 1u);
 
     menu_view_base_ =
         AddChildView(std::make_unique<chromeos::MultitaskMenuView>(

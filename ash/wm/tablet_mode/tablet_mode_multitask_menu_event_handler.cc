@@ -40,6 +40,13 @@ TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
   Shell::Get()->RemovePreTargetHandler(this);
 }
 
+// static
+bool TabletModeMultitaskMenuEventHandler::CanShowMenu(aura::Window* window) {
+  auto* window_state = WindowState::Get(window);
+  return !window_state->IsFloated() && window_state->CanMaximize() &&
+         window_state->CanResize();
+}
+
 void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
     aura::Window* window) {
   MaybeCreateMultitaskMenu(window);
@@ -151,15 +158,16 @@ void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
 
 bool TabletModeMultitaskMenuEventHandler::CanProcessEvent(
     aura::Window* window) const {
-  if (multitask_menu_ || multitask_cue_->cue_layer()) {
-    // If the multitask menu or cue layer is shown, we can always drag the menu.
-    return true;
-  }
   if (!window) {
     return false;
   }
-  auto* window_state = WindowState::Get(window);
-  return !window_state->IsFloated() && window_state->CanMaximize();
+
+  // If the multitask menu is shown, we can always drag the menu.
+  if (multitask_menu_) {
+    return true;
+  }
+
+  return CanShowMenu(window);
 }
 
 void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(

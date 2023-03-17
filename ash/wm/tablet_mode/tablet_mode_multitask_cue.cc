@@ -63,10 +63,7 @@ void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
   // or non-maximizable window, any existing cue should still be dismissed.
   DismissCue();
 
-  // Floated windows do not have the multitask menu.
-  // TODO(hewer): Consolidate checks with ones for multitask menu in a helper.
-  WindowState* state = WindowState::Get(active_window);
-  if (state->IsFloated() || !state->CanMaximize()) {
+  if (!TabletModeMultitaskMenuEventHandler::CanShowMenu(active_window)) {
     return;
   }
 

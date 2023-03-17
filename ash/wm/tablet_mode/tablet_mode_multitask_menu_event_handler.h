@@ -26,6 +26,8 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
       const TabletModeMultitaskMenuEventHandler&) = delete;
   ~TabletModeMultitaskMenuEventHandler() override;
 
+  static bool CanShowMenu(aura::Window* window);
+
   TabletModeMultitaskMenu* multitask_menu() { return multitask_menu_.get(); }
 
   // Creates and shows the menu.
