@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_crd_availability_info_job.h"
 
-#include <iomanip>
-#include <set>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
@@ -40,7 +42,7 @@ using test::SessionTypeToString;
 using test::TestSessionType;
 using testing::Not;
 
-constexpr long kUniqueID = 111222333444;
+constexpr int64_t kUniqueID = 111222333444;
 
 RemoteCommand GenerateCommandProto(const std::string& payload) {
   RemoteCommand command_proto;
