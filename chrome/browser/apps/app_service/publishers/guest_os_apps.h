@@ -13,6 +13,8 @@
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -87,6 +89,11 @@ class GuestOSApps : public KeyedService,
       registry_observation_{this};
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 };
+
+// Create a file intent filter with mime type conditions for App Service.
+apps::IntentFilters CreateIntentFilterForAppService(
+    const guest_os::GuestOsMimeTypesService* mime_types_service,
+    const guest_os::GuestOsRegistryService::Registration& registration);
 
 }  // namespace apps
 

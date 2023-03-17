@@ -7,12 +7,15 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 
 namespace apps {
 
@@ -116,12 +119,62 @@ AppPtr GuestOSApps::CreateApp(
   app->show_in_shelf = show;
   app->show_in_management = false;
   app->allow_uninstall = false;
-  app->handles_intents = false;
+
+  // Add intent filters based on file extensions.
+  app->handles_intents = true;
+  const guest_os::GuestOsMimeTypesService* mime_types_service =
+      guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile());
+  app->intent_filters =
+      CreateIntentFilterForAppService(mime_types_service, registration);
 
   // Allow subclasses of GuestOSApps to modify app.
   CreateAppOverrides(registration, app.get());
 
   return app;
+}
+
+apps::IntentFilters CreateIntentFilterForAppService(
+    const guest_os::GuestOsMimeTypesService* mime_types_service,
+    const guest_os::GuestOsRegistryService::Registration& registration) {
+  const std::set<std::string> mime_types_set = registration.MimeTypes();
+  if (mime_types_set.empty()) {
+    return {};
+  }
+
+  // When a file has a mime type that Files App can't recognise but the guest
+  // can (e.g. a proprietary file type), we should look at the file extensions
+  // that the app can support. We find these extension types by checking what
+  // extensions correspond to the app's supported mime types.
+  std::vector<std::string> extension_types;
+  if (ash::features::ShouldGuestOsFileTasksUseAppService()) {
+    extension_types = mime_types_service->GetExtensionTypesFromMimeTypes(
+        mime_types_set, registration.VmName(), registration.ContainerName());
+  }
+  std::vector<std::string> mime_types(mime_types_set.begin(),
+                                      mime_types_set.end());
+
+  // If we see that the app supports the text/plain mime-type, then the app
+  // supports all files with type text/*, as per xdg spec.
+  // https://specifications.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-latest.html.
+  // In this case, remove all mime types that begin with "text/" and replace
+  // them with a single "text/*" mime type.
+  if (base::Contains(mime_types, "text/plain")) {
+    mime_types.erase(std::remove_if(mime_types.begin(), mime_types.end(),
+                                    [](const std::string& s) {
+                                      return base::StartsWith(s, "text/");
+                                    }),
+                     mime_types.end());
+    mime_types.push_back("text/*");
+  }
+
+  apps::IntentFilters intent_filters;
+  intent_filters.push_back(apps_util::CreateFileFilter(
+      {apps_util::kIntentActionView}, mime_types, extension_types,
+      // TODO(crbug/1349974): Remove activity_name when default file handling
+      // preferences for Files App are migrated.
+      /*activity_name=*/apps_util::kGuestOsActivityName));
+
+  return intent_filters;
 }
 
 }  // namespace apps

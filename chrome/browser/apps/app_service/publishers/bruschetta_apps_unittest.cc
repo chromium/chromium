@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/bruschetta/fake_bruschetta_launcher.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -48,6 +49,9 @@ class BruschettaAppsTest : public testing::Test,
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_.get());
     scoped_feature_list_.InitAndEnableFeature(ash::features::kBruschetta);
     bruschetta::BruschettaServiceFactory::EnableForTesting(profile_.get());
+    const guest_os::GuestId id(bruschetta::kBruschettaVmName, "test_container");
+    guest_os::GuestOsSessionTracker::GetForProfile(profile_.get())
+        ->AddGuestForTesting(id);
   }
 
   void TearDown() override { profile_.reset(); }
