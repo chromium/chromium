@@ -114,7 +114,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   // Represents a set of attribution sources which registered in a top-level
   // navigation redirect or a beacon chain, and associated info to process them.
-  struct SourceRegistrations;
+  class SourceRegistrations;
 
   using SourceRegistrationsId =
       absl::variant<blink::AttributionSrcToken, BeaconId>;
