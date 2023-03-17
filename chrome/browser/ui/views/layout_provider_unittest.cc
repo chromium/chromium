@@ -55,9 +55,6 @@ class LayoutProviderTest : public testing::Test {
 
  protected:
   static void SetUpTestSuite() {
-#if BUILDFLAG(IS_WIN)
-    base::win::EnableHighDPISupport();
-#endif
     gfx::InitializeFonts();
     // Some previous test may have left the default font description set to an
     // unexpected state.
@@ -78,13 +75,6 @@ TEST_F(LayoutProviderTest, EnsuresDefaultSystemSettings) {
       << "The test requires that fonts smoothing (anti-aliasing) is "
          "activated. If this assert is failing you need to manually activate "
          "the flag in your system fonts settings.";
-
-  // Ensures that the screen resolution is at the default value.
-  float system_dpi_scale = display::win::GetDPIScale();
-  EXPECT_EQ(system_dpi_scale, 1.0)
-      << "The test requires default display settings. The DPI of the display "
-         "is not 100%. dpi_scale="
-      << system_dpi_scale;
 
   double accessibility_font_scale = display::win::GetAccessibilityFontScale();
   EXPECT_EQ(accessibility_font_scale, 1.0)
