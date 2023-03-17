@@ -59,18 +59,18 @@ base::Time ComputeReportTime(const CommonSourceInfo& source,
 
   // After the initial impression, a schedule of reporting windows and deadlines
   // associated with that impression begins. The time between impression time
-  // and impression expiry is split into multiple reporting windows. At the end
-  // of each window, the browser will send all scheduled reports for that
-  // impression.
+  // and impression expiry is split into multiple reporting windows whose values
+  // are defined in `kEarlyDeadlinesNavigation`. At the end of each window, the
+  // browser will send all scheduled reports for that impression.
   //
   // Each reporting window has a deadline and only conversions registered before
-  // that deadline are sent in that window. Each deadline is one hour prior to
-  // the window report time. The deadlines relative to impression time are <2
-  // days minus 1 hour, 7 days minus 1 hour, impression expiry>. The impression
-  // expiry window is only used for conversions that occur after the 7 day
-  // deadline. For example, a conversion which happens one hour after an
-  // impression with an expiry of two hours, is still reported in the 2 day
-  // window.
+  // that deadline are sent in that window. Each deadline is at the window
+  // report time. The deadlines relative to impression time are <first report
+  // window, second report window, impression expiry>. The impression expiry
+  // window is only used for conversions that occur after the second report
+  // window. For example, a conversion which happens one hour after an
+  // impression with an expiry of two hours, is still reported in the first
+  // report window.
   //
   // Note that only navigation (not event) sources have early reporting
   // deadlines.
