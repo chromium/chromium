@@ -1278,15 +1278,16 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
 
   // If currently only mouse left button is still pressed, while Alt or Search
   // is not, then we need to look deeper. Here we piggyback on an existing
-  // instance variable `pressed_device_ids_` to check whether the previous
-  // remapped event is a remapped mouse right button press event. If yes,
-  // then even currently the Alt or Search is not pressed, we still proceed to
-  // remap to a mouse right button event. Also, in this case, this event
-  // has to be a release event. this change is for regressions such as:
+  // instance variable `pressed_as_right_button_device_ids_` to check whether
+  // the previous remapped event is a remapped mouse right button press event.
+  // If yes, then even currently the Alt or Search is not pressed, we still
+  // proceed to remap to a mouse right button event. Also, in this case, this
+  // event has to be a release event. this change is for regressions such as:
   // https://crbug.com/1399284, https://crbug.com/1417079
   const bool release_without_modifier =
       AreFlagsSet(flags, EF_LEFT_MOUSE_BUTTON) &&
-      pressed_device_ids_.count(mouse_event.source_device_id()) &&
+      pressed_as_right_button_device_ids_.count(
+          mouse_event.source_device_id()) &&
       mouse_event.type() == ET_MOUSE_RELEASED;
   // TODO(crbug.com/1179893): When enabling the deprecate alt click flag by
   // default, decide whether kUseSearchClickForRightClick being disabled
@@ -1303,10 +1304,10 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
     } else if (AreFlagsSet(flags, kAltLeftButton) &&
                is_alt_down_remapping_enabled_) {
       // When the alt variant is deprecated, report when it would have matched.
-      *matched_alt_deprecation =
-          ((mouse_event.type() == ET_MOUSE_PRESSED) ||
-           pressed_device_ids_.count(mouse_event.source_device_id())) &&
-          IsFromTouchpadDevice(mouse_event);
+      *matched_alt_deprecation = ((mouse_event.type() == ET_MOUSE_PRESSED) ||
+                                  pressed_as_right_button_device_ids_.count(
+                                      mouse_event.source_device_id())) &&
+                                 IsFromTouchpadDevice(mouse_event);
     }
   } else if (is_alt_down_remapping_enabled_) {
     // If currently both Alt key and mouse left button are still pressed,
@@ -1325,7 +1326,8 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
 
   return (*matched_mask != 0) &&
          ((mouse_event.type() == ET_MOUSE_PRESSED) ||
-          pressed_device_ids_.count(mouse_event.source_device_id())) &&
+          pressed_as_right_button_device_ids_.count(
+              mouse_event.source_device_id())) &&
          IsFromTouchpadDevice(mouse_event);
 }
 
@@ -2059,7 +2061,8 @@ int EventRewriterChromeOS::RewriteModifierClick(const MouseEvent& mouse_event,
     *flags &= ~matched_mask;
     *flags |= EF_RIGHT_MOUSE_BUTTON;
     if (mouse_event.type() == ET_MOUSE_PRESSED) {
-      pressed_device_ids_.insert(mouse_event.source_device_id());
+      pressed_as_right_button_device_ids_.insert(
+          mouse_event.source_device_id());
       if (matched_mask == kSearchLeftButton) {
         base::RecordAction(
             base::UserMetricsAction("SearchClickMappedToRightClick"));
@@ -2069,7 +2072,7 @@ int EventRewriterChromeOS::RewriteModifierClick(const MouseEvent& mouse_event,
             base::UserMetricsAction("AltClickMappedToRightClick"));
       }
     } else {
-      pressed_device_ids_.erase(mouse_event.source_device_id());
+      pressed_as_right_button_device_ids_.erase(mouse_event.source_device_id());
     }
     return EF_RIGHT_MOUSE_BUTTON;
   } else if (matched_alt_deprecation) {
