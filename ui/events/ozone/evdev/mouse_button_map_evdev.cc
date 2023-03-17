@@ -6,16 +6,32 @@
 
 #include <linux/input.h>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace ui {
 namespace {
+
 // Used as the id to mark the value of the setting before settings were split
 // per-device.
 constexpr int kSharedDeviceSettingsId = -1;
+
+bool ShouldEnablePerDeviceSettings() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::features::IsInputDeviceSettingsSplitEnabled();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 }  // namespace
 
-MouseButtonMapEvdev::MouseButtonMapEvdev() {
-}
+MouseButtonMapEvdev::MouseButtonMapEvdev()
+    : enable_per_device_settings_(ShouldEnablePerDeviceSettings()) {}
 
 MouseButtonMapEvdev::~MouseButtonMapEvdev() {
 }
@@ -43,11 +59,11 @@ int MouseButtonMapEvdev::GetMappedButton(int device_id, uint16_t button) const {
   return button;
 }
 
-void MouseButtonMapEvdev::EnablePerDeviceSettings() {
-  enable_per_device_settings_ = true;
-}
-
 void MouseButtonMapEvdev::RemoveDeviceFromSettings(int device_id) {
+  if (!enable_per_device_settings_) {
+    return;
+  }
+
   primary_button_right_map_.erase(device_id);
 }
 

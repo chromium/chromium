@@ -74,7 +74,7 @@ struct COMPONENT_EXPORT(EVDEV) InputDeviceSettingsEvdev {
   const PointingStickSettingsEvdev& GetPointingStickSettings(
       int device_id) const;
 
-  bool enable_per_device_settings = false;
+  bool enable_per_device_settings;
   // Pausing of tap to click applies to all touchpad devices.
   bool tap_to_click_paused = false;
   // Three finger click applies to all touchpad devices.

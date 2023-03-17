@@ -7,14 +7,29 @@
 #include "base/feature_list.h"
 #include "ui/events/ozone/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace ui {
 namespace {
+
 // Used to denote the global instance of settings within the maps which is used
 // when per device settings are disabled.
 constexpr int kSharedSettingsDeviceId = -1;
+
+bool ShouldEnablePerDeviceSettings() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::features::IsInputDeviceSettingsSplitEnabled();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 }  // namespace
 
-InputDeviceSettingsEvdev::InputDeviceSettingsEvdev() {
+InputDeviceSettingsEvdev::InputDeviceSettingsEvdev()
+    : enable_per_device_settings(ShouldEnablePerDeviceSettings()) {
   touch_event_logging_enabled =
       base::FeatureList::IsEnabled(ui::kEnableInputEventLogging);
 }

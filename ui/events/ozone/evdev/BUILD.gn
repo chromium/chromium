@@ -147,7 +147,10 @@ component("evdev") {
       "numberpad_metrics.cc",
       "numberpad_metrics.h",
     ]
-    deps += [ "//chromeos/ash/components/feature_usage" ]
+    deps += [
+      "//ash/constants",
+      "//chromeos/ash/components/feature_usage",
+    ]
   }
 
   public_configs = [ ":evdev_config" ]
@@ -256,7 +259,6 @@ source_set("unittests") {
     "libgestures_glue/haptic_touchpad_handler.h",
     "libgestures_glue/haptic_touchpad_handler_unittest.cc",
     "microphone_mute_switch_event_converter_evdev_unittest.cc",
-    "mouse_button_map_evdev_unittest.cc",
     "stylus_button_event_converter_evdev_unittest.cc",
     "tablet_event_converter_evdev_unittest.cc",
     "testing/fake_cursor_delegate_evdev.h",
@@ -290,9 +292,13 @@ source_set("unittests") {
   if (is_chromeos_ash) {
     sources += [
       "input_device_factory_evdev_unittest.cc",
+      "mouse_button_map_evdev_unittest.cc",
       "numberpad_metrics_unittest.cc",
     ]
-    deps += [ "//chromeos/ash/components/feature_usage" ]
+    deps += [
+      "//ash/constants",
+      "//chromeos/ash/components/feature_usage",
+    ]
   }
 
   visibility += [ "//ui/events/ozone:unittests" ]

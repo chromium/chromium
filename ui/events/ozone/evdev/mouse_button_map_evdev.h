@@ -42,11 +42,8 @@ class COMPONENT_EXPORT(EVDEV) MouseButtonMapEvdev {
   // Removes saved mouse button settings for a given `device_id`.
   void RemoveDeviceFromSettings(int device_id);
 
-  // Enables per-device handling of mouse button mapping.
-  void EnablePerDeviceSettings();
-
  private:
-  bool enable_per_device_settings_ = false;
+  const bool enable_per_device_settings_;
   base::flat_map<int, bool> primary_button_right_map_;
 };
 
