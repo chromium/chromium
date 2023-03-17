@@ -50,6 +50,19 @@ enum class TimePeriod {
   TIME_PERIOD_LAST = LAST_15_MINUTES
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ClearBrowsingDataAction {
+  kClearBrowsingDataDialog = 0,
+  kClearBrowsingDataOnExit = 1,
+  kIncognitoCloseTabs = 2,
+  kCookiesInUseDialog = 3,
+  kSitesSettingsPage = 4,
+  kHistoryPage = 5,
+  kQuickDeleteLast15Minutes = 6,
+  kMaxValue = kQuickDeleteLast15Minutes,
+};
+
 // Calculate the begin time for the deletion range specified by |time_period|.
 base::Time CalculateBeginDeleteTime(TimePeriod time_period);
 
@@ -61,6 +74,9 @@ void RecordDeletionForPeriod(TimePeriod time_period);
 
 // Records the UMA action of a change of the clear browsing data time period.
 void RecordTimePeriodChange(TimePeriod period);
+
+// Record Clear Browsing Data Action specified by |cbd_action|.
+void RecordClearBrowsingDataAction(ClearBrowsingDataAction cbd_action);
 
 // Constructs the text to be displayed by a counter from the given |result|.
 // Currently this can only be used for counters for which the Result is

@@ -133,6 +133,20 @@ reviewer.
   <summary>The accuracy status of a page. Recorded on each page load.</summary>
 </histogram>
 
+<histogram name="Privacy.ClearBrowsingData.Action"
+    enum="ClearBrowsingDataAction" expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>arabm@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Horizontal metric to show CBD usage across various surfaces. Recorded when
+    the user deletes browsing data from one of these surfaces or when the
+    browser automatically deletes cookies because the user enabled
+    &quot;ClearOnExit&quot;.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.ClearOnExitSyncEvent" enum="ClearOnExitSyncEvent"
     expires_after="M103">
   <owner>sauski@google.com</owner>
