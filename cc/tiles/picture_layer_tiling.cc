@@ -46,7 +46,8 @@ PictureLayerTiling::PictureLayerTiling(
       min_preraster_distance_(min_preraster_distance),
       max_preraster_distance_(max_preraster_distance),
       can_use_lcd_text_(can_use_lcd_text) {
-  recordreplay::RegisterPointer("PictureLayerTiling", this);
+  record_replay_id_ = recordreplay::NewIdAnyThread("PictureLayerTiling");
+  
   DCHECK(!raster_source->IsSolidColor());
   DCHECK_GE(raster_transform.translation().x(), 0.f);
   DCHECK_LT(raster_transform.translation().x(), 1.f);
@@ -79,8 +80,7 @@ PictureLayerTiling::PictureLayerTiling(
   tiling_data_.SetMaxTextureSize(tile_size);
 }
 
-PictureLayerTiling::~PictureLayerTiling() {
-  recordreplay::UnregisterPointer(this);
+PictureLayerTiling::~PictureLayerTiling() = default;
 }
 
 Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
@@ -134,13 +134,6 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
             invalid_content_rect.Intersect(tile_rect);
             invalidated.Union(invalid_content_rect);
           }
-
-          // https://linear.app/replay/issue/RUN-464
-          recordreplay::Assert("PictureLayerTiling::CreateMissingTilesInLiveTilesRect #5 %d %d %d %d %d %d",
-                               (int)tile->id(),
-                               invalidated.x(), invalidated.y(),
-                               invalidated.width(), invalidated.height(),
-                               (int)old_tile->id());
 
           tile->SetInvalidated(invalidated, old_tile->id());
         }
@@ -282,17 +275,6 @@ void PictureLayerTiling::Invalidate(const Region& layer_invalidation) {
 
 void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
                                              bool recreate_tiles) {
-  // https://linear.app/replay/issue/RUN-465
-  recordreplay::Assert("PictureLayerTiling::RemoveTilesInRegion");
-
-  // We only invalidate the active tiling when it's orphaned: it has no pending
-  // twin, so it's slated for removal in the future.
-  if (live_tiles_rect_.IsEmpty()) {
-    // https://linear.app/replay/issue/RUN-465
-    recordreplay::Assert("PictureLayerTiling::RemoveTilesInRegion #1");
-    return;
-  }
-
   base::flat_map<TileMapKey, gfx::Rect> remove_tiles;
   gfx::Rect expanded_live_tiles_rect =
       tiling_data_.ExpandRectToTileBounds(live_tiles_rect_);
@@ -327,20 +309,10 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
     if (recreate_tiles && old_tile) {
       Tile::CreateInfo info = CreateInfoForTile(key.index_x, key.index_y);
       if (Tile* tile = CreateTile(info)) {
-        // https://linear.app/replay/issue/RUN-464
-        recordreplay::Assert("PictureLayerTiling::RemoveTilesInRegion #5 %d %d %d %d %d %d",
-                             (int)tile->id(),
-                             invalid_content_rect.x(), invalid_content_rect.y(),
-                             invalid_content_rect.width(), invalid_content_rect.height(),
-                             (int)old_tile->id());
-
         tile->SetInvalidated(invalid_content_rect, old_tile->id());
       }
     }
   }
-
-  // https://linear.app/replay/issue/RUN-465
-  recordreplay::Assert("PictureLayerTiling::RemoveTilesInRegion Done");
 }
 
 Tile::CreateInfo PictureLayerTiling::CreateInfoForTile(int i, int j) const {

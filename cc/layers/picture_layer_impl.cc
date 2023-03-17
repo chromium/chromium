@@ -427,6 +427,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
   // Keep track of the tilings that were used so that tilings that are
   // unused can be considered for removal.
+  recordreplay::Assert("[RUN-550-1536] PictureLayerImpl::AppendQuads A");
   last_append_quads_tilings_.clear();
 
   // Ignore missing tiles outside of viewport for tile priority. This is
@@ -571,9 +572,12 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
     if (last_append_quads_tilings_.empty() ||
         last_append_quads_tilings_.back() != iter.CurrentTiling()) {
+      recordreplay::Assert("[RUN-550-1536] PictureLayerImpl::AppendQuads B %d",
+                           iter.CurrentTiling().record_replay_id_);
       last_append_quads_tilings_.push_back(iter.CurrentTiling());
     }
   }
+  recordreplay::Assert("[RUN-550-1536] PictureLayerImpl::AppendQuads C");
 
   // Adjust shared_quad_state with the quad_offset, since we've adjusted each
   // quad we've appended by it.
@@ -1717,12 +1721,6 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
         {max_acceptable_high_res_scale, twin->raster_contents_scale_key(),
          twin->ideal_contents_scale_key()});
   }
-
-  recordreplay::Assert(
-      "[RUN-550-1469] PictureLayerImpl::CleanUpTilingsOnActiveLayer %zu %f %f",
-      tilings_->num_tilings(),
-      min_acceptable_high_res_scale,
-      max_acceptable_high_res_scale);
 
   PictureLayerTilingSet* twin_set = twin ? twin->tilings_.get() : nullptr;
   tilings_->CleanUpTilings(min_acceptable_high_res_scale,
