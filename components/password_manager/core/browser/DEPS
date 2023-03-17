@@ -43,8 +43,5 @@ specific_include_rules = {
   ],
   ".*unit_test\.cc": [
     "+components/autofill/core/browser/test_utils",
-  ],
-  "get_logins_with_affiliations_request_handler\.cc": [
-    "+components/crash/core/common/crash_key.h",
   ]
 }

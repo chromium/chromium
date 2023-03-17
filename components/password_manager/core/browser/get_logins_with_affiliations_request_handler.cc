@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/trace_event/trace_event.h"
 
-#include "components/crash/core/common/crash_key.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -80,13 +79,6 @@ void GetLoginsWithAffiliationsRequestHandler::HandleLoginsForFormReceived(
   for (const auto& form : forms) {
     switch (GetMatchResult(*form, requested_digest_)) {
       case MatchResult::NO_MATCH:
-        // TODO(crbug.com/1420211): Remove this after crash is fixed.
-        static crash_reporter::CrashKeyString<1024> crash_key1(
-            "matching-signon-realm");
-        crash_key1.Set(form->signon_realm);
-        static crash_reporter::CrashKeyString<1024> crash_key2(
-            "requested-signon-realm");
-        crash_key2.Set(requested_digest_.signon_realm);
         NOTREACHED();
         break;
       case MatchResult::EXACT_MATCH:
