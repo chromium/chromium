@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
@@ -717,6 +718,7 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     VideoFrame& txt_frame,
     gpu::raster::RasterInterface* ri,
     GrDirectContext* gr_context,
+    const gpu::Capabilities& caps,
     VideoFramePool* pool) {
   DCHECK(ri);
 
@@ -745,7 +747,7 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     gfx::Rect src_rect(0, 0, txt_frame.columns(plane), txt_frame.rows(plane));
     if (!ReadbackTexturePlaneToMemorySync(
             txt_frame, plane, src_rect, result->writable_data(plane),
-            result->stride(plane), ri, gr_context)) {
+            result->stride(plane), ri, gr_context, caps)) {
       return nullptr;
     }
   }
@@ -758,11 +760,14 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
                                       uint8_t* dest_pixels,
                                       size_t dest_stride,
                                       gpu::raster::RasterInterface* ri,
-                                      GrDirectContext* gr_context) {
+                                      GrDirectContext* gr_context,
+                                      const gpu::Capabilities& caps) {
   DCHECK(ri);
 
   bool result;
-  if (gr_context) {
+  if (gr_context &&
+      !(caps.supports_yuv_rgb_conversion &&
+        src_frame.mailbox_holder(src_plane).mailbox.IsSharedImage())) {
     result = ReadbackTexturePlaneToMemorySyncSkImage(
         src_frame, src_plane, src_rect, dest_pixels, dest_stride, ri,
         gr_context);
