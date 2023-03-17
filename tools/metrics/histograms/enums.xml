@@ -74702,6 +74702,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="13" label="Other action"/>
 </enum>
 
+<enum name="NTPHistoryClustersElementType">
+  <int value="0" label="Visit"/>
+  <int value="1" label="Suggest"/>
+  <int value="2" label="ShowAll"/>
+</enum>
+
 <enum name="NTPHistoryClustersModuleDisplayLayout">
   <int value="0" label="Not displayed"/>
   <int value="1" label="Layout 1"/>

@@ -38,6 +38,17 @@ export enum HistoryClusterLayoutType {
   LAYOUT_3 = 3,  // 2 image visits & 2 non-image visits
 }
 
+/**
+ * Available module element types. This enum must match the numbering for
+ * NTPHistoryClustersElementType in enums.xml. These values are persisted to
+ * logs. Entries should not be renumbered, removed or reused.
+ */
+export enum HistoryClusterElementType {
+  VISIT = 0,
+  SUGGEST = 1,
+  SHOW_ALL = 2,
+}
+
 export interface HistoryClustersModuleElement {
   $: {
     infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
@@ -74,14 +85,22 @@ export class HistoryClustersModuleElement extends I18nMixin
   }
 
   private onVisitTileClick_(e: Event) {
-    this.recordClick_(e.target as HTMLElement, 'Visit');
+    this.recordTileClickIndex_(e.target as HTMLElement, 'Visit');
+    this.recordClick_(HistoryClusterElementType.VISIT);
   }
 
   private onSuggestTileClick_(e: Event) {
-    this.recordClick_(e.target as HTMLElement, 'Suggest');
+    this.recordTileClickIndex_(e.target as HTMLElement, 'Suggest');
+    this.recordClick_(HistoryClusterElementType.SUGGEST);
   }
 
-  private recordClick_(tile: HTMLElement, tileType: string) {
+  private recordClick_(type: HistoryClusterElementType) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        `NewTabPage.HistoryClusters.Layout${this.layoutType}.Click`, type,
+        Object.keys(HistoryClusterElementType).length);
+  }
+
+  private recordTileClickIndex_(tile: HTMLElement, tileType: string) {
     assert(this.layoutType !== HistoryClusterLayoutType.NONE);
     const index = Array.from(tile.parentNode!.children).indexOf(tile);
     chrome.metricsPrivate.recordValue(
@@ -131,6 +150,7 @@ export class HistoryClustersModuleElement extends I18nMixin
     assert(this.cluster.label.length >= 2);
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
         this.cluster.label.substring(1, this.cluster.label.length - 1));
+    this.recordClick_(HistoryClusterElementType.SHOW_ALL);
   }
 }
 

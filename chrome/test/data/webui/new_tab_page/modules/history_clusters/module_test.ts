@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {Cluster, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
-import {DismissModuleEvent, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, MIN_RELATED_SEARCHES} from 'chrome://new-tab-page/lazy_load.js';
+import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, MIN_RELATED_SEARCHES} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -257,6 +257,16 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     showAllButton.click();
     const query = await handler.whenCalled('showJourneysSidePanel');
     assertEquals(sampleClusterUnquotedLabel, query);
+    assertEquals(
+        1,
+        metrics.count(`NewTabPage.HistoryClusters.Layout${
+            HistoryClusterLayoutType.LAYOUT_1}.Click`));
+    assertEquals(
+        1,
+        metrics.count(
+            `NewTabPage.HistoryClusters.Layout${
+                HistoryClusterLayoutType.LAYOUT_1}.Click`,
+            HistoryClusterElementType.SHOW_ALL));
   });
 
   test('Backend is notified when module is dismissed', async () => {
@@ -303,6 +313,15 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
               1,
               metrics.count(`NewTabPage.HistoryClusters.Layout${
                   layoutType}.VisitTile.ClickIndex`));
+          assertEquals(
+              1,
+              metrics.count(
+                  `NewTabPage.HistoryClusters.Layout${layoutType}.Click`));
+          assertEquals(
+              1,
+              metrics.count(
+                  `NewTabPage.HistoryClusters.Layout${layoutType}.Click`,
+                  HistoryClusterElementType.VISIT));
         });
 
         test('Module produces suggest tile click metrics', async () => {
@@ -321,6 +340,15 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
               1,
               metrics.count(`NewTabPage.HistoryClusters.Layout${
                   layoutType}.SuggestTile.ClickIndex`));
+          assertEquals(
+              1,
+              metrics.count(
+                  `NewTabPage.HistoryClusters.Layout${layoutType}.Click`));
+          assertEquals(
+              1,
+              metrics.count(
+                  `NewTabPage.HistoryClusters.Layout${layoutType}.Click`,
+                  HistoryClusterElementType.SUGGEST));
         });
       });
 });
