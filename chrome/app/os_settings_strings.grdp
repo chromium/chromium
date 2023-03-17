@@ -1145,6 +1145,12 @@
   <message name="IDS_SETTINGS_CHROMEVOX_TTS_SETTINGS_DESCRIPTION" desc="In the ChromeVox settings subpage, the description sub-label for the link to the Text-to-Speech settings page, used to illustrate the keyboard shortcut for the Text-to-Speech settings page, and a description telling users that they can use the Text-to-speech settings page to Install, Manage, and Customize their text-to-speech voices.">
     Search + O, then S. Use to install, manage, and customize voices.
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_EVENT_LOG_LINK" desc="In the ChromeVox settings subpage, the label for the link to show the ChromeVox Event Log page.">
+    Show Log
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_EVENT_LOG_DESCRIPTION" desc="In the ChromeVox settings subpage, the description sub-label for the link to show the ChromeVox Event Log page, used to illustrate the keyboard shortcut to open the ChromeVox Event Log page: Search + O, then W.">
+    Search + O, then W
+  </message>
   <message name="IDS_SETTINGS_CHROMEVOX_LANGUAGE_SWITCHING" desc="In the ChromeVox settings subpage, the label for the toggle to enable ChromeVox language switching.">
     Automatically switch ChromeVox voice based on language
   </message>

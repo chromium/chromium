@@ -185,5 +185,10 @@ found in the LICENSE file.
         pref="{{prefs.settings.a11y.chromevox.enable_event_stream_logging}}"
         label="$i18n{chromeVoxEnableEventStreamLogging}">
     </settings-toggle-button>
+    <cr-link-row class="settings-box"
+        label="$i18n{chromeVoxEventLogLink}"
+        sub-label="$i18n{chromeVoxEventLogDescription}"
+        on-click="onEventLogTap_" external embedded>
+    </cr-link-row>
   </div>
 </iron-collapse>

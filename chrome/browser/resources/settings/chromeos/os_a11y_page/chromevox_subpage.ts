@@ -29,6 +29,7 @@ import {getTemplate} from './chromevox_subpage.html.js';
 import {ChromeVoxSubpageBrowserProxy, ChromeVoxSubpageBrowserProxyImpl} from './chromevox_subpage_browser_proxy.js';
 
 const SYSTEM_VOICE = 'chromeos_system_voice';
+const CHROMEVOX_EXTENSION_ID = 'mndnfokpggljbaajbnioimlmbfngpief';
 const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
 const ESPEAK_TTS_EXTENSION_ID = 'dakbfdmgjiabojdgbiljlhgjbokobjpg';
 
@@ -291,6 +292,12 @@ class SettingsChromeVoxSubpageElement extends
     Router.getInstance().navigateTo(
         routes.MANAGE_TTS_SETTINGS,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
+  }
+
+  private onEventLogTap_(): void {
+    window.open(
+        'chrome-extension://' + CHROMEVOX_EXTENSION_ID +
+        '/chromevox/log_page/log.html');
   }
 }
 
