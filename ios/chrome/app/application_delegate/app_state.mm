@@ -442,8 +442,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   if (self.mainBrowserState) {
     SessionMetrics::FromBrowserState(self.mainBrowserState)
         ->RecordAndClearSessionMetrics(
-            MetricsToRecordFlags::kOpenedTabCount |
-            MetricsToRecordFlags::kClosedTabCount |
             MetricsToRecordFlags::kActivatedTabCount);
 
     if (self.mainBrowserState->HasOffTheRecordChromeBrowserState()) {

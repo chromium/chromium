@@ -36,18 +36,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Session.ClosedTabCounts" units="operations"
-    expires_after="2021-09-19">
-  <owner>rohitrao@chromium.org</owner>
-  <owner>marq@chromium.org</owner>
-  <summary>
-    The number of tabs closed by the user during the current session
-    (launch/foregrounding to backgrounding).
-
-    This histogram is only logged on iOS when the application is backgrounded.
-  </summary>
-</histogram>
-
 <histogram name="Session.IsActive" enum="BooleanActive"
     expires_after="2023-09-03">
   <owner>rogerm@chromium.org</owner>
@@ -64,18 +52,6 @@ chromium-metrics-reviews@google.com.
 
     For information on what's considered &quot;active&quot;, see the histogram
     description for Session.TotalDuration.
-  </summary>
-</histogram>
-
-<histogram name="Session.NewTabCounts" units="operations"
-    expires_after="2021-04-19">
-  <owner>rohitrao@chromium.org</owner>
-  <owner>marq@chromium.org</owner>
-  <summary>
-    The number of tabs created by the user during the current session
-    (launch/foregrounding to backgrounding).
-
-    This histogram is only logged on iOS when the application is backgrounded.
   </summary>
 </histogram>
 

@@ -67,7 +67,6 @@ void WebStateListMetricsBrowserAgent::WebStateInsertedAt(
   if (metric_collection_paused_)
     return;
   base::RecordAction(base::UserMetricsAction("MobileNewTabOpened"));
-  session_metrics_->OnWebStateInserted();
 }
 
 void WebStateListMetricsBrowserAgent::WebStateDetachedAt(
@@ -76,7 +75,6 @@ void WebStateListMetricsBrowserAgent::WebStateDetachedAt(
     int index) {
   if (metric_collection_paused_)
     return;
-  session_metrics_->OnWebStateDetached();
 }
 
 void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(

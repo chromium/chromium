@@ -53,14 +53,6 @@ SessionMetrics* SessionMetrics::FromBrowserState(
 
 void SessionMetrics::RecordAndClearSessionMetrics(
     MetricsToRecordFlagSet flag_set) {
-  if (flag_set & MetricsToRecordFlags::kOpenedTabCount) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Session.NewTabCounts",
-                                inserted_web_state_counter_, 1, 200, 50);
-  }
-  if (flag_set & MetricsToRecordFlags::kClosedTabCount) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Session.ClosedTabCounts",
-                                detached_web_state_counter_, 1, 200, 50);
-  }
   if (flag_set & MetricsToRecordFlags::kActivatedTabCount) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Session.OpenedTabCounts",
                                 activated_web_state_counter_, 1, 200, 50);
@@ -73,20 +65,10 @@ void SessionMetrics::RecordAndClearSessionMetrics(MetricsToRecordFlags flag) {
   RecordAndClearSessionMetrics(static_cast<MetricsToRecordFlagSet>(flag));
 }
 
-void SessionMetrics::OnWebStateInserted() {
-  inserted_web_state_counter_++;
-}
-
-void SessionMetrics::OnWebStateDetached() {
-  detached_web_state_counter_++;
-}
-
 void SessionMetrics::OnWebStateActivated() {
   activated_web_state_counter_++;
 }
 
 void SessionMetrics::ResetSessionMetrics() {
-  inserted_web_state_counter_ = 0;
-  detached_web_state_counter_ = 0;
   activated_web_state_counter_ = 0;
 }
