@@ -63,7 +63,7 @@
 
 // The view controller representing the Feed top section (between the feed
 // header and the feed collection).
-@property(nonatomic, strong) UIViewController* feedTopSectionViewController;
+@property(nonatomic, weak) UIViewController* feedTopSectionViewController;
 
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;

@@ -381,7 +381,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   self.NTPViewController = nil;
   self.feedHeaderViewController.ntpDelegate = nil;
   self.feedHeaderViewController = nil;
-  self.feedTopSectionCoordinator.ntpDelegate = nil;
   [self.feedTopSectionCoordinator stop];
   self.feedTopSectionCoordinator = nil;
 
