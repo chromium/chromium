@@ -83,6 +83,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".MigratedLast28Days"
       summary="Includes data for users that went through migration during the
                last 28 days (wrt recording the metrics)."/>
+  <variant name=".MigratedLast90Days"
+      summary="Includes data for users that went through migration during the
+               last 90 days (wrt recording the metrics)."/>
+  <variant name=".MigratedLast180Days"
+      summary="Includes data for users that went through migration during the
+               last 180 days (wrt recording the metrics)."/>
   <variant name=".MigratedLastDay"
       summary="Includes data for users that went through migration during the
                last day (wrt recording the metrics)."/>

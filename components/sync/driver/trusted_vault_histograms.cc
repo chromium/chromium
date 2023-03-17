@@ -113,6 +113,14 @@ void RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
     return;
   }
 
+  if (time_delta_since_migration < base::Days(180)) {
+    base::UmaHistogramBoolean(histogram_name + ".MigratedLast180Days", sample);
+  }
+
+  if (time_delta_since_migration < base::Days(90)) {
+    base::UmaHistogramBoolean(histogram_name + ".MigratedLast90Days", sample);
+  }
+
   if (time_delta_since_migration < base::Days(28)) {
     base::UmaHistogramBoolean(histogram_name + ".MigratedLast28Days", sample);
   }
