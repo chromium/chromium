@@ -34,8 +34,7 @@ kGoodBucketNameTests.forEach(test_data => {
     });
 
     const buckets = await navigator.storageBuckets.keys();
-    assert_equals(buckets.length, 1);
-    assert_equals(buckets[0], bucket_name);
+    assert_equals(buckets.join(), bucket_name);
   }, `open() allows bucket names ${test_description}`);
 });
 
@@ -88,6 +87,5 @@ promise_test(async testCase => {
   });
 
   const buckets = await navigator.storageBuckets.keys();
-  assert_equals(buckets.length, 1);
-  assert_equals(buckets[0], 'bucket_name');
+  assert_equals(buckets.join(), 'bucket_name');
 }, 'open() does not store duplicate bucket names');
