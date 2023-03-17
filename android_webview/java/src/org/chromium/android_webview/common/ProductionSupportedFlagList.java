@@ -326,8 +326,6 @@ public final class ProductionSupportedFlagList {
                     "If enabled, SVG images will suspend animations when all "
                             + "instances of the image are outside of the "
                             + "viewport."),
-            Flag.baseFeature(BlinkFeatures.SCROLL_OVERLAP_OPTIMIZATION,
-                    "Enables scroll overlap optimization. See https://crbug.com/1401086#c29."),
             Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
             Flag.baseFeature("PreconnectOnRedirect"),
             Flag.baseFeature("PreconnectInNetworkService"), Flag.baseFeature("PrefetchDNSWithURL"),

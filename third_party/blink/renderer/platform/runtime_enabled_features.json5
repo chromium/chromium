@@ -2943,10 +2943,6 @@
       base_feature: "none",
     },
     {
-      name: "ScrollOverlapOptimization",
-      status: "experimental",
-    },
-    {
       name: "ScrollTimeline",
       status: "experimental",
       implied_by: ["AnimationWorklet", "CSSScrollTimeline", "CSSViewTimeline"],

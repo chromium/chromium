@@ -584,13 +584,6 @@ void GeometryMapper::MapVisualRectAboveScrollForCompositingOverlap(
   DCHECK_EQ(&state.Transform().NearestScrollTranslationNode(),
             &scroll_translation);
   DCHECK(scroll_translation.ScrollNode());
-  gfx::RectF container_rect(scroll_translation.ScrollNode()->ContainerRect());
-
-  if (!RuntimeEnabledFeatures::ScrollOverlapOptimizationEnabled()) {
-    rect = container_rect;
-    state = ScrollContainerState(scroll_translation);
-    return;
-  }
 
   rect = VisualRectForCompositingOverlap(
       rect, state, ScrollingContentsState(scroll_translation));
@@ -604,7 +597,7 @@ void GeometryMapper::MapVisualRectAboveScrollForCompositingOverlap(
   // in the container space.
   rect.Offset(-max_scroll_offset.width(), -max_scroll_offset.height());
   rect.set_size(rect.size() + max_scroll_offset);
-  rect.Intersect(container_rect);
+  rect.Intersect(gfx::RectF(scroll_translation.ScrollNode()->ContainerRect()));
 
   state = ScrollContainerState(scroll_translation);
 }
