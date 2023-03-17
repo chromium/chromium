@@ -23,6 +23,8 @@ source_set("mixers") {
     "chrome_color_provider_utils.h",
     "material_side_panel_color_mixer.cc",
     "material_side_panel_color_mixer.h",
+    "material_tab_strip_color_mixer.cc",
+    "material_tab_strip_color_mixer.h",
     "native_chrome_color_mixer.cc",
     "native_chrome_color_mixer.h",
     "new_tab_page_color_mixer.cc",
