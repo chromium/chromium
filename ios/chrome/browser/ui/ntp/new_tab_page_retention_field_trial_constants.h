@@ -46,7 +46,7 @@ const int kIOSPopularSitesImprovedSuggestionsStableWeight = 5;
 const int kIOSPopularSitesImprovedSuggestionsPrestableWeight = 16;
 
 // Group weights for the tile ablation experiments.
-const int kTileAblationStableWeight = 0;
+const int kTileAblationStableWeight = 5;
 const int kTileAblationPrestableWeight = 16;
 
 }  // namespace field_trial_constants
