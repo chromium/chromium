@@ -71,6 +71,25 @@ void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
   ASSERT_EQ(src_data, icon.compressed);
 }
 
+SkBitmap CreateSquareIconBitmap(int size_px, SkColor solid_color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size_px, size_px);
+  bitmap.eraseColor(solid_color);
+  return bitmap;
+}
+
+gfx::ImageSkia CreateSquareIconImageSkia(int size_dp, SkColor solid_color) {
+  gfx::ImageSkia image;
+  for (auto& scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    int icon_size_in_px =
+        gfx::ScaleToFlooredSize(gfx::Size(size_dp, size_dp), scale_factor)
+            .width();
+    SkBitmap bitmap = CreateSquareIconBitmap(icon_size_in_px, solid_color);
+    image.AddRepresentation(gfx::ImageSkiaRep(bitmap, scale_factor));
+  }
+  return image;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 FakeIconLoader::FakeIconLoader(apps::AppServiceProxy* proxy) : proxy_(proxy) {}
 

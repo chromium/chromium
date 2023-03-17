@@ -65,31 +65,6 @@ class AppIconDecoder {
     const int32_t size_in_dip_;
   };
 
-  // Decode images safely in a sandboxed service per ARC app icons' security
-  // requests.
-  class DecodeRequest : public ImageDecoder::ImageRequest {
-   public:
-    DecodeRequest(ui::ResourceScaleFactor scale_factor,
-                  AppIconDecoder& host,
-                  gfx::ImageSkia& image_skia,
-                  std::set<ui::ResourceScaleFactor>& incomplete_scale_factors);
-
-    DecodeRequest(const DecodeRequest&) = delete;
-    DecodeRequest& operator=(const DecodeRequest&) = delete;
-
-    ~DecodeRequest() override;
-
-    // ImageDecoder::ImageRequest
-    void OnImageDecoded(const SkBitmap& bitmap) override;
-    void OnDecodeImageFailed() override;
-
-   private:
-    ui::ResourceScaleFactor scale_factor_;
-    AppIconDecoder& host_;
-    gfx::ImageSkia& image_skia_;
-    std::set<ui::ResourceScaleFactor>& incomplete_scale_factors_;
-  };
-
   bool SetScaleFactors(
       const std::map<ui::ResourceScaleFactor, IconValuePtr>& icon_datas);
 
@@ -102,9 +77,9 @@ class AppIconDecoder {
 
   void UpdateImageSkia(
       ui::ResourceScaleFactor scale_factor,
-      const SkBitmap& bitmap,
       gfx::ImageSkia& image_skia,
-      std::set<ui::ResourceScaleFactor>& incomplete_scale_factors);
+      std::set<ui::ResourceScaleFactor>& incomplete_scale_factors,
+      const SkBitmap& bitmap);
 
   void DiscardDecodeRequest();
 
@@ -125,9 +100,6 @@ class AppIconDecoder {
 
   bool is_maskable_icon_ = false;
   bool is_adaptive_icon_ = false;
-
-  // Contains pending image decode requests.
-  std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
 
   base::WeakPtrFactory<AppIconDecoder> weak_ptr_factory_{this};
 };

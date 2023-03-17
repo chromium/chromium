@@ -7475,6 +7475,7 @@ test("unit_tests") {
       "../browser/apps/app_preload_service/app_preload_service_unittest.cc",
       "../browser/apps/app_preload_service/preload_app_definition_unittest.cc",
       "../browser/apps/app_preload_service/web_app_preload_installer_unittest.cc",
+      "../browser/apps/app_service/app_icon/app_icon_decoder_unittest.cc",
       "../browser/apps/app_service/app_icon/arc_apps_icon_unittest.cc",
       "../browser/apps/app_service/app_icon/guest_os_apps_icon_unittest.cc",
       "../browser/apps/app_service/file_utils_unittest.cc",

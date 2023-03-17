@@ -38,13 +38,6 @@ namespace {
 
 constexpr int kTestIconSize = 64;
 
-SkBitmap CreateSquareIconBitmap(int size_px, SkColor solid_color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(size_px, size_px);
-  bitmap.eraseColor(solid_color);
-  return bitmap;
-}
-
 }  // namespace
 
 class AppServiceGuestOSIconTest : public testing::Test {
@@ -106,15 +99,7 @@ class AppServiceGuestOSIconTest : public testing::Test {
   IconValuePtr GenerateIcon(SkColor solid_color,
                             int size_dp,
                             IconEffects effects) {
-    gfx::ImageSkia image;
-    for (auto& scale_factor : ui::GetSupportedResourceScaleFactors()) {
-      int icon_size_in_px =
-          gfx::ScaleToFlooredSize(gfx::Size(size_dp, size_dp), scale_factor)
-              .width();
-      SkBitmap bitmap = CreateSquareIconBitmap(icon_size_in_px, solid_color);
-      image.AddRepresentation(gfx::ImageSkiaRep(bitmap, scale_factor));
-    }
-
+    gfx::ImageSkia image = CreateSquareIconImageSkia(size_dp, solid_color);
     auto iv = std::make_unique<apps::IconValue>();
     iv->icon_type = apps::IconType::kUncompressed;
     iv->uncompressed = image;

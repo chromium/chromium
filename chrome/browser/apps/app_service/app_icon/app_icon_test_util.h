@@ -8,9 +8,10 @@
 #include <vector>
 
 #include "build/chromeos_buildflags.h"
-
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/grit/extensions_browser_resources.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -36,6 +37,10 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst);
 
 void VerifyCompressedIcon(const std::vector<uint8_t>& src_data,
                           const apps::IconValue& icon);
+
+SkBitmap CreateSquareIconBitmap(int size_px, SkColor solid_color);
+
+gfx::ImageSkia CreateSquareIconImageSkia(int size_dp, SkColor solid_color);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 struct AppLaunchParams;
