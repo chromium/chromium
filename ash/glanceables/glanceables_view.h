@@ -15,7 +15,6 @@ class Label;
 
 namespace ash {
 
-class GlanceablesRestoreView;
 class GlanceablesUpNextView;
 class GlanceablesWeatherView;
 class GlanceablesWelcomeLabel;
@@ -40,8 +39,6 @@ class ASH_EXPORT GlanceablesView : public views::View {
   GlanceablesWeatherView* weather_view_ = nullptr;
   views::Label* up_next_label_ = nullptr;
   GlanceablesUpNextView* up_next_view_ = nullptr;
-  views::Label* restore_session_label_ = nullptr;
-  GlanceablesRestoreView* restore_view_ = nullptr;
 };
 
 }  // namespace ash

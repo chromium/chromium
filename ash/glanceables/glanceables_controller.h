@@ -45,9 +45,6 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
   // Destroys the glanceables widget and view.
   void DestroyUi();
 
-  // Triggers a session restore.
-  void RestoreSession();
-
   // wm::ActivationChangeObserver:
   void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
                          aura::Window* gained_focus,

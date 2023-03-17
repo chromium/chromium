@@ -16,9 +16,6 @@ class ASH_EXPORT GlanceablesDelegate {
  public:
   virtual ~GlanceablesDelegate() = default;
 
-  // Triggers session restore.
-  virtual void RestoreSession() = 0;
-
   // Called after the glanceables UI is closed.
   virtual void OnGlanceablesClosed() = 0;
 };

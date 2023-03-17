@@ -11,7 +11,6 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/glanceables_restore_view.h"
 #include "ash/glanceables/glanceables_up_next_event_item_view.h"
 #include "ash/glanceables/glanceables_up_next_view.h"
 #include "ash/glanceables/glanceables_view.h"
@@ -21,7 +20,6 @@
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
-#include "ash/style/pill_button.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
@@ -37,12 +35,10 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/test/button_test_api.h"
 
 namespace ash {
 namespace {
@@ -152,18 +148,6 @@ class GlanceablesTest : public AshTestBase {
 
   views::Label* GetNoEventsLabel() { return GetUpNextView()->no_events_label_; }
 
-  views::Label* GetRestoreSessionLabel() {
-    return controller_->view_->restore_session_label_;
-  }
-
-  GlanceablesRestoreView* GetRestoreView() {
-    return controller_->view_->restore_view_;
-  }
-
-  PillButton* GetRestoreViewPillButton() {
-    return GetRestoreView()->pill_button_;
-  }
-
  protected:
   GlanceablesController* controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_{features::kGlanceables};
@@ -215,8 +199,6 @@ TEST_F(GlanceablesTest, GlanceablesViewCreatesChildViews) {
   EXPECT_TRUE(GetWeatherIcon());
   EXPECT_TRUE(GetWeatherTemperature());
   EXPECT_TRUE(GetUpNextView());
-  EXPECT_TRUE(GetRestoreSessionLabel());
-  EXPECT_TRUE(GetRestoreView());
 }
 
 TEST_F(GlanceablesTest, WeatherViewShowsWeather) {
@@ -318,22 +300,6 @@ TEST_F(GlanceablesTest, UpNextEventItemViewRendersCorrectlyWithoutEventTitle) {
 
   EXPECT_EQ(view.GetAccessibleName(), u"(No title)");
   EXPECT_EQ(view.event_title_label_for_test()->GetText(), u"(No title)");
-}
-
-TEST_F(GlanceablesTest, ClickOnSessionRestore) {
-  controller_->CreateUi();
-  GlanceablesRestoreView* restore_view = GetRestoreView();
-  ASSERT_TRUE(restore_view);
-
-  PillButton* restore_button = GetRestoreViewPillButton();
-  ASSERT_TRUE(restore_button);
-  ASSERT_EQ(0, GetTestDelegate()->restore_session_count());
-
-  // Click on the "Restore" button.
-  views::test::ButtonTestApi(restore_button).NotifyClick(ui::test::TestEvent());
-
-  EXPECT_EQ(1, GetTestDelegate()->restore_session_count());
-  EXPECT_FALSE(controller_->IsShowing());
 }
 
 TEST_F(GlanceablesTest, DismissesOnlyOnAppWindowOpen) {

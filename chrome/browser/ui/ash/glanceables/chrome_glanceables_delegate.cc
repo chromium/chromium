@@ -8,12 +8,9 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "chrome/browser/ash/app_restore/full_restore_service.h"
-#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/app_restore/full_restore_save_handler.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -42,7 +39,6 @@ ChromeGlanceablesDelegate* ChromeGlanceablesDelegate::Get() {
 }
 
 void ChromeGlanceablesDelegate::OnPrimaryUserSessionStarted(Profile* profile) {
-  primary_profile_ = profile;
   identity_manager_ = IdentityManagerFactory::GetForProfileIfExists(profile);
   DCHECK(identity_manager_);
 
@@ -62,25 +58,6 @@ void ChromeGlanceablesDelegate::OnPrimaryUserSessionStarted(Profile* profile) {
     identity_manager_->AddObserver(this);
 }
 
-void ChromeGlanceablesDelegate::RestoreSession() {
-  if (!primary_profile_ || did_restore_)
-    return;
-  auto* full_restore_service =
-      ash::full_restore::FullRestoreService::GetForProfile(primary_profile_);
-  if (!full_restore_service)
-    return;
-  full_restore_service->Restore();
-  did_restore_ = true;
-}
-
-void ChromeGlanceablesDelegate::OnGlanceablesClosed() {
-  if (!did_restore_) {
-    // The user closed glanceables without triggering a session restore, so
-    // start the full restore state save timer.
-    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
-  }
-}
-
 void ChromeGlanceablesDelegate::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   const CoreAccountInfo& primary_account_info =
@@ -96,16 +73,6 @@ bool ChromeGlanceablesDelegate::ShouldShowOnLogin() const {
   // Skip glanceables when --no-first-run is passed. This prevents glanceables
   // from interfering with existing browser tests (they pass this switch) and is
   // also helpful when bisecting.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoFirstRun))
-    return false;
-
-  // Don't show glanceables for session types that don't support full restore
-  // (e.g. demo mode, forced app mode).
-  // TODO(crbug.com/1353119): Refine triggering logic based on PM/UX feedback.
-  if (!ash::full_restore::FullRestoreServiceFactory::
-          IsFullRestoreAvailableForProfile(primary_profile_)) {
-    return false;
-  }
-
-  return true;
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kNoFirstRun);
 }

@@ -6332,12 +6332,6 @@ New install
       <message name="IDS_GLANCEABLES_UP_NEXT" desc="Section header for upcoming calendar events. Used on the glanceables surface (welcome screen).">
         Up next
       </message>
-      <message name="IDS_GLANCEABLES_RESTORE_SESSION" desc="Section header for a button that restores the last user session windows. Used on the glanceables surface (welcome screen).">
-        Restore last session
-      </message>
-      <message name="IDS_GLANCEABLES_RESTORE" desc="Label for button that restores the last user session windows. Used on the glanceables surface (welcome screen).">
-        Restore
-      </message>
       <message name="IDS_GLANCEABLES_UP_NEXT_NO_EVENTS" desc="Text label used in the up next section in case if there are no (more) calendar events for today.">
         No events today
       </message>

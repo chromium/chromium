@@ -32,8 +32,7 @@ class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate,
   void OnPrimaryUserSessionStarted(Profile* profile);
 
   // ash::GlanceablesDelegate:
-  void RestoreSession() override;
-  void OnGlanceablesClosed() override;
+  void OnGlanceablesClosed() override {}
 
   // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
@@ -45,14 +44,8 @@ class ChromeGlanceablesDelegate : public ash::GlanceablesDelegate,
 
   ash::GlanceablesController* const controller_;
 
-  // The profile for the primary user in the session.
-  Profile* primary_profile_ = nullptr;
-
   // The identity manager for the primary profile.
   signin::IdentityManager* identity_manager_ = nullptr;
-
-  // Whether the user triggered session restore on login.
-  bool did_restore_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_GLANCEABLES_CHROME_GLANCEABLES_DELEGATE_H_

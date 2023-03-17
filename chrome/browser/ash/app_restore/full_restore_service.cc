@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -413,15 +412,6 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
                                                       bool& show_notification) {
   if (!ShouldShowNotification())
     return;
-
-  // TODO(crbug.com/1353119): Update this logic once PM/UX have decided on how
-  // glanceables interact with full restore. For now, suppress the non-crash
-  // full restore notification for the primary user, because glanceables are
-  // only shown for the primary user.
-  if (features::AreGlanceablesEnabled() && id == kRestoreNotificationId &&
-      IsPrimaryUser(profile_)) {
-    return;
-  }
 
   // If the system is restored from crash, create the crash lock for the browser
   // session restore to help set the browser saving flag.
