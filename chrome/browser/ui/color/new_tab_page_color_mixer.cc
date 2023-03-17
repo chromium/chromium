@@ -142,8 +142,9 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageChipForeground] =
       select_topmost_element_foreground_color;
   mixer[kColorNewTabPageModuleItemBackground] = {kColorNewTabPageBackground};
-  mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
-      kColorNewTabPageBackground};
+  mixer[kColorNewTabPageHistoryClustersModuleItemBackground] =
+      SelectBasedOnWhiteNtpBackground(gfx::kGoogleGrey100,
+                                      kColorNewTabPageBackground);
   mixer[kColorNewTabPageModuleControlBorder] = SelectBasedOnWhiteNtpBackground(
       gfx::kGoogleGrey300, kColorNewTabPageBackground);
   mixer[kColorNewTabPageMostVisitedForeground] = SelectBasedOnDarkInput(
