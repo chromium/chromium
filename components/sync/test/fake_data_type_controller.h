@@ -18,13 +18,13 @@ namespace syncer {
 class FakeDataTypeController : public ModelTypeController {
  public:
   explicit FakeDataTypeController(ModelType type);
-  FakeDataTypeController(ModelType type, bool enable_transport_only_model);
+  FakeDataTypeController(ModelType type, bool enable_transport_mode);
   ~FakeDataTypeController() override;
 
   void SetPreconditionState(PreconditionState state);
 
   // Access to the fake underlying model. |kTransportOnly] only exists if
-  // |enable_transport_only_model| is set upon construction.
+  // |enable_transport_mode| is set upon construction.
   FakeModelTypeControllerDelegate* model(SyncMode sync_mode = SyncMode::kFull);
 
   int activate_call_count() const { return activate_call_count_; }

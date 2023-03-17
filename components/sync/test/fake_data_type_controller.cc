@@ -11,16 +11,16 @@
 namespace syncer {
 
 FakeDataTypeController::FakeDataTypeController(ModelType type)
-    : FakeDataTypeController(type, /*enable_transport_only_model=*/false) {}
+    : FakeDataTypeController(type, /*enable_transport_mode=*/false) {}
 
 FakeDataTypeController::FakeDataTypeController(ModelType type,
-                                               bool enable_transport_only_model)
+                                               bool enable_transport_mode)
     : ModelTypeController(
           type,
           /*delegate_for_full_sync_mode=*/
           std::make_unique<FakeModelTypeControllerDelegate>(type),
           /*delegate_for_transport_mode=*/
-          enable_transport_only_model
+          enable_transport_mode
               ? std::make_unique<FakeModelTypeControllerDelegate>(type)
               : nullptr) {}
 

@@ -26,11 +26,15 @@ struct DataTypeActivationResponse;
 // DataTypeController implementation for Unified Sync and Storage model types.
 class ModelTypeController : public DataTypeController {
  public:
-  // For datatypes that do not run in transport-only mode.
+  // For data types that do not run in transport-only mode.
+  // Note: THIS IS NOT SUPPORTED for new data types. When introducing a new data
+  // type, you must consider how it should work in transport mode.
+  // TODO(crbug.com/1425386): Remove this constructor.
   ModelTypeController(
       ModelType type,
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode);
-  // For datatypes that have support for STORAGE_IN_MEMORY.
+  // For data types that have support for running in transport mode. All new
+  // data types must use this constructor!
   ModelTypeController(
       ModelType type,
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode,

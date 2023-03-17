@@ -242,9 +242,9 @@ class SyncDataTypeManagerImplTest : public testing::Test {
 
   // Adds a fake controller for the given type to |controllers_|.
   // Should be called only before setting up the DTM.
-  void AddController(ModelType model_type) {
-    controllers_[model_type] =
-        std::make_unique<FakeDataTypeController>(model_type);
+  void AddController(ModelType model_type, bool enable_transport_mode = false) {
+    controllers_[model_type] = std::make_unique<FakeDataTypeController>(
+        model_type, enable_transport_mode);
   }
 
   // Gets the fake controller for the given type, which should have
@@ -1415,7 +1415,7 @@ TEST_F(SyncDataTypeManagerImplTest, StopWithDisableSync) {
 
 TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStartingPersistent) {
   AddController(BOOKMARKS);
-  AddController(AUTOFILL_WALLET_DATA);
+  AddController(AUTOFILL_WALLET_DATA, /*enable_transport_mode=*/true);
 
   // Configure as usual.
   SetConfigureStartExpectation();
