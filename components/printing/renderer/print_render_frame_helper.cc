@@ -1371,8 +1371,6 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
 void PrintRenderFrameHelper::PrintWithParams(
     mojom::PrintPagesParamsPtr settings,
     PrintWithParamsCallback callback) {
-  CHECK(PrintMsgPrintParamsIsValid(*settings->params));
-
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint) {
     std::move(callback).Run(mojom::PrintWithParamsResult::NewFailureReason(
@@ -2165,7 +2163,6 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
       return;
     }
 
-    CHECK(PrintMsgPrintParamsIsValid(*print_settings->params));
     print_settings->params->print_scaling_option =
         print_settings->params->prefer_css_page_size
             ? mojom::PrintScalingOption::kSourceSize
@@ -2422,8 +2419,6 @@ bool PrintRenderFrameHelper::InitPrintSettings(bool fit_to_paper_size) {
   settings.params->print_scaling_option =
       fit_to_paper_size ? mojom::PrintScalingOption::kFitToPrintableArea
                         : mojom::PrintScalingOption::kSourceSize;
-
-  CHECK(PrintMsgPrintParamsIsValid(*settings.params));
   SetPrintPagesParams(settings);
   return true;
 }
@@ -2504,7 +2499,6 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
   settings->params->print_scaling_option = GetPrintScalingOption(
       frame, node, source_is_html, *job_settings, *settings->params);
 
-  CHECK(PrintMsgPrintParamsIsValid(*settings->params));
   SetPrintPagesParams(*settings);
   return true;
 }
@@ -3096,6 +3090,7 @@ void PrintRenderFrameHelper::PrintPreviewContext::CalculatePluginAttributes() {
 
 void PrintRenderFrameHelper::SetPrintPagesParams(
     const mojom::PrintPagesParams& settings) {
+  CHECK(PrintMsgPrintParamsIsValid(*settings.params));
   print_pages_params_ = settings.Clone();
 }
 

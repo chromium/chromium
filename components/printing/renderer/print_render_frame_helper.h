@@ -455,6 +455,7 @@ class PrintRenderFrameHelper
   void OnPreviewDisconnect();
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
+  // `settings` must be valid.
   void SetPrintPagesParams(const mojom::PrintPagesParams& settings);
 
   // Quits all runloops waiting for Mojo replies. It's called when
