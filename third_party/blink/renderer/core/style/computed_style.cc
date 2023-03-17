@@ -2472,6 +2472,7 @@ ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style) {
 
 scoped_refptr<const ComputedStyle> ComputedStyleBuilder::CloneStyle() const {
   DCHECK(style_);
+  ResetAccess();
   return base::AdoptRef(new ComputedStyle(*style_));
 }
 

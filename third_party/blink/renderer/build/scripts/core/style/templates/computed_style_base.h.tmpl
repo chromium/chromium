@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_copy, fieldwise_diff, fieldwise_pointer_compare_inherited %}
+{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_copy, fieldwise_diff, fieldwise_pointer_compare_inherited, field_group_access_bit_name %}
 {% from 'templates/fields/group.tmpl' import declare_field_group_class %}
 {{license()}}
 
@@ -262,7 +262,19 @@ class ComputedStyleBuilderBase {
 
   {% endfor %}
 
+  void ResetAccess() const {
+    memset(&access_, 0, sizeof(access_));
+  }
+
  private:
+  // Access flags. These are passed to DataRef::Access to ensure that we have
+  // a private copy of the relevant DataRef before mutation.
+  mutable struct {
+  {% for group in computed_style.all_subgroups|sort(attribute='name') %}
+    bool {{group.member_name}} = false;
+  {% endfor %}
+  } access_;
+
   ComputedStyleBase* style_ = nullptr;
 };
 

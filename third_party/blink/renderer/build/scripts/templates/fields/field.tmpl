@@ -62,9 +62,13 @@ style_->
 {%- endif %}
 {%- endmacro %}
 
+{% macro access_flag(group) -%}
+  access_.{{group.member_name}}
+{%- endmacro %}
+
 {% macro setter_expression_without_prefix(field) %}
 {% for group in field.group.path_without_root() -%}
-{{group.member_name}}.Access()->
+{{group.member_name}}.Access({{access_flag(group)}})->
 {%- endfor -%}
 {{field.name}}
 {%- endmacro %}
@@ -122,10 +126,11 @@ const {{field.type_name}}&
 {% endmacro %}
 
 {% macro group_setter_expression(group) %}
-{% for group in group.path_without_root() -%}
-{{group.member_name}}{{print_if(not loop.last, ".Access()->")}}
+{% for group in group.path_without_root()[:-1] -%}
+{{group.member_name}}.Access({{access_flag(group)}})->
 {%- endfor -%}
-{% endmacro %}
+{{group.member_name}}
+{%- endmacro %}
 
 {% macro declare_storage(field) %}
 {% if field.is_bit_field %}
@@ -180,11 +185,19 @@ const {{field.type_name}}&
 {% endfor %}
 {% endmacro %}
 
+{% macro reset_group_access(group) -%}
+  {{access_flag(group)}} = false;
+  {% for subgroup in group.subgroups -%}
+    {{reset_group_access(subgroup)}}
+  {%- endfor %}
+{%- endmacro %}
+
 {% macro fieldwise_copy(group, fields_to_copy) %}
 {% for subgroup in group.subgroups %}
   {% set group_expression = group_getter_expression(subgroup) %}
   {% if subgroup.all_fields|rejectattr("custom_copy")|reject("in", fields_to_copy)|list|length == 0 -%}
-    style.{{group_setter_expression(subgroup)}} = other.{{group_expression}};
+style.{{group_setter_expression(subgroup)}} = other.{{group_expression}};
+{{reset_group_access(subgroup)}}
   {% elif subgroup.all_fields|rejectattr("custom_copy")|select("in", fields_to_copy)|list|length > 0 -%}
 if (style.{{group_expression}}.Get() != other.{{group_expression}}.Get()) {
 {{fieldwise_copy(subgroup, fields_to_copy)|indent(2, true)}}

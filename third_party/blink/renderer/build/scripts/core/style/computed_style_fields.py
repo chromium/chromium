@@ -51,6 +51,8 @@ class Group(object):
         # Recursively get all the fields in the subgroups as well
         self.all_fields = _flatten_list(subgroup.all_fields
                                         for subgroup in subgroups) + fields
+        self.all_subgroups = _flatten_list(
+            subgroup.all_subgroups for subgroup in subgroups) + subgroups
 
         # Ensure that all fields/subgroups on this group link to it
         for field in fields:
