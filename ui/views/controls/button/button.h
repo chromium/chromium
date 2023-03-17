@@ -343,7 +343,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Button, View)
-VIEW_BUILDER_PROPERTY(std::u16string, AccessibleName)
 VIEW_BUILDER_PROPERTY(Button::PressedCallback, Callback)
 VIEW_BUILDER_PROPERTY(base::TimeDelta, AnimationDuration)
 VIEW_BUILDER_PROPERTY(bool, AnimateOnStateChange)

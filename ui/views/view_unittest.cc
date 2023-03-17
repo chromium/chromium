@@ -57,6 +57,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/paint_info.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -277,7 +278,33 @@ class TestView : public View {
   raw_ptr<const ui::NativeTheme> native_theme_ = nullptr;
 
   // Accessibility events
-  ax::mojom::Event last_a11y_event_;
+  ax::mojom::Event last_a11y_event_ = ax::mojom::Event::kNone;
+};
+
+class A11yTestView : public TestView {
+ public:
+  // Convenience constructors to test `View::AccessibilityInit`
+  A11yTestView(ax::mojom::Role role,
+               const std::u16string& name,
+               const std::u16string& description) {
+    AccessibilityInit(role, name, description);
+  }
+  A11yTestView(ax::mojom::Role role,
+               const std::u16string& role_description,
+               const std::u16string& name,
+               const std::u16string& description) {
+    AccessibilityInit(role, role_description, name, description);
+  }
+  A11yTestView(ax::mojom::Role role,
+               const std::u16string& name,
+               ax::mojom::NameFrom name_from,
+               const std::u16string& description,
+               ax::mojom::DescriptionFrom description_from) {
+    AccessibilityInit(role, name, name_from, description, description_from);
+  }
+
+  A11yTestView() = default;
+  ~A11yTestView() override = default;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -335,13 +362,366 @@ TEST_F(ViewTest, SizeToPreferredSizeInducesLayout) {
   EXPECT_TRUE(example_view.did_layout_);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// OnBoundsChanged
-////////////////////////////////////////////////////////////////////////////////
-
 void TestView::OnAccessibilityEvent(ax::mojom::Event event_type) {
   last_a11y_event_ = event_type;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Accessibility Property Setters
+////////////////////////////////////////////////////////////////////////////////
+
+TEST_F(ViewTest, PauseAccessibilityEvents) {
+  TestView v;
+  EXPECT_EQ(v.pause_accessibility_events_, false);
+
+  // Setting the accessible name when `pause_accessibility_events_` is false
+  // should result in an event being fired.
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  v.SetAccessibleName(u"Name");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+  EXPECT_EQ(v.pause_accessibility_events_, false);
+
+  // Setting the accessible name when `pause_accessibility_events_` is true
+  // should result in no event being fired.
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  v.pause_accessibility_events_ = true;
+  v.SetAccessibleName(u"New Name");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kNone);
+  EXPECT_EQ(v.pause_accessibility_events_, true);
+
+  // A11yTestView views are constructed using `AccessibilityInit`. By default,
+  // `pause_accessibility_events_` is false. It is temporarily set to true and
+  // then reset at the end of initialization.
+  A11yTestView ax_v(ax::mojom::Role::kButton, u"Name", u"Description");
+  EXPECT_EQ(ax_v.last_a11y_event_, ax::mojom::Event::kNone);
+  EXPECT_EQ(ax_v.pause_accessibility_events_, false);
+}
+
+TEST_F(ViewTest, AccessibilityInitRoleNameDescription) {
+  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  A11yTestView v(ax::mojom::Role::kButton, u"Name", u"Description");
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(v.GetAccessibleName(), u"Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Name");
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kAttribute);
+  EXPECT_EQ(v.GetAccessibleDescription(), u"Description");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Description");
+  EXPECT_EQ(static_cast<ax::mojom::DescriptionFrom>(data.GetIntAttribute(
+                ax::mojom::IntAttribute::kDescriptionFrom)),
+            ax::mojom::DescriptionFrom::kAriaDescription);
+
+  // There should not be any accessibility events fired when properties are
+  // set within `AccessibilityInit`. For the above properties, the only event
+  // type is `kTextChanged`.
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 0);
+
+  // Setting the accessible name after initialization should result in an event
+  // being fired.
+  v.SetAccessibleName(u"New Name");
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 1);
+}
+
+TEST_F(ViewTest, AccessibilityInitRoleNameDescriptionDetailed) {
+  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  A11yTestView v(ax::mojom::Role::kButton, u"Name",
+                 ax::mojom::NameFrom::kContents, u"Description",
+                 ax::mojom::DescriptionFrom::kTitle);
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(v.GetAccessibleName(), u"Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Name");
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kContents);
+  EXPECT_EQ(v.GetAccessibleDescription(), u"Description");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Description");
+  EXPECT_EQ(static_cast<ax::mojom::DescriptionFrom>(data.GetIntAttribute(
+                ax::mojom::IntAttribute::kDescriptionFrom)),
+            ax::mojom::DescriptionFrom::kTitle);
+
+  // There should not be any accessibility events fired when properties are
+  // set within `AccessibilityInit`. For the above properties, the only event
+  // type is `kTextChanged`.
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 0);
+
+  // Setting the accessible name after initialization should result in an event
+  // being fired.
+  v.SetAccessibleName(u"New Name");
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 1);
+}
+
+TEST_F(ViewTest, AccessibilityInitRoleRolenameNameDescription) {
+  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  A11yTestView v(ax::mojom::Role::kButton, u"Super Button", u"Name",
+                 u"Description");
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
+      u"Super Button");
+  EXPECT_EQ(v.GetAccessibleName(), u"Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Name");
+  EXPECT_EQ(v.GetAccessibleDescription(), u"Description");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Description");
+
+  // There should not be any accessibility events fired when properties are
+  // set within `AccessibilityInit`. For the above properties, the only event
+  // type is `kTextChanged`.
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 0);
+
+  // Setting the accessible name after initialization should result in an event
+  // being fired.
+  v.SetAccessibleName(u"New Name");
+  EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 1);
+}
+
+TEST_F(ViewTest, SetAccessibleRole) {
+  TestView v;
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kUnknown);
+  EXPECT_EQ(data.role, ax::mojom::Role::kUnknown);
+
+  data = ui::AXNodeData();
+  v.SetAccessibleRole(ax::mojom::Role::kButton);
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+}
+
+TEST_F(ViewTest, SetAccessibleNameToStringWithRoleAlreadySet) {
+  TestView v;
+  v.SetAccessibleRole(ax::mojom::Role::kButton);
+
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+
+  v.SetAccessibleName(u"Name");
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Name");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+}
+
+TEST_F(ViewTest, SetAccessibleNameToLabelWithRoleAlreadySet) {
+  TestView label;
+  label.SetAccessibleName(u"Label's Name");
+
+  TestView v;
+  v.SetAccessibleRole(ax::mojom::Role::kButton);
+
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kNone);
+  EXPECT_FALSE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds));
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+
+  v.SetAccessibleName(&label);
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"Label's Name");
+  EXPECT_TRUE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds));
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kRelatedElement);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Label's Name");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+}
+
+TEST_F(ViewTest, SetAccessibleNameExplicitlyEmpty) {
+  TestView v;
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kNone);
+
+  data = ui::AXNodeData();
+  v.SetAccessibleName(u"", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
+TEST_F(ViewTest, SetAccessibleNameToStringRoleNotInitiallySet) {
+  TestView v;
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+
+  // Setting the name prior to setting the role violates an expectation of
+  // `AXNodeData::SetName`. `View::SetAccessibleName` handles that case by
+  // setting the property but not adding it to `ax_node_data_` until a role
+  // has been set.
+  v.SetAccessibleName(u"Name");
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+
+  // Setting the role to a valid role should add the previously-set name to
+  // ax_node_data_. Note there is currently no role-changed accessibility event.
+  v.SetAccessibleRole(ax::mojom::Role::kButton);
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Name");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kNone);
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+}
+
+TEST_F(ViewTest, SetAccessibleNameToLabelRoleNotInitiallySet) {
+  TestView label;
+  label.SetAccessibleName(u"Label's Name");
+
+  TestView v;
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+
+  // Setting the name prior to setting the role violates an expectation of
+  // `AXNodeData::SetName`. `View::SetAccessibleName` handles that case by
+  // setting the property but not adding it to `ax_node_data_` until a role
+  // has been set.
+  v.SetAccessibleName(&label);
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"Label's Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+
+  // Setting the role to a valid role should add the previously-set name to
+  // ax_node_data_. Note there is currently no role-changed accessibility event.
+  v.SetAccessibleRole(ax::mojom::Role::kButton);
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"Label's Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Label's Name");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kNone);
+}
+
+TEST_F(ViewTest, SetAccessibleDescriptionToString) {
+  TestView v;
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleDescription(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"");
+
+  data = ui::AXNodeData();
+  v.SetAccessibleDescription(u"Description");
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleDescription(), u"Description");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Description");
+}
+
+TEST_F(ViewTest, SetAccessibleDescriptionToLabel) {
+  TestView label;
+  label.SetAccessibleName(u"Label's Name");
+
+  TestView v;
+  v.SetAccessibleRole(ax::mojom::Role::kButton);
+
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleDescription(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"");
+  EXPECT_EQ(static_cast<ax::mojom::DescriptionFrom>(data.GetIntAttribute(
+                ax::mojom::IntAttribute::kDescriptionFrom)),
+            ax::mojom::DescriptionFrom::kNone);
+  EXPECT_FALSE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds));
+
+  data = ui::AXNodeData();
+  v.SetAccessibleDescription(&label);
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleDescription(), u"Label's Name");
+  EXPECT_TRUE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds));
+  EXPECT_EQ(static_cast<ax::mojom::DescriptionFrom>(data.GetIntAttribute(
+                ax::mojom::IntAttribute::kDescriptionFrom)),
+            ax::mojom::DescriptionFrom::kRelatedElement);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"Label's Name");
+}
+
+TEST_F(ViewTest, SetAccessibleDescriptionExplicitlyEmpty) {
+  TestView v;
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleDescription(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"");
+  EXPECT_EQ(static_cast<ax::mojom::DescriptionFrom>(data.GetIntAttribute(
+                ax::mojom::IntAttribute::kDescriptionFrom)),
+            ax::mojom::DescriptionFrom::kNone);
+
+  data = ui::AXNodeData();
+  v.SetAccessibleDescription(
+      u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleDescription(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            u"");
+  EXPECT_EQ(static_cast<ax::mojom::DescriptionFrom>(data.GetIntAttribute(
+                ax::mojom::IntAttribute::kDescriptionFrom)),
+            ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// OnBoundsChanged
+////////////////////////////////////////////////////////////////////////////////
 
 TEST_F(ViewTest, OnBoundsChangedFiresA11yEvent) {
   TestView v;
