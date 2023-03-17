@@ -224,6 +224,7 @@ class DriveFsPinManagerTest : public testing::Test {
         continue;
       }
       ItemEventPtr event = ItemEvent::New();
+      event->is_download = true;
       event->stable_id = item.stable_id;
       event->path = item.path.value();
       event->state = state;
@@ -1251,6 +1252,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   // An event with an unknown type is ignored.
   {
     ItemEvent event;
+    event.is_download = true;
     event.stable_id = static_cast<int64_t>(id2);
     event.path = path2.value();
     event.state = ItemEvent::State(-1);
@@ -1274,6 +1276,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   // Mark file 1 as queued.
   {
     ItemEvent event;
+    event.is_download = true;
     event.stable_id = static_cast<int64_t>(id1);
     event.path = path1.value();
     event.state = ItemEvent::State::kQueued;
@@ -1308,6 +1311,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   // Mark file 1 as in progress.
   {
     ItemEvent event;
+    event.is_download = true;
     event.stable_id = static_cast<int64_t>(id1);
     event.path = path1.value();
     event.state = ItemEvent::State::kInProgress;
@@ -1344,6 +1348,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   // Mark file 1 as completed.
   {
     ItemEvent event;
+    event.is_download = true;
     event.stable_id = static_cast<int64_t>(id1);
     event.path = path1.value();
     event.state = ItemEvent::State::kCompleted;
@@ -1373,6 +1378,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   // Mark file 2 as failed.
   {
     ItemEvent event;
+    event.is_download = true;
     event.stable_id = static_cast<int64_t>(id2);
     event.path = path2.value();
     event.state = ItemEvent::State::kFailed;

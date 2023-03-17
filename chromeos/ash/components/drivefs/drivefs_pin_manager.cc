@@ -216,7 +216,8 @@ ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent> q) {
              << " " << Quote(e.path) << ", bytes_transferred: "
              << HumanReadableSize(e.bytes_transferred)
              << ", bytes_to_transfer: "
-             << HumanReadableSize(e.bytes_to_transfer) << "}";
+             << HumanReadableSize(e.bytes_to_transfer)
+             << ", is_download: " << e.is_download << "}";
 }
 
 ostream& operator<<(ostream& out, Quoter<mojom::FileChange> q) {
@@ -888,7 +889,7 @@ void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
       progress_.useful_events++;
     } else {
       progress_.duplicated_events++;
-      VLOG(3) << "Duplicated event: " << Quote(*event);
+      VLOG(3) << "Discarded " << Quote(*event);
     }
   }
 
@@ -898,6 +899,11 @@ void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
 
 bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!event.is_download) {
+    // We're only interested in download events.
+    return false;
+  }
 
   const Id id = Id(event.stable_id);
   const Path path = Path(event.path);
