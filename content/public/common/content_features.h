@@ -46,7 +46,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kBrokerFileOperationsOnDiskCacheInNetworkService);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBrowserVerifiedUserActivationKeyboard);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBrowserVerifiedUserActivationMouse);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kBrowserSideDownloadPolicySandbox);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCanvas2DImageChromium);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kClearCrossSiteCrossBrowsingContextGroupWindowName);

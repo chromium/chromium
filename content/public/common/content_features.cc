@@ -207,14 +207,6 @@ BASE_FEATURE(kBrowserVerifiedUserActivationMouse,
              "BrowserVerifiedUserActivationMouse",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Compute the NavigationDownloadPolicy bit about sandbox flags from the browser
-// process side. This is a fix for https://crbug.com/1357366. The feature flag
-// is used as a temporary kill switch in case it breaks something important on
-// stable. To be removed by M111.
-BASE_FEATURE(kBrowserSideDownloadPolicySandbox,
-             "BrowserSideDownloadPolicySandbox",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If Canvas2D Image Chromium is allowed, this feature controls whether it is
 // enabled.
 BASE_FEATURE(kCanvas2DImageChromium,

@@ -9006,11 +9006,9 @@ void NavigationRequest::ComputeDownloadPolicy() {
   }
 
   // [Sandbox]
-  if (base::FeatureList::IsEnabled(
-          features::kBrowserSideDownloadPolicySandbox) &&
-      (commit_params_->frame_policy.sandbox_flags &
+  if ((commit_params_->frame_policy.sandbox_flags &
        network::mojom::WebSandboxFlags::kDownloads) ==
-          network::mojom::WebSandboxFlags::kDownloads) {
+      network::mojom::WebSandboxFlags::kDownloads) {
     download_policy().SetDisallowed(blink::NavigationDownloadType::kSandbox);
   }
 

@@ -681,13 +681,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     SimulateNetworkGoingOnline(popup);
     ForceScheduledAutoReloadNow(popup);
     ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
-    if (base::FeatureList::IsEnabled(
-            features::kBrowserSideDownloadPolicySandbox)) {
-      EXPECT_FALSE(handle_observer.is_download());
-    } else {
-      // TODO(https://crbug.com/1357366): This must be false instead.
-      EXPECT_TRUE(handle_observer.is_download());
-    }
+    EXPECT_FALSE(handle_observer.is_download());
   }
 }
 
