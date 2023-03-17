@@ -4,8 +4,10 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/test/mock_media_router.h"
@@ -46,8 +48,10 @@ TEST_F(ChromeMediaRouterFactoryTest, CreateForIncognitoProfile) {
       MediaRouterFactory::GetApiForBrowserContext(incognito_profile);
   ASSERT_TRUE(router);
 
-  // A Profile and its incognito Profile share the same MediaRouter instance.
-  ASSERT_EQ(router, MediaRouterFactory::GetApiForBrowserContext(profile()));
+  if (!base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
+    // A Profile and its incognito Profile share the same MediaRouter instance.
+    ASSERT_EQ(router, MediaRouterFactory::GetApiForBrowserContext(profile()));
+  }
 }
 
 }  // namespace media_router

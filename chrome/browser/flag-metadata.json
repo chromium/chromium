@@ -4782,6 +4782,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "media-router-otr-instance",
+    "owners": [ "mfoltz" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "memlog",
     "owners": [ "erikchen", "ssid", "etienneb", "alph" ],
     // Memlog is Chrome's heap profiler. It is used for both automated and

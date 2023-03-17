@@ -24,6 +24,10 @@ bool MediaRouterEnabled(content::BrowserContext* context);
 // process.
 void ClearMediaRouterStoredPrefsForTesting();
 
+// If enabled, separate Media Router instances will be created for normal and
+// off-the-record profiles.
+BASE_DECLARE_FEATURE(kMediaRouterOTRInstance);
+
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, the sink discovery on Caf MRP is run asynchronously when the main
 // thread is idle.

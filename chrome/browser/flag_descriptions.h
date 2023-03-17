@@ -2448,6 +2448,9 @@ extern const char kAppManagementAppDetailsDescription[];
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];
 
+extern const char kMediaRouterOtrInstanceName[];
+extern const char kMediaRouterOtrInstanceDescription[];
+
 extern const char kBatterySaverModeAvailableName[];
 extern const char kBatterySaverModeAvailableDescription[];
 

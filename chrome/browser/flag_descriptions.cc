@@ -4272,6 +4272,13 @@ const char kAllowAllSitesToInitiateMirroringDescription[] =
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
 
+const char kMediaRouterOtrInstanceName[] =
+    "Create a separate Media Router instance for off-the-record "
+    "profiles.";
+const char kMediaRouterOtrInstanceDescription[] =
+    "When enabled, a separate Media Router instance will be created for "
+    "off-the-record (\"incognito\") profiles.";
+
 extern const char kBatterySaverModeAvailableName[] =
     "Enable the battery saver mode feature in the settings";
 extern const char kBatterySaverModeAvailableDescription[] =

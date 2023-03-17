@@ -61,7 +61,9 @@ ChromeMediaRouterFactory::~ChromeMediaRouterFactory() = default;
 
 content::BrowserContext* ChromeMediaRouterFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
+  return base::FeatureList::IsEnabled(kMediaRouterOTRInstance)
+             ? context
+             : chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 KeyedService* ChromeMediaRouterFactory::BuildServiceInstanceFor(
@@ -75,7 +77,7 @@ KeyedService* ChromeMediaRouterFactory::BuildServiceInstanceFor(
   media_router = new MediaRouterAndroid();
 #else
   media_router = new MediaRouterDesktop(context);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
   media_router->Initialize();
   return media_router;
 }

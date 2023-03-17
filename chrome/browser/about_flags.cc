@@ -4492,6 +4492,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowAllSitesToInitiateMirroringDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(media_router::kAllowAllSitesToInitiateMirroring)},
+    {"media-router-otr-instance",
+     flag_descriptions::kMediaRouterOtrInstanceName,
+     flag_descriptions::kMediaRouterOtrInstanceDescription, kOsAll,
+     FEATURE_VALUE_TYPE(media_router::kMediaRouterOTRInstance)},
+
     {"enable-preinstalled-web-app-duplication-fixer",
      flag_descriptions::kEnablePreinstalledWebAppDuplicationFixerName,
      flag_descriptions::kEnablePreinstalledWebAppDuplicationFixerDescription,
