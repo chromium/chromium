@@ -3431,7 +3431,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3993887353483242788">Sincronize o <ph name="DEVICE_TYPE" /> para que suas preferências estejam em qualquer dispositivo em que você fizer login na Conta do Google. As preferências incluem apps, configurações, senhas de Wi-Fi, idiomas, planos de fundo, atalhos do teclado e muito mais.</translation>
 <translation id="3994318741694670028">Infelizmente, seu computador está configurado com um ID de hardware incorreto. Isso impede que o ChromeOS Flex seja atualizado com as correções de segurança mais recentes e, por isso, ele <ph name="BEGIN_BOLD" />pode ficar vulnerável a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloqueie seu smartphone e aproxime-o para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3994708120330953242">Algumas das suas senhas foram encontradas em uma violação de dados. Para proteger suas contas, mude as senhas imediatamente.</translation>
+<translation id="3994708120330953242">Algumas das suas senhas foram encontradas em um vazamento de dados. Para proteger suas contas, mude as senhas imediatamente.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta traseira da direita)</translation>
 <translation id="3995963973192100066">Iniciar animação</translation>

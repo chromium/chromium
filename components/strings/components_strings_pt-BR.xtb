@@ -2694,7 +2694,7 @@ Mais detalhes:
 <translation id="7637586430889951925">{COUNT,plural, =0{Nenhuma}=1{1 senha na sua conta (para <ph name="DOMAIN_LIST" />)}one{# senha na sua conta (para <ph name="DOMAIN_LIST" />)}other{# senhas na sua conta (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Portas seriais</translation>
 <translation id="7639968568612851608">Cinza-escuro</translation>
-<translation id="7646681339175747202">A senha que você usou foi encontrada em uma violação de dados. O Gerenciador de senhas do Google recomenda que você a mude imediatamente.</translation>
+<translation id="7646681339175747202">A senha que você usou foi encontrada em um vazamento de dados. O Gerenciador de senhas do Google recomenda que você mude essa senha imediatamente.</translation>
 <translation id="7647206758853451655">Qualidade de impressão</translation>
 <translation id="7648992873808071793">Armazenar arquivos neste dispositivo</translation>
 <translation id="7653957176542370971">A página do gerenciador de pagamento está fechada</translation>
