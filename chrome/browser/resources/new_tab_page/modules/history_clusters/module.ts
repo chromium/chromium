@@ -128,8 +128,9 @@ export class HistoryClustersModuleElement extends I18nMixin
   }
 
   private onShowAllClick_() {
+    assert(this.cluster.label.length >= 2);
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
-        this.cluster.label);
+        this.cluster.label.substring(1, this.cluster.label.length - 1));
   }
 }
 

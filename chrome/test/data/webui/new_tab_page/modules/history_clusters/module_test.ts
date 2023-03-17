@@ -241,6 +241,24 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     assertTrue(!!$$(moduleElement, 'ntp-info-dialog'));
   });
 
+  test('Backend is notified when Show all button is triggered', async () => {
+    const sampleClusterUnquotedLabel = 'Sample Journey';
+    const sampleClusterLabel = `"${sampleClusterUnquotedLabel}"`;
+    const moduleElement = await initializeModule(createSampleCluster(
+        undefined, MIN_RELATED_SEARCHES, {label: sampleClusterLabel}));
+    assertTrue(!!moduleElement);
+
+    const headerElement = $$(moduleElement, 'ntp-module-header');
+    assertTrue(!!headerElement);
+    const showAllButton =
+        headerElement.querySelector('#showAllButton') as HTMLElement;
+    assertTrue(!!showAllButton);
+
+    showAllButton.click();
+    const query = await handler.whenCalled('showJourneysSidePanel');
+    assertEquals(sampleClusterUnquotedLabel, query);
+  });
+
   test('Backend is notified when module is dismissed', async () => {
     // Arrange.
     const sampleClusterLabel = '"Sample Journey"';
