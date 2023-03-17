@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKWallet : public KeyStorageLinux {
   // Create Chrome's folder in the wallet, if it doesn't exist.
   bool InitFolder();
 
+  // Generates a new 16-byte key, stores it in KWallet and returns the key
+  // value.
+  absl::optional<std::string> GenerateAndStorePassword();
+
   const base::nix::DesktopEnvironment desktop_env_;
   int32_t handle_ = kInvalidHandle;
   std::string wallet_name_;

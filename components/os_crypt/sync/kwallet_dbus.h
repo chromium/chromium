@@ -17,13 +17,23 @@
 namespace dbus {
 class Bus;
 class ObjectProxy;
-}
+}  // namespace dbus
 
 // Contains wrappers for dbus invocations related to KWallet.
 class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
  public:
   // Error code for dbus calls to kwallet.
   enum Error { SUCCESS = 0, CANNOT_CONTACT, CANNOT_READ };
+
+  // The type of a KWallet entry. See available types in
+  // https://github.com/KDE/kwallet/blob/master/src/api/KWallet/kwallet.h.
+  enum class Type {
+    kUnknown = 0,
+    kPassword,
+    kStream,
+    kMap,
+    kMaxValue = kMap,
+  };
 
   explicit KWalletDBus(base::nix::DesktopEnvironment desktop_env);
 
@@ -58,17 +68,24 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
                                    const std::string& app_name,
                                    int* handle_ptr);
 
-  // Determine if the current folder has they entry key.
+  // Determine if the current folder has the entry key.
   [[nodiscard]] virtual Error HasEntry(int wallet_handle,
                                        const std::string& folder_name,
-                                       const std::string& signon_realm,
+                                       const std::string& key,
                                        const std::string& app_name,
                                        bool* has_entry_ptr);
+
+  // Get the type of the value of an entry.
+  [[nodiscard]] virtual Error EntryType(int wallet_handle,
+                                        const std::string& folder_name,
+                                        const std::string& key,
+                                        const std::string& app_name,
+                                        Type* entry_type_ptr);
 
   // Read the entry key from the current folder.
   [[nodiscard]] virtual Error ReadEntry(int wallet_handle,
                                         const std::string& folder_name,
-                                        const std::string& signon_realm,
+                                        const std::string& key,
                                         const std::string& app_name,
                                         std::vector<uint8_t>* bytes_ptr);
 
@@ -83,7 +100,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
   // |*return_code_ptr| is 0 on success.
   [[nodiscard]] virtual Error RemoveEntry(int wallet_handle,
                                           const std::string& folder_name,
-                                          const std::string& signon_realm,
+                                          const std::string& key,
                                           const std::string& app_name,
                                           int* return_code_ptr);
 
@@ -91,7 +108,7 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
   // |*return_code_ptr| is 0 on success.
   [[nodiscard]] virtual Error WriteEntry(int wallet_handle,
                                          const std::string& folder_name,
-                                         const std::string& signon_realm,
+                                         const std::string& key,
                                          const std::string& app_name,
                                          const uint8_t* data,
                                          size_t length,

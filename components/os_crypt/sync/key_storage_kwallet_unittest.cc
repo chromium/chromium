@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "build/branding_buildflags.h"
+#include "components/os_crypt/sync/kwallet_dbus.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -39,6 +40,11 @@ const char kExpectedFolderName[] = "Chromium Keys";
 const char kExpectedEntryName[] = "Chromium Safe Storage";
 #endif
 
+const char kAppName[] = "test-app";
+
+// Some KWallet operations use return codes. Success is 0.
+constexpr int kSuccessReturnCode = 0;
+
 // Environment-specific behavior is handled and tested with KWalletDBus, not
 // here, but we still need a value to instantiate.
 const base::nix::DesktopEnvironment kDesktopEnv =
@@ -62,6 +68,27 @@ class MockKWalletDBus : public KWalletDBus {
 
   MOCK_METHOD3(Open,
                KWalletDBus::Error(const std::string&,
+                                  const std::string&,
+                                  int*));
+
+  MOCK_METHOD5(HasEntry,
+               KWalletDBus::Error(int,
+                                  const std::string&,
+                                  const std::string&,
+                                  const std::string&,
+                                  bool*));
+
+  MOCK_METHOD5(EntryType,
+               KWalletDBus::Error(int,
+                                  const std::string&,
+                                  const std::string&,
+                                  const std::string&,
+                                  Type*));
+
+  MOCK_METHOD5(RemoveEntry,
+               KWalletDBus::Error(int,
+                                  const std::string&,
+                                  const std::string&,
                                   const std::string&,
                                   int*));
 
@@ -96,7 +123,7 @@ class MockKWalletDBus : public KWalletDBus {
 
 class KeyStorageKWalletTest : public testing::Test {
  public:
-  KeyStorageKWalletTest() : key_storage_kwallet_(kDesktopEnv, "test-app") {}
+  KeyStorageKWalletTest() : key_storage_kwallet_(kDesktopEnv, kAppName) {}
 
   KeyStorageKWalletTest(const KeyStorageKWalletTest&) = delete;
   KeyStorageKWalletTest& operator=(const KeyStorageKWalletTest&) = delete;
@@ -104,14 +131,14 @@ class KeyStorageKWalletTest : public testing::Test {
   void SetUp() override {
     kwallet_dbus_mock_ = new StrictMock<MockKWalletDBus>();
 
-    // Calls from |key_storage_kwallet_|'s destructor
-    EXPECT_CALL(*kwallet_dbus_mock_, Close(_, false, _, _))
+    // Calls from |key_storage_kwallet_|'s destructor.
+    EXPECT_CALL(*kwallet_dbus_mock_, Close(_, false, kAppName, _))
         .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
     EXPECT_CALL(*kwallet_dbus_mock_->GetSessionBus(), ShutdownAndBlock())
         .Times(1);
   }
 
-  void SuccessfulInit() {
+  void ExpectCallWhenSuccessfulInit() {
     EXPECT_CALL(*kwallet_dbus_mock_, IsEnabled(_))
         .WillOnce(DoAll(SetArgPointee<0>(true), Return(SUCCESS)));
     EXPECT_CALL(*kwallet_dbus_mock_, NetworkWallet(_))
@@ -122,6 +149,35 @@ class KeyStorageKWalletTest : public testing::Test {
         std::unique_ptr<MockKWalletDBus>(kwallet_dbus_mock_)));
   }
 
+  void ExpectCallWhenSuccessfulOpen() {
+    EXPECT_CALL(*kwallet_dbus_mock_, Open("mollet", kAppName, _))
+        .WillOnce(DoAll(SetArgPointee<2>(123), Return(SUCCESS)));
+  }
+
+  void ExpectCallWhenFolderExists() {
+    EXPECT_CALL(*kwallet_dbus_mock_,
+                HasFolder(123, kExpectedFolderName, kAppName, _))
+        .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
+  }
+
+  void ExpectCallWhenKeyGeneration(std::string* generated_password) {
+    EXPECT_CALL(*kwallet_dbus_mock_,
+                WritePassword(123, kExpectedFolderName, kExpectedEntryName, _,
+                              kAppName, _))
+        .WillOnce(DoAll(SaveArg<3>(generated_password), SetArgPointee<5>(true),
+                        Return(SUCCESS)));
+  }
+
+  void ExpectCallWhenKeyExists() {
+    EXPECT_CALL(*kwallet_dbus_mock_, HasEntry(123, kExpectedFolderName,
+                                              kExpectedEntryName, kAppName, _))
+        .WillOnce(DoAll(SetArgPointee<4>(true), Return(SUCCESS)));
+    EXPECT_CALL(*kwallet_dbus_mock_, EntryType(123, kExpectedFolderName,
+                                               kExpectedEntryName, kAppName, _))
+        .WillOnce(DoAll(SetArgPointee<4>(KWalletDBus::Type::kPassword),
+                        Return(SUCCESS)));
+  }
+
  protected:
   raw_ptr<StrictMock<MockKWalletDBus>> kwallet_dbus_mock_;
   KeyStorageKWallet key_storage_kwallet_;
@@ -129,26 +185,67 @@ class KeyStorageKWalletTest : public testing::Test {
 };
 
 TEST_F(KeyStorageKWalletTest, InitializeFolder) {
-  SuccessfulInit();
-  EXPECT_CALL(*kwallet_dbus_mock_, Open(_, _, _))
-      .WillOnce(DoAll(SetArgPointee<2>(123), Return(SUCCESS)));
+  ExpectCallWhenSuccessfulInit();
+  ExpectCallWhenSuccessfulOpen();
+  // OSCrypt checks whether the folder exists, then creates it.
   EXPECT_CALL(*kwallet_dbus_mock_, HasFolder(123, kExpectedFolderName, _, _))
       .WillOnce(DoAll(SetArgPointee<3>(false), Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_, CreateFolder(123, kExpectedFolderName, _, _))
       .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
+  // OSCrypt checks whether the entry exists, then creates it.
   EXPECT_CALL(*kwallet_dbus_mock_,
-              ReadPassword(123, kExpectedFolderName, kExpectedEntryName, _, _))
-      .WillOnce(DoAll(SetArgPointee<4>("butter"), Return(SUCCESS)));
+              HasEntry(123, kExpectedFolderName, kExpectedEntryName, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(false), Return(SUCCESS)));
+  std::string generated_password;
+  ExpectCallWhenKeyGeneration(&generated_password);
 
-  EXPECT_EQ("butter", key_storage_kwallet_.GetKey());
+  EXPECT_EQ(generated_password, key_storage_kwallet_.GetKey());
+}
+
+// Chrome's folder in KWallet exists, but it doesn't contain the key. A new key
+// will be generated.
+TEST_F(KeyStorageKWalletTest, EmptyFolder) {
+  ExpectCallWhenSuccessfulInit();
+  ExpectCallWhenSuccessfulOpen();
+  ExpectCallWhenFolderExists();
+  // There is no key.
+  EXPECT_CALL(*kwallet_dbus_mock_,
+              HasEntry(123, kExpectedFolderName, kExpectedEntryName, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(false), Return(SUCCESS)));
+  std::string generated_password;
+  ExpectCallWhenKeyGeneration(&generated_password);
+
+  EXPECT_EQ(generated_password, key_storage_kwallet_.GetKey());
+}
+
+// Chrome's folder in KWallet exists, but it contains a key of the wrong type.
+// It will be cleared and a new key will be created.
+TEST_F(KeyStorageKWalletTest, WrongEntryType) {
+  ExpectCallWhenSuccessfulInit();
+  ExpectCallWhenSuccessfulOpen();
+  ExpectCallWhenFolderExists();
+  // There is a key, but it's the wrong type.
+  EXPECT_CALL(*kwallet_dbus_mock_,
+              HasEntry(123, kExpectedFolderName, kExpectedEntryName, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(true), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, EntryType(123, kExpectedFolderName,
+                                             kExpectedEntryName, kAppName, _))
+      .WillOnce(
+          DoAll(SetArgPointee<4>(KWalletDBus::Type::kMap), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, RemoveEntry(123, kExpectedFolderName,
+                                               kExpectedEntryName, kAppName, _))
+      .WillOnce(DoAll(SetArgPointee<4>(kSuccessReturnCode), Return(SUCCESS)));
+  std::string generated_password;
+  ExpectCallWhenKeyGeneration(&generated_password);
+
+  EXPECT_EQ(generated_password, key_storage_kwallet_.GetKey());
 }
 
 TEST_F(KeyStorageKWalletTest, ExistingPassword) {
-  SuccessfulInit();
-  EXPECT_CALL(*kwallet_dbus_mock_, Open(_, _, _))
-      .WillOnce(DoAll(SetArgPointee<2>(123), Return(SUCCESS)));
-  EXPECT_CALL(*kwallet_dbus_mock_, HasFolder(123, kExpectedFolderName, _, _))
-      .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
+  ExpectCallWhenSuccessfulInit();
+  ExpectCallWhenSuccessfulOpen();
+  ExpectCallWhenFolderExists();
+  ExpectCallWhenKeyExists();
   EXPECT_CALL(*kwallet_dbus_mock_,
               ReadPassword(123, kExpectedFolderName, kExpectedEntryName, _, _))
       .WillOnce(DoAll(SetArgPointee<4>("butter"), Return(SUCCESS)));
@@ -157,19 +254,30 @@ TEST_F(KeyStorageKWalletTest, ExistingPassword) {
 }
 
 TEST_F(KeyStorageKWalletTest, GenerateNewPassword) {
-  SuccessfulInit();
-  std::string generated_password;
-  EXPECT_CALL(*kwallet_dbus_mock_, Open(_, _, _))
-      .WillOnce(DoAll(SetArgPointee<2>(123), Return(SUCCESS)));
-  EXPECT_CALL(*kwallet_dbus_mock_, HasFolder(123, kExpectedFolderName, _, _))
-      .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
+  ExpectCallWhenSuccessfulInit();
+  ExpectCallWhenSuccessfulOpen();
+  ExpectCallWhenFolderExists();
+  ExpectCallWhenKeyExists();
   EXPECT_CALL(*kwallet_dbus_mock_,
               ReadPassword(123, kExpectedFolderName, kExpectedEntryName, _, _))
       .WillOnce(DoAll(SetArgPointee<4>(absl::nullopt), Return(SUCCESS)));
-  EXPECT_CALL(*kwallet_dbus_mock_, WritePassword(123, kExpectedFolderName,
-                                                 kExpectedEntryName, _, _, _))
-      .WillOnce(DoAll(SaveArg<3>(&generated_password), SetArgPointee<5>(true),
-                      Return(SUCCESS)));
+  std::string generated_password;
+  ExpectCallWhenKeyGeneration(&generated_password);
+
+  EXPECT_EQ(generated_password, key_storage_kwallet_.GetKey());
+}
+
+// If an entry exists in KWallet but it's empty, generate a new key.
+TEST_F(KeyStorageKWalletTest, GenerateNewPasswordWhenEmpty) {
+  ExpectCallWhenSuccessfulInit();
+  ExpectCallWhenSuccessfulOpen();
+  ExpectCallWhenFolderExists();
+  ExpectCallWhenKeyExists();
+  EXPECT_CALL(*kwallet_dbus_mock_,
+              ReadPassword(123, kExpectedFolderName, kExpectedEntryName, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(""), Return(SUCCESS)));
+  std::string generated_password;
+  ExpectCallWhenKeyGeneration(&generated_password);
 
   EXPECT_EQ(generated_password, key_storage_kwallet_.GetKey());
 }
@@ -226,12 +334,12 @@ TEST_F(KeyStorageKWalletTest, InitTryTwiceAndSuccess) {
 }
 
 // Tests for a dbus connection that fails after initialization.
-// Any error is expected to return an empty password.
+// Any error is expected to return a `nullopt`.
 class KeyStorageKWalletFailuresTest
     : public testing::TestWithParam<KWalletDBus::Error> {
  public:
   KeyStorageKWalletFailuresTest()
-      : key_storage_kwallet_(kDesktopEnv, "test-app") {}
+      : key_storage_kwallet_(kDesktopEnv, kAppName) {}
 
   KeyStorageKWalletFailuresTest(const KeyStorageKWalletFailuresTest&) = delete;
   KeyStorageKWalletFailuresTest& operator=(
@@ -294,11 +402,40 @@ TEST_P(KeyStorageKWalletFailuresTest, PostInitFailureCreateFolder) {
   EXPECT_FALSE(key_storage_kwallet_.GetKey().has_value());
 }
 
+TEST_P(KeyStorageKWalletFailuresTest, PostInitFailureHasEntry) {
+  EXPECT_CALL(*kwallet_dbus_mock_, Open(_, _, _))
+      .WillOnce(DoAll(SetArgPointee<2>(123), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, HasFolder(123, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, HasEntry(123, _, _, _, _))
+      .WillOnce(Return(GetParam()));
+
+  EXPECT_FALSE(key_storage_kwallet_.GetKey().has_value());
+}
+
+TEST_P(KeyStorageKWalletFailuresTest, PostInitFailureEntryType) {
+  EXPECT_CALL(*kwallet_dbus_mock_, Open(_, _, _))
+      .WillOnce(DoAll(SetArgPointee<2>(123), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, HasFolder(123, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, HasEntry(123, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(true), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, EntryType(123, _, _, _, _))
+      .WillOnce(Return(GetParam()));
+
+  EXPECT_FALSE(key_storage_kwallet_.GetKey().has_value());
+}
+
 TEST_P(KeyStorageKWalletFailuresTest, PostInitFailureReadPassword) {
   EXPECT_CALL(*kwallet_dbus_mock_, Open(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(123), Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_, HasFolder(123, _, _, _))
       .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, HasEntry(123, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(true), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, EntryType(123, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(KWalletDBus::Type::kPassword),
+                      Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_, ReadPassword(123, _, _, _, _))
       .WillOnce(Return(GetParam()));
 
@@ -310,6 +447,11 @@ TEST_P(KeyStorageKWalletFailuresTest, PostInitFailureWritePassword) {
       .WillOnce(DoAll(SetArgPointee<2>(123), Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_, HasFolder(123, _, _, _))
       .WillOnce(DoAll(SetArgPointee<3>(true), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, HasEntry(123, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(true), Return(SUCCESS)));
+  EXPECT_CALL(*kwallet_dbus_mock_, EntryType(123, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(KWalletDBus::Type::kPassword),
+                      Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_, ReadPassword(123, _, _, _, _))
       .WillOnce(DoAll(SetArgPointee<4>(absl::nullopt), Return(SUCCESS)));
   EXPECT_CALL(*kwallet_dbus_mock_, WritePassword(123, _, _, _, _, _))

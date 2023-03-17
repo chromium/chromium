@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "components/os_crypt/sync/kwallet_dbus.h"
 #include "dbus/bus.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 KeyStorageKWallet::KeyStorageKWallet(base::nix::DesktopEnvironment desktop_env,
                                      std::string app_name)
@@ -45,8 +47,9 @@ bool KeyStorageKWallet::InitWithKWalletDBus(
 
   InitResult result = InitWallet();
   // If KWallet might not have started, attempt to start it and retry.
-  if (result == InitResult::TEMPORARY_FAIL && kwallet_dbus_->StartKWalletd())
+  if (result == InitResult::TEMPORARY_FAIL && kwallet_dbus_->StartKWalletd()) {
     result = InitWallet();
+  }
 
   return result == InitResult::SUCCESS;
 }
@@ -63,8 +66,9 @@ KeyStorageKWallet::InitResult KeyStorageKWallet::InitWallet() {
     case KWalletDBus::Error::SUCCESS:
       break;
   }
-  if (!enabled)
+  if (!enabled) {
     return InitResult::PERMANENT_FAIL;
+  }
 
   // Get the wallet name.
   error = kwallet_dbus_->NetworkWallet(&wallet_name_);
@@ -85,32 +89,52 @@ absl::optional<std::string> KeyStorageKWallet::GetKeyImpl() {
   // Get handle
   KWalletDBus::Error error =
       kwallet_dbus_->Open(wallet_name_, app_name_, &handle_);
-  if (error || handle_ == kInvalidHandle)
+  if (error || handle_ == kInvalidHandle) {
     return absl::nullopt;
+  }
 
   // Create folder
-  if (!InitFolder())
+  if (!InitFolder()) {
     return absl::nullopt;
+  }
 
-  // Read password
+  // Check if a an entry of the correct type exists.
+  bool has_entry = false;
+  if (kwallet_dbus_->HasEntry(handle_, KeyStorageLinux::kFolderName,
+                              KeyStorageLinux::kKey, app_name_,
+                              &has_entry) != KWalletDBus::SUCCESS) {
+    return absl::nullopt;
+  }
+
+  if (!has_entry) {
+    return GenerateAndStorePassword();
+  }
+
+  KWalletDBus::Type entry_type = KWalletDBus::Type::kUnknown;
+  if (kwallet_dbus_->EntryType(handle_, KeyStorageLinux::kFolderName,
+                               KeyStorageLinux::kKey, app_name_,
+                               &entry_type) != KWalletDBus::SUCCESS) {
+    return absl::nullopt;
+  }
+
+  if (entry_type != KWalletDBus::Type::kPassword) {
+    int ret = 0;
+    base::IgnoreResult(
+        kwallet_dbus_->RemoveEntry(handle_, KeyStorageLinux::kFolderName,
+                                   KeyStorageLinux::kKey, app_name_, &ret));
+    return GenerateAndStorePassword();
+  }
+
+  // Get the existing password.
   absl::optional<std::string> password;
-  error =
-      kwallet_dbus_->ReadPassword(handle_, KeyStorageLinux::kFolderName,
-                                  KeyStorageLinux::kKey, app_name_, &password);
-  if (error)
+  if (kwallet_dbus_->ReadPassword(handle_, KeyStorageLinux::kFolderName,
+                                  KeyStorageLinux::kKey, app_name_,
+                                  &password) != KWalletDBus::SUCCESS) {
     return absl::nullopt;
+  }
 
-  // If there is no entry, generate and write a new password.
-  if (!password.has_value()) {
-    std::string password_;
-    base::Base64Encode(base::RandBytesAsString(16), &password_);
-    bool success;
-    error = kwallet_dbus_->WritePassword(handle_, KeyStorageLinux::kFolderName,
-                                         KeyStorageLinux::kKey, password_,
-                                         app_name_, &success);
-    if (error || !success)
-      return absl::nullopt;
-    password = std::move(password_);
+  if (!password.has_value() || password->empty()) {
+    return GenerateAndStorePassword();
   }
 
   return password;
@@ -120,16 +144,31 @@ bool KeyStorageKWallet::InitFolder() {
   bool has_folder = false;
   KWalletDBus::Error error = kwallet_dbus_->HasFolder(
       handle_, KeyStorageLinux::kFolderName, app_name_, &has_folder);
-  if (error)
+  if (error) {
     return false;
+  }
 
   if (!has_folder) {
     bool success = false;
     error = kwallet_dbus_->CreateFolder(handle_, KeyStorageLinux::kFolderName,
                                         app_name_, &success);
-    if (error || !success)
+    if (error || !success) {
       return false;
+    }
   }
 
   return true;
+}
+
+absl::optional<std::string> KeyStorageKWallet::GenerateAndStorePassword() {
+  std::string password;
+  base::Base64Encode(base::RandBytesAsString(16), &password);
+  bool success;
+  KWalletDBus::Error error = kwallet_dbus_->WritePassword(
+      handle_, KeyStorageLinux::kFolderName, KeyStorageLinux::kKey, password,
+      app_name_, &success);
+  if (error || !success) {
+    return absl::nullopt;
+  }
+  return password;
 }

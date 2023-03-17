@@ -523,6 +523,40 @@ TEST_P(KWalletDBusTest, HasEntryErrorContact) {
             kwallet_dbus_.HasEntry(123, "folder", "realm", "app", &has_entry));
 }
 
+TEST_P(KWalletDBusTest, EntryType) {
+  EXPECT_CALL(*mock_kwallet_proxy_.get(),
+              CallMethodAndBlock(AllOf(Calls(kKWalletInterface, "entryType"),
+                                       ArgumentsAreIntStringStringString(
+                                           123, "folder", "key", "app")),
+                                 _))
+      .WillOnce(Return(ByMove(RespondInt32(1))));
+
+  KWalletDBus::Type type = KWalletDBus::Type::kUnknown;
+  EXPECT_EQ(KWalletDBus::Error::SUCCESS,
+            kwallet_dbus_.EntryType(123, "folder", "key", "app", &type));
+  EXPECT_EQ(type, KWalletDBus::Type::kPassword);
+}
+
+TEST_P(KWalletDBusTest, EntryTypeErrorRead) {
+  EXPECT_CALL(*mock_kwallet_proxy_.get(),
+              CallMethodAndBlock(Calls(kKWalletInterface, "entryType"), _))
+      .WillOnce(Return(ByMove(dbus::Response::CreateEmpty())));
+
+  KWalletDBus::Type type = KWalletDBus::Type::kUnknown;
+  EXPECT_EQ(KWalletDBus::Error::CANNOT_READ,
+            kwallet_dbus_.EntryType(123, "folder", "key", "app", &type));
+}
+
+TEST_P(KWalletDBusTest, EntryTypeErrorContact) {
+  EXPECT_CALL(*mock_kwallet_proxy_.get(),
+              CallMethodAndBlock(Calls(kKWalletInterface, "entryType"), _))
+      .WillOnce(Return(ByMove(nullptr)));
+
+  KWalletDBus::Type type = KWalletDBus::Type::kUnknown;
+  EXPECT_EQ(KWalletDBus::Error::CANNOT_CONTACT,
+            kwallet_dbus_.EntryType(123, "folder", "key", "app", &type));
+}
+
 TEST_P(KWalletDBusTest, ReadEntry) {
   const std::vector<uint8_t> bytes_expected = {1, 2, 1, 2};
   EXPECT_CALL(

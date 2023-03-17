@@ -158,14 +158,14 @@ KWalletDBus::Error KWalletDBus::Open(const std::string& wallet_name,
 
 KWalletDBus::Error KWalletDBus::HasEntry(const int wallet_handle,
                                          const std::string& folder_name,
-                                         const std::string& signon_realm,
+                                         const std::string& key,
                                          const std::string& app_name,
                                          bool* has_entry) {
   dbus::MethodCall method_call(kKWalletInterface, "hasEntry");
   dbus::MessageWriter builder(&method_call);
   builder.AppendInt32(wallet_handle);  // handle
   builder.AppendString(folder_name);   // folder
-  builder.AppendString(signon_realm);  // key
+  builder.AppendString(key);           // key
   builder.AppendString(app_name);      // appid
   std::unique_ptr<dbus::Response> response(kwallet_proxy_->CallMethodAndBlock(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
@@ -182,16 +182,50 @@ KWalletDBus::Error KWalletDBus::HasEntry(const int wallet_handle,
   return SUCCESS;
 }
 
+KWalletDBus::Error KWalletDBus::EntryType(const int wallet_handle,
+                                          const std::string& folder_name,
+                                          const std::string& key,
+                                          const std::string& app_name,
+                                          Type* entry_type) {
+  constexpr char kMethodName[] = "entryType";
+
+  dbus::MethodCall method_call(kKWalletInterface, kMethodName);
+  dbus::MessageWriter builder(&method_call);
+  builder.AppendInt32(wallet_handle);  // handle
+  builder.AppendString(folder_name);   // folder
+  builder.AppendString(key);           // key
+  builder.AppendString(app_name);      // appid
+  std::unique_ptr<dbus::Response> response(kwallet_proxy_->CallMethodAndBlock(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+  if (!response) {
+    LOG(ERROR) << "Error contacting " << kwalletd_name_ << " (" << kMethodName
+               << ")";
+    return CANNOT_CONTACT;
+  }
+  dbus::MessageReader reader(response.get());
+  int entry_type_raw;
+  if (!reader.PopInt32(&entry_type_raw)) {
+    LOG(ERROR) << "Error reading response from " << kwalletd_name_ << " ("
+               << kMethodName << "): " << response->ToString();
+    return CANNOT_READ;
+  }
+  *entry_type = static_cast<Type>(entry_type_raw);
+  if (*entry_type < Type::kUnknown || *entry_type > Type::kMaxValue) {
+    *entry_type = Type::kUnknown;
+  }
+  return SUCCESS;
+}
+
 KWalletDBus::Error KWalletDBus::ReadEntry(const int wallet_handle,
                                           const std::string& folder_name,
-                                          const std::string& signon_realm,
+                                          const std::string& key,
                                           const std::string& app_name,
                                           std::vector<uint8_t>* bytes_ptr) {
   dbus::MethodCall method_call(kKWalletInterface, "readEntry");
   dbus::MessageWriter builder(&method_call);
   builder.AppendInt32(wallet_handle);  // handle
   builder.AppendString(folder_name);   // folder
-  builder.AppendString(signon_realm);  // key
+  builder.AppendString(key);           // key
   builder.AppendString(app_name);      // appid
   std::unique_ptr<dbus::Response> response(kwallet_proxy_->CallMethodAndBlock(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
@@ -242,14 +276,14 @@ KWalletDBus::Error KWalletDBus::EntryList(
 
 KWalletDBus::Error KWalletDBus::RemoveEntry(const int wallet_handle,
                                             const std::string& folder_name,
-                                            const std::string& signon_realm,
+                                            const std::string& key,
                                             const std::string& app_name,
                                             int* return_code_ptr) {
   dbus::MethodCall method_call(kKWalletInterface, "removeEntry");
   dbus::MessageWriter builder(&method_call);
   builder.AppendInt32(wallet_handle);  // handle
   builder.AppendString(folder_name);   // folder
-  builder.AppendString(signon_realm);  // key
+  builder.AppendString(key);           // key
   builder.AppendString(app_name);      // appid
   std::unique_ptr<dbus::Response> response(kwallet_proxy_->CallMethodAndBlock(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
@@ -268,7 +302,7 @@ KWalletDBus::Error KWalletDBus::RemoveEntry(const int wallet_handle,
 
 KWalletDBus::Error KWalletDBus::WriteEntry(const int wallet_handle,
                                            const std::string& folder_name,
-                                           const std::string& signon_realm,
+                                           const std::string& key,
                                            const std::string& app_name,
                                            const uint8_t* data,
                                            const size_t length,
@@ -277,7 +311,7 @@ KWalletDBus::Error KWalletDBus::WriteEntry(const int wallet_handle,
   dbus::MessageWriter builder(&method_call);
   builder.AppendInt32(wallet_handle);        // handle
   builder.AppendString(folder_name);         // folder
-  builder.AppendString(signon_realm);        // key
+  builder.AppendString(key);                 // key
   builder.AppendArrayOfBytes(data, length);  // value
   builder.AppendString(app_name);            // appid
   std::unique_ptr<dbus::Response> response(kwallet_proxy_->CallMethodAndBlock(
