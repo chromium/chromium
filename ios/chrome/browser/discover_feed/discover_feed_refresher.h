@@ -11,12 +11,6 @@ enum class FeedRefreshTrigger;
 // An interface to refresh the Discover Feed.
 class DiscoverFeedRefresher {
  public:
-  // Refreshes the Discover Feed if needed. The implementer decides if a refresh
-  // is needed or not. This should only be called when the feed is visible to
-  // the user.
-  // Deprecated.
-  virtual void RefreshFeedIfNeeded() {}
-
   // Refreshes the Discover Feed. `trigger` describes the context of the
   // refresh.
   virtual void RefreshFeed(FeedRefreshTrigger trigger) = 0;
