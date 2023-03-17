@@ -660,6 +660,21 @@ void ExtensionTelemetryService::DumpReportForTest(
        << "  DisableReasons: 0x" << std::hex << extension_pb.disable_reasons()
        << "\n";
 
+    if (extension_pb.has_manifest_json()) {
+      ss << "  ManifestJSON: " << extension_pb.manifest_json() << "\n";
+    }
+
+    const RepeatedPtrField<
+        ExtensionTelemetryReportRequest_ExtensionInfo_FileInfo>& file_infos =
+        extension_pb.file_infos();
+    if (!file_infos.empty()) {
+      ss << "  FileInfos: \n";
+      for (const auto& file_info : file_infos) {
+        ss << "    File name: " << file_info.name()
+           << " File hash: " << file_info.hash() << "\n";
+      }
+    }
+
     const RepeatedPtrField<ExtensionTelemetryReportRequest_SignalInfo>&
         signals = report_pb.signals();
     for (const auto& signal_pb : signals) {

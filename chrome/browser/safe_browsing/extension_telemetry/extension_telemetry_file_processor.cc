@@ -41,6 +41,12 @@ void RecordNumFilesFound(int count) {
       "SafeBrowsing.ExtensionTelemetry.FileData.NumFilesFound", count);
 }
 
+void RecordNumFilesOverProcessingLimit(int count) {
+  base::UmaHistogramCounts1000(
+      "SafeBrowsing.ExtensionTelemetry.FileData.NumFilesOverProcessingLimit",
+      count);
+}
+
 void RecordNumFilesOverSizeLimit(int count) {
   base::UmaHistogramCounts1000(
       "SafeBrowsing.ExtensionTelemetry.FileData.NumFilesOverSizeLimit", count);
@@ -54,6 +60,11 @@ void RecordNumFilesProcessed(int count) {
 void RecordProcessedFileSize(size_t size) {
   base::UmaHistogramCounts1M(
       "SafeBrowsing.ExtensionTelemetry.FileData.ProcessedFileSize", size);
+}
+
+void RecordValidExtension(bool valid) {
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.ExtensionTelemetry.FileData.ValidExtension", valid);
 }
 }  // namespace
 
@@ -75,27 +86,33 @@ base::Value::Dict ExtensionTelemetryFileProcessor::ProcessExtension(
     const base::FilePath& root_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (root_dir.empty()) {
+    RecordValidExtension(false);
+    return base::Value::Dict();
+  }
+
+  // Check if Manifest.json file is valid. If invalid, record in histogram and
+  // do not need to process any further.
+  base::FilePath manifest_path = root_dir.Append(kManifestFilePath);
+  std::string manifest_contents;
+  if (!base::ReadFileToString(manifest_path, &manifest_contents) ||
+      manifest_contents.empty()) {
+    RecordValidExtension(false);
     return base::Value::Dict();
   }
 
   // Gather all installed extension files, filter and sort by types.
   SortedFilePaths installed_files = RetrieveFilePaths(root_dir);
+  // Record +1 for Manifest.json file.
+  RecordNumFilesFound(installed_files.size() + 1);
 
   // Compute hashes of files until |max_files_to_process_| limit is reached.
   base::Value::Dict extension_data =
       ComputeHashes(root_dir, std::move(installed_files));
-
-  // Add Manifest.json file data, unhashed.
-  base::FilePath manifest_path = root_dir.Append(kManifestFilePath);
-  std::string manifest_contents;
-
-  if (base::ReadFileToString(manifest_path, &manifest_contents) &&
-      !manifest_contents.empty()) {
-    extension_data.Set(manifest_path.BaseName().AsUTF8Unsafe(),
-                       std::move(manifest_contents));
-  }
+  extension_data.Set(manifest_path.BaseName().AsUTF8Unsafe(),
+                     std::move(manifest_contents));
 
   RecordNumFilesProcessed(extension_data.size());
+  RecordValidExtension(true);
   return extension_data;
 }
 
@@ -136,7 +153,6 @@ ExtensionTelemetryFileProcessor::RetrieveFilePaths(
 
   RecordLargestFileSizeObserved(largest_file_size);
   RecordNumFilesOverSizeLimit(exceeded_file_size_counter);
-  RecordNumFilesFound(sorted_file_paths.size());
   return sorted_file_paths;
 }
 
@@ -146,26 +162,29 @@ base::Value::Dict ExtensionTelemetryFileProcessor::ComputeHashes(
   base::Value::Dict extension_data;
 
   for (const auto& full_path : file_paths) {
-    std::string file_contents;
-
-    if (extension_data.size() < max_files_to_process_ &&
-        base::ReadFileToString(full_path, &file_contents) &&
-        !file_contents.empty()) {
-      // Use relative path as key since file names can repeat.
-      base::FilePath relative_path;
-      root_dir.AppendRelativePath(full_path, &relative_path);
-
-      std::string hash = crypto::SHA256HashString(file_contents);
-      std::string hex_encode = base::HexEncode(hash.c_str(), hash.size());
-
-      extension_data.Set(
-          relative_path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe(),
-          std::move(hex_encode));
-
-      RecordProcessedFileSize(file_contents.size());
+    if (extension_data.size() >= max_files_to_process_) {
+      break;
     }
+
+    std::string file_contents;
+    base::ReadFileToString(full_path, &file_contents);
+
+    // Use relative path as key since file names can repeat.
+    base::FilePath relative_path;
+    root_dir.AppendRelativePath(full_path, &relative_path);
+
+    std::string hash = crypto::SHA256HashString(file_contents);
+    std::string hex_encode = base::HexEncode(hash.c_str(), hash.size());
+
+    extension_data.Set(
+        relative_path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe(),
+        std::move(hex_encode));
+
+    RecordProcessedFileSize(file_contents.size());
   }
 
+  RecordNumFilesOverProcessingLimit(
+      std::max(0, static_cast<int>(file_paths.size() - max_files_to_process_)));
   return extension_data;
 }
 

@@ -774,9 +774,23 @@ chromium-metrics-reviews@google.com.
     Extension telemetry includes file data such as file hashes for off-store
     extension files. This histogram records the number of applicable files found
     in an extension's directories. An applicable file must be non-empty, within
-    the max size limit, and among the applicable types (eg. JS, HTML, CSS).
-    Logged by the FileProcessor at periodic intervals (default: once per day)
-    for each off-store extension installed (if applicable).
+    the max size limit, and among the applicable types (eg. JS, HTML, CSS). The
+    manifest.json file is also included. Logged by the FileProcessor at periodic
+    intervals (default: once per day) for each off-store extension installed.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.FileData.NumFilesOverProcessingLimit"
+    units="files" expires_after="2023-07-23">
+  <owner>richche@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Extension telemetry includes file data such as file hashes for off-store
+    extension files. This histogram records the number of files not processed
+    because they exceeded the max files to process per extension limit. Logged
+    by the FileProcessor at periodic intervals (default: once per day) for each
+    off-store extension installed.
   </summary>
 </histogram>
 
@@ -801,8 +815,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Extension telemetry includes file data such as file hashes for off-store
     extension files. This histogram records the number of successfully processed
-    files. Logged by the FileProcessor at periodic intervals (default: once per
-    day) for each off-store extension installed.
+    files, including the manifest.json file. Logged by the FileProcessor at
+    periodic intervals (default: once per day) for each off-store extension
+    installed.
   </summary>
 </histogram>
 
@@ -829,6 +844,19 @@ chromium-metrics-reviews@google.com.
     extension files. This histogram records the size of a successfully processed
     file. Logged by the FileProcessor at periodic intervals (default: once per
     day) for each off-store extension installed.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.ExtensionTelemetry.FileData.ValidExtension"
+    enum="BooleanValid" expires_after="2023-07-23">
+  <owner>richche@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Extension telemetry includes file data such as file hashes for off-store
+    extension files. This histogram records true for a valid extension, and
+    false if the extension root directory or manifest.json file is invalid.
+    Logged by the FileProcessor at periodic intervals (default: once per day)
+    for each off-store extension installed.
   </summary>
 </histogram>
 
