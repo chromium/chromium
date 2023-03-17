@@ -1222,6 +1222,10 @@ void PasswordManager::MaybeSavePasswordHash(
 void PasswordManager::ProcessAutofillPredictions(
     PasswordManagerDriver* driver,
     const std::vector<FormStructure*>& forms) {
+  // Don't do anything if Password store is not available.
+  if(!client_->GetProfilePasswordStore())
+    return;
+
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
