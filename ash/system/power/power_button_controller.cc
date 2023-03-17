@@ -453,10 +453,12 @@ void PowerButtonController::OnTabletModeEnded() {
 }
 
 void PowerButtonController::OnSecurityCurtainEnabled() {
+  DismissMenu();
   Shell::GetPrimaryRootWindow()->AddChild(GetPowerMenuContainer());
 }
 
 void PowerButtonController::OnSecurityCurtainDisabled() {
+  DismissMenu();
   Shell::GetPrimaryRootWindow()
       ->GetChildById(kShellWindowId_LockScreenRelatedContainersContainer)
       ->AddChild(GetPowerMenuContainer());

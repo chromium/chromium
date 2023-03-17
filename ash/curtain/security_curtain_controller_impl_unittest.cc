@@ -594,4 +594,22 @@ TEST_F(SecurityCurtainControllerImplTest,
   ASSERT_EQ(&parent_before_enabled, &parent_after_disabled);
 }
 
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldDismissOpenPowerMenuWidgetWhenCurtainModeIsEnabled) {
+  PressPowerButton();
+
+  security_curtain_controller().Enable(init_params());
+
+  EXPECT_FALSE(power_button_test_api().IsMenuOpened());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldDismissOpenPowerMenuWidgetWhenCurtainModeIsDisabled) {
+  security_curtain_controller().Enable(init_params());
+  PressPowerButton();
+  security_curtain_controller().Disable();
+
+  EXPECT_FALSE(power_button_test_api().IsMenuOpened());
+}
+
 }  // namespace ash::curtain
