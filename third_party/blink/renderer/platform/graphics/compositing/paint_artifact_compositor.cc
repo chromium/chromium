@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "cc/base/features.h"
@@ -198,7 +199,7 @@ bool NeedsFullUpdateAfterPaintingChunk(
     // properties are changed, which would indicate a missing call to
     // SetNeedsUpdate.
     if (previous.properties != repainted.properties) {
-      NOTREACHED();
+      base::debug::DumpWithoutCrashing();
       return true;
     }
 
@@ -263,7 +264,7 @@ bool NeedsFullUpdateAfterPaintingChunk(
   // properties are changed, which would indicate a missing call to
   // SetNeedsUpdate.
   if (previous.properties != repainted.properties) {
-    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return true;
   }
 
