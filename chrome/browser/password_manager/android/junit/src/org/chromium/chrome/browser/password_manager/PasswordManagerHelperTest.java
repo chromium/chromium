@@ -113,11 +113,6 @@ public class PasswordManagerHelperTest {
     private static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.PasswordCheckup.Launch.Success";
 
-    private static final String LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM =
-            "PasswordManager.ModalLoadingDialog.CredentialManager.Outcome";
-    private static final String LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM =
-            "PasswordManager.ModalLoadingDialog.PasswordCheckup.Outcome";
-
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
@@ -1004,11 +999,6 @@ public class PasswordManagerHelperTest {
                 ContextUtils.getApplicationContext());
 
         verify(mLoadingModalDialogCoordinator).dismiss();
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
     }
 
     @Test
@@ -1024,11 +1014,6 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock, mLoadingModalDialogCoordinator, mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_LOADED));
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mLoadingModalDialogCoordinator).dismiss();
@@ -1048,15 +1033,7 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock, mLoadingModalDialogCoordinator, mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext());
 
-        assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM));
-
         mLoadingDialogCoordinatorObserver.onDismissable();
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_LOADED));
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mLoadingModalDialogCoordinator).dismiss();
@@ -1074,11 +1051,6 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock, mLoadingModalDialogCoordinator, mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_CANCELLED));
     }
 
     @Test
@@ -1094,18 +1066,10 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock, mLoadingModalDialogCoordinator, mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext());
 
-        assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM));
-
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.CANCELLED);
         mLoadingDialogCoordinatorObserver.onDismissedWithState(
                 LoadingModalDialogCoordinator.State.CANCELLED);
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_CANCELLED));
     }
 
     @Test
@@ -1119,11 +1083,6 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock, mLoadingModalDialogCoordinator, mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_TIMED_OUT));
     }
 
     @Test
@@ -1139,18 +1098,10 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock, mLoadingModalDialogCoordinator, mModalDialogManagerSupplier,
                 ContextUtils.getApplicationContext());
 
-        assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM));
-
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.TIMED_OUT);
         mLoadingDialogCoordinatorObserver.onDismissedWithState(
                 LoadingModalDialogCoordinator.State.TIMED_OUT);
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_TIMED_OUT));
     }
 
     @Test
@@ -1167,11 +1118,6 @@ public class PasswordManagerHelperTest {
                 ContextUtils.getApplicationContext());
 
         verify(mLoadingModalDialogCoordinator).dismiss();
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
     }
 
     @Test
@@ -1189,11 +1135,6 @@ public class PasswordManagerHelperTest {
                 ContextUtils.getApplicationContext());
 
         verify(mLoadingModalDialogCoordinator).dismiss();
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
     }
 
     @Test
@@ -1209,11 +1150,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier, ContextUtils.getApplicationContext());
 
         verify(mLoadingModalDialogCoordinator).dismiss();
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
     }
 
     @Test
@@ -1231,11 +1167,6 @@ public class PasswordManagerHelperTest {
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mLoadingModalDialogCoordinator).dismiss();
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_LOADED));
     }
 
     @Test
@@ -1252,15 +1183,7 @@ public class PasswordManagerHelperTest {
                 Optional.of(TEST_EMAIL_ADDRESS), mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier, ContextUtils.getApplicationContext());
 
-        assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM));
-
         mLoadingDialogCoordinatorObserver.onDismissable();
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_LOADED));
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mLoadingModalDialogCoordinator).dismiss();
@@ -1277,11 +1200,6 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
                 Optional.of(TEST_EMAIL_ADDRESS), mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier, ContextUtils.getApplicationContext());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_CANCELLED));
     }
 
     @Test
@@ -1297,18 +1215,10 @@ public class PasswordManagerHelperTest {
                 Optional.of(TEST_EMAIL_ADDRESS), mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier, ContextUtils.getApplicationContext());
 
-        assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM));
-
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.CANCELLED);
         mLoadingDialogCoordinatorObserver.onDismissedWithState(
                 LoadingModalDialogCoordinator.State.CANCELLED);
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_CANCELLED));
     }
 
     @Test
@@ -1322,11 +1232,6 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
                 Optional.of(TEST_EMAIL_ADDRESS), mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier, ContextUtils.getApplicationContext());
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_TIMED_OUT));
     }
 
     @Test
@@ -1342,18 +1247,10 @@ public class PasswordManagerHelperTest {
                 Optional.of(TEST_EMAIL_ADDRESS), mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier, ContextUtils.getApplicationContext());
 
-        assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM));
-
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.TIMED_OUT);
         mLoadingDialogCoordinatorObserver.onDismissedWithState(
                 LoadingModalDialogCoordinator.State.TIMED_OUT);
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.SHOWN_TIMED_OUT));
     }
 
     @Test
@@ -1371,11 +1268,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier, ContextUtils.getApplicationContext());
 
         verify(mLoadingModalDialogCoordinator).dismiss();
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
     }
 
     @Test
@@ -1392,11 +1284,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier, ContextUtils.getApplicationContext());
 
         verify(mLoadingModalDialogCoordinator).dismiss();
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
-                        PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
     }
 
     @Test

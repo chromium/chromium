@@ -215,21 +215,6 @@ SuccessStatus GetSuccessStatusFromError(
   return SuccessStatus::kError;
 }
 
-void RecordApiErrorInCombinationWithSyncTransportState(
-    int error_code,
-    syncer::SyncService::TransportState sync_transport_state) {
-  std::string histogram_suffix;
-  if (sync_transport_state == syncer::SyncService::TransportState::PAUSED) {
-    histogram_suffix = "SyncPaused";
-  } else {
-    histogram_suffix = "SyncNotPaused";
-  }
-  base::UmaHistogramSparse(
-      "PasswordManager.PasswordStoreAndroidBackend.APIError." +
-          histogram_suffix,
-      error_code);
-}
-
 void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
   // This is called from `PasswordStoreAndroidBackend` which is only
   // created when feature is enabled.
@@ -1033,8 +1018,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
     // AndroidBackendAPIErrorCode::kDeveloperError) to catch dev errors.
     DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
-    RecordApiErrorInCombinationWithSyncTransportState(
-        error.api_error_code.value(), sync_service_->GetTransportState());
 
     int api_error = error.api_error_code.value();
     auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);

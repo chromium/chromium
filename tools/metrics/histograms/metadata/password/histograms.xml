@@ -782,7 +782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationService.GetChangePasswordUsage"
-    enum="GetChangePasswordUrlMetric" expires_after="2023-04-16">
+    enum="GetChangePasswordUrlMetric" expires_after="M120">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1167,7 +1167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialEntryActions.{CredentialEntryType}"
-    enum="CredentialEntryAction" expires_after="M114">
+    enum="CredentialEntryAction" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1183,9 +1183,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="M114">
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
-  <owner>maxan@google.com</owner>
+  <owner>izuzic@google.com</owner>
   <summary>
     Records the API error code encountered while attempting to fetch the
     Credential Manager launch intent from Google Play Services for the
@@ -1197,9 +1197,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.APIError.ConnectionResultCode"
-    enum="PasswordStoreAndroidBackendConnectionResultCode" expires_after="M114">
+    enum="PasswordStoreAndroidBackendConnectionResultCode" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
-  <owner>maxan@google.com</owner>
+  <owner>izuzic@google.com</owner>
   <summary>
     Records the API error code encountered while attempting to fetch the
     Credential Manager launch intent from Google Play Services for the
@@ -1211,7 +1211,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Error"
-    enum="CredentialManagerError" expires_after="M114">
+    enum="CredentialManagerError" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1225,7 +1225,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Latency"
-    units="ms" expires_after="M114">
+    units="ms" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1240,7 +1240,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Success"
-    enum="BooleanSuccess" expires_after="M114">
+    enum="BooleanSuccess" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1253,7 +1253,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.Launch.Success"
-    enum="BooleanSuccess" expires_after="M114">
+    enum="BooleanSuccess" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -2117,22 +2117,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.ModalLoadingDialog.{IntentType}.Outcome"
-    enum="PasswordManager.LoadingDialogOutcome" expires_after="M114">
-  <owner>maxan@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Records the outcome of the GMS Core UI loading dialog shown when the user
-    launches the {IntentType}. Recorded for both successful and failed attempts
-    to get and launch the {IntentType}. The outcome is recorded right before
-    attempting to send the {IntentType} PendingIntent.
-  </summary>
-  <token key="IntentType">
-    <variant name="CredentialManager"/>
-    <variant name="PasswordCheckup"/>
-  </token>
-</histogram>
-
 <histogram name="PasswordManager.MoveUIDismissalReason{UserSyncingType}"
     enum="PasswordManagerUIDismissalReason" expires_after="2023-08-12">
   <owner>mamir@chromium.org</owner>
@@ -2237,9 +2221,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="M114">
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
-  <owner>maxan@google.com</owner>
+  <owner>izuzic@google.com</owner>
   <summary>
     Records the error code returned by the GMS Password Checkup 1P API while
     attempting to {Operation}. This is recorded after the asynchronous call
@@ -2250,9 +2234,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.Error"
-    enum="CredentialManagerError" expires_after="M114">
+    enum="CredentialManagerError" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
-  <owner>maxan@google.com</owner>
+  <owner>izuzic@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
     Records the backend error code encountered while attempting to {Operation}.
@@ -2265,10 +2249,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.ErrorLatency"
-    units="ms" expires_after="M114">
+    units="ms" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <owner>maxan@google.com</owner>
+  <owner>izuzic@google.com</owner>
   <summary>
     Records the time(ms) elapsed between asking Google Play Services to
     {Operation} and receiving the error response. This is recorded either before
@@ -2280,10 +2263,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.Latency"
-    units="ms" expires_after="M114">
+    units="ms" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <owner>maxan@google.com</owner>
+  <owner>izuzic@google.com</owner>
   <summary>
     Records the time(ms) elapsed between asking Google Play Services to
     {Operation} and receiving the response. It includes synchronous calls made
@@ -2294,10 +2276,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.Success"
-    enum="BooleanSuccess" expires_after="M114">
+    enum="BooleanSuccess" expires_after="M120">
   <owner>ioanap@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <owner>maxan@google.com</owner>
+  <owner>izuzic@google.com</owner>
   <summary>
     Records whether attempt to {Operation} using the Google Play Services was
     successful or not. Recorded when the asynchronous call comes back.
@@ -2432,8 +2413,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordSettings.{Function}.{Setting}.APIError1"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="M114">
-  <owner>maxan@google.com</owner>
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M120">
+  <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     The error codes returned by the GMS Core Password preferences 1P API while
@@ -2450,8 +2431,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordSettings.{Function}.{Setting}.ErrorCode"
-    enum="PasswordStoreAndroidBackendError" expires_after="M114">
-  <owner>maxan@google.com</owner>
+    enum="PasswordStoreAndroidBackendError" expires_after="M120">
+  <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records the error encountered in PasswordSettingsUpdater while attempting to
@@ -2465,8 +2446,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordSettings.{Function}.{Setting}.ErrorLatency"
-    units="ms" expires_after="M114">
-  <owner>maxan@google.com</owner>
+    units="ms" expires_after="M120">
+  <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Real-time duration of the asynchronous attempt to {Function} for {Setting}.
@@ -2478,8 +2459,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordSettings.{Function}.{Setting}.Latency"
-    units="ms" expires_after="M114">
-  <owner>maxan@google.com</owner>
+    units="ms" expires_after="M120">
+  <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Real-time duration of the asynchronous attempt to {Function} for {Setting}.
@@ -2491,8 +2472,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordSettings.{Function}.{Setting}.Success"
-    enum="BooleanSuccess" expires_after="M114">
-  <owner>maxan@google.com</owner>
+    enum="BooleanSuccess" expires_after="M120">
+  <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records whether PasswordSettingsUpdater attempt to {Function} for {Setting}
@@ -2571,49 +2552,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.APIError.{SyncErrorStatus}"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="M114">
-  <owner>vsemeniuk@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    The error codes returned by the GMS Core ChromeSync 1P API when
-    {SyncErrorStatus} is returned by SyncService.GetTransportState(). Recorded
-    when the asynchronous job has returned.
-  </summary>
-  <token key="SyncErrorStatus">
-    <variant name="NoAuthError" summary="no error">
-      <obsolete>
-        Deprecated in M112 and no longer recorded, see
-        PasswordManager.PasswordStoreAndroidBackend.APIError.SyncNotPaused
-        instead for a replacement that is identical at the time (M112) but is
-        more future-proof (in case the implementation changes and sync gets
-        paused for reasons other than persistent auth errors).
-      </obsolete>
-    </variant>
-    <variant name="PersistentAuthError" summary="a persistent auth error">
-      <obsolete>
-        Deprecated in M112 and no longer recorded, see
-        PasswordManager.PasswordStoreAndroidBackend.APIError.SyncPaused instead
-        for a replacement that is identical at the time (M112) but is more
-        future-proof (in case the implementation changes and sync gets paused
-        for reasons other than persistent auth errors).
-      </obsolete>
-    </variant>
-    <variant name="SyncNotPaused" summary="a state other than PAUSED"/>
-    <variant name="SyncPaused" summary="PAUSED (e.g. persistent auth error)"/>
-    <variant name="TransientAuthError" summary="a transient auth error">
-      <obsolete>
-        Deprecated in M111 and no longer recorded. In M110 and below, it only
-        recorded a small subset of transient errors, the ones that immediately
-        followed a persistent auth error.
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
-<histogram
     name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.LoginsToRemove"
-    units="count" expires_after="M114">
+    units="count" expires_after="M120">
   <owner>vsemeniuk@google.com</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -2623,7 +2563,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.SuccessRate"
-    units="%" expires_after="M114">
+    units="%" expires_after="M120">
   <owner>vsemeniuk@google.com</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -2636,8 +2576,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.Retry{Operation}.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="M114">
-  <owner>maxan@google.com</owner>
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M120">
+  <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records the last error code returned by the GMS ChromeSync 1P API when
@@ -2669,8 +2609,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.Retry{Operation}.Attempt"
-    units="Times" expires_after="M114">
-  <owner>maxan@google.com</owner>
+    units="Times" expires_after="M120">
+  <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Records the retry attempt number when the GMS ChromeSync 1P API returned an
@@ -2703,7 +2643,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="M114">
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M120">
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -2726,8 +2666,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.ConnectionResultCode"
-    enum="PasswordStoreAndroidBackendConnectionResultCode" expires_after="M114">
-  <owner>maxan@google.com</owner>
+    enum="PasswordStoreAndroidBackendConnectionResultCode" expires_after="M120">
+  <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     The connection result status code returned by the GMS Core ChromeSync 1P
@@ -2748,7 +2688,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.ErrorCode"
-    enum="PasswordStoreAndroidBackendError" expires_after="M114">
+    enum="PasswordStoreAndroidBackendError" expires_after="M120">
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -2786,7 +2726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStoreInitResult2"
-    enum="BooleanSuccess" expires_after="M115">
+    enum="BooleanSuccess" expires_after="M120">
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
@@ -2799,8 +2739,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStoreProxyBackend.{Function}.Fallback"
-    enum="Boolean" expires_after="M114">
-  <owner>maxan@google.com</owner>
+    enum="Boolean" expires_after="M120">
+  <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Records true if the fallback to the build-in backend occurred during
@@ -2826,7 +2766,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreProxyBackend.{Function}.{Metric}.{Measurement}"
-    units="count" expires_after="M114">
+    units="count" expires_after="M120">
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -2865,7 +2805,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreProxyBackend.{ModifyingFunction}.{Metric}.{Measurement}"
-    units="count" expires_after="M114">
+    units="count" expires_after="M120">
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -2906,7 +2846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStore{Backend}{Function}"
-    enum="PasswordStoreAndroidBackendRequestStatus" expires_after="M114">
+    enum="PasswordStoreAndroidBackendRequestStatus" expires_after="M120">
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -2943,7 +2883,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStore{Backend}{Function}.Latency"
-    units="ms" expires_after="M114">
+    units="ms" expires_after="M120">
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -2980,7 +2920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStore{Backend}{Function}.Success"
-    enum="BooleanSuccess" expires_after="M114">
+    enum="BooleanSuccess" expires_after="M120">
   <owner>maxan@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -3658,7 +3598,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Latency"
-    units="ms" expires_after="M114">
+    units="ms" expires_after="M120">
   <owner>vsemeniuk@google.com</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -3670,7 +3610,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Success"
-    enum="BooleanSuccess" expires_after="M114">
+    enum="BooleanSuccess" expires_after="M120">
   <owner>vsemeniuk@google.com</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -3700,7 +3640,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.UPMUnenrollmentReason"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2023-09-10">
   <owner>ioanap@chromium.org</owner>
-  <owner>maxan@google.com</owner>
+  <owner>izuzic@google.com</owner>
   <summary>
     Records the error code returned by the GMS Password Checkup 1P API which
     caused unenrollment. This is recorded when the user is evicted from UPM.
