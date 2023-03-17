@@ -9,6 +9,11 @@
 
 namespace storage {
 
+// See also GetFileSystemTypeString in file_system_util.h to convert the
+// numeric value to a string name.
+//
+// The numeric values are not guaranteed to be stable across Chrome versions.
+// Do not save them to persistent logs, preferences, etc.
 enum FileSystemType {
   // Indicates uninitialized or invalid filesystem type.
   kFileSystemTypeUnknown = -1,
@@ -52,73 +57,73 @@ enum FileSystemType {
   // See the comments for IsolatedContext and/or FileSystemURL for more details.
 
   // Should be used only for testing.
-  kFileSystemTypeTest,
+  kFileSystemTypeTest = 100,
 
   // Indicates a local filesystem where we can access files using local path.
-  kFileSystemTypeLocal,
+  kFileSystemTypeLocal = 101,
 
   // Indicates a local filesystem where we can access files using local path,
   // but with restricted access.
   // Restricted local file system is in read-only mode.
-  kFileSystemTypeRestrictedLocal,
+  kFileSystemTypeRestrictedLocal = 102,
 
   // Indicates a transient, isolated file system for dragged files (which could
   // contain multiple dragged paths in the virtual root).
-  kFileSystemTypeDragged,
+  kFileSystemTypeDragged = 103,
 
   // Indicates media filesystem which we can access with same manner to
   // regular filesystem.
-  kFileSystemTypeLocalMedia,
+  kFileSystemTypeLocalMedia = 104,
 
   // Indicates media filesystem to which we need special protocol to access,
   // such as MTP or PTP.
-  kFileSystemTypeDeviceMedia,
+  kFileSystemTypeDeviceMedia = 105,
 
   // Indicates a Syncable sandboxed filesystem which can be backed by a
   // cloud storage service.
-  kFileSystemTypeSyncable,
+  kFileSystemTypeSyncable = 106,
 
   // Indicates a special filesystem type for internal file sync operation
   // for Syncable sandboxed filesystems. The file system is overlayed, i.e.
   // points to the same sandboxed filesystem as that of kFileSystemTypeSyncable,
   // but the changes made with this filesystem type are not recorded for
   // further sync.
-  kFileSystemTypeSyncableForInternalSync,
+  kFileSystemTypeSyncableForInternalSync = 107,
 
   // Indicates an external filesystem accessible by file paths from platform
   // Apps. As of writing, on non Chrome OS platform, this is merely a
   // kFileSystemTypeLocal. On Chrome OS, the path is parsed by
   // the handlers of kFileSystemTypeExternal.
-  kFileSystemTypeLocalForPlatformApp,
+  kFileSystemTypeLocalForPlatformApp = 108,
 
   // Indicates an isolated filesystem which is supposed to contain one
   // temporary which is supposed to go away when the last reference of
   // its snapshot is dropped.
   // This type is useful for creating a blob reference for a temporary
   // file which must go away when the blob's last reference is dropped.
-  kFileSystemTypeForTransientFile,
+  kFileSystemTypeForTransientFile = 109,
 
   // A filesystem that is mounted via the FileSystemProvider API.
-  kFileSystemTypeProvided,
+  kFileSystemTypeProvided = 110,
 
   // A media filesystem such as MTP or PTP, mounted as a file storage not
   // limited to media files.
-  kFileSystemTypeDeviceMediaAsFileStorage,
+  kFileSystemTypeDeviceMediaAsFileStorage = 111,
 
   // A filesystem to provide access to contents managed by ARC.
-  kFileSystemTypeArcContent,
+  kFileSystemTypeArcContent = 112,
 
   // A filesystem to provide access to documents providers in ARC.
-  kFileSystemTypeArcDocumentsProvider,
+  kFileSystemTypeArcDocumentsProvider = 113,
 
   // Indicates a DriveFS filesystem which provides access to Google Drive.
-  kFileSystemTypeDriveFs,
+  kFileSystemTypeDriveFs = 114,
 
   // Indicates an SmbFs filesystem which provides access to SMB file shares.
-  kFileSystemTypeSmbFs,
+  kFileSystemTypeSmbFs = 115,
 
   // Indicates a FUSE filesystem which provides access to virtual files.
-  kFileSystemTypeFuseBox,
+  kFileSystemTypeFuseBox = 116,
 
   kFileSystemTypeLast = kFileSystemTypeFuseBox,
 
