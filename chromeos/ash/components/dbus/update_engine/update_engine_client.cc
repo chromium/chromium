@@ -58,6 +58,7 @@ const char kStubVersion[] = "1234.0.0.0";
 UpdateEngineClient* g_instance = nullptr;
 
 bool IsValidChannel(const std::string& channel) {
+  // lts and ltc can only be selected using policies.
   return channel == kReleaseChannelDev || channel == kReleaseChannelBeta ||
          channel == kReleaseChannelStable;
 }
@@ -146,6 +147,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
 
   void SetChannel(const std::string& target_channel,
                   bool is_powerwash_allowed) override {
+    // TODO(b/273431629): Remove channel validation.
     if (!IsValidChannel(target_channel)) {
       LOG(ERROR) << "Invalid channel name: " << target_channel;
       return;

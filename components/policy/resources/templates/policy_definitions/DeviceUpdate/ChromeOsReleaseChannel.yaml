@@ -8,6 +8,12 @@ example_value: stable-channel
 features:
   dynamic_refresh: true
 items:
+- caption: LTS channel
+  name: LTSChannel
+  value: lts-channel
+- caption: LTC channel
+  name: LTCChannel
+  value: ltc-channel
 - caption: Stable channel
   name: StableChannel
   value: stable-channel
@@ -26,6 +32,8 @@ schema:
   - stable-channel
   - beta-channel
   - dev-channel
+  - lts-channel
+  - ltc-channel
   type: string
 supported_on:
 - chrome_os:11-
