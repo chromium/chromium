@@ -1110,7 +1110,14 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (BOOL)isStartSurface {
-  DCHECK(self.webState);
+  // TODO(crbug.com/1425382): This condition should be removed once the issue of
+  // having this coordinator started with no valid webstate (e.g. visible NTP in
+  // non-active tab) is resolved. At that point, we should just leave the
+  // `self.webState` DCHECK.
+  if (!self.webState) {
+    DCHECK(NO);
+    return NO;
+  }
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(self.webState);
   return NTPHelper && NTPHelper->ShouldShowStartSurface();
