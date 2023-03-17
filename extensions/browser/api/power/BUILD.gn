@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -23,6 +24,31 @@ source_set("power") {
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      "activity_reporter_delegate.cc",
+      "activity_reporter_delegate.h",
+    ]
+
+    deps += [ "//build:chromeos_buildflags" ]
+
+    if (is_chromeos_ash) {
+      sources += [
+        "activity_reporter_delegate_ash.cc",
+        "activity_reporter_delegate_ash.h",
+      ]
+    } else if (is_chromeos_lacros) {
+      sources += [
+        "activity_reporter_delegate_lacros.cc",
+        "activity_reporter_delegate_lacros.h",
+      ]
+      deps += [
+        "//chromeos/crosapi/mojom",
+        "//chromeos/lacros",
+      ]
+    }
+  }
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

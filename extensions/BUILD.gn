@@ -372,6 +372,7 @@ source_set("chrome_extensions_browsertests_sources") {
     "//third_party/widevine/cdm:headers",
     "//ui/accessibility:test_support",
     "//ui/base:test_support",
+    "//ui/base/idle:test_support",
     "//ui/compositor:test_support",
     "//ui/resources",
     "//ui/web_dialogs:test_support",

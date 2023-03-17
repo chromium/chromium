@@ -336,6 +336,7 @@ source_set("crosapi") {
     "//extensions/browser/api/audio",
     "//extensions/browser/api/automation_internal",
     "//extensions/browser/api/networking_private",
+    "//extensions/browser/api/power",
     "//extensions/common",
     "//media/mojo/mojom/stable:stable_video_decoder",
     "//printing/backend",

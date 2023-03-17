@@ -36283,6 +36283,7 @@ Called by update_extension_histograms.py.-->
   <int value="1770" label="WMDESKSPRIVATE_GETDESKBYID"/>
   <int value="1771" label="AUTOFILLPRIVATE_ISVALIDIBAN"/>
   <int value="1772" label="ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY"/>
+  <int value="1773" label="POWER_REPORTACTIVITY"/>
 </enum>
 
 <enum name="ExtensionIconState">

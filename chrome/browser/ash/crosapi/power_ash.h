@@ -45,6 +45,7 @@ class PowerAsh : public mojom::Power {
                            device::mojom::WakeLockType type,
                            device::mojom::WakeLockReason reason,
                            const std::string& description) override;
+  void ReportActivity() override;
 
  private:
   // Handlers for disconnection of |lock| from AddPowerSaveBlocker(),

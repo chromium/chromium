@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -47,6 +48,20 @@ class PowerReleaseKeepAwakeFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Implementation of the chrome.power.reportActivity API.
+class PowerReportActivityFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("power.reportActivity", POWER_REPORTACTIVITY)
+
+ protected:
+  ~PowerReportActivityFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Handles calls made via the chrome.power API. There is a separate instance of
 // this class for each profile, as requests are tracked by extension ID, but a

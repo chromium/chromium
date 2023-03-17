@@ -93,7 +93,7 @@ TEST(FeatureProviderTest, PermissionFeatureTypes) {
   // NOTE: This feature cannot have multiple rules, otherwise it is not a
   // SimpleFeature.
   const SimpleFeature* feature = static_cast<const SimpleFeature*>(
-      FeatureProvider::GetPermissionFeature("power"));
+      FeatureProvider::GetPermissionFeature("alarms"));
   ASSERT_TRUE(feature);
   const std::vector<Manifest::Type>& extension_types =
       feature->extension_types();

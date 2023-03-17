@@ -5,6 +5,8 @@
 // Use the <code>chrome.power</code> API to override the system's power
 // management features.
 namespace power {
+  callback VoidCallback = void ();
+
   [noinline_doc] enum Level {
     // Prevent the system from sleeping in response to user inactivity.
     system,
@@ -23,5 +25,11 @@ namespace power {
 
     // Releases a request previously made via requestKeepAwake().
     static void releaseKeepAwake();
+
+    // Reports a user activity in order to awake the screen from a dimmed or
+    // turned off state or from a screensaver. Exits the screensaver if it is
+    // currently active.
+    [platforms=("chromeos", "lacros"), supportsPromises]
+    static void reportActivity(optional VoidCallback callback);
   };
 };

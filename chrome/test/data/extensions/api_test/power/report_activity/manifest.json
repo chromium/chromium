@@ -1,0 +1,17 @@
+{
+  "name": "chrome.power.reportActivity() test extension (ID dibbenaepdnglcjpgjmnefmjccpinang)",
+  "key": "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCb0DzjK+cmP0/ULDF4z7mS8wniW1e0fo+HMhrznMqsahgrX/zYzc0fGZDX5dmzE3FQ9c1a4BdqWCaxI4q3yQmmNR+xKYUWaYuaTQAI1RPIUqZK3yps+2TUqMkfa1Da9t6pBGlzNXwKwsrvDdP55oXPlhtXiJZ0Qq+0AtRHhbi7/kzR7EpRjqhfWmJLYovSfBP9ZLSvzO/GhBIxlEvY3KGdH9fv4xEUR0AKV0TmSlEV/3fLY6tF5vFH8+a6Z5KCDhI6Df0nYl/bCbplAt6geHBhBBW+8NgW00b/jcij9gWilUvUewgV9fwYgTzhNAd5wYKAclAKkKx3+EK8rw7t5gMHAgMBAAECggEAD1zPFArucHv05VOHe9o8pCYoXFQV6ABD1dhKhf3N5y/9ZWbCaac+STRebpsFWuhY14WqE1gIQaj4BPvJypMcy3FuHYFIKPc2bNFDZpuI/CBXWwcj32OYrnWx1tI1l6aYOjaVexF+mG+vozWhfSs4bZ48NeY2sgx9LGohqfz07jwIoEf5MxW4pSF0QxRX+3yBeUnEKmgSg+5RPOiaokcUVbtOAJ/27e0PYxtKK6GiDTWGnz4cV+ylqQEEQxg4zH4+IjUjcakfi0hdkEKMzLvCdXyWLGYbTeK4z2fFgwCWWgE5Sb4cetxLgJHHqnEnC1VUlAU6fXJoGS+lupTA/hG80QKBgQDb1YfcpastkxOxUOcweoCCtHT8K/IckAxRCE0hz4cKt4KSmxDWhqVHZwNHg7bKchQgR/GPM57GvOiN//8fqFSNbjE6UKqQEkvxRlUZSVfLKnqp55NWATgOrsRVP4zGN4vp3HTNnLK5rSgMTfsAvLwXckaEKa8PfV550t77eZaMSQKBgQC1cm5Tvt5utQDKBb/DC2u92bSKHX+I0p+JrGuyeSX/MWD0uWMJtVFBpdmcd/26iIUsTJJjdk4gGQXGuv8OGW3gN6qDNOGgkcteGW51YSRZQUxG/zJqTPBVAeJIDw5m+SoHnTd3EHfYTPMz+TUVuKKWW4AY19o4/D+T0Njtgc30zwKBgQCzl4pas+1YWiNoZJO6gxmhrhM0QCKXOwcU3BdHW+cS1kCRzKTA3VcBMiL3tZ8LXI8coCmzt5QrAAFsoIqoLjiFIlSNM4FkGc542eCDu+tBSv7S9yDizjQhqp0yl6xF8vMWpse1giJwlgl1o+8+9vEipnT9W6BsoxsfoyoPf5GCIQKBgQCnGwU6wW1PXgmlBRhvhCQtC8Q28yXSl8/wVkg1bVeuKAbYO6hXd5KnOBwq+2NFGJg1jSvAyGL5MrJcLTna/VZxCjNSdTBa1gsK1bciCV4ViYq7VCpVNhic4YhJvvwPn+eybXt4f0UwguX09s2J/KpYeVqHBrxmgQH4m349dq98hwKBgC2MFgDw9/4r8GUgYxS5bAvAtegqQv4Rl3wzTOOe/KO95zukmqbFI93fI9ksTYDZ2t5n8jE6qfKms0W7ItJ3irb0oQHcHyL8vhl8rAZVkffmDyGU7pYMm3bQRtL029fKnwJ9miySj2+hAObuFZg6feum5z8fztn2Whoz8dujCvl+",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "chrome.power.reportActivity API test",
+  "background": {
+    "scripts": [
+      "test.js"
+    ],
+    "persistent": true
+  },
+  "permissions": [
+    "idle",
+    "power"
+  ]
+}

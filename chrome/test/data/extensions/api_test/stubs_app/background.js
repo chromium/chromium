@@ -24,10 +24,11 @@ function getApiPaths() {
         return;
       // Pieces of the module don't inherit from Array/Object.
       Array.prototype.forEach.call(section, function(entry) {
-      // Skip idle.getAutoLockDelay(), since it's restricted to certain
-      // platforms.
-      // TODO(https://crbug.com/921466)
-        if (entry.name != "getAutoLockDelay") {
+        // Skip idle.getAutoLockDelay() and power.reportActivity() since they
+        // are restricted to certain platforms.
+        // TODO(https://crbug.com/921466)
+        if (entry.name != 'getAutoLockDelay' &&
+            entry.name != 'reportActivity') {
           apiPaths.push(namespace + "." + entry.name);
         }
       });

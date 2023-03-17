@@ -479,6 +479,9 @@
     "dependencies": ["permission:power"],
     "contexts": ["blessed_extension"]
   },
+  "power.reportActivity": {
+    "platforms": ["chromeos", "lacros"]
+  },
   "printerProvider": {
     "dependencies": ["permission:printerProvider"],
     "contexts": ["blessed_extension"]
