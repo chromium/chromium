@@ -280,6 +280,7 @@ int Node::ClosePort(const PortRef& port_ref) {
   if (recordreplay::AreEventsDisallowed()) {
     return OK;
   }
+  recordreplay::Assert("[RUN-1307-1539] Node::ClosePort");
 
   std::vector<std::unique_ptr<UserMessageEvent>> undelivered_messages;
   NodeName peer_node_name;

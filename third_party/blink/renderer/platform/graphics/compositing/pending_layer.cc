@@ -17,6 +17,8 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
+#include "cc/trees/layer_tree_host.h"
+
 namespace blink {
 
 namespace {
@@ -522,6 +524,13 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
                                          cc::LayerSelection& layer_selection,
                                          bool tracks_raster_invalidations,
                                          cc::LayerTreeHost* layer_tree_host) {
+  recordreplay::Assert(
+      "[RUN-657-1540] PendingLayer::UpdateCompositedLayer %d %d %d",
+      layer_tree_host ? layer_tree_host->GetId() : 0,
+      old_pending_layer && old_pending_layer->cc_layer_
+          ? old_pending_layer->cc_layer_->id()
+          : 0,
+      cc_layer_ ? cc_layer_->id() : 0);
   switch (compositing_type_) {
     case PendingLayer::kForeignLayer:
       UpdateForeignLayer();

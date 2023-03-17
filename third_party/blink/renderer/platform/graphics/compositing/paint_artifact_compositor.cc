@@ -706,11 +706,6 @@ void PaintArtifactCompositor::Update(
 
     cc::Layer& layer = pending_layer.CcLayer();
 
-    // NOTE: This `Assert` must come after `UpdateCompositedLayer`, since that one sets `pending_layer.CcLayer`.
-    recordreplay::Assert(
-        "[RUN-1229-1434] PaintArtifactCompositor::Update %d %d",
-        host->GetId(), layer.id());
-
     const auto& property_state = pending_layer.GetPropertyTreeState();
     const auto& transform = property_state.Transform();
     const auto& clip = property_state.Clip();
@@ -750,7 +745,8 @@ void PaintArtifactCompositor::Update(
     bool backface_hidden = transform.IsBackfaceHidden();
     layer.SetShouldCheckBackfaceVisibility(backface_hidden);
 
-    recordreplay::Assert("[RUN-1470-1471] %d", layer.subtree_property_changed());
+    recordreplay::Assert("[RUN-1470-1471] PaintArtifactCompositor::Update %d",
+                         layer.subtree_property_changed());
 
     if (layer.subtree_property_changed())
       root_layer_->SetNeedsCommit();
@@ -762,6 +758,8 @@ void PaintArtifactCompositor::Update(
           .AddTransitionPseudoElementEffectId(effect_id);
     }
   }
+
+  recordreplay::Assert("[RUN-657-1540] PaintArtifactCompositor::Update");
 
   root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
 
