@@ -20,6 +20,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -178,6 +179,17 @@ public class SafeModeController {
             logSafeModeExecutionResult(SafeModeController.SafeModeExecutionResult.UNKNOWN_ERROR);
             throw t;
         }
+    }
+
+    /**
+     *
+     * @return A copy of the list of registered {@link SafeModeAction} actions.
+     */
+    public SafeModeAction[] getRegisteredActions() {
+        if (mRegisteredActions == null) {
+            return null;
+        }
+        return Arrays.copyOf(mRegisteredActions, mRegisteredActions.length);
     }
 
     private static void logSafeModeExecutionResult(@SafeModeExecutionResult int result) {

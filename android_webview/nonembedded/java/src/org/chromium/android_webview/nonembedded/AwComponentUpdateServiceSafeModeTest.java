@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.android_webview.common.SafeModeController;
+import org.chromium.android_webview.services.ComponentUpdaterResetSafeModeAction;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;

@@ -17,6 +17,7 @@ import org.chromium.android_webview.common.CommandLineUtil;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
+import org.chromium.android_webview.services.NonembeddedSafeModeActionsList;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;

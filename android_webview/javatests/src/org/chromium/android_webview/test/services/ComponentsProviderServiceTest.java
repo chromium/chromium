@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
-import org.chromium.android_webview.nonembedded.ComponentUpdaterResetSafeModeAction;
+import org.chromium.android_webview.services.ComponentUpdaterResetSafeModeAction;
 import org.chromium.android_webview.services.ComponentsProviderService;
 import org.chromium.android_webview.services.SafeModeService;
 import org.chromium.android_webview.test.AwActivityTestRule;

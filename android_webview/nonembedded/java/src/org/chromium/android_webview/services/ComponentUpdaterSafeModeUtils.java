@@ -21,10 +21,6 @@ public class ComponentUpdaterSafeModeUtils {
     private static final String HISTOGRAM_COMPONENT_UPDATER_SAFEMODE_EXECUTED =
             "Android.WebView.ComponentUpdater.SafeModeActionExecuted";
 
-    // Keep in sync with the ID in ComponentUpdaterResetSafeModeAction.
-    private static final String RESET_COMPONENT_UPDATER_SAFEMODE_ACTION_ID =
-            "reset_component_updater";
-
     // Don't instantiate this class.
     private ComponentUpdaterSafeModeUtils() {}
 
@@ -43,7 +39,7 @@ public class ComponentUpdaterSafeModeUtils {
         }
         Set<String> actions = controller.queryActions(packageName);
 
-        if (actions.isEmpty() || !actions.contains(RESET_COMPONENT_UPDATER_SAFEMODE_ACTION_ID)) {
+        if (actions.isEmpty() || !actions.contains(ComponentUpdaterResetSafeModeAction.ID)) {
             RecordHistogram.recordBooleanHistogram(
                     HISTOGRAM_COMPONENT_UPDATER_SAFEMODE_EXECUTED, false);
             return false;

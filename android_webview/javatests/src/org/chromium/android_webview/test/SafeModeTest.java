@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
@@ -26,6 +27,8 @@ import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
 import org.chromium.android_webview.common.variations.VariationsUtils;
+import org.chromium.android_webview.services.NonEmbeddedSafeModeAction;
+import org.chromium.android_webview.services.NonEmbeddedSafeModeActionsSetupCleanup;
 import org.chromium.android_webview.services.SafeModeService;
 import org.chromium.android_webview.services.SafeModeService.TrustedPackage;
 import org.chromium.android_webview.test.VariationsSeedLoaderTest.TestLoader;
@@ -41,6 +44,7 @@ import org.chromium.build.BuildConfig;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -418,6 +422,48 @@ public class SafeModeTest {
         }
     }
 
+    private class TestNonEmbeddedSafeModeAction implements NonEmbeddedSafeModeAction {
+        private int mActivatedCount;
+        private int mDeactivatedCount;
+        private final String mId;
+        private final boolean mSuccess;
+
+        TestNonEmbeddedSafeModeAction(String id) {
+            this(id, true);
+        }
+
+        TestNonEmbeddedSafeModeAction(String id, boolean success) {
+            mId = id;
+            mSuccess = success;
+        }
+
+        @Override
+        @NonNull
+        public String getId() {
+            return mId;
+        }
+
+        @Override
+        public boolean onActivate() {
+            mActivatedCount++;
+            return mSuccess;
+        }
+
+        @Override
+        public boolean onDeactivate() {
+            mDeactivatedCount++;
+            return mSuccess;
+        }
+
+        public int getActivatedCallCount() {
+            return mActivatedCount;
+        }
+
+        public int getDeactivatedCallCount() {
+            return mDeactivatedCount;
+        }
+    }
+
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -779,5 +825,237 @@ public class SafeModeTest {
                 new TestTrustedPackage(TEST_WEBVIEW_PACKAGE_NAME, TEST_WEBVIEW_CERT_HASH, null);
         Assert.assertTrue("The WebView test shell should match itself",
                 webviewTestShell.verify(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNonEmbeddedSafeModeActionList_executeNonEmbeddedActionWhenRegisteredAndEnabled()
+            throws Throwable {
+        TestNonEmbeddedSafeModeAction testAction = new TestNonEmbeddedSafeModeAction("test");
+
+        // Register test action
+        SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
+        // Enable test action
+        setSafeMode(Arrays.asList(testAction.getId()));
+        Assert.assertEquals(
+                "Test action should be executed once", 1, testAction.getActivatedCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void
+    testNonEmbeddedSafeModeActionList_executeNonEmbeddedActionWhenRegisteredAndDisabled()
+            throws Throwable {
+        TestNonEmbeddedSafeModeAction testAction = new TestNonEmbeddedSafeModeAction("test");
+        SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
+
+        // Enable test action
+        setSafeMode(Arrays.asList(testAction.getId()));
+        Assert.assertEquals("Test action should be executed once when enabled", 1,
+                testAction.getActivatedCallCount());
+
+        // Disable test action
+        setSafeMode(Arrays.asList());
+        Assert.assertEquals("Test action should be executed when previously "
+                        + "enabled and current command is to disable it",
+                1, testAction.getDeactivatedCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNonEmbeddedSafeModeActionList_doNotExecuteNonEmbeddedActionAlreadyEnabled()
+            throws Throwable {
+        TestNonEmbeddedSafeModeAction testAction = new TestNonEmbeddedSafeModeAction("test");
+        SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
+
+        // Enable test action
+        setSafeMode(Arrays.asList(testAction.getId()));
+        Assert.assertEquals("Test action should be executed once when enabled", 1,
+                testAction.getActivatedCallCount());
+
+        // Enable test action again
+        // Since test action was previously enabled and it is being enabled again,
+        // it will not execute again since there is no state change
+        setSafeMode(Arrays.asList(testAction.getId()));
+        Assert.assertEquals("Test action should not be executed when previously "
+                        + "enabled and current command is to enable it",
+                1, testAction.getActivatedCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNonEmbeddedSafeModeActionList_doNotExecuteNonEmbeddedActionAlreadyDisabled()
+            throws Throwable {
+        TestNonEmbeddedSafeModeAction testAction = new TestNonEmbeddedSafeModeAction("test");
+        SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
+
+        // Enable test action
+        setSafeMode(Arrays.asList(testAction.getId()));
+        Assert.assertEquals("Test action should be executed once when enabled", 1,
+                testAction.getActivatedCallCount());
+
+        // Disable test action
+        setSafeMode(Arrays.asList());
+        Assert.assertEquals("Test action should be executed when previously "
+                        + "enabled and current command is to disable it",
+                1, testAction.getDeactivatedCallCount());
+
+        // Disable test action again
+        setSafeMode(Arrays.asList());
+        Assert.assertEquals("Test action should not be executed when previously"
+                        + " disabled and current command is to disable it",
+                1, testAction.getDeactivatedCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNonEmbeddedSafeModeActionList_doNotExecuteNonEmbeddedActionWhenUnregistered()
+            throws Throwable {
+        TestNonEmbeddedSafeModeAction testAction = new TestNonEmbeddedSafeModeAction("test");
+        // Register empty action list
+        SafeModeController.getInstance().registerActions(new SafeModeAction[] {});
+
+        // Enable test action
+        setSafeMode(Arrays.asList(testAction.getId()));
+        Assert.assertEquals("Test action should not be executed when enabled and not registered", 0,
+                testAction.getActivatedCallCount());
+
+        // Disable test action
+        setSafeMode(Arrays.asList());
+        Assert.assertEquals("Test action should not be executed when disabled and not registered",
+                0, testAction.getDeactivatedCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNonEmbeddedSafeModeActionList_nonEmbeddedActionsFailureIsCaptured()
+            throws Throwable {
+        TestNonEmbeddedSafeModeAction failingTestAction =
+                new TestNonEmbeddedSafeModeAction("test", false);
+        TestNonEmbeddedSafeModeAction passingTestAction =
+                new TestNonEmbeddedSafeModeAction("passingtest");
+        SafeModeController.getInstance().registerActions(
+                new SafeModeAction[] {failingTestAction, passingTestAction});
+
+        Assert.assertFalse("Overall status is failure if mitigations indicate"
+                        + "failure when SafeMode is activated",
+                NonEmbeddedSafeModeActionsSetupCleanup.executeNonEmbeddedActionsOnStateChange(
+                        new HashSet<>(Arrays.asList()),
+                        new HashSet<>(Arrays.asList(failingTestAction.getId()))));
+        Assert.assertFalse("Overall status is failure if mitigations indicate"
+                        + "failure when SafeMode is deactivated",
+                NonEmbeddedSafeModeActionsSetupCleanup.executeNonEmbeddedActionsOnStateChange(
+                        new HashSet<>(Arrays.asList(failingTestAction.getId())),
+                        new HashSet<>(Arrays.asList())));
+        Assert.assertFalse("Overall status is failure if at least one mitigation indicates "
+                        + "failure when SafeMode is activated",
+                NonEmbeddedSafeModeActionsSetupCleanup.executeNonEmbeddedActionsOnStateChange(
+                        new HashSet<>(Arrays.asList()),
+                        new HashSet<>(Arrays.asList(
+                                failingTestAction.getId(), passingTestAction.getId()))));
+
+        setSafeMode(Arrays.asList(passingTestAction.getId()));
+        Assert.assertTrue("Overall status is success if all mitigations success",
+                NonEmbeddedSafeModeActionsSetupCleanup.executeNonEmbeddedActionsOnStateChange(
+                        new HashSet<>(Arrays.asList()),
+                        new HashSet<>(Arrays.asList(passingTestAction.getId()))));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void
+    testNonEmbeddedSafeModeActionList_multipleNonEmbeddedActionsNotExecutedWhenNotRegistered()
+            throws Throwable {
+        TestNonEmbeddedSafeModeAction testAction1 = new TestNonEmbeddedSafeModeAction("test1");
+        TestNonEmbeddedSafeModeAction testAction2 = new TestNonEmbeddedSafeModeAction("test2");
+        TestNonEmbeddedSafeModeAction testAction3 =
+                new TestNonEmbeddedSafeModeAction("test3", false);
+
+        // Actions are not yet registered, activating them
+        setSafeMode(Arrays.asList(testAction1.getId(), testAction2.getId(), testAction3.getId()));
+        Assert.assertEquals(
+                "Test action 1 should not be executed", 0, testAction1.getActivatedCallCount());
+        Assert.assertEquals(
+                "Test action 2 should not be executed", 0, testAction2.getActivatedCallCount());
+        Assert.assertEquals(
+                "Test action 3 should not be executed", 0, testAction3.getActivatedCallCount());
+
+        // Register all three actions
+        SafeModeController.getInstance().registerActions(
+                new SafeModeAction[] {testAction1, testAction2, testAction3});
+
+        // turn off
+        setSafeMode(Arrays.asList());
+        Assert.assertEquals(
+                "Test action 1 should be executed once", 1, testAction1.getDeactivatedCallCount());
+        Assert.assertEquals(
+                "Test action 2 should be executed once", 1, testAction2.getDeactivatedCallCount());
+        Assert.assertEquals(
+                "Test action 3 should be executed once", 1, testAction3.getDeactivatedCallCount());
+
+        // Unregister test action 2
+        SafeModeController.getInstance().unregisterActionsForTesting();
+        SafeModeController.getInstance().registerActions(
+                new SafeModeAction[] {testAction1, testAction3});
+
+        // turn on
+        setSafeMode(Arrays.asList(testAction1.getId(), testAction2.getId(), testAction3.getId()));
+        Assert.assertEquals(
+                "Test action 1 should be activated once", 1, testAction1.getActivatedCallCount());
+        Assert.assertEquals("Test action 2 should not be activated since it's not in the list", 0,
+                testAction2.getActivatedCallCount());
+        Assert.assertEquals(
+                "Test action 3 should be activated once", 1, testAction3.getActivatedCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNonEmbeddedSafeModeActionList_turnOffMultipleNonEmbeddedActions()
+            throws Throwable {
+        TestNonEmbeddedSafeModeAction testAction1 = new TestNonEmbeddedSafeModeAction("test1");
+        TestNonEmbeddedSafeModeAction testAction2 = new TestNonEmbeddedSafeModeAction("test2");
+        TestNonEmbeddedSafeModeAction testAction3 =
+                new TestNonEmbeddedSafeModeAction("test3", false);
+        SafeModeController.getInstance().registerActions(
+                new SafeModeAction[] {testAction1, testAction2, testAction3});
+
+        Assert.assertEquals(
+                "Test action 1 should not be executed", 0, testAction1.getActivatedCallCount());
+        Assert.assertEquals(
+                "Test action 2 should not be executed", 0, testAction2.getActivatedCallCount());
+        Assert.assertEquals(
+                "Test action 3 should not be executed", 0, testAction3.getActivatedCallCount());
+        setSafeMode(Arrays.asList(testAction1.getId(), testAction2.getId(), testAction3.getId()));
+
+        setSafeMode(Arrays.asList(testAction2.getId()));
+        Assert.assertEquals(
+                "Test action 1 should be activated once", 1, testAction1.getActivatedCallCount());
+        Assert.assertEquals("Test action 1 should be deactivated once", 1,
+                testAction1.getDeactivatedCallCount());
+        Assert.assertEquals(
+                "Test action 2 should be activated once", 1, testAction2.getActivatedCallCount());
+        Assert.assertEquals("Test action 2 should not be deactivated", 0,
+                testAction2.getDeactivatedCallCount());
+        Assert.assertEquals(
+                "Test action 3 should be activated once", 1, testAction3.getActivatedCallCount());
+        Assert.assertEquals("Test action 3 should be deactivated once", 1,
+                testAction3.getDeactivatedCallCount());
+    }
+
+    private void setSafeMode(List<String> actions) throws RemoteException {
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
+        try (ServiceConnectionHelper helper =
+                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
+            service.setSafeMode(actions);
+        }
     }
 }

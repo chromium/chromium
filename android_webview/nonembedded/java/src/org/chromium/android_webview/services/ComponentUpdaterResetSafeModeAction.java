@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.nonembedded;
+package org.chromium.android_webview.services;
 
 import androidx.annotation.NonNull;
 
@@ -15,7 +15,7 @@ public class ComponentUpdaterResetSafeModeAction implements SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
 
     // This ID should not be changed or reused.
-    private static final String ID = "reset_component_updater";
+    public static final String ID = "reset_component_updater";
 
     @Override
     @NonNull

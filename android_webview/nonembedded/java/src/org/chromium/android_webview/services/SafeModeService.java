@@ -250,12 +250,15 @@ public final class SafeModeService extends Service {
     private static void setSafeModeLocked(List<String> actions) {
         boolean enableSafeMode = actions != null && !actions.isEmpty();
 
+        Set<String> oldActions = new HashSet<>();
+        oldActions.addAll(
+                getSharedPreferences().getStringSet(SAFEMODE_ACTIONS_KEY, Collections.emptySet()));
+        Set<String> actionsToPersist = new HashSet<>(actions);
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         if (enableSafeMode) {
             long currentTime = sClock.currentTimeMillis();
             editor.putLong(LAST_MODIFIED_TIME_KEY, currentTime);
 
-            Set<String> actionsToPersist = new HashSet<>(actions);
             editor.putStringSet(SAFEMODE_ACTIONS_KEY, actionsToPersist);
         } else {
             editor.clear();
@@ -273,6 +276,10 @@ public final class SafeModeService extends Service {
                                       : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
         context.getPackageManager().setComponentEnabledSetting(
                 safeModeComponent, newState, PackageManager.DONT_KILL_APP);
+        if (SafeModeController.getInstance().getRegisteredActions() != null) {
+            NonEmbeddedSafeModeActionsSetupCleanup.executeNonEmbeddedActionsOnStateChange(
+                    oldActions, actionsToPersist);
+        }
     }
 
     @GuardedBy("sLock")
