@@ -126,7 +126,8 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
       SiteInstanceImpl* site_instance,
       const GURL& url) {
     OriginAgentClusterIsolationState isolation_request =
-        OriginAgentClusterIsolationState::CreateForDefaultIsolation();
+        OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+            shell()->web_contents()->GetBrowserContext());
 
     return ChildProcessSecurityPolicyImpl::GetInstance()
         ->DetermineOriginAgentClusterIsolation(

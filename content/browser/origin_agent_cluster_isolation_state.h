@@ -9,6 +9,8 @@
 
 namespace content {
 
+class BrowserContext;
+
 // This class contains the OAC isolation state applied to an origin. If
 // `is_origin_agent_cluster` is false, then there's no OAC isolation. If it's
 // true, but `requires_origin_keyed_process` is false, then the origin has
@@ -21,7 +23,8 @@ class CONTENT_EXPORT OriginAgentClusterIsolationState {
   // isolation is non-isolated (flag off) or OriginAgentCluster but without
   // origin-keyed process (flag on), this function is used to get the correct
   // default state without having to know the flag setting.
-  static OriginAgentClusterIsolationState CreateForDefaultIsolation();
+  static OriginAgentClusterIsolationState CreateForDefaultIsolation(
+      BrowserContext* context);
 
   static OriginAgentClusterIsolationState CreateNonIsolated() {
     return OriginAgentClusterIsolationState(false, false);

@@ -2469,7 +2469,9 @@ void ChildProcessSecurityPolicyImpl::AddDefaultIsolatedOriginIfNeeded(
   // Since there was no prior record for this BrowsingInstance, track that this
   // origin should use the default isolation model.
   origin_isolation_by_browsing_instance_[browsing_instance_id].emplace_back(
-      OriginAgentClusterIsolationState::CreateForDefaultIsolation(), origin);
+      OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+          browser_context),
+      origin);
 }
 
 void ChildProcessSecurityPolicyImpl::

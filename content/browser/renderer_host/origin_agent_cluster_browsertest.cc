@@ -460,6 +460,26 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
   EXPECT_FALSE(CanDocumentDomain("a.domain.test", "domain.test", kMalformed));
 }
 
+// Make sure that the default isolation state is correctly generated with
+// respect to the enterprise policy.
+IN_PROC_BROWSER_TEST_F(OriginAgentClusterEnabledBrowserTest,
+                       DefaultIsolationStateEnterprisePolicyTest) {
+  // OAC by default not disabled by enterprise policy.
+  SetEnterprisePolicy(true);
+  {
+    OriginAgentClusterIsolationState default_isolation_state =
+        OriginAgentClusterIsolationState::CreateForDefaultIsolation(nullptr);
+    EXPECT_TRUE(default_isolation_state.is_origin_agent_cluster());
+  }
+  // OAC by default disabled by enterprise policy.
+  SetEnterprisePolicy(false);
+  {
+    OriginAgentClusterIsolationState default_isolation_state =
+        OriginAgentClusterIsolationState::CreateForDefaultIsolation(nullptr);
+    EXPECT_FALSE(default_isolation_state.is_origin_agent_cluster());
+  }
+}
+
 // Test that the legacy behaviour continues working in insecure contexts.
 //
 // Origin-Agent-Cluster: is supposed to be a "powerful feature", which is
