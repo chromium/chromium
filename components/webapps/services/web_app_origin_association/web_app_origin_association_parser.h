@@ -19,8 +19,8 @@ class Value;
 namespace webapps {
 
 // Handles the logic of parsing the web app origin association file from a
-// string as described in the "PWAs as URL Handlers" explainer:
-// https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
+// string as described in the "Scope Extensions for Web Apps" explainer:
+// https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
 class WebAppOriginAssociationParser {
  public:
   WebAppOriginAssociationParser();
@@ -39,10 +39,6 @@ class WebAppOriginAssociationParser {
       const base::Value::Dict& root_dict);
   absl::optional<mojom::AssociatedWebAppPtr> ParseAssociatedWebApp(
       const base::Value::Dict& app_dict);
-  absl::optional<GURL> ParseManifestURL(const base::Value::Dict& app_dict);
-  absl::optional<std::vector<std::string>> ParsePaths(
-      const base::Value::Dict& app_details_dict,
-      const std::string& key);
   void AddErrorInfo(const std::string& error_msg,
                     int error_line = 0,
                     int error_column = 0);

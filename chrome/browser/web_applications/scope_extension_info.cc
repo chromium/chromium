@@ -8,6 +8,9 @@
 
 namespace web_app {
 
+ScopeExtensionInfo::ScopeExtensionInfo(const url::Origin& origin)
+    : origin(origin) {}
+
 ScopeExtensionInfo::ScopeExtensionInfo(const url::Origin& origin,
                                        bool has_origin_wildcard)
     : origin(origin), has_origin_wildcard(has_origin_wildcard) {}
@@ -17,6 +20,11 @@ base::Value ScopeExtensionInfo::AsDebugValue() const {
   root.SetStringKey("origin", origin.GetDebugString());
   root.SetBoolKey("has_origin_wildcard", has_origin_wildcard);
   return root;
+}
+
+void ScopeExtensionInfo::Reset() {
+  origin = url::Origin();
+  has_origin_wildcard = false;
 }
 
 bool operator==(const ScopeExtensionInfo& scope_extension1,

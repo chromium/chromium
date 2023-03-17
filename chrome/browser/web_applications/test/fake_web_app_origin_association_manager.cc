@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/task/sequenced_task_runner.h"
-#include "url/gurl.h"
 
 namespace web_app {
 
@@ -18,16 +17,16 @@ FakeWebAppOriginAssociationManager::~FakeWebAppOriginAssociationManager() =
     default;
 
 void FakeWebAppOriginAssociationManager::GetWebAppOriginAssociations(
-    const GURL& manifest_url,
-    apps::UrlHandlers url_handlers,
+    const GURL& web_app_identity,
+    ScopeExtensions scope_extensions,
     OnDidGetWebAppOriginAssociations callback) {
-  apps::UrlHandlers result;
+  ScopeExtensions result;
 
   if (pass_through_) {
-    result = url_handlers;
+    result = scope_extensions;
   } else {
-    for (const auto& url_handler : url_handlers) {
-      auto it = data_.find(url_handler);
+    for (const auto& scope_extension : scope_extensions) {
+      auto it = data_.find(scope_extension);
       if (it != data_.end())
         result.push_back(it->second);
     }
@@ -37,7 +36,7 @@ void FakeWebAppOriginAssociationManager::GetWebAppOriginAssociations(
 }
 
 void FakeWebAppOriginAssociationManager::SetData(
-    std::map<apps::UrlHandlerInfo, apps::UrlHandlerInfo> data) {
+    std::map<ScopeExtensionInfo, ScopeExtensionInfo> data) {
   data_ = std::move(data);
 }
 

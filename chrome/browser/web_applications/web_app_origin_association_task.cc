@@ -15,71 +15,48 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-namespace {
-// Keep in sync with
-// third_party/blink/renderer/modules/manifest/manifest_parser.cc.
-constexpr size_t kMaxPathsSize = 10;
-constexpr size_t kMaxPathLength = 2000;
-
-// Number of paths cannot exceed |kMaxPathsSize|, and each path cannot contain
-// more than |kMaxPathLength| characters. Duplicate paths are ignored and do not
-// count towards kMaxPathsSize.
-std::vector<std::string> GetValidPaths(std::vector<std::string> paths) {
-  base::flat_set<std::string> result;
-  for (std::string& path : paths) {
-    if (result.size() == kMaxPathsSize)
-      break;
-
-    if (path.length() > kMaxPathLength)
-      continue;
-
-    result.insert(std::move(path));
-  }
-  return std::move(result).extract();
-}
-}  // namespace
-
 namespace web_app {
 
 WebAppOriginAssociationManager::Task::Task(
-    const GURL& manifest_url,
-    apps::UrlHandlers url_handlers,
+    const GURL& web_app_identity,
+    ScopeExtensions scope_extensions,
     WebAppOriginAssociationManager& manager,
     OnDidGetWebAppOriginAssociations callback)
-    : manifest_url_(manifest_url),
+    : web_app_identity_(web_app_identity),
       owner_(manager),
       callback_(std::move(callback)) {
-  for (auto& url_handler : url_handlers)
-    pending_url_handlers_.push_back(std::move(url_handler));
-  url_handlers.clear();
+  for (auto& scope_extension : scope_extensions) {
+    pending_scope_extensions_.push_back(std::move(scope_extension));
+  }
+  scope_extensions.clear();
 }
 
 WebAppOriginAssociationManager::Task::~Task() = default;
 
 void WebAppOriginAssociationManager::Task::Start() {
-  if (pending_url_handlers_.empty()) {
+  if (pending_scope_extensions_.empty()) {
     Finalize();
     return;
   }
 
-  FetchAssociationFile(GetCurrentUrlHandler());
+  FetchAssociationFile(GetCurrentScopeExtension());
 }
 
-apps::UrlHandlerInfo&
-WebAppOriginAssociationManager::Task::GetCurrentUrlHandler() {
-  DCHECK(!pending_url_handlers_.empty());
-  return pending_url_handlers_.front();
+ScopeExtensionInfo&
+WebAppOriginAssociationManager::Task::GetCurrentScopeExtension() {
+  DCHECK(!pending_scope_extensions_.empty());
+  return pending_scope_extensions_.front();
 }
 
 void WebAppOriginAssociationManager::Task::FetchAssociationFile(
-    apps::UrlHandlerInfo& url_handler) {
-  if (url_handler.origin.Serialize().empty()) {
-    MaybeStartNextUrlHandler();
+    ScopeExtensionInfo& scope_extension) {
+  if (scope_extension.origin.Serialize().empty()) {
+    MaybeStartNextScopeExtension();
     return;
   }
 
   owner_->GetFetcher().FetchWebAppOriginAssociationFile(
-      url_handler, g_browser_process->shared_url_loader_factory(),
+      scope_extension.origin, g_browser_process->shared_url_loader_factory(),
       base::BindOnce(
           &WebAppOriginAssociationManager::Task::OnAssociationFileFetched,
           weak_ptr_factory_.GetWeakPtr()));
@@ -88,7 +65,7 @@ void WebAppOriginAssociationManager::Task::FetchAssociationFile(
 void WebAppOriginAssociationManager::Task::OnAssociationFileFetched(
     std::unique_ptr<std::string> file_content) {
   if (!file_content || file_content->empty()) {
-    MaybeStartNextUrlHandler();
+    MaybeStartNextScopeExtension();
     return;
   }
 
@@ -102,38 +79,30 @@ void WebAppOriginAssociationManager::Task::OnAssociationParsed(
     webapps::mojom::WebAppOriginAssociationPtr association,
     std::vector<webapps::mojom::WebAppOriginAssociationErrorPtr> errors) {
   if (association.is_null() || association->apps.empty()) {
-    MaybeStartNextUrlHandler();
+    MaybeStartNextScopeExtension();
     return;
   }
 
-  auto& url_handler = GetCurrentUrlHandler();
-  for (auto& app : association->apps) {
-    if (app->manifest_url == manifest_url_) {
-      if (app->paths.has_value())
-        url_handler.paths = GetValidPaths(std::move(app->paths.value()));
-
-      if (app->exclude_paths.has_value()) {
-        url_handler.exclude_paths =
-            GetValidPaths(std::move(app->exclude_paths.value()));
-      }
-
-      result_.push_back(std::move(url_handler));
-      url_handler.Reset();
+  auto& scope_extension = GetCurrentScopeExtension();
+  for (auto& associated_app : association->apps) {
+    if (associated_app->web_app_identity == web_app_identity_) {
+      result_.push_back(scope_extension);
+      scope_extension.Reset();
       // Only information in the first valid app is saved.
       break;
     }
   }
   association->apps.clear();
 
-  MaybeStartNextUrlHandler();
+  MaybeStartNextScopeExtension();
 }
 
-void WebAppOriginAssociationManager::Task::MaybeStartNextUrlHandler() {
-  DCHECK(!pending_url_handlers_.empty());
-  pending_url_handlers_.pop_front();
-  if (!pending_url_handlers_.empty()) {
-    // Continue with the next url handler.
-    FetchAssociationFile(GetCurrentUrlHandler());
+void WebAppOriginAssociationManager::Task::MaybeStartNextScopeExtension() {
+  DCHECK(!pending_scope_extensions_.empty());
+  pending_scope_extensions_.pop_front();
+  if (!pending_scope_extensions_.empty()) {
+    // Continue with the next scope extension.
+    FetchAssociationFile(GetCurrentScopeExtension());
     return;
   }
 
@@ -141,7 +110,7 @@ void WebAppOriginAssociationManager::Task::MaybeStartNextUrlHandler() {
 }
 
 void WebAppOriginAssociationManager::Task::Finalize() {
-  apps::UrlHandlers result = std::move(result_);
+  ScopeExtensions result = std::move(result_);
   result_.clear();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), std::move(result)));

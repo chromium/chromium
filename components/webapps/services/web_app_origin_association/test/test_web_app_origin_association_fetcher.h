@@ -27,7 +27,7 @@ class TestWebAppOriginAssociationFetcher
 
   // WebAppOriginAssociationFetcher:
   void FetchWebAppOriginAssociationFile(
-      const apps::UrlHandlerInfo& url_handler,
+      const url::Origin& origin,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       FetchFileCallback callback) override;
 

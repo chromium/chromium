@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_SCOPE_EXTENSION_INFO_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_SCOPE_EXTENSION_INFO_H_
 
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "base/values.h"
 #include "url/origin.h"
 
@@ -14,6 +18,7 @@ namespace web_app {
 // from its web app manifest.
 struct ScopeExtensionInfo {
   ScopeExtensionInfo() = default;
+  explicit ScopeExtensionInfo(const url::Origin& origin);
   ScopeExtensionInfo(const url::Origin& origin, bool has_origin_wildcard);
 
   // Copyable to support web_app::WebApp being copyable as it has a
@@ -26,6 +31,9 @@ struct ScopeExtensionInfo {
   ScopeExtensionInfo& operator=(ScopeExtensionInfo&&) = default;
 
   ~ScopeExtensionInfo() = default;
+
+  // Reset the scope extension to its default state.
+  REINITIALIZES_AFTER_MOVE void Reset();
 
   base::Value AsDebugValue() const;
 
@@ -44,6 +52,9 @@ bool operator!=(const ScopeExtensionInfo& scope_extension1,
 // or std::map).
 bool operator<(const ScopeExtensionInfo& scope_extension1,
                const ScopeExtensionInfo& scope_extension2);
+
+using ScopeExtensions = std::vector<ScopeExtensionInfo>;
+using ScopeExtensionMap = std::unordered_map<std::string, ScopeExtensionInfo>;
 
 }  // namespace web_app
 

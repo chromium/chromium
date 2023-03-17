@@ -18,10 +18,10 @@ TestWebAppOriginAssociationFetcher::~TestWebAppOriginAssociationFetcher() =
     default;
 
 void TestWebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
-    const apps::UrlHandlerInfo& url_handler,
+    const url::Origin& origin,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     FetchFileCallback callback) {
-  auto search = data_.find(url_handler.origin);
+  auto search = data_.find(origin);
   std::string file_content;
   if (search != data_.end())
     file_content = search->second;

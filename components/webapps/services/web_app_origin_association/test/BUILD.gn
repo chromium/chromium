@@ -9,7 +9,6 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//components/services/app_service/public/cpp:app_url_handling",
     "//services/network/public/cpp",
     "//url",
   ]

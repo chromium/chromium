@@ -31,12 +31,12 @@ constexpr net::NetworkTrafficAnnotationTag
       semantics {
           sender: "Web App Origin Association Fetcher"
           description:
-            "PWAs can specify URL Handlers in the Manifest. To verify the "
+            "PWAs can specify Scope Extensions in the Manifest. To verify the "
             "handlers, we download the corresponding web app origin "
             "association files."
           trigger:
-            "A PWA that has URL Handlers declared in the Manifest is "
-            "installed, updated, or when DevTools displays URL Handler "
+            "A PWA that has Scope Extensions declared in the Manifest is "
+            "installed, updated, or when DevTools displays Scope Extensions "
             "information to users."
           data:
             "Nothing."
@@ -110,11 +110,10 @@ void WebAppOriginAssociationFetcher::SetRetryOptionsForTest(
 }
 
 void WebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
-    const apps::UrlHandlerInfo& url_handler,
+    const url::Origin& origin,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     FetchFileCallback callback) {
-  const GURL resource_url =
-      url_handler.origin.GetURL().Resolve(association_file_name);
+  const GURL resource_url = origin.GetURL().Resolve(association_file_name);
   if (!ShouldFetchAssociationFile(resource_url)) {
     // Do not proceed if |resource_url| is not valid.
     webapps::WebAppOriginAssociationMetrics::RecordFetchResult(

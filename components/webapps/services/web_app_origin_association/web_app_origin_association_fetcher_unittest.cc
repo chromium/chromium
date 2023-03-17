@@ -25,13 +25,9 @@
 namespace {
 
 constexpr char kWebAppOriginAssociationFileContent[] =
-    R"({\"web_apps\": [{"
-    "    \"manifest\": \"https://foo.com/manifest.json\","
-    "    \"details\": {"
-    "      \"paths\": [\"/*\"],"
-    "      \"exclude_paths\": [\"/blog/data\"]"
-    "    }"
-    "}]})";
+    R"({\"web_apps\": ["
+  "    { \"web_app_identity\": \"https://foo.com/\"}"
+  "]})";
 
 constexpr char kFetchResultHistogram[] =
     "Webapp.WebAppOriginAssociationFetchResult";
@@ -90,10 +86,9 @@ class WebAppOriginAssociationFetcherTest : public testing::Test {
 
 TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
   base::RunLoop run_loop;
-  auto handler = apps::UrlHandlerInfo();
-  handler.origin = url::Origin::Create(GURL(server_.base_url()));
   fetcher_->FetchWebAppOriginAssociationFile(
-      handler, shared_url_loader_factory_.get(),
+      url::Origin::Create(GURL(server_.base_url())),
+      shared_url_loader_factory_.get(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<std::string> file_content) {
             ASSERT_FALSE(!file_content);
@@ -108,11 +103,9 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
 
 TEST_F(WebAppOriginAssociationFetcherTest, FileDoesNotExist) {
   base::RunLoop run_loop;
-  auto handler = apps::UrlHandlerInfo();
   GURL url = server_.GetURL("foo.com", "/");
-  handler.origin = url::Origin::Create(url);
   fetcher_->FetchWebAppOriginAssociationFile(
-      handler, shared_url_loader_factory_.get(),
+      url::Origin::Create(url), shared_url_loader_factory_.get(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<std::string> file_content) {
             ASSERT_TRUE(!file_content);
@@ -128,10 +121,9 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileDoesNotExist) {
 
 TEST_F(WebAppOriginAssociationFetcherTest, FileUrlIsInvalid) {
   base::RunLoop run_loop;
-  auto handler = apps::UrlHandlerInfo();
-  handler.origin = url::Origin::Create(GURL("https://co.uk"));
   fetcher_->FetchWebAppOriginAssociationFile(
-      handler, shared_url_loader_factory_.get(),
+      url::Origin::Create(GURL("https://co.uk")),
+      shared_url_loader_factory_.get(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<std::string> file_content) {
             ASSERT_TRUE(!file_content);

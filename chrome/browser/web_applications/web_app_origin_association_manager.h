@@ -10,24 +10,22 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class GURL;
-
 namespace web_app {
 
-// Callback type that sends back the valid |url_handlers|.
+// Callback type that sends back the valid |scope_extensions|.
 using OnDidGetWebAppOriginAssociations =
-    base::OnceCallback<void(apps::UrlHandlers url_handlers)>;
+    base::OnceCallback<void(ScopeExtensions scope_extensions)>;
 
 // Fetch, parse, and validate web app origin association files.
 class WebAppOriginAssociationManager {
  public:
-  // Does the fetching, parsing, and validation work for a batch of url
-  // handlers.
+  // Does the fetching, parsing, and validation work for a batch of scope
+  // extensions.
   class Task;
 
   WebAppOriginAssociationManager();
@@ -38,9 +36,10 @@ class WebAppOriginAssociationManager {
   virtual ~WebAppOriginAssociationManager();
 
   virtual void GetWebAppOriginAssociations(
-      const GURL& manifest_url,
-      apps::UrlHandlers url_handlers,
+      const GURL& web_app_identity,
+      ScopeExtensions scope_extensions,
       OnDidGetWebAppOriginAssociations callback);
+
   void SetFetcherForTest(
       std::unique_ptr<webapps::WebAppOriginAssociationFetcher> fetcher);
 

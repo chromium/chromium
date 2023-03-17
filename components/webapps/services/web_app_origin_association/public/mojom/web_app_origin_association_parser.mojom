@@ -8,20 +8,17 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "url/mojom/url.mojom";
 
 // The WebAppOriginAssociation structure is an internal representation of the
-// web app origin association file described in the "PWAs as URL Handlers"
-// explainer: https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
+// web app origin association file described in the "Scope Extensions for Web
+// Apps" explainer:
+// https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
 struct WebAppOriginAssociation {
   array<AssociatedWebApp> apps;
 };
 
-// |paths| contains allowed path strings relative to the origin, and
-// |exclude_paths| contains disallowed paths.
-// |paths| is null if "paths" doesn't exist, and |exclude_paths| is null if
-// "exclude_paths" doesn't exist.
+// |web_app_identity| is the app's manifest id.
+// https://www.w3.org/TR/appmanifest/#dfn-id
 struct AssociatedWebApp {
-  url.mojom.Url manifest_url;
-  array<string>? paths;
-  array<string>? exclude_paths;
+  url.mojom.Url web_app_identity;
 };
 
 struct WebAppOriginAssociationError {

@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,88 +48,69 @@ class WebAppOriginAssociationParserImplTest : public testing::Test {
 
 TEST_F(WebAppOriginAssociationParserImplTest, ParseGoodAssociationFile) {
   std::string raw_json =
-      "{\"web_apps\": ["
-      "  {"
-      "    \"manifest\": \"https://foo.com/manifest.json\","
-      "    \"details\": {}"
-      "  }"
-      "]}";
+      "{"
+      "  \"web_apps\": [{"
+      "    \"web_app_identity\":\"https://foo.com/\""
+      "    }]"
+      "}";
+  base::test::TestFuture<mojom::WebAppOriginAssociationPtr,
+                         std::vector<mojom::WebAppOriginAssociationErrorPtr>>
+      future;
 
-  base::RunLoop run_loop;
-  ParseWebAppOriginAssociation(
-      raw_json,
-      base::BindLambdaForTesting(
-          [&](mojom::WebAppOriginAssociationPtr association,
-              std::vector<mojom::WebAppOriginAssociationErrorPtr> errors) {
-            ASSERT_FALSE(!association);
-            ASSERT_FALSE(association == mojom::WebAppOriginAssociation::New());
-            ASSERT_TRUE(errors.empty());
+  ParseWebAppOriginAssociation(raw_json, future.GetCallback());
+  auto [association, errors] = future.Take();
 
-            ASSERT_EQ(1u, association->apps.size());
-            EXPECT_EQ("https://foo.com/manifest.json",
-                      association->apps[0]->manifest_url);
+  ASSERT_FALSE(!association);
+  ASSERT_FALSE(association == mojom::WebAppOriginAssociation::New());
+  ASSERT_TRUE(errors.empty());
 
-            histogram_tester_.ExpectBucketCount(
-                kParseResultHistogram,
-                WebAppOriginAssociationMetrics::ParseResult::kParseSucceeded,
-                1);
-            run_loop.Quit();
-          }));
+  ASSERT_EQ(1u, association->apps.size());
+  EXPECT_EQ(GURL("https://foo.com/"), association->apps[0]->web_app_identity);
 
-  run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      kParseResultHistogram,
+      WebAppOriginAssociationMetrics::ParseResult::kParseSucceeded, 1);
 }
 
 TEST_F(WebAppOriginAssociationParserImplTest,
        ParseBadAssociationFileNotADictionary) {
   std::string raw_json = "\"invalid\"";
+  base::test::TestFuture<mojom::WebAppOriginAssociationPtr,
+                         std::vector<mojom::WebAppOriginAssociationErrorPtr>>
+      future;
 
-  base::RunLoop run_loop;
-  ParseWebAppOriginAssociation(
-      raw_json,
-      base::BindLambdaForTesting(
-          [&](mojom::WebAppOriginAssociationPtr association,
-              std::vector<mojom::WebAppOriginAssociationErrorPtr> errors) {
-            ASSERT_TRUE(!association);
-            ASSERT_FALSE(errors.empty());
-            ASSERT_EQ(1u, errors.size());
-            EXPECT_EQ("No valid JSON object found.", errors[0]->message);
+  ParseWebAppOriginAssociation(raw_json, future.GetCallback());
+  auto [association, errors] = future.Take();
 
-            histogram_tester_.ExpectBucketCount(
-                kParseResultHistogram,
-                WebAppOriginAssociationMetrics::ParseResult::
-                    kParseFailedNotADictionary,
-                1);
-            run_loop.Quit();
-          }));
+  ASSERT_TRUE(!association);
+  ASSERT_FALSE(errors.empty());
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ("No valid JSON object found.", errors[0]->message);
 
-  run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      kParseResultHistogram,
+      WebAppOriginAssociationMetrics::ParseResult::kParseFailedNotADictionary,
+      1);
 }
 
 TEST_F(WebAppOriginAssociationParserImplTest,
        ParseBadAssociationFileInvalidJson) {
   std::string raw_json = "[1, 2";
+  base::test::TestFuture<mojom::WebAppOriginAssociationPtr,
+                         std::vector<mojom::WebAppOriginAssociationErrorPtr>>
+      future;
 
-  base::RunLoop run_loop;
-  ParseWebAppOriginAssociation(
-      raw_json,
-      base::BindLambdaForTesting(
-          [&](mojom::WebAppOriginAssociationPtr association,
-              std::vector<mojom::WebAppOriginAssociationErrorPtr> errors) {
-            ASSERT_TRUE(!association);
-            ASSERT_FALSE(errors.empty());
-            ASSERT_EQ(1u, errors.size());
-            EXPECT_NE(std::string::npos,
-                      errors[0]->message.find("Line: 1, column: 6,"));
+  ParseWebAppOriginAssociation(raw_json, future.GetCallback());
+  auto [association, errors] = future.Take();
 
-            histogram_tester_.ExpectBucketCount(
-                kParseResultHistogram,
-                WebAppOriginAssociationMetrics::ParseResult::
-                    kParseFailedInvalidJson,
-                1);
-            run_loop.Quit();
-          }));
+  ASSERT_TRUE(!association);
+  ASSERT_FALSE(errors.empty());
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_NE(std::string::npos, errors[0]->message.find("Line: 1, column: 6,"));
 
-  run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      kParseResultHistogram,
+      WebAppOriginAssociationMetrics::ParseResult::kParseFailedInvalidJson, 1);
 }
 
 }  // namespace webapps

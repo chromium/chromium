@@ -16,7 +16,6 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//components/services/app_service/public/cpp:app_url_handling",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp",
