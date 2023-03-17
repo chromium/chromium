@@ -744,12 +744,17 @@ void TabletModeController::SuspendDone(base::TimeDelta sleep_duration) {
     tablet_mode_usage_interval_start_time_ = base::Time::Now();
 
   // Start listening to the input device changes again.
-  if (IsBoardTypeMarkedAsTabletCapable()) {
+  // It might be possible that the suspend request has been cancelled so
+  // `this` was not removed as an observer of the input device changes. See
+  // b/271634754 for details.
+  auto* device_data_manager = ui::DeviceDataManager::GetInstance();
+  if (IsBoardTypeMarkedAsTabletCapable() &&
+      !device_data_manager->HasObserver(this)) {
     bluetooth_devices_observer_ =
         std::make_unique<BluetoothDevicesObserver>(base::BindRepeating(
             &TabletModeController::OnBluetoothAdapterOrDeviceChanged,
             base::Unretained(this)));
-    ui::DeviceDataManager::GetInstance()->AddObserver(this);
+    device_data_manager->AddObserver(this);
     // Call HandlePointingDeviceAddedOrRemoved() to iterate all available input
     // devices just in case we have missed all the notifications from
     // DeviceDataManager and  BluetoothDevicesObserver when SuspendDone() is

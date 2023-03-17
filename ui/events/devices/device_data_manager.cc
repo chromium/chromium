@@ -283,6 +283,10 @@ void DeviceDataManager::RemoveObserver(InputDeviceEventObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool DeviceDataManager::HasObserver(InputDeviceEventObserver* observer) {
+  return observers_.HasObserver(observer);
+}
+
 void DeviceDataManager::ResetDeviceListsForTest() {
   touchscreen_devices_.clear();
   keyboard_devices_.clear();
