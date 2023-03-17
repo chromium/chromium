@@ -219,7 +219,6 @@ source_set("metrics_internal") {
     ":tab_usage_recorder_metrics",
     "//base",
     "//components/google/core/common",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/voice",
     "//ios/chrome/browser/web_state_list",

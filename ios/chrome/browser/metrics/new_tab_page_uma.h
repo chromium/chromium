@@ -7,7 +7,6 @@
 
 #include "ui/base/page_transition_types.h"
 
-class ChromeBrowserState;
 class GURL;
 namespace web {
 class WebState;
@@ -35,12 +34,6 @@ enum ActionType {
 };
 
 void RecordAction(bool is_incognito,
-                  web::WebState* web_state,
-                  ActionType action);
-
-// TODO(crbug.com/1424397): This method is DEPRECATED, to be removed
-// once ios_internal has been updated.
-void RecordAction(ChromeBrowserState* browser_state,
                   web::WebState* web_state,
                   ActionType action);
 

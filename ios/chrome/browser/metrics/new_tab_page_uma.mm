@@ -6,7 +6,6 @@
 
 #import "base/metrics/histogram_macros.h"
 #import "components/google/core/common/google_util.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -26,22 +25,6 @@ void RecordAction(bool is_incognito,
       web_state->GetVisibleURL() != kChromeUINewTabURL) {
     return;
   }
-  base::HistogramBase* counter = base::Histogram::FactoryGet(
-      "NewTabPage.ActioniOS", 0, NUM_ACTION_TYPES, NUM_ACTION_TYPES + 1,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  counter->Add(action);
-}
-
-// TODO(crbug.com/1424397): This method is DEPRECATED, to be removed
-// once ios_internal has been updated.
-void RecordAction(ChromeBrowserState* browser_state,
-                  web::WebState* web_state,
-                  ActionType action) {
-  DCHECK(browser_state);
-  if (browser_state->IsOffTheRecord())
-    return;
-  if (!web_state || web_state->GetVisibleURL() != kChromeUINewTabURL)
-    return;
   base::HistogramBase* counter = base::Histogram::FactoryGet(
       "NewTabPage.ActioniOS", 0, NUM_ACTION_TYPES, NUM_ACTION_TYPES + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag);
