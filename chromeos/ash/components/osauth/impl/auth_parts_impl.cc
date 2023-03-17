@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 
@@ -49,7 +50,8 @@ AuthPartsImpl::~AuthPartsImpl() {
 }
 
 void AuthPartsImpl::CreateDefaultComponents() {
-  session_storage_ = std::make_unique<AuthSessionStorageImpl>();
+  session_storage_ =
+      std::make_unique<AuthSessionStorageImpl>(UserDataAuthClient::Get());
 }
 
 AuthSessionStorage* AuthPartsImpl::GetAuthSessionStorage() {

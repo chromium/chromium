@@ -35,6 +35,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/memory:unit_tests",
     "//chromeos/ash/components/multidevice:unit_tests",
     "//chromeos/ash/components/network:unit_tests",
+    "//chromeos/ash/components/osauth/impl:unit_tests",
     "//chromeos/ash/components/peripheral_notification:unit_tests",
     "//chromeos/ash/components/phonehub:unit_tests",
     "//chromeos/ash/components/policy:unit_tests",

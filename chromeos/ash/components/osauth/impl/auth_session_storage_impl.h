@@ -21,6 +21,7 @@ namespace ash {
 class AuthenticationError;
 class AuthPerformer;
 class UserContext;
+class UserDataAuthClient;
 
 // Helper class that stores and manages lifetime of authenticated UserContext.
 // Main use cases for this class are the situations where authenticated
@@ -38,7 +39,7 @@ class UserContext;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     : public AuthSessionStorage {
  public:
-  AuthSessionStorageImpl();
+  explicit AuthSessionStorageImpl(UserDataAuthClient* user_data_auth);
   ~AuthSessionStorageImpl() override;
 
   // AuthSessionStorage implementation:

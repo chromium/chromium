@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/unguessable_token.h"
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -19,8 +18,9 @@
 
 namespace ash {
 
-AuthSessionStorageImpl::AuthSessionStorageImpl() {
-  auth_performer_ = std::make_unique<AuthPerformer>(UserDataAuthClient::Get());
+AuthSessionStorageImpl::AuthSessionStorageImpl(
+    UserDataAuthClient* user_data_auth) {
+  auth_performer_ = std::make_unique<AuthPerformer>(user_data_auth);
 }
 
 AuthSessionStorageImpl::~AuthSessionStorageImpl() = default;

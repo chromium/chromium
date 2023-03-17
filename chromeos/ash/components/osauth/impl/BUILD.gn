@@ -25,3 +25,18 @@ component("impl") {
     "auth_session_storage_impl.h",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":impl",
+    "//base",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:test_support",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+  sources = [ "auth_session_storage_impl_unittest.cc" ]
+}
