@@ -26,6 +26,7 @@ class KeyEvent;
 class MouseEvent;
 class ScrollEvent;
 class TouchEvent;
+class GestureEvent;
 }  // namespace ui
 
 namespace views {

@@ -266,8 +266,9 @@ TEST(PenProcessorTest, MultiPenDMEnabled) {
 
   const int kPenCount = 3;
   POINTER_PEN_INFO pen_info[kPenCount];
-  for (int i = 0; i < kPenCount; i++)
-    memset(&pen_info[i], 0, sizeof(POINTER_PEN_INFO));
+  for (auto& i : pen_info) {
+    memset(&i, 0, sizeof(POINTER_PEN_INFO));
+  }
 
   gfx::Point point(100, 100);
 
