@@ -2534,8 +2534,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   CreateCookieAccessObserver();
 
   // network::mojom::CookieAccessObserver:
-  void OnCookiesAccessed(
-      network::mojom::CookieAccessDetailsPtr details) override;
+  void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
+                             details_vector) override;
 
   void GetSavableResourceLinksFromRenderer();
   void GetPendingBeaconHost(

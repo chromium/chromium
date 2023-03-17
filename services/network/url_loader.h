@@ -459,7 +459,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Returns true if the request should be cancelled.
   bool MaybeBlockResponseForCorb(corb::ResponseAnalyzer::Decision);
 
-  void ReportFlaggedResponseCookies();
+  void ReportFlaggedResponseCookies(bool call_cookie_observer);
   void StartReading();
 
   // Whether `force_ignore_site_for_cookies` should be set on net::URLRequest.
@@ -680,6 +680,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // request. This prevents the network stack from overriding them.
   bool allow_cookies_from_browser_ = false;
   std::string cookies_from_browser_;
+
+  std::vector<network::mojom::CookieAccessDetailsPtr> cookie_access_details_;
 
   const bool provide_data_use_updates_;
 

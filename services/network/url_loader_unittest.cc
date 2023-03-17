@@ -3841,12 +3841,16 @@ class MockCookieObserver : public network::mojom::CookieAccessObserver {
     return remote;
   }
 
-  void OnCookiesAccessed(mojom::CookieAccessDetailsPtr details) override {
-    if (access_type_ && access_type_ != details->type)
-      return;
+  void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
+                             details_vector) override {
+    for (auto& details : details_vector) {
+      if (access_type_ && access_type_ != details->type) {
+        continue;
+      }
 
-    for (const auto& cookie_with_status : details->cookie_list) {
-      observed_cookies_.emplace_back(details, cookie_with_status);
+      for (const auto& cookie_with_status : details->cookie_list) {
+        observed_cookies_.emplace_back(details, cookie_with_status);
+      }
     }
     if (wait_for_cookie_count_ &&
         observed_cookies().size() >= wait_for_cookie_count_) {

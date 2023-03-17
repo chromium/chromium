@@ -8262,37 +8262,41 @@ NavigationRequest::CreateCookieAccessObserver() {
 }
 
 void NavigationRequest::OnCookiesAccessed(
-    network::mojom::CookieAccessDetailsPtr details) {
-  // TODO(721329): We should not send information to the current frame about
-  // (potentially unrelated) ongoing navigation, but at the moment we don't
-  // have another way to add messages to DevTools console.
-  EmitCookieWarningsAndMetrics(frame_tree_node()->current_frame_host(),
-                               details);
+    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
+  for (auto& details : details_vector) {
+    // TODO(721329): We should not send information to the current frame about
+    // (potentially unrelated) ongoing navigation, but at the moment we don't
+    // have another way to add messages to DevTools console.
+    EmitCookieWarningsAndMetrics(frame_tree_node()->current_frame_host(),
+                                 details);
 
-  CookieAccessDetails allowed;
-  CookieAccessDetails blocked;
-  SplitCookiesIntoAllowedAndBlocked(details, &allowed, &blocked);
-  if (!allowed.cookie_list.empty())
-    GetDelegate()->OnCookiesAccessed(this, allowed);
-  if (!blocked.cookie_list.empty())
-    GetDelegate()->OnCookiesAccessed(this, blocked);
-
-  // When determining the BFCache eligibility, we explicitly ignore the cookie
-  // changes from the navigation itself because we want the
-  // `CookieChangeListener` to only track the cookie changes that potentially
-  // make the document initially rendered by the navigation request outdated.
-  if (allowed.type == CookieAccessDetails::Type::kChange) {
-    uint64_t cookie_modification_count = allowed.cookie_list.size();
-    uint64_t http_only_cookie_modification_count = 0u;
-    for (net::CanonicalCookie& cookie : allowed.cookie_list) {
-      if (cookie.IsHttpOnly()) {
-        http_only_cookie_modification_count++;
-      }
+    CookieAccessDetails allowed;
+    CookieAccessDetails blocked;
+    SplitCookiesIntoAllowedAndBlocked(details, &allowed, &blocked);
+    if (!allowed.cookie_list.empty()) {
+      GetDelegate()->OnCookiesAccessed(this, allowed);
     }
-    if (cookie_change_listener_) {
-      cookie_change_listener_->RemoveNavigationCookieModificationCount(
-          base::PassKey<NavigationRequest>(), cookie_modification_count,
-          http_only_cookie_modification_count);
+    if (!blocked.cookie_list.empty()) {
+      GetDelegate()->OnCookiesAccessed(this, blocked);
+    }
+
+    // When determining the BFCache eligibility, we explicitly ignore the cookie
+    // changes from the navigation itself because we want the
+    // `CookieChangeListener` to only track the cookie changes that potentially
+    // make the document initially rendered by the navigation request outdated.
+    if (allowed.type == CookieAccessDetails::Type::kChange) {
+      uint64_t cookie_modification_count = allowed.cookie_list.size();
+      uint64_t http_only_cookie_modification_count = 0u;
+      for (net::CanonicalCookie& cookie : allowed.cookie_list) {
+        if (cookie.IsHttpOnly()) {
+          http_only_cookie_modification_count++;
+        }
+      }
+      if (cookie_change_listener_) {
+        cookie_change_listener_->RemoveNavigationCookieModificationCount(
+            base::PassKey<NavigationRequest>(), cookie_modification_count,
+            http_only_cookie_modification_count);
+      }
     }
   }
 }

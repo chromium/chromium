@@ -1650,8 +1650,8 @@ class CONTENT_EXPORT NavigationRequest
   CreateCookieAccessObserver();
 
   // network::mojom::CookieAccessObserver:
-  void OnCookiesAccessed(
-      network::mojom::CookieAccessDetailsPtr details) override;
+  void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
+                             details_vector) override;
   void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
                  observer) override;
 

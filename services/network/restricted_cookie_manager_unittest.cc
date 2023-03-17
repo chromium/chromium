@@ -120,15 +120,18 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
-  void OnCookiesAccessed(mojom::CookieAccessDetailsPtr details) override {
-    for (const auto& cookie_and_access_result : details->cookie_list) {
-      CookieOp op;
-      op.type = details->type;
-      op.url = details->url;
-      op.site_for_cookies = details->site_for_cookies;
-      op.cookie_or_line = std::move(cookie_and_access_result->cookie_or_line);
-      op.status = cookie_and_access_result->access_result.status;
-      recorded_activity_.push_back(std::move(op));
+  void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
+                             details_vector) override {
+    for (auto& details : details_vector) {
+      for (const auto& cookie_and_access_result : details->cookie_list) {
+        CookieOp op;
+        op.type = details->type;
+        op.url = details->url;
+        op.site_for_cookies = details->site_for_cookies;
+        op.cookie_or_line = std::move(cookie_and_access_result->cookie_or_line);
+        op.status = cookie_and_access_result->access_result.status;
+        recorded_activity_.push_back(std::move(op));
+      }
     }
 
     run_loop_->QuitClosure().Run();
@@ -1499,6 +1502,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicyWarnActual) {
       *cookie, kDefaultUrl, net::SiteForCookies(), kDefaultOrigin,
       /*has_storage_access=*/false));
 
+  WaitForCallback();
+
   EXPECT_THAT(recorded_activity(),
               ElementsAre(MatchesCookieOp(
                   mojom::CookieAccessDetails::Type::kChange,
@@ -1582,6 +1587,8 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
             net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/true),
         kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
         /*has_storage_access=*/false));
+
+    WaitForCallback();
 
     EXPECT_THAT(
         recorded_activity(),

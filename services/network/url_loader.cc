@@ -1075,6 +1075,14 @@ URLLoader::~URLLoader() {
     keepalive_statistics_recorder_->OnLoadFinished(
         *factory_params_->top_frame_id, keepalive_request_size_);
   }
+
+  if (base::FeatureList::IsEnabled(features::kLessChattyNetworkService) &&
+      !cookie_access_details_.empty()) {
+    // In case the response wasn't received successfully sent the call now.
+    // Note `cookie_observer_` is guaranteed non-null since
+    // `cookie_access_details_` is only appended to when it is valid.
+    cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
+  }
 }
 
 // static
@@ -1362,7 +1370,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   mojom::URLResponseHeadPtr response = BuildResponseHead();
   DispatchOnRawResponse();
-  ReportFlaggedResponseCookies();
+  ReportFlaggedResponseCookies(false);
 
   if (memory_cache_)
     memory_cache_->OnRedirect(url_request_.get(), request_destination_);
@@ -1571,7 +1579,10 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   DCHECK(url_request == url_request_.get());
   has_received_response_ = true;
 
-  ReportFlaggedResponseCookies();
+  // Use `true` to force sending the cookie accessed update now. This is because
+  // for navigations the CookieObserver might get torn down by the time the
+  // request completes.
+  ReportFlaggedResponseCookies(true);
 
   if (net_error != net::OK) {
     NotifyCompleted(net_error);
@@ -2011,7 +2022,7 @@ void URLLoader::OnAuthCredentials(
   } else {
     // CancelAuth will proceed to the body, so cookies only need to be reported
     // here.
-    ReportFlaggedResponseCookies();
+    ReportFlaggedResponseCookies(false);
     url_request_->SetAuth(credentials.value());
   }
 }
@@ -2223,10 +2234,13 @@ void URLLoader::SetRawRequestHeadersAndNotify(
     }
 
     if (!reported_cookies.empty()) {
-      cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
+      cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url_request_->url(),
           url_request_->site_for_cookies(), std::move(reported_cookies),
           devtools_request_id()));
+      if (!base::FeatureList::IsEnabled(features::kLessChattyNetworkService)) {
+        cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
+      }
     }
   }
 }
@@ -2531,33 +2545,39 @@ bool URLLoader::MaybeBlockResponseForCorb(
   return will_cancel;
 }
 
-void URLLoader::ReportFlaggedResponseCookies() {
-  if (cookie_observer_) {
-    std::vector<mojom::CookieOrLineWithAccessResultPtr> reported_cookies;
-    for (const auto& cookie_line_and_access_result :
-         url_request_->maybe_stored_cookies()) {
-      if (ShouldNotifyAboutCookie(
-              cookie_line_and_access_result.access_result.status)) {
-        mojom::CookieOrLinePtr cookie_or_line;
-        if (cookie_line_and_access_result.cookie.has_value()) {
-          cookie_or_line = mojom::CookieOrLine::NewCookie(
-              cookie_line_and_access_result.cookie.value());
-        } else {
-          cookie_or_line = mojom::CookieOrLine::NewCookieString(
-              cookie_line_and_access_result.cookie_string);
-        }
+void URLLoader::ReportFlaggedResponseCookies(bool call_cookie_observer) {
+  if (!cookie_observer_) {
+    return;
+  }
 
-        reported_cookies.push_back(mojom::CookieOrLineWithAccessResult::New(
-            std::move(cookie_or_line),
-            cookie_line_and_access_result.access_result));
+  std::vector<mojom::CookieOrLineWithAccessResultPtr> reported_cookies;
+  for (const auto& cookie_line_and_access_result :
+       url_request_->maybe_stored_cookies()) {
+    if (ShouldNotifyAboutCookie(
+            cookie_line_and_access_result.access_result.status)) {
+      mojom::CookieOrLinePtr cookie_or_line;
+      if (cookie_line_and_access_result.cookie.has_value()) {
+        cookie_or_line = mojom::CookieOrLine::NewCookie(
+            cookie_line_and_access_result.cookie.value());
+      } else {
+        cookie_or_line = mojom::CookieOrLine::NewCookieString(
+            cookie_line_and_access_result.cookie_string);
       }
-    }
 
-    if (!reported_cookies.empty()) {
-      cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
-          mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
-          url_request_->site_for_cookies(), std::move(reported_cookies),
-          devtools_request_id()));
+      reported_cookies.push_back(mojom::CookieOrLineWithAccessResult::New(
+          std::move(cookie_or_line),
+          cookie_line_and_access_result.access_result));
+    }
+  }
+
+  if (!reported_cookies.empty()) {
+    cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
+        mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
+        url_request_->site_for_cookies(), std::move(reported_cookies),
+        devtools_request_id()));
+    if (!base::FeatureList::IsEnabled(features::kLessChattyNetworkService) ||
+        call_cookie_observer) {
+      cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
     }
   }
 }

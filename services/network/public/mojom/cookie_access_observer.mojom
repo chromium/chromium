@@ -39,7 +39,7 @@ struct CookieAccessDetails {
 // The user of the NetworkService should create a dedicated
 // CookieAccessObserver for each context it is interested in.
 interface CookieAccessObserver {
-  // Called when an attempt has been made to access (read or write) the cookies
+  // Called when attempts have been made to access (read or write) the cookies
   // in |details.cookie_list|, with the status indicating cookies were actually
   // used or blocked (and if blocked gives the reason). Currently, blocked
   // cookies are included if they are blocked by user preference, or if they
@@ -47,7 +47,9 @@ interface CookieAccessObserver {
   // The network skips sending this notification on consecutive "duplicate"
   // access events (i.e. where the cookie and its access result remain unchanged
   // since the previous event).
-  OnCookiesAccessed(CookieAccessDetails details);
+  // The network service queues multiple events within a short time window to
+  // reduce mojo overhead.
+  OnCookiesAccessed(array<CookieAccessDetails> details);
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

@@ -14604,16 +14604,20 @@ void RenderFrameHostImpl::Clone(
 }
 
 void RenderFrameHostImpl::OnCookiesAccessed(
-    network::mojom::CookieAccessDetailsPtr details) {
-  EmitCookieWarningsAndMetrics(this, details);
+    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
+  for (auto& details : details_vector) {
+    EmitCookieWarningsAndMetrics(this, details);
 
-  CookieAccessDetails allowed;
-  CookieAccessDetails blocked;
-  SplitCookiesIntoAllowedAndBlocked(details, &allowed, &blocked);
-  if (!allowed.cookie_list.empty())
-    delegate_->OnCookiesAccessed(this, allowed);
-  if (!blocked.cookie_list.empty())
-    delegate_->OnCookiesAccessed(this, blocked);
+    CookieAccessDetails allowed;
+    CookieAccessDetails blocked;
+    SplitCookiesIntoAllowedAndBlocked(details, &allowed, &blocked);
+    if (!allowed.cookie_list.empty()) {
+      delegate_->OnCookiesAccessed(this, allowed);
+    }
+    if (!blocked.cookie_list.empty()) {
+      delegate_->OnCookiesAccessed(this, blocked);
+    }
+  }
 }
 
 void RenderFrameHostImpl::SetEmbeddingToken(

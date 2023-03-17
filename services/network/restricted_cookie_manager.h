@@ -16,6 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
@@ -245,6 +246,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   net::CookieSettingOverrides GetCookieSettingOverrides(
       bool has_storage_access) const;
 
+  void OnCookiesAccessed(network::mojom::CookieAccessDetailsPtr details);
+
+  void CallCookiesAccessed();
+
   const mojom::RestrictedCookieManagerRole role_;
   const raw_ptr<net::CookieStore> cookie_store_;
   const raw_ref<const CookieSettings> cookie_settings_;
@@ -292,6 +297,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   mojo::Receiver<mojom::RestrictedCookieManager> receiver_;
 
   const raw_ptr<UmaMetricsUpdater> metrics_updater_;
+
+  // Stores queued cookie access events that will be sent after a short delay, controlled by
+  // `cookies_access_timer_`.
+  std::vector<network::mojom::CookieAccessDetailsPtr> cookie_access_details_;
+  base::RetainingOneShotTimer cookies_access_timer_;
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
 };

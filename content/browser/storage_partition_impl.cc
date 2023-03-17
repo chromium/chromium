@@ -1097,22 +1097,24 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
         std::move(observer));
   }
 
-  void OnCookiesAccessed(
-      network::mojom::CookieAccessDetailsPtr details) override {
+  void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
+                             details_vector) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
-        storage_partition_->GetServiceWorkerContext();
-    std::vector<GlobalRenderFrameHostId> destinations =
-        *service_worker_context->GetWindowClientFrameRoutingIds(
-            blink::StorageKey::CreateFirstParty(
-                url::Origin::Create(details->url)));
-    if (destinations.empty()) {
-      return;
-    }
+    for (auto& details : details_vector) {
+      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
+          storage_partition_->GetServiceWorkerContext();
+      std::vector<GlobalRenderFrameHostId> destinations =
+          *service_worker_context->GetWindowClientFrameRoutingIds(
+              blink::StorageKey::CreateFirstParty(
+                  url::Origin::Create(details->url)));
+      if (destinations.empty()) {
+        return;
+      }
 
-    for (GlobalRenderFrameHostId frame_id : destinations) {
-      if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
-        rfh->OnCookiesAccessed(mojo::Clone(details));
+      for (GlobalRenderFrameHostId frame_id : destinations) {
+        if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
+          rfh->OnCookiesAccessed(mojo::Clone(details_vector));
+        }
       }
     }
   }
