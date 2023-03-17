@@ -8,11 +8,14 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/credentials_mode.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "net/base/backoff_entry.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -28,6 +31,31 @@ namespace {
 
 const char kAuthorizationHeader[] = "Authorization";
 const char kProtobufContentType[] = "application/x-protobuf";
+
+constexpr net::BackoffEntry::Policy kRetryPolicy = {
+    // Number of initial errors to ignore before starting to back off.
+    0,
+
+    // Initial delay in ms: 10 second.
+    10000,
+
+    // Factor by which the waiting time is multiplied.
+    10,
+
+    // Fuzzing percentage; this spreads delays randomly between 80% and 100%
+    // of the calculated time.
+    0.20,
+
+    // Maximum amount of time we are willing to delay our request: 25 minutes.
+    1000 * 60 * 25,
+
+    // When to discard an entry: never.
+    -1,
+
+    // |always_use_initial_delay|; false means that the initial delay is
+    // applied after the first error, and starts backing off from there.
+    false,
+};
 
 net::NetworkTrafficAnnotationTag CreateTrafficAnnotationTag() {
   return net::DefineNetworkTrafficAnnotation("trusted_vault_request",
@@ -89,32 +117,37 @@ TrustedVaultRequest::HttpStatus AccessTokenFetchingErrorToRequestHttpStatus(
 }  // namespace
 
 TrustedVaultRequest::TrustedVaultRequest(
+    const CoreAccountId& account_id,
     HttpMethod http_method,
     const GURL& request_url,
     const absl::optional<std::string>& serialized_request_proto,
+    base::TimeDelta max_retry_duration,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher,
     TrustedVaultURLFetchReasonForUMA reason_for_uma)
-    : http_method_(http_method),
+    : account_id_(account_id),
+      http_method_(http_method),
       request_url_(request_url),
       serialized_request_proto_(serialized_request_proto),
       url_loader_factory_(std::move(url_loader_factory)),
-      reason_for_uma_(reason_for_uma) {
+      access_token_fetcher_(std::move(access_token_fetcher)),
+      reason_for_uma_(reason_for_uma),
+      max_retry_time_(base::TimeTicks::Now() + max_retry_duration),
+      backoff_entry_(&kRetryPolicy) {
   DCHECK(url_loader_factory_);
   DCHECK(http_method == HttpMethod::kPost ||
          !serialized_request_proto.has_value());
+  DCHECK(access_token_fetcher_);
 }
 
 TrustedVaultRequest::~TrustedVaultRequest() = default;
 
 void TrustedVaultRequest::FetchAccessTokenAndSendRequest(
-    const CoreAccountId& account_id,
-    TrustedVaultAccessTokenFetcher* access_token_fetcher,
     CompletionCallback callback) {
-  DCHECK(access_token_fetcher);
   completion_callback_ = std::move(callback);
-  access_token_fetcher->FetchAccessToken(
-      account_id, base::BindOnce(&TrustedVaultRequest::OnAccessTokenFetched,
-                                 weak_ptr_factory_.GetWeakPtr()));
+  access_token_fetcher_->FetchAccessToken(
+      account_id_, base::BindOnce(&TrustedVaultRequest::OnAccessTokenFetched,
+                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrustedVaultRequest::OnAccessTokenFetched(
@@ -124,8 +157,14 @@ void TrustedVaultRequest::OnAccessTokenFetched(
                             access_token_info_or_error.has_value());
 
   if (!access_token_info_or_error.has_value()) {
-    // TODO(crbug.com/1413179): expose persistent auth errors to the higher
-    // level as a dedicated status.
+    backoff_entry_.InformOfRequest(/*succeeded=*/false);
+    if (access_token_info_or_error.error() ==
+            TrustedVaultAccessTokenFetcher::FetchingError::
+                kTransientAuthError &&
+        CanRetry()) {
+      ScheduleRetry();
+      return;
+    }
     RunCompletionCallbackAndMaybeDestroySelf(
         /*status=*/AccessTokenFetchingErrorToRequestHttpStatus(
             access_token_info_or_error.error()),
@@ -156,6 +195,11 @@ void TrustedVaultRequest::OnURLLoadComplete(
 
   std::string response_content = response_body ? *response_body : std::string();
   if (http_response_code == 0) {
+    backoff_entry_.InformOfRequest(/*succeeded=*/false);
+    if (CanRetry()) {
+      ScheduleRetry();
+      return;
+    }
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kNetworkError,
                                              response_content);
     return;
@@ -206,7 +250,8 @@ std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
                                        CreateTrafficAnnotationTag());
 
   // Fetchers are sometimes cancelled because a network change was detected,
-  // especially at startup and after sign-in on ChromeOS.
+  // especially at startup and after sign-in on ChromeOS. Still (despite of more
+  // advanced retry logic) use basic retry option for network change errors.
   url_loader->SetRetryOptions(
       3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   url_loader->SetAllowHttpErrorResults(true);
@@ -216,6 +261,26 @@ std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
                                       kProtobufContentType);
   }
   return url_loader;
+}
+
+bool TrustedVaultRequest::CanRetry() const {
+  return backoff_entry_.GetReleaseTime() < max_retry_time_;
+}
+
+void TrustedVaultRequest::ScheduleRetry() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TrustedVaultRequest::Retry,
+                     weak_ptr_factory_.GetWeakPtr()),
+      backoff_entry_.GetTimeUntilRelease());
+}
+
+void TrustedVaultRequest::Retry() {
+  // Start over from access token fetching, since its fetching errors also
+  // trigger retries.
+  access_token_fetcher_->FetchAccessToken(
+      account_id_, base::BindOnce(&TrustedVaultRequest::OnAccessTokenFetched,
+                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrustedVaultRequest::RunCompletionCallbackAndMaybeDestroySelf(

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_IMPL_H_
 #define COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_IMPL_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
@@ -17,7 +19,8 @@ namespace syncer {
 
 class TrustedVaultAccessTokenFetcherFrontend;
 
-// Must be created on the UI thread, but can be used on any sequence.
+// Must be created on the UI thread, but can be used (and cloned) on any
+// sequence.
 class TrustedVaultAccessTokenFetcherImpl
     : public TrustedVaultAccessTokenFetcher {
  public:
@@ -32,8 +35,13 @@ class TrustedVaultAccessTokenFetcherImpl
   // TrustedVaultAccessTokenFetcher implementation.
   void FetchAccessToken(const CoreAccountId& account_id,
                         TokenCallback callback) override;
+  std::unique_ptr<TrustedVaultAccessTokenFetcher> Clone() override;
 
  private:
+  TrustedVaultAccessTokenFetcherImpl(
+      base::WeakPtr<TrustedVaultAccessTokenFetcherFrontend> frontend,
+      scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner);
+
   base::WeakPtr<TrustedVaultAccessTokenFetcherFrontend> frontend_;
   scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
 };

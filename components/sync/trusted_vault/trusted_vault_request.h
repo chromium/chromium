@@ -10,13 +10,14 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-struct CoreAccountId;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -62,11 +63,16 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   // object upon |callback| call. For GET requests, |serialized_request_proto|
   // must be null. For |POST| requests, it can be either way (optional payload).
   // |url_loader_factory| must not be null.
+  // |max_retry_duration| specifies for how long the request can be retried in
+  // case of transient errors. There will be no retries when it is set to zero.
   TrustedVaultRequest(
+      const CoreAccountId& account_id,
       HttpMethod http_method,
       const GURL& request_url,
       const absl::optional<std::string>& serialized_request_proto,
+      base::TimeDelta max_retry_duration,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher,
       TrustedVaultURLFetchReasonForUMA reason_for_uma);
   TrustedVaultRequest(const TrustedVaultRequest& other) = delete;
   TrustedVaultRequest& operator=(const TrustedVaultRequest& other) = delete;
@@ -75,10 +81,7 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   // Attempts to fetch access token and sends the request if fetch was
   // successful or populates error into ResultCallback otherwise. Should be
   // called at most once.
-  void FetchAccessTokenAndSendRequest(
-      const CoreAccountId& account_id,
-      TrustedVaultAccessTokenFetcher* access_token_fetcher,
-      CompletionCallback callback);
+  void FetchAccessTokenAndSendRequest(CompletionCallback callback);
 
  private:
   void OnAccessTokenFetched(
@@ -89,17 +92,26 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
       const std::string& access_token) const;
 
+  bool CanRetry() const;
+  void ScheduleRetry();
+  void Retry();
+
   // Running |completion_callback_| may cause destroying of this object, so all
   // callers of this method must not run any code afterwards.
   void RunCompletionCallbackAndMaybeDestroySelf(
       HttpStatus status,
       const std::string& response_body);
 
+  const CoreAccountId account_id_;
   const HttpMethod http_method_;
   const GURL request_url_;
   const absl::optional<std::string> serialized_request_proto_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher_;
   const TrustedVaultURLFetchReasonForUMA reason_for_uma_;
+  const base::TimeTicks max_retry_time_;
+
+  net::BackoffEntry backoff_entry_;
 
   CompletionCallback completion_callback_;
 

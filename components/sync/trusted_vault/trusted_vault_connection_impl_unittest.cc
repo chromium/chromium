@@ -4,6 +4,7 @@
 
 #include "components/sync/trusted_vault/trusted_vault_connection_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -97,6 +98,11 @@ class FakeTrustedVaultAccessTokenFetcher
     std::move(callback).Run(access_token_info_or_error_);
   }
 
+  std::unique_ptr<TrustedVaultAccessTokenFetcher> Clone() override {
+    return std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
+        access_token_info_or_error_);
+  }
+
  private:
   const AccessTokenInfoOrError access_token_info_or_error_;
 };
@@ -179,12 +185,17 @@ class TrustedVaultConnectionImplTest : public testing::Test {
         response_http_code);
   }
 
+  base::test::SingleThreadTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
   const std::vector<std::vector<uint8_t>> kTrustedVaultKeys = {{1, 2},
                                                                {1, 2, 3, 4}};
   const GURL kTestURL = GURL("https://test.com/test");
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
@@ -520,6 +531,9 @@ TEST_F(TrustedVaultConnectionImplTest,
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
+  // Advance time to bypass retry logic.
+  task_environment().FastForwardBy(
+      TrustedVaultConnectionImpl::kMaxJoinSecurityDomainRetryDuration);
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kNetworkError)));
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequestWithNetworkError());
 }
