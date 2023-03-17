@@ -27,6 +27,7 @@
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -407,6 +408,11 @@ class CORE_EXPORT ContainerNode : public Node {
   virtual LayoutBox* GetLayoutBoxForScrolling() const;
 
   Element* GetAutofocusDelegate() const;
+
+  HTMLCollection* PopoverInvokers() {
+    DCHECK(IsTreeScope());
+    return EnsureCachedCollection<HTMLCollection>(kPopoverInvokers);
+  }
 
   void Trace(Visitor*) const override;
 

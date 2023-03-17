@@ -1391,7 +1391,8 @@ void MarkPopoverInvokersDirty(const HTMLElement& popover) {
   if (!cache) {
     return;
   }
-  for (auto* invoker_candidate : *document.PopoverInvokers()) {
+  for (auto* invoker_candidate :
+       *popover.GetTreeScope().RootNode().PopoverInvokers()) {
     auto* invoker = To<HTMLFormControlElement>(invoker_candidate);
     if (popover == invoker->popoverTargetElement().popover) {
       cache->MarkElementDirty(invoker);
@@ -1959,7 +1960,8 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
   // 2. Anchor attribute.
   check_ancestor(new_popover.anchorElement());
   // 3. Invoker to popover (need to consider all of them).
-  for (auto* invoker : *document.PopoverInvokers()) {
+  for (auto* invoker :
+       *new_popover.GetTreeScope().RootNode().PopoverInvokers()) {
     DCHECK(IsA<HTMLFormControlElement>(invoker));
     auto* popover = To<HTMLFormControlElement>(invoker)
                         ->popoverTargetElement()

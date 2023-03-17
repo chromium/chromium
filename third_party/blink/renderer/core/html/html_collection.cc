@@ -111,12 +111,13 @@ static NodeListSearchRoot SearchRootFromCollectionType(
     case kSelectedOptions:
     case kDataListOptions:
     case kMapAreas:
-    case kPopoverInvokers:
       return NodeListSearchRoot::kOwnerNode;
     case kFormControls:
       if (IsA<HTMLFieldSetElement>(owner))
         return NodeListSearchRoot::kOwnerNode;
       DCHECK(IsA<HTMLFormElement>(owner));
+      return NodeListSearchRoot::kTreeScope;
+    case kPopoverInvokers:
       return NodeListSearchRoot::kTreeScope;
     case kNameNodeListType:
     case kRadioNodeListType:

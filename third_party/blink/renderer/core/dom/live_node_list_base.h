@@ -83,10 +83,6 @@ class CORE_EXPORT LiveNodeListBase : public GarbageCollectedMixin {
  protected:
   Document& GetDocument() const { return owner_node_->GetDocument(); }
 
-  ALWAYS_INLINE NodeListSearchRoot SearchRoot() const {
-    return static_cast<NodeListSearchRoot>(search_root_);
-  }
-
   template <typename MatchFunc>
   static Element* TraverseMatchingElementsForwardToOffset(
       Element& current_element,

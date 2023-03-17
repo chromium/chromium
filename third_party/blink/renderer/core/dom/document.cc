@@ -7253,10 +7253,6 @@ HTMLCollection* Document::DocumentAllNamedItems(const AtomicString& name) {
       kDocumentAllNamedItems, name);
 }
 
-HTMLCollection* Document::PopoverInvokers() {
-  return EnsureCachedCollection<HTMLCollection>(kPopoverInvokers);
-}
-
 void Document::IncrementLazyAdsFrameCount() {
   data_->lazy_ads_frame_count_++;
 }
