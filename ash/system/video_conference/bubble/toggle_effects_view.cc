@@ -16,6 +16,8 @@
 #include "ash/utility/haptics_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -34,10 +36,41 @@ namespace ash {
 
 namespace {
 
+constexpr char kTestEffectHistogramName[] = "TestEffect";
+constexpr char kPortraitRelightingHistogramName[] = "PortraitRelighting";
+constexpr char kNoiseCancellationHistogramName[] = "NoiseCancellation";
+constexpr char kLiveCaptionHistogramName[] = "LiveCaption";
+constexpr char kVideoConferenceHistogramPrefix[] = "Ash.VideoConferenceTray";
+
 constexpr int kButtonCornerRadius = 16;
 constexpr int kIconSize = 20;
 constexpr int kButtonHeight = 64;
 constexpr int kButtonSpacing = 8;
+
+// Gets the histogram name for the effect, based on `effect_id`.
+std::string GetEffectHistogramName(VcEffectId effect_id) {
+  std::string effect_name;
+  switch (effect_id) {
+    case ash::VcEffectId::kTestEffect:
+      effect_name = kTestEffectHistogramName;
+      break;
+    case ash::VcEffectId::kPortraitRelighting:
+      effect_name = kPortraitRelightingHistogramName;
+      break;
+    case ash::VcEffectId::kNoiseCancellation:
+      effect_name = kNoiseCancellationHistogramName;
+      break;
+    case ash::VcEffectId::kLiveCaption:
+      effect_name = kLiveCaptionHistogramName;
+      break;
+    case ash::VcEffectId::kBackgroundBlur:
+      // No toggle button for background blur effect.
+      return std::string();
+  }
+  return base::JoinString(
+      {kVideoConferenceHistogramPrefix, effect_name, "Click"},
+      /*separator=*/".");
+}
 
 // A single toggle button for a video conference effect, combined with a text
 // label. WARNING: `callback` provided must not destroy the button or the bubble
@@ -52,8 +85,9 @@ class ButtonContainer : public views::Button {
                   const std::u16string& label_text,
                   const int accessible_name_id,
                   const int preferred_width,
-                  absl::optional<int> container_id = absl::nullopt)
-      : callback_(callback), toggled_(toggle_state) {
+                  absl::optional<int> container_id,
+                  const VcEffectId effect_id)
+      : callback_(callback), toggled_(toggle_state), effect_id_(effect_id) {
     SetCallback(base::BindRepeating(&ButtonContainer::OnButtonClicked,
                                     weak_ptr_factory_.GetWeakPtr()));
     SetID(video_conference::BubbleViewID::kToggleEffectsButton);
@@ -105,6 +139,8 @@ class ButtonContainer : public views::Button {
     // Sets the toggled state.
     toggled_ = !toggled_;
 
+    base::UmaHistogramBoolean(GetEffectHistogramName(effect_id_), toggled_);
+
     haptics_util::PlayHapticToggleEffect(
         !toggled_, ui::HapticTouchpadEffectStrength::kMedium);
 
@@ -124,6 +160,9 @@ class ButtonContainer : public views::Button {
 
   // Indicates the toggled state of the button.
   bool toggled_ = false;
+
+  // The effect id associated to the effect of this button.
+  const VcEffectId effect_id_;
 
   // Owned by the views hierarchy.
   views::ImageView* icon_ = nullptr;
@@ -191,7 +230,7 @@ ToggleEffectsView::ToggleEffectsView(VideoConferenceTrayController* controller,
       row_view->AddChildView(std::make_unique<ButtonContainer>(
           state->button_callback(), state->icon(), toggle_state,
           state->label_text(), state->accessible_name_id(), button_width,
-          tile->container_id()));
+          tile->container_id(), tile->id()));
     }
 
     // Add the row as a child, now that it's fully populated,

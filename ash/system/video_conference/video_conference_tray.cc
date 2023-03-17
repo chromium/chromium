@@ -24,6 +24,7 @@
 #include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -40,6 +41,16 @@ namespace {
 constexpr float kTrayButtonsSpacing = 4;
 constexpr float kPrivacyIndicatorRadius = 4;
 constexpr float kIndicatorBorderWidth = 1;
+
+// Histogram names
+constexpr char kToggleButtonHistogramName[] =
+    "Ash.VideoConferenceTray.ToggleBubbleButton.Click";
+constexpr char kCameraMuteHistogramName[] =
+    "Ash.VideoConferenceTray.CameraMuteButton.Click";
+constexpr char kMicrophoneMuteHistogramName[] =
+    "Ash.VideoConferenceTray.MicrophoneMuteButton.Click";
+constexpr char kStopScreenShareHistogramName[] =
+    "Ash.VideoConferenceTray.StopScreenShareButton.Click";
 
 // A customized toggle button for the VC tray's toggle bubble button.
 class ToggleBubbleButton : public IconButton {
@@ -306,7 +317,10 @@ void VideoConferenceTray::OnSessionStateChanged(
 }
 
 void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
-  if (GetBubbleWidget()) {
+  const bool bubble_open = GetBubbleWidget();
+  base::UmaHistogramBoolean(kToggleButtonHistogramName, !bubble_open);
+
+  if (bubble_open) {
     CloseBubble();
     return;
   }
@@ -332,14 +346,17 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
 }
 
 void VideoConferenceTray::OnCameraButtonClicked(const ui::Event& event) {
-  VideoConferenceTrayController::Get()->SetCameraMuted(
-      /*muted=*/!camera_icon_->toggled());
+  const bool muted = !camera_icon_->toggled();
+  VideoConferenceTrayController::Get()->SetCameraMuted(muted);
+
+  base::UmaHistogramBoolean(kCameraMuteHistogramName, !muted);
 }
 
 void VideoConferenceTray::OnAudioButtonClicked(const ui::Event& event) {
-  // TODO(b/253275993): Implement the callback for `audio_icon_`.
-  VideoConferenceTrayController::Get()->SetMicrophoneMuted(
-      /*muted=*/!audio_icon_->toggled());
+  const bool muted = !audio_icon_->toggled();
+  VideoConferenceTrayController::Get()->SetMicrophoneMuted(muted);
+
+  base::UmaHistogramBoolean(kMicrophoneMuteHistogramName, !muted);
 }
 
 void VideoConferenceTray::OnScreenShareButtonClicked(const ui::Event& event) {
@@ -347,6 +364,8 @@ void VideoConferenceTray::OnScreenShareButtonClicked(const ui::Event& event) {
       ->system_notification_controller()
       ->screen_security_controller()
       ->StopAllSessions(/*is_screen_access=*/true);
+
+  base::UmaHistogramBoolean(kStopScreenShareHistogramName, true);
 }
 
 BEGIN_METADATA(VideoConferenceTray, TrayBackgroundView)

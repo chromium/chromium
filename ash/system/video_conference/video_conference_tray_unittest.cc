@@ -19,11 +19,21 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 
 namespace {
+
+constexpr char kToggleButtonHistogramName[] =
+    "Ash.VideoConferenceTray.ToggleBubbleButton.Click";
+constexpr char kCameraMuteHistogramName[] =
+    "Ash.VideoConferenceTray.CameraMuteButton.Click";
+constexpr char kMicrophoneMuteHistogramName[] =
+    "Ash.VideoConferenceTray.MicrophoneMuteButton.Click";
+constexpr char kStopScreenShareHistogramName[] =
+    "Ash.VideoConferenceTray.StopScreenShareButton.Click";
 
 void SetSessionState(session_manager::SessionState state) {
   ash::SessionInfo info;
@@ -109,6 +119,7 @@ class VideoConferenceTrayTest : public AshTestBase {
 };
 
 TEST_F(VideoConferenceTrayTest, ClickTrayButton) {
+  base::HistogramTester histogram_tester;
   SetTrayAndButtonsVisible();
 
   EXPECT_FALSE(video_conference_tray()->GetBubbleView());
@@ -118,16 +129,19 @@ TEST_F(VideoConferenceTrayTest, ClickTrayButton) {
   EXPECT_TRUE(video_conference_tray()->GetBubbleView());
   EXPECT_TRUE(video_conference_tray()->GetBubbleView()->GetVisible());
   EXPECT_TRUE(toggle_bubble_button()->toggled());
+  histogram_tester.ExpectBucketCount(kToggleButtonHistogramName, true, 1);
 
   // Clicking it again should reset the bubble.
   LeftClickOn(toggle_bubble_button());
   EXPECT_FALSE(video_conference_tray()->GetBubbleView());
   EXPECT_FALSE(toggle_bubble_button()->toggled());
+  histogram_tester.ExpectBucketCount(kToggleButtonHistogramName, false, 1);
 
   LeftClickOn(toggle_bubble_button());
   EXPECT_TRUE(video_conference_tray()->GetBubbleView());
   EXPECT_TRUE(video_conference_tray()->GetBubbleView()->GetVisible());
   EXPECT_TRUE(toggle_bubble_button()->toggled());
+  histogram_tester.ExpectBucketCount(kToggleButtonHistogramName, true, 2);
 
   // Click anywhere else outside the bubble (i.e. the status area button) should
   // close the bubble.
@@ -292,6 +306,7 @@ TEST_F(VideoConferenceTrayTest, ScreenshareButtonVisibility) {
 }
 
 TEST_F(VideoConferenceTrayTest, ToggleCameraButton) {
+  base::HistogramTester histogram_tester;
   SetTrayAndButtonsVisible();
 
   EXPECT_FALSE(camera_icon()->toggled());
@@ -300,14 +315,17 @@ TEST_F(VideoConferenceTrayTest, ToggleCameraButton) {
   LeftClickOn(camera_icon());
   EXPECT_TRUE(controller()->GetCameraMuted());
   EXPECT_TRUE(camera_icon()->toggled());
+  histogram_tester.ExpectBucketCount(kCameraMuteHistogramName, false, 1);
 
   // Toggle again, should be unmuted.
   LeftClickOn(camera_icon());
   EXPECT_FALSE(controller()->GetCameraMuted());
   EXPECT_FALSE(camera_icon()->toggled());
+  histogram_tester.ExpectBucketCount(kCameraMuteHistogramName, true, 1);
 }
 
 TEST_F(VideoConferenceTrayTest, ToggleMicrophoneButton) {
+  base::HistogramTester histogram_tester;
   SetTrayAndButtonsVisible();
 
   EXPECT_FALSE(audio_icon()->toggled());
@@ -316,14 +334,17 @@ TEST_F(VideoConferenceTrayTest, ToggleMicrophoneButton) {
   LeftClickOn(audio_icon());
   EXPECT_TRUE(controller()->GetMicrophoneMuted());
   EXPECT_TRUE(audio_icon()->toggled());
+  histogram_tester.ExpectBucketCount(kMicrophoneMuteHistogramName, false, 1);
 
   // Toggle again, should be unmuted.
   LeftClickOn(audio_icon());
   EXPECT_FALSE(controller()->GetMicrophoneMuted());
   EXPECT_FALSE(audio_icon()->toggled());
+  histogram_tester.ExpectBucketCount(kMicrophoneMuteHistogramName, true, 1);
 }
 
 TEST_F(VideoConferenceTrayTest, ClickScreenshareButton) {
+  base::HistogramTester histogram_tester;
   SetTrayAndButtonsVisible();
 
   bool stop_callback_called = false;
@@ -339,6 +360,7 @@ TEST_F(VideoConferenceTrayTest, ClickScreenshareButton) {
   // callback.
   LeftClickOn(screen_share_icon());
   EXPECT_TRUE(stop_callback_called);
+  histogram_tester.ExpectBucketCount(kStopScreenShareHistogramName, true, 1);
 
   stop_callback_called = false;
   Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
@@ -374,7 +396,7 @@ TEST_F(VideoConferenceTrayTest, PrivacyIndicator) {
   EXPECT_FALSE(audio_icon()->show_privacy_indicator());
 }
 
-TEST_F(VideoConferenceTrayTest, CamerIconPrivacyIndicatorOnToggled) {
+TEST_F(VideoConferenceTrayTest, CameraIconPrivacyIndicatorOnToggled) {
   auto state = SetTrayAndButtonsVisible();
 
   state.is_capturing_camera = true;

@@ -5884,6 +5884,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.VideoConferenceTray.StopScreenSharingButton.Click"
+    enum="BooleanClicked" expires_after="2024-03-16">
+  <owner>leandre@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the stop screen share button in video conference tray is
+    clicked.
+  </summary>
+</histogram>
+
+<histogram name="Ash.VideoConferenceTray.ToggleBubbleButton.Click"
+    enum="BooleanOpened" expires_after="2024-03-16">
+  <owner>leandre@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the toggle bubble button in video conference tray is clicked
+    to open/close the bubble.
+  </summary>
+</histogram>
+
+<histogram name="Ash.VideoConferenceTray.{Device}MuteButton.Click"
+    enum="BooleanMuted" expires_after="2024-03-16">
+  <owner>leandre@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the {Device} mute button in video conference tray is clicked.
+    We will record if the user clicks the button to mute or to un-mute the
+    {Device}.
+  </summary>
+  <token key="Device">
+    <variant name="Camera" summary="camera"/>
+    <variant name="Microphone" summary="microphone"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.VideoConferenceTray.{EffectName}.Click"
+    enum="BooleanEnabled" expires_after="2024-03-16">
+  <owner>leandre@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when the toggle button of {EffectName} in the video conference
+    bubble is clicked. We will record if the user clicks the button to enable or
+    disable the effect.
+  </summary>
+  <token key="EffectName">
+    <variant name="LiveCaption" summary="Live Caption"/>
+    <variant name="NoiseCancellation" summary="Noise cancellation"/>
+    <variant name="PortraitRelighting" summary="Portrait Relighting"/>
+    <variant name="TestEffect" summary="Test Effect"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Wallpaper.Collection" enum="WallpaperCollection"
     expires_after="2023-07-30">
   <owner>jasontt@chromium.org</owner>

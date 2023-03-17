@@ -223,6 +223,8 @@ class BubbleViewTest : public AshTestBase {
       super_cuteness_;
 };
 
+// TODO(b/273604669): Move tests that are only related to `toggle_effects_view`
+// to its own unit test file.
 TEST_F(BubbleViewTest, NoEffects) {
   EXPECT_FALSE(bubble_view());
 

@@ -12911,6 +12911,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Match multiple apps"/>
 </enum>
 
+<enum name="BooleanMuted">
+  <int value="0" label="Muted"/>
+  <int value="1" label="Unmuted"/>
+</enum>
+
 <enum name="BooleanNativeNotifications">
   <int value="0" label="Using Chrome notifications"/>
   <int value="1" label="Using native notifications"/>
