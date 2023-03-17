@@ -434,6 +434,11 @@ export class AutomationPredicate {
         nodeNameContainedInStaticTextChildren(node)) {
       return false;
     }
+    // Do not consider containers that are clickable containers, unless they
+    // also contain actionable nodes.
+    if (node.clickable && !hasActionableDescendant(node)) {
+      return false;
+    }
 
     // Always try to dive into subtrees with actionable descendants for some
     // roles even if these roles are not naturally containers.
