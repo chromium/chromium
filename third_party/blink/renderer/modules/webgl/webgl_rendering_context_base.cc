@@ -1755,11 +1755,9 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     return false;
   if (!CopyRenderingResultsFromDrawingBuffer(Host()->ResourceProvider(),
                                              source_buffer)) {
-    // Currently, CopyRenderingResultsFromDrawingBuffer is expected to always
-    // succeed because cases where canvas()-buffer() is not accelerated are
-    // handled before reaching this point.  If that assumption ever stops
-    // holding true, we may need to implement a fallback right here.
-    NOTREACHED();
+    // CopyRenderingResultsFromDrawingBuffer handles both the
+    // hardware-accelerated and software cases, so there is no
+    // possible additional fallback for failures seen at this point.
     return false;
   }
   return true;
