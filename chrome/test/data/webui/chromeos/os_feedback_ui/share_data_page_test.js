@@ -866,6 +866,24 @@ export function shareDataPageTestSuite() {
   });
 
   /**
+   * Test that openAutofillDialog and recordPreSubmitAction are called when
+   * #autofillMetadataUrl ("autofill metadata") link is clicked.
+   */
+  test('openAutofillDialog', async () => {
+    await initializePage();
+
+    assertEquals(0, feedbackServiceProvider.getOpenAutofillDialogCallCount());
+    verifyRecordPreSubmitActionCallCount(
+        0, FeedbackAppPreSubmitAction.kViewedAutofillMetadata);
+
+    getElement('#autofillMetadataUrl').click();
+
+    assertEquals(1, feedbackServiceProvider.getOpenAutofillDialogCallCount());
+    verifyRecordPreSubmitActionCallCount(
+        1, FeedbackAppPreSubmitAction.kViewedAutofillMetadata);
+  });
+
+  /**
    * Test that clicking the #bluetoothLogsLink will open the dialog and set the
    * focus on the close dialog icon button.
    */

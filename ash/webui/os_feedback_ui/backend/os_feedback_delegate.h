@@ -50,6 +50,10 @@ class OsFeedbackDelegate {
   // Open system info dialog (which displays the system logs
   // to be sent with the report if the user has opted in).
   virtual void OpenSystemInfoDialog() = 0;
+  // Open autofill metadata dialog (which displays the autofill logs
+  // to be sent with the report if the user has opted in).
+  virtual void OpenAutofillMetadataDialog(
+      const std::string& autofill_metadata) = 0;
   // Gets the isChild to check if the account is a unicorn account.
   virtual bool IsChildAccount() = 0;
 };

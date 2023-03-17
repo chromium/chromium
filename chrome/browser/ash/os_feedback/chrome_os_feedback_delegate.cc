@@ -316,7 +316,7 @@ void ChromeOsFeedbackDelegate::OpenExploreApp() {
 }
 
 void ChromeOsFeedbackDelegate::OpenMetricsDialog() {
-  OpenWebDialog(GURL(chrome::kChromeUIHistogramsURL));
+  OpenWebDialog(GURL(chrome::kChromeUIHistogramsURL), /*args=*/"");
 }
 
 void ChromeOsFeedbackDelegate::OpenSystemInfoDialog() {
@@ -324,14 +324,22 @@ void ChromeOsFeedbackDelegate::OpenSystemInfoDialog() {
   // For now, use the old Feedback tool's sys_info.html.
   GURL systemInfoUrl =
       GURL(base::StrCat({chrome::kChromeUIFeedbackURL, "html/sys_info.html"}));
-  OpenWebDialog(systemInfoUrl);
+  OpenWebDialog(systemInfoUrl, /*args=*/"");
+}
+
+void ChromeOsFeedbackDelegate::OpenAutofillMetadataDialog(
+    const std::string& autofill_metadata) {
+  GURL autofillInfoUrl = GURL(base::StrCat(
+      {chrome::kChromeUIFeedbackURL, "html/autofill_metadata_info.html"}));
+  OpenWebDialog(autofillInfoUrl, autofill_metadata);
 }
 
 bool ChromeOsFeedbackDelegate::IsChildAccount() {
   return profile_->IsChild();
 }
 
-void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url) {
+void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url,
+                                             const std::string& args) {
   Browser* feedback_browser = ash::FindSystemWebAppBrowser(
       profile_, ash::SystemWebAppType::OS_FEEDBACK);
 
@@ -342,7 +350,7 @@ void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url) {
   ChildWebDialog* child_dialog = new ChildWebDialog(
       profile_, widget, url,
       /*title=*/std::u16string(),
-      /*modal_type=*/ui::MODAL_TYPE_NONE, /*args=*/"", /*dialog_width=*/640,
+      /*modal_type=*/ui::MODAL_TYPE_NONE, /*args=*/args, /*dialog_width=*/640,
       /*dialog_height=*/400, /*can_resize=*/true,
       /*can_minimize=*/true);
 

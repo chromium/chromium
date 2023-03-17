@@ -262,7 +262,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     // this default behavior.
     e.preventDefault();
 
-    // TODO(crbug.com/1407646): Open autofill metadata dialog.
+    this.feedbackServiceProvider_.openAutofillDialog(
+        this.feedbackContext.autofillMetadata || '');
   }
 
   /**
@@ -488,8 +489,11 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     const assistantLogsLink = this.getElement_('#autofillMetadataUrl');
     // Setting href causes <a> tag to display as link.
     assistantLogsLink.setAttribute('href', '#');
-    assistantLogsLink.addEventListener(
-        'click', (e) => void this.handleOpenAutofillMetadataDialog_(e));
+    assistantLogsLink.addEventListener('click', (e) => {
+      this.handleOpenAutofillMetadataDialog_(e);
+      this.feedbackServiceProvider_.recordPreSubmitAction(
+          FeedbackAppPreSubmitAction.kViewedAutofillMetadata);
+    });
   }
 
   /** @private */

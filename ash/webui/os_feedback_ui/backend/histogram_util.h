@@ -25,6 +25,8 @@ constexpr char kFeedbackAppViewedMetrics[] =
     "Feedback.ChromeOSApp.ViewedMetrics";
 constexpr char kFeedbackAppViewedSystemAndAppInfo[] =
     "Feedback.ChromeOSApp.ViewedSystemAndAppInfo";
+constexpr char kFeedbackAppViewedAutofillMetadata[] =
+    "Feedback.ChromeOSApp.ViewedAutofillMetadata";
 constexpr char kFeedbackAppViewedHelpContent[] =
     "Feedback.ChromeOSApp.ViewedHelpContent";
 constexpr char kFeedbackAppCanContactUser[] =

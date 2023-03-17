@@ -84,6 +84,9 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
   void OpenMetricsDialog() override {}
 
   void OpenSystemInfoDialog() override {}
+
+  void OpenAutofillMetadataDialog(
+      const std::string& autofill_metadata) override {}
 };
 
 class FeedbackServiceProviderTest : public testing::Test {

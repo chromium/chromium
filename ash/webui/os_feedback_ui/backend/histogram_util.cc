@@ -43,6 +43,9 @@ void EmitFeedbackAppPreSubmitAction(mojom::FeedbackAppPreSubmitAction action) {
     case mojom::FeedbackAppPreSubmitAction::kViewedSystemAndAppInfo:
       base::UmaHistogramBoolean(kFeedbackAppViewedSystemAndAppInfo, true);
       break;
+    case mojom::FeedbackAppPreSubmitAction::kViewedAutofillMetadata:
+      base::UmaHistogramBoolean(kFeedbackAppViewedAutofillMetadata, true);
+      break;
     case mojom::FeedbackAppPreSubmitAction::kViewedMetrics:
       base::UmaHistogramBoolean(kFeedbackAppViewedMetrics, true);
       break;

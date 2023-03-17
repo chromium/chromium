@@ -180,6 +180,8 @@ enum FeedbackAppPreSubmitAction {
   kViewedImage,
   // User viewed the system and app info on share data page.
   kViewedSystemAndAppInfo,
+  // User viewed the autofill metadata info on share data page.
+  kViewedAutofillMetadata,
   // User viewed the metrics on share data page.
   kViewedMetrics
 };
@@ -240,6 +242,9 @@ interface FeedbackServiceProvider {
   // Open system info dialog (which displays the system logs
   // to be sent with the report if the user has opted in).
   OpenSystemInfoDialog();
+  // Open autofill dialog (which displays the autofill logs
+  // to be sent with the report if the user has opted in).
+  OpenAutofillDialog(string autofill_metadata);
   // Record the metrics of users' first action on confirmation page.
   RecordPostSubmitAction(FeedbackAppPostSubmitAction action);
   // Record metrics of users' action before sending the feedback.

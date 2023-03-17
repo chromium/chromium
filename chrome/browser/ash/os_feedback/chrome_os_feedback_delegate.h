@@ -48,11 +48,13 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   void OpenExploreApp() override;
   void OpenMetricsDialog() override;
   void OpenSystemInfoDialog() override;
+  void OpenAutofillMetadataDialog(
+      const std::string& autofill_metadata) override;
   bool IsChildAccount() override;
 
  private:
   void OnSendFeedbackDone(SendReportCallback callback, bool status);
-  void OpenWebDialog(GURL url);
+  void OpenWebDialog(GURL url, const std::string& args);
   // Loading system logs could be slow. Preload them to reduce potential user
   // wait time when sending reports.
   void PreloadSystemLogs();

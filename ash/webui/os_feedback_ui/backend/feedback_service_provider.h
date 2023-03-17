@@ -37,6 +37,7 @@ class FeedbackServiceProvider
   void OpenExploreApp() override;
   void OpenMetricsDialog() override;
   void OpenSystemInfoDialog() override;
+  void OpenAutofillDialog(const std::string& autofill_metadata) override;
   void RecordPostSubmitAction(
       os_feedback_ui::mojom::FeedbackAppPostSubmitAction action) override;
   void RecordPreSubmitAction(

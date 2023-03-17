@@ -108,6 +108,11 @@ void FeedbackServiceProvider::OpenSystemInfoDialog() {
   feedback_delegate_->OpenSystemInfoDialog();
 }
 
+void FeedbackServiceProvider::OpenAutofillDialog(
+    const std::string& autofill_metadata) {
+  feedback_delegate_->OpenAutofillMetadataDialog(autofill_metadata);
+}
+
 void FeedbackServiceProvider::RecordPostSubmitAction(
     os_feedback_ui::mojom::FeedbackAppPostSubmitAction action) {
   if (action ==
