@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_SCHEDULER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -148,11 +149,13 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
   // Gets the task signal associated with a task or continuation, creating a
   // composite task signal from the `signal_option` and `priority_option` if
   // needed. The signal this returns is what gets used for scheduling the task
-  // or continuation.
-  DOMTaskSignal* GetTaskSignalFromOptions(ScriptState*,
-                                          ExceptionState&,
-                                          AbortSignal* signal_option,
-                                          AtomicString priority_option);
+  // or continuation, and it's what gets propagated for yield() inheritance.
+  enum class InheritOption { kInherit };
+  DOMTaskSignal* GetTaskSignalFromOptions(
+      ScriptState*,
+      ExceptionState&,
+      absl::variant<AbortSignal*, InheritOption> signal_option,
+      absl::variant<AtomicString, InheritOption> priority_option);
 
   // Gets the fixed priority TaskSignal for `priority`, creating it if needed.
   DOMTaskSignal* GetFixedPriorityTaskSignal(ScriptState*,

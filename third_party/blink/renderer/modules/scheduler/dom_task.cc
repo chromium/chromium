@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -22,7 +23,9 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
+#include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
@@ -197,17 +200,26 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
 
   std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
+  // For the main thread (tracker exists), create the task scope with the signal
+  // to set up propagation. On workers, set the current context here since there
+  // is no tracker.
   if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker()) {
     task_attribution_scope = tracker->CreateTaskScope(
         script_state, parent_task_id_,
-        scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask);
+        scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask,
+        signal_);
+  } else if (RuntimeEnabledFeatures::SchedulerYieldEnabled()) {
+    ScriptWrappableTaskState::SetCurrent(
+        script_state, MakeGarbageCollected<ScriptWrappableTaskState>(
+                          scheduler::TaskAttributionId(), signal_));
   }
 
   ScriptValue result;
-  if (callback_->Invoke(nullptr).To(&result))
+  if (callback_->Invoke(nullptr).To(&result)) {
     resolver_->Resolve(result.V8Value());
-  else if (try_catch.HasCaught())
+  } else if (try_catch.HasCaught()) {
     resolver_->Reject(try_catch.Exception());
+  }
 }
 
 void DOMTask::OnAbort() {
