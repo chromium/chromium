@@ -1555,9 +1555,6 @@ extern const char kSameAppWindowCycleDescription[];
 extern const char kPartitionedCookiesName[];
 extern const char kPartitionedCookiesDescription[];
 
-extern const char kNoncedPartitionedCookiesName[];
-extern const char kNoncedPartitionedCookiesDescription[];
-
 extern const char kThirdPartyStoragePartitioningName[];
 extern const char kThirdPartyStoragePartitioningDescription[];
 

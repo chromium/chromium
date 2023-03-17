@@ -8398,11 +8398,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPartitionedCookiesDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kPartitionedCookies)},
 
-    {"nonced-partitioned-cookies",
-     flag_descriptions::kNoncedPartitionedCookiesName,
-     flag_descriptions::kNoncedPartitionedCookiesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kNoncedPartitionedCookies)},
-
     {"third-party-storage-partitioning",
      flag_descriptions::kThirdPartyStoragePartitioningName,
      flag_descriptions::kThirdPartyStoragePartitioningDescription, kOsAll,

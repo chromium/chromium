@@ -4994,11 +4994,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "nonced-partitioned-cookies",
-    "owners": [ "dylancutler@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "notification-interaction-history",
     "owners": [
       "sideyilmaz",

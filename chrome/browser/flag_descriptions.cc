@@ -2756,13 +2756,6 @@ const char kPartitionedCookiesName[] = "Partitioned cookies";
 const char kPartitionedCookiesDescription[] =
     "Controls if the Partitioned cookie attribute is enabled.";
 
-const char kNoncedPartitionedCookiesName[] = "Nonced partitioned cookies only";
-const char kNoncedPartitionedCookiesDescription[] =
-    "When this flag is enabled, we allow partitioned cookies whose "
-    "partition keys contain a nonce even if the \"Partitioned cookies\" "
-    "feature is disabled. If \"Partitioned cookies\" are enabled, then "
-    "enabling or disabling this feature does nothing.";
-
 const char kThirdPartyStoragePartitioningName[] =
     "Experimental third-party storage partitioning.";
 const char kThirdPartyStoragePartitioningDescription[] =
