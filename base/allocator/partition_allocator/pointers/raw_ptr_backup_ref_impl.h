@@ -18,7 +18,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/partition_root.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -306,17 +305,11 @@ struct RawPtrBackupRefImpl {
     // TODO(bartekn): Consider adding support for non-BRP pools too (without
     // removing the cross-pool migration check).
     if (IsSupportedAndNotNull(before_addr)) {
-      partition_alloc::internal::PtrPosWithinAlloc ptr_pos_within_alloc =
-          partition_alloc::internal::IsPtrWithinSameAlloc(
-              before_addr, after_addr, sizeof(T));
-      // No need to check that |new_ptr| is in the same pool, as
-      // IsPtrWithinSameAlloc() checks that it's within the same allocation, so
-      // must be the same pool.
-      PA_BASE_CHECK(ptr_pos_within_alloc !=
-                    partition_alloc::internal::PtrPosWithinAlloc::kFarOOB);
+      constexpr size_t size = sizeof(T);
+      [[maybe_unused]] const bool is_end =
+          CheckPointerWithinSameAlloc(before_addr, after_addr, size);
 #if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
-      if (ptr_pos_within_alloc ==
-          partition_alloc::internal::PtrPosWithinAlloc::kAllocEnd) {
+      if (is_end) {
         new_ptr = PoisonOOBPtr(new_ptr);
       }
 #endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
@@ -447,6 +440,16 @@ struct RawPtrBackupRefImpl {
       uintptr_t address);
   PA_NOINLINE static PA_COMPONENT_EXPORT(RAW_PTR) void ReportIfDanglingInternal(
       uintptr_t address);
+
+  // CHECK if `before_addr` and `after_addr` are in the same allocation, for a
+  // given `type_size`.
+  // If BACKUP_REF_PTR_POISON_OOB_PTR is enabled, return whether the allocation
+  // is at the end.
+  // If BACKUP_REF_PTR_POISON_OOB_PTR is disable, return false.
+  PA_NOINLINE static PA_COMPONENT_EXPORT(
+      RAW_PTR) bool CheckPointerWithinSameAlloc(uintptr_t before_addr,
+                                                uintptr_t after_addr,
+                                                size_t type_size);
 };
 
 }  // namespace base::internal

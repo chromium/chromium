@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 
 namespace base::internal {
@@ -61,6 +62,29 @@ void RawPtrBackupRefImpl<AllowDangling>::ReportIfDanglingInternal(
           ->ReportIfDangling();
     }
   }
+}
+
+// static
+template <bool AllowDangling>
+bool RawPtrBackupRefImpl<AllowDangling>::CheckPointerWithinSameAlloc(
+    uintptr_t before_addr,
+    uintptr_t after_addr,
+    size_t type_size) {
+  partition_alloc::internal::PtrPosWithinAlloc ptr_pos_within_alloc =
+      partition_alloc::internal::IsPtrWithinSameAlloc(before_addr, after_addr,
+                                                      type_size);
+  // No need to check that |new_ptr| is in the same pool, as
+  // IsPtrWithinSameAlloc() checks that it's within the same allocation, so
+  // must be the same pool.
+  PA_BASE_CHECK(ptr_pos_within_alloc !=
+                partition_alloc::internal::PtrPosWithinAlloc::kFarOOB);
+
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+  return ptr_pos_within_alloc ==
+         partition_alloc::internal::PtrPosWithinAlloc::kAllocEnd;
+#else
+  return false;
+#endif
 }
 
 template <bool AllowDangling>
