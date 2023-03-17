@@ -51,7 +51,8 @@
     'chrome.pgo': {
       'android-arm32-pgo': 'official_reclient_android_arm32_pgo',
       'android-arm64-pgo': 'official_reclient_android_arm64_pgo',
-      'lacros-amd64-generic-pgo': 'official_reclient_chromeos_lacros_pgo',
+      'lacros-amd64-generic-pgo': 'official_reclient_lacros_amd64_pgo',
+      'lacros-arm-generic-pgo': 'official_reclient_lacros_arm_pgo',
       'linux-pgo': 'official_reclient_linux_pgo',
       'mac-arm-pgo': 'official_reclient_mac_arm_pgo',
       'mac-pgo': 'official_reclient_mac_pgo',
@@ -995,7 +996,7 @@
     'tryserver.chrome.pgo': {
       'android-arm32-pgo': 'official_goma_android_arm32_pgo',
       'android-arm64-pgo': 'official_goma_android_arm64_pgo',
-      'lacros-amd64-generic-pgo': 'official_reclient_chromeos_lacros_pgo',
+      'lacros-amd64-generic-pgo': 'official_reclient_lacros_amd64_pgo',
       'linux-pgo': 'official_goma_linux_pgo',
       'mac-arm-pgo': 'official_goma_mac_arm_pgo',
       'mac-pgo': 'official_goma_mac_pgo',
@@ -3245,16 +3246,20 @@
       'official', 'reclient', 'chromeos', 'minimal_symbols', 'include_unwind_tables',
     ],
 
-    'official_reclient_chromeos_lacros_pgo': [
-      'official', 'release', 'lacros', 'amd64-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'cfi', 'pgo_phase_1', 'thin_lto'
-    ],
-
     'official_reclient_fuchsia_arm64_perf': [
       'cast_receiver_size_optimized_internal', 'official', 'reclient', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator',
     ],
 
     'official_reclient_fuchsia_x64_perf': [
       'official', 'reclient', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator',
+    ],
+
+    'official_reclient_lacros_amd64_pgo': [
+      'official', 'release', 'lacros', 'amd64-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'cfi', 'pgo_phase_1', 'thin_lto'
+    ],
+
+    'official_reclient_lacros_arm_pgo': [
+      'official', 'release', 'lacros', 'arm-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'cfi', 'pgo_phase_1', 'thin_lto'
     ],
 
     'official_reclient_linux_perf': [
