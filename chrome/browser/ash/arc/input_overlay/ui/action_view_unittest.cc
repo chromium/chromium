@@ -304,7 +304,7 @@ TEST_F(ActionViewTest, TestDisplayModeChange) {
   // Change key binding.
   ui::KeyEvent event_a(ui::ET_KEY_PRESSED, ui::VKEY_A, 0);
   label->OnKeyPressed(event_a);
-  EXPECT_NE(tap_view_bounds, tap_action_view_->bounds());
+  EXPECT_EQ(tap_view_bounds, tap_action_view_->bounds());
   touch_point_in_window = touch_point->bounds().CenterPoint();
   touch_point_in_window.Offset(tap_action_view_->origin().x(),
                                tap_action_view_->origin().y());

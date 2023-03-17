@@ -129,7 +129,7 @@ BASE_FEATURE(kArcInputOverlayBeta,
 // Controls whether to enable support for ARC Input Overlay Alpha v2.
 BASE_FEATURE(kArcInputOverlayAlphaV2,
              "ArcInputOverlayAlphaV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to enable support for ARC ADB sideloading for managed
 // accounts and/or devices.
