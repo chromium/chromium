@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
-#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/ipcz_api.h"
@@ -732,7 +731,7 @@ TEST_F(CoreIpczTest, DataPipeTwoPhase) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(c));
 }
 
-#if BUILDFLAG(USE_BLINK)
+#if !BUILDFLAG(IS_IOS)
 
 constexpr base::StringPiece kAttachmentName = "interesting pipe name";
 
@@ -951,7 +950,7 @@ TEST_F(CoreIpczTest, DataPipeTransfer) {
       });
 }
 
-#endif  // BUILDFLAG(USE_BLINK)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace mojo::core

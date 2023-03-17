@@ -1761,7 +1761,7 @@ TEST_F(DataPipeTest, CreateOversized) {
   ASSERT_EQ(MOJO_RESULT_RESOURCE_EXHAUSTED, Create(&options));
 }
 
-#if BUILDFLAG(USE_BLINK)
+#if !BUILDFLAG(IS_IOS)
 
 constexpr size_t kNoSpuriousEvents_NumIterations = 1000;
 
@@ -2208,7 +2208,7 @@ TEST_F(DataPipeTest, CreateOversizedInChild) {
   });
 }
 
-#endif  // BUILDFLAG(USE_BLINK)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace core
