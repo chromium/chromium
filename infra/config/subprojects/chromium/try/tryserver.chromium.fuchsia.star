@@ -136,6 +136,7 @@ try_.orchestrator_builder(
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
     compilator = "fuchsia-x64-cast-receiver-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
@@ -143,6 +144,7 @@ try_.orchestrator_builder(
     },
     main_list_view = "try",
     tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(

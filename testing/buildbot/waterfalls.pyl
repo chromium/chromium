@@ -2692,6 +2692,7 @@
         'browser_config': 'web-engine-shell',
         'os_type': 'fuchsia',
         'mixins': [
+          'isolate_profile_data',
           'linux-bionic',
         ],
         'swarming': {

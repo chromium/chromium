@@ -3556,7 +3556,8 @@
     ],
 
     'release_trybot_fuchsia_cast_receiver_reclient': [
-      'release_trybot_reclient', 'fuchsia', 'cast_receiver_size_optimized',
+      'release_trybot_reclient', 'fuchsia', 'cast_receiver_size_optimized', 'use_clang_coverage',
+      'fuchsia_code_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'release_trybot_fuchsia_chrome': [
