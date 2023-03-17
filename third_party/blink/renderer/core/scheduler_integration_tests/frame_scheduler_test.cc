@@ -50,8 +50,7 @@ class FencedFrameFrameSchedulerTest
 };
 
 TEST_F(FencedFrameFrameSchedulerTest, GetFrameType) {
-  InitializeFencedFrameRoot(
-      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault);
+  InitializeFencedFrameRoot(mojom::blink::FencedFrameMode::kDefault);
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(R"HTML(

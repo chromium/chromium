@@ -340,6 +340,7 @@ class NavigationDelayerInterceptor
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
           pending_receiver,
+      blink::mojom::FencedFrameMode mode,
       blink::mojom::RemoteFrameInterfacesFromRendererPtr
           remote_frame_interfaces,
       const blink::RemoteFrameToken& frame_token,
@@ -348,7 +349,7 @@ class NavigationDelayerInterceptor
         original_remote;
 
     GetForwardingInterface()->CreateFencedFrame(
-        original_remote.InitWithNewEndpointAndPassReceiver(),
+        original_remote.InitWithNewEndpointAndPassReceiver(), mode,
         std::move(remote_frame_interfaces), frame_token, devtools_frame_token);
     std::vector<FencedFrame*> fenced_frames =
         render_frame_host_->GetFencedFrames();
@@ -1244,8 +1245,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
 
   static_cast<RenderFrameHostImpl*>(iframe.get())
       ->CreateFencedFrame(
-          std::move(receiver), std::move(remote_frame_interfaces),
-          blink::RemoteFrameToken(), base::UnguessableToken::Create());
+          std::move(receiver), blink::mojom::FencedFrameMode::kDefault,
+          std::move(remote_frame_interfaces), blink::RemoteFrameToken(),
+          base::UnguessableToken::Create());
   EXPECT_TRUE(primary_rfh.WaitUntilRenderFrameDeleted());
   EXPECT_TRUE(iframe.IsRenderFrameDeleted());
 }
@@ -1819,15 +1821,15 @@ INSTANTIATE_TEST_SUITE_P(FencedFrameNestedFrameBrowserTest,
 namespace {
 
 static std::string ModeTestParamToString(
-    ::testing::TestParamInfo<
-        std::tuple<blink::FencedFrame::DeprecatedFencedFrameMode,
-                   blink::FencedFrame::DeprecatedFencedFrameMode>> param_info) {
+    ::testing::TestParamInfo<std::tuple<blink::mojom::FencedFrameMode,
+                                        blink::mojom::FencedFrameMode>>
+        param_info) {
   std::string out = "ParentMode";
   switch (std::get<0>(param_info.param)) {
-    case blink::FencedFrame::DeprecatedFencedFrameMode::kDefault:
+    case blink::mojom::FencedFrameMode::kDefault:
       out += "Default";
       break;
-    case blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds:
+    case blink::mojom::FencedFrameMode::kOpaqueAds:
       out += "OpaqueAds";
       break;
   }
@@ -1835,10 +1837,10 @@ static std::string ModeTestParamToString(
   out += "_ChildMode";
 
   switch (std::get<1>(param_info.param)) {
-    case blink::FencedFrame::DeprecatedFencedFrameMode::kDefault:
+    case blink::mojom::FencedFrameMode::kDefault:
       out += "Default";
       break;
-    case blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds:
+    case blink::mojom::FencedFrameMode::kOpaqueAds:
       out += "OpaqueAds";
       break;
   }
@@ -1851,8 +1853,8 @@ static std::string ModeTestParamToString(
 class FencedFrameNestedModesTest
     : public FencedFrameBrowserTestBase,
       public testing::WithParamInterface<
-          std::tuple<blink::FencedFrame::DeprecatedFencedFrameMode,
-                     blink::FencedFrame::DeprecatedFencedFrameMode>> {
+          std::tuple<blink::mojom::FencedFrameMode,
+                     blink::mojom::FencedFrameMode>> {
  protected:
   FencedFrameNestedModesTest() {
     // TODO(domfarolino): Maybe we don't need this?
@@ -1862,28 +1864,17 @@ class FencedFrameNestedModesTest
         {/* disabled_features */});
   }
 
-  blink::FencedFrame::DeprecatedFencedFrameMode GetParentMode() {
-    return std::get<0>(GetParam());
-  }
-  blink::FencedFrame::DeprecatedFencedFrameMode GetChildMode() {
-    return std::get<1>(GetParam());
-  }
-
-  std::string GetParentModeStr() {
-    return ModeToString(std::get<0>(GetParam()));
-  }
-  std::string GetChildModeStr() {
-    return ModeToString(std::get<1>(GetParam()));
-  }
+  std::string GetParentMode() { return ModeToString(std::get<0>(GetParam())); }
+  std::string GetChildMode() { return ModeToString(std::get<1>(GetParam())); }
 
   base::HistogramTester histogram_tester_;
 
  private:
-  std::string ModeToString(blink::FencedFrame::DeprecatedFencedFrameMode mode) {
+  std::string ModeToString(blink::mojom::FencedFrameMode mode) {
     switch (mode) {
-      case blink::FencedFrame::DeprecatedFencedFrameMode::kDefault:
+      case blink::mojom::FencedFrameMode::kDefault:
         return "default";
-      case blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds:
+      case blink::mojom::FencedFrameMode::kOpaqueAds:
         return "opaque-ads";
     }
 
@@ -1903,6 +1894,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
   const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
+  // 1.) Create the parent fenced frame.
   const GURL fenced_frame_url =
       https_server()->GetURL("c.test", "/fenced_frames/title1.html");
   constexpr char kAddFencedFrameScript[] = R"({
@@ -1911,19 +1903,9 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
       fenced_frame.mode = $1;
       document.body.appendChild(fenced_frame);
     })";
-
-  // Because FencedFrameTestHelper::CreateFencedFrame doesn't yet do an
-  // embedder-initiated navigation for default mode, we have to manually
-  // perform the navigation in JS.
-  if (GetParentMode() ==
-      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault) {
-    EXPECT_TRUE(ExecJs(
-        primary_main_frame_host(),
-        JsReplace(kAddFencedFrameScript, GetParentMode(), fenced_frame_url)));
-  } else {
-    std::ignore = fenced_frame_test_helper().CreateFencedFrame(
-        primary_main_frame_host(), fenced_frame_url, net::OK, GetParentMode());
-  }
+  EXPECT_TRUE(ExecJs(
+      primary_main_frame_host(),
+      JsReplace(kAddFencedFrameScript, GetParentMode(), fenced_frame_url)));
 
   // Wait for page to load in order to have it know it's in a secure context.
   WaitForLoadStop(web_contents());
@@ -1939,36 +1921,28 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
   ASSERT_TRUE(parent_fenced_frame_rfh);
 
   // 2.) Attempt to create the child fenced frame.
-  if (GetChildMode() ==
-      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault) {
-    EXPECT_TRUE(ExecJs(
-        parent_fenced_frame_rfh,
-        JsReplace(kAddFencedFrameScript, GetChildMode(), fenced_frame_url)));
-  } else {
-    std::ignore = fenced_frame_test_helper().CreateFencedFrame(
-        parent_fenced_frame_rfh, fenced_frame_url, net::OK, GetChildMode(),
-        /*wait_for_load=*/false);
-  }
+  EXPECT_TRUE(ExecJs(
+      parent_fenced_frame_rfh,
+      JsReplace(kAddFencedFrameScript, GetChildMode(), fenced_frame_url)));
 
   // 3.) Assert that the child fenced frame was created or not created depending
   //     on the test parameters.
   content::FetchHistogramsFromChildProcesses();
-  // Child fenced frame creation should have succeeded unconditionally.
-  EXPECT_EQ(1u, parent_fenced_frame_rfh->child_count());
   if (GetParentMode() != GetChildMode()) {
-    // Child fenced frame navigation should have failed based on its mode.
+    // Child fenced frame creation should have failed based on its mode.
+    EXPECT_EQ(0u, parent_fenced_frame_rfh->child_count());
     histogram_tester_.ExpectTotalCount(
         blink::kFencedFrameCreationOrNavigationOutcomeHistogram, 2);
     histogram_tester_.ExpectBucketCount(
         blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
         blink::FencedFrameCreationOutcome::kIncompatibleMode, 1);
   } else {
-    // Child fenced frame navigation should have succeeded because its mode is
-    // the same as its parent.
+    // Child fenced frame creation should have succeeded because its mode is the
+    // same as its parent.
+    EXPECT_EQ(1u, parent_fenced_frame_rfh->child_count());
     histogram_tester_.ExpectTotalCount(
         blink::kFencedFrameCreationOrNavigationOutcomeHistogram, 2);
-    if (GetChildMode() ==
-        blink::FencedFrame::DeprecatedFencedFrameMode::kDefault) {
+    if (GetChildMode() == "default") {
       histogram_tester_.ExpectBucketCount(
           blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
           blink::FencedFrameCreationOutcome::kSuccessDefault, 2);
@@ -1985,12 +1959,11 @@ INSTANTIATE_TEST_SUITE_P(
     FencedFrameNestedModesTest,
     testing::Combine(
         /*parent mode=*/testing::Values(
-            blink::FencedFrame::DeprecatedFencedFrameMode::kDefault,
-            blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds),
+            blink::mojom::FencedFrameMode::kDefault,
+            blink::mojom::FencedFrameMode::kOpaqueAds),
         /*child mode=*/
-        testing::Values(
-            blink::FencedFrame::DeprecatedFencedFrameMode::kDefault,
-            blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds)),
+        testing::Values(blink::mojom::FencedFrameMode::kDefault,
+                        blink::mojom::FencedFrameMode::kOpaqueAds)),
     ModeTestParamToString);
 
 // TODO(domfarolino): Rename this.
@@ -3776,8 +3749,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        ReloadPageWithFencedFrame) {
-  GURL main_url(https_server()->GetURL(
-      "a.test", "/fenced_frames/basic_fenced_frame_src.html"));
+  GURL main_url(
+      https_server()->GetURL("a.test", "/fenced_frames/opaque_ads.html"));
   GURL fenced_frame_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3800,7 +3773,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        NavigateUnfencedTopAndGoBack) {
-  GURL main_url(https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  GURL main_url(
+      https_server()->GetURL("a.test", "/fenced_frames/opaque_ads.html"));
   GURL fenced_frame_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   TestNavigationObserver load_observer(web_contents());
@@ -3812,12 +3786,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()
                             .root();
-
-  RenderFrameHost* primary_rfh = primary_main_frame_host();
-  std::ignore = fenced_frame_test_helper().CreateFencedFrame(
-      primary_rfh, fenced_frame_url, net::OK,
-      blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
-
   auto* fenced_frame = GetFencedFrameRootNode(root->child_at(0));
 
   GURL new_main_url(https_server()->GetURL("b.test", "/hello.html"));
@@ -4108,12 +4076,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
     if (!test_case.expect_allowed)
       EXPECT_EQ("fenced-frame-src;", EvalJs(root, "violation"));
 
-    absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode =
-            fenced_frame_root_node->GetDeprecatedFencedFrameMode();
+    absl::optional<blink::mojom::FencedFrameMode> fenced_frame_mode =
+        fenced_frame_root_node->GetFencedFrameMode();
     EXPECT_TRUE(fenced_frame_mode.has_value());
     EXPECT_EQ(fenced_frame_mode.value(),
-              blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+              blink::mojom::FencedFrameMode::kOpaqueAds);
   }
 }
 

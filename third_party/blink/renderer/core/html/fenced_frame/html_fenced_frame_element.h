@@ -85,9 +85,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   bool IsHTMLFencedFrameElement() const final { return true; }
 
   // See the documentation above `mode_`.
-  blink::FencedFrame::DeprecatedFencedFrameMode GetDeprecatedMode() const {
-    return mode_;
-  }
+  mojom::blink::FencedFrameMode GetMode() const { return mode_; }
 
   // The frame size is "frozen" when the `src` attribute is set.
   // The frozen state is kept in this element so that it can survive across
@@ -199,8 +197,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // is effectively frozen. Like the frozen size of the frame, it survives
   // element reattachments too. We maintain the `freeze_mode_attribute_`
   // variable below so we can know when to reject updates to `mode_`.
-  blink::FencedFrame::DeprecatedFencedFrameMode mode_ =
-      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
+  mojom::blink::FencedFrameMode mode_ = mojom::blink::FencedFrameMode::kDefault;
+  bool freeze_mode_attribute_ = false;
   // Used to track if the Blink.FencedFrame.IsFrameResizedAfterSizeFrozen
   // histogram has already been logged for this fenced frame if its size was
   // set after being frozen. This ensures that multiple logs don't happen

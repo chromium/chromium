@@ -2420,7 +2420,8 @@ RemoteFrame* WebLocalFrameImpl::AdoptPortal(HTMLPortalElement* portal) {
 RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
     HTMLFencedFrameElement* fenced_frame,
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>
-        receiver) {
+        receiver,
+    mojom::blink::FencedFrameMode mode) {
   mojom::blink::FrameReplicationStatePtr initial_replicated_state =
       mojom::blink::FrameReplicationState::New();
   initial_replicated_state->origin = SecurityOrigin::CreateUniqueOpaque();
@@ -2437,8 +2438,8 @@ RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
           remote_frame_interfaces->frame.InitWithNewEndpointAndPassReceiver();
 
   GetFrame()->GetLocalFrameHostRemote().CreateFencedFrame(
-      std::move(receiver), std::move(remote_frame_interfaces), frame_token,
-      devtools_frame_token);
+      std::move(receiver), mode, std::move(remote_frame_interfaces),
+      frame_token, devtools_frame_token);
 
   DCHECK(initial_replicated_state->origin->IsOpaque());
 

@@ -458,7 +458,8 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   RemoteFrame* CreateFencedFrame(
       HTMLFencedFrameElement*,
-      mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>);
+      mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
+      mojom::blink::FencedFrameMode);
 
   void DidChangeContentsSize(const gfx::Size&);
 

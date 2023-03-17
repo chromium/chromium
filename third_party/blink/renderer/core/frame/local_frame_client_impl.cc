@@ -909,8 +909,9 @@ RemoteFrame* LocalFrameClientImpl::AdoptPortal(HTMLPortalElement* portal) {
 RemoteFrame* LocalFrameClientImpl::CreateFencedFrame(
     HTMLFencedFrameElement* fenced_frame,
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>
-        receiver) {
-  return web_frame_->CreateFencedFrame(fenced_frame, std::move(receiver));
+        receiver,
+    mojom::blink::FencedFrameMode mode) {
+  return web_frame_->CreateFencedFrame(fenced_frame, std::move(receiver), mode);
 }
 
 WebPluginContainerImpl* LocalFrameClientImpl::CreatePlugin(

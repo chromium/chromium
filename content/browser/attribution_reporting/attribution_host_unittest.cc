@@ -558,10 +558,8 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
   RenderFrameHost* fenced_frame =
-      RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-  static_cast<RenderFrameHostImpl*>(fenced_frame)
-      ->frame_tree_node()
-      ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
+      RenderFrameHostTester::For(main_rfh())
+          ->AppendFencedFrame(blink::mojom::FencedFrameMode::kOpaqueAds);
   fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
       GURL("https://fencedframe.example"), fenced_frame);
   SetCurrentTargetFrameForTesting(fenced_frame);
@@ -588,10 +586,8 @@ TEST_F(AttributionHostTest, FeatureDisabled_FencedFrameReportingBeaconDropped) {
       .Times(0);
 
   RenderFrameHost* fenced_frame =
-      RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-  static_cast<RenderFrameHostImpl*>(fenced_frame)
-      ->frame_tree_node()
-      ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
+      RenderFrameHostTester::For(main_rfh())
+          ->AppendFencedFrame(blink::mojom::FencedFrameMode::kOpaqueAds);
   fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
       GURL("https://fencedframe.example"), fenced_frame);
 
@@ -632,10 +628,8 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
     }
 
     RenderFrameHost* fenced_frame =
-        RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-    static_cast<RenderFrameHostImpl*>(fenced_frame)
-        ->frame_tree_node()
-        ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
+        RenderFrameHostTester::For(main_rfh())
+            ->AppendFencedFrame(blink::mojom::FencedFrameMode::kOpaqueAds);
     fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
         GURL("https://fencedframe.example"), fenced_frame);
 
@@ -652,10 +646,8 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
   contents()->NavigateAndCommit(GURL("https://secure.com"));
 
   RenderFrameHost* fenced_frame =
-      RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-  static_cast<RenderFrameHostImpl*>(fenced_frame)
-      ->frame_tree_node()
-      ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
+      RenderFrameHostTester::For(main_rfh())
+          ->AppendFencedFrame(blink::mojom::FencedFrameMode::kOpaqueAds);
 
   static constexpr char kAllowedOriginUrl[] = "https://a.test";
 

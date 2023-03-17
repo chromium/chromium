@@ -192,6 +192,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
                    AdoptPortalCallback callback) override;
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
+      mojom::blink::FencedFrameMode,
       mojom::blink::RemoteFrameInterfacesFromRendererPtr
           remote_frame_interfaces,
       const RemoteFrameToken& frame_token,

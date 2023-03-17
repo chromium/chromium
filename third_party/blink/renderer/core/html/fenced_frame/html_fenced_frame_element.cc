@@ -47,12 +47,18 @@ PhysicalRect ToPhysicalRect(const DOMRectReadOnly& rect) {
                       LayoutUnit::FromDoubleRound(rect.height()));
 }
 
-String DeprecatedFencedFrameModeToString(
-    blink::FencedFrame::DeprecatedFencedFrameMode mode) {
+mojom::blink::FencedFrameMode GetModeAttributeValue(const String& value) {
+  // Keep this in sync with the values in the `FencedFrameMode` enum.
+  if (EqualIgnoringASCIICase(value, "opaque-ads"))
+    return mojom::blink::FencedFrameMode::kOpaqueAds;
+  return mojom::blink::FencedFrameMode::kDefault;
+}
+
+String FencedFrameModeToString(mojom::blink::FencedFrameMode mode) {
   switch (mode) {
-    case blink::FencedFrame::DeprecatedFencedFrameMode::kDefault:
+    case mojom::blink::FencedFrameMode::kDefault:
       return "default";
-    case blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds:
+    case mojom::blink::FencedFrameMode::kOpaqueAds:
       return "opaque-ads";
   }
 
@@ -64,16 +70,15 @@ String DeprecatedFencedFrameModeToString(
 // than the mode given to the function. Note that this function will return
 // false if there is no mode set in the parent tree (i.e. not in a fenced frame
 // tree).
-bool ParentModeIsDifferent(
-    blink::FencedFrame::DeprecatedFencedFrameMode current_mode,
-    LocalFrame& frame) {
+bool ParentModeIsDifferent(mojom::blink::FencedFrameMode current_mode,
+                           LocalFrame& frame) {
   Page* ancestor_page = frame.GetPage();
   return ancestor_page->IsMainFrameFencedFrameRoot() &&
-         ancestor_page->DeprecatedFencedFrameMode() != current_mode;
+         ancestor_page->FencedFrameMode() != current_mode;
 }
 
 bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
-  return ParentModeIsDifferent(outer_element.GetDeprecatedMode(),
+  return ParentModeIsDifferent(outer_element.GetMode(),
                                *(outer_element.GetDocument().GetFrame()));
 }
 
@@ -280,6 +285,23 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
   // of this function.
   DCHECK(outer_element->GetDocument().GetFrame());
 
+  if (HasDifferentModeThanParent(*outer_element)) {
+    mojom::blink::FencedFrameMode parent_mode =
+        outer_element->GetDocument().GetPage()->FencedFrameMode();
+
+    outer_element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Cannot create a fenced frame with mode '" +
+                FencedFrameModeToString(outer_element->GetMode()) +
+                "' nested in a fenced frame with mode '" +
+                FencedFrameModeToString(parent_mode) + "'."));
+    RecordFencedFrameCreationOutcome(
+        FencedFrameCreationOutcome::kIncompatibleMode);
+    return nullptr;
+  }
+
   return MakeGarbageCollected<FencedFrameMPArchDelegate>(outer_element);
 }
 
@@ -330,9 +352,8 @@ bool HTMLFencedFrameElement::canLoadOpaqueURL(ScriptState* script_state) {
   // another mode."
   // See: https://github.com/WICG/fenced-frame/blob/master/explainer/modes.md
   // TODO(lbrady) Link to spec once it's written.
-  if (ParentModeIsDifferent(
-          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds,
-          *frame_to_check)) {
+  if (ParentModeIsDifferent(mojom::blink::FencedFrameMode::kOpaqueAds,
+                            *frame_to_check)) {
     return false;
   }
 
@@ -409,7 +430,20 @@ void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
 
 void HTMLFencedFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == html_names::kSrcAttr) {
+  if (params.name == html_names::kModeAttr) {
+    mojom::blink::FencedFrameMode new_mode =
+        GetModeAttributeValue(params.new_value);
+    if (new_mode != mode_ && freeze_mode_attribute_) {
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "Changing the `mode` attribute on a fenced frame has no effect after "
+          "it has already been frozen due to the first navigation."));
+      return;
+    }
+
+    mode_ = new_mode;
+  } else if (params.name == html_names::kSrcAttr) {
     if (config_) {
       DCHECK(config_->url());
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -492,35 +526,30 @@ void HTMLFencedFrameElement::Navigate(
     return;
   }
 
-  if (IsValidUrnUuidURL(GURL(url))) {
-    mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
-  } else if (IsValidFencedFrameURL(GURL(url))) {
-    mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
-  } else {
+  if (mode_ == mojom::blink::FencedFrameMode::kDefault &&
+      !IsValidFencedFrameURL(GURL(url))) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "A fenced frame must be navigated to an \"https\" URL, an \"http\" "
-        "localhost URL,"
-        " \"about:blank\", or a \"urn:uuid\"."));
+        "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
+            " must be navigated to an \"https\" URL, an \"http\" localhost URL,"
+            " or \"about:blank\"."));
     RecordFencedFrameCreationOutcome(
         FencedFrameCreationOutcome::kIncompatibleURLDefault);
     return;
   }
 
-  if (HasDifferentModeThanParent(*this)) {
-    blink::FencedFrame::DeprecatedFencedFrameMode parent_mode =
-        GetDocument().GetPage()->DeprecatedFencedFrameMode();
-
+  if (mode_ == mojom::blink::FencedFrameMode::kOpaqueAds &&
+      !IsValidUrnUuidURL(GURL(url)) && !IsValidFencedFrameURL(GURL(url))) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Cannot create a fenced frame with mode '" +
-            DeprecatedFencedFrameModeToString(GetDeprecatedMode()) +
-            "' nested in a fenced frame with mode '" +
-            DeprecatedFencedFrameModeToString(parent_mode) + "'."));
+        "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
+            " must be navigated to an opaque \"urn:uuid\" URL,"
+            " an \"https\" URL, an \"http\" localhost URL,"
+            " or \"about:blank\"."));
     RecordFencedFrameCreationOutcome(
-        FencedFrameCreationOutcome::kIncompatibleMode);
+        FencedFrameCreationOutcome::kIncompatibleURLOpaque);
     return;
   }
 
@@ -529,7 +558,7 @@ void HTMLFencedFrameElement::Navigate(
   frame_delegate_->Navigate(url, embedder_shared_storage_context);
 
   RecordFencedFrameCreationOutcome(
-      mode_ == blink::FencedFrame::DeprecatedFencedFrameMode::kDefault
+      mode_ == mojom::blink::FencedFrameMode::kDefault
           ? FencedFrameCreationOutcome::kSuccessDefault
           : FencedFrameCreationOutcome::kSuccessOpaque);
 
@@ -605,6 +634,10 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
     return;
   }
 
+  // Freeze the `mode` attribute to its current value even if it has never been
+  // explicitly set before, so that it cannot change after insertion.
+  freeze_mode_attribute_ = true;
+
   frame_delegate_ = FencedFrameDelegate::Create(this);
 
   if (config_) {
@@ -647,8 +680,7 @@ PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
   // "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_ad_sizes.h"
   // #include "third_party/blink/renderer/core/frame/local_dom_window.h"
   // #include "third_party/blink/renderer/core/frame/screen.h"
-  if (GetDeprecatedMode() !=
-          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds ||
+  if (GetMode() != mojom::blink::FencedFrameMode::kOpaqueAds ||
       GetDocument().GetFrame()->IsInFencedFrameTree()) {
     return requested_size;
   }

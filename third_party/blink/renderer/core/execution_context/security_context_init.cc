@@ -207,9 +207,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
       // the required policies, which is checked separately in
       // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
       permissions_policy = PermissionsPolicy::CreateForFencedFrame(
-          origin,
-          /*is_opaque_ads_mode=*/frame.GetDeprecatedFencedFrameMode().value() ==
-              blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+          origin, frame.GetFencedFrameMode().value());
     } else {
       auto* parent_permissions_policy = frame.Tree().Parent()
                                             ? frame.Tree()

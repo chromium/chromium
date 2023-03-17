@@ -6706,6 +6706,12 @@ void NavigationRequest::DidCommitNavigation(
   }
   previous_main_frame_url_ = previous_main_frame_url;
 
+  // When the embedder navigates a fenced frame root, the navigation
+  // installs a new set of inner fenced frame properties.
+  if (is_embedder_initiated_fenced_frame_navigation_) {
+    frame_tree_node()->set_fenced_frame_properties(fenced_frame_properties_);
+  }
+
   // It should be kept in sync with the check in
   // RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation.
   if (DidEncounterError()) {
@@ -7030,17 +7036,14 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
   // Create a view of the fenced frame properties from the perspective of the
   // fenced frame content, which will be sent to its renderer.
-  // On each navigation commit within the fenced frame tree:
-  // * If the properties have no mapped url, the browser will send the renderer
-  //   the `RedactedFencedFrameProperties` unconditionally.
-  // * If the properties do have a mapped url, the browser will send the
-  //   renderer the `RedactedFencedFrameProperties` when the committed
-  //   origin is same-origin to the urn's mapped_url (after redirects).
-  // This is because we want to make fenced frame APIs available only
-  // in same-origin contexts, when "same-origin" has a coherent definition.
+  // On each navigation commit within the fenced frame tree, if the committed
+  // origin is same-origin to the urn's mapped_url (after redirects), the
+  // browser sends the `RedactedFencedFrameProperties` to the renderer for that
+  // frame. This is because we want to make fenced frame APIs available only
+  // in same-origin contexts.
   const auto& computed_fenced_frame_properties = ComputeFencedFrameProperties();
   if (computed_fenced_frame_properties.has_value()) {
-    if (!computed_fenced_frame_properties->mapped_url_.has_value() ||
+    if (computed_fenced_frame_properties->mapped_url_.has_value() &&
         url::Origin::Create(common_params_->url)
             .IsSameOriginWith(computed_fenced_frame_properties->mapped_url_
                                   ->GetValueIgnoringVisibility())) {
@@ -8694,16 +8697,6 @@ NavigationRequest::ComputeFencedFrameNonce() const {
   }
   return computed_fenced_frame_properties->partition_nonce_
       ->GetValueIgnoringVisibility();
-}
-
-const absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-NavigationRequest::ComputeDeprecatedFencedFrameMode() const {
-  const absl::optional<FencedFrameProperties>&
-      computed_fenced_frame_properties = ComputeFencedFrameProperties();
-  if (!computed_fenced_frame_properties.has_value()) {
-    return absl::nullopt;
-  }
-  return computed_fenced_frame_properties->mode_;
 }
 
 void NavigationRequest::RenderFallbackContentForObjectTag() {

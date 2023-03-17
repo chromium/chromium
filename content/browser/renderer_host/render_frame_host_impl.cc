@@ -644,9 +644,7 @@ network::mojom::TrustTokenRedemptionPolicy
 DetermineWhetherToForbidTrustTokenRedemption(
     const RenderFrameHostImpl* frame,
     const blink::mojom::CommitNavigationParams& commit_params,
-    const url::Origin& subframe_origin,
-    absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode_for_navigation) {
+    const url::Origin& subframe_origin) {
   std::unique_ptr<blink::PermissionsPolicy> subframe_policy;
   if (frame->IsNestedWithinFencedFrame()) {
     // Fenced frames have a list of required permission policies to load and
@@ -654,9 +652,9 @@ DetermineWhetherToForbidTrustTokenRedemption(
     // inheriting from its parent. Note that the parent policies must allow the
     // required policies, which is checked separately in
     // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
-    CHECK(fenced_frame_mode_for_navigation);
     subframe_policy = blink::PermissionsPolicy::CreateForFencedFrame(
-        subframe_origin, fenced_frame_mode_for_navigation.value());
+        subframe_origin,
+        frame->frame_tree_node()->GetFencedFrameMode().value());
   } else {
     // For main frame loads, the frame's permissions policy is determined
     // entirely by response headers, which are provided by the renderer.
@@ -1006,8 +1004,8 @@ bool ValidateUnfencedTopNavigation(
   // It should only be possible to send this IPC with this flag from an
   // opaque-ads fenced frame. Opaque-ads fenced frames should always
   // have the sandbox flag `allow-top-navigation-by-user-activation`.
-  if ((render_frame_host->frame_tree_node()->GetDeprecatedFencedFrameMode() !=
-       blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds) ||
+  if ((render_frame_host->frame_tree_node()->GetFencedFrameMode() !=
+       blink::mojom::FencedFrameMode::kOpaqueAds) ||
       render_frame_host->IsSandboxed(
           network::mojom::WebSandboxFlags::kTopNavigationByUserActivation)) {
     // If we get the IPC elsewhere, assume the renderer is compromised.
@@ -1190,8 +1188,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
       result.trust_token_redemption_policy_ =
           DetermineWhetherToForbidTrustTokenRedemption(
               navigation_request.GetRenderFrameHost(),
-              navigation_request.commit_params(), result.origin(),
-              navigation_request.ComputeDeprecatedFencedFrameMode());
+              navigation_request.commit_params(), result.origin());
 
       if (navigation_request.GetIsThirdPartyCookiesUserBypassEnabled()) {
         result.cookie_setting_overrides_.Put(
@@ -7974,6 +7971,7 @@ void RenderFrameHostImpl::DestroyFencedFrame(FencedFrame& fenced_frame) {
 void RenderFrameHostImpl::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
         pending_receiver,
+    blink::mojom::FencedFrameMode mode,
     blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     const blink::RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {
@@ -7990,10 +7988,20 @@ void RenderFrameHostImpl::CreateFencedFrame(
     return;
   }
   // Cannot create a fenced frame in a sandbox iframe which doesn't allow
-  // features that need to be allowed in the fenced frame.
+  // features that need to be allowed in the fenced frame. This check is for
+  // MPArch Fenced Frame.
   if (IsSandboxed(blink::kFencedFrameMandatoryUnsandboxedFlags)) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME);
+    return;
+  }
+  // A fenced frame embedded in another fenced frame cannot have a different
+  // mode than its embedder. This is checked in the renderer, but needs
+  // verification in the browser in case the renderer is compromised.
+  if (GetMainFrame()->IsFencedFrameRoot() &&
+      GetMainFrame()->frame_tree_node()->GetFencedFrameMode() != mode) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::FF_DIFFERENT_MODE_THAN_EMBEDDER);
     return;
   }
 
@@ -8025,7 +8033,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
   }
 
   fenced_frames_.push_back(std::make_unique<FencedFrame>(
-      weak_ptr_factory_.GetSafeRef(), was_discarded_));
+      weak_ptr_factory_.GetSafeRef(), mode, was_discarded_));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   RenderFrameProxyHost* proxy_host =
       fenced_frame->InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
@@ -10787,8 +10795,6 @@ void RenderFrameHostImpl::CreateWebUsbService(
 
 void RenderFrameHostImpl::ResetPermissionsPolicy() {
   if (IsNestedWithinFencedFrame()) {
-    const absl::optional<FencedFrameProperties>& properties =
-        frame_tree_node()->GetFencedFrameProperties();
     // Fenced frames have a list of required permission policies to load and
     // can't be granted extra policies, so use the required policies instead of
     // inheriting from its parent. Note that the parent policies must allow the
@@ -10796,9 +10802,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
     // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
     permissions_policy_ = blink::PermissionsPolicy::CreateForFencedFrame(
         last_committed_origin_,
-        properties.has_value() &&
-            properties->mode_ ==
-                blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+        frame_tree_node()->GetFencedFrameMode().value());
     return;
   }
 
@@ -12414,17 +12418,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // TODO(https://crbug.com1287458): Once the ShadowDom implementation of
   // FencedFrame is gone, move this attribute back to PageImpl.
   credentialless_iframes_nonce_ = base::UnguessableToken::Create();
-
-  // When the embedder navigates a fenced frame root, the navigation
-  // stores a new set of fenced frame properties.
-  // (Embedder-initiated fenced frame root navigation  will necessarily create
-  // a new document.)
-  // This must be done before `ResetPermissionsPolicy()` below, which looks up
-  // the stored fenced frame properties.
-  if (navigation_request->GetFencedFrameProperties()) {
-    frame_tree_node()->set_fenced_frame_properties(
-        navigation_request->GetFencedFrameProperties());
-  }
 
   ResetPermissionsPolicy();
 

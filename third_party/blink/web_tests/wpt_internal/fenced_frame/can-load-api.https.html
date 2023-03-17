@@ -8,10 +8,10 @@
 
 <body>
 <script>
-async function runTest(expected_result, generator_api, attribute_list, header_list, use_fencedframe=false) {
+async function runTest(expected_result, attribute_list, header_list, use_fencedframe=false) {
   const frame = use_fencedframe ?
-      await attachFencedFrameContext({generator_api: generator_api, attributes:attribute_list, headers:header_list}) :
-      await attachIFrameContext({generator_api, generator_api, attributes:attribute_list, headers:header_list});
+      attachFencedFrameContext({attributes:attribute_list, headers:header_list}) :
+      attachIFrameContext({attributes:attribute_list, headers:header_list});
   await frame.execute(async (expected_result, attribute_list) => {
     assert_equals(navigator.canLoadAdAuctionFencedFrame(), expected_result,
     "A frame with attributes " + attribute_list + " should return " +
@@ -24,32 +24,33 @@ promise_test(async(t) => {
 }, 'canLoadOpaqueURL called on a page that can load a FF should return true');
 
 promise_test(async(t) => {
-  await runTest(true, "sharedstorage",
-     [["width", "300"],
+  await runTest(true,
+     [["mode", "opaque-ads"],
+      ["width", "300"],
       ["height", "200"]],
       [], use_fencedframe=true);
 }, 'canLoadOpaqueURL returns true inside an opaque-ads fenced frame');
 
 promise_test(async(t) => {
-  await runTest(false, "default", [], [], use_fencedframe=true);
+  await runTest(false, [["mode", "default"]], [], use_fencedframe=true);
 }, 'canLoadOpaqueURL returns false inside an default fenced frame');
 
 promise_test(async(t) => {
-  await runTest(true, "default", [], [["Content-Security-Policy", "fenced-frame-src *"]]);
-  await runTest(true, "default", [], [["Content-Security-Policy", "fenced-frame-src https:"]]);
-  await runTest(true, "default", [], [["Content-Security-Policy", "fenced-frame-src https://*:*"]]);
+  await runTest(true, [], [["Content-Security-Policy", "fenced-frame-src *"]]);
+  await runTest(true, [], [["Content-Security-Policy", "fenced-frame-src https:"]]);
+  await runTest(true, [], [["Content-Security-Policy", "fenced-frame-src https://*:*"]]);
 }, 'canLoadOpaqueURL returns true for all 3 fenced-frame-src allowed values');
 
 promise_test(async(t) => {
-  await runTest(true, "default", [], [["Content-Security-Policy", "fenced-frame-src *; frame-src 'self'"]]);
-  await runTest(false, "default", [], [["Content-Security-Policy", "fenced-frame-src 'self'; frame-src *"]]);
-  await runTest(true, "default", [], [["Content-Security-Policy", "child-src 'self'; fenced-frame-src https:"]]);
-  await runTest(false, "default", [], [["Content-Security-Policy", "child-src *; fenced-frame-src 'self'"]]);
+  await runTest(true, [], [["Content-Security-Policy", "fenced-frame-src *; frame-src 'self'"]]);
+  await runTest(false, [], [["Content-Security-Policy", "fenced-frame-src 'self'; frame-src *"]]);
+  await runTest(true, [], [["Content-Security-Policy", "child-src 'self'; fenced-frame-src https:"]]);
+  await runTest(false, [], [["Content-Security-Policy", "child-src *; fenced-frame-src 'self'"]]);
 }, 'canLoadOpaqueURL ignores fallback CSPs');
 
 promise_test(async(t) => {
-  await runTest(true, "default", [], [["Content-Security-Policy", "img-src 'none';"]]);
-  await runTest(true, "default", [], [["Content-Security-Policy", "font-src 'none';"]]);
+  await runTest(true, [], [["Content-Security-Policy", "img-src 'none';"]]);
+  await runTest(true, [], [["Content-Security-Policy", "font-src 'none';"]]);
 }, 'canLoadOpaqueURL ignores unrelated CSPs');
 
 promise_test(async(t) => {

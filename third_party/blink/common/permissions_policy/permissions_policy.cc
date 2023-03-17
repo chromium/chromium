@@ -330,15 +330,14 @@ PermissionsPolicy::~PermissionsPolicy() = default;
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
     const url::Origin& origin,
-    bool is_opaque_ads_mode) {
-  return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList(),
-                              is_opaque_ads_mode);
+    blink::mojom::FencedFrameMode mode) {
+  return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList(), mode);
 }
 
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
     const url::Origin& origin,
     const PermissionsPolicyFeatureList& features,
-    bool is_opaque_ads_mode) {
+    blink::mojom::FencedFrameMode mode) {
   std::unique_ptr<PermissionsPolicy> new_policy =
       base::WrapUnique(new PermissionsPolicy(origin, features));
   for (const auto& feature : features) {
@@ -348,7 +347,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
   // attribution reporting inside an opaque ad. This will eventually be replaced
   // by urn:uuid bound attributes as outlined in this document:
   // https://docs.google.com/document/d/11QaI40IAr12CDFrIUQbugxmS9LfircghHUghW-EDzMk/edit?usp=sharing
-  if (is_opaque_ads_mode) {
+  if (mode == blink::mojom::FencedFrameMode::kOpaqueAds) {
     for (const blink::mojom::PermissionsPolicyFeature feature :
          blink::kFencedFrameOpaqueAdsDefaultAllowedFeatures) {
       new_policy->inherited_policies_[feature] = true;

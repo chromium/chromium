@@ -76,9 +76,8 @@ class PermissionsPolicyTest : public testing::Test {
   }
   std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin,
-      bool is_opaque_ads_mode) {
-    return PermissionsPolicy::CreateForFencedFrame(origin, feature_list_,
-                                                   is_opaque_ads_mode);
+      const blink::mojom::FencedFrameMode mode) {
+    return PermissionsPolicy::CreateForFencedFrame(origin, feature_list_, mode);
   }
 
   bool PolicyContainsInheritedValue(const PermissionsPolicy* policy,
@@ -2028,7 +2027,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestNestedPolicyPropagates) {
 
 TEST_F(PermissionsPolicyTest, CreateForDefaultFencedFrame) {
   std::unique_ptr<PermissionsPolicy> policy =
-      CreateForFencedFrame(origin_a_, /*is_opaque_ads_mode=*/false);
+      CreateForFencedFrame(origin_a_, blink::mojom::FencedFrameMode::kDefault);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(
@@ -2038,8 +2037,8 @@ TEST_F(PermissionsPolicyTest, CreateForDefaultFencedFrame) {
 }
 
 TEST_F(PermissionsPolicyTest, CreateForOpaqueFencedFrame) {
-  std::unique_ptr<PermissionsPolicy> policy =
-      CreateForFencedFrame(origin_a_, /*is_opaque_ads_mode=*/true);
+  std::unique_ptr<PermissionsPolicy> policy = CreateForFencedFrame(
+      origin_a_, blink::mojom::FencedFrameMode::kOpaqueAds);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_TRUE(policy->IsFeatureEnabled(

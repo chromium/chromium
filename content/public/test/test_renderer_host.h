@@ -153,7 +153,9 @@ class RenderFrameHostTester {
   virtual void SimulateManifestURLUpdate(const GURL& manifest_url) = 0;
 
   // Creates and appends a fenced frame.
-  virtual RenderFrameHost* AppendFencedFrame() = 0;
+  virtual RenderFrameHost* AppendFencedFrame(
+      blink::mojom::FencedFrameMode mode =
+          blink::mojom::FencedFrameMode::kDefault) = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Creates the HidService and binds `receiver`.

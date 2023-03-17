@@ -280,6 +280,7 @@ void FakeLocalFrameHost::AdoptPortal(
 
 void FakeLocalFrameHost::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
+    mojom::blink::FencedFrameMode,
     mojom::blink::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token) {

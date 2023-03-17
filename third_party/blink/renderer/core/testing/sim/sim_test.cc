@@ -99,8 +99,7 @@ void SimTest::InitializeRemote() {
       local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
 }
 
-void SimTest::InitializeFencedFrameRoot(
-    blink::FencedFrame::DeprecatedFencedFrameMode mode) {
+void SimTest::InitializeFencedFrameRoot(mojom::blink::FencedFrameMode mode) {
   web_view_helper_->InitializeWithOpener(/*opener=*/nullptr,
                                          /*frame_client=*/nullptr,
                                          /*view_client=*/nullptr,

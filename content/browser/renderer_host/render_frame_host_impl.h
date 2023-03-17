@@ -2399,6 +2399,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
           pending_receiver,
+      blink::mojom::FencedFrameMode mode,
       blink::mojom::RemoteFrameInterfacesFromRendererPtr
           remote_frame_interfaces,
       const blink::RemoteFrameToken& frame_token,

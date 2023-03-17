@@ -2803,8 +2803,8 @@ bool NavigatorAuction::canLoadAdAuctionFencedFrame(ScriptState* script_state) {
   // another mode."
   // See: https://github.com/WICG/fenced-frame/blob/master/explainer/modes.md
   if (frame_to_check->GetPage()->IsMainFrameFencedFrameRoot() &&
-      frame_to_check->GetPage()->DeprecatedFencedFrameMode() !=
-          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds) {
+      frame_to_check->GetPage()->FencedFrameMode() !=
+          mojom::blink::FencedFrameMode::kOpaqueAds) {
     return false;
   }
 

@@ -426,8 +426,7 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
     TestWebFrameClient* web_frame_client,
     WebViewClient* web_view_client,
     void (*update_settings_func)(WebSettings*),
-    absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode) {
+    absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode) {
   Reset();
 
   InitializeWebView(web_view_client, opener ? opener->View() : nullptr,
@@ -705,8 +704,7 @@ void WebViewHelper::Resize(const gfx::Size& size) {
 void WebViewHelper::InitializeWebView(
     WebViewClient* web_view_client,
     class WebView* opener,
-    absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode) {
+    absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode) {
   web_view_client =
       CreateDefaultClientIfNeeded(web_view_client, owned_web_view_client_);
   web_view_ = To<WebViewImpl>(

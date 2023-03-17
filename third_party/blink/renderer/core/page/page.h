@@ -30,7 +30,6 @@
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
@@ -408,13 +407,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // Returns if the main frame of this frame tree is a fenced frame.
   bool IsMainFrameFencedFrameRoot() const;
 
-  void SetDeprecatedFencedFrameMode(
-      blink::FencedFrame::DeprecatedFencedFrameMode mode) {
+  void SetFencedFrameMode(mojom::blink::FencedFrameMode mode) {
     fenced_frame_mode_ = mode;
   }
-  blink::FencedFrame::DeprecatedFencedFrameMode DeprecatedFencedFrameMode() {
-    return fenced_frame_mode_;
-  }
+  mojom::blink::FencedFrameMode FencedFrameMode() { return fenced_frame_mode_; }
 
   V8CompileHints& GetV8CompileHints() { return v8_compile_hints_; }
 
@@ -560,9 +556,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // browser side FrameTree has the FrameTree::Type of kFencedFrame.
   bool is_fenced_frame_tree_ = false;
 
-  // This tracks the mode that the fenced frame is set to.
-  blink::FencedFrame::DeprecatedFencedFrameMode fenced_frame_mode_ =
-      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
+  // If the page is hosted inside an MPArch fenced frame, this tracks the
+  // mode that the fenced frame is set to. This will always be set to kDefault
+  // for the ShadowDOM implementation of fenced frames.
+  mojom::blink::FencedFrameMode fenced_frame_mode_ =
+      mojom::blink::FencedFrameMode::kDefault;
 
   mojom::blink::TextAutosizerPageInfo web_text_autosizer_page_info_;
 

@@ -725,8 +725,7 @@ class FencedFrameLocalFrameViewTest : private ScopedFencedFramesForTest,
 };
 
 TEST_F(FencedFrameLocalFrameViewTest, DoNotDeferCommitsInFencedFrames) {
-  InitializeFencedFrameRoot(
-      blink::FencedFrame::DeprecatedFencedFrameMode::kDefault);
+  InitializeFencedFrameRoot(mojom::blink::FencedFrameMode::kDefault);
   GetDocument().SetDeferredCompositorCommitIsAllowed(true);
   EXPECT_FALSE(GetDocument().View()->WillDoPaintHoldingForFCP());
 }
