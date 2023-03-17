@@ -316,6 +316,10 @@ class BrowserAutofillManager : public AutofillManager,
   virtual void SetFastCheckoutRunId(FieldTypeGroup field_type_group,
                                     int64_t run_id);
 
+  TouchToFillDelegateImpl* touch_to_fill_delegate() {
+    return touch_to_fill_delegate_.get();
+  }
+
   void SetExternalDelegateForTest(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
     external_delegate_ = std::move(external_delegate);

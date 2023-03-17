@@ -1657,8 +1657,9 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   // Disable Autofill.
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
 
   GetAutofillSuggestions(form, form.fields[0]);
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
@@ -3019,8 +3020,9 @@ TEST_F(BrowserAutofillManagerTest,
   test::CreateTestAddressFormData(&form);
 
   // Disable autofill and the password manager.
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
   ON_CALL(autofill_client_, IsPasswordManagerEnabled())
       .WillByDefault(Return(false));
 
@@ -6228,8 +6230,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 // Test that when Autocomplete is enabled and Autofill is disabled, form
 // submissions are still received by the SingleFieldFormFillRouter.
 TEST_F(BrowserAutofillManagerTest, FormSubmittedAutocompleteEnabled) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
 
   // Set up our form data.
   FormData form;
@@ -6271,8 +6274,9 @@ TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
 // still queried as a fallback.
 TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_SomeWhenAutofillDisabled) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
       browser_autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
@@ -6345,8 +6349,9 @@ TEST_F(BrowserAutofillManagerTest,
   replacements.SetSchemeStr(url::kHttpScheme);
   client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
   ResetBrowserAutofillManager(&client);
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
       browser_autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
@@ -6379,8 +6384,9 @@ TEST_F(BrowserAutofillManagerTest,
   replacements.SetSchemeStr(url::kHttpScheme);
   client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
   ResetBrowserAutofillManager(&client);
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
       browser_autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
@@ -6438,8 +6444,9 @@ TEST_F(
 TEST_F(
     BrowserAutofillManagerTest,
     SingleFieldFormFillSuggestions_NoneWhenSingleFieldFormFillConditionsNotMet) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
       browser_autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
@@ -8005,7 +8012,7 @@ TEST_F(BrowserAutofillManagerTest, FillInUpdatedExpirationDate) {
 }
 
 TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotFillFormData) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
 
   // Set up our form data.
   FormData form;
@@ -8022,7 +8029,7 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotFillFormData) {
 }
 
 TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
 
   // Set up our form data.
   FormData form;
@@ -8038,7 +8045,8 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
 }
 
 TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotFillFormData) {
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(true, false);
@@ -8054,7 +8062,8 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotFillFormData) {
 }
 
 TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(true, false);
@@ -8394,8 +8403,9 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Autofill disabled.
-  browser_autofill_manager_->SetAutofillProfileEnabled(false);
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
   EXPECT_FALSE(
       browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 }
@@ -10250,7 +10260,8 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
 // preference for credit card upload is set to disabled.
 TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
        ShouldNotShowDueToCreditCardUploadPrefDisabled) {
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
   FieldGlobalId field_id = CreateCompleteFormAndGetSuggestions();
   external_delegate_->CheckSuggestionCount(field_id, 0);
 }

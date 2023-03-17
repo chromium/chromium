@@ -31,10 +31,9 @@ FormStructureTestApi test_api(FormStructure* form_structure) {
 
 }  // namespace
 
-TestBrowserAutofillManager::TestBrowserAutofillManager(
-    AutofillDriver* driver,
-    TestAutofillClient* client)
-    : BrowserAutofillManager(driver, client, "en-US"), client_(client) {}
+TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver,
+                                                       AutofillClient* client)
+    : BrowserAutofillManager(driver, client, "en-US") {}
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 
@@ -263,20 +262,22 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
 }
 
 void TestBrowserAutofillManager::SetAutofillProfileEnabled(
+    TestAutofillClient& client,
     bool autofill_profile_enabled) {
   autofill_profile_enabled_ = autofill_profile_enabled;
   if (!autofill_profile_enabled_) {
     // Profile data is refreshed when this pref is changed.
-    client()->GetPersonalDataManager()->ClearProfiles();
+    client.GetPersonalDataManager()->ClearProfiles();
   }
 }
 
 void TestBrowserAutofillManager::SetAutofillCreditCardEnabled(
+    TestAutofillClient& client,
     bool autofill_credit_card_enabled) {
   autofill_credit_card_enabled_ = autofill_credit_card_enabled;
   if (!autofill_credit_card_enabled_) {
     // Credit card data is refreshed when this pref is changed.
-    client()->GetPersonalDataManager()->ClearCreditCards();
+    client.GetPersonalDataManager()->ClearCreditCards();
   }
 }
 

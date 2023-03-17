@@ -504,7 +504,8 @@ TEST_F(CreditCardSaveManagerTest, InvalidCreditCardNumberIsNotSaved) {
 }
 
 TEST_F(CreditCardSaveManagerTest, CreditCardDisabledDoesNotSave) {
-  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
+                                                          false);
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
