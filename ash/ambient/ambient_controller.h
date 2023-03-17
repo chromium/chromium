@@ -197,6 +197,7 @@ class ASH_EXPORT AmbientController
   void MaybeStartScreenSaver();
   void MaybeDismissUIOnMouseMove();
   AmbientUiSettings GetCurrentUiSettings() const;
+  void SetUiSettingsForExperimentation();
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
   // device being inactive for a specific amount of time.
@@ -218,6 +219,10 @@ class ASH_EXPORT AmbientController
   void OnPhotoRefreshIntervalPrefChanged();
   void OnAmbientUiSettingsChanged();
   void OnAnimationPlaybackSpeedChanged();
+
+  void CreateUiLauncher();
+  void DestroyUiLauncher();
+  bool IsUiLauncherActive() const;
 
   AmbientAccessTokenController* access_token_controller_for_testing() {
     return &access_token_controller_;

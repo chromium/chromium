@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ambient/model/ambient_backend_model.h"
+#include "ash/constants/ambient_theme.h"
 #include "base/functional/callback_forward.h"
 #include "ui/views/view.h"
 

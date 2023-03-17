@@ -226,11 +226,7 @@ void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
   }
 
   if (enabled) {
-    photo_controller()->set_photo_cache_for_testing(
-        std::make_unique<TestAmbientPhotoCacheImpl>());
-    photo_controller()->set_backup_photo_cache_for_testing(
-        std::make_unique<TestAmbientPhotoCacheImpl>());
-    photo_controller()->backup_photo_refresh_timer_for_testing().Stop();
+    SetUpPhotoControllerForTesting();
   }
 }
 
@@ -238,6 +234,19 @@ void AmbientAshTestBase::SetAmbientUiSettings(
     const AmbientUiSettings& settings) {
   settings.WriteToPrefService(
       *Shell::Get()->session_controller()->GetActivePrefService());
+  SetUpPhotoControllerForTesting();
+}
+
+void AmbientAshTestBase::SetUpPhotoControllerForTesting() {
+  // Some |AmbientUiSettings| legitimately don't use a photo controller.
+  if (!photo_controller()) {
+    return;
+  }
+  photo_controller()->set_photo_cache_for_testing(
+      std::make_unique<TestAmbientPhotoCacheImpl>());
+  photo_controller()->set_backup_photo_cache_for_testing(
+      std::make_unique<TestAmbientPhotoCacheImpl>());
+  photo_controller()->backup_photo_refresh_timer_for_testing().Stop();
 }
 
 void AmbientAshTestBase::SetAmbientTheme(AmbientTheme theme) {

@@ -175,6 +175,8 @@ component("ash") {
     "ambient/ambient_ui_launcher.h",
     "ambient/ambient_ui_settings.cc",
     "ambient/ambient_ui_settings.h",
+    "ambient/ambient_video_ui_launcher.cc",
+    "ambient/ambient_video_ui_launcher.h",
     "ambient/ambient_view_delegate_impl.cc",
     "ambient/ambient_view_delegate_impl.h",
     "ambient/ambient_weather_controller.cc",

@@ -10,22 +10,26 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_managed_photo_controller.h"
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/constants/ambient_theme.h"
+#include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
+#include "ash/public/cpp/personalization_app/time_of_day_paths.h"
 #include "ash/public/cpp/test/in_process_image_decoder.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
+#include "ash/test/test_ash_web_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -48,6 +52,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "net/base/url_util.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -151,37 +156,39 @@ class AmbientControllerTest : public AmbientAshTestBase {
   base::UserActionTester user_action_tester_;
 };
 
-// Tests for behavior that are agnostic to the AmbientTheme selected by
+// Tests for behavior that are agnostic to the AmbientUiSettings selected by
 // the user should use this test harness.
 //
 // Currently there are test cases that actually fall under this category but
 // do not use this test fixture. This is done purely for time constraint reasons
 // (it takes a lot of compute time to repeat every single one of these test
 // cases).
-class AmbientControllerTestForAnyTheme
+class AmbientControllerTestForAnyUiSettings
     : public AmbientControllerTest,
-      public ::testing::WithParamInterface<AmbientTheme> {
+      public ::testing::WithParamInterface<AmbientUiSettings> {
  protected:
   void SetUp() override {
     AmbientControllerTest::SetUp();
-    SetAmbientTheme(GetParam());
+    SetAmbientUiSettings(GetParam());
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    SlideshowAndAnimationTheme,
-    AmbientControllerTestForAnyTheme,
-    // Only one lottie-animated theme is sufficient here. The main goal here is
-    // to make sure that fundamental behavior holds for both the slideshow and
-    // lottie-animated codepaths.
-    testing::Values(AmbientTheme::kSlideshow
+    AllUiSettings,
+    AmbientControllerTestForAnyUiSettings,
+    // Only one lottie-animated theme and video is
+    // sufficient here. The main goal here is to make sure
+    // that fundamental behavior holds for all themes.
+    testing::Values(AmbientUiSettings(AmbientTheme::kSlideshow),
+                    AmbientUiSettings(AmbientTheme::kVideo,
+                                      AmbientVideo::kNewMexico)
 #if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
-                    ,
-                    AmbientTheme::kFeelTheBreeze
+                        ,
+                    AmbientUiSettings(AmbientTheme::kFeelTheBreeze)
 #endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
-                    ));
+                        ));
 
-TEST_P(AmbientControllerTestForAnyTheme, ShowAmbientScreenUponLock) {
+TEST_P(AmbientControllerTestForAnyUiSettings, ShowAmbientScreenUponLock) {
   LockScreen();
   // Lockscreen will not immediately show Ambient mode.
   EXPECT_FALSE(ambient_controller()->IsShown());
@@ -201,7 +208,8 @@ TEST_P(AmbientControllerTestForAnyTheme, ShowAmbientScreenUponLock) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, NotShowAmbientWhenPrefNotEnabled) {
+TEST_P(AmbientControllerTestForAnyUiSettings,
+       NotShowAmbientWhenPrefNotEnabled) {
   SetAmbientModeEnabled(false);
 
   LockScreen();
@@ -223,7 +231,7 @@ TEST_P(AmbientControllerTestForAnyTheme, NotShowAmbientWhenPrefNotEnabled) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, HideAmbientScreen) {
+TEST_P(AmbientControllerTestForAnyUiSettings, HideAmbientScreen) {
   LockScreen();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
@@ -245,7 +253,7 @@ TEST_P(AmbientControllerTestForAnyTheme, HideAmbientScreen) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, CloseAmbientScreenUponUnlock) {
+TEST_P(AmbientControllerTestForAnyUiSettings, CloseAmbientScreenUponUnlock) {
   LockScreen();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
@@ -265,7 +273,7 @@ TEST_P(AmbientControllerTestForAnyTheme, CloseAmbientScreenUponUnlock) {
   EXPECT_TRUE(GetContainerViews().empty());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme,
+TEST_P(AmbientControllerTestForAnyUiSettings,
        CloseAmbientScreenUponUnlockSecondaryUser) {
   // Simulate the login screen.
   ClearLogin();
@@ -356,7 +364,7 @@ TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
   EXPECT_TRUE(GetContainerViews().empty());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme,
+TEST_P(AmbientControllerTestForAnyUiSettings,
        ShouldRequestAccessTokenWhenLockingScreen) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
@@ -383,7 +391,7 @@ TEST_F(AmbientControllerTest, ShouldNotRequestAccessTokenWhenPrefNotEnabled) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, ShouldReturnCachedAccessToken) {
+TEST_P(AmbientControllerTestForAnyUiSettings, ShouldReturnCachedAccessToken) {
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -664,7 +672,8 @@ TEST_F(AmbientControllerTest,
 }
 
 // TODO(cowmoo): find a way to simulate events to trigger |UserActivityDetector|
-TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissContainerViewOnEvents) {
+TEST_P(AmbientControllerTestForAnyUiSettings,
+       ShouldDismissContainerViewOnEvents) {
   std::vector<std::unique_ptr<ui::Event>> events;
 
   for (auto mouse_event_type : {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_MOVED}) {
@@ -709,7 +718,7 @@ TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissContainerViewOnEvents) {
   }
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissAndThenComesBack) {
+TEST_P(AmbientControllerTestForAnyUiSettings, ShouldDismissAndThenComesBack) {
   LockScreen();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
@@ -724,7 +733,8 @@ TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissAndThenComesBack) {
   EXPECT_TRUE(WidgetsVisible());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, ShouldDismissContainerViewOnKeyEvent) {
+TEST_P(AmbientControllerTestForAnyUiSettings,
+       ShouldDismissContainerViewOnKeyEvent) {
   // Without user interaction, should show ambient mode.
   ShowAmbientScreen();
   EXPECT_TRUE(WidgetsVisible());
@@ -1028,7 +1038,7 @@ TEST_F(AmbientControllerTest, HandlesPhotoDownloadOutage) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, HideCursor) {
+TEST_P(AmbientControllerTestForAnyUiSettings, HideCursor) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
   LockScreen();
 
@@ -1049,7 +1059,7 @@ TEST_P(AmbientControllerTestForAnyTheme, HideCursor) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, ShowsOnMultipleDisplays) {
+TEST_P(AmbientControllerTestForAnyUiSettings, ShowsOnMultipleDisplays) {
   UpdateDisplay("800x600,800x600");
   FastForwardTiny();
 
@@ -1058,10 +1068,19 @@ TEST_P(AmbientControllerTestForAnyTheme, ShowsOnMultipleDisplays) {
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetNumDisplays(), 2);
   EXPECT_EQ(GetContainerViews().size(), 2u);
-  AmbientViewID expected_child_view_id =
-      GetParam() == AmbientTheme::kSlideshow
-          ? AmbientViewID::kAmbientPhotoView
-          : AmbientViewID::kAmbientAnimationView;
+  AmbientViewID expected_child_view_id;
+  switch (GetParam().theme()) {
+    case AmbientTheme::kVideo:
+      expected_child_view_id = kAmbientVideoWebView;
+      break;
+    case AmbientTheme::kSlideshow:
+      expected_child_view_id = AmbientViewID::kAmbientPhotoView;
+      break;
+    case AmbientTheme::kFeelTheBreeze:
+    case AmbientTheme::kFloatOnBy:
+      expected_child_view_id = AmbientViewID::kAmbientAnimationView;
+      break;
+  }
   EXPECT_TRUE(GetContainerViews().front()->GetViewByID(expected_child_view_id));
   EXPECT_TRUE(GetContainerViews().back()->GetViewByID(expected_child_view_id));
   // Check that each root controller has an ambient widget.
@@ -1070,7 +1089,7 @@ TEST_P(AmbientControllerTestForAnyTheme, ShowsOnMultipleDisplays) {
                 ctrl->ambient_widget_for_testing()->IsVisible());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, RespondsToDisplayAdded) {
+TEST_P(AmbientControllerTestForAnyUiSettings, RespondsToDisplayAdded) {
   // UpdateDisplay triggers a rogue MouseEvent that cancels Ambient mode when
   // testing with Xvfb. A corresponding MouseEvent is not fired on a real device
   // when an external display is added. Ignore this MouseEvent for testing.
@@ -1101,7 +1120,7 @@ TEST_P(AmbientControllerTestForAnyTheme, RespondsToDisplayAdded) {
       old_should_ignore_events);
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, HandlesDisplayRemoved) {
+TEST_P(AmbientControllerTestForAnyUiSettings, HandlesDisplayRemoved) {
   UpdateDisplay("800x600,800x600");
   FastForwardTiny();
 
@@ -1245,7 +1264,7 @@ TEST_F(AmbientControllerTest, BindsObserversWhenAmbientOn) {
   EXPECT_FALSE(ctrl->power_status_observer_.IsObserving());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme,
+TEST_P(AmbientControllerTestForAnyUiSettings,
        ShowDismissAmbientScreenUponAssistantQuery) {
   // Without user interaction, should show ambient mode.
   ShowAmbientScreen();
@@ -1336,7 +1355,7 @@ TEST_F(AmbientControllerTest,
   EXPECT_TRUE(GetCachedFiles().empty());
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, MetricsEngagementTime) {
+TEST_P(AmbientControllerTestForAnyUiSettings, MetricsEngagementTime) {
   // TODO(esum): Find a better way of fast forwarding time for lottie animations
   // in unit tests. Currently, the whole compositor stack is being used in this
   // test harness and there is no good way to control the frame rate, so
@@ -1366,7 +1385,8 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsEngagementTime) {
       "Ash.AmbientMode.EngagementTime.ClamshellMode", kExpectedEngagementTime,
       1);
   histogram_tester.ExpectTimeBucketCount(
-      base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(GetParam())}),
+      base::StrCat(
+          {"Ash.AmbientMode.EngagementTime.", ToString(GetParam().theme())}),
       kExpectedEngagementTime, 1);
 
   // Now do the same sequence in tablet mode.
@@ -1386,11 +1406,12 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsEngagementTime) {
   histogram_tester.ExpectTimeBucketCount(
       "Ash.AmbientMode.EngagementTime.TabletMode", kExpectedEngagementTime, 1);
   histogram_tester.ExpectTimeBucketCount(
-      base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(GetParam())}),
+      base::StrCat(
+          {"Ash.AmbientMode.EngagementTime.", ToString(GetParam().theme())}),
       kExpectedEngagementTime, 2);
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTime) {
+TEST_P(AmbientControllerTestForAnyUiSettings, MetricsStartupTime) {
   base::HistogramTester histogram_tester;
   LockScreen();
   FastForwardToLockScreenTimeout();
@@ -1398,7 +1419,9 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTime) {
   ASSERT_TRUE(ambient_controller()->IsShown());
 
   histogram_tester.ExpectTotalCount(
-      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}), 1);
+      base::StrCat(
+          {"Ash.AmbientMode.StartupTime.", ToString(GetParam().theme())}),
+      1);
 
   UnlockScreen();
   ASSERT_FALSE(ambient_controller()->IsShown());
@@ -1409,7 +1432,9 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTime) {
   ASSERT_TRUE(ambient_controller()->IsShown());
 
   histogram_tester.ExpectTotalCount(
-      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}), 2);
+      base::StrCat(
+          {"Ash.AmbientMode.StartupTime.", ToString(GetParam().theme())}),
+      2);
 }
 
 TEST_F(AmbientControllerTest,
@@ -1448,7 +1473,18 @@ TEST_F(AmbientControllerTest,
   UnlockScreen();
 }
 
-TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTimeFailedToStart) {
+TEST_P(AmbientControllerTestForAnyUiSettings, MetricsStartupTimeFailedToStart) {
+  switch (GetParam().theme()) {
+    case AmbientTheme::kVideo:
+      // Video themes have no dependency on backend photos, so we cannot test
+      // failure to start ambient mode by simulating an IMAX outage. Video
+      // themes should always start unless there is a design oversight or bug.
+      GTEST_SKIP();
+    case AmbientTheme::kSlideshow:
+    case AmbientTheme::kFeelTheBreeze:
+    case AmbientTheme::kFloatOnBy:
+      break;
+  }
   // Simulate IMAX outage that doesn't return any photos.
   backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);
 
@@ -1460,7 +1496,7 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTimeFailedToStart) {
 
   UnlockScreen();
   histogram_tester.ExpectUniqueTimeSample(
-      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}),
+      base::StrCat({"Ash.AmbientMode.StartupTime.", GetParam().ToString()}),
       base::Minutes(1), 1);
 }
 
@@ -1617,6 +1653,71 @@ TEST_F(AmbientControllerForManagedScreensaver,
   ASSERT_FALSE(GetContainerView());
   UnlockScreen();
   EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {
+  SetAmbientUiSettings(
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kNewMexico));
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  ASSERT_TRUE(GetContainerView());
+  const TestAshWebView* web_view = static_cast<const TestAshWebView*>(
+      GetContainerView()->GetViewByID(kAmbientVideoWebView));
+  ASSERT_TRUE(web_view);
+  EXPECT_TRUE(web_view->current_url().SchemeIsFile());
+  EXPECT_EQ(web_view->current_url().path(),
+            personalization_app::GetTimeOfDaySrcDir()
+                .Append(personalization_app::kAmbientVideoHtml)
+                .value());
+  std::string video_path_requested;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_src",
+                                         &video_path_requested));
+  GURL video_src_url(video_path_requested);
+  EXPECT_TRUE(video_src_url.SchemeIsFile());
+  EXPECT_EQ(video_src_url.path(),
+            personalization_app::GetTimeOfDayVideosDir()
+                .Append(personalization_app::kTimeOfDayNewMexicoVideo)
+                .value());
+
+  UnlockScreen();
+  SetAmbientTheme(AmbientTheme::kSlideshow);
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+
+  UnlockScreen();
+  SetAmbientUiSettings(
+      AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  ASSERT_TRUE(GetContainerView());
+  web_view = static_cast<const TestAshWebView*>(
+      GetContainerView()->GetViewByID(kAmbientVideoWebView));
+  ASSERT_TRUE(web_view);
+  EXPECT_TRUE(web_view->current_url().SchemeIsFile());
+  EXPECT_EQ(web_view->current_url().path(),
+            personalization_app::GetTimeOfDaySrcDir()
+                .Append(personalization_app::kAmbientVideoHtml)
+                .value());
+  ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_src",
+                                         &video_path_requested));
+  video_src_url = GURL(video_path_requested);
+  EXPECT_TRUE(video_src_url.SchemeIsFile());
+  EXPECT_EQ(video_src_url.path(),
+            personalization_app::GetTimeOfDayVideosDir()
+                .Append(personalization_app::kTimeOfDayCloudsVideo)
+                .value());
 }
 
 }  // namespace ash
