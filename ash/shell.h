@@ -150,6 +150,7 @@ class HoldingSpaceController;
 class HumanPresenceOrientationController;
 class ImeControllerImpl;
 class InputDeviceSettingsControllerImpl;
+class InputDeviceSettingsDispatcher;
 class InputDeviceTracker;
 class WebAuthNDialogControllerImpl;
 class KeyAccessibilityEnabler;
@@ -876,7 +877,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<EventRewriterControllerImpl> event_rewriter_controller_;
   std::unique_ptr<InputDeviceSettingsControllerImpl>
       input_device_settings_controller_;
-
+  std::unique_ptr<InputDeviceSettingsDispatcher>
+      input_device_settings_dispatcher_;
   std::unique_ptr<InputDeviceTracker> input_device_tracker_;
   std::unique_ptr<KeyboardModifierMetricsRecorder>
       keyboard_modifier_metrics_recorder_;

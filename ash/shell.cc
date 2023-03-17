@@ -132,6 +132,7 @@
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ash/system/input_device_settings/input_device_settings_dispatcher.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
@@ -739,6 +740,7 @@ Shell::~Shell() {
 
   event_rewriter_controller_.reset();
   keyboard_modifier_metrics_recorder_.reset();
+  input_device_settings_dispatcher_.reset();
   input_device_tracker_.reset();
   input_device_settings_controller_.reset();
 
@@ -1249,12 +1251,18 @@ void Shell::Init(
   window_modality_controller_ =
       std::make_unique<::wm::WindowModalityController>(this, env);
 
-  // The `InputDeviceSettingsController` is a dependency of the
-  // `EventRewriterController`, `InputDeviceTracker` and
-  // `KeyboardModifierMetricsRecorder` so it must be initialized first.
+  // The `InputDeviceSettingsController` is a dependency of the following so it
+  // must be initialized first:
+  //  - `EventRewriterController`
+  //  - `InputDeviceTracker`
+  //  - `KeyboardModifierMetricsRecorder`
+  //  - `InputDeviceSettingsDispatcher`
   input_device_settings_controller_ =
       std::make_unique<InputDeviceSettingsControllerImpl>();
   input_device_tracker_ = std::make_unique<InputDeviceTracker>();
+  input_device_settings_dispatcher_ =
+      std::make_unique<InputDeviceSettingsDispatcher>(
+          ui::OzonePlatform::GetInstance()->GetInputController());
   keyboard_modifier_metrics_recorder_ =
       std::make_unique<KeyboardModifierMetricsRecorder>();
   event_rewriter_controller_ = std::make_unique<EventRewriterControllerImpl>();
