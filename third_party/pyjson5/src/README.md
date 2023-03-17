@@ -61,6 +61,20 @@ To run the tests, setup a venv and install the required dependencies with
 
 ## Version History / Release Notes
 
+* v0.9.13 (2023-03-16)
+    * [GitHub PR #64](https://github.com/dpranke/pyjson5/pull/64)
+      Remove a field from one of the JSON benchmark files to
+      reduce confusion in Chromium.
+    * No code changes.
+* v0.9.12 (2023-01-02)
+    * Fix GitHub Actions config file to no longer test against
+      Python 3.6 or 3.7. For now we will only test against an
+      "oldest" release (3.8 in this case) and a "current"
+      release (3.11 in this case).
+* v0.9.11 (2023-01-02)
+    * [GitHub issue #60](https://github.com/dpranke/pyjson5/issues/60)
+      Fixed minor Python2 compatibility issue by referring to
+      `float("inf")` instead of `math.inf`.
 * v0.9.10 (2022-08-18)
     * [GitHub issue #58](https://github.com/dpranke/pyjson5/issues/58)
       Updated the //README.md to be clear that parsing arbitrary JS

@@ -264,12 +264,12 @@ def _dumps(obj, skipkeys, ensure_ascii, check_circular, allow_nan, indent,
         s = u'false'
     elif obj is None:
         s = u'null'
-    elif obj == math.inf:
+    elif obj == float('inf'):
         if allow_nan:
             s = u'Infinity'
         else:
             raise ValueError()
-    elif obj == -math.inf:
+    elif obj == float('-inf'):
         if allow_nan:
             s = u'-Infinity'
         else:

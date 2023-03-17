@@ -1,9 +1,9 @@
 Name: pyjson5
 Short Name: pyjson5
 URL: https://github.com/dpranke/pyjson5
-Version: 0.9.10
-Date: August 8 2022
-Revision: e28f7b981aebc9b909ac561fdbc3b3ba4db8d516
+Version: 0.9.13
+Date: March 16 2023
+Revision: 25ca192ef962ddb2c2680ce0c22ef81f9999b0e2
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: No

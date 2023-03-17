@@ -5,7 +5,6 @@
   ],
   "xcode version": "8.0",
   "gn_args": [
-    "additional_target_cpus=[\"x86\"]",
     "goma_dir=\"$(goma_dir)\"",
     "is_component_build=false",
     "is_debug=true",
