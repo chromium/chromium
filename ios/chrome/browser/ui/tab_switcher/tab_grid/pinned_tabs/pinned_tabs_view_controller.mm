@@ -184,6 +184,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)dropAnimationDidEnd {
+  // If a local drag action is in progress, `dragSessionDidEnd:` will end the
+  // drag session.
+  if (_localDragActionInProgress) {
+    return;
+  }
+
   _dropAnimationInProgress = NO;
   [self dragSessionEnabled:NO];
 }
