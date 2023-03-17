@@ -1643,6 +1643,7 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
   mojom::PrintPagesParams print_pages_params;
   GetPrintManagerHost()->GetDefaultPrintSettings(&print_pages_params.params);
   if (!print_pages_params.params) {
+    LOG(ERROR) << "GetDefaultPrintSettings() failed";
     std::move(callback).Run(nullptr);
     return;
   }
@@ -1664,6 +1665,7 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
   if (page_count == 0) {
     frame->PrintEnd();
     metafile->FinishDocument();
+    LOG(ERROR) << "PrintBegin() returned 0 pages";
     std::move(callback).Run(nullptr);
     return;
   }
@@ -1686,6 +1688,7 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
 
   if (!CopyMetafileDataToDidPrintContentParams(*metafile,
                                                page_params->content.get())) {
+    LOG(ERROR) << "CopyMetafileDataToDidPrintContentParams() failed";
     std::move(callback).Run(nullptr);
     return;
   }
