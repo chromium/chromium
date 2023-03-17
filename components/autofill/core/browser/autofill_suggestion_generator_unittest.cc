@@ -138,8 +138,8 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  std::unique_ptr<TestAutofillSuggestionGenerator> suggestion_generator_;
   TestAutofillClient autofill_client_;
+  std::unique_ptr<TestAutofillSuggestionGenerator> suggestion_generator_;
   scoped_refptr<AutofillWebDataService> database_;
 };
 
