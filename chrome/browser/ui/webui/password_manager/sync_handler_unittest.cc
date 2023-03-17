@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/test/test_web_ui.h"
@@ -24,6 +27,13 @@ std::unique_ptr<KeyedService> BuildMockSyncService(
   return std::make_unique<testing::NiceMock<syncer::MockSyncService>>();
 }
 
+bool CallbackReturnedSuccessfully(const content::TestWebUI::CallData& data) {
+  return (data.function_name() == "cr.webUIResponse") &&
+         data.arg1()->is_string() &&
+         (data.arg1()->GetString() == kTestCallbackId) &&
+         data.arg2()->is_bool() && data.arg2()->GetBool();
+}
+
 }  // namespace
 
 class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
@@ -33,7 +43,8 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
     mock_sync_service_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&BuildMockSyncService)));
-
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     auto handler = std::make_unique<SyncHandler>(profile());
     handler_ = handler.get();
     web_ui_.AddMessageHandler(std::move(handler));
@@ -44,19 +55,33 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     static_cast<content::WebUIMessageHandler*>(handler_)->DisallowJavascript();
+    identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories();
+  }
+
+  AccountInfo CreateTestSyncAccount() {
+    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        "user@gmail.com", signin::ConsentLevel::kSync);
+    ON_CALL(*sync_service(), HasSyncConsent).WillByDefault(Return(true));
+    ON_CALL(*sync_service()->GetMockUserSettings(), IsSyncRequested)
+        .WillByDefault(Return(true));
+    ON_CALL(*sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+        .WillByDefault(Return(true));
+    ON_CALL(*sync_service(), GetAccountInfo)
+        .WillByDefault(Return(account_info));
+    return account_info;
   }
 
   void ExpectTrustedVaultBannerStateResponse(
       TrustedVaultBannerState expected_state) {
     auto& data = *web_ui_.call_data().back();
     EXPECT_EQ("cr.webUIResponse", data.function_name());
-
-    ASSERT_TRUE(data.arg1()->is_string());
-    EXPECT_EQ(kTestCallbackId, data.arg1()->GetString());
-    ASSERT_TRUE(data.arg2()->is_bool());
-    EXPECT_TRUE(data.arg2()->GetBool());
-    ASSERT_TRUE(data.arg3()->is_int());
+    ASSERT_TRUE(CallbackReturnedSuccessfully(data));
     EXPECT_EQ(static_cast<int>(expected_state), data.arg3()->GetInt());
   }
 
@@ -74,12 +99,18 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
     return arguments;
   }
 
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_adaptor_->identity_test_env();
+  }
+
   content::TestWebUI* web_ui() { return &web_ui_; }
   MockSyncService* sync_service() { return mock_sync_service_; }
   SyncHandler* handler() { return handler_; }
 
  private:
   content::TestWebUI web_ui_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
   raw_ptr<MockSyncService> mock_sync_service_;
   SyncHandler* handler_;
 };
@@ -143,6 +174,35 @@ TEST_F(SyncHandlerTest, TrustedVaultBannerStateChange) {
   ASSERT_TRUE(args[0]->is_int());
   EXPECT_EQ(static_cast<int>(TrustedVaultBannerState::kNotShown),
             args[0]->GetInt());
+}
+
+TEST_F(SyncHandlerTest, AccountInfo) {
+  base::Value::List args;
+  args.Append(kTestCallbackId);
+  web_ui()->ProcessWebUIMessage(GURL(), "GetAccountInfo", std::move(args));
+  auto& data = *web_ui()->call_data().back();
+  ASSERT_TRUE(CallbackReturnedSuccessfully(data));
+
+  // Expect no accounts initially.
+  base::Value::List expected_accounts;
+  ASSERT_TRUE(data.arg3()->is_dict());
+  EXPECT_EQ("", *data.arg3()->GetDict().FindString("email"));
+
+  auto account_info = CreateTestSyncAccount();
+  // Creating an account with IdentityTestEnvironment::MakeAccountAvailable
+  // triggers identity manager observer before stored accounts info
+  // can be retrieved.
+  size_t num_account_change_updates =
+      GetAllFiredValuesForEventName("stored-accounts-changed").size();
+
+  // Verify that stored accounts are propagated to WebUI.
+  static_cast<signin::IdentityManager::Observer*>(handler())
+      ->OnExtendedAccountInfoUpdated(account_info);
+  std::vector<const base::Value*> update_args =
+      GetAllFiredValuesForEventName("stored-accounts-changed");
+  ASSERT_EQ(num_account_change_updates + 1, update_args.size());
+  ASSERT_TRUE(update_args[1]->is_dict());
+  EXPECT_EQ(account_info.email, *update_args[1]->GetDict().FindString("email"));
 }
 
 }  // namespace password_manager

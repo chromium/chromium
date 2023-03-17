@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/webui/web_ui_util.h"
 
 namespace password_manager {
 
@@ -21,6 +24,9 @@ void SyncHandler::RegisterMessages() {
       "GetSyncTrustedVaultBannerState",
       base::BindRepeating(&SyncHandler::HandleGetTrustedVaultBannerState,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "GetAccountInfo", base::BindRepeating(&SyncHandler::HandleGetAccountInfo,
+                                            base::Unretained(this)));
 }
 
 void SyncHandler::OnJavascriptAllowed() {
@@ -31,10 +37,17 @@ void SyncHandler::OnJavascriptAllowed() {
   if (sync_service) {
     sync_service_observation_.Observe(sync_service);
   }
+
+  signin::IdentityManager* identity_manager(
+      IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
+  if (identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
 }
 
 void SyncHandler::OnJavascriptDisallowed() {
   sync_service_observation_.Reset();
+  identity_manager_observation_.Reset();
 }
 
 base::Value SyncHandler::GetTrustedVaultBannerState() const {
@@ -59,9 +72,40 @@ void SyncHandler::HandleGetTrustedVaultBannerState(
   ResolveJavascriptCallback(callback_id, GetTrustedVaultBannerState());
 }
 
+base::Value::Dict SyncHandler::GetAccountInfo() const {
+  signin::IdentityManager* identity_manager(
+      IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
+  auto stored_account = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+
+  base::Value::Dict dict;
+  dict.Set("email", stored_account.email);
+  const auto& avatar_image = stored_account.account_image;
+  if (!avatar_image.IsEmpty()) {
+    dict.Set("avatarImage", webui::GetBitmapDataUrl(avatar_image.AsBitmap()));
+  }
+  return dict;
+}
+
+void SyncHandler::HandleGetAccountInfo(const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  ResolveJavascriptCallback(callback_id, GetAccountInfo());
+}
+
 void SyncHandler::OnStateChanged(syncer::SyncService* sync_service) {
   FireWebUIListener("trusted-vault-banner-state-changed",
                     GetTrustedVaultBannerState());
+}
+
+void SyncHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
+  FireWebUIListener("stored-accounts-changed", GetAccountInfo());
+}
+
+void SyncHandler::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
+  FireWebUIListener("stored-accounts-changed", GetAccountInfo());
 }
 
 syncer::SyncService* SyncHandler::GetSyncService() const {
