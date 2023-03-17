@@ -2961,42 +2961,20 @@ TEST_P(CacheStorageManagerTestP, DeleteStorageKeyData) {
     EXPECT_EQ(DeleteStorageKeyData(partitioned_storage_key1, owner),
               blink::mojom::QuotaStatusCode::kOk);
 
-    // TODO(https://crbug.com/1218097): We don't currently delete named bucket
-    // data when `DeleteStorageKeyData()` is called, but when we do, update this
-    // test condition.
     usages = GetAllStorageKeysUsage(owner);
-    EXPECT_EQ(3ULL, usages.size());
-
-    storage_key1_index = usages[0]->storage_key == storage_key1_   ? 0
-                         : usages[1]->storage_key == storage_key1_ ? 1
-                                                                   : 2;
-    storage_key2_index = usages[0]->storage_key == storage_key2_   ? 0
-                         : usages[1]->storage_key == storage_key2_ ? 1
-                                                                   : 2;
-    partitioned_storage_key1_index =
-        usages[0]->storage_key == partitioned_storage_key1   ? 0
-        : usages[1]->storage_key == partitioned_storage_key1 ? 1
-                                                             : 2;
-    EXPECT_NE(storage_key1_index, storage_key2_index);
-    EXPECT_NE(storage_key2_index, partitioned_storage_key1_index);
-    EXPECT_NE(partitioned_storage_key1_index, storage_key1_index);
-
-    EXPECT_EQ(usages[storage_key2_index]->total_size_bytes,
-              usages[storage_key1_index]->total_size_bytes);
-    EXPECT_EQ(usages[partitioned_storage_key1_index]->total_size_bytes,
-              usages[storage_key2_index]->total_size_bytes);
+    EXPECT_EQ(1ULL, usages.size());
+    EXPECT_EQ(usages[0]->storage_key, storage_key2_);
 
     EXPECT_EQ(DeleteStorageKeyData(storage_key2_, owner),
               blink::mojom::QuotaStatusCode::kOk);
 
-    EXPECT_EQ(2ULL, GetAllStorageKeysUsage(owner).size());
+    EXPECT_EQ(0ULL, GetAllStorageKeysUsage(owner).size());
 
     if (!MemoryOnly()) {
       auto* legacy_manager =
           static_cast<CacheStorageManager*>(cache_manager_.get());
-      // TODO(https://crbug.com/1218097): When we support deleting named
-      // buckets, check that the files for those get deleted as well.
-      for (const auto& bucket_locator : {bucket_locator2_}) {
+      for (const auto& bucket_locator : {bucket_locator1_, bucket_locator2_,
+                                         partitioned_named_bucket_locator1}) {
         base::FilePath bucket_path = CacheStorageManager::ConstructBucketPath(
             legacy_manager->profile_path(), bucket_locator, owner);
         EXPECT_FALSE(base::PathExists(bucket_path));

@@ -458,16 +458,12 @@ void OneStorageKeySizeReported(
 // Match a bucket for deletion if its storage key matches any of the given
 // storage keys.
 //
-// This function considers a bucket to match a storage key if it is the default
-// bucket and either the bucket's key's origin matches the storage key's origin
-// or the bucket's key is third-party and its top-level site matches the origin.
+// This function considers a bucket to match a storage key if either the
+// bucket's key's origin matches the storage key's origin or the bucket's key is
+// third-party and its top-level site matches the origin.
 bool BucketMatchesStorageKeysForDeletion(
     const storage::BucketLocator& bucket_locator,
     const std::set<blink::StorageKey>& storage_keys) {
-  // Non-default buckets never match.
-  if (!bucket_locator.is_default) {
-    return false;
-  }
   auto& bucket_key = bucket_locator.storage_key;
 
   for (auto& storage_key : storage_keys) {
