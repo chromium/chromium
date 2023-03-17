@@ -114,7 +114,6 @@ ScriptedIdleTaskController::ScriptedIdleTaskController(
       paused_(false) {}
 
 ScriptedIdleTaskController::~ScriptedIdleTaskController() {
-  recordreplay::Assert("[RUN-1335-1456] ScriptedIdleTaskController::~ScriptedIdleTaskController");
 }
 
 void ScriptedIdleTaskController::Trace(Visitor* visitor) const {
