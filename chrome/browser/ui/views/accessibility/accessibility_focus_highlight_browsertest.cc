@@ -21,6 +21,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -58,6 +59,11 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(
         features::kAccessibilityFocusHighlight);
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Force the CPU backend to use AAA. (https://crbug.com/1421297)
+    command_line->AppendSwitch(switches::kForceSkiaAnalyticAntialiasing);
   }
 
   bool ColorsApproximatelyEqual(SkColor color1, SkColor color2) {
