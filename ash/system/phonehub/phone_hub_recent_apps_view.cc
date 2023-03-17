@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_connected_view.h"
+#include "ash/system/phonehub/phone_hub_app_loading_icon.h"
 #include "ash/system/phonehub/phone_hub_more_apps_button.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -28,6 +29,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -65,7 +67,64 @@ constexpr int kMaxAppsWithMoreAppsButton = 5;
 constexpr gfx::Rect kMoreAppsButtonArea = gfx::Rect(57, 32);
 constexpr int kMoreAppsButtonRadius = 16;
 
+// Animation constants for loading view
+constexpr float kAnimationLoadingIconOpacityHigh = 1.0f;
+constexpr float kAnimationLoadingIconOpacityLow = 0.5f;
+constexpr int kAnimationLoadingIconStaggerDelayInMs = 100;
+constexpr int kAnimationLoadingIconFadeDownDurationInMs = 500;
+constexpr int kAnimationLoadingIconFadeUpDurationInMs = 500;
+
 constexpr int kRecentAppsHeaderSpacing = 220;
+
+void LayoutAppButtonsView(views::View* buttons_view) {
+  const gfx::Rect child_area = buttons_view->GetContentsBounds();
+  views::View::Views visible_children;
+  base::ranges::copy_if(
+      buttons_view->children(), std::back_inserter(visible_children),
+      [](const auto* v) {
+        return v->GetVisible() && (v->GetPreferredSize().width() > 0);
+      });
+  if (visible_children.empty()) {
+    return;
+  }
+  const int visible_child_width =
+      std::accumulate(visible_children.cbegin(), visible_children.cend(), 0,
+                      [](int width, const auto* v) {
+                        return width + v->GetPreferredSize().width();
+                      });
+
+  int spacing = 0;
+  if (visible_children.size() > 1) {
+    spacing = (child_area.width() - visible_child_width -
+               kRecentAppButtonsViewHorizontalPadding * 2) /
+              (static_cast<int>(visible_children.size()) - 1);
+    spacing = base::clamp(spacing, kRecentAppButtonMinSpacing,
+                          kRecentAppButtonDefaultSpacing);
+  }
+
+  int child_x = child_area.x() + kRecentAppButtonsViewHorizontalPadding;
+  int child_y = child_area.y() + kRecentAppButtonsViewTopPadding +
+                kRecentAppButtonFocusPadding.bottom();
+  for (auto* child : visible_children) {
+    // Most recent apps be added to the left and shift right as the other apps
+    // are streamed.
+    int width = child->GetPreferredSize().width();
+    child->SetBounds(child_x, child_y, width, child->GetHeightForWidth(width));
+    child_x += width + spacing;
+  }
+}
+
+void ApplyLoadingAnimation(views::View* view) {
+  views::AnimationBuilder()
+      .Repeatedly()
+      .SetDuration(
+          base::Milliseconds(kAnimationLoadingIconFadeDownDurationInMs))
+      .SetOpacity(view, kAnimationLoadingIconOpacityLow,
+                  gfx::Tween::ACCEL_30_DECEL_20_85)
+      .Then()
+      .SetDuration(base::Milliseconds(kAnimationLoadingIconFadeUpDurationInMs))
+      .SetOpacity(view, kAnimationLoadingIconOpacityHigh, gfx::Tween::LINEAR);
+}
 
 class HeaderView : public views::View {
  public:
@@ -158,6 +217,10 @@ PhoneHubRecentAppsView::PhoneHubRecentAppsView(
       AddChildView(std::make_unique<RecentAppButtonsView>());
   placeholder_view_ = AddChildView(std::make_unique<PlaceholderView>());
 
+  if (features::IsEcheNetworkConnectionStateEnabled()) {
+    loading_view_ = AddChildView(std::make_unique<LoadingView>());
+  }
+
   Update();
   recent_apps_interaction_handler_->AddObserver(this);
 }
@@ -214,41 +277,7 @@ void PhoneHubRecentAppsView::RecentAppButtonsView::Layout() {
     views::View::Layout();
     return;
   }
-
-  const gfx::Rect child_area = GetContentsBounds();
-  views::View::Views visible_children;
-  base::ranges::copy_if(
-      children(), std::back_inserter(visible_children), [](const auto* v) {
-        return v->GetVisible() && (v->GetPreferredSize().width() > 0);
-      });
-  if (visible_children.empty()) {
-    return;
-  }
-  const int visible_child_width =
-      std::accumulate(visible_children.cbegin(), visible_children.cend(), 0,
-                      [](int width, const auto* v) {
-                        return width + v->GetPreferredSize().width();
-                      });
-
-  int spacing = 0;
-  if (visible_children.size() > 1) {
-    spacing = (child_area.width() - visible_child_width -
-               kRecentAppButtonsViewHorizontalPadding * 2) /
-              (static_cast<int>(visible_children.size()) - 1);
-    spacing = base::clamp(spacing, kRecentAppButtonMinSpacing,
-                          kRecentAppButtonDefaultSpacing);
-  }
-
-  int child_x = child_area.x() + kRecentAppButtonsViewHorizontalPadding;
-  int child_y = child_area.y() + kRecentAppButtonsViewTopPadding +
-                kRecentAppButtonFocusPadding.bottom();
-  for (auto* child : visible_children) {
-    // Most recent apps be added to the left and shift right as the other apps
-    // are streamed.
-    int width = child->GetPreferredSize().width();
-    child->SetBounds(child_x, child_y, width, child->GetHeightForWidth(width));
-    child_x += width + spacing;
-  }
+  LayoutAppButtonsView(this);
 }
 
 const char* PhoneHubRecentAppsView::RecentAppButtonsView::GetClassName() const {
@@ -257,6 +286,59 @@ const char* PhoneHubRecentAppsView::RecentAppButtonsView::GetClassName() const {
 
 void PhoneHubRecentAppsView::RecentAppButtonsView::Reset() {
   RemoveAllChildViews();
+}
+
+PhoneHubRecentAppsView::LoadingView::LoadingView() {
+  SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  SetDefaultFlex(1);
+  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  PopulateLoadingView();
+}
+
+PhoneHubRecentAppsView::LoadingView::~LoadingView() = default;
+
+gfx::Size PhoneHubRecentAppsView::LoadingView::CalculatePreferredSize() const {
+  int width = kTrayMenuWidth - kBubbleHorizontalSidePaddingDip * 2;
+  int height = kMoreAppsButtonSize + kRecentAppButtonFocusPadding.height() +
+               kRecentAppButtonsViewTopPadding;
+
+  return gfx::Size(width, height);
+}
+
+void PhoneHubRecentAppsView::LoadingView::Layout() {
+  if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
+    views::View::Layout();
+    return;
+  }
+  LayoutAppButtonsView(this);
+}
+
+const char* PhoneHubRecentAppsView::LoadingView::GetClassName() const {
+  return "RecentAppLoadingView";
+}
+
+void PhoneHubRecentAppsView::LoadingView::PopulateLoadingView() {
+  for (size_t i = 0; i < 6; i++) {
+    views::View* empty_app_loading_icon = nullptr;
+    if (i == 5) {
+      empty_app_loading_icon = AddChildView(new PhoneHubMoreAppsButton());
+
+      // TODO(b/271478560): Animation fails for more apps button.
+      continue;
+    } else {
+      empty_app_loading_icon =
+          AddChildView(new AppLoadingIcon(AppIcon::kSizeNormal));
+    }
+
+    auto timer = std::make_unique<base::OneShotTimer>();
+    timer->Start(
+        FROM_HERE,
+        /*delay=*/base::Milliseconds(i * kAnimationLoadingIconStaggerDelayInMs),
+        base::BindOnce(&ApplyLoadingAnimation, empty_app_loading_icon));
+    timers_.emplace_back(std::move(timer));
+  }
 }
 
 void PhoneHubRecentAppsView::Update() {
@@ -269,6 +351,9 @@ void PhoneHubRecentAppsView::Update() {
   switch (current_ui_state) {
     case RecentAppsUiState::HIDDEN:
       placeholder_view_->SetVisible(false);
+      if (loading_view_) {
+        loading_view_->SetVisible(false);
+      }
       SetVisible(false);
       break;
     case RecentAppsUiState::LOADING:
@@ -281,6 +366,9 @@ void PhoneHubRecentAppsView::Update() {
     case RecentAppsUiState::PLACEHOLDER_VIEW:
       recent_app_buttons_view_->SetVisible(false);
       placeholder_view_->SetVisible(true);
+      if (loading_view_) {
+        loading_view_->SetVisible(false);
+      }
       SetVisible(true);
       break;
     case RecentAppsUiState::ITEMS_VISIBLE:
@@ -308,6 +396,9 @@ void PhoneHubRecentAppsView::Update() {
 
       recent_app_buttons_view_->SetVisible(true);
       placeholder_view_->SetVisible(false);
+      if (loading_view_) {
+        loading_view_->SetVisible(false);
+      }
       SetVisible(true);
       break;
   }

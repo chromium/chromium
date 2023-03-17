@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "phone_hub_small_app_loading_icon.h"
+#include "phone_hub_app_loading_icon.h"
 
 #include "ash/style/ash_color_provider.h"
 #include "ui/compositor/layer.h"
@@ -10,9 +10,13 @@
 #include "ui/gfx/image/canvas_image_source.h"
 
 namespace ash {
+
+namespace {
+
 class LoadingCircle : public gfx::CanvasImageSource {
  public:
-  explicit LoadingCircle() : CanvasImageSource(gfx::Size(18, 18)) {}
+  explicit LoadingCircle(int size)
+      : CanvasImageSource(AppIcon::GetRecommendedImageSize(size)) {}
 
   LoadingCircle(const LoadingCircle&) = delete;
   LoadingCircle& operator=(const LoadingCircle&) = delete;
@@ -28,11 +32,15 @@ class LoadingCircle : public gfx::CanvasImageSource {
   }
 };
 
-SmallAppLoadingIcon::SmallAppLoadingIcon()
-    : SmallAppIcon(
-          gfx::Image(gfx::CanvasImageSource::MakeImageSkia<LoadingCircle>())) {
+}  // namespace
+
+AppLoadingIcon::AppLoadingIcon(int size)
+    : AppIcon(gfx::Image(
+                  gfx::CanvasImageSource::MakeImageSkia<LoadingCircle>(size)),
+              size) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetFillsBoundsCompletely(false);
 }
+
 }  // namespace ash

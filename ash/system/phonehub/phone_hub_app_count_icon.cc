@@ -14,10 +14,13 @@
 
 namespace ash {
 
+namespace {
+
 class NumberIconImageSource : public gfx::CanvasImageSource {
  public:
-  explicit NumberIconImageSource(size_t count)
-      : CanvasImageSource(gfx::Size(18, 18)), count_(count) {}
+  explicit NumberIconImageSource(size_t count, int size)
+      : CanvasImageSource(AppIcon::GetRecommendedImageSize(size)),
+        count_(count) {}
 
   NumberIconImageSource(const NumberIconImageSource&) = delete;
   NumberIconImageSource& operator=(const NumberIconImageSource&) = delete;
@@ -49,8 +52,12 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
   }
 };
 
+}  // namespace
+
 AppCountIcon::AppCountIcon(const int count)
-    : SmallAppIcon(gfx::Image(
-          gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(
-              count))) {}
+    : AppIcon(gfx::Image(
+                  gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(
+                      count,
+                      AppIcon::kSizeSmall)),
+              AppIcon::kSizeSmall) {}
 }  // namespace ash

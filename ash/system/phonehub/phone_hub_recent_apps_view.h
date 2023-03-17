@@ -10,8 +10,10 @@
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_connected_view.h"
 #include "base/gtest_prod_util.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
@@ -69,6 +71,24 @@ class ASH_EXPORT PhoneHubRecentAppsView
     void Reset();
   };
 
+  class LoadingView : public views::BoxLayoutView {
+   public:
+    LoadingView();
+    ~LoadingView() override;
+    LoadingView(LoadingView&) = delete;
+    LoadingView operator=(LoadingView&) = delete;
+
+    // views::View:
+    gfx::Size CalculatePreferredSize() const override;
+    void Layout() override;
+    const char* GetClassName() const override;
+
+    void PopulateLoadingView();
+
+   private:
+    std::vector<std::unique_ptr<base::OneShotTimer>> timers_;
+  };
+
   // Update the view to reflect the most recently opened apps.
   void Update();
 
@@ -86,6 +106,7 @@ class ASH_EXPORT PhoneHubRecentAppsView
       nullptr;
   phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
   PlaceholderView* placeholder_view_ = nullptr;
+  LoadingView* loading_view_ = nullptr;
   PhoneConnectedView* connected_view_ = nullptr;
 };
 

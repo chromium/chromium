@@ -8,9 +8,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_app_count_icon.h"
+#include "ash/system/phonehub/phone_hub_app_icon.h"
+#include "ash/system/phonehub/phone_hub_app_loading_icon.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
-#include "ash/system/phonehub/phone_hub_small_app_icon.h"
-#include "ash/system/phonehub/phone_hub_small_app_loading_icon.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,11 +51,16 @@ class MoreAppsButtonBackground : public views::Background {
   }
 };
 
+PhoneHubMoreAppsButton::PhoneHubMoreAppsButton() {
+  InitLayout();
+}
+
 PhoneHubMoreAppsButton::PhoneHubMoreAppsButton(
     phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model,
     views::Button::PressedCallback callback)
     : views::Button(std::move(callback)),
       app_stream_launcher_data_model_(app_stream_launcher_data_model) {
+  CHECK(app_stream_launcher_data_model_);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
@@ -64,7 +69,9 @@ PhoneHubMoreAppsButton::PhoneHubMoreAppsButton(
 }
 
 PhoneHubMoreAppsButton::~PhoneHubMoreAppsButton() {
-  app_stream_launcher_data_model_->RemoveObserver(this);
+  if (app_stream_launcher_data_model_) {
+    app_stream_launcher_data_model_->RemoveObserver(this);
+  }
 }
 
 void PhoneHubMoreAppsButton::InitLayout() {
@@ -91,9 +98,15 @@ void PhoneHubMoreAppsButton::InitLayout() {
                          kMoreAppsButtonRowPadding);
 
   SetEnabled(false);
+  SetBackground(std::make_unique<MoreAppsButtonBackground>());
+  if (!app_stream_launcher_data_model_) {
+    AddLoadingAppIcons(/*animate=*/false);
+    return;
+  }
+
   if (app_stream_launcher_data_model_->GetAppsListSortedByName()->empty()) {
     load_app_list_latency_ = base::TimeTicks::Now();
-    InitGlimmer();
+    AddLoadingAppIcons(/*animate=*/true);
     SetEnabled(false);
     phone_hub_metrics::LogMoreAppsButtonAnimationOnShow(
         phone_hub_metrics::MoreAppsButtonLoadingState::kAnimationShown);
@@ -108,13 +121,16 @@ void PhoneHubMoreAppsButton::InitLayout() {
     phone_hub_metrics::LogMoreAppsButtonAnimationOnShow(
         phone_hub_metrics::MoreAppsButtonLoadingState::kMoreAppsButtonLoaded);
   }
-
-  SetBackground(std::make_unique<MoreAppsButtonBackground>());
 }
 
-void PhoneHubMoreAppsButton::InitGlimmer() {
+void PhoneHubMoreAppsButton::AddLoadingAppIcons(bool animate) {
   for (auto i = 0; i < 4; i++) {
-    auto* app_loading_icon = new SmallAppLoadingIcon();
+    auto* app_loading_icon =
+        AddChildView(new AppLoadingIcon(AppIcon::kSizeSmall));
+    if (!animate) {
+      continue;
+    }
+
     views::AnimationBuilder animation_builder;
     animation_builder.Once().SetOpacity(app_loading_icon,
                                         kAnimationLoadingCardOpacity);
@@ -131,7 +147,6 @@ void PhoneHubMoreAppsButton::InitGlimmer() {
             base::Milliseconds(kAnimationLoadingCardTransitDurationInMs))
         .SetOpacity(app_loading_icon, kAnimationLoadingCardOpacity,
                     gfx::Tween::LINEAR);
-    AddChildView(app_loading_icon);
   }
 }
 
@@ -148,13 +163,15 @@ void PhoneHubMoreAppsButton::OnAppListChanged() {
 }
 
 void PhoneHubMoreAppsButton::LoadAppList() {
+  CHECK(app_stream_launcher_data_model_);
   RemoveAllChildViews();
   const std::vector<phonehub::Notification::AppMetadata>* app_list =
       app_stream_launcher_data_model_->GetAppsListSortedByName();
   if (!app_list->empty()) {
     auto app_count = std::min(app_list->size(), size_t{3});
     for (size_t i = 0; i < app_count; i++) {
-      AddChildView(std::make_unique<SmallAppIcon>(app_list->at(i).icon));
+      AddChildView(
+          std::make_unique<AppIcon>(app_list->at(i).icon, AppIcon::kSizeSmall));
     }
   }
 

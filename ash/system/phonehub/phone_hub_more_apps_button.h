@@ -20,9 +20,14 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
  public:
   METADATA_HEADER(PhoneHubMoreAppsButton);
 
-  explicit PhoneHubMoreAppsButton(
+  // Only use this constructor to create a skeleton view for the LoadingView.
+  // Does not process click events or load app icons.
+  PhoneHubMoreAppsButton();
+
+  PhoneHubMoreAppsButton(
       phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model,
       views::Button::PressedCallback callback);
+
   PhoneHubMoreAppsButton(const PhoneHubMoreAppsButton&) = delete;
   PhoneHubMoreAppsButton& operator=(const PhoneHubMoreAppsButton&) = delete;
   ~PhoneHubMoreAppsButton() override;
@@ -34,11 +39,12 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
  private:
   void InitLayout();
   void LoadAppList();
-  void InitGlimmer();
+  void AddLoadingAppIcons(bool animate);
 
   base::TimeTicks load_app_list_latency_ = base::TimeTicks();
   views::TableLayout* table_layout_ = nullptr;
-  phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model_;
+  phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model_ =
+      nullptr;
 };
 
 }  // namespace ash
