@@ -1,0 +1,2 @@
+android.webkit.WebView focusable focused scrollable
+++android.widget.TextView name='Hello world'

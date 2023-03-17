@@ -16,6 +16,7 @@ namespace content {
 constexpr const char kARIA[]{"aria"};
 constexpr const char kAOM[]{"aom"};
 constexpr const char kCSS[]{"css"};
+constexpr const char kFormControls[]{"form-controls"};
 constexpr const char kHTML[]{"html"};
 constexpr const char kMathML[]{"mathml"};
 constexpr const char kDisplayLocking[]{"display-locking"};
@@ -40,7 +41,8 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
-  std::vector<std::string> Dump() override;
+
+  std::vector<std::string> Dump(ui::AXMode mode) override;
 
   void RunAccNameTest(const base::FilePath::CharType* file_path) {
     base::FilePath test_path = GetTestFilePath("accessibility", "accname");
@@ -49,7 +51,8 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
       ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
     }
     base::FilePath accname_file = test_path.Append(base::FilePath(file_path));
-    RunTest(accname_file, "accessibility/accname", FILE_PATH_LITERAL("tree"));
+    RunTest(ui::kAXModeComplete, accname_file, "accessibility/accname",
+            FILE_PATH_LITERAL("tree"));
   }
 
   void RunAriaTest(const base::FilePath::CharType* file_path) {
@@ -62,6 +65,10 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
   void RunCSSTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kCSS>(file_path);
+  }
+
+  void RunFormControlsTest(const base::FilePath::CharType* file_path) {
+    RunTypedTest<kFormControls>(file_path, ui::kAXModeFormControls);
   }
 
   void RunHtmlTest(const base::FilePath::CharType* file_path) {
@@ -96,7 +103,8 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kEnableExperimentalAccessibilityLanguageDetectionDynamic);
 
-    RunTest(language_detection_file, "accessibility/language-detection");
+    RunTest(ui::kAXModeComplete, language_detection_file,
+            "accessibility/language-detection");
   }
 
   // Testing of the Test Harness itself.

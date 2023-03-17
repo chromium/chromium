@@ -54,8 +54,8 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
     return property_filters;
   }
 
-  std::vector<std::string> Dump() override {
-    WaitForFinalTreeContents();
+  std::vector<std::string> Dump(ui::AXMode mode) override {
+    WaitForFinalTreeContents(mode);
 
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
 

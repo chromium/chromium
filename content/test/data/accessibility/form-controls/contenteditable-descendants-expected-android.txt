@@ -1,0 +1,13 @@
+android.webkit.WebView focusable focused scrollable
+++android.widget.EditText editable_text focusable has_non_empty_value multiline name='A contenteditable with a link and an  and a Button.Always expose editable tables as tables.1. Editable list item.' text_change_added_count=113
+++++android.widget.TextView name='A contenteditable with a '
+++++android.widget.TextView name='link'
+++++android.widget.TextView name=' and an '
+++++android.widget.TextView name=' and a '
+++++android.widget.Button role_description='button' clickable focusable name='Button'
+++++android.widget.TextView name='.'
+++++android.widget.TextView name='Always expose editable tables as tables.'
+++++android.widget.TextView name='1. '
+++++android.widget.TextView name='Editable list item.'
+++android.widget.TextView name='Non-editable paragraph.'
+++android.widget.EditText editable_text focusable has_non_empty_value multiline name='Should keep the role but change the state.' text_change_added_count=42

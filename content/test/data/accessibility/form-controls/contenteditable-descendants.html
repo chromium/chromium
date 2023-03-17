@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--
+@MAC-ALLOW:AXEditableAncestor
+@MAC-ALLOW:AXHighestEditableAncestor
+@WIN-ALLOW:caret_offset*
+@WIN-ALLOW:IA2_STATE_EDITABLE
+@WIN-ALLOW:IA2_STATE_MULTI_LINE
+@WIN-ALLOW:ia2_hypertext=*
+@WIN-ALLOW:LINKED
+@WIN-ALLOW:n_selections*
+@WIN-ALLOW:selection_start*
+@WIN-ALLOW:selection_end*
+@BLINK-ALLOW:linked
+@BLINK-ALLOW:nonAtomicTextFieldRoot=true
+@BLINK-ALLOW:editable*
+@BLINK-ALLOW:richlyEditable*
+@BLINK-ALLOW:textSel*
+@AURALINUX-ALLOW:editable
+@AURALINUX-ALLOW:multi-line
+@AURALINUX-ALLOW:selection_start*
+@AURALINUX-ALLOW:selection_end*
+-->
+<div contenteditable>
+  <p>A contenteditable with a
+    <a href="#">link</a> and an
+    <img alt="Image"> and a
+    <input type="button" value="Button">.
+  </p>
+  <table>
+    <td>Always expose editable tables as tables.</td>
+  </table>
+  <ol>
+    <li>Editable list item.</li>
+  </ol>
+</div>
+<p>Non-editable paragraph.</p>
+<p contenteditable>Should keep the role but change the state.</p>

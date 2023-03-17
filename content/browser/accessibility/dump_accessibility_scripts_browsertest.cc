@@ -92,7 +92,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     property_filters->push_back(AXPropertyFilter(filter, type));
   }
 
-  std::vector<std::string> Dump() override {
+  std::vector<std::string> Dump(ui::AXMode mode) override {
     std::vector<std::string> dump;
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
     BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
@@ -129,7 +129,8 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
         auto pair = CaptureEvents(
             base::BindOnce(&DumpAccessibilityScriptTest::EvaluateScript,
                            base::Unretained(this), formatter.get(), root,
-                           scenario_.script_instructions, start_index, index));
+                           scenario_.script_instructions, start_index, index),
+            ui::kAXModeComplete);
         actual_contents = pair.first.GetString();
         for (auto event : pair.second) {
           if (base::StartsWith(event, wait_for)) {

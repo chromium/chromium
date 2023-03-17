@@ -1,0 +1,12 @@
+rootWebArea
+++staticText name='Welcome to my example page!'
+++staticText name='Lengthy instructions on filling out the form.'
+++staticText name='Imagine hundreds of nodes that are simple content...'
+++staticText ignored name='Enter your name: '
+++textField name='Enter your name:'
+++++genericContainer
+++staticText ignored name='Enter your email: '
+++textField name='Enter your email:'
+++++genericContainer
+++button name='Subscribe!'
+++++staticText name='Subscribe!'

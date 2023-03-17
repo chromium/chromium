@@ -109,8 +109,8 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
       switches::kDisableAXMenuList, "false");
 }
 
-std::vector<std::string> DumpAccessibilityTreeTest::Dump() {
-  WaitForFinalTreeContents();
+std::vector<std::string> DumpAccessibilityTreeTest::Dump(ui::AXMode mode) {
+  WaitForFinalTreeContents(mode);
 
   return base::SplitString(DumpTreeAsString(), "\n", base::KEEP_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
@@ -1730,6 +1730,20 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-descendants.html"));
 }
 
+#if BUILDFLAG(IS_MAC)
+// Mac failures: http://crbug.com/571712.
+#define MAYBE_AccessibilityContenteditableDescendantsFormControls \
+  DISABLED_AccessibilityContenteditableDescendantsFormControls
+#else
+#define MAYBE_AccessibilityContenteditableDescendantsFormControls \
+  AccessibilityContenteditableDescendantsFormControls
+#endif
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    MAYBE_AccessibilityContenteditableDescendantsFormControls) {
+  RunFormControlsTest(FILE_PATH_LITERAL("contenteditable-descendants.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityContenteditableDocsLi) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
@@ -2447,6 +2461,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityId) {
   RunHtmlTest(FILE_PATH_LITERAL("id.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityImgFormFormControls) {
+  RunFormControlsTest(FILE_PATH_LITERAL("img-form.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityIns) {
   RunHtmlTest(FILE_PATH_LITERAL("ins.html"));
 }
@@ -2828,6 +2847,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityRoleChange) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityRoleChangeDelay) {
   RunAriaTest(FILE_PATH_LITERAL("role-change-delay.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityRoleGroupFormControls) {
+  RunFormControlsTest(FILE_PATH_LITERAL("role-group.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityRuby) {

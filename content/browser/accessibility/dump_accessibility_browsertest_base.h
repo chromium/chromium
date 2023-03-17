@@ -49,13 +49,26 @@ class DumpAccessibilityTestBase
   // loads the HTML, loads the accessibility tree, calls Dump(), then
   // compares the output to the expected result and has the test succeed
   // or fail based on the diff.
+  // Run with given AXMode.
+  void RunTest(ui::AXMode mode,
+               const base::FilePath file_path,
+               const char* file_dir,
+               const base::FilePath::StringType& expectations_qualifier =
+                   FILE_PATH_LITERAL(""));
+
+  // Given a path to an HTML file relative to the test directory,
+  // loads the HTML, loads the accessibility tree, calls Dump(), then
+  // compares the output to the expected result and has the test succeed
+  // or fail based on the diff.
+  // Run with default kAXModeComplete.
   void RunTest(const base::FilePath file_path,
                const char* file_dir,
                const base::FilePath::StringType& expectations_qualifier =
                    FILE_PATH_LITERAL(""));
 
   template <const char* type>
-  void RunTypedTest(const base::FilePath::CharType* file_path) {
+  void RunTypedTest(const base::FilePath::CharType* file_path,
+                    ui::AXMode mode = ui::kAXModeComplete) {
     base::FilePath test_path = GetTestFilePath("accessibility", type);
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -64,7 +77,7 @@ class DumpAccessibilityTestBase
     base::FilePath test_file = test_path.Append(base::FilePath(file_path));
 
     std::string dir(std::string() + "accessibility/" + type);
-    RunTest(test_file, dir.c_str());
+    RunTest(mode, test_file, dir.c_str());
   }
 
   template <std::vector<ui::AXApiType::Type> TestPasses(),
@@ -106,7 +119,7 @@ class DumpAccessibilityTestBase
   // including the load complete accessibility event. The subclass should
   // dump whatever that specific test wants to dump, returning the result
   // as a sequence of strings.
-  virtual std::vector<std::string> Dump() = 0;
+  virtual std::vector<std::string> Dump(ui::AXMode mode) = 0;
 
   // Add the default filters that are applied to all tests.
   virtual std::vector<ui::AXPropertyFilter> DefaultFilters() const = 0;
@@ -131,7 +144,8 @@ class DumpAccessibilityTestBase
   // and return it as a string.
   std::string DumpUnfilteredAccessibilityTreeAsString();
 
-  void RunTestForPlatform(const base::FilePath file_path,
+  void RunTestForPlatform(ui::AXMode mode,
+                          const base::FilePath file_path,
                           const char* file_dir,
                           const base::FilePath::StringType&
                               expectations_qualifier = FILE_PATH_LITERAL(""));
@@ -152,7 +166,8 @@ class DumpAccessibilityTestBase
   // Returns a list of captured events fired after the invoked action.
   using InvokeAction = base::OnceCallback<base::Value()>;
   std::pair<base::Value, std::vector<std::string>> CaptureEvents(
-      InvokeAction invoke_action);
+      InvokeAction invoke_action,
+      ui::AXMode mode);
 
   // Test scenario loaded from the test file.
   ui::AXInspectScenario scenario_;
@@ -175,18 +190,21 @@ class DumpAccessibilityTestBase
 
   WebContentsImpl* GetWebContents() const;
 
-  // Wait until all accessibility events and dirty objects have been processed.
-  void WaitForEndOfTest() const;
+  // Wait until all accessibility events and dirty objects have been processed
+  // with the given AXMode.
+  void WaitForEndOfTest(ui::AXMode mode) const;
 
   // Perform any requested default actions and wait until a notification is
-  // received that each action is performed.
-  void PerformAndWaitForDefaultActions();
+  // received that each action is performed with the given AXMode.
+  void PerformAndWaitForDefaultActions(ui::AXMode mode);
 
-  // Support the @WAIT-FOR directive (node, tree tests only).
-  void WaitForExpectedText();
+  // Support the @WAIT-FOR directive (node, tree tests only) with the given
+  // AXMode.
+  void WaitForExpectedText(ui::AXMode mode);
 
-  // Wait for default action, expected text and then end of test signal.
-  void WaitForFinalTreeContents();
+  // Wait for default action, expected text and then end of test signal with the
+  // given AXMode.
+  void WaitForFinalTreeContents(ui::AXMode mode);
 
   // Creates a new secure test server that can be used in place of the default
   // HTTP embedded_test_server defined in BrowserTestBase. The new test server
@@ -215,8 +233,8 @@ class DumpAccessibilityTestBase
       const std::vector<std::string>& skip_urls);
 
   // Wait until all initial content is completely loaded, included within
-  // subframes, objects and portals.
-  void WaitForAllFramesLoaded();
+  // subframes, objects and portals with given AXMode.
+  void WaitForAllFramesLoaded(ui::AXMode mode);
 
   void OnEventRecorded(const std::string& event) const {
     VLOG(1) << "++ Platform event: " << event;
