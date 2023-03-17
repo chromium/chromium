@@ -47,10 +47,21 @@ class BluetoothPairingFloss {
     pairing_expectation_ = expectation;
   }
 
+  void SetActive(bool is_active) {
+    is_active_ = is_active;
+  }
+
+  bool active() {
+    return is_active_;
+  }
+
  private:
   // UI Pairing Delegate to make method calls on, this must live as long as
   // the object capturing the PairingContext.
   raw_ptr<device::BluetoothDevice::PairingDelegate> pairing_delegate_;
+
+  // If the pairing is active, it can trigger actions to the delegate.
+  bool is_active_ = true;
 
   // If pending user interaction, what is expected from the user.
   PairingExpectation pairing_expectation_ = PairingExpectation::kNone;

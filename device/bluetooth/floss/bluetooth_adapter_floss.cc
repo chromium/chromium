@@ -797,6 +797,11 @@ void BluetoothAdapterFloss::AdapterSspRequest(
     return;
   }
 
+  if (!pairing->active()) {
+    LOG(WARNING) << "SSP request for an inactive pairing";
+    return;
+  }
+
   device::BluetoothDevice::PairingDelegate* pairing_delegate =
       pairing->pairing_delegate();
 
@@ -853,6 +858,10 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
       static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
 
   if (status != 0) {
+    if (device->pairing()) {
+      // Mark that no actions should be triggered for pairing delegate.
+      device->pairing()->SetActive(false);
+    }
     LOG(ERROR) << "Received BondStateChanged with error status = " << status;
     device->SetBondState(bond_state);
     if (bond_state == FlossAdapterClient::BondState::kNotBonded) {

@@ -685,8 +685,12 @@ void BluetoothDeviceFloss::TriggerConnectCallback(
     adapter_->NotifyDeviceChanged(this);
 
   if (pending_callback_on_connect_profiles_) {
-    std::move(*pending_callback_on_connect_profiles_).Run(error_code);
+    // We need to move it first and set pending_callback_on_connect_profiles_
+    // to nullopt before Run-ing the callback, because this may trigger arriving
+    // at this same location.
+    auto callback = std::move(*pending_callback_on_connect_profiles_);
     pending_callback_on_connect_profiles_ = absl::nullopt;
+    std::move(callback).Run(error_code);
   }
 }
 
