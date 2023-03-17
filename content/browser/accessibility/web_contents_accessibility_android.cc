@@ -1571,16 +1571,15 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
     if (is_screen_reader_enabled) {
       accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
     } else {
-      // Add basic mode
-      ui::AXMode flags_to_add(ui::kAXModeBasic.flags());
-      accessibility_state->AddAccessibilityModeFlags(flags_to_add);
-
       // Remove the mode flags present in kAXModeComplete but not in
       // kAXModeBasic, thereby reverting the mode to kAXModeBasic while
       // not touching any other flags.
       ui::AXMode flags_to_remove(ui::kAXModeComplete.flags() &
                                  ~ui::kAXModeBasic.flags());
       accessibility_state->RemoveAccessibilityModeFlags(flags_to_remove);
+
+      // Add basic mode
+      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeBasic);
     }
     return;
   }
@@ -1602,16 +1601,14 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
       accessibility_state->RemoveAccessibilityModeFlags(flags_to_remove);
 
       // Add form controls experimental mode.
-      ui::AXMode flags_to_add(ui::kAXModeFormControls.flags(),
-                              ui::AXMode::kExperimentalFormControls);
-      accessibility_state->AddAccessibilityModeFlags(flags_to_add);
+      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeFormControls);
     } else {
-      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-
       // Remove form controls experimental mode to preserve screen reader mode.
       ui::AXMode flags_to_remove(ui::AXMode::kNone,
                                  ui::AXMode::kExperimentalFormControls);
       accessibility_state->RemoveAccessibilityModeFlags(flags_to_remove);
+
+      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
     }
     return;
   }
@@ -1623,12 +1620,12 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
   if (features::IsComputeAXModeEnabled() &&
       features::IsAccessibilityFormControlsAXModeEnabled()) {
     if (is_screen_reader_enabled) {
-      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-
       // Remove form controls experimental mode to preserve screen reader mode.
       ui::AXMode flags_to_remove(ui::AXMode::kNone,
                                  ui::AXMode::kExperimentalFormControls);
       accessibility_state->RemoveAccessibilityModeFlags(flags_to_remove);
+
+      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
     } else if (form_controls_mode) {
       // TODO (aldietz): Add a SetAccessibilityModeFlags method to
       // BrowserAccessibilityState to add and remove flags atomically in one
@@ -1641,9 +1638,7 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
       accessibility_state->RemoveAccessibilityModeFlags(flags_to_remove);
 
       // Add form controls experimental mode.
-      ui::AXMode flags_to_add(ui::kAXModeFormControls.flags(),
-                              ui::AXMode::kExperimentalFormControls);
-      accessibility_state->AddAccessibilityModeFlags(flags_to_add);
+      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeFormControls);
     } else {
       // Remove the mode flags present in kAXModeComplete and
       // kExperimentalFormControls but not in kAXModeBasic, thereby reverting
@@ -1654,8 +1649,7 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
       accessibility_state->RemoveAccessibilityModeFlags(flags_to_remove);
 
       // Add basic mode
-      ui::AXMode flags_to_add(ui::kAXModeBasic.flags());
-      accessibility_state->AddAccessibilityModeFlags(flags_to_add);
+      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeBasic);
     }
   }
 }
