@@ -19,6 +19,15 @@ template("build_webui_tests") {
   preprocess_dir = "${target_gen_dir}/preprocessed"
   tsc_dir = "${target_gen_dir}/tsc"
 
+  # Generated Mojo TS files.
+  if (defined(invoker.mojo_files)) {
+    assert(defined(invoker.mojo_files_deps))
+    mojo_files = []
+    foreach(mojo_file, invoker.mojo_files) {
+      mojo_files += [ get_path_info(invoker.mojo_files, "file") ]
+    }
+  }
+
   if (defined(invoker.static_files)) {
     static_files_filter = [ "*.html" ]
     static_files = filter_include(invoker.static_files, static_files_filter)
@@ -42,6 +51,15 @@ template("build_webui_tests") {
     in_files = files
   }
 
+  if (defined(invoker.mojo_files_deps)) {
+    copy("copy_mojo") {
+      visibility = [ ":build_ts" ]
+      deps = invoker.mojo_files_deps
+      sources = invoker.mojo_files
+      outputs = [ "${preprocess_dir}/{{source_file_part}}" ]
+    }
+  }
+
   ts_library("build_ts") {
     visibility = [ ":build_grdp" ]
     root_dir = preprocess_dir
@@ -63,11 +81,23 @@ template("build_webui_tests") {
                        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                                    target_gen_dir) ]
     in_files = files
+
     if (defined(invoker.ts_definitions)) {
       definitions = invoker.ts_definitions
     }
     deps = [ "//chrome/test/data/webui:build_ts" ] + ts_deps
     extra_deps = [ ":preprocess" ]
+
+    if (defined(invoker.mojo_files)) {
+      target_outputs = get_target_outputs(":copy_mojo")
+
+      # Add all Mojo JS files produced by `:copy_mojo` as inputs to the TS
+      # compiler.
+      foreach(o, target_outputs) {
+        in_files += [ rebase_path(o, preprocess_dir) ]
+      }
+      extra_deps += [ ":copy_mojo" ]
+    }
   }
 
   # This target is public so that it can be depended on by

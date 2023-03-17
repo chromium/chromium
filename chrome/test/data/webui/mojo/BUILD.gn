@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/test/data/webui/build_webui_tests.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 
 mojom("mojo_bindings") {
   sources = [
@@ -12,37 +11,31 @@ mojom("mojo_bindings") {
     "mojo_file_system_access_test.mojom",
   ]
   webui_module_path = "/"
+  use_typescript_sources = true
 }
 
-preprocess_if_expr("copy_mojo") {
-  in_folder = "$root_gen_dir/mojom-webui/chrome/test/data/webui/mojo"
-  out_folder = "$target_gen_dir/preprocessed"
-  in_files = [
-    "foobar.mojom-webui.js",
-    "mojo_file_system_access_test.mojom-webui.js",
-  ]
-  out_manifest = "$target_gen_dir/copy_mojo.manifest"
-  deps = [ ":mojo_bindings_js__generator" ]
-}
+build_webui_tests("build") {
+  resource_path_prefix = "mojo"
 
-generate_grd("build_grdp") {
-  grd_prefix = "webui_mojo"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  input_files = [
-    "main.js",
+  static_files = [
     "mojo_file_system_access_test.html",
-    "mojo_file_system_access_test.js",
     "mojo_js_interface_broker_test_bar.html",
     "mojo_js_interface_broker_test_buz.html",
     "mojo_js_interface_broker_test_foo.html",
     "mojo_web_ui_controller_test.html",
   ]
-  input_files_base_dir = rebase_path(".", "//")
-  resource_path_prefix = rebase_path(".", "//chrome/test/data/webui")
 
-  manifest_files =
-      filter_include(get_target_outputs(":copy_mojo"), [ "*.manifest" ])
+  files = [
+    "main.ts",
+    "mojo_file_system_access_test.ts",
+  ]
 
-  deps = [ ":copy_mojo" ]
+  mojo_files = [
+    "$target_gen_dir/foobar.mojom-webui.ts",
+    "$target_gen_dir/mojo_file_system_access_test.mojom-webui.ts",
+  ]
+
+  mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
+
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
 }

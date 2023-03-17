@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Bar, Baz, Foo} from '/foobar.mojom-webui.js';
+import {MojoFileSystemAccessTest} from './mojo_file_system_access_test.mojom-webui.js';
 
 // Expose the interface for browsertest EvalJs.
-Object.assign(window, {Foo, Bar, Baz});
+Object.assign(window, {MojoFileSystemAccessTest});
