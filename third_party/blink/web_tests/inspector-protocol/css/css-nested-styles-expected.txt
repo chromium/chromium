@@ -6,10 +6,32 @@ The test verifies functionality of protocol methods working correctly with CSS n
     width: 42px; @[2:4-2:16]
     width: 42px; @[undefined-undefined]
 }
+nesting selectors: #parent
+*div* {    user-agent    readonly
+    display: block; @[undefined-undefined]
+}
+*#deep-nested* {    regular
+    height: 42px; @[5:6-5:19]
+    height: 42px; @[undefined-undefined]
+}
+nesting selectors: #nested,#parent
+.cls1, *#deep-nested*, .cls2 {    regular
+    display: grid; @[9:6-9:20]
+    display: grid; @[undefined-undefined]
+}
+nesting selectors: #nested,#parent
 ==== Style sheet text ====
 #parent {
   #nested {
     width: 41px;
+
+    #deep-nested {
+    height: 42px;
+    }
+
+    #deep-nested {
+    display: grid;
+    }
   }
 }
 

@@ -1,5 +1,13 @@
 #parent {
   #nested {
     width: 42px;
+
+    #deep-nested {
+      height: 42px;
+    }
+
+    .cls1, #deep-nested, .cls2 {
+      display: grid;
+    }
   }
 }
