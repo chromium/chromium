@@ -1,0 +1,8 @@
+include_rules = [
+  "+content/public/app",
+  "+content/public/browser",
+  "+content/public/common",
+  "+content/public/renderer",
+  "+components/embedder_support",
+  "+components/version_info",
+]
