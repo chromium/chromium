@@ -340,6 +340,9 @@ by the [Client Update Protocol (CUP)](cup.md).
 
 The legacy COM classes in updater_legacy_idl.template allow non-admin callers
 because the interfaces only expose functionality that non-admin callers need.
+One exception is that calling `IAppBundleWeb::install()` after calling
+`IAppBundleWeb::createApp` requires the caller to be admin, since it allows
+installing a new application.
 
 The new COM classes in updater_internal_idl.template and updater_idl.template
 require the callers to be admin. This is because the corresponding interfaces

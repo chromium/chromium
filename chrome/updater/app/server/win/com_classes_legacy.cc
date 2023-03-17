@@ -657,6 +657,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
       return E_UNEXPECTED;
     }
 
+    is_install_ = true;
     return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(
         &app_web_, app_id, UpdateService::PolicySameVersionUpdate::kAllowed);
   }
@@ -668,6 +669,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
       return E_UNEXPECTED;
     }
 
+    is_install_ = false;
     return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(
         &app_web_, app_id, UpdateService::PolicySameVersionUpdate::kNotAllowed);
   }
@@ -723,6 +725,11 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
       return E_UNEXPECTED;
     }
 
+    if (is_install_ && FAILED(IsCOMCallerAllowed())) {
+      VLOG(1) << __func__ << ": admin rights required for new system installs";
+      return E_ACCESSDENIED;
+    }
+
     return app_web_->Update();
   }
 
@@ -754,9 +761,14 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
  private:
   ~AppBundleWebImpl() override = default;
 
-  // Access to `app_web_` must be serialized by using the lock.
+  // Access to the object members must be serialized by using the lock.
   mutable base::Lock lock_;
+
+  // Only a single app at a time is supported.
   Microsoft::WRL::ComPtr<AppWebImpl> app_web_;
+
+  // `false` for updates. `true` for fresh installs or reinstalls.
+  bool is_install_ = false;
 };
 
 LegacyOnDemandImpl::LegacyOnDemandImpl() = default;

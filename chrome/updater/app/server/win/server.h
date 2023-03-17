@@ -19,6 +19,9 @@ namespace updater {
 
 struct RegistrationRequest;
 
+// Returns S_OK if user install, or if the COM caller is admin. Error otherwise.
+HRESULT IsCOMCallerAllowed();
+
 // The COM objects involved in this server are free threaded. Incoming COM calls
 // arrive on COM RPC threads. Outgoing COM calls are posted from a blocking
 // sequenced task runner in the thread pool. Calls to the services hosted

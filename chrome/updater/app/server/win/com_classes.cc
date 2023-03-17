@@ -37,20 +37,6 @@ namespace {
 // Maximum string length for COM strings.
 constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
 
-HRESULT IsCOMCallerAllowed() {
-  if (!IsSystemInstall())
-    return S_OK;
-
-  HResultOr<bool> result = IsCOMCallerAdmin();
-  if (!result.has_value()) {
-    HRESULT hr = result.error();
-    LOG(ERROR) << __func__ << ": IsCOMCallerAdmin failed: " << std::hex << hr;
-    return hr;
-  }
-
-  return result.value() ? S_OK : E_ACCESSDENIED;
-}
-
 }  // namespace
 
 STDMETHODIMP UpdateStateImpl::get_state(LONG* state) {

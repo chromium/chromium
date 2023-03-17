@@ -237,6 +237,21 @@ bool UninstallGoogleUpdate(UpdaterScope scope,
 
 }  // namespace
 
+HRESULT IsCOMCallerAllowed() {
+  if (!IsSystemInstall()) {
+    return S_OK;
+  }
+
+  HResultOr<bool> result = IsCOMCallerAdmin();
+  if (!result.has_value()) {
+    HRESULT hr = result.error();
+    LOG(ERROR) << __func__ << ": IsCOMCallerAdmin failed: " << std::hex << hr;
+    return hr;
+  }
+
+  return result.value() ? S_OK : E_ACCESSDENIED;
+}
+
 // Returns a leaky singleton of the App instance.
 scoped_refptr<ComServerApp> AppServerSingletonInstance() {
   return AppSingletonInstance<ComServerApp>();
