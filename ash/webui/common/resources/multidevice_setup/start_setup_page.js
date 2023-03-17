@@ -126,6 +126,12 @@ Polymer({
     },
 
     /**
+     * ID of phone a user used to complete Quick Start earlier in OOBE flow.
+     * @private {string|undefined}
+     */
+    quickStartPhoneInstanceId_: String,
+
+    /**
      * Provider of an interface to the MultiDeviceSetup Mojo service.
      * @private {!MojoInterfaceProvider}
      */
@@ -180,12 +186,12 @@ Polymer({
 
     this.mojoInterfaceProvider_.getMojoServiceRemote()
         .getQuickStartPhoneInstanceID()
-        .then((responseParams) => {
-          if (!responseParams.qsPhoneInstanceId) {
+        .then(({qsPhoneInstanceId}) => {
+          if (!qsPhoneInstanceId) {
             return;
           }
 
-          this.headerTextId = 'startSetupPageAfterQuickStartHeader';
+          this.quickStartPhoneInstanceId_ = qsPhoneInstanceId;
         })
         .catch((error) => {
           console.warn('Mojo service failure: ' + error);
@@ -306,9 +312,40 @@ Polymer({
   /** @private */
   devicesChanged_() {
     if (this.devices.length > 0) {
+      if (this.quickStartPhoneInstanceId_ &&
+          this.moveDeviceToFront_(this.quickStartPhoneInstanceId_)) {
+        // Adjust the title to reflect that the Quick Start phone was moved to
+        // top of list.
+        this.headerTextId = 'startSetupPageAfterQuickStartHeader';
+      }
+
       this.selectedInstanceIdOrLegacyDeviceId =
           this.getInstanceIdOrLegacyDeviceId_(this.devices[0]);
     }
+  },
+
+  /**
+   * Checks if the devices list contains a phone matching the provided
+   * device_id. If so, that phone is moved to the front of the devices list.
+   * @param {string} device_id
+   * @return {boolean} Whether the device matching the provided ID is moved to
+   *     the front of the devices list. Returns false if no matching device is
+   *     found. Returns true and moves the matching device to index 0 if a
+   *     matching device is found.
+   * @private
+   */
+  moveDeviceToFront_(device_id) {
+    const matchingDeviceIdx = this.devices.findIndex(
+        device => this.getInstanceIdOrLegacyDeviceId_(device) === device_id);
+
+    if (matchingDeviceIdx === -1) {
+      return false;
+    }
+
+    // Move device located at the matchingDeviceIdx to the front of the
+    // devices list.
+    this.devices.unshift(this.devices.splice(matchingDeviceIdx, 1)[0]);
+    return true;
   },
 
   /** @private */
