@@ -636,6 +636,7 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     result->sim_infos = CellularSIMInfosToMojo(device);
     result->inhibit_reason =
         GetInhibitReason(network_state_handler, cellular_inhibitor);
+    result->imei = device->imei();
   }
   return result;
 }

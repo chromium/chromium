@@ -309,6 +309,8 @@ struct DeviceStateProperties {
   // is provided.
   network.mojom.IPAddress? ipv4_address;
   network.mojom.IPAddress? ipv6_address;
+  // IMEI of the cellular modem. Present only for Cellular device.
+  string? imei;
   // AA:BB formatted MAC address for the device. Use for display purposes only.
   // May be null if no MAC address is available for the device.
   string? mac_address;

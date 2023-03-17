@@ -68,6 +68,7 @@ constexpr int kSimRetriesLeft = 3;
 constexpr char kCellularGuid[] = "cellular_guid";
 constexpr char kCellularDevicePath[] = "/device/stub_cellular_device";
 constexpr char kCellularTestIccid[] = "1234567890";
+constexpr char kCellularTestImei[] = "1234567890";
 
 constexpr char kCellularTestApn1[] = "TEST.APN1";
 constexpr char kCellularTestApnName1[] = "Test Apn 1";
@@ -368,6 +369,10 @@ class CrosNetworkConfigTest : public testing::Test {
     helper()->device_test()->SetDeviceProperty(kCellularDevicePath,
                                                shill::kIccidProperty,
                                                base::Value(kCellularTestIccid),
+                                               /*notify_changed=*/false);
+    helper()->device_test()->SetDeviceProperty(kCellularDevicePath,
+                                               shill::kImeiProperty,
+                                               base::Value(kCellularTestImei),
                                                /*notify_changed=*/false);
     helper()->device_test()->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMPresentProperty, base::Value(true),
@@ -1399,6 +1404,7 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
   EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
   EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
   EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
+  EXPECT_EQ(kCellularTestImei, cellular->imei);
 
   mojom::DeviceStateProperties* vpn = devices[3].get();
   EXPECT_EQ(mojom::NetworkType::kVPN, vpn->type);
