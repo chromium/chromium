@@ -65,6 +65,21 @@ DisplayCALayerTree::~DisplayCALayerTree() {
 
 void DisplayCALayerTree::UpdateCALayerTree(
     const gfx::CALayerParams& ca_layer_params) {
+  // TODO(danakj): We should avoid lossy conversions to integer DIPs. The OS
+  // wants a floating point value.
+  gfx::Size dip_size = gfx::ToFlooredSize(gfx::ConvertSizeToDips(
+      ca_layer_params.pixel_size, ca_layer_params.scale_factor));
+
+  // iOS doesn't support autoresizing mask. Thus, adjust the bounds.
+#if BUILDFLAG(IS_IOS)
+  [maybe_flipped_layer_
+      setBounds:CGRectMake(0, 0, dip_size.width(), dip_size.height())];
+
+  if ([maybe_flipped_layer_ contentsScale] != ca_layer_params.scale_factor) {
+    [maybe_flipped_layer_ setContentsScale:ca_layer_params.scale_factor];
+  }
+#endif
+
   // Remote layers are the most common case.
   if (ca_layer_params.ca_context_id) {
     GotCALayerFrame(ca_layer_params.ca_context_id);
@@ -77,8 +92,7 @@ void DisplayCALayerTree::UpdateCALayerTree(
     base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
         IOSurfaceLookupFromMachPort(ca_layer_params.io_surface_mach_port));
     if (io_surface) {
-      GotIOSurfaceFrame(io_surface, ca_layer_params.pixel_size,
-                        ca_layer_params.scale_factor);
+      GotIOSurfaceFrame(io_surface, dip_size, ca_layer_params.scale_factor);
       return;
     }
     LOG(ERROR) << "Unable to open IOSurface for frame.";
@@ -139,7 +153,7 @@ void DisplayCALayerTree::GotCALayerFrame(uint32_t ca_context_id) {
 
 void DisplayCALayerTree::GotIOSurfaceFrame(
     base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-    const gfx::Size& pixel_size,
+    const gfx::Size& dip_size,
     float scale_factor) {
   DCHECK(io_surface);
   TRACE_EVENT0("ui", "DisplayCALayerTree::GotIOSurfaceFrame");
@@ -157,14 +171,12 @@ void DisplayCALayerTree::GotIOSurfaceFrame(
     [io_surface_layer_ setContentsChanged];
   else
     [io_surface_layer_ setContents:new_contents];
-  // TODO(danakj): We should avoid lossy conversions to integer DIPs. The OS
-  // wants a floating point value.
-  gfx::Size bounds_dip =
-      gfx::ToFlooredSize(gfx::ConvertSizeToDips(pixel_size, scale_factor));
+
   [io_surface_layer_
-      setBounds:CGRectMake(0, 0, bounds_dip.width(), bounds_dip.height())];
-  if ([io_surface_layer_ contentsScale] != scale_factor)
+      setBounds:CGRectMake(0, 0, dip_size.width(), dip_size.height())];
+  if ([io_surface_layer_ contentsScale] != scale_factor) {
     [io_surface_layer_ setContentsScale:scale_factor];
+  }
 
   // Ensure that the remote layer be removed.
   if (remote_layer_) {
