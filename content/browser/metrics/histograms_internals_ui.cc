@@ -41,13 +41,13 @@ struct JsParams {
   bool include_subprocesses;
 };
 
-WebUIDataSource* CreateHistogramsHTMLSource() {
-  WebUIDataSource* source = WebUIDataSource::Create(kChromeUIHistogramHost);
+void CreateAndAddHistogramsHTMLSource(BrowserContext* browser_context) {
+  WebUIDataSource* source =
+      WebUIDataSource::CreateAndAdd(browser_context, kChromeUIHistogramHost);
 
   source->AddResourcePath(kHistogramsUIJs, IDR_HISTOGRAMS_INTERNALS_JS);
   source->AddResourcePath(kHistogramsUICss, IDR_HISTOGRAMS_INTERNALS_CSS);
   source->SetDefaultResource(IDR_HISTOGRAMS_INTERNALS_HTML);
-  return source;
 }
 
 // This class receives javascript messages from the renderer.
@@ -165,9 +165,8 @@ HistogramsInternalsUI::HistogramsInternalsUI(WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<HistogramsMessageHandler>());
 
   // Set up the chrome://histograms/ source.
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  WebUIDataSource::Add(browser_context, CreateHistogramsHTMLSource());
+  CreateAndAddHistogramsHTMLSource(
+      web_ui->GetWebContents()->GetBrowserContext());
 }
 
 }  // namespace content

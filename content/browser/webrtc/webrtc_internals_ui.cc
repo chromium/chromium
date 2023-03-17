@@ -15,15 +15,14 @@
 namespace content {
 namespace {
 
-WebUIDataSource* CreateWebRTCInternalsHTMLSource() {
-  WebUIDataSource* source =
-      WebUIDataSource::Create(kChromeUIWebRTCInternalsHost);
+void CreateAndAddWebRTCInternalsHTMLSource(BrowserContext* browser_context) {
+  WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+      browser_context, kChromeUIWebRTCInternalsHost);
 
   source->UseStringsJs();
   source->AddResourcePaths(base::make_span(kWebrtcInternalsResources,
                                            kWebrtcInternalsResourcesSize));
   source->SetDefaultResource(IDR_WEBRTC_INTERNALS_WEBRTC_INTERNALS_HTML);
-  return source;
 }
 
 }  // namespace
@@ -38,9 +37,8 @@ WebRTCInternalsUI::WebRTCInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<WebRTCInternalsMessageHandler>());
 
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  WebUIDataSource::Add(browser_context, CreateWebRTCInternalsHTMLSource());
+  CreateAndAddWebRTCInternalsHTMLSource(
+      web_ui->GetWebContents()->GetBrowserContext());
 }
 
 }  // namespace content

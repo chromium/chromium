@@ -68,13 +68,19 @@ bool SchemeIsInSchemes(const std::string& scheme,
 }  // namespace
 
 URLDataManagerBackend::URLDataManagerBackend() : next_request_id_(0) {
-  // Add a shared data source for chrome://resources.
-  AddDataSource(
-      static_cast<WebUIDataSourceImpl*>(CreateSharedResourcesDataSource()));
+  {
+    // Add a shared data source for chrome://resources.
+    auto* source = new WebUIDataSourceImpl(kChromeUIResourcesHost);
+    PopulateSharedResourcesDataSource(source);
+    AddDataSource(source);  // Takes ownership.
+  }
 
-  // Add a shared data source for chrome-untrusted://resources.
-  AddDataSource(static_cast<WebUIDataSourceImpl*>(
-      CreateUntrustedSharedResourcesDataSource()));
+  {
+    // Add a shared data source for chrome-untrusted://resources.
+    auto* source = new WebUIDataSourceImpl(kChromeUIUntrustedResourcesURL);
+    PopulateSharedResourcesDataSource(source);
+    AddDataSource(source);  // Takes ownership.
+  }
 }
 
 URLDataManagerBackend::~URLDataManagerBackend() = default;

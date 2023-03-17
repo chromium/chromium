@@ -75,17 +75,16 @@ void EnsureHeadlessCommandResources() {
   }
 }
 
-content::WebUIDataSource* CreateHeadlessHostDataSource() {
+void CreateAndAddHeadlessHostDataSource(
+    content::BrowserContext* browser_context) {
   EnsureHeadlessCommandResources();
 
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeHeadlessHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      browser_context, kChromeHeadlessHost);
   DCHECK(source);
 
   source->AddResourcePath(kHeadlessCommandHtml, IDR_HEADLESS_COMMAND_HTML);
   source->AddResourcePath(kHeadlessCommandJs, IDR_HEADLESS_COMMAND_JS);
-
-  return source;
 }
 
 base::Value::Dict GetColorDictFromHexColor(uint32_t color, bool has_alpha) {
@@ -256,8 +255,7 @@ HeadlessCommandHandler::HeadlessCommandHandler(
 
   // Load command execution harness resources and create URL data source
   // for chrome://headless.
-  content::WebUIDataSource::Add(web_contents_->GetBrowserContext(),
-                                CreateHeadlessHostDataSource());
+  CreateAndAddHeadlessHostDataSource(web_contents_->GetBrowserContext());
 
   content::WebContentsObserver::Observe(web_contents_);
 

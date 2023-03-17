@@ -27,13 +27,13 @@
 namespace content {
 namespace {
 
-WebUIDataSource* CreateUkmHTMLSource() {
-  WebUIDataSource* source = WebUIDataSource::Create(kChromeUIUkmHost);
+void CreateAndAddUkmHTMLSource(BrowserContext* browser_context) {
+  WebUIDataSource* source =
+      WebUIDataSource::CreateAndAdd(browser_context, kChromeUIUkmHost);
 
   source->AddResourcePath("ukm_internals.js", IDR_UKM_INTERNALS_JS);
   source->AddResourcePath("ukm_internals.css", IDR_UKM_INTERNALS_CSS);
   source->SetDefaultResource(IDR_UKM_INTERNALS_HTML);
-  return source;
 }
 
 // This class receives javascript messages from the renderer.
@@ -98,9 +98,7 @@ UkmInternalsUI::UkmInternalsUI(WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<UkmMessageHandler>(ukm_service));
 
   // Set up the chrome://ukm/ source.
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  WebUIDataSource::Add(browser_context, CreateUkmHTMLSource());
+  CreateAndAddUkmHTMLSource(web_ui->GetWebContents()->GetBrowserContext());
 }
 
 }  // namespace content

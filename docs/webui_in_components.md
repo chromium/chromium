@@ -245,7 +245,8 @@ You probably want your new WebUI page to be able to do something or get informat
 // The WebUI for chrome://hello-world
 ...
     // Set up the chrome://hello-world source.
-    content::WebUIDataSource* html_source = content::WebUIDataSource::Create(hello_world::kChromeUIHelloWorldHost);
+    content::WebUIDataSource::CreateAndAdd(
+        browser_context, hello_world::kChromeUIHelloWorldHost);
 +
 +   // Register callback handler.
 +   RegisterMessageCallback("addNumbers",

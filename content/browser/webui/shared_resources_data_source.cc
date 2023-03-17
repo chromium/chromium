@@ -6,9 +6,8 @@
 
 #include <set>
 
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/common/url_constants.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -69,6 +68,8 @@ void AddResources(const std::set<int>& resource_ids,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+}  // namespace
+
 void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
@@ -92,22 +93,6 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   AddResources(GetAshMojoResourceIds(), kAshResources, kAshResourcesSize,
                source);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-}  // namespace
-
-WebUIDataSource* CreateSharedResourcesDataSource() {
-  WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIResourcesHost);
-  PopulateSharedResourcesDataSource(source);
-  return source;
-}
-
-WebUIDataSource* CreateUntrustedSharedResourcesDataSource() {
-  WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIUntrustedResourcesURL);
-  PopulateSharedResourcesDataSource(source);
-  return source;
 }
 
 }  // namespace content

@@ -69,8 +69,9 @@
 namespace content {
 namespace {
 
-WebUIDataSource* CreateGpuHTMLSource() {
-  WebUIDataSource* source = WebUIDataSource::Create(kChromeUIGpuHost);
+void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
+  WebUIDataSource* source =
+      WebUIDataSource::CreateAndAdd(browser_context, kChromeUIGpuHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
@@ -98,7 +99,6 @@ WebUIDataSource* CreateGpuHTMLSource() {
   source->AddResourcePath("vulkan_types.mojom-webui.js",
                           IDR_VULKAN_TYPES_MOJO_JS);
   source->SetDefaultResource(IDR_GPU_INTERNALS_HTML);
-  return source;
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -912,9 +912,7 @@ GpuInternalsUI::GpuInternalsUI(WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<GpuMessageHandler>());
 
   // Set up the chrome://gpu/ source.
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  WebUIDataSource::Add(browser_context, CreateGpuHTMLSource());
+  CreateAndAddGpuHTMLSource(web_ui->GetWebContents()->GetBrowserContext());
 }
 
 }  // namespace content

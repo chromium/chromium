@@ -14,16 +14,14 @@
 
 SuggestInternalsUI::SuggestInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/false) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUISuggestInternalsHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      Profile::FromWebUI(web_ui), chrome::kChromeUISuggestInternalsHost);
 
   webui::SetupWebUIDataSource(source,
                               base::make_span(kSuggestInternalsResources,
                                               kSuggestInternalsResourcesSize),
                               IDR_SUGGEST_INTERNALS_SUGGEST_INTERNALS_HTML);
   webui::EnableTrustedTypesCSP(source);
-
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 
 SuggestInternalsUI::~SuggestInternalsUI() = default;

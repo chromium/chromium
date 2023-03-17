@@ -83,6 +83,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
  private:
   class InternalDataSource;
   friend class InternalDataSource;
+  friend class URLDataManagerBackend;
   friend class WebUIDataSource;
   friend class WebUIDataSourceTest;
 
