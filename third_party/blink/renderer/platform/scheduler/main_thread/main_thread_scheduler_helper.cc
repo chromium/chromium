@@ -62,10 +62,8 @@ MainThreadSchedulerHelper::DeprecatedDefaultTaskRunner() {
 
 scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerHelper::NewTaskQueue(
     const MainThreadTaskQueue::QueueCreationParams& params) {
-  scoped_refptr<MainThreadTaskQueue> task_queue =
-      sequence_manager_->CreateTaskQueueWithType<MainThreadTaskQueue>(
-          params.spec, params, main_thread_scheduler_);
-  return task_queue;
+  return base::MakeRefCounted<MainThreadTaskQueue>(
+      *sequence_manager_, params.spec, params, main_thread_scheduler_);
 }
 
 void MainThreadSchedulerHelper::ShutdownAllQueues() {

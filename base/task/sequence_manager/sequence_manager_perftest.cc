@@ -15,10 +15,9 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
-#include "base/task/sequence_manager/task_queue_impl.h"
+#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/test/mock_time_domain.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
-#include "base/task/sequence_manager/test/test_task_queue.h"
 #include "base/task/sequence_manager/test/test_task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
 #include "base/task/single_thread_task_runner.h"
@@ -111,9 +110,8 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   bool MultipleQueuesSupported() const override { return true; }
 
   scoped_refptr<TaskRunner> CreateTaskRunner() override {
-    scoped_refptr<TestTaskQueue> task_queue =
-        manager_->CreateTaskQueueWithType<TestTaskQueue>(
-            TaskQueue::Spec(QueueName::TEST_TQ));
+    scoped_refptr<TaskQueue> task_queue =
+        manager_->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
     owned_task_queues_.push_back(task_queue);
     return task_queue->task_runner();
   }
@@ -143,7 +141,7 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   std::unique_ptr<SequenceManager> manager_;
   std::unique_ptr<TimeDomain> time_domain_;
   std::unique_ptr<RunLoop> run_loop_;
-  std::vector<scoped_refptr<TestTaskQueue>> owned_task_queues_;
+  std::vector<scoped_refptr<TaskQueue>> owned_task_queues_;
 };
 
 class SequenceManagerWithMessagePumpPerfTestDelegate
@@ -166,8 +164,7 @@ class SequenceManagerWithMessagePumpPerfTestDelegate
     // ThreadControllerWithMessagePumpImpl doesn't provide a default task
     // runner.
     scoped_refptr<TaskQueue> default_task_queue =
-        GetManager()->template CreateTaskQueueWithType<TestTaskQueue>(
-            TaskQueue::Spec(QueueName::DEFAULT_TQ));
+        GetManager()->CreateTaskQueue(TaskQueue::Spec(QueueName::DEFAULT_TQ));
     GetManager()->SetDefaultTaskRunner(default_task_queue->task_runner());
   }
 

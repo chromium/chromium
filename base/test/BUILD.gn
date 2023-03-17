@@ -39,8 +39,6 @@ static_library("test_support") {
     "../task/sequence_manager/test/mock_time_message_pump.h",
     "../task/sequence_manager/test/sequence_manager_for_test.cc",
     "../task/sequence_manager/test/sequence_manager_for_test.h",
-    "../task/sequence_manager/test/test_task_queue.cc",
-    "../task/sequence_manager/test/test_task_queue.h",
     "../task/sequence_manager/test/test_task_time_observer.h",
     "../timer/mock_timer.cc",
     "../timer/mock_timer.h",

@@ -18,8 +18,11 @@
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 
-namespace blink {
-namespace scheduler {
+namespace base::sequence_manager {
+class SequenceManager;
+}  // namespace base::sequence_manager
+
+namespace blink::scheduler {
 
 using TaskQueue = base::sequence_manager::TaskQueue;
 
@@ -53,9 +56,8 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
     absl::optional<WebSchedulingPriority> web_scheduling_priority;
   };
 
-  // TODO(kraynov): Consider options to remove TaskQueueImpl reference here.
   NonMainThreadTaskQueue(
-      std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
+      base::sequence_manager::SequenceManager& sequence_manager,
       const TaskQueue::Spec& spec,
       NonMainThreadSchedulerBase* non_main_thread_scheduler,
       QueueCreationParams params,
@@ -146,7 +148,6 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
       task_runner_with_default_task_type_;
 };
 
-}  // namespace scheduler
-}  // namespace blink
+}  // namespace blink::scheduler
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_TASK_QUEUE_H_

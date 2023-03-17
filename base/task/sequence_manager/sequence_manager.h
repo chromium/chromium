@@ -28,6 +28,9 @@ class MessagePump;
 class TaskObserver;
 
 namespace sequence_manager {
+namespace internal {
+class TestTaskQueue;
+}  // namespace internal
 
 class TimeDomain;
 
@@ -283,17 +286,6 @@ class BASE_EXPORT SequenceManager {
 
   virtual TaskQueue::QueuePriority GetPriorityCount() const = 0;
 
-  // Creates a task queue with the given type, `spec` and args.
-  // Must be called on the main thread.
-  // TODO(scheduler-dev): SequenceManager should not create TaskQueues.
-  template <typename TaskQueueType, typename... Args>
-  scoped_refptr<TaskQueueType> CreateTaskQueueWithType(
-      const TaskQueue::Spec& spec,
-      Args&&... args) {
-    return WrapRefCounted(new TaskQueueType(CreateTaskQueueImpl(spec), spec,
-                                            std::forward<Args>(args)...));
-  }
-
   // Creates a vanilla TaskQueue rather than a user type derived from it. This
   // should be used if you don't wish to sub class TaskQueue.
   // Must be called on the main thread.
@@ -328,6 +320,8 @@ class BASE_EXPORT SequenceManager {
   virtual void RemoveTaskObserver(TaskObserver* task_observer) = 0;
 
  protected:
+  friend class internal::TestTaskQueue;  // For CreateTaskQueueImpl().
+
   virtual std::unique_ptr<internal::TaskQueueImpl> CreateTaskQueueImpl(
       const TaskQueue::Spec& spec) = 0;
 };

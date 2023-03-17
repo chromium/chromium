@@ -564,7 +564,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
   SequenceManagerThreadDelegate()
       : sequence_manager_(
             base::sequence_manager::CreateUnboundSequenceManager()),
-        task_queue_(sequence_manager_->CreateTaskQueueWithType<TaskQueue>(
+        task_queue_(sequence_manager_->CreateTaskQueue(
             TaskQueue::Spec(base::sequence_manager::QueueName::DEFAULT_TQ))) {
     sequence_manager_->SetDefaultTaskRunner(GetDefaultTaskRunner());
   }

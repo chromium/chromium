@@ -383,6 +383,11 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     }
   };
 
+  MainThreadTaskQueue(base::sequence_manager::SequenceManager& sequence_manager,
+                      const TaskQueue::Spec& spec,
+                      const QueueCreationParams& params,
+                      MainThreadSchedulerImpl* main_thread_scheduler);
+
   QueueType queue_type() const { return queue_type_; }
 
   bool CanBeDeferred() const { return queue_traits_.can_be_deferred; }
@@ -528,14 +533,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
  protected:
   void SetFrameSchedulerForTest(FrameSchedulerImpl* frame_scheduler);
 
-  // TODO(crbug.com/1143007): Remove references to TaskQueueImpl once
-  // TaskQueueImpl inherits from TaskQueue.
-  MainThreadTaskQueue(
-      std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
-      const TaskQueue::Spec& spec,
-      const QueueCreationParams& params,
-      MainThreadSchedulerImpl* main_thread_scheduler);
-
   MainThreadTaskQueue(const MainThreadTaskQueue&) = delete;
   MainThreadTaskQueue& operator=(const MainThreadTaskQueue&) = delete;
 
@@ -543,7 +540,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
  private:
   friend class base::RefCountedThreadSafe<MainThreadTaskQueue>;
-  friend class base::sequence_manager::SequenceManager;
   friend class blink::scheduler::main_thread_scheduler_impl_unittest::
       MainThreadSchedulerImplTest;
 

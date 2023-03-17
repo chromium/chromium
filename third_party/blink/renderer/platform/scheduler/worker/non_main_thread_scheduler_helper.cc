@@ -66,8 +66,8 @@ NonMainThreadSchedulerHelper::NewTaskQueue(
     const TaskQueue::Spec& spec,
     NonMainThreadTaskQueue::QueueCreationParams params) {
   DCHECK(default_task_queue_);
-  return sequence_manager_->CreateTaskQueueWithType<NonMainThreadTaskQueue>(
-      spec, non_main_thread_scheduler_, params,
+  return base::MakeRefCounted<NonMainThreadTaskQueue>(
+      *sequence_manager_, spec, non_main_thread_scheduler_, params,
       default_task_queue_->GetTaskRunnerWithDefaultTaskType());
 }
 
@@ -75,8 +75,8 @@ scoped_refptr<NonMainThreadTaskQueue>
 NonMainThreadSchedulerHelper::NewTaskQueueInternal(
     const TaskQueue::Spec& spec,
     NonMainThreadTaskQueue::QueueCreationParams params) {
-  return sequence_manager_->CreateTaskQueueWithType<NonMainThreadTaskQueue>(
-      spec, non_main_thread_scheduler_, params, nullptr);
+  return base::MakeRefCounted<NonMainThreadTaskQueue>(
+      *sequence_manager_, spec, non_main_thread_scheduler_, params, nullptr);
 }
 
 void NonMainThreadSchedulerHelper::ShutdownAllQueues() {

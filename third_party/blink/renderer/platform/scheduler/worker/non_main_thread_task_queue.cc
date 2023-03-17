@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/blink_scheduler_single_thread_task_runner.h"
@@ -20,12 +21,12 @@ namespace scheduler {
 using base::sequence_manager::TaskQueue;
 
 NonMainThreadTaskQueue::NonMainThreadTaskQueue(
-    std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
+    base::sequence_manager::SequenceManager& sequence_manager,
     const TaskQueue::Spec& spec,
     NonMainThreadSchedulerBase* non_main_thread_scheduler,
     QueueCreationParams params,
     scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner)
-    : task_queue_(base::MakeRefCounted<TaskQueue>(std::move(impl), spec)),
+    : task_queue_(sequence_manager.CreateTaskQueue(spec)),
       non_main_thread_scheduler_(non_main_thread_scheduler),
       web_scheduling_queue_type_(params.web_scheduling_queue_type),
       web_scheduling_priority_(params.web_scheduling_priority),

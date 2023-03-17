@@ -20,42 +20,6 @@
 namespace base {
 namespace sequence_manager {
 
-namespace {
-
-class NullTaskRunner final : public SingleThreadTaskRunner {
- public:
-  NullTaskRunner() {}
-
-  bool PostDelayedTask(const Location& location,
-                       OnceClosure callback,
-                       TimeDelta delay) override {
-    return false;
-  }
-
-  bool PostNonNestableDelayedTask(const Location& location,
-                                  OnceClosure callback,
-                                  TimeDelta delay) override {
-    return false;
-  }
-
-  bool RunsTasksInCurrentSequence() const override {
-    return thread_checker_.CalledOnValidThread();
-  }
-
- private:
-  // Ref-counted
-  ~NullTaskRunner() override = default;
-
-  ThreadCheckerImpl thread_checker_;
-};
-
-// TODO(kraynov): Move NullTaskRunner from //base/test to //base.
-scoped_refptr<SingleThreadTaskRunner> CreateNullTaskRunner() {
-  return MakeRefCounted<NullTaskRunner>();
-}
-
-}  // namespace
-
 TaskQueue::QueueEnabledVoter::QueueEnabledVoter(
     scoped_refptr<TaskQueue> task_queue)
     : task_queue_(std::move(task_queue)), enabled_(true) {
@@ -125,13 +89,12 @@ void TaskQueue::OnQueueEnabledVoteChanged(bool enabled) {
 TaskQueue::TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
                      const TaskQueue::Spec& spec)
     : impl_(std::move(impl)),
-      sequence_manager_(impl_ ? impl_->GetSequenceManagerWeakPtr() : nullptr),
-      associated_thread_((impl_ && impl_->sequence_manager())
+      sequence_manager_(impl_->GetSequenceManagerWeakPtr()),
+      associated_thread_((impl_->sequence_manager())
                              ? impl_->sequence_manager()->associated_thread()
                              : MakeRefCounted<internal::AssociatedThreadId>()),
-      default_task_runner_(impl_ ? impl_->CreateTaskRunner(kTaskTypeNone)
-                                 : CreateNullTaskRunner()),
-      name_(impl_ ? impl_->GetProtoName() : QueueName::UNKNOWN_TQ) {}
+      default_task_runner_(impl_->CreateTaskRunner(kTaskTypeNone)),
+      name_(impl_->GetProtoName()) {}
 
 TaskQueue::~TaskQueue() {
   ShutdownTaskQueueGracefully();

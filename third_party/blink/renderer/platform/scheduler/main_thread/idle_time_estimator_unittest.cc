@@ -9,8 +9,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
-#include "base/task/sequence_manager/test/test_task_queue.h"
 #include "base/task/sequence_manager/test/test_task_time_observer.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -53,7 +53,8 @@ class IdleTimeEstimatorTest : public testing::Test {
   }
 
   scoped_refptr<MainThreadTaskQueue> NewTaskQueue() {
-    return manager_->CreateTaskQueueWithType<MainThreadTaskQueue>(
+    return base::MakeRefCounted<MainThreadTaskQueue>(
+        *manager_.get(),
         base::sequence_manager::TaskQueue::Spec(
             base::sequence_manager::QueueName::TEST_TQ),
         MainThreadTaskQueue::QueueCreationParams(

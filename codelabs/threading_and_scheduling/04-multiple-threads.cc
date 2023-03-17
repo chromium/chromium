@@ -87,11 +87,9 @@ int main() {
 
   // Create a default TaskQueue that feeds into the SequenceManager.
   scoped_refptr<base::sequence_manager::TaskQueue> main_task_queue =
-      sequence_manager
-          ->CreateTaskQueueWithType<base::sequence_manager::TaskQueue>(
-              base::sequence_manager::TaskQueue::Spec(
-                  base::sequence_manager::TaskQueue::Spec(
-                      base::sequence_manager::QueueName::DEFAULT_TQ)));
+      sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
+          base::sequence_manager::TaskQueue::Spec(
+              base::sequence_manager::QueueName::DEFAULT_TQ)));
 
   // Get a default TaskRunner for the main (UI) thread.
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner =
