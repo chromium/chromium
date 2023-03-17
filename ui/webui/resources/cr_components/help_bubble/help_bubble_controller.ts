@@ -195,6 +195,7 @@ export class HelpBubbleController {
     assert(
         this.anchor_,
         'HelpBubble: anchor was not defined when showing help bubble');
+    assert(this.anchor_.parentNode, 'HelpBubble: anchor element not in DOM');
 
     this.bubble_ = document.createElement('help-bubble');
     this.bubble_.nativeId = this.nativeId_;
@@ -220,31 +221,17 @@ export class HelpBubbleController {
 
     assert(this.root_);
 
-    // The bubble must be placed in the same coordinate system as the anchor.
-    // The `offsetParent` of an element is the element which provides its
-    // coordinate reference frame. The help bubble must also be a descendant of
-    // the host (want to avoid placing the help bubble outside the mixin
-    // element). This provides three possible cases:
-    //  - Fixed anchor. `offsetParent` is null, coordinates are relative to the
-    //    viewport. The help bubble must also be fixed.
-    //  - `offsetParent` is the host or an enclosing element. The help bubble is
-    //    placed in the host's shadow DOM, ensuring it shares a coordinate
-    //    system (the only way this wouldn't work would be if the anchor were
-    //    outside the host, which is a misuse of the help bubble system).
-    //  - `offsetParent` is inside the host. The help bubble is parented to the
-    //    `offsetParent`, guaranteeing that the coordinate systems are the same.
-    const offsetParent = this.anchor_.offsetParent;
-    const bubbleParent = (offsetParent && this.root_.contains(offsetParent)) ?
-        offsetParent :
-        this.root_;
+    // Because the help bubble uses either absolute or fixed positioning, it
+    // need only be placed within the offset parent of the anchor. However it is
+    // placed as a sibling to the anchor because that guarantees proper tab
+    // order.
     if (getComputedStyle(this.anchor_).getPropertyValue('position') ===
         'fixed') {
       this.bubble_.fixed = true;
     }
-    bubbleParent.appendChild(this.bubble_);
+    this.anchor_.parentNode.insertBefore(this.bubble_, this.anchor_);
     return this.bubble_;
   }
-
 
   /**
    * Styles the anchor element to appear highlighted while the bubble is open,
@@ -255,7 +242,7 @@ export class HelpBubbleController {
         this.anchor_, 'Set anchor highlight: expected valid anchor element.');
     this.anchor_.classList.toggle(ANCHOR_HIGHLIGHT_CLASS, highlight);
     if (highlight) {
-      this.anchor_.focus();
+      (this.bubble_ || this.anchor_).focus();
       this.anchor_.scrollIntoView(HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS);
     }
   }

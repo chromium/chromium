@@ -237,6 +237,18 @@ export class HelpBubbleElement extends PolymerElement {
   }
 
   /**
+   * Focuses a button in the bubble.
+   */
+  override focus() {
+    this.$.buttonlist.render();
+    const button: HTMLElement =
+        this.$.buttons.querySelector('cr-button.default-button') ||
+        this.$.buttons.querySelector('cr-button') || this.$.close;
+    assert(button);
+    button.focus();
+  }
+
+  /**
    * Returns whether the default button is leading (true on Windows) vs trailing
    * (all other platforms).
    */

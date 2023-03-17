@@ -140,6 +140,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                        ShowEmbeddedHelpBubble) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserTabId);
   static const DeepQuery kPathToHelpBubbleBody = {"user-education-internals",
+                                                  "#IPH_WebUiHelpBubbleTest",
                                                   "help-bubble", "#topBody"};
   RunTestSequence(InstrumentTab(kBrowserTabId),
                   NavigateWebContents(
