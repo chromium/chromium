@@ -49,10 +49,11 @@ class GPU_GLES2_EXPORT ProgramCache {
   class GPU_GLES2_EXPORT ScopedCacheUse {
    public:
     ScopedCacheUse(ProgramCache* cache, CacheProgramCallback callback);
+    // Disallow copy/assign as it is subtle and error prone (only one
+    // ScopedCacheUse should reset the callback on destruction).
+    ScopedCacheUse(ScopedCacheUse& other) = delete;
+    ScopedCacheUse& operator=(ScopedCacheUse& other) = delete;
     ~ScopedCacheUse();
-
-    ScopedCacheUse(ScopedCacheUse&&) = default;
-    ScopedCacheUse& operator=(ScopedCacheUse&& other) = default;
 
    private:
     // This field is not a raw_ptr<> because it was filtered by the rewriter

@@ -156,16 +156,14 @@ bool InProcessCommandBuffer::MakeCurrent() {
   return true;
 }
 
-absl::optional<gles2::ProgramCache::ScopedCacheUse>
-InProcessCommandBuffer::CreateCacheUse() {
-  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+void InProcessCommandBuffer::CreateCacheUse(
+    absl::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use) {
   if (context_group_->has_program_cache()) {
     cache_use.emplace(
         context_group_->get_program_cache(),
         base::BindRepeating(&DecoderClient::CacheBlob, base::Unretained(this),
                             gpu::GpuDiskCacheType::kGlShaders));
   }
-  return cache_use;
 }
 
 gpu::ContextResult InProcessCommandBuffer::Initialize(
@@ -491,7 +489,7 @@ bool InProcessCommandBuffer::DestroyOnGpuThread() {
   bool have_context = context_.get() && context_->MakeCurrent(surface_.get());
   absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (have_context)
-    cache_use = CreateCacheUse();
+    CreateCacheUse(cache_use);
 
   if (decoder_) {
     decoder_->Destroy(have_context);
@@ -611,7 +609,8 @@ void InProcessCommandBuffer::FlushOnGpuThread(
 
   if (!MakeCurrent())
     return;
-  auto cache_use = CreateCacheUse();
+  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  CreateCacheUse(cache_use);
 
   {
     absl::optional<raster::GrShaderCache::ScopedCacheUse> gr_cache_use;
@@ -643,7 +642,8 @@ void InProcessCommandBuffer::PerformDelayedWorkOnGpuThread() {
   delayed_work_pending_ = false;
 
   if (MakeCurrent()) {
-    auto cache_use = CreateCacheUse();
+    absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+    CreateCacheUse(cache_use);
     decoder_->PerformIdleWork();
     decoder_->ProcessPendingQueries(false);
     if (decoder_->HasMoreIdleWork() || decoder_->HasPendingQueries()) {

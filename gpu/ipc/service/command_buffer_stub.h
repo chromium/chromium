@@ -283,7 +283,8 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
  private:
   void Destroy();
 
-  gles2::ProgramCache::ScopedCacheUse CreateCacheUse();
+  void CreateCacheUse(
+      absl::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use);
 
   // Message handlers:
   void OnAsyncFlush(int32_t put_offset,

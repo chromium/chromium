@@ -210,7 +210,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   bool MakeCurrent();
 
-  absl::optional<gles2::ProgramCache::ScopedCacheUse> CreateCacheUse();
+  void CreateCacheUse(
+      absl::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use);
 
   // Client callbacks are posted back to |origin_task_runner_|, or run
   // synchronously if there's no task runner or message loop.

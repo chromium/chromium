@@ -198,7 +198,8 @@ void CommandBufferStub::PerformWork() {
                                                                         : "0");
   if (decoder_context_.get() && !MakeCurrent())
     return;
-  auto cache_use = CreateCacheUse();
+  absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
+  CreateCacheUse(cache_use);
 
   if (decoder_context_) {
     uint32_t current_unprocessed_num =
@@ -290,8 +291,9 @@ bool CommandBufferStub::MakeCurrent() {
   return false;
 }
 
-gles2::ProgramCache::ScopedCacheUse CommandBufferStub::CreateCacheUse() {
-  return gles2::ProgramCache::ScopedCacheUse(
+void CommandBufferStub::CreateCacheUse(
+    absl::optional<gles2::ProgramCache::ScopedCacheUse>& cache_use) {
+  cache_use.emplace(
       channel_->gpu_channel_manager()->program_cache(),
       base::BindRepeating(&DecoderClient::CacheBlob, base::Unretained(this),
                           gpu::GpuDiskCacheType::kGlShaders));
@@ -340,7 +342,7 @@ void CommandBufferStub::Destroy() {
 
   absl::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (have_context)
-    cache_use.emplace(CreateCacheUse());
+    CreateCacheUse(cache_use);
 
   for (auto& observer : destruction_observers_)
     observer.OnWillDestroyStub(have_context);
@@ -767,7 +769,7 @@ CommandBufferStub::ScopedContextOperation::ScopedContextOperation(
   stub_->UpdateActiveUrl();
   if (stub_->decoder_context_ && stub_->MakeCurrent()) {
     have_context_ = true;
-    cache_use_.emplace(stub_->CreateCacheUse());
+    stub_->CreateCacheUse(cache_use_);
   }
 }
 
