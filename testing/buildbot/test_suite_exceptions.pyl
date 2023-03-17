@@ -3944,6 +3944,11 @@
           'inverse_quickrun_shards': 2,
         },
       },
+      'win-arm64-rel': {
+        'args': [
+          '--top-chrome-touch-ui=disabled',
+        ],
+      },
     },
   },
   'variations_smoke_tests': {

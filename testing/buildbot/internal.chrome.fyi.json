@@ -2017,6 +2017,9 @@
         "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
       },
       {
+        "args": [
+          "--top-chrome-touch-ui=disabled"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
