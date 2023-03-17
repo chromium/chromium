@@ -1784,6 +1784,21 @@ TEST_F(DriveFsPinManagerTest, OnError) {
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
 }
 
+// Tests that calling PinManager::Start() when the PinManager is already in
+// progress does not have any effect.
+TEST_F(DriveFsPinManagerTest, StartWhenInProgress) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kGettingFreeSpace;
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  manager.Start();
+  EXPECT_EQ(manager.progress_.stage, Stage::kGettingFreeSpace);
+
+  manager.Stop();
+}
+
 TEST_F(DriveFsPinManagerTest,
        DISABLED_FailingToPinOneItemShouldNotFailCompletely) {
   CompletionCallback completion_callback;
