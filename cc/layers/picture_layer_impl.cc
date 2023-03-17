@@ -573,7 +573,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     if (last_append_quads_tilings_.empty() ||
         last_append_quads_tilings_.back() != iter.CurrentTiling()) {
       recordreplay::Assert("[RUN-550-1536] PictureLayerImpl::AppendQuads B %d",
-                           iter.CurrentTiling().record_replay_id_);
+                           iter.CurrentTiling()->record_replay_id_);
       last_append_quads_tilings_.push_back(iter.CurrentTiling());
     }
   }

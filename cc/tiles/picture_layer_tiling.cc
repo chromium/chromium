@@ -81,7 +81,6 @@ PictureLayerTiling::PictureLayerTiling(
 }
 
 PictureLayerTiling::~PictureLayerTiling() = default;
-}
 
 Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
   const int i = info.tiling_i_index;
