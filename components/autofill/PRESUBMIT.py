@@ -98,6 +98,27 @@ def _CheckFeatureNames(input_api, output_api):
 
   return warnings
 
+def _CheckWebViewExposedExperiments(input_api, output_api):
+  """Checks that changes to autofill features are exposed to webview."""
+
+  _PRODUCTION_SUPPORT_FILE = ('android_webview/java/src/org/chromium/' +
+      'android_webview/common/ProductionSupportedFlagList.java')
+
+  warnings = []
+  if (IsComponentsAutofillFileAffected(input_api, 'features.cc') and
+      not AnyAffectedFileMatches(
+          input_api, lambda f: f.LocalPath() == _PRODUCTION_SUPPORT_FILE)):
+    warnings += [
+        output_api.PresubmitPromptWarning(
+            (
+                'You may need to modify {} instructions if your feature affects'
+                ' WebView.'
+            ).format(_PRODUCTION_SUPPORT_FILE)
+        )
+    ]
+
+  return warnings
+
 def _CheckModificationOfLegacyRegexPatterns(input_api, output_api):
   """Reminds to update internal regex patterns when legacy ones are modified."""
 
@@ -131,6 +152,7 @@ def _CommonChecks(input_api, output_api):
   results.extend(_CheckNoBaseTimeCalls(input_api, output_api))
   results.extend(_CheckNoServerFieldTypeCasts(input_api, output_api))
   results.extend(_CheckFeatureNames(input_api, output_api))
+  results.extend(_CheckWebViewExposedExperiments(input_api, output_api))
   results.extend(_CheckModificationOfLegacyRegexPatterns(input_api, output_api))
   results.extend(_CheckModificationOfFormAutofillUtil(input_api, output_api))
   return results
