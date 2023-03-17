@@ -139,15 +139,15 @@ class BASE_EXPORT HistogramSamples {
   virtual HistogramBase::Count GetCount(HistogramBase::Sample value) const = 0;
   virtual HistogramBase::Count TotalCount() const = 0;
 
-  virtual void Add(const HistogramSamples& other);
+  void Add(const HistogramSamples& other);
 
   // Add from serialized samples.
-  virtual bool AddFromPickle(PickleIterator* iter);
+  bool AddFromPickle(PickleIterator* iter);
 
-  virtual void Subtract(const HistogramSamples& other);
+  void Subtract(const HistogramSamples& other);
 
   virtual std::unique_ptr<SampleCountIterator> Iterator() const = 0;
-  virtual void Serialize(Pickle* pickle) const;
+  void Serialize(Pickle* pickle) const;
 
   // Returns ASCII representation of histograms data for histogram samples.
   // The dictionary returned will be of the form
