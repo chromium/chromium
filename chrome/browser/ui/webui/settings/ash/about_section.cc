@@ -332,6 +332,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutChannelDev", IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_DEV},
     {"aboutChannelLabel", IDS_SETTINGS_ABOUT_PAGE_CHANNEL},
     {"aboutChannelStable", IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_STABLE},
+    {"aboutChannelLongTermSupportCandidate",
+     IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_LTC},
     {"aboutChannelLongTermSupport",
      IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_LTS},
     {"aboutCheckForUpdates", IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES},

@@ -22,6 +22,8 @@ export enum BrowserChannel {
   CANARY = 'canary-channel',
   DEV = 'dev-channel',
   STABLE = 'stable-channel',
+  LTC = 'ltc-channel',
+  LTS = 'lts-channel',
 }
 
 export interface ChannelInfo {
@@ -81,6 +83,7 @@ export interface UpdateStatusChangedEvent {
 
 export function browserChannelToI18nId(
     channel: BrowserChannel, isLts: boolean): string {
+  // TODO(b/273717293): Remove LTS tag handling.
   if (isLts) {
     return 'aboutChannelLongTermSupport';
   }
@@ -94,6 +97,10 @@ export function browserChannelToI18nId(
       return 'aboutChannelDev';
     case BrowserChannel.STABLE:
       return 'aboutChannelStable';
+    case BrowserChannel.LTC:
+      return 'aboutChannelLongTermSupportCandidate';
+    case BrowserChannel.LTS:
+      return 'aboutChannelLongTermSupport';
   }
 }
 
@@ -108,6 +115,8 @@ export function isTargetChannelMoreStable(
     BrowserChannel.DEV,
     BrowserChannel.BETA,
     BrowserChannel.STABLE,
+    BrowserChannel.LTC,
+    BrowserChannel.LTS,
   ];
   const currentIndex = channelList.indexOf(currentChannel);
   const targetIndex = channelList.indexOf(targetChannel);
