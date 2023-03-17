@@ -88,9 +88,10 @@ struct COMPONENT_EXPORT(EVDEV) InputDeviceSettingsEvdev {
   std::vector<DomCode> internal_keyboard_allowed_keys;
 
  private:
-  base::flat_map<int, TouchpadSettingsEvdev> touchpad_settings_;
-  base::flat_map<int, MouseSettingsEvdev> mouse_settings_;
-  base::flat_map<int, PointingStickSettingsEvdev> pointing_stick_settings_;
+  mutable base::flat_map<int, TouchpadSettingsEvdev> touchpad_settings_;
+  mutable base::flat_map<int, MouseSettingsEvdev> mouse_settings_;
+  mutable base::flat_map<int, PointingStickSettingsEvdev>
+      pointing_stick_settings_;
 };
 
 }  // namespace ui

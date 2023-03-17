@@ -58,16 +58,16 @@ InputDeviceSettingsEvdev::GetPointingStickSettings() {
 
 const TouchpadSettingsEvdev& InputDeviceSettingsEvdev::GetTouchpadSettings()
     const {
-  return touchpad_settings_.at(kSharedSettingsDeviceId);
+  return touchpad_settings_[kSharedSettingsDeviceId];
 }
 
 const MouseSettingsEvdev& InputDeviceSettingsEvdev::GetMouseSettings() const {
-  return mouse_settings_.at(kSharedSettingsDeviceId);
+  return mouse_settings_[kSharedSettingsDeviceId];
 }
 
 const PointingStickSettingsEvdev&
 InputDeviceSettingsEvdev::GetPointingStickSettings() const {
-  return pointing_stick_settings_.at(kSharedSettingsDeviceId);
+  return pointing_stick_settings_[kSharedSettingsDeviceId];
 }
 
 TouchpadSettingsEvdev& InputDeviceSettingsEvdev::GetTouchpadSettings(
@@ -98,7 +98,7 @@ const TouchpadSettingsEvdev& InputDeviceSettingsEvdev::GetTouchpadSettings(
   if (!enable_per_device_settings) {
     return GetTouchpadSettings();
   }
-  return touchpad_settings_.at(device_id);
+  return touchpad_settings_[device_id];
 }
 
 const MouseSettingsEvdev& InputDeviceSettingsEvdev::GetMouseSettings(
@@ -106,7 +106,7 @@ const MouseSettingsEvdev& InputDeviceSettingsEvdev::GetMouseSettings(
   if (!enable_per_device_settings) {
     return GetMouseSettings();
   }
-  return mouse_settings_.at(device_id);
+  return mouse_settings_[device_id];
 }
 
 const PointingStickSettingsEvdev&
@@ -114,7 +114,7 @@ InputDeviceSettingsEvdev::GetPointingStickSettings(int device_id) const {
   if (!enable_per_device_settings) {
     return GetPointingStickSettings();
   }
-  return pointing_stick_settings_.at(device_id);
+  return pointing_stick_settings_[device_id];
 }
 
 TouchpadSettingsEvdev::TouchpadSettingsEvdev() = default;
