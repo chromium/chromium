@@ -1527,28 +1527,6 @@
           "hard_timeout": 43200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "nacl_loader_unittests",
-        "test_id_prefix": "ninja://components/nacl/loader:nacl_loader_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": null,
-              "os": "Windows-11",
-              "pool": "chrome.tests.arm64"
-            }
-          ],
-          "expiration": 64800,
-          "hard_timeout": 43200,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "native_theme_unittests",
         "test_id_prefix": "ninja://ui/native_theme:native_theme_unittests/"
       },
