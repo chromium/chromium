@@ -16,6 +16,7 @@
 namespace ash {
 enum class ShutdownReason;
 class PowerButtonMenuView;
+class PowerButtonMenuCurtainView;
 
 // PowerButtonMenuScreenView is the top-level view of power button menu UI. It
 // creates a PowerButtonMenuBackgroundView to display the fullscreen background
@@ -37,6 +38,10 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
 
   PowerButtonMenuView* power_button_menu_view() const {
     return power_button_menu_view_;
+  }
+
+  PowerButtonMenuCurtainView* power_button_menu_curtain_view() const {
+    return power_button_menu_curtain_view_;
   }
 
   // Schedules an animation to show or hide the view.
@@ -73,14 +78,26 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   // Lays out the view without animation transform.
   void LayoutWithoutTransform();
 
+  // Helper methods for Layout().
+  void LayoutMenuView();
+  void LayoutMenuCurtainView();
+
   // Updates |menu_bounds_origins_| according to power button position info.
   void UpdateMenuBoundsOrigins();
 
   // Gets the bounds of power button menu.
   gfx::Rect GetMenuBounds();
 
-  // Created by PowerButtonMenuScreenView. Owned by views hierarchy.
+  gfx::Size GetMenuViewPreferredSize();
+
+  PowerButtonMenuCurtainView* GetOrCreateCurtainView();
+
+  // Created by PowerButtonMenuScreenView. Owned by views hierarchy. Only
+  // power_button_menu_view_ or power_button_menu_curtain_view_ will be
+  // available at a time.
   PowerButtonMenuView* power_button_menu_view_ = nullptr;
+  PowerButtonMenuCurtainView* power_button_menu_curtain_view_ = nullptr;
+
   PowerButtonMenuBackgroundView* power_button_screen_background_shield_ =
       nullptr;
 

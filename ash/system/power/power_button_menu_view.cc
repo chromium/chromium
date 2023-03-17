@@ -18,6 +18,7 @@
 #include "ash/style/system_shadow.h"
 #include "ash/system/power/power_button_menu_item_view.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
+#include "ash/system/power/power_button_menu_view_util.h"
 #include "ash/system/user/login_status.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -42,41 +43,12 @@ namespace {
 constexpr int kMenuItemHorizontalPadding = 16;
 constexpr int kMenuItemVerticalPadding = 16;
 
-// The rounded corner radius of menu.
-constexpr int kMenuCornerRadius = 16;
-
 // Horizontal padding between two menu items.
 constexpr int kPaddingBetweenMenuItems = 8;
-
-// Set show/hide animation for layer.
-void SetLayerAnimation(ui::Layer* layer,
-                       ui::ImplicitAnimationObserver* observer,
-                       bool show,
-                       const gfx::Transform& transform) {
-  DCHECK(layer);
-
-  auto* animator = layer->GetAnimator();
-  animator->AbortAllAnimations();
-
-  ui::ScopedLayerAnimationSettings animation_settings(animator);
-  animation_settings.SetTweenType(show ? gfx::Tween::EASE_IN
-                                       : gfx::Tween::FAST_OUT_LINEAR_IN);
-  animation_settings.SetTransitionDuration(
-      PowerButtonMenuView::kMenuAnimationDuration);
-  animation_settings.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  if (observer)
-    animation_settings.AddObserver(observer);
-
-  layer->SetOpacity(show ? 1.0f : 0.f);
-  layer->SetTransform(transform);
-}
 
 }  // namespace
 
 using PowerButtonPosition = PowerButtonController::PowerButtonPosition;
-
-constexpr base::TimeDelta PowerButtonMenuView::kMenuAnimationDuration;
 
 PowerButtonMenuView::PowerButtonMenuView(
     ShutdownReason shutdown_reason,
@@ -86,13 +58,15 @@ PowerButtonMenuView::PowerButtonMenuView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kMenuCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+      kPowerButtonMenuCornerRadius, kPowerButtonMenuBorderType,
       /*use_light_colors=*/false));
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  SetBackground(
+      views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
 
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kMenuCornerRadius));
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
+  layer()->SetBackgroundBlur(kPowerButtonMenuBlurType);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_ACCESSIBLE));
@@ -101,7 +75,7 @@ PowerButtonMenuView::PowerButtonMenuView(
   // Create a system shadow for current view.
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation12);
-  shadow_->SetRoundedCornerRadius(kMenuCornerRadius);
+  shadow_->SetRoundedCornerRadius(kPowerButtonMenuCornerRadius);
 }
 
 PowerButtonMenuView::~PowerButtonMenuView() = default;
@@ -118,10 +92,11 @@ void PowerButtonMenuView::ScheduleShowHideAnimation(bool show) {
   gfx::Transform transform;
   if (show) {
     TransformDisplacement transform_displacement = GetTransformDisplacement();
-    if (transform_displacement.direction == TransformDirection::X)
+    if (transform_displacement.direction == TransformDirection::X) {
       transform.Translate(transform_displacement.distance, 0);
-    else if (transform_displacement.direction == TransformDirection::Y)
+    } else if (transform_displacement.direction == TransformDirection::Y) {
       transform.Translate(0, transform_displacement.distance);
+    }
   }
 
   SetLayerAnimation(layer(), this, show, transform);
@@ -134,7 +109,7 @@ PowerButtonMenuView::GetTransformDisplacement() const {
   if (power_button_position_ == PowerButtonPosition::NONE ||
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     transform_displacement.direction = TransformDirection::Y;
-    transform_displacement.distance = kMenuViewTransformDistanceDp;
+    transform_displacement.distance = kPowerButtonMenuTransformDistanceDp;
     return transform_displacement;
   }
 
@@ -167,8 +142,8 @@ PowerButtonMenuView::GetTransformDisplacement() const {
                              : !is_landscape_primary_or_portrait_secondary;
   }
   transform_displacement.distance = positive_transform
-                                        ? kMenuViewTransformDistanceDp
-                                        : -kMenuViewTransformDistanceDp;
+                                        ? kPowerButtonMenuTransformDistanceDp
+                                        : -kPowerButtonMenuTransformDistanceDp;
   return transform_displacement;
 }
 
@@ -182,10 +157,12 @@ void PowerButtonMenuView::RecreateItems() {
              PowerButtonMenuItemView** out_item_ptr) -> void {
     // If an item needs to be created and exists, or needs to be destroyed but
     // does not exist, there is nothing to be done.
-    if (create && *out_item_ptr)
+    if (create && *out_item_ptr) {
       return;
-    if (!create && !*out_item_ptr)
+    }
+    if (!create && !*out_item_ptr) {
       return;
+    }
 
     if (create) {
       *out_item_ptr = AddChildView(std::make_unique<PowerButtonMenuItemView>(
@@ -314,14 +291,17 @@ gfx::Size PowerButtonMenuView::CalculatePreferredSize() const {
   const int one_item_x_offset =
       PowerButtonMenuItemView::kMenuItemWidth + kPaddingBetweenMenuItems;
   if (sign_out_item_) {
+    width += one_item_x_offset;
+    if (lock_screen_item_) {
       width += one_item_x_offset;
-      if (lock_screen_item_)
-        width += one_item_x_offset;
+    }
   }
-  if (capture_mode_item_)
+  if (capture_mode_item_) {
     width += one_item_x_offset;
-  if (feedback_item_)
+  }
+  if (feedback_item_) {
     width += one_item_x_offset;
+  }
   menu_size.set_width(width);
   return menu_size;
 }
@@ -331,11 +311,13 @@ void PowerButtonMenuView::OnThemeChanged() {
 }
 
 void PowerButtonMenuView::OnImplicitAnimationsCompleted() {
-  if (layer()->opacity() == 0.f)
+  if (layer()->opacity() == 0.f) {
     SetVisible(false);
+  }
 
-  if (layer()->opacity() == 1.0f)
+  if (layer()->opacity() == 1.0f) {
     RequestFocus();
+  }
 }
 
 void PowerButtonMenuView::ButtonPressed(PowerButtonMenuActionType action,

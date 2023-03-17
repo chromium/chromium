@@ -21,13 +21,6 @@ class SystemShadow;
 class ASH_EXPORT PowerButtonMenuView : public views::View,
                                        public ui::ImplicitAnimationObserver {
  public:
-  // The duration of showing or dismissing power button menu animation.
-  static constexpr base::TimeDelta kMenuAnimationDuration =
-      base::Milliseconds(250);
-
-  // Distance of the menu animation transform.
-  static constexpr int kMenuViewTransformDistanceDp = 16;
-
   // Direction of the animation transform. X means to translate from
   // x-coordinate. Y means to translate from y-coordinate.
   enum class TransformDirection { NONE, X, Y };

@@ -6373,6 +6373,16 @@ New install
       <message name="IDS_ASH_PAGINATION_RIGHT_ARROW_TOOLTIP" desc="The tooltip text used for pagination right arrow button." >
         Next page
       </message>
-     </messages>
-    </release>
+
+      <!-- Power menu widget for security curtain -->
+      <message name="IDS_ASH_CURTAIN_POWER_WIDGET_TITLE" desc="Title text displayed in the dialog when the power button is pressed and the remote admin session on ChromeOs device will end.">
+        Shut down the device?
+      </message>
+      <message name="IDS_ASH_CURTAIN_POWER_WIDGET_DESCRIPTION" desc="Detailed description displayed to inform the user that the device will be shut down and remote admin session will be end if they press the power button again. The linebreak should NOT be removed from the string.">
+        Once shut down, the administrator will be logged out and won't be able to control your device.
+
+To shut down the device, press and hold the power button on the device again.
+      </message>
+    </messages>
+  </release>
 </grit>

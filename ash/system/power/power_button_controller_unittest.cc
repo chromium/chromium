@@ -14,6 +14,7 @@
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/system/power/power_button_menu_item_view.h"
 #include "ash/system/power/power_button_menu_view.h"
+#include "ash/system/power/power_button_menu_view_util.h"
 #include "ash/system/power/power_button_test_base.h"
 #include "ash/test_media_client.h"
 #include "ash/touch/touch_devices_controller.h"
@@ -1170,7 +1171,7 @@ TEST_P(PowerButtonControllerWithPositionTest,
   EXPECT_TRUE(IsMenuCentered());
   TapToDismissPowerButtonMenu();
 
-  int animation_transform = PowerButtonMenuView::kMenuViewTransformDistanceDp;
+  int animation_transform = kPowerButtonMenuTransformDistanceDp;
   EnableTabletMode(true);
   EXPECT_TRUE(IsTabletMode());
   OpenPowerButtonMenu();
