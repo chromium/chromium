@@ -52,11 +52,11 @@ declare_args() {
   rust_toolchain_supports_nacl = false
 
   # Any extra std rlibs in your Rust toolchain, relative to the standard
-  # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
+  # Rust toolchain. Typically used with 'rust_sysroot_absolute'
   added_rust_stdlib_libs = []
 
   # Any removed std rlibs in your Rust toolchain, relative to the standard
-  # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
+  # Rust toolchain. Typically used with 'rust_sysroot_absolute'
   removed_rust_stdlib_libs = []
 
   # Non-rlib libs provided in the toolchain sysroot. Usually this is empty, but
@@ -236,6 +236,13 @@ if (current_cpu == "x86") {
 }
 
 assert(!toolchain_has_rust || rust_target_arch != "")
+
+# Must use Chromium Rust toolchain to get precisely matching LLVM versions
+# in order to enable LTO. Some say that LTO probably works if LLVM is "close
+# enough", but we don't want to take that risk.
+assert(!use_thin_lto || !enable_rust || use_chromium_rust_toolchain ||
+           use_unverified_rust_toolchain,
+       "Must use Chromium Rust toolchain for LTO")
 
 # Determine whether the local libstd can and should be built.
 local_libstd_supported = enable_local_libstd && use_chromium_rust_toolchain
