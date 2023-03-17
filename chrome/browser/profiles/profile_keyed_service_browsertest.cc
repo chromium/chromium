@@ -397,6 +397,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "InstallVerifier",
     "InstanceIDProfileService",
     "InvalidationService",
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    "KidsChromeManagementClient",
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "LanguageSettingsPrivateDelegate",
     "LastTabStandingTrackerKeyedService",
     "LazyBackgroundTaskQueue",

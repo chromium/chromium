@@ -25,7 +25,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -33,6 +33,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -255,6 +256,7 @@ void SupervisedUserService::RemoveObserver(
 SupervisedUserService::SupervisedUserService(
     Profile* profile,
     signin::IdentityManager* identity_manager,
+    KidsChromeManagementClient* kids_chrome_management_client,
     PrefService& user_prefs,
     supervised_user::SupervisedUserSettingsService& settings_service,
     syncer::SyncService& sync_service,
@@ -266,11 +268,8 @@ SupervisedUserService::SupervisedUserService(
       sync_service_(sync_service),
       profile_(profile),
       identity_manager_(identity_manager),
-      active_(false),
+      kids_chrome_management_client_(kids_chrome_management_client),
       delegate_(nullptr),
-      is_profile_active_(false),
-      did_init_(false),
-      did_shutdown_(false),
       url_filter_(std::move(check_webstore_url_callback),
                   std::move(url_filter_delegate)),
       denylist_state_(DenylistLoadState::NOT_LOADED) {
@@ -549,9 +548,7 @@ void SupervisedUserService::UpdateAsyncUrlChecker() {
 
   if (use_online_check != url_filter_.HasAsyncURLChecker()) {
     if (use_online_check) {
-      url_filter_.InitAsyncURLChecker(
-          KidsChromeManagementClientFactory::GetInstance()
-              ->GetForBrowserContext(profile_));
+      url_filter_.InitAsyncURLChecker(kids_chrome_management_client_);
     } else {
       url_filter_.ClearAsyncURLChecker();
     }

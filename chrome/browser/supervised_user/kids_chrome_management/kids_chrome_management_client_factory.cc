@@ -10,8 +10,8 @@
 #include "content/public/browser/storage_partition.h"
 
 // static
-KidsChromeManagementClient*
-KidsChromeManagementClientFactory::GetForBrowserContext(Profile* profile) {
+KidsChromeManagementClient* KidsChromeManagementClientFactory::GetForProfile(
+    Profile* profile) {
   return static_cast<KidsChromeManagementClient*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -25,7 +25,7 @@ KidsChromeManagementClientFactory::GetInstance() {
 
 KidsChromeManagementClientFactory::KidsChromeManagementClientFactory()
     : ProfileKeyedServiceFactory(
-          "KidsChromeManagementClientFactory",
+          "KidsChromeManagementClient",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/1418376): Check if this service is needed in

@@ -20,7 +20,7 @@ class KidsChromeManagementClient;
 // notification and cleans up the associated KidsChromeManagementClient.
 class KidsChromeManagementClientFactory : public ProfileKeyedServiceFactory {
  public:
-  static KidsChromeManagementClient* GetForBrowserContext(Profile* profile);
+  static KidsChromeManagementClient* GetForProfile(Profile* profile);
 
   static KidsChromeManagementClientFactory* GetInstance();
 

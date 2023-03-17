@@ -259,6 +259,7 @@ class SupervisedUserService
   SupervisedUserService(
       Profile* profile,
       signin::IdentityManager* identity_manager,
+      KidsChromeManagementClient* kids_chrome_management_client,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
       syncer::SyncService& sync_service,
@@ -392,19 +393,21 @@ class SupervisedUserService
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 
-  bool active_;
+  raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
+
+  bool active_ = false;
 
   raw_ptr<Delegate> delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  bool is_profile_active_;
+  bool is_profile_active_ = false;
 
   // True only when |Init()| method has been called.
-  bool did_init_;
+  bool did_init_ = false;
 
   // True only when |Shutdown()| method has been called.
-  bool did_shutdown_;
+  bool did_shutdown_ = false;
 
   supervised_user::SupervisedUserURLFilter url_filter_;
 

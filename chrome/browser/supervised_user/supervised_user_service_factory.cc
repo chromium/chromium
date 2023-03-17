@@ -70,6 +70,7 @@ SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
 KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
   return new SupervisedUserService(
       profile, IdentityManagerFactory::GetInstance()->GetForProfile(profile),
+      KidsChromeManagementClientFactory::GetInstance()->GetForProfile(profile),
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
