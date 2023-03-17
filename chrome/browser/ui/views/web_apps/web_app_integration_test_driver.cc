@@ -1892,7 +1892,29 @@ void WebAppIntegrationTestDriver::OpenInChrome() {
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::SetOpenInTab(Site site) {
+void WebAppIntegrationTestDriver::SetOpenInTabFromAppHome(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+#if BUILDFLAG(IS_CHROMEOS)
+  auto& sync_bridge =
+      WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
+  sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kStandalone,
+                                    true);
+  AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
+#else
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler();
+  app_home_page_handler.SetUserDisplayMode(
+      app_id, web_app::mojom::UserDisplayMode::kBrowser);
+#endif
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::SetOpenInTabFromAppSettings(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1914,7 +1936,29 @@ void WebAppIntegrationTestDriver::SetOpenInTab(Site site) {
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::SetOpenInWindow(Site site) {
+void WebAppIntegrationTestDriver::SetOpenInWindowFromAppHome(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+#if BUILDFLAG(IS_CHROMEOS)
+  auto& sync_bridge =
+      WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
+  sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kStandalone,
+                                    true);
+  AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
+#else
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler();
+  app_home_page_handler.SetUserDisplayMode(
+      app_id, web_app::mojom::UserDisplayMode::kStandalone);
+#endif
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::SetOpenInWindowFromAppSettings(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }

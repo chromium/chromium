@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 145) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 151) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -80,15 +80,8 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | uninstall_not_locally_installed | Site | uninstall_from_list($1) & uninstall_from_menu($1) & uninstall_from_os($1) | 99 | Parameterized | Uninstall an app by user, the app can be not locally installed. |  |
 | # Checking app state |
 | check_app_icon | Site, Color |  | 110 | Implemented | Check that the app icon color is correct | finnur@ |
-| check_app_in_list_tabbed | Site |  | 11 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the app opens in a window by right clicking on it to see if the "open in window" option is checked, and by launching it to see if it opens in a separate window. |  |
-| check_app_in_list_windowed | Site |  | 12 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the app opens in a tab by right clicking on it to see if the "open in window" option is unchecked, and by launching it to see if it opens in a browser tab (and not a window). |  |
-| check_app_list_empty |  |  | 13 | Implemented | The app list is empty (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). |  |
 | check_app_navigation | Site |  | 133 | Implemented |  |  |
 | check_app_navigation_is_start_url |  |  | 14 | Implemented |  |  |
-| check_app_in_list_not_locally_installed | Site |  | 45 | Implemented | Find the app in the app list (chrome://apps) and check that the given app is in the app list and is not installed. This means the icon is grey, and right clicking on it provides an 'install' option. Win/Mac/Linux only. |  |
-| check_app_not_in_list | Site |  | 15 | Implemented | Check that the given app is NOT in the app list. On desktop, this is chrome://apps, and on ChromeOS, this is the app drawer. |  |
-| check_app_title | Site, Title |  | 79 | Implemented | Check that the app title is correct | finnur@ |
-| check_app_in_list_icon_correct | Site |  | 75 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the icon for the given app in the app list is correct. | P2 (fetch icon using web request for chrome://app-icon/<app-id>/<icon-size>) |
 | check_theme_color | Site |  | 76 | Not Implemented | Asserts that the theme color of the given app window is correct. | P3 |
 | # Misc UX |
 | check_browser_navigation | Site |  | 134 | Implemented | Check the current browser navigation is the given site |  |
@@ -122,8 +115,10 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | open_app_settings_from_app_menu | Site |  | 97 | Implemented |  | phillis@ |
 | open_app_settings_from_chrome_apps | Site |  | 96 | Implemented |  | phillis@ |
 | open_in_chrome |  |  | 71 | Implemented | Click on the 'open in chrome' link in the 3-dot menu of the app window | cliffordcheng@, P1 |
-| set_open_in_tab | Site |  | 50 | Implemented | Uncheck the "open in window" checkbox in the right-click menu of the app icon, in the app list page |  |
-| set_open_in_window | Site |  | 51 | Implemented | Check the "open in window" checkbox in the right-click menu of the app icon, in the app list page |  |
+| set_open_in_tab | Site | set_open_in_tab_from_app_settings($1) & set_open_in_tab_from_app_home($1) | 148 | Parameterized | All methods to toggle an app to open in a tab in the same window. | dibyapal@ |
+| set_open_in_tab_from_app_settings | Site |  | 149 | Implemented | Toggle the "open in window"  option in the chrome://app-settings/<app-id> page to disable an app from opening in a separate window, so that the app opens in a tab in the same window. | dibyapal@ |
+| set_open_in_window | Site | set_open_in_window_from_app_settings($1) & set_open_in_window_from_app_home($1) | 146 | Parameterized | All methods to toggle an app to open in window. | dibyapal@ |
+| set_open_in_window_from_app_settings | Site |  | 150 | Implemented | Toggle the "open in window" option in the chrome://app-settings/<app-id> page to enable an app to launch in a separate window. | dibyapal@ |
 | check_window_color_correct | Site |  | 77 | Not Implemented | The color of the window is correct. | P3 |
 | check_window_icon_correct | Site |  | 78 | Not Implemented |  | P3 |
 | create_shortcuts_from_list | Site |  | 72 | Implemented | "create shortcuts" in chrome://apps. Win/Mac/Linux only. | P2 |
@@ -169,3 +164,23 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_has_sub_app | Site |  | 140 | Implemented | Assuming we have the active browser window on the (potential) parent site, call subApps.list() and check if the given site is listed. |  |
 | check_not_has_sub_app | Site |  | 141 | Implemented | Assuming we have the active browser window on the (potential) parent site, call subApps.list() and check if the given site is not listed. |  |
 | check_no_sub_apps |  |  | 142 | Implemented | Assuming we navigated to the (potential) parent site, call subApps.list() and check if the list is empty. |  |
+
+### App Home
+
+TODO(dibyapal): Move more app home based actions here once they are integrated to above actions or newly implemented.
+
+Actions that the user can take by going to chrome://apps and either left clicking an app or right clicking an app and then taking actions from the context menu that opens.
+
+| # Action base name | Argument Types | Output Actions | Unique Identifier | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| --- | --- | --- | --- | --- | --- | --- |
+| set_open_in_window_from_app_home | Site |  | 145 | Implemented | Checks the `open in window` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
+| set_open_in_tab_from_app_home | Site |  | 147 | Implemented | Unchecks the `open in window` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
+| check_app_in_list_not_locally_installed | Site |  | 45 | Implemented | Find the app in the app list (chrome://apps) and check that the given app is in the app list and is not installed. This means the icon is grey, and right clicking on it provides an 'install' option. Win/Mac/Linux only. |  |
+| check_app_not_in_list | Site |  | 15 | Implemented | Check that the given app is NOT in the app list. On desktop, this is chrome://apps, and on ChromeOS, this is the app drawer. |  |
+| check_app_title | Site, Title |  | 79 | Implemented | Check that the app title is correct | finnur@ |
+| check_app_in_list_icon_correct | Site |  | 75 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the icon for the given app in the app list is correct. | P2 (fetch icon using web request for chrome://app-icon/<app-id>/<icon-size>) |
+| check_app_in_list_tabbed | Site |  | 11 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the app opens in a window by right clicking on it to see if the "open in window" option is checked, and by launching it to see if it opens in a separate window. |  |
+| check_app_in_list_windowed | Site |  | 12 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the app opens in a tab by right clicking on it to see if the "open in window" option is unchecked, and by launching it to see if it opens in a browser tab (and not a window). |  |
+| check_app_list_empty |  |  | 13 | Implemented | The app list is empty (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). |  |
+| enable_run_on_os_login_from_app_home | Site |  | 151 | Implemented | Checks the `open in window` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
+| disable_run_on_os_login_from_app_home | Site |  | 152 | Implemented | Unchecks the `open in window` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |

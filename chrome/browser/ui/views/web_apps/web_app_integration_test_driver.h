@@ -301,8 +301,10 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void ManifestUpdateDisplay(Site site, Display display);
   void ManifestUpdateScopeTo(Site app, Site scope);
   void OpenInChrome();
-  void SetOpenInTab(Site site);
-  void SetOpenInWindow(Site site);
+  void SetOpenInTabFromAppHome(Site site);
+  void SetOpenInTabFromAppSettings(Site site);
+  void SetOpenInWindowFromAppHome(Site site);
+  void SetOpenInWindowFromAppSettings(Site site);
   void SwitchIncognitoProfile();
   void SwitchProfileClients(ProfileClient client);
   void SwitchActiveProfile(ProfileName profile_name);
