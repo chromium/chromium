@@ -7,8 +7,8 @@
     </message>
   </if>
   <if expr="is_ios">
-    <message name="IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that clears an auto-filled form.">
-      CLEAR FORM
+    <message name="IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that clears an auto-filled form. Title-cased.">
+      Clear Form
     </message>
   </if>
 
