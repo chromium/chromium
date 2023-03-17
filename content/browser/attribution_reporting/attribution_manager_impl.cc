@@ -955,6 +955,13 @@ void AttributionManagerImpl::SendReports(
       continue;
     }
 
+    if (auto id = report.ReportId();
+        const auto* aggregatable_id =
+            absl::get_if<AttributionReport::AggregatableAttributionData::Id>(
+                &id)) {
+      pending_aggregatable_reports_.erase(*aggregatable_id);
+    }
+
     if (!IsReportAllowed(report)) {
       // If measurement is disallowed, just drop the report on the floor. We
       // need to make sure we forward that the report was "sent" to ensure it is
@@ -966,13 +973,6 @@ void AttributionManagerImpl::SendReports(
     }
 
     if (!web_ui_callback) {
-      if (auto id = report.ReportId();
-          const auto* aggregatable_id =
-              absl::get_if<AttributionReport::AggregatableAttributionData::Id>(
-                  &id)) {
-        pending_aggregatable_reports_.erase(*aggregatable_id);
-      }
-
       LogMetricsOnReportSend(report, now);
     }
 
