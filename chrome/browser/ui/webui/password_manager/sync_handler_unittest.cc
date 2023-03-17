@@ -77,10 +77,14 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
     return account_info;
   }
 
+  void FireSyncStateChange() {
+    static_cast<syncer::SyncServiceObserver*>(handler())->OnStateChanged(
+        static_cast<syncer::SyncService*>(sync_service()));
+  }
+
   void ExpectTrustedVaultBannerStateResponse(
       TrustedVaultBannerState expected_state) {
     auto& data = *web_ui_.call_data().back();
-    EXPECT_EQ("cr.webUIResponse", data.function_name());
     ASSERT_TRUE(CallbackReturnedSuccessfully(data));
     EXPECT_EQ(static_cast<int>(expected_state), data.arg3()->GetInt());
   }
@@ -167,13 +171,40 @@ TEST_F(SyncHandlerTest, TrustedVaultBannerStateChange) {
   // Ensure the state is propagated.
   ON_CALL(*sync_service(), GetTransportState())
       .WillByDefault(Return(syncer::SyncService::TransportState::PAUSED));
-  static_cast<syncer::SyncServiceObserver*>(handler())->OnStateChanged(
-      static_cast<syncer::SyncService*>(sync_service()));
+  FireSyncStateChange();
   args = GetAllFiredValuesForEventName("trusted-vault-banner-state-changed");
   ASSERT_EQ(1U, args.size());
   ASSERT_TRUE(args[0]->is_int());
   EXPECT_EQ(static_cast<int>(TrustedVaultBannerState::kNotShown),
             args[0]->GetInt());
+}
+
+TEST_F(SyncHandlerTest, GetSyncInfo) {
+  CreateTestSyncAccount();
+
+  base::Value::List args;
+  args.Append(kTestCallbackId);
+  web_ui()->ProcessWebUIMessage(GURL(), "GetSyncInfo", std::move(args));
+
+  auto& data = *web_ui()->call_data().back();
+  ASSERT_TRUE(CallbackReturnedSuccessfully(data));
+  ASSERT_TRUE(data.arg3()->is_dict());
+  // A syncing user should not be eligible for account storage.
+  EXPECT_FALSE(*data.arg3()->GetDict().FindBool("isEligibleForAccountStorage"));
+}
+
+TEST_F(SyncHandlerTest, GetSyncInfoOnSyncStateChange) {
+  CreateTestSyncAccount();
+
+  FireSyncStateChange();
+  std::vector<const base::Value*> state_update_args =
+      GetAllFiredValuesForEventName("sync-info-changed");
+
+  ASSERT_EQ(1U, state_update_args.size());
+  ASSERT_TRUE(state_update_args[0]->is_dict());
+  // A syncing user should not be eligible for account storage.
+  EXPECT_FALSE(
+      *state_update_args[0]->GetDict().FindBool("isEligibleForAccountStorage"));
 }
 
 TEST_F(SyncHandlerTest, AccountInfo) {

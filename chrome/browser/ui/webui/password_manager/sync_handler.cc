@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -14,6 +15,9 @@
 #include "ui/base/webui/web_ui_util.h"
 
 namespace password_manager {
+
+using password_manager::features_util::IsOptedInForAccountStorage;
+using password_manager::features_util::ShouldShowAccountStorageOptIn;
 
 SyncHandler::SyncHandler(Profile* profile) : profile_(profile) {}
 
@@ -27,6 +31,9 @@ void SyncHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "GetAccountInfo", base::BindRepeating(&SyncHandler::HandleGetAccountInfo,
                                             base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "GetSyncInfo", base::BindRepeating(&SyncHandler::HandleGetSyncInfo,
+                                         base::Unretained(this)));
 }
 
 void SyncHandler::OnJavascriptAllowed() {
@@ -72,6 +79,26 @@ void SyncHandler::HandleGetTrustedVaultBannerState(
   ResolveJavascriptCallback(callback_id, GetTrustedVaultBannerState());
 }
 
+base::Value::Dict SyncHandler::GetSyncInfo() const {
+  base::Value::Dict dict;
+
+  syncer::SyncService* sync_service = GetSyncService();
+  PrefService* pref_service = profile_->GetPrefs();
+  dict.Set("isEligibleForAccountStorage",
+           (IsOptedInForAccountStorage(pref_service, sync_service) ||
+            ShouldShowAccountStorageOptIn(pref_service, sync_service)));
+  return dict;
+}
+
+void SyncHandler::HandleGetSyncInfo(const base::Value::List& args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  ResolveJavascriptCallback(callback_id, GetSyncInfo());
+}
+
 base::Value::Dict SyncHandler::GetAccountInfo() const {
   signin::IdentityManager* identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
@@ -98,6 +125,7 @@ void SyncHandler::HandleGetAccountInfo(const base::Value::List& args) {
 void SyncHandler::OnStateChanged(syncer::SyncService* sync_service) {
   FireWebUIListener("trusted-vault-banner-state-changed",
                     GetTrustedVaultBannerState());
+  FireWebUIListener("sync-info-changed", GetSyncInfo());
 }
 
 void SyncHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {

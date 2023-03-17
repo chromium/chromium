@@ -47,9 +47,13 @@ class SyncHandler : public content::WebUIMessageHandler,
 
   // Retrieves the trusted vault banner state value from the SyncService.
   base::Value GetTrustedVaultBannerState() const;
-
   // Handles the request for the trusted vault banner state.
   void HandleGetTrustedVaultBannerState(const base::Value::List& args);
+
+  // Retrieves sync related information from the SyncService.
+  base::Value::Dict GetSyncInfo() const;
+  // Handles the request for sync information.
+  void HandleGetSyncInfo(const base::Value::List& args);
 
   // Retrieves information about the primary account.
   base::Value::Dict GetAccountInfo() const;
