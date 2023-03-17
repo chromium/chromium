@@ -61,23 +61,43 @@ class ZpsSection : public Section {
   void InitFromMatches(ACMatches& matches) override;
 };
 
-// Section expressing the Android zps limits and grouping. The rules are:
-// - Contains up to 1 verbatim, 1 clipboard, 1 most visited, 8 related search
-//   suggestions, and 15 personalized suggestions.
-// - Allow up to 15 suggestions total.
-class AndroidZpsSection : public ZpsSection {
+// Section expressing the Android ZPS limits and grouping for the NTP.
+// The rules are:
+// - Allow up to 15 search suggestions.
+// - Additional trending and related queries may be appended at the bottom of
+//   the suggestions list.
+// - Related queries are ranked above the trends.
+class AndroidNTPZpsSection : public ZpsSection {
  public:
-  explicit AndroidZpsSection(omnibox::GroupConfigMap& group_configs);
+  AndroidNTPZpsSection(size_t max_related_queries,
+                       size_t max_trending_queries,
+                       omnibox::GroupConfigMap& group_configs);
 };
 
-// Section expressing the Android Inspire Me NTP ZPS limits and grouping.
-// Appends additional trending and related queries at the bottom of the
-// suggestions list. Related queries are ranked above the trends.
-class AndroidInspireMeZpsSection : public ZpsSection {
+// Section expressing the Android ZPS limits and grouping for the SRP.
+// The rules are:
+// - 1 verbatim match,
+// - 1 clipboard suggestion,
+// - 1 most visited carousel,
+// - up to 15 previous search related suggestions,
+// - up to 15 personalized suggestions.
+// - Up to 15 suggestions total.
+class AndroidSRPZpsSection : public ZpsSection {
  public:
-  AndroidInspireMeZpsSection(size_t max_related_queries,
-                             size_t max_trending_queries,
-                             omnibox::GroupConfigMap& group_configs);
+  explicit AndroidSRPZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
+// Section expressing the Android ZPS limits and grouping for the Web.
+// The rules are:
+// - 1 verbatim match,
+// - 1 clipboard suggestion,
+// - 1 most visited carousel,
+// - up to 8 page related search suggestions,
+// - up to 15 personalized suggestions.
+// - Up to 15 suggestions total.
+class AndroidWebZpsSection : public ZpsSection {
+ public:
+  explicit AndroidWebZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Desktop zps limits and grouping. The rules are:

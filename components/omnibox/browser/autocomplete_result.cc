@@ -377,19 +377,20 @@ void AutocompleteResult::SortAndCull(
   if (use_grouping_for_zps) {
     PSections sections;
     if constexpr (is_android) {
-      sections.push_back(
-          std::make_unique<AndroidZpsSection>(suggestion_groups_map_));
       if (omnibox::IsNTPPage(page_classification)) {
         size_t num_related_queries =
             OmniboxFieldTrial::kInspireMeAdditionalRelatedQueries.Get();
         size_t num_trending_queries =
             OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.Get();
 
-        if (num_related_queries + num_trending_queries > 0) {
-          sections.push_back(std::make_unique<AndroidInspireMeZpsSection>(
-              num_related_queries, num_trending_queries,
-              suggestion_groups_map_));
-        }
+        sections.push_back(std::make_unique<AndroidNTPZpsSection>(
+            num_related_queries, num_trending_queries, suggestion_groups_map_));
+      } else if (omnibox::IsSearchResultsPage(page_classification)) {
+        sections.push_back(
+            std::make_unique<AndroidSRPZpsSection>(suggestion_groups_map_));
+      } else {
+        sections.push_back(
+            std::make_unique<AndroidWebZpsSection>(suggestion_groups_map_));
       }
     } else if constexpr (is_desktop) {
       sections.push_back(

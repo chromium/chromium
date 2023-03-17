@@ -102,22 +102,41 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
   });
 }
 
-AndroidZpsSection::AndroidZpsSection(omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(15,
-                 {{1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
-                  {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                  {1, omnibox::GROUP_MOBILE_MOST_VISITED},
-                  {15, omnibox::GROUP_VISITED_DOC_RELATED},
-                  {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST}},
-                 group_configs) {}
-
-AndroidInspireMeZpsSection::AndroidInspireMeZpsSection(
+AndroidNTPZpsSection::AndroidNTPZpsSection(
     size_t max_related_queries,
     size_t max_trending_queries,
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(max_related_queries + max_trending_queries,
-                 {{max_related_queries, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
-                  {max_trending_queries, omnibox::GROUP_TRENDS}},
+    : ZpsSection(
+          15 + max_related_queries + max_trending_queries,
+          {
+              {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+              {max_related_queries, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+              {max_trending_queries, omnibox::GROUP_TRENDS},
+          },
+          group_configs) {}
+
+AndroidSRPZpsSection::AndroidSRPZpsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(15,
+                 {
+                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
+                     {15, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+                     {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
+                 group_configs) {}
+
+AndroidWebZpsSection::AndroidWebZpsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(15,
+                 {
+                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
+                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
+                     {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
                  group_configs) {}
 
 DesktopZpsSection::DesktopZpsSection(omnibox::GroupConfigMap& group_configs)
