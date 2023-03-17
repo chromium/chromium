@@ -41,8 +41,11 @@ source_set("unit_tests") {
   sources = [
     "origin_trials/component_updater_utils_unittest.cc",
     "origin_trials/origin_trial_policy_impl_unittest.cc",
-    "user_agent_utils_unittest.cc",
   ]
+
+  if (!is_ios) {
+    sources += [ "user_agent_utils_unittest.cc" ]
+  }
 
   deps = [
     ":browser_util",
