@@ -50,6 +50,11 @@ MousePrefHandlerImpl::~MousePrefHandlerImpl() = default;
 
 void MousePrefHandlerImpl::InitializeMouseSettings(PrefService* pref_service,
                                                    mojom::Mouse* mouse) {
+  if (!pref_service) {
+    mouse->settings = GetDefaultMouseSettings();
+    return;
+  }
+
   const auto& devices_dict =
       pref_service->GetDict(prefs::kMouseDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(mouse->device_key);

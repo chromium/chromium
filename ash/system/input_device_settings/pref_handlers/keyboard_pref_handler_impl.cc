@@ -52,7 +52,6 @@ mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings() {
   settings->auto_repeat_enabled = kDefaultAutoRepeatEnabled;
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
   settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
-  settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
   return settings;
 }
 
@@ -106,6 +105,11 @@ KeyboardPrefHandlerImpl::~KeyboardPrefHandlerImpl() = default;
 void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     PrefService* pref_service,
     mojom::Keyboard* keyboard) {
+  if (!pref_service) {
+    keyboard->settings = GetDefaultKeyboardSettings();
+    return;
+  }
+
   const auto& devices_dict =
       pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(keyboard->device_key);

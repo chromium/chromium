@@ -19,6 +19,7 @@ class ASH_EXPORT KeyboardPrefHandler {
 
   // Initializes device settings in prefs and update the `settings` member of
   // the `mojom::Keyboard` object.
+  // If `pref_service` is null, sets the `settings` member to default settings.
   virtual void InitializeKeyboardSettings(PrefService* pref_service,
                                           mojom::Keyboard* keyboard) = 0;
 

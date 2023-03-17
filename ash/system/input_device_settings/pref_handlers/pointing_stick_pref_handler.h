@@ -19,6 +19,7 @@ class ASH_EXPORT PointingStickPrefHandler {
 
   // Initializes device settings in prefs and update the `settings` member of
   // the `mojom::PointingStick` object.
+  // If `pref_service` is null, sets the `settings` member to default settings.
   virtual void InitializePointingStickSettings(
       PrefService* pref_service,
       mojom::PointingStick* pointing_stick) = 0;

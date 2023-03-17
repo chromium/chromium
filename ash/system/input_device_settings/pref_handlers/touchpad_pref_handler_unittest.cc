@@ -302,6 +302,13 @@ TEST_F(TouchpadPrefHandlerTest, NewSettingAddedRoundTrip) {
   EXPECT_EQ(test_settings, *settings);
 }
 
+TEST_F(TouchpadPrefHandlerTest, DefaultSettingsWhenPrefServiceNull) {
+  mojom::Touchpad touchpad;
+  touchpad.device_key = kTouchpadKey1;
+  pref_handler_->InitializeTouchpadSettings(nullptr, &touchpad);
+  EXPECT_EQ(kTouchpadSettingsDefault, *touchpad.settings);
+}
+
 TEST_F(TouchpadPrefHandlerTest, NewTouchpadDefaultSettings) {
   mojom::TouchpadSettingsPtr settings =
       CallInitializeTouchpadSettings(kTouchpadKey1);

@@ -338,6 +338,13 @@ TEST_F(KeyboardPrefHandlerTest, NewSettingAddedRoundTrip) {
   EXPECT_EQ(test_settings, *settings);
 }
 
+TEST_F(KeyboardPrefHandlerTest, DefaultSettingsWhenPrefServiceNull) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+  pref_handler_->InitializeKeyboardSettings(nullptr, &keyboard);
+  EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
+}
+
 TEST_F(KeyboardPrefHandlerTest, NewKeyboardsDefaultSettings) {
   mojom::KeyboardSettingsPtr settings =
       CallInitializeKeyboardSettings(kKeyboardKey1);

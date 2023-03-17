@@ -235,6 +235,13 @@ TEST_F(PointingStickPrefHandlerTest, NewSettingAddedRoundTrip) {
   EXPECT_EQ(test_settings, *settings);
 }
 
+TEST_F(PointingStickPrefHandlerTest, DefaultSettingsWhenPrefServiceNull) {
+  mojom::PointingStick pointing_stick;
+  pointing_stick.device_key = kPointingStickKey1;
+  pref_handler_->InitializePointingStickSettings(nullptr, &pointing_stick);
+  EXPECT_EQ(kPointingStickSettingsDefault, *pointing_stick.settings);
+}
+
 TEST_F(PointingStickPrefHandlerTest, NewPointingStickDefaultSettings) {
   mojom::PointingStickSettingsPtr settings =
       CallInitializePointingStickSettings(kPointingStickKey1);

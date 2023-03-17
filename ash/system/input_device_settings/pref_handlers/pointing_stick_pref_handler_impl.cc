@@ -48,6 +48,11 @@ PointingStickPrefHandlerImpl::~PointingStickPrefHandlerImpl() = default;
 void PointingStickPrefHandlerImpl::InitializePointingStickSettings(
     PrefService* pref_service,
     mojom::PointingStick* pointing_stick) {
+  if (!pref_service) {
+    pointing_stick->settings = GetDefaultPointingStickSettings();
+    return;
+  }
+
   const auto& devices_dict =
       pref_service->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(pointing_stick->device_key);

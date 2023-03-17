@@ -253,6 +253,13 @@ TEST_F(MousePrefHandlerTest, NewSettingAddedRoundTrip) {
   EXPECT_EQ(test_settings, *settings);
 }
 
+TEST_F(MousePrefHandlerTest, DefaultSettingsWhenPrefServiceNull) {
+  mojom::Mouse mouse;
+  mouse.device_key = kMouseKey1;
+  pref_handler_->InitializeMouseSettings(nullptr, &mouse);
+  EXPECT_EQ(kMouseSettingsDefault, *mouse.settings);
+}
+
 TEST_F(MousePrefHandlerTest, NewMouseDefaultSettings) {
   mojom::MouseSettingsPtr settings = CallInitializeMouseSettings(kMouseKey1);
   EXPECT_EQ(*settings, kMouseSettingsDefault);

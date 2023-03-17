@@ -62,6 +62,11 @@ TouchpadPrefHandlerImpl::~TouchpadPrefHandlerImpl() = default;
 void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
     PrefService* pref_service,
     mojom::Touchpad* touchpad) {
+  if (!pref_service) {
+    touchpad->settings = GetDefaultTouchpadSettings();
+    return;
+  }
+
   const auto& devices_dict =
       pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(touchpad->device_key);

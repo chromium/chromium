@@ -19,6 +19,7 @@ class ASH_EXPORT TouchpadPrefHandler {
 
   // Initializes device settings in prefs and update the `settings` member of
   // the `mojom::Touchpad` object.
+  // If `pref_service` is null, sets the `settings` member to default settings.
   virtual void InitializeTouchpadSettings(PrefService* pref_service,
                                           mojom::Touchpad* touchpad) = 0;
 
