@@ -218,7 +218,48 @@ suite('PaymentsSectionIban', function() {
     flush();
   });
 
-  test('verifyRemoveIbanClicked', async function() {
+  test('verifyRemoveLocalIbanDialogConfirmed', async function() {
+    const iban = createIbanEntry('FI1410093000123458', 'NickName');
+
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], [iban], /*upiIds=*/[], /*prefValues=*/ {});
+    assertEquals(1, getLocalIbanListItems().length);
+
+    const rowShadowRoot = getIbanRowShadowRoot(section.$.paymentsList);
+    assertTrue(!!rowShadowRoot);
+    const menuButton = rowShadowRoot.querySelector<HTMLElement>('#ibanMenu');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+
+    const menuRemoveIban =
+        section.shadowRoot!.querySelector<CrButtonElement>('#menuRemoveIban');
+    assertTrue(!!menuRemoveIban);
+    assertFalse(menuRemoveIban.hidden);
+    menuRemoveIban.click();
+    flush();
+
+    const confirmationDialog = section.shadowRoot!.querySelector(
+        'settings-local-iban-remove-confirmation-dialog');
+    assertTrue(!!confirmationDialog);
+    await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
+
+    const closePromise = eventToPromise('close', confirmationDialog);
+
+    confirmationDialog.$.remove.click();
+    flush();
+
+    // Wait for the dialog close event to propagate to the PaymentManager.
+    await closePromise;
+
+    const paymentsManager =
+        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
+    const expectations = getDefaultExpectations();
+    expectations.removedIbans = 1;
+    paymentsManager.assertExpectations(expectations);
+  });
+
+  test('verifyRemoveLocalIbanDialogCancelled', async function() {
     const iban = createIbanEntry();
 
     const section = await createPaymentsSection(
@@ -238,10 +279,23 @@ suite('PaymentsSectionIban', function() {
     menuRemoveIban.click();
     flush();
 
+    const confirmationDialog = section.shadowRoot!.querySelector(
+        'settings-local-iban-remove-confirmation-dialog');
+    assertTrue(!!confirmationDialog);
+    await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
+
+    confirmationDialog.$.cancel.click();
+    flush();
+
+    const closePromise = eventToPromise('close', confirmationDialog);
+
+    // Wait for the dialog close event to propagate to the PaymentManager.
+    await closePromise;
+
     const paymentsManager =
         PaymentsManagerImpl.getInstance() as TestPaymentsManager;
     const expectations = getDefaultExpectations();
-    expectations.removedIbans = 1;
+    expectations.removedIbans = 0;
     paymentsManager.assertExpectations(expectations);
   });
 });

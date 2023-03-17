@@ -85,6 +85,7 @@ build_webui("build") {
     "autofill_page/iban_edit_dialog.ts",
     "autofill_page/iban_list_entry.ts",
     "autofill_page/local_credit_card_remove_confirmation_dialog.ts",
+    "autofill_page/local_iban_remove_confirmation_dialog.ts",
     "autofill_page/password_check_edit_disclaimer_dialog.ts",
     "autofill_page/password_check_list_item.ts",
     "autofill_page/password_check.ts",

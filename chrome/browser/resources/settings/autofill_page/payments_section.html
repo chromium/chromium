@@ -154,7 +154,7 @@
       </button>
       <button id="menuRemoveIban" class="dropdown-item"
           on-click="onMenuRemoveIbanClick_">
-        $i18n{removeIban}
+        $i18n{delete}
       </button>
     </cr-action-menu>
   </template>
@@ -183,4 +183,11 @@
   <settings-local-credit-card-remove-confirmation-dialog
       on-close="onLocalCreditCardRemoveConfirmationDialogClose_">
   </setting-local-credit-card-remove-confirmation-dialog>
+</template>
+
+<template is="dom-if" if="[[showLocalIbanRemoveConfirmationDialog_]]"
+    restamp>
+  <settings-local-iban-remove-confirmation-dialog
+      on-close="onLocalIbanRemoveConfirmationDialogClose_">
+  </setting-local-iban-remove-confirmation-dialog>
 </template>

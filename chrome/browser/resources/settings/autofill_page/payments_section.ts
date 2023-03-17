@@ -19,6 +19,7 @@ import '../prefs/prefs.js';
 import './credit_card_edit_dialog.js';
 import './iban_edit_dialog.js';
 import './local_credit_card_remove_confirmation_dialog.js';
+import './local_iban_remove_confirmation_dialog.js';
 import './passwords_shared.css.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
@@ -142,6 +143,7 @@ export class SettingsPaymentsSectionElement extends
       showCreditCardDialog_: Boolean,
       showIbanDialog_: Boolean,
       showLocalCreditCardRemoveConfirmationDialog_: Boolean,
+      showLocalIbanRemoveConfirmationDialog_: Boolean,
       showVirtualCardUnenrollDialog_: Boolean,
       migratableCreditCardsInfo_: String,
 
@@ -192,6 +194,7 @@ export class SettingsPaymentsSectionElement extends
   private showCreditCardDialog_: boolean;
   private showIbanDialog_: boolean;
   private showLocalCreditCardRemoveConfirmationDialog_: boolean;
+  private showLocalIbanRemoveConfirmationDialog_: boolean;
   private showVirtualCardUnenrollDialog_: boolean;
   private migratableCreditCardsInfo_: string;
   private migrationEnabled_: boolean;
@@ -427,16 +430,32 @@ export class SettingsPaymentsSectionElement extends
     this.$.ibanSharedActionMenu.get().close();
   }
 
+  private onLocalIbanRemoveConfirmationDialogClose_() {
+    // Only remove the IBAN entry if the user closed the dialog via the
+    // confirmation button (instead of cancel or close).
+    const confirmationDialog = this.shadowRoot!.querySelector(
+        'settings-local-iban-remove-confirmation-dialog');
+    assert(confirmationDialog);
+    if (confirmationDialog.wasConfirmed()) {
+      assert(this.activeIban_);
+      assert(this.activeIban_.guid);
+      this.paymentsManager_.removeIban(this.activeIban_.guid);
+      this.activeIban_ = null;
+    }
+
+    this.showLocalIbanRemoveConfirmationDialog_ = false;
+    assert(this.activeDialogAnchor_);
+    focusWithoutInk(this.activeDialogAnchor_);
+    this.activeDialogAnchor_ = null;
+  }
+
   /**
    * Handles clicking on the "Remove" IBAN button.
    */
   private onMenuRemoveIbanClick_() {
     assert(this.activeIban_);
-    this.paymentsManager_.removeIban(this.activeIban_.guid!);
+    this.showLocalIbanRemoveConfirmationDialog_ = true;
     this.$.ibanSharedActionMenu.get().close();
-    assert(this.activeDialogAnchor_);
-    focusWithoutInk(this.activeDialogAnchor_);
-    this.activeIban_ = null;
   }
 
   /**
