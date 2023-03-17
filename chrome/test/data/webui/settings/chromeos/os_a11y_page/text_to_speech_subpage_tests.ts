@@ -4,18 +4,17 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {Router, routes, TtsSubpageBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {SettingsTtsSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {Router, routes, TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/**
- * @implements {TtsSubpageBrowserProxy}
- */
-class TestTtsSubpageBrowserProxy extends TestBrowserProxy {
+class TestTtsSubpageBrowserProxy extends TestBrowserProxy implements
+    TtsSubpageBrowserProxy {
   constructor() {
     super([
       'getAllTtsVoiceData',
@@ -26,38 +25,30 @@ class TestTtsSubpageBrowserProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
-  getAllTtsVoiceData() {
+  getAllTtsVoiceData(): void {
     this.methodCalled('getAllTtsVoiceData');
   }
 
-  /** @override */
-  getTtsExtensions() {
+  getTtsExtensions(): void {
     this.methodCalled('getTtsExtensions');
   }
 
-  /** @override */
-  previewTtsVoice(previewText, previewVoice) {
+  previewTtsVoice(previewText: string, previewVoice: string): void {
     this.methodCalled('previewTtsVoice', [previewText, previewVoice]);
   }
 
-  /** @override */
-  wakeTtsEngine() {
+  wakeTtsEngine(): void {
     this.methodCalled('wakeTtsEngine');
   }
 
-  /** @override */
-  refreshTtsVoices() {
+  refreshTtsVoices(): void {
     this.methodCalled('refreshTtsVoices');
   }
 }
 
-suite('TextToSpeechSubpageTests', function() {
-  /** @type {SettingsTtsSubpageElement} */
-  let ttsPage = null;
-
-  /** @type {?TestTtsSubpageBrowserProxy} */
-  let browserProxy = null;
+suite('<settings-tts-subpage>', function() {
+  let ttsPage: SettingsTtsSubpageElement;
+  let browserProxy: TestTtsSubpageBrowserProxy;
 
   function getDefaultPrefs() {
     return {
@@ -84,7 +75,6 @@ suite('TextToSpeechSubpageTests', function() {
     browserProxy = new TestTtsSubpageBrowserProxy();
     TtsSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-    PolymerTest.clearBody();
     ttsPage = document.createElement('settings-tts-subpage');
     ttsPage.prefs = getDefaultPrefs();
     document.body.appendChild(ttsPage);
@@ -99,14 +89,14 @@ suite('TextToSpeechSubpageTests', function() {
   test('Deep link to text to speech rate', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '1503');
-    Router.getInstance().navigateTo(
-        routes.MANAGE_TTS_SETTINGS, params);
+    Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS, params);
 
     flush();
 
     const deepLinkElement =
-        ttsPage.shadowRoot.querySelector('#textToSpeechRate')
-            .shadowRoot.querySelector('cr-slider');
+        ttsPage.shadowRoot!.querySelector('#textToSpeechRate')!.shadowRoot!
+            .querySelector<HTMLElement>('cr-slider');
+    assert(deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -123,11 +113,11 @@ suite('TextToSpeechSubpageTests', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', '1507');
-    Router.getInstance().navigateTo(
-        routes.MANAGE_TTS_SETTINGS, params);
+    Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS, params);
 
-    const deepLinkElement =
-        ttsPage.shadowRoot.querySelector('#extensionOptionsButton_0');
+    const deepLinkElement = ttsPage.shadowRoot!.querySelector<HTMLElement>(
+        '#extensionOptionsButton_0');
+    assert(deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
