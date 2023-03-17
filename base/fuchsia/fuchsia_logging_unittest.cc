@@ -14,7 +14,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/logging.h"
-#include "base/process/process.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,23 +28,6 @@ class MockLogSource {
   MOCK_METHOD0(Log, const char*());
 };
 
-// Configures `listener` to listen for messages from the current process.
-void ListenFilteredByPid(SimpleTestLogListener& listener) {
-  // Connect the test LogListenerSafe to the Log.
-  auto log_client_end = fuchsia_component::Connect<fuchsia_logger::Log>();
-  EXPECT_TRUE(log_client_end.is_ok())
-      << FidlConnectionErrorMessage(log_client_end);
-  fidl::Client log_client(std::move(log_client_end.value()),
-                          async_get_default_dispatcher());
-  listener.ListenToLog(
-      log_client,
-      std::make_unique<fuchsia_logger::LogFilterOptions>(
-          fuchsia_logger::LogFilterOptions{
-              {.filter_by_pid = true,
-               .pid = Process::Current().Pid(),
-               .min_severity = fuchsia_logger::LogLevelFilter::kInfo}}));
-}
-
 }  // namespace
 
 // Verifies that calling the log macro goes to the Fuchsia system logs, by
@@ -56,7 +38,7 @@ TEST(FuchsiaLoggingTest, SystemLogging) {
   test::SingleThreadTaskEnvironment task_environment_{
       test::SingleThreadTaskEnvironment::MainThreadType::IO};
   SimpleTestLogListener listener;
-  ListenFilteredByPid(listener);
+  ListenFilteredByCurrentProcessId(listener);
 
   // Ensure that logging is directed to the system debug log.
   logging::ScopedLoggingSettings scoped_logging_settings;
@@ -86,7 +68,7 @@ TEST(FuchsiaLoggingTest, SystemLoggingMultipleTags) {
   test::SingleThreadTaskEnvironment task_environment_{
       test::SingleThreadTaskEnvironment::MainThreadType::IO};
   SimpleTestLogListener listener;
-  ListenFilteredByPid(listener);
+  ListenFilteredByCurrentProcessId(listener);
 
   // Connect the test LogListenerSafe to the Log.
   auto log_sink_client_end =
