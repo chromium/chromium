@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -22,7 +23,8 @@ public class QuickDeleteController {
             new MutableFlagWithSafeDefault(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID, false);
 
     private final @NonNull QuickDeleteDialogDelegate mQuickDeleteDialogDelegate;
-    private final @NonNull QuickDeleteSnackbarDelegate mQuickDeleteSnackbarDelegate;
+    private final @NonNull SnackbarManager mSnackbarManager;
+    private final @NonNull Context mContext;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -34,10 +36,8 @@ public class QuickDeleteController {
     public QuickDeleteController(@NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull SnackbarManager snackbarManager) {
-        // TODO(crbug.com/1412087): Clean up QuickDeleteSnackbarDelegate as the "cancel" flow wont
-        // be needed anymore and move the implementation of showSnackbar() to QuickDeleteController.
-        mQuickDeleteSnackbarDelegate = new QuickDeleteSnackbarDelegate(snackbarManager);
-
+        mContext = context;
+        mSnackbarManager = snackbarManager;
         mQuickDeleteDialogDelegate =
                 new QuickDeleteDialogDelegate(context, modalDialogManager, this::onDialogDismissed);
     }
@@ -61,5 +61,24 @@ public class QuickDeleteController {
      *
      * TODO(crbug.com/1412087): Add implementation logic for the deletion.
      */
-    private void onDialogDismissed(@DialogDismissalCause int dismissalCause) {}
+    private void onDialogDismissed(@DialogDismissalCause int dismissalCause) {
+        switch (dismissalCause) {
+            case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                showSnackbar();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * A method to show the quick delete snack-bar.
+     */
+    private void showSnackbar() {
+        Snackbar snackbar = Snackbar.make(
+                mContext.getString(R.string.quick_delete_snackbar_message),
+                /*controller= */ null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_QUICK_DELETE);
+
+        mSnackbarManager.showSnackbar(snackbar);
+    }
 }

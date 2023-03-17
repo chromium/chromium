@@ -113,6 +113,7 @@ public class Snackbar {
     public static final int UMA_CREATOR_FOLLOW_FAILURE = 57;
     public static final int UMA_CREATOR_UNFOLLOW_SUCCESS = 58;
     public static final int UMA_CREATOR_UNFOLLOW_FAILURE = 59;
+    public static final int UMA_QUICK_DELETE = 60;
 
     private @Nullable SnackbarController mController;
     private CharSequence mText;
