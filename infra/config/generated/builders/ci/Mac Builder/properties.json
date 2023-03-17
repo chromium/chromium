@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Builder",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -35,7 +35,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac10.13 Tests",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -60,7 +60,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m111"
               }
             }
           },
@@ -68,7 +68,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac10.14 Tests",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -90,7 +90,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m111"
               }
             }
           },
@@ -98,7 +98,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac10.15 Tests",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -120,7 +120,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m111"
               }
             }
           },
@@ -128,7 +128,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac11 Tests",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -149,7 +149,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m111"
               }
             }
           },
@@ -157,7 +157,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac12 Tests",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -178,7 +178,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m111"
               }
             }
           }
@@ -188,34 +188,34 @@
         {
           "bucket": "ci",
           "builder": "Mac Builder",
-          "project": "chromium"
+          "project": "chromium-m111"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Mac10.13 Tests",
-          "project": "chromium"
+          "project": "chromium-m111"
         },
         {
           "bucket": "ci",
           "builder": "Mac10.14 Tests",
-          "project": "chromium"
+          "project": "chromium-m111"
         },
         {
           "bucket": "ci",
           "builder": "Mac10.15 Tests",
-          "project": "chromium"
+          "project": "chromium-m111"
         },
         {
           "bucket": "ci",
           "builder": "Mac11 Tests",
-          "project": "chromium"
+          "project": "chromium-m111"
         },
         {
           "bucket": "ci",
           "builder": "Mac12 Tests",
-          "project": "chromium"
+          "project": "chromium-m111"
         }
       ],
       "mirroring_builder_group_and_names": [

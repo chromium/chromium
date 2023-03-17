@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU Mac Builder",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -35,7 +35,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Builder",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -63,7 +63,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -85,7 +85,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m111"
               }
             }
           },
@@ -93,7 +93,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac12 Tests",
-              "project": "chromium"
+              "project": "chromium-m111"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -114,7 +114,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m111"
               }
             }
           }
@@ -124,24 +124,24 @@
         {
           "bucket": "ci",
           "builder": "GPU Mac Builder",
-          "project": "chromium"
+          "project": "chromium-m111"
         },
         {
           "bucket": "ci",
           "builder": "Mac Builder",
-          "project": "chromium"
+          "project": "chromium-m111"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Mac Release (Intel)",
-          "project": "chromium"
+          "project": "chromium-m111"
         },
         {
           "bucket": "ci",
           "builder": "Mac12 Tests",
-          "project": "chromium"
+          "project": "chromium-m111"
         }
       ],
       "rts_config": {
