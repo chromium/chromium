@@ -69,9 +69,11 @@ using ::content::BrowserThread;
 // generation.
 const unsigned int kMaxRSAModulusLengthBits = 2048;
 
-std::vector<uint8_t> ScopedSECItemToBytes(
-    const crypto::ScopedSECItem& sec_item) {
-  return std::vector<uint8_t>(sec_item->data, sec_item->data + sec_item->len);
+// Returns a vector containing bytes from `value` or an empty vector if `value`
+// is nullptr.
+std::vector<uint8_t> ScopedSECItemToBytes(const crypto::ScopedSECItem& value) {
+  return value ? std::vector<uint8_t>(value->data, value->data + value->len)
+               : std::vector<uint8_t>();
 }
 
 std::vector<uint8_t> StrToBytes(const std::string& val) {
