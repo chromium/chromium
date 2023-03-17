@@ -192,7 +192,8 @@ function initialize() {
           message,
         });
         const logMessage = logMessageContainer.insertRow();
-        logMessage.innerHTML = window.trustedTypes!.emptyHTML;
+        logMessage.innerHTML =
+            window.trustedTypes ? window.trustedTypes.emptyHTML : '';
         appendTD(logMessage, eventTimeStr, 'event-logs-time');
         appendTD(logMessage, logSourceStr, 'event-logs-log-source');
         createChromiumSourceLink(
