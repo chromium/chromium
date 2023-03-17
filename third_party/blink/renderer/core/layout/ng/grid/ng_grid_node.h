@@ -24,7 +24,7 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
   // If |oof_children| is provided, aggregate any out of flow children.
   GridItems ConstructGridItems(const NGGridPlacementData& placement_data,
                                HeapVector<Member<LayoutBox>>* oof_children,
-                               bool* has_nested_subgrid) const;
+                               bool* has_nested_subgrid = nullptr) const;
 
   void AppendSubgriddedItems(GridItems* grid_items) const;
 

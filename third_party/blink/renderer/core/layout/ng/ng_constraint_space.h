@@ -749,12 +749,8 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->LinesUntilClamp() : absl::nullopt;
   }
 
-  const NGGridLayoutTrackCollection* SubgriddedColumns() const {
-    return HasRareData() ? rare_data_->SubgriddedColumns() : nullptr;
-  }
-
-  const NGGridLayoutTrackCollection* SubgriddedRows() const {
-    return HasRareData() ? rare_data_->SubgriddedRows() : nullptr;
+  const NGGridLayoutSubtree* GridLayoutSubtree() const {
+    return HasRareData() ? rare_data_->GridLayoutSubtree() : nullptr;
   }
 
   // Return true if the two constraint spaces are similar enough that it *may*
@@ -1278,25 +1274,14 @@ class CORE_EXPORT NGConstraintSpace final {
           target_stretch_block_sizes;
     }
 
-    const NGGridLayoutTrackCollection* SubgriddedColumns() const {
+    const NGGridLayoutSubtree* GridLayoutSubtree() const {
       return GetDataUnionType() == DataUnionType::kSubgridData
-                 ? subgrid_data_.layout_data.columns()
+                 ? &subgrid_data_.layout_subtree
                  : nullptr;
     }
 
-    void SetSubgriddedColumns(
-        std::unique_ptr<NGGridLayoutTrackCollection> columns) {
-      EnsureSubgridData()->layout_data.SetTrackCollection(std::move(columns));
-    }
-
-    const NGGridLayoutTrackCollection* SubgriddedRows() const {
-      return GetDataUnionType() == DataUnionType::kSubgridData
-                 ? subgrid_data_.layout_data.rows()
-                 : nullptr;
-    }
-
-    void SetSubgriddedRows(std::unique_ptr<NGGridLayoutTrackCollection> rows) {
-      EnsureSubgridData()->layout_data.SetTrackCollection(std::move(rows));
+    void SetGridLayoutSubtree(NGGridLayoutSubtree&& grid_layout_subtree) {
+      EnsureSubgridData()->layout_subtree = std::move(grid_layout_subtree);
     }
 
     DataUnionType GetDataUnionType() const {
@@ -1437,14 +1422,12 @@ class CORE_EXPORT NGConstraintSpace final {
 
     struct SubgridData {
       bool MaySkipLayout(const SubgridData& other) const {
-        return layout_data == other.layout_data;
+        return layout_subtree == other.layout_subtree;
       }
 
-      bool IsInitialForMaySkipLayout() const {
-        return layout_data == NGGridLayoutData();
-      }
+      bool IsInitialForMaySkipLayout() const { return !layout_subtree; }
 
-      NGGridLayoutData layout_data;
+      NGGridLayoutSubtree layout_subtree;
     };
 
     BlockData* EnsureBlockData() {
