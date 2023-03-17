@@ -136,8 +136,8 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
 
 void BitmapRasterBufferProvider::Flush() {}
 
-viz::ResourceFormat BitmapRasterBufferProvider::GetResourceFormat() const {
-  return viz::RGBA_8888;
+viz::SharedImageFormat BitmapRasterBufferProvider::GetFormat() const {
+  return viz::SinglePlaneFormat::kRGBA_8888;
 }
 
 bool BitmapRasterBufferProvider::IsResourcePremultiplied() const {

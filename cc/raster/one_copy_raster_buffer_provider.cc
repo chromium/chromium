@@ -166,7 +166,7 @@ OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
       use_partial_raster_(use_partial_raster),
       use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
       bytes_scheduled_since_last_flush_(0),
-      tile_format_(tile_format),
+      tile_format_(viz::SharedImageFormat::SinglePlane(tile_format)),
       staging_pool_(std::move(task_runner),
                     worker_context_provider,
                     use_partial_raster,
@@ -211,7 +211,7 @@ void OneCopyRasterBufferProvider::Flush() {
   compositor_context_provider_->ContextSupport()->FlushPendingWork();
 }
 
-viz::ResourceFormat OneCopyRasterBufferProvider::GetResourceFormat() const {
+viz::SharedImageFormat OneCopyRasterBufferProvider::GetFormat() const {
   return tile_format_;
 }
 

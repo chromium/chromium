@@ -149,7 +149,7 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
     : compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
       use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
-      tile_format_(tile_format),
+      tile_format_(viz::SharedImageFormat::SinglePlane(tile_format)),
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
@@ -195,7 +195,7 @@ void GpuRasterBufferProvider::Flush() {
   compositor_context_provider_->ContextSupport()->FlushPendingWork();
 }
 
-viz::ResourceFormat GpuRasterBufferProvider::GetResourceFormat() const {
+viz::SharedImageFormat GpuRasterBufferProvider::GetFormat() const {
   return tile_format_;
 }
 

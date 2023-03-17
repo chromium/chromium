@@ -48,7 +48,7 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override;
   void Flush() override;
-  viz::ResourceFormat GetResourceFormat() const override;
+  viz::SharedImageFormat GetFormat() const override;
   bool IsResourcePremultiplied() const override;
   bool CanPartialRasterIntoProvidedResource() const override;
   bool IsResourceReadyToDraw(
@@ -67,7 +67,7 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;
   raw_ptr<viz::ContextProvider> compositor_context_provider_;
-  viz::ResourceFormat tile_format_;
+  viz::SharedImageFormat tile_format_;
 };
 
 }  // namespace cc

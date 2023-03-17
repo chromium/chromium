@@ -39,8 +39,8 @@ FakeRasterBufferProviderImpl::AcquireBufferForRaster(
 
 void FakeRasterBufferProviderImpl::Flush() {}
 
-viz::ResourceFormat FakeRasterBufferProviderImpl::GetResourceFormat() const {
-  return viz::ResourceFormat::RGBA_8888;
+viz::SharedImageFormat FakeRasterBufferProviderImpl::GetFormat() const {
+  return viz::SinglePlaneFormat::kRGBA_8888;
 }
 
 bool FakeRasterBufferProviderImpl::IsResourcePremultiplied() const {

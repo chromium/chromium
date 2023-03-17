@@ -174,7 +174,7 @@ ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
     viz::ResourceFormat tile_format)
     : gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       compositor_context_provider_(compositor_context_provider),
-      tile_format_(tile_format) {}
+      tile_format_(viz::SharedImageFormat::SinglePlane(tile_format)) {}
 
 ZeroCopyRasterBufferProvider::~ZeroCopyRasterBufferProvider() = default;
 
@@ -211,7 +211,7 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
 
 void ZeroCopyRasterBufferProvider::Flush() {}
 
-viz::ResourceFormat ZeroCopyRasterBufferProvider::GetResourceFormat() const {
+viz::SharedImageFormat ZeroCopyRasterBufferProvider::GetFormat() const {
   return tile_format_;
 }
 
