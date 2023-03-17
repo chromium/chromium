@@ -503,29 +503,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierInfo];
 
-  BookmarkTextFieldItem* titleItem =
+  self.titleItem =
       [[BookmarkTextFieldItem alloc] initWithType:ItemTypeFolderTitle];
-  titleItem.text =
+  self.titleItem.text =
       (self.folder)
           ? bookmark_utils_ios::TitleForBookmarkNode(self.folder)
           : l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_GROUP_DEFAULT_NAME);
-  titleItem.placeholder =
+  self.titleItem.placeholder =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_EDITOR_NAME_LABEL);
-  titleItem.accessibilityIdentifier = @"Title";
-  [self.tableViewModel addItem:titleItem
+  self.titleItem.accessibilityIdentifier = @"Title";
+  [self.tableViewModel addItem:self.titleItem
        toSectionWithIdentifier:SectionIdentifierInfo];
-  titleItem.delegate = self;
-  self.titleItem = titleItem;
+  self.titleItem.delegate = self;
 
-  BookmarkParentFolderItem* parentFolderItem =
+  self.parentFolderItem =
       [[BookmarkParentFolderItem alloc] initWithType:ItemTypeParentFolder];
-  parentFolderItem.title =
+  self.parentFolderItem.title =
       bookmark_utils_ios::TitleForBookmarkNode(self.parentFolder);
   self.parentFolderItem.shouldDisplayCloudSlashIcon =
       bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
-  [self.tableViewModel addItem:parentFolderItem
+  [self.tableViewModel addItem:self.parentFolderItem
        toSectionWithIdentifier:SectionIdentifierInfo];
-  self.parentFolderItem = parentFolderItem;
 }
 
 - (void)addToolbar {
