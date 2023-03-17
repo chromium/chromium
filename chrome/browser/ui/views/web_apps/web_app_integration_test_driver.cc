@@ -1060,6 +1060,7 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
   if (open_in_window) {
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
+    ASSERT_TRUE(app_browser_);
     ActivateBrowserAndWait(app_browser_);
   }
   AppReadinessWaiter(profile(), active_app_id_).Await();
@@ -1083,8 +1084,9 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   WaitForAndAcceptInstallDialogForSite(site);
 
   browser_added_waiter.Wait();
-  active_app_id_ = install_observer.Wait();
   app_browser_ = browser_added_waiter.browser_added();
+  ASSERT_TRUE(app_browser_);
+  active_app_id_ = install_observer.Wait();
   ActivateBrowserAndWait(app_browser_);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/false);
   AppReadinessWaiter(profile(), active_app_id_).Await();
@@ -1148,9 +1150,10 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
 
   run_loop.Run();
   browser_added_waiter.Wait();
+  app_browser_ = browser_added_waiter.browser_added();
+  ASSERT_TRUE(app_browser_);
   active_app_id_ = install_observer.Wait();
   DCHECK_EQ(app_id, active_app_id_);
-  app_browser_ = browser_added_waiter.browser_added();
   ActivateBrowserAndWait(app_browser_);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   AppReadinessWaiter(profile(), active_app_id_).Await();
@@ -1447,6 +1450,7 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
 
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
+  ASSERT_TRUE(app_browser_);
   ActivateBrowserAndWait(app_browser_);
   ASSERT_TRUE(app_browser_->is_type_app());
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser_, app_id));
@@ -1468,6 +1472,7 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(Site site) {
   CHECK(chrome::ExecuteCommand(browser(), IDC_OPEN_IN_PWA_WINDOW));
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
+  ASSERT_TRUE(app_browser_);
   ActivateBrowserAndWait(app_browser_);
   active_app_id_ = app_id;
 
