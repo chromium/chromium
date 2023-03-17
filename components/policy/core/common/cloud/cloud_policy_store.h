@@ -150,6 +150,9 @@ class POLICY_EXPORT CloudPolicyStore {
   // Removes the specified observer.
   void RemoveObserver(Observer* observer);
 
+  // Checks if `observer` was already added.
+  bool HasObserver(CloudPolicyStore::Observer* observer);
+
   // The invalidation version of the last policy stored. This value can be read
   // by observers to determine which version of the policy is now available.
   int64_t invalidation_version() {
