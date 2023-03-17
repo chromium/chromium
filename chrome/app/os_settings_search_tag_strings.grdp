@@ -143,20 +143,19 @@
   <message name="IDS_OS_SETTINGS_TAG_VPN" desc="Text for search result item which, when clicked, navigates the user to VPN settings.">
     VPN
   </message>
-  <!-- TODO(b/260277007): Remove translateble false and upload snapshots when strings finalized. -->
-  <message translateable="false" name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS"  desc="Text for search result item which, when clicked, navigates the user to Audio settings.">
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS"  desc="Text for search result item which, when clicked, navigates the user to Audio settings.">
     Audio
   </message>
-  <message translateable="false" name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT1"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT1"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
     Volume
   </message>
-  <message translateable="false" name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT2"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT2"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
     Sound
   </message>
-  <message translateable="false" name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT3"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT3"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
     Speakers
   </message>
-  <message translateable="false" name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT4"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
+  <message name="IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT4"  desc="Text for search result item which, when clicked, navigates the user to Audio settings. Alternative phrase for: 'Audio'.">
     Microphone
   </message>
   <message name="IDS_OS_SETTINGS_TAG_AUTO_CONNECT_NETWORK" desc="Text for search result item which, when clicked, navigates the user to settings to toggle whether the device auto-connects to a network. Alternate phrase for: 'Auto connect to network'">
