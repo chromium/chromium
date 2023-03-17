@@ -1097,9 +1097,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           DnsQueryType::HTTPS, TransactionErrorBehavior::kFatalOrEmpty);
     }
 
-    // Give some queries a head start by pushing them to the queue first.
-    constexpr DnsQueryType kHighPriorityQueries[] = {DnsQueryType::A,
-                                                     DnsQueryType::AAAA};
+    // Give AAAA/A queries a head start by pushing them to the queue first.
+    constexpr DnsQueryType kHighPriorityQueries[] = {DnsQueryType::AAAA,
+                                                     DnsQueryType::A};
     for (DnsQueryType high_priority_query : kHighPriorityQueries) {
       if (query_types.Has(high_priority_query)) {
         query_types.Remove(high_priority_query);
@@ -1646,7 +1646,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     results.ClearMetadatas();
   }
 
-  raw_ptr<DnsClient> client_;
+  const raw_ptr<DnsClient> client_;
 
   absl::variant<url::SchemeHostPort, std::string> host_;
 
@@ -1657,7 +1657,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   const SecureDnsMode secure_dns_mode_;
 
   // The listener to the results of this DnsTask.
-  raw_ptr<Delegate> delegate_;
+  const raw_ptr<Delegate> delegate_;
   const NetLogWithSource net_log_;
 
   bool any_transaction_started_ = false;
@@ -1670,7 +1670,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   absl::optional<HostCache::Entry> saved_results_;
   bool saved_results_is_failure_ = false;
 
-  raw_ptr<const base::TickClock> tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks task_start_time_;
 
   absl::optional<HttpssvcMetrics> httpssvc_metrics_;
@@ -3389,14 +3389,16 @@ absl::optional<HostCache::Entry> HostResolverManager::ServeFromHosts(
   std::vector<IPEndPoint> addresses;
   if (query_types.Has(DnsQueryType::AAAA)) {
     auto it = hosts->find(DnsHostsKey(effective_hostname, ADDRESS_FAMILY_IPV6));
-    if (it != hosts->end())
-      addresses.push_back(IPEndPoint(it->second, 0));
+    if (it != hosts->end()) {
+      addresses.emplace_back(it->second, 0);
+    }
   }
 
   if (query_types.Has(DnsQueryType::A)) {
     auto it = hosts->find(DnsHostsKey(effective_hostname, ADDRESS_FAMILY_IPV4));
-    if (it != hosts->end())
-      addresses.push_back(IPEndPoint(it->second, 0));
+    if (it != hosts->end()) {
+      addresses.emplace_back(it->second, 0);
+    }
   }
 
   // If got only loopback addresses and the family was restricted, resolve

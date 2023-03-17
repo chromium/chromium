@@ -224,8 +224,7 @@ class MockHostResolverProc : public HostResolverProc {
               AddressList* addrlist,
               int* os_error) override {
     base::AutoLock lock(lock_);
-    capture_list_.push_back(
-        ResolveKey(hostname, address_family, host_resolver_flags));
+    capture_list_.emplace_back(hostname, address_family, host_resolver_flags);
     ++num_requests_waiting_;
     requests_waiting_.Broadcast();
     {
@@ -7171,7 +7170,7 @@ TEST_F(HostResolverManagerDnsTest,
     // so they should be unaffected.
     parameters.source = HostResolverSource::DNS;
     ResolveHostResponseHelper response_dns(resolver_->CreateRequest(
-        HostPortPair("4slow_ok", 80), NetworkAnonymizationKey(),
+        HostPortPair("6slow_ok", 80), NetworkAnonymizationKey(),
         NetLogWithSource(), parameters, resolve_context_.get(),
         resolve_context_->host_cache()));
     EXPECT_FALSE(response_dns.complete());
