@@ -348,6 +348,9 @@ ci.gpu.linux_builder(
         category = "ChromeOS|ARM",
         short_name = "kvn",
     ),
+    # Given the capacity constraints, the default 6 hour timeout is not
+    # sufficient.
+    execution_timeout = 12 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
