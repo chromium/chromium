@@ -59922,6 +59922,7 @@ from previous Chrome versions.
   <int value="-1219547098" label="SearchWebInSidePanel:disabled"/>
   <int value="-1218608640" label="disable-offline-load-stale-cache"/>
   <int value="-1218063855" label="MediaAppAnnotation:disabled"/>
+  <int value="-1217936232" label="HeuristicMemorySaver:disabled"/>
   <int value="-1217623062"
       label="AutofillAlwaysReturnCloudTokenizedCard:disabled"/>
   <int value="-1217600112"
@@ -64912,6 +64913,7 @@ from previous Chrome versions.
   <int value="1591653786" label="SpeculativePreconnect:enabled"/>
   <int value="1591780364" label="EcheCustomWidget:disabled"/>
   <int value="1592391721" label="DesktopDetailedLanguageSettings:disabled"/>
+  <int value="1592595046" label="HeuristicMemorySaver:enabled"/>
   <int value="1593720927" label="GamepadVibration:disabled"/>
   <int value="1593883073" label="OfflineIndicatorV2:disabled"/>
   <int value="1593917165" label="SimplifiedNTP:disabled"/>

@@ -4182,6 +4182,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "heuristic-memory-saver-mode",
+    "owners": [
+      "anthonyvd",
+      "agale"
+    ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "hidden-network-migration",
     "owners": [ "chadduffin", "hsuregan", "cros-connectivity@google.com" ],
     "expiry_milestone": 115
