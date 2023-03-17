@@ -94,6 +94,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the tooltip text of `drill_in_button_`.
   void SetDrillInButtonTooltipText(const std::u16string& text);
 
+  // views::View:
+  void OnThemeChanged() override;
+
   views::ImageView* icon() { return icon_; }
   views::Label* label() { return label_; }
   views::Label* sub_label() { return sub_label_; }
@@ -102,6 +105,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
  private:
   friend class BluetoothFeaturePodControllerTest;
   friend class NotificationCounterViewTest;
+
+  // Updates `drill_in_arrow_` since it uses a different focus ring color when
+  // the tile is toggled to provide contrast with the background color.
+  void UpdateDrillInButtonFocusRingColor();
 
   // The vector icon for the tile, if one is set.
   const gfx::VectorIcon* vector_icon_ = nullptr;

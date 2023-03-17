@@ -34,7 +34,7 @@ namespace ash {
 namespace {
 
 constexpr auto kScrollViewMargin = gfx::Insets::TLBR(0, 12, 16, 12);
-constexpr auto kTileMargin = gfx::Insets::TLBR(1, 4, 8, 4);
+constexpr auto kTileMargin = gfx::Insets::TLBR(4, 4, 8, 4);
 constexpr auto kSliderPadding = gfx::Insets::TLBR(4, 0, 0, 0);
 constexpr auto kSliderBorder = gfx::Insets::VH(0, 4);
 

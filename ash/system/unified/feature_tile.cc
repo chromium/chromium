@@ -7,6 +7,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/tray/tray_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
@@ -27,6 +28,7 @@ namespace {
 // Tile constants
 constexpr int kIconSize = 20;
 constexpr int kButtonRadius = 16;
+constexpr int kFocusRingPadding = 2;
 
 // Primary tile constants
 constexpr int kPrimarySubtitleLineHeight = 18;
@@ -52,8 +54,8 @@ FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
                          bool is_togglable,
                          TileType type)
     : Button(callback), is_togglable_(is_togglable), type_(type) {
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kButtonRadius);
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(-kFocusRingPadding), kButtonRadius + kFocusRingPadding);
   CreateChildViews();
   UpdateColors();
 
@@ -78,12 +80,14 @@ void FeatureTile::CreateChildViews() {
   layout_manager->SetOrientation(is_compact
                                      ? views::LayoutOrientation::kVertical
                                      : views::LayoutOrientation::kHorizontal);
+
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
   // Since the focus ring doesn't set a LayoutManager it won't get drawn unless
   // excluded by the tile's LayoutManager.
   // TODO(crbug/1385946): Modify LayoutManagerBase and FocusRing to always
   // exclude focus ring from the layout.
-  layout_manager->SetChildViewIgnoredByLayout(views::FocusRing::Get(this),
-                                              true);
+  layout_manager->SetChildViewIgnoredByLayout(focus_ring, true);
 
   SetPreferredSize(is_compact ? kCompactSize : kDefaultSize);
 
@@ -150,7 +154,7 @@ void FeatureTile::CreateDrillInButton(base::RepeatingCallback<void()> callback,
                     : IconButton::Type::kXSmallFloating,
       &kQuickSettingsRightArrowIcon, tooltip_text,
       /*togglable=*/is_togglable_,
-      /*has_border=*/false);
+      /*has_border=*/true);
 
   // Focus behavior is set on this view, but we let its parent view
   // `drill_in_button_` handle the button events.
@@ -166,7 +170,21 @@ void FeatureTile::CreateDrillInButton(base::RepeatingCallback<void()> callback,
   drill_in_button_ = AddChildView(std::move(drill_in_button));
   drill_in_arrow_ = drill_in_button_->AddChildView(std::move(drill_in_arrow));
 
-  UpdateColors();
+  drill_in_arrow_->SetIconColorId(cros_tokens::kCrosSysSecondary);
+  drill_in_arrow_->SetIconToggledColorId(
+      cros_tokens::kCrosSysSystemOnPrimaryContainer);
+
+  // TODO(b/262615213): Delete when Jelly launches.
+  if (!chromeos::features::IsJellyEnabled()) {
+    drill_in_arrow_->SetBackgroundColorId(
+        kColorAshControlBackgroundColorInactive);
+    drill_in_arrow_->SetBackgroundToggledColorId(
+        static_cast<ui::ColorId>(kColorAshTileSmallCircle));
+    return;
+  }
+  drill_in_arrow_->SetBackgroundColorId(cros_tokens::kCrosSysHoverOnSubtle);
+  drill_in_arrow_->SetBackgroundToggledColorId(
+      cros_tokens::kCrosSysHighlightShape);
 }
 
 void FeatureTile::UpdateColors() {
@@ -182,16 +200,6 @@ void FeatureTile::UpdateColors() {
     foreground_optional_color =
         toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                  : cros_tokens::kCrosSysSecondary;
-
-    if (!chromeos::features::IsJellyEnabled() && drill_in_arrow_) {
-      // TODO(b/262615213): Only the toggled states are interesting here. The
-      // un-toggled states are the defaults for `IconButton` so when Jelly
-      // launches, this can be deleted safely.
-      drill_in_arrow_->SetIconColorId(foreground_optional_color);
-      drill_in_arrow_->SetBackgroundColorId(
-          toggled_ ? static_cast<ui::ColorId>(kColorAshTileSmallCircle)
-                   : kColorAshControlBackgroundColorInactive);
-    }
   } else {
     background_color = cros_tokens::kCrosSysDisabledContainer;
     foreground_color = cros_tokens::kCrosSysDisabled;
@@ -206,6 +214,9 @@ void FeatureTile::UpdateColors() {
   if (sub_label_) {
     sub_label_->SetEnabledColorId(foreground_optional_color);
   }
+  if (drill_in_arrow_) {
+    UpdateDrillInButtonFocusRingColor();
+  }
 }
 
 void FeatureTile::SetToggled(bool toggled) {
@@ -213,6 +224,9 @@ void FeatureTile::SetToggled(bool toggled) {
     return;
 
   toggled_ = toggled;
+  if (drill_in_arrow_) {
+    drill_in_arrow_->SetToggled(toggled_);
+  }
 
   UpdateColors();
 }
@@ -255,6 +269,21 @@ void FeatureTile::SetDrillInButtonTooltipText(const std::u16string& text) {
   // Only primary tiles have a drill-in button.
   DCHECK(drill_in_button_);
   drill_in_button_->SetTooltipText(text);
+}
+
+void FeatureTile::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (drill_in_arrow_) {
+    UpdateDrillInButtonFocusRingColor();
+  }
+}
+
+void FeatureTile::UpdateDrillInButtonFocusRingColor() {
+  views::FocusRing::Get(drill_in_arrow_)
+      ->SetColorId(toggled_
+                       ? static_cast<ui::ColorId>(
+                             kToggledFeatureTileDrillInButtonFocusRingColor)
+                       : cros_tokens::kCrosSysFocusRing);
 }
 
 BEGIN_METADATA(FeatureTile, views::Button)

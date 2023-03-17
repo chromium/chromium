@@ -203,7 +203,7 @@ void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
   if (HasFocus()) {
     cc::PaintFlags highlight_border;
     highlight_border.setColor(GetColorProvider()->GetColor(
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)));
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)));
     highlight_border.setAntiAlias(true);
     highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
     highlight_border.setStrokeWidth(kLineThickness);

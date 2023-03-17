@@ -126,7 +126,10 @@ namespace ash {
   /* Color for feature tile small circle */ \
   E_CPONLY(kColorAshTileSmallCircle) \
   /* Color for the background of the app count indicator on a folder */ \
-  E_CPONLY(kColorAshFolderItemCountBackgroundColor)
+  E_CPONLY(kColorAshFolderItemCountBackgroundColor) \
+  /* TODO(b/274134608): Remove when new tokens are added. */ \
+  /* Color for the focus ring of a toggled feature tile drill-in button */ \
+  E_CPONLY(kToggledFeatureTileDrillInButtonFocusRingColor)
 
 #include "ui/color/color_id_macros.inc"
 

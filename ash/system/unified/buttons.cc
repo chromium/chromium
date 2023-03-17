@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
@@ -50,6 +51,7 @@ constexpr SkScalar kManagedStateCornerRadii[] = {16, 16, 16, 16,
                                                  16, 16, 16, 16};
 constexpr auto kManagedStateBorderInsets = gfx::Insets::TLBR(0, 12, 0, 12);
 constexpr gfx::Size kManagedStateImageSize(20, 20);
+constexpr auto kBatteryLabelViewInsets = gfx::Insets(2);
 
 // Helper function for getting ContentLayerColor.
 inline SkColor GetContentLayerColor(AshColorProvider::ContentLayerType type) {
@@ -117,7 +119,11 @@ BatteryLabelView::BatteryLabelView(UnifiedSystemTrayController* controller,
       use_smart_charging_ui_(use_smart_charging_ui) {
   SetID(VIEW_ID_QS_BATTERY_BUTTON);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
+      views::BoxLayout::Orientation::kHorizontal, kBatteryLabelViewInsets));
+  views::FocusRing::Get(this)->SetColorId(
+      features::IsQsRevampEnabled()
+          ? cros_tokens::kCrosSysFocusRing
+          : static_cast<ui::ColorId>(ui::kColorAshFocusRing));
 
   percentage_ = AddChildView(std::make_unique<views::Label>());
   auto separator = std::make_unique<views::Label>();
@@ -261,7 +267,10 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
   }
 
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  views::FocusRing::Get(this)->SetColorId(
+      features::IsQsRevampEnabled()
+          ? cros_tokens::kCrosSysFocusRing
+          : static_cast<ui::ColorId>(ui::kColorAshFocusRing));
   if (features::IsQsRevampEnabled()) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
@@ -436,7 +445,10 @@ UserAvatarButton ::UserAvatarButton(PressedCallback callback)
   AddChildView(CreateUserAvatarView(0 /* user_index */));
   SetTooltipText(GetUserItemAccessibleString(0 /* user_index */));
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  views::FocusRing::Get(this)->SetColorId(
+      features::IsQsRevampEnabled()
+          ? cros_tokens::kCrosSysFocusRing
+          : static_cast<ui::ColorId>(ui::kColorAshFocusRing));
 
   views::InstallCircleHighlightPathGenerator(this);
 }

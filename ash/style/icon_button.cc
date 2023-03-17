@@ -160,7 +160,10 @@ IconButton::IconButton(PressedCallback callback,
   UpdateVectorIcon(/*icon_changed=*/true);
 
   auto* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetColorId(
+      chromeos::features::IsJellyrollEnabled()
+          ? cros_tokens::kCrosSysFocusRing
+          : static_cast<ui::ColorId>(ui::kColorAshFocusRing));
   if (has_border) {
     // The focus ring will have the outline padding with the bounds of the
     // buttons.

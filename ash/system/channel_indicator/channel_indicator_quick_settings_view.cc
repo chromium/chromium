@@ -221,6 +221,10 @@ class VersionButton : public views::LabelButton {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     InstallRoundedCornerHighlightPathGenerator(
         this, GetVersionButtonInkDropCorners(allow_user_feedback));
+    views::FocusRing::Get(this)->SetColorId(
+        features::IsQsRevampEnabled()
+            ? cros_tokens::kCrosSysFocusRing
+            : static_cast<ui::ColorId>(ui::kColorAshFocusRing));
   }
   VersionButton(const VersionButton&) = delete;
   VersionButton& operator=(const VersionButton&) = delete;
