@@ -1235,8 +1235,11 @@ BluetoothAdapterFloss::StartLowEnergyScanSession(
 
 device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
 BluetoothAdapterFloss::GetLowEnergyScanSessionHardwareOffloadingStatus() {
-  NOTIMPLEMENTED();
-  return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
+  return FlossDBusManager::Get()->GetGattManagerClient()->GetMsftSupported()
+             ? device::BluetoothAdapter::
+                   LowEnergyScanSessionHardwareOffloadingStatus::kSupported
+             : device::BluetoothAdapter::
+                   LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

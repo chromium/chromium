@@ -636,6 +636,10 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
     return;
   }
 
+  property_msft_supported_.Init(this, bus_, service_name_, gatt_adapter_path_,
+                                dbus::ObjectPath(kExportedCallbacksPath),
+                                base::DoNothing());
+
   // Everything is queued for registration so save |on_ready| for later.
   on_ready_ = std::move(on_ready);
 }

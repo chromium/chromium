@@ -896,6 +896,10 @@ class FlossProperty {
                                       weak_ptr_factory_.GetWeakPtr()),
                        bus, service_name, interface_, path, getter_);
 
+    if (!on_update_) {
+      return;
+    }
+
     // Listen for property updates.
     dbus::ExportedObject* exported_object =
         bus->GetExportedObject(callback_path);
@@ -951,8 +955,10 @@ class FlossProperty {
   const char* interface_;
   const char* callback_interface_;
 
-  // Method names.
+  // Method name to call to Floss daemon to get property value.
   const char* getter_;
+  // Method name called by Floss daemon to us to notify updates.
+  // Null means the property value never changes.
   const char* on_update_;
 
   // Keeps the property value.
