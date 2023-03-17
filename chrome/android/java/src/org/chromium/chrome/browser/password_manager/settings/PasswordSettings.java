@@ -30,7 +30,8 @@ import androidx.preference.PreferenceGroup;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -63,7 +64,8 @@ import java.util.Locale;
  */
 public class PasswordSettings extends PreferenceFragmentCompat
         implements PasswordManagerHandler.PasswordListObserver,
-                   Preference.OnPreferenceClickListener, SyncService.SyncStateChangedListener {
+                   Preference.OnPreferenceClickListener, SyncService.SyncStateChangedListener,
+                   FragmentHelpAndFeedbackLauncher {
     @IntDef({TrustedVaultBannerState.NOT_SHOWN, TrustedVaultBannerState.OFFER_OPT_IN,
             TrustedVaultBannerState.OPTED_IN})
     @Retention(RetentionPolicy.SOURCE)
@@ -124,6 +126,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
 
     private @Nullable PasswordCheck mPasswordCheck;
     private @ManagePasswordsReferrer int mManagePasswordsReferrer;
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     /**
      * For controlling the UX flow of exporting passwords.
@@ -235,8 +238,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
             return true;
         }
         if (id == R.id.menu_id_targeted_help) {
-            HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
-                    .show(getActivity(), getString(R.string.help_context_passwords), null);
+            mHelpAndFeedbackLauncher.show(
+                    getActivity(), getString(R.string.help_context_passwords), null);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -670,6 +673,11 @@ public class PasswordSettings extends PreferenceFragmentCompat
         getActivity().startActivity(intent);
         // Return true to notify the click was handled.
         return true;
+    }
+
+    @Override
+    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 
     @VisibleForTesting

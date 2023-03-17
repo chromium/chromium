@@ -37,7 +37,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -76,7 +77,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         implements PassphraseDialogFragment.Listener, PassphraseCreationDialogFragment.Listener,
                    PassphraseTypeDialogFragment.Listener, Preference.OnPreferenceChangeListener,
                    SyncService.SyncStateChangedListener, SettingsActivity.OnBackPressedListener,
-                   Listener, SyncErrorCardPreference.SyncErrorCardPreferenceListener {
+                   Listener, SyncErrorCardPreference.SyncErrorCardPreferenceListener,
+                   FragmentHelpAndFeedbackLauncher {
     private static final String IS_FROM_SIGNIN_SCREEN = "ManageSyncSettings.isFromSigninScreen";
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
@@ -154,6 +156,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
 
     private SyncService.SyncSetupInProgressHandle mSyncSetupInProgressHandle;
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     /**
      * Creates an argument bundle for this fragment.
@@ -277,8 +280,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
-                    .show(getActivity(), getString(R.string.help_context_sync_and_services), null);
+            mHelpAndFeedbackLauncher.show(
+                    getActivity(), getString(R.string.help_context_sync_and_services), null);
             return true;
         }
         if (item.getItemId() == android.R.id.home) {
@@ -796,5 +799,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, dataWipeCallback,
                     forceWipeUserData);
         }
+    }
+
+    @Override
+    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 }

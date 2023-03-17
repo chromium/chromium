@@ -19,7 +19,8 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitchPreference;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -54,8 +55,8 @@ import org.chromium.ui.text.SpanApplier;
 /**
  * Fragment to keep track of the all the privacy related preferences.
  */
-public class PrivacySettings
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+public class PrivacySettings extends PreferenceFragmentCompat
+        implements Preference.OnPreferenceChangeListener, FragmentHelpAndFeedbackLauncher {
     private static final String PREF_CAN_MAKE_PAYMENT = "can_make_payment";
     private static final String PREF_PRELOAD_PAGES = "preload_pages";
     private static final String PREF_HTTPS_FIRST_MODE = "https_first_mode";
@@ -71,6 +72,7 @@ public class PrivacySettings
     private static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
 
     private IncognitoLockSettings mIncognitoLockSettings;
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -303,10 +305,15 @@ public class PrivacySettings
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
-                    .show(getActivity(), getString(R.string.help_context_privacy), null);
+            mHelpAndFeedbackLauncher.show(
+                    getActivity(), getString(R.string.help_context_privacy), null);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 }

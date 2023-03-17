@@ -24,18 +24,20 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /**
  * Fragment with a {@link TabLayout} containing a basic and an advanced version of the CBD dialog.
  */
-public class ClearBrowsingDataTabsFragment extends Fragment {
+public class ClearBrowsingDataTabsFragment
+        extends Fragment implements FragmentHelpAndFeedbackLauncher {
     public static final int CBD_TAB_COUNT = 2;
 
     private ClearBrowsingDataFetcher mFetcher;
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -168,11 +170,15 @@ public class ClearBrowsingDataTabsFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
-                    .show(getActivity(), getString(R.string.help_context_clear_browsing_data),
-                            null);
+            mHelpAndFeedbackLauncher.show(
+                    getActivity(), getString(R.string.help_context_clear_browsing_data), null);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 }
