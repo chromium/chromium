@@ -86,7 +86,7 @@ void LanguageDetectionJavaScriptFeature::ScriptMessageReceived(
                       base::Milliseconds(*capture_text_time));
 
   web::WebFrame* sender_frame =
-      web_state->GetPageWorldWebFramesManager()->GetFrameWithId(*frame_id);
+      GetWebFramesManager(web_state)->GetFrameWithId(*frame_id);
   if (!sender_frame) {
     return;
   }

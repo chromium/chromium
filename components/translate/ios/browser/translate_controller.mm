@@ -17,6 +17,7 @@
 #include "components/translate/core/common/translate_util.h"
 #import "components/translate/ios/browser/js_translate_web_frame_manager.h"
 #import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
+#import "components/translate/ios/browser/translate_java_script_feature.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/navigation/navigation_context.h"
@@ -80,14 +81,18 @@ TranslateController::TranslateController(
   DCHECK(web_state_);
   web_state_->AddObserver(this);
   if (web_state_->IsRealized()) {
-    web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
+    TranslateJavaScriptFeature::GetInstance()
+        ->GetWebFramesManager(web_state_)
+        ->AddObserver(this);
   }
 }
 
 TranslateController::~TranslateController() {
   if (web_state_) {
     web_state_->RemoveObserver(this);
-    web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
+    TranslateJavaScriptFeature::GetInstance()
+        ->GetWebFramesManager(web_state_)
+        ->RemoveObserver(this);
     web_state_ = nullptr;
   }
 }
@@ -300,7 +305,9 @@ void TranslateController::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   if (web_state_->IsRealized()) {
-    web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
+    TranslateJavaScriptFeature::GetInstance()
+        ->GetWebFramesManager(web_state_)
+        ->RemoveObserver(this);
   }
   web_state_ = nullptr;
   main_web_frame_ = nullptr;
@@ -319,7 +326,9 @@ void TranslateController::DidStartNavigation(
 }
 
 void TranslateController::WebStateRealized(web::WebState* web_state) {
-  web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
+  TranslateJavaScriptFeature::GetInstance()
+      ->GetWebFramesManager(web_state_)
+      ->AddObserver(this);
 }
 
 #pragma mark - web::WebFramesManager implementation
@@ -327,7 +336,6 @@ void TranslateController::WebStateRealized(web::WebState* web_state) {
 void TranslateController::WebFrameBecameAvailable(
     web::WebFramesManager* web_frames_manager,
     web::WebFrame* web_frame) {
-  DCHECK_EQ(web_state_->GetPageWorldWebFramesManager(), web_frames_manager);
   if (web_frame->IsMainFrame()) {
     js_manager_factory_->CreateForWebFrame(web_frame);
     main_web_frame_ = web_frame;
@@ -337,7 +345,6 @@ void TranslateController::WebFrameBecameAvailable(
 void TranslateController::WebFrameBecameUnavailable(
     web::WebFramesManager* web_frames_manager,
     const std::string& frame_id) {
-  DCHECK_EQ(web_state_->GetPageWorldWebFramesManager(), web_frames_manager);
   if (web_frames_manager->GetFrameWithId(frame_id) == main_web_frame_) {
     main_web_frame_ = nullptr;
   }

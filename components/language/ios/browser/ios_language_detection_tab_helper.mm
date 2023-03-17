@@ -22,7 +22,6 @@
 #include "components/translate/core/language_detection/language_detection_util.h"
 #import "ios/web/common/url_scheme_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #include "net/http/http_response_headers.h"
 
@@ -109,6 +108,10 @@ IOSLanguageDetectionTabHelper::IOSLanguageDetectionTabHelper(
   // WebStateObserver::PageLoaded.
   StartLanguageDetection();
   web_state_->AddObserver(this);
+  web::WebFramesManager* web_frames_manager =
+      LanguageDetectionJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state);
+  web_frames_manager->AddObserver(this);
 }
 
 IOSLanguageDetectionTabHelper::~IOSLanguageDetectionTabHelper() {
@@ -141,6 +144,17 @@ void IOSLanguageDetectionTabHelper::OnLanguageDetermined(
   }
 }
 
+// web::WebFramesManager::Observer
+
+void IOSLanguageDetectionTabHelper::WebFrameBecameAvailable(
+    web::WebFramesManager* web_frames_manager,
+    web::WebFrame* web_frame) {
+  if (web_frame->IsMainFrame() && waiting_for_main_frame_) {
+    waiting_for_main_frame_ = false;
+    StartLanguageDetection();
+  }
+}
+
 // web::WebStateObserver implementation:
 
 void IOSLanguageDetectionTabHelper::PageLoaded(
@@ -149,16 +163,6 @@ void IOSLanguageDetectionTabHelper::PageLoaded(
   DCHECK_EQ(web_state_, web_state);
   if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS)
     StartLanguageDetection();
-}
-
-void IOSLanguageDetectionTabHelper::WebFrameDidBecomeAvailable(
-    web::WebState* web_state,
-    web::WebFrame* web_frame) {
-  DCHECK_EQ(web_state_, web_state);
-  if (web_frame->IsMainFrame() && waiting_for_main_frame_) {
-    waiting_for_main_frame_ = false;
-    StartLanguageDetection();
-  }
 }
 
 void IOSLanguageDetectionTabHelper::DidStartNavigation(
@@ -200,7 +204,10 @@ void IOSLanguageDetectionTabHelper::StartLanguageDetection() {
   if (!web::UrlHasWebScheme(url) || !web_state_->ContentIsHTML())
     return;
 
-  web::WebFrame* web_frame = web::GetMainFrame(web_state_);
+  web::WebFramesManager* web_frames_manager =
+      LanguageDetectionJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_);
+  web::WebFrame* web_frame = web_frames_manager->GetMainWebFrame();
   if (!web_frame) {
     waiting_for_main_frame_ = true;
     return;

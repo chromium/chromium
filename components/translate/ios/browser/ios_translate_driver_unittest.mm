@@ -12,6 +12,7 @@
 #include "components/translate/core/browser/mock_translate_ranker.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
+#import "components/translate/ios/browser/translate_java_script_feature.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -41,14 +42,17 @@ class IOSTranslateDriverTest : public PlatformTest {
       : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         fake_browser_state_(std::make_unique<web::FakeBrowserState>()),
-        fake_web_state_(std::make_unique<web::FakeWebState>()),
-        fake_web_frames_manager_(
-            std::make_unique<web::FakeWebFramesManager>()) {
+        fake_web_state_(std::make_unique<web::FakeWebState>()) {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kOfferTranslateEnabled, true);
-    fake_web_state_->SetWebFramesManager(std::move(fake_web_frames_manager_));
+
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web::ContentWorld content_world =
+        TranslateJavaScriptFeature::GetInstance()->GetSupportedContentWorld();
+    fake_web_state_->SetWebFramesManager(content_world,
+                                         std::move(web_frames_manager));
     language::IOSLanguageDetectionTabHelper::CreateForWebState(
         fake_web_state_.get(), nullptr, nullptr, pref_service_.get());
 
@@ -69,7 +73,6 @@ class IOSTranslateDriverTest : public PlatformTest {
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
-  std::unique_ptr<web::FakeWebFramesManager> fake_web_frames_manager_;
   std::unique_ptr<IOSTranslateDriver> driver_;
   std::unique_ptr<::testing::NiceMock<testing::MockTranslateClient>>
       mock_translate_client_;

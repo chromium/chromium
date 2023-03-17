@@ -14,6 +14,7 @@
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
 #import "components/translate/ios/browser/language_detection_model_service.h"
+#import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/language/language_model_manager_factory.h"
@@ -49,8 +50,12 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     web_state_.SetBrowserState(browser_state_.get());
-    fake_web_frames_manager_ = std::make_unique<web::FakeWebFramesManager>();
-    web_state_.SetWebFramesManager(std::move(fake_web_frames_manager_));
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web::ContentWorld content_world =
+        translate::TranslateJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state_.SetWebFramesManager(content_world,
+                                   std::move(web_frames_manager));
     ChromeIOSTranslateClient::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
   }
@@ -61,7 +66,6 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
-  std::unique_ptr<web::FakeWebFramesManager> fake_web_frames_manager_;
 };
 
 base::File GetValidModelFile() {

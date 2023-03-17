@@ -117,9 +117,10 @@ class OverflowMenuMediatorTest : public PlatformTest {
         /*security_origin=*/url);
     main_frame->set_browser_state(browser_state_.get());
     frames_manager->AddWebFrame(std::move(main_frame));
-    web_state_->SetWebFramesManager(std::move(frames_manager));
-    web_state_->OnWebFrameDidBecomeAvailable(
-        web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame());
+    web::ContentWorld content_world =
+        language::LanguageDetectionJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state_->SetWebFramesManager(content_world, std::move(frames_manager));
 
     browser_->GetWebStateList()->InsertWebState(
         0, std::move(test_web_state), WebStateList::INSERT_FORCE_INDEX,
@@ -197,9 +198,10 @@ class OverflowMenuMediatorTest : public PlatformTest {
         /*security_origin=*/url);
     main_frame->set_browser_state(browser_state_.get());
     frames_manager->AddWebFrame(std::move(main_frame));
-    web_state->SetWebFramesManager(std::move(frames_manager));
-    web_state->OnWebFrameDidBecomeAvailable(
-        web_state->GetPageWorldWebFramesManager()->GetMainWebFrame());
+    web::ContentWorld content_world =
+        language::LanguageDetectionJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state->SetWebFramesManager(content_world, std::move(frames_manager));
 
     browser_->GetWebStateList()->InsertWebState(
         index, std::move(web_state), WebStateList::INSERT_FORCE_INDEX,

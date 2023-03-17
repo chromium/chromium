@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_member.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -31,7 +32,8 @@ class UrlLanguageHistogram;
 
 // Dispatches language detection messages to language and translate components.
 class IOSLanguageDetectionTabHelper
-    : public web::WebStateObserver,
+    : public web::WebFramesManager::Observer,
+      public web::WebStateObserver,
       public web::WebStateUserData<IOSLanguageDetectionTabHelper> {
  public:
   class Observer {
@@ -78,12 +80,14 @@ class IOSLanguageDetectionTabHelper
       translate::LanguageDetectionModel* language_detection_model,
       PrefService* prefs);
 
+  // web::WebFramesManager::Observer
+  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
+                               web::WebFrame* web_frame) override;
+
   // web::WebStateObserver implementation:
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
-  void WebFrameDidBecomeAvailable(web::WebState* web_state,
-                                  web::WebFrame* web_frame) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,

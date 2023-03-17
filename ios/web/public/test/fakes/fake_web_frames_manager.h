@@ -43,7 +43,7 @@ class FakeWebFramesManager : public WebFramesManager {
   std::map<std::string, std::unique_ptr<WebFrame>> web_frames_;
   // Reference to the current main web frame.
   WebFrame* main_web_frame_ = nullptr;
-  base::ObserverList<Observer, /*check_empty=*/true> observers_;
+  base::ObserverList<Observer, /*check_empty=*/false> observers_;
 };
 
 }  // namespace web
