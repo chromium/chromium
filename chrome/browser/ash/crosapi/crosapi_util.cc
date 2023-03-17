@@ -115,6 +115,7 @@
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "chromeos/crosapi/mojom/system_display.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
@@ -260,7 +261,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 105,
+static_assert(crosapi::mojom::Crosapi::Version_ == 106,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -340,6 +341,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Power>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Prefs>(),
     MakeInterfaceVersionEntry<crosapi::mojom::PrintingMetrics>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::TelemetryEventService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TelemetryProbeService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Remoting>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ResourceManager>(),

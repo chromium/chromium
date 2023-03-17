@@ -16,6 +16,8 @@ source_set("telemetry_extension") {
     "probe_service_ash.h",
     "probe_service_converters.cc",
     "probe_service_converters.h",
+    "telemetry_event_service_ash.cc",
+    "telemetry_event_service_ash.h",
   ]
 
   deps = [

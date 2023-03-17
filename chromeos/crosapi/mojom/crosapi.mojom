@@ -84,6 +84,7 @@ import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/sync.mojom";
 import "chromeos/crosapi/mojom/system_display.mojom";
 import "chromeos/crosapi/mojom/task_manager.mojom";
+import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/timezone.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
@@ -136,8 +137,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 106
-// Next method id: 109
+// Next version: 107
+// Next method id: 110
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -598,6 +599,12 @@ interface Crosapi {
   // task manager.
   // Added in M91.
   [MinVersion=19] BindTaskManager@24(pending_receiver<TaskManager> receiver);
+
+  // Binds the TelemetryEventService interface for registering telemetry events
+  // in Lacros-Chrome.
+  // Added in M114.
+  [MinVersion=106] BindTelemetryEventService@109(
+    pending_receiver<TelemetryEventService> receiver);
 
   // Binds the telemetry probe service to allow Lacros request telemetry data
   // from Ash.
