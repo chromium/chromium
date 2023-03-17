@@ -6,6 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
@@ -19,6 +21,18 @@
 #include "content/public/browser/storage_partition.h"
 
 namespace reporting {
+
+namespace {
+
+std::unique_ptr<FileUploadJob::Delegate> CreateFileUploadDelegate() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<FileUploadDelegate>();
+#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
+  // No file uploads for all other configurations.
+  return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+}  // namespace
 
 // static
 void UploadClient::Create(CreatedCallback created_cb) {
@@ -48,9 +62,9 @@ Status UploadClient::EnqueueUpload(
 
 UploadClient::UploadClient()
     : sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      handler_(std::make_unique<RecordHandlerImpl>(
-          sequenced_task_runner_,
-          std::make_unique<FileUploadDelegate>())) {}
+      handler_(
+          std::make_unique<RecordHandlerImpl>(sequenced_task_runner_,
+                                              CreateFileUploadDelegate())) {}
 
 UploadClient::~UploadClient() = default;
 

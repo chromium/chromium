@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/core_account_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace reporting {

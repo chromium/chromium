@@ -71,7 +71,7 @@ class FileUploadJob {
     // Asynchronously finalizes upload (once `uploaded` reached `total`).
     // Calls back with `access_parameters`, or Status in case of error.
     virtual void DoFinalize(
-        base::StringPiece session_token,
+        base::StringPiece access_parameters,
         base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
             cb) = 0;
 

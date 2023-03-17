@@ -6,32 +6,50 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FILE_UPLOAD_IMPL_H_
 
 #include <string>
+#include <vector>
 
+#include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "components/reporting/util/status.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/oauth2_access_token_manager.h"
+#include "net/http/http_response_headers.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "url/gurl.h"
 
 namespace reporting {
 
 class FileUploadDelegate : public FileUploadJob::Delegate {
  public:
   FileUploadDelegate();
+  ~FileUploadDelegate() override;
+
+  static std::string GetFileUploadUrl();
 
  private:
-  // Delegate implementation.
-  // Asynchronously initializes upload.
-  // Calls back with `total` and `session_token` are set, or Status in case
-  // of error.
+  // Helper classes.
+  class AccessTokenRetriever;
+  class InitContext;
+  class NextStepContext;
+  class FinalContext;
+
+  friend class FileUploadDelegateTest;
+
+  // FileUploadJob::Delegate:
   void DoInitiate(
       base::StringPiece origin_path,
       base::StringPiece upload_parameters,
       base::OnceCallback<void(
           StatusOr<std::pair<int64_t /*total*/,
                              std::string /*session_token*/>>)> cb) override;
-
-  // Asynchronously uploads the next chunk.
-  // Calls back with new `uploaded` and `session_token` (could be the same),
-  // or Status in case of an error.
   void DoNextStep(
       int64_t total,
       int64_t uploaded,
@@ -39,13 +57,69 @@ class FileUploadDelegate : public FileUploadJob::Delegate {
       base::OnceCallback<void(
           StatusOr<std::pair<int64_t /*uploaded*/,
                              std::string /*session_token*/>>)> cb) override;
-
-  // Asynchronously finalizes upload (once `uploaded` reached `total`).
-  // Calls back with `access_parameters`, or Status in case of error.
   void DoFinalize(
-      base::StringPiece session_token,
+      base::StringPiece access_parameters,
       base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)> cb)
       override;
+
+  // Called once authentication is finished (with token or failure status).
+  void OnAccessTokenResult(
+      base::StringPiece origin_path,
+      base::StringPiece upload_parameters,
+      base::OnceCallback<void(
+          StatusOr<
+              std::pair<int64_t /*total*/, std::string /*session_token*/>>)> cb,
+      StatusOr<std::string> access_token_result);
+
+  // Initializes the delegate once, lazily - when the first API is called.
+  // On later API calls this method immediately returns.
+  void InitializeOnce();
+
+  // Helper method starts OAuth2 token request.
+  [[nodiscard]] std::unique_ptr<OAuth2AccessTokenManager::Request>
+  StartOAuth2Request(
+      OAuth2AccessTokenManager::Consumer* consumer  // owned by the caller!
+  ) const;
+
+  // Helper method populates rest of request and creates SimpleURLLoader
+  // instance.
+  [[nodiscard]] std::unique_ptr<::network::SimpleURLLoader> CreatePostLoader(
+      std::unique_ptr<::network::ResourceRequest> resource_request) const;
+
+  // Helper method sends request and hands the response headers to `response_cb`
+  // (on the current task runner).
+  void SendAndGetResponse(
+      ::network::SimpleURLLoader* url_loader,  // owned by the caller!
+      base::OnceCallback<void(scoped_refptr<::net::HttpResponseHeaders>
+                                  headers)> response_cb) const;
+
+  base::WeakPtr<FileUploadDelegate> GetWeakPtr();
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // The URL to which the POST request should be directed.
+  GURL upload_url_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The account ID that will be used for the access token fetch.
+  CoreAccountId account_id_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The token manager used to retrieve the access token (not owned).
+  raw_ptr<OAuth2AccessTokenManager> access_token_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // This is used to initialize the network::SimpleURLLoader object.
+  scoped_refptr<::network::SharedURLLoaderFactory> url_loader_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Network traffic annotation set by the delegate describing what kind of data
+  // is uploaded.
+  std::unique_ptr<net::NetworkTrafficAnnotationTag> traffic_annotation_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Maximum upload size allowed for a single request.
+  int64_t max_upload_buffer_size_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<FileUploadDelegate> weak_ptr_factory_{this};
 };
 }  // namespace reporting
 
