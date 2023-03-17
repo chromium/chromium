@@ -33,6 +33,10 @@ TabletModeMultitaskMenuEventHandler::TabletModeMultitaskMenuEventHandler() {
 }
 
 TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
+  // The cue needs to be destroyed first so that it doesn't do any work when
+  // window activation changes as a result of destroying `this`.
+  multitask_cue_.reset();
+
   Shell::Get()->RemovePreTargetHandler(this);
 }
 

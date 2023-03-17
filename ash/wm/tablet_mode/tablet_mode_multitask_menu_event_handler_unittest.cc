@@ -24,6 +24,7 @@
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/wm/core/window_util.h"
 
@@ -604,6 +605,20 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest,
   auto* multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
   ASSERT_TRUE(multitask_menu_view);
   ASSERT_TRUE(bounds.Contains(multitask_menu_view->GetBoundsInScreen()));
+}
+
+// Tests that when we exit tablet mode with the multitask menu open, there is no
+// crash. Regression test for b/273835755.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, NoCrashWhenExitingTabletMode) {
+  // We need to use a non zero duration otherwise the fade out animation will
+  // complete immediately and destroy the multitask menu before the tablet mode
+  // window manager gets destroyed, which is not what happens on a real device.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto window = CreateAppWindow();
+  ShowMultitaskMenu(*window);
+  TabletModeControllerTestApi().LeaveTabletMode();
 }
 
 }  // namespace ash

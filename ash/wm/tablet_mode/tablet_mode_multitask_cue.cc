@@ -140,15 +140,17 @@ void TabletModeMultitaskCue::OnWindowBoundsChanged(
 void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
                                                aura::Window* gained_active,
                                                aura::Window* lost_active) {
-  auto* event_handler = Shell::Get()
-                            ->tablet_mode_controller()
-                            ->tablet_mode_window_manager()
-                            ->tablet_mode_multitask_menu_event_handler();
-  DCHECK(event_handler);
-
   if (!gained_active) {
     return;
   }
+
+  auto* window_manager =
+      Shell::Get()->tablet_mode_controller()->tablet_mode_window_manager();
+  DCHECK(window_manager);
+
+  auto* event_handler =
+      window_manager->tablet_mode_multitask_menu_event_handler();
+  DCHECK(event_handler);
 
   // TODO(b/263519133): Stop the cue from reappearing after using non-app
   // windows like popups.
