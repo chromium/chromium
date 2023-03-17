@@ -111,7 +111,7 @@ enum class RestrictedPrefetchReused {
 
 void RecordPervasivePayloadIndex(const char* histogram_name, int index) {
   if (index != -1) {
-    base::UmaHistogramExactLinear(histogram_name, index, 323);
+    base::UmaHistogramCustomCounts(histogram_name, index, 1, 323, 323);
   }
 }
 
@@ -693,12 +693,13 @@ bool HttpCache::Transaction::ResponseChecksumMatches(
   if (hex_result != request_->checksum) {
     DVLOG(2) << "Pervasive payload checksum mismatch for \"" << request_->url
              << "\": got " << hex_result << ", expected " << request_->checksum;
-    RecordPervasivePayloadIndex("Network.CacheTransparency.MismatchedChecksums",
-                                request_->pervasive_payloads_index_for_logging);
+    RecordPervasivePayloadIndex(
+        "Network.CacheTransparency2.MismatchedChecksums",
+        request_->pervasive_payloads_index_for_logging);
     return false;
   }
   RecordPervasivePayloadIndex(
-      "Network.CacheTransparency.SingleKeyedCacheIsUsed",
+      "Network.CacheTransparency2.SingleKeyedCacheIsUsed",
       request_->pervasive_payloads_index_for_logging);
   return true;
 }
@@ -1618,7 +1619,7 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   }
 
   if (response_.single_keyed_cache_entry_unusable) {
-    RecordPervasivePayloadIndex("Network.CacheTransparency.MarkedUnusable",
+    RecordPervasivePayloadIndex("Network.CacheTransparency2.MarkedUnusable",
                                 request_->pervasive_payloads_index_for_logging);
 
     // We've read the single keyed entry and it turned out to be unusable. Let's
