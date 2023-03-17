@@ -57,7 +57,7 @@ void HeadlessPrintManager::PrintToPdf(
 void HeadlessPrintManager::GetDefaultPrintSettings(
     GetDefaultPrintSettingsCallback callback) {
   DLOG(ERROR) << "Scripted print is not supported";
-  std::move(callback).Run(printing::mojom::PrintParams::New());
+  std::move(callback).Run(nullptr);
 }
 
 void HeadlessPrintManager::ScriptedPrint(

@@ -1641,9 +1641,13 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
     SnapshotForContentAnalysisCallback callback) {
   // Use default print params to snapshot the page.
   mojom::PrintPagesParams print_pages_params;
-  print_pages_params.params = mojom::PrintParams::New();
   GetPrintManagerHost()->GetDefaultPrintSettings(&print_pages_params.params);
+  if (!print_pages_params.params) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
 
+  CHECK(PrintMsgPrintParamsIsValid(*print_pages_params.params));
   ContentProxySet typeface_content_info;
   auto metafile = std::make_unique<MetafileSkia>(
       print_pages_params.params->printed_doc_type,
@@ -2399,25 +2403,26 @@ void PrintRenderFrameHelper::IPCProcessed() {
 }
 
 bool PrintRenderFrameHelper::InitPrintSettings(bool fit_to_paper_size) {
-  mojom::PrintPagesParams settings;
-  settings.params = mojom::PrintParams::New();
-  GetPrintManagerHost()->GetDefaultPrintSettings(&settings.params);
-
-  // Check if the printer returned any settings, if the settings is empty, we
-  // can safely assume there are no printer drivers configured. So we safely
-  // terminate.
-  const bool result = PrintMsgPrintParamsIsValid(*settings.params);
-
   // Reset to default values.
   ignore_css_margins_ = false;
-  settings.pages.clear();
+
+  mojom::PrintPagesParams settings;
+  GetPrintManagerHost()->GetDefaultPrintSettings(&settings.params);
+
+  // Check if the printer returned any settings, if the settings are null,
+  // assume there are no printer drivers configured. So safely terminate.
+  if (!settings.params) {
+    // Caller will reset `print_pages_params_`.
+    return false;
+  }
 
   settings.params->print_scaling_option =
       fit_to_paper_size ? mojom::PrintScalingOption::kFitToPrintableArea
                         : mojom::PrintScalingOption::kSourceSize;
 
+  CHECK(PrintMsgPrintParamsIsValid(*settings.params));
   SetPrintPagesParams(settings);
-  return result;
+  return true;
 }
 
 bool PrintRenderFrameHelper::CalculateNumberOfPages(blink::WebLocalFrame* frame,

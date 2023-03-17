@@ -78,6 +78,11 @@ void AwPrintManager::GetDefaultPrintSettings(
   auto params = printing::mojom::PrintParams::New();
   printing::RenderParamsFromPrintSettings(*settings_, params.get());
   params->document_cookie = cookie();
+  if (!printing::PrintMsgPrintParamsIsValid(*params)) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   std::move(callback).Run(std::move(params));
 }
 

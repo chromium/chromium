@@ -361,7 +361,7 @@ interface PrintManagerHost {
 
   // Requests the default print settings.
   [Sync]
-  GetDefaultPrintSettings() => (PrintParams default_settings);
+  GetDefaultPrintSettings() => (PrintParams? default_settings);
 
   // Tells the browser that the print dialog has been shown.
   DidShowPrintDialog();

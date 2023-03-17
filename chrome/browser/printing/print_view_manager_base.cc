@@ -88,26 +88,29 @@ void OnDidGetDefaultPrintSettings(
     std::unique_ptr<PrinterQuery> printer_query,
     mojom::PrintManagerHost::GetDefaultPrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  mojom::PrintParamsPtr params = mojom::PrintParams::New();
-  if (printer_query &&
-      printer_query->last_status() == mojom::ResultCode::kSuccess) {
-    RenderParamsFromPrintSettings(printer_query->settings(), params.get());
-    params->document_cookie = printer_query->cookie();
+
+  if (printer_query->last_status() != mojom::ResultCode::kSuccess) {
+    if (!want_pdf_settings) {
+      ShowPrintErrorDialogForInvalidPrinterError();
+    }
+    std::move(callback).Run(nullptr);
+    return;
   }
 
-  if (!want_pdf_settings && !PrintMsgPrintParamsIsValid(*params)) {
-    ShowPrintErrorDialogForInvalidPrinterError();
+  mojom::PrintParamsPtr params = mojom::PrintParams::New();
+  RenderParamsFromPrintSettings(printer_query->settings(), params.get());
+  params->document_cookie = printer_query->cookie();
+
+  if (!PrintMsgPrintParamsIsValid(*params)) {
+    if (!want_pdf_settings) {
+      ShowPrintErrorDialogForInvalidPrinterError();
+    }
+    std::move(callback).Run(nullptr);
+    return;
   }
 
   std::move(callback).Run(std::move(params));
-
-  // If printing was enabled.
-  if (printer_query) {
-    // If user hasn't cancelled.
-    if (printer_query->cookie() && printer_query->settings().dpi()) {
-      queue->QueuePrinterQuery(std::move(printer_query));
-    }
-  }
+  queue->QueuePrinterQuery(std::move(printer_query));
 }
 
 void OnDidScriptedPrint(
@@ -354,8 +357,7 @@ void PrintViewManagerBase::GetDefaultPrintSettingsReply(
     mojom::PrintParamsPtr params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
-      !params->document_cookie) {
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get() && !params) {
     // The attempt to use the default settings failed.  There should be no
     // subsequent call to get settings from the user that would normally be
     // shared as part of this client registration.  Immediately notify the
@@ -363,8 +365,13 @@ void PrintViewManagerBase::GetDefaultPrintSettingsReply(
     UnregisterSystemPrintClient();
   }
 #endif
-  set_cookie(params->document_cookie);
-  std::move(callback).Run(std::move(params));
+  if (params) {
+    set_cookie(params->document_cookie);
+    std::move(callback).Run(std::move(params));
+  } else {
+    set_cookie(0);
+    std::move(callback).Run(nullptr);
+  }
 }
 
 void PrintViewManagerBase::ScriptedPrintReply(
@@ -539,8 +546,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
     GetDefaultPrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!printing_enabled_.GetValue()) {
-    GetDefaultPrintSettingsReply(std::move(callback),
-                                 mojom::PrintParams::New());
+    GetDefaultPrintSettingsReply(std::move(callback), nullptr);
     return;
   }
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -550,8 +556,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
 #endif
       !query_with_ui_client_id_.has_value()) {
     // Renderer process has requested settings outside of the expected setup.
-    GetDefaultPrintSettingsReply(std::move(callback),
-                                 mojom::PrintParams::New());
+    GetDefaultPrintSettingsReply(std::move(callback), nullptr);
     return;
   }
 #endif
