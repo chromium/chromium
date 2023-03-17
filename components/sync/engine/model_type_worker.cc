@@ -618,25 +618,32 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
     }
   }
 
-  // Processed pending invalidations are deleted, and unprocessed invalidations
-  // will be used in next sync cycle.
-  auto it = pending_invalidations_.begin();
-  while (it != pending_invalidations_.end()) {
-    if (it->is_processed) {
-      LogPendingInvalidationStatus(PendingInvalidationStatus::kAcknowledged);
-      it->pending_invalidation->Acknowledge();
-      it = pending_invalidations_.erase(it);
-    } else {
-      ++it;
+  // At the end of a sync cycle, clean up any invalidations that were used.
+  // (If the cycle is still ongoing, i.e. there are more updates to download,
+  // the invalidations must be kept and sent again in the next request, since
+  // they may still be relevant.)
+  if (cycle_done) {
+    // Processed pending invalidations are deleted, and unprocessed
+    // invalidations will be used again in the next sync cycle.
+    auto it = pending_invalidations_.begin();
+    while (it != pending_invalidations_.end()) {
+      if (it->is_processed) {
+        LogPendingInvalidationStatus(PendingInvalidationStatus::kAcknowledged);
+        it->pending_invalidation->Acknowledge();
+        it = pending_invalidations_.erase(it);
+      } else {
+        ++it;
+      }
     }
-  }
-  if (base::FeatureList::IsEnabled(kSyncPersistInvalidations)) {
-    UpdateModelTypeStateInvalidations();
-  }
+    if (base::FeatureList::IsEnabled(kSyncPersistInvalidations)) {
+      UpdateModelTypeStateInvalidations();
+    }
 
-  has_dropped_invalidation_ = false;
+    has_dropped_invalidation_ = false;
 
-  nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
+    nudge_handler_->SetHasPendingInvalidations(type_,
+                                               HasPendingInvalidations());
+  }
 
   if (HasNonDeletionUpdates()) {
     status->add_updated_type(type_);
