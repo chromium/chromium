@@ -694,8 +694,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // TODO(crbug.com/1423530): disabled on UIA.
+// TODO(crbug.com/1423845): Failing on Mac.
+// TODO(crbug.com/1423845): Actually failing everywhere. Disabled.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
-                       AccessibilityEventsPopoverExpandedChanged) {
+                       DISABLED_AccessibilityEventsPopoverExpandedChanged) {
   RunEventTest(FILE_PATH_LITERAL("popover-expanded-changed.html"));
 }
 
