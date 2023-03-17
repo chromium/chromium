@@ -252,30 +252,26 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
   NSAttributedString* wrappingString =
       [self attributedString:self.attributedText
            withLineBreakMode:NSLineBreakByWordWrapping];
-  const CGSize wrappingStringSize =
-      [wrappingString
-          boundingRectWithSize:CGSizeMake(requestedRect.size.width, 0)
-                       options:NSStringDrawingUsesLineFragmentOrigin
-                       context:nil]
-          .size;
 
-  // Apply gradient if the height needed to draw `attributedText` exceeds the
-  // available height.
-  const BOOL applyGradient =
-      floor(wrappingStringSize.height) > floor(requestedRect.size.height);
-
-  NSArray<NSValue*>* stringRangeForLines =
-      StringRangeInLines(wrappingString, requestedRect.size.width);
   const CGFloat lineHeight = self.font.lineHeight;
   if (!lineHeight) {
     return;
   }
 
+  NSArray<NSValue*>* stringRangeForLines =
+      StringRangeInLines(wrappingString, requestedRect.size.width);
+
+  const NSInteger availableLineCount =
+      floor(requestedRect.size.height / lineHeight);
+  const NSInteger stringLineCount =
+      base::checked_cast<NSInteger>(stringRangeForLines.count);
+
+  const BOOL applyGradient = availableLineCount < stringLineCount;
+
   // Like UILabel, always draw a minimum of one line even if there is not enough
   // vertical space.
-  NSInteger lineCount = MAX(floor(requestedRect.size.height / lineHeight), 1);
-  lineCount =
-      MIN(lineCount, base::checked_cast<NSInteger>(stringRangeForLines.count));
+  NSInteger lineCount = MAX(availableLineCount, 1);
+  lineCount = MIN(lineCount, stringLineCount);
   if (lineCount <= 0) {
     return;
   }
