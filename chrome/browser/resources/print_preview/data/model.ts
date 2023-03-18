@@ -327,6 +327,10 @@ export class PrintPreviewModelElement extends PolymerElement {
               unavailableValue: {
                 width_microns: 215900,
                 height_microns: 279400,
+                imageable_area_left_microns: 0,
+                imageable_area_bottom_microns: 0,
+                imageable_area_right_microns: 215900,
+                imageable_area_top_microns: 279400,
               },
               valid: true,
               available: true,
