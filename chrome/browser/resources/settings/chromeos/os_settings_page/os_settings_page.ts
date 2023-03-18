@@ -87,7 +87,9 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
        */
       isGuestMode_: {
         type: Boolean,
-        value: loadTimeData.getBoolean('isGuest'),
+        value: () => {
+          return loadTimeData.getBoolean('isGuest');
+        },
       },
 
       /**

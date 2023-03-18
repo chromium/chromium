@@ -6,14 +6,13 @@ import 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {CrSettingsPrefs, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 
-suite('OsSettingsPageTests', function() {
+suite('<os-settings-page>', function() {
   /** @type {?OsSettingsPageElement} */
   let settingsPage = null;
 
@@ -33,203 +32,153 @@ suite('OsSettingsPageTests', function() {
     fakeSettings = new FakeNearbyShareSettings();
     setNearbyShareSettingsForTesting(fakeSettings);
 
-    Router.getInstance().navigateTo(routes.BASIC);
-    PolymerTest.clearBody();
-
-    prefElement = document.createElement('settings-prefs');
-    document.body.appendChild(prefElement);
-
-    return CrSettingsPrefs.initialized;
-  });
-
-  teardown(function() {
-    settingsPage.remove();
-    CrSettingsPrefs.resetForTesting();
-    Router.getInstance().resetRouteForTesting();
-  });
-
-  function init() {
     // Using the real CrosBluetoothConfig will crash due to no
     // SessionManager.
     setBluetoothConfigForTesting(new FakeBluetoothConfig());
 
-    settingsPage = document.createElement('os-settings-page');
-    settingsPage.prefs = prefElement.prefs;
-    document.body.appendChild(settingsPage);
+    PolymerTest.clearBody();
+    prefElement = document.createElement('settings-prefs');
+    document.body.appendChild(prefElement);
+    await CrSettingsPrefs.initialized;
+  });
+
+  /** @return {OsSettingsPageElement} */
+  function init() {
+    const element = document.createElement('os-settings-page');
+    element.prefs = prefElement.prefs;
+    document.body.appendChild(element);
     flush();
+    return element;
   }
 
-  test('Os Settings Page created', async () => {
-    init();
-    assert(!!settingsPage);
+  suite('Basic pages', () => {
+    suiteSetup(() => {
+      Router.getInstance().navigateTo(routes.BASIC);
+      settingsPage = init();
+
+      // For Kerberos page
+      settingsPage.showKerberosSection = true;
+    });
+
+    suiteTeardown(() => {
+      settingsPage.remove();
+      CrSettingsPrefs.resetForTesting();
+      Router.getInstance().resetRouteForTesting();
+    });
+
+    const basicPages = [
+      'settings-internet-page',
+      'os-settings-bluetooth-page',
+      'settings-multidevice-page',
+      'settings-kerberos-page',
+      'os-settings-people-page',
+      'settings-device-page',
+      'settings-personalization-page',
+      'os-settings-search-page',
+      'os-settings-privacy-page',
+      'os-settings-apps-page',
+      'os-settings-a11y-page',
+    ];
+    basicPages.forEach((pageName) => {
+      test(`${pageName} exists`, () => {
+        const pageElement = settingsPage.shadowRoot.querySelector(pageName);
+        assertTrue(!!pageElement, `Element <${pageName}> was not found.`);
+      });
+    });
   });
 
-  test('Check settings-internet-page exists', async () => {
-    init();
-    const settingsInternetPage =
-        settingsPage.shadowRoot.querySelector('settings-internet-page');
-    assert(!!settingsInternetPage);
+  suite('Advanced pages', () => {
+    suiteSetup(async () => {
+      Router.getInstance().navigateTo(routes.BASIC);
+      settingsPage = init();
+      const idleRender =
+          settingsPage.shadowRoot.querySelector('settings-idle-load');
+      await idleRender.get();
+
+      // For reset page
+      settingsPage.showReset = true;
+    });
+
+    suiteTeardown(() => {
+      settingsPage.remove();
+      CrSettingsPrefs.resetForTesting();
+      Router.getInstance().resetRouteForTesting();
+    });
+
+    const advancedPages = [
+      'settings-date-time-page',
+      'os-settings-languages-section',
+      'os-settings-files-page',
+      'os-settings-printing-page',
+      'settings-crostini-page',
+      'os-settings-reset-page',
+    ];
+    advancedPages.forEach((pageName) => {
+      test(`${pageName} exists`, async () => {
+        const pageElement = settingsPage.shadowRoot.querySelector(pageName);
+        assertTrue(!!pageElement, `Element <${pageName}> was not found.`);
+      });
+    });
   });
 
-  test('Check os-settings-printing-page exists', async () => {
-    init();
-    const idleRender =
-        settingsPage.shadowRoot.querySelector('settings-idle-load');
-    await idleRender.get();
-    flush();
-    const osSettingsPrintingPage =
-        settingsPage.shadowRoot.querySelector('os-settings-printing-page');
-    assert(!!osSettingsPrintingPage);
-  });
+  suite('In Guest mode', () => {
+    suiteSetup(async () => {
+      Router.getInstance().navigateTo(routes.BASIC);
+      loadTimeData.overrideValues({isGuest: true});
+      settingsPage = init();
 
-  test('Check os-settings-bluetooth-page exists', async () => {
-    init();
-    const osSettingsBluetoothPage =
-        settingsPage.shadowRoot.querySelector('os-settings-bluetooth-page');
-    assert(!!osSettingsBluetoothPage);
-  });
+      // For Kerberos page
+      settingsPage.showKerberosSection = true;
+      // For reset page
+      settingsPage.showReset = true;
 
-  test('Check os-settings-privacy-page exists', async () => {
-    init();
-    const osSettingsPrivacyPage =
-        settingsPage.shadowRoot.querySelector('os-settings-privacy-page');
-    assert(!!osSettingsPrivacyPage);
-    flush();
-  });
+      const idleRender =
+          settingsPage.shadowRoot.querySelector('settings-idle-load');
+      await idleRender.get();
+    });
 
-  test('Check settings-multidevice-page exists', async () => {
-    init();
-    const settingsMultidevicePage =
-        settingsPage.shadowRoot.querySelector('settings-multidevice-page');
-    assert(!!settingsMultidevicePage);
-  });
+    suiteTeardown(() => {
+      settingsPage.remove();
+      CrSettingsPrefs.resetForTesting();
+      Router.getInstance().resetRouteForTesting();
+    });
 
-  test('Check os-settings-people-page exists', async () => {
-    init();
-    const settingsPeoplePage =
-        settingsPage.shadowRoot.querySelector('os-settings-people-page');
-    assert(!!settingsPeoplePage);
-  });
+    const visiblePages = [
+      'settings-internet-page',
+      'os-settings-bluetooth-page',
+      'settings-kerberos-page',
+      'settings-device-page',
+      'os-settings-search-page',
+      'os-settings-privacy-page',
+      'os-settings-apps-page',
+      'os-settings-a11y-page',
+      'settings-date-time-page',
+      'os-settings-languages-section',
+      'os-settings-printing-page',
+      'settings-crostini-page',
+      'os-settings-reset-page',
+    ];
+    visiblePages.forEach((pageName) => {
+      test(`${pageName} should exist`, async () => {
+        const pageElement = settingsPage.shadowRoot.querySelector(pageName);
+        assertTrue(
+            !!pageElement, `Element <${pageName}> should exist in Guest mode.`);
+      });
+    });
 
-  test('Check settings-date-time-page exists', async () => {
-    init();
-    const idleRender =
-        settingsPage.shadowRoot.querySelector('settings-idle-load');
-    await idleRender.get();
-    flush();
-    const settingsDateTimePage =
-        settingsPage.shadowRoot.querySelector('settings-date-time-page');
-    assert(!!settingsDateTimePage);
-  });
-
-  test('Check os-settings-languages-section exists', async () => {
-    init();
-    const idleRender =
-        settingsPage.shadowRoot.querySelector('settings-idle-load');
-    assert(!!idleRender);
-    await idleRender.get();
-    flush();
-    const osSettingsLangagesSection =
-        settingsPage.shadowRoot.querySelector('os-settings-languages-section');
-    assert(!!osSettingsLangagesSection);
-  });
-
-  test('Check os-settings-a11y-page exists', async () => {
-    init();
-    const idleRender =
-        settingsPage.shadowRoot.querySelector('settings-idle-load');
-    assert(!!idleRender);
-    await idleRender.get();
-    flush();
-    const osSettingsA11yPage =
-        settingsPage.shadowRoot.querySelector('os-settings-a11y-page');
-    assert(!!osSettingsA11yPage);
-  });
-
-  test('Check settings-kerberos-page exists', async () => {
-    init();
-    settingsPage.showKerberosSection = true;
-    const idleRender =
-        settingsPage.shadowRoot.querySelector('settings-idle-load');
-    assert(!!idleRender);
-    await idleRender.get();
-    flush();
-
-    const settingsKerberosPage =
-        settingsPage.shadowRoot.querySelector('settings-kerberos-page');
-    assert(!!settingsKerberosPage);
-    flush();
-  });
-
-  test('Check settings-device-page exists', async () => {
-    init();
-    settingsPage.showCrostini = true;
-    settingsPage.allowCrostini_ = true;
-    const settingsDevicePage =
-        settingsPage.shadowRoot.querySelector('settings-device-page');
-    assert(!!settingsDevicePage);
-    flush();
-  });
-
-  test('Check os-settings-files-page exists', async () => {
-    init();
-    settingsPage.isGuestMode_ = false;
-    const idleRender =
-        settingsPage.shadowRoot.querySelector('settings-idle-load');
-    await idleRender.get();
-    flush();
-    const settingsFilesPage =
-        settingsPage.shadowRoot.querySelector('os-settings-files-page');
-    assert(!!settingsFilesPage);
-  });
-
-  test('Check settings-personalization-page exists', async () => {
-    init();
-    const settingsPersonalizationPage =
-        settingsPage.shadowRoot.querySelector('settings-personalization-page');
-    assert(!!settingsPersonalizationPage);
-  });
-
-  test('Check os-settings-search-page exists', async () => {
-    init();
-    const osSettingsSearchPage =
-        settingsPage.shadowRoot.querySelector('os-settings-search-page');
-    assert(!!osSettingsSearchPage);
-  });
-
-  test('Check os-settings-apps-page exists', async () => {
-    init();
-    settingsPage.showAndroidApps = true;
-    settingsPage.showPluginVm = true;
-    settingsPage.havePlayStoreApp = true;
-    flush();
-    const osSettingsAppsPage =
-        settingsPage.shadowRoot.querySelector('os-settings-apps-page');
-    assert(!!osSettingsAppsPage);
-  });
-
-  test('Check settings-crostini-page exists', async () => {
-    init();
-    const idleRender =
-        settingsPage.shadowRoot.querySelector('settings-idle-load');
-    await idleRender.get();
-    flush();
-    const osSettingsCrostiniPage =
-        settingsPage.shadowRoot.querySelector('settings-crostini-page');
-    assert(!!osSettingsCrostiniPage);
-  });
-
-  test('Check os-settings-reset-page exists', async () => {
-    init();
-    const idleRender =
-        settingsPage.shadowRoot.querySelector('settings-idle-load');
-    assert(!!idleRender);
-    await idleRender.get();
-
-    settingsPage.showReset = true;
-    flush();
-    const osSettingsResetPage =
-        settingsPage.shadowRoot.querySelector('os-settings-reset-page');
-    assert(!!osSettingsResetPage);
+    const hiddenPages = [
+      'settings-multidevice-page',
+      'os-settings-people-page',
+      'settings-personalization-page',
+      'os-settings-files-page',
+    ];
+    hiddenPages.forEach((pageName) => {
+      test(`${pageName} should not exist`, async () => {
+        const pageElement = settingsPage.shadowRoot.querySelector(pageName);
+        assertEquals(
+            null, pageElement,
+            `Element <${pageName}> should not exist in Guest mode.`);
+      });
+    });
   });
 });
