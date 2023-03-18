@@ -18,6 +18,7 @@
 
 namespace ash {
 
+class HotspotConfigurationHandler;
 class HotspotController;
 
 // This class is used to track the hotspot capabilities and status update and
@@ -52,6 +53,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   void Init(HotspotCapabilitiesProvider* hotspot_capabilities_provider,
             HotspotStateHandler* hotspot_state_handler,
             HotspotController* hotspot_controller,
+            HotspotConfigurationHandler* hotspot_configuration_handler,
             NetworkStateHandler* network_state_handler);
 
   void set_is_enterprise_managed(bool is_enterprise_managed) {
@@ -78,7 +80,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
                            EnableTetheringNetworkSetupFailure);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, DisableTetheringSuccess);
-  FRIEND_TEST_ALL_PREFIXES(HotspotStateHandlerTest, SetAndGetHotspotConfig);
+  FRIEND_TEST_ALL_PREFIXES(HotspotConfigurationHandlerTest,
+                           SetAndGetHotspotConfig);
   FRIEND_TEST_ALL_PREFIXES(HotspotCapabilitiesProviderTest,
                            CheckTetheringReadiness);
 
@@ -201,6 +204,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
 
   HotspotCapabilitiesProvider* hotspot_capabilities_provider_ = nullptr;
   HotspotStateHandler* hotspot_state_handler_ = nullptr;
+  HotspotConfigurationHandler* hotspot_configuration_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
 
   // A timer to wait for user connecting to their upstream cellular network

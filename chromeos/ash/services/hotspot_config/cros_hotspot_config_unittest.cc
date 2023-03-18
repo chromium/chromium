@@ -60,10 +60,11 @@ class CrosHotspotConfigTest : public testing::Test {
     NetworkHandler* network_handler = NetworkHandler::Get();
     // Use base::WrapUnique(new CrosHotspotConfig(...)) instead of
     // std::make_unique<CrosHotspotConfig> to access a private constructor.
-    cros_hotspot_config_ = base::WrapUnique(
-        new CrosHotspotConfig(network_handler->hotspot_capabilities_provider(),
-                              network_handler->hotspot_state_handler(),
-                              network_handler->hotspot_controller()));
+    cros_hotspot_config_ = base::WrapUnique(new CrosHotspotConfig(
+        network_handler->hotspot_capabilities_provider(),
+        network_handler->hotspot_state_handler(),
+        network_handler->hotspot_controller(),
+        network_handler->hotspot_configuration_handler()));
     base::RunLoop().RunUntilIdle();
   }
 

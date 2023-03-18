@@ -22,11 +22,9 @@
 namespace ash {
 
 // This class caches hotspot related status and implements methods to get
-// current state, active client count, capabilities and configure the hotspot
-// configurations.
+// current state and active client count.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
     : public ShillPropertyChangedObserver,
-      public LoginState::Observer,
       public hotspot_config::HotspotEnabledStateProvider {
  public:
   class Observer : public base::CheckedObserver {
@@ -51,19 +49,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // Return the latest hotspot active client count
   size_t GetHotspotActiveClientCount() const;
 
-  // Return the current hotspot configuration
-  hotspot_config::mojom::HotspotConfigPtr GetHotspotConfig() const;
-  // Return callback for the SetHotspotConfig method. |success| indicates
-  // whether the operation is success or not.
-
-  using SetHotspotConfigCallback = base::OnceCallback<void(
-      hotspot_config::mojom::SetHotspotConfigResult result)>;
-
-  // Set hotspot configuration with given |config|. |callback| is called with
-  // the success result of SetHotspotConfig operation.
-  void SetHotspotConfig(hotspot_config::mojom::HotspotConfigPtr config,
-                        SetHotspotConfigCallback callback);
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
   bool HasObserver(Observer* observer) const;
@@ -72,9 +57,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // ShillPropertyChangedObserver overrides
   void OnPropertyChanged(const std::string& key,
                          const base::Value& value) override;
-
-  // LoginState::Observer
-  void LoggedInStateChanged() override;
 
   // Callback to handle the manager properties with hotspot related properties.
   void OnManagerProperties(absl::optional<base::Value::Dict> properties);
@@ -89,23 +71,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // Notify observers that hotspot state or active client count was changed.
   void NotifyHotspotStatusChanged();
 
-  // Update the cached hotspot_config_ with the tethering configuration
-  // from |manager_properties|, and then run the |callback|.
-  void UpdateHotspotConfigAndRunCallback(
-      SetHotspotConfigCallback callback,
-      absl::optional<base::Value::Dict> manager_properties);
-
-  // Callback when the SetHotspotConfig operation succeeded.
-  void OnSetHotspotConfigSuccess(SetHotspotConfigCallback callback);
-
-  // Callback when the SetHotspotConfig operation failed.
-  void OnSetHotspotConfigFailure(SetHotspotConfigCallback callback,
-                                 const std::string& error_name,
-                                 const std::string& error_message);
-
   hotspot_config::mojom::HotspotState hotspot_state_ =
       hotspot_config::mojom::HotspotState::kDisabled;
-  absl::optional<base::Value::Dict> hotspot_config_ = absl::nullopt;
+
   size_t active_client_count_ = 0;
 
   base::ObserverList<Observer> observer_list_;
