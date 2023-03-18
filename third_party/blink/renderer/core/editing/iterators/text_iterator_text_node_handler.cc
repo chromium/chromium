@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_state.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 
 namespace blink {
@@ -19,6 +20,21 @@ namespace {
 // proceed till the end of the text node. Can be removed when we can handle text
 // length differences due to text-transform correctly.
 const unsigned kMaxOffset = std::numeric_limits<unsigned>::max();
+
+// Resolves kMaxOffset to an actual number. Should simply return |dom_length|
+// when we can handle text-transform correctly.
+unsigned CalculateMaxOffset(const Text& text) {
+  DCHECK(text.GetLayoutObject());
+  unsigned dom_length = text.data().length();
+  unsigned layout_length;
+  if (const LayoutTextFragment* fragment =
+          DynamicTo<LayoutTextFragment>(text.GetLayoutObject())) {
+    layout_length = fragment->Start() + fragment->FragmentLength();
+  } else {
+    layout_length = text.GetLayoutObject()->TextLength();
+  }
+  return std::min(dom_length, layout_length);
+}
 
 bool ShouldSkipInvisibleTextAt(const Text& text,
                                unsigned offset,
@@ -162,7 +178,8 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
 
   // Restore end offset from magic value.
   if (end_offset_ == kMaxOffset)
-    end_offset_ = node->data().length();
+    end_offset_ = CalculateMaxOffset(*node);
+  ;
   mapping_units_ = mapping->GetMappingUnitsForDOMRange(
       EphemeralRange(Position(node, offset_), Position(node, end_offset_)));
   mapping_units_index_ = 0;
