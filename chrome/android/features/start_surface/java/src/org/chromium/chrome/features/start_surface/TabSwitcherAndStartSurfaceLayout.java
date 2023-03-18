@@ -902,6 +902,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
      */
     private boolean isTabGtsAnimationEnabled() {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) return false;
-        return TabUiFeatureUtilities.isTabToGtsAnimationEnabled();
+        return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext());
     }
 }
