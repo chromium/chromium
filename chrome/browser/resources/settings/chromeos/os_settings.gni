@@ -322,6 +322,7 @@ non_web_component_files = [
   "chromeos/device_page/fake_input_device_settings_provider.ts",
   "chromeos/device_page/input_device_mojo_interface_provider.ts",
   "chromeos/device_page/input_device_settings_types.ts",
+  "chromeos/device_page/input_device_settings_utils.ts",
   "chromeos/ensure_lazy_loaded.ts",
   "chromeos/guest_os/guest_os_browser_proxy.ts",
   "chromeos/internet_page/cellular_setup_settings_delegate.ts",

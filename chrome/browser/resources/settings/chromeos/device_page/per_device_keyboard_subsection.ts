@@ -35,7 +35,8 @@ import {Route, Router} from '../router.js';
 
 import {mojoTimeDelta} from './fake_input_device_data.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardSettings} from './input_device_settings_types.js';
+import {settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
 const SettingsPerDeviceKeyboardSubsectionElementBase =
@@ -196,6 +197,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private keyboardIndex: number;
 
   private updateSettingsToCurrentPrefs(): void {
+    // `updateSettingsToCurrentPrefs` gets called when the `keyboard` object
+    // gets updated. This subsection element can be reused multiple times so we
+    // need to reset `isInitialized` so we do not make unneeded API calls.
+    this.isInitialized = false;
     this.set(
         'topRowAreFunctionKeysPref.value',
         this.keyboard.settings.topRowAreFkeys);
@@ -226,11 +231,11 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   }
 
   private onSettingsChanged(): void {
-    // TODO(wangdanny): Implement onSettingsChanged.
     if (!this.isInitialized) {
       return;
     }
-    this.keyboard.settings = {
+
+    const newSettings: KeyboardSettings = {
       ...this.keyboard.settings,
       autoRepeatEnabled: this.enableAutoRepeatPref.value,
       topRowAreFkeys: this.topRowAreFunctionKeysPref.value,
@@ -238,6 +243,12 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       autoRepeatInterval: mojoTimeDelta(this.autoRepeatIntervalsPref.value),
       suppressMetaFkeyRewrites: this.blockMetaFunctionKeyRewritesPref.value,
     };
+
+    if (settingsAreEqual(newSettings, this.keyboard.settings)) {
+      return;
+    }
+
+    this.keyboard.settings = newSettings;
     this.inputDeviceSettingsProvider.setKeyboardSettings(
         this.keyboard.id, this.keyboard.settings);
   }

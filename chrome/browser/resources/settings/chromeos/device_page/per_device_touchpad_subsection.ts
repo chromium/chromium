@@ -31,7 +31,8 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Touchpad} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Touchpad, TouchpadSettings} from './input_device_settings_types.js';
+import {settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_touchpad_subsection.html.js';
 
 const SettingsPerDeviceTouchpadSubsectionElementBase =
@@ -241,6 +242,10 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   private touchpadIndex: number;
 
   private updateSettingsToCurrentPrefs(): void {
+    // `updateSettingsToCurrentPrefs` gets called when the `keyboard` object
+    // gets updated. This subsection element can be reused multiple times so we
+    // need to reset `isInitialized` so we do not make unneeded API calls.
+    this.isInitialized = false;
     this.set(
         'enableTapToClickPref.value', this.touchpad.settings.tapToClickEnabled);
     this.set(
@@ -284,11 +289,11 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   }
 
   private onSettingsChanged(): void {
-    // TODO(wangdanny): Implement onSettingsChanged.
     if (!this.isInitialized) {
       return;
     }
-    this.touchpad.settings = {
+
+    const newSettings: TouchpadSettings = {
       ...this.touchpad.settings,
       tapToClickEnabled: this.enableTapToClickPref.value,
       tapDraggingEnabled: this.enableTapDraggingPref.value,
@@ -301,6 +306,11 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
       hapticEnabled: this.hapticFeedbackValue,
     };
 
+    if (settingsAreEqual(newSettings, this.touchpad.settings)) {
+      return;
+    }
+
+    this.touchpad.settings = newSettings;
     this.inputDeviceSettingsProvider.setTouchpadSettings(
         this.touchpad.id, this.touchpad.settings);
   }

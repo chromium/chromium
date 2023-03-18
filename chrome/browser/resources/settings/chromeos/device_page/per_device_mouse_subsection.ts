@@ -30,7 +30,8 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Mouse} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Mouse, MouseSettings} from './input_device_settings_types.js';
+import {settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_mouse_subsection.html.js';
 
 const SettingsPerDeviceMouseSubsectionElementBase =
@@ -207,6 +208,10 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   private mouseIndex: number;
 
   private updateSettingsToCurrentPrefs(): void {
+    // `updateSettingsToCurrentPrefs` gets called when the `keyboard` object
+    // gets updated. This subsection element can be reused multiple times so we
+    // need to reset `isInitialized` so we do not make unneeded API calls.
+    this.isInitialized = false;
     this.set('primaryRightPref.value', this.mouse.settings.swapRight);
     this.set('accelerationPref.value', this.mouse.settings.accelerationEnabled);
     this.set('sensitivityPref.value', this.mouse.settings.sensitivity);
@@ -235,11 +240,11 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   }
 
   private onSettingsChanged(): void {
-    // TODO(wangdanny): Implement onSettingsChanged.
     if (!this.isInitialized) {
       return;
     }
-    this.mouse.settings = {
+
+    const newSettings: MouseSettings = {
       ...this.mouse.settings,
       swapRight: this.primaryRightPref.value,
       accelerationEnabled: this.accelerationPref.value,
@@ -249,6 +254,11 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       reverseScrolling: this.reverseScrollValue,
     };
 
+    if (settingsAreEqual(newSettings, this.mouse.settings)) {
+      return;
+    }
+
+    this.mouse.settings = newSettings;
     this.inputDeviceSettingsProvider.setMouseSettings(
         this.mouse.id, this.mouse.settings);
   }

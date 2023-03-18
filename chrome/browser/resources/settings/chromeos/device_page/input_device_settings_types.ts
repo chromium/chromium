@@ -29,6 +29,8 @@ export type TouchpadSettings = InputDeviceSettingsTypes.TouchpadSettings;
 export type MouseSettings = InputDeviceSettingsTypes.MouseSettings;
 export type PointingStickSettings =
     InputDeviceSettingsTypes.PointingStickSettings;
+export type DeviceSettings =
+    KeyboardSettings|TouchpadSettings|MouseSettings|PointingStickSettings;
 
 export interface KeyboardObserverInterface {
   // Fired when the keyboard list is updated.
