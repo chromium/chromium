@@ -123,12 +123,21 @@ if (is_fuchsia) {
 # TODO(crbug.com/1304707): Drop toolchain_has_rust after we have support for all
 # our toolchains: Linux x86 is missing in order to build for Android.
 #
+# Rust to C++ type conversions.
+build_rust_base_conversions = toolchain_has_rust && enable_rust_base_conversions
+
 # The Rust implementation of base::JSONReader.
 build_rust_json_reader = toolchain_has_rust && enable_rust_json
 
-buildflag_header("parsing_buildflags") {
-  header = "parsing_buildflags.h"
-  flags = [ "BUILD_RUST_JSON_READER=$build_rust_json_reader" ]
+assert(build_rust_base_conversions || !build_rust_json_reader,
+       "Cannot enable Rust JSON decoder without also base conversions")
+
+buildflag_header("rust_buildflags") {
+  header = "rust_buildflags.h"
+  flags = [
+    "BUILD_RUST_JSON_READER=$build_rust_json_reader",
+    "BUILD_RUST_BASE_CONVERSIONS=$build_rust_base_conversions",
+  ]
 }
 
 if (is_win) {
@@ -1068,9 +1077,9 @@ component("base") {
     ":ios_cronet_buildflags",
     ":logging_buildflags",
     ":orderfile_buildflags",
-    ":parsing_buildflags",
     ":power_monitor_buildflags",
     ":profiler_buildflags",
+    ":rust_buildflags",
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
     ":tracing_buildflags",
@@ -1078,11 +1087,10 @@ component("base") {
     "//base/numerics:base_numerics",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
-    "//build/rust:rust_buildflags",
     "//third_party/abseil-cpp:absl",
   ]
 
-  if (toolchain_has_rust) {
+  if (build_rust_base_conversions) {
     # Base provides conversions between CXX types and base types (e.g.
     # StringPiece).
     public_deps += [ "//build/rust:cxx_cppdeps" ]
@@ -3096,7 +3104,6 @@ test("base_unittests") {
     "containers/linked_list_unittest.cc",
     "containers/lru_cache_unittest.cc",
     "containers/small_map_unittest.cc",
-    "containers/span_rust_unittest.cc",
     "containers/span_unittest.cc",
     "containers/stack_container_unittest.cc",
     "containers/unique_ptr_adapters_unittest.cc",
@@ -3262,7 +3269,6 @@ test("base_unittests") {
     "strings/safe_sprintf_unittest.cc",
     "strings/strcat_unittest.cc",
     "strings/string_number_conversions_unittest.cc",
-    "strings/string_piece_rust_unittest.cc",
     "strings/string_piece_unittest.cc",
     "strings/string_split_unittest.cc",
     "strings/string_tokenizer_unittest.cc",
@@ -3413,6 +3419,13 @@ test("base_unittests") {
     "vlog_unittest.cc",
   ]
 
+  if (build_rust_base_conversions) {
+    sources += [
+      "containers/span_rust_unittest.cc",
+      "strings/string_piece_rust_unittest.cc",
+    ]
+  }
+
   if (use_allocator_shim) {
     sources += [ "allocator/dispatcher/dispatcher_unittest.cc" ]
   }
@@ -3456,7 +3469,7 @@ test("base_unittests") {
     data_deps += [ "//clank/build/bot/filters:base_unittests_filters" ]
   }
 
-  if (toolchain_has_rust) {
+  if (build_rust_base_conversions) {
     deps += [ "//build/rust:cxx_cppdeps" ]
   }
 

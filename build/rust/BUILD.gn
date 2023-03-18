@@ -5,11 +5,6 @@
 import("//build/buildflag_header.gni")
 import("//build/config/rust.gni")
 
-buildflag_header("rust_buildflags") {
-  header = "rust_buildflags.h"
-  flags = [ "TOOLCHAIN_HAS_RUST=$toolchain_has_rust" ]
-}
-
 if (toolchain_has_rust) {
   config("edition_2021") {
     rustflags = [ "--edition=2021" ]
