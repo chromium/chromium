@@ -1927,6 +1927,7 @@ fyi_mac_builder(
     builderless = False,
     cores = None,
     os = os.MAC_ANY,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
