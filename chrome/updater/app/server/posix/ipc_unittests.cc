@@ -336,7 +336,7 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
 
   base::Process child_process = base::SpawnMultiProcessTestChild(
       kClientProcessName, base::GetMultiProcessTestChildBaseCommandLine(),
-      /*options= */ {});
+      /*options=*/{});
   EXPECT_EQ(WaitForProcessExit(child_process), 0);
 }
 
@@ -489,7 +489,7 @@ TEST_F(UpdaterIPCInternalTestCase, AllIpcsComplete) {
 
   base::Process child_process = base::SpawnMultiProcessTestChild(
       kClientProcessName, base::GetMultiProcessTestChildBaseCommandLine(),
-      /*options= */ {});
+      /*options=*/{});
   EXPECT_EQ(WaitForProcessExit(child_process), 0);
 }
 

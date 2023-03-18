@@ -578,15 +578,15 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     return Microsoft::WRL::MakeAndInitialize<CurrentStateImpl>(
         current_state, state_value, available_version, bytes_downloaded,
         total_bytes_to_download,
-        /* download_time_remaining_ms = */ -1,
-        /* next_retry_time = */ -1, install_progress_percentage,
-        /* install_time_remaining_ms = */ -1,
-        /* is_canceled = */ VARIANT_FALSE, error_code, extra_code1,
+        /*download_time_remaining_ms=*/-1,
+        /*next_retry_time=*/-1, install_progress_percentage,
+        /*install_time_remaining_ms=*/-1,
+        /*is_canceled=*/VARIANT_FALSE, error_code, extra_code1,
         completion_message, installer_result_code,
-        /* installer_result_extra_code1 = */ -1,
-        /* post_install_launch_command_line = */ L"",
-        /* post_install_url = */ L"",
-        /* post_install_action = */ 0);
+        /*installer_result_extra_code1=*/-1,
+        /*post_install_launch_command_line=*/L"",
+        /*post_install_url=*/L"",
+        /*post_install_action=*/0);
   }
 
   IFACEMETHODIMP launch() override {
