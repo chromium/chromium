@@ -24,6 +24,8 @@ namespace ash {
 namespace {
 
 using FeatureState = multidevice_setup::mojom::FeatureState;
+using RecentAppsUiState =
+    phonehub::RecentAppsInteractionHandler::RecentAppsUiState;
 
 const char16_t kAppName[] = u"Test App";
 const char kPackageName[] = "com.google.testapp";
@@ -42,7 +44,8 @@ class RecentAppButtonsViewTest : public AshTestBase {
 
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
-                              features::kEcheLauncherIconsInMoreAppsButton},
+                              features::kEcheLauncherIconsInMoreAppsButton,
+                              features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
 
     phone_hub_recent_apps_view_ = std::make_unique<PhoneHubRecentAppsView>(
@@ -87,19 +90,34 @@ class RecentAppButtonsViewTest : public AshTestBase {
         ->GetShouldShowMiniLauncher();
   }
 
+  void SetRecentAppsHandlerUiState(RecentAppsUiState ui_state) {
+    fake_recent_apps_interaction_handler_.set_ui_state_for_testing(ui_state);
+  }
+
+  views::View* GetLoadingView() {
+    return phone_hub_recent_apps_view_->get_loading_view_for_test();
+  }
+
+  views::ImageButton* GetErrorButton() {
+    return phone_hub_recent_apps_view_->get_error_button_for_test();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   std::unique_ptr<PhoneHubRecentAppsView> phone_hub_recent_apps_view_;
   phonehub::FakeRecentAppsInteractionHandler
       fake_recent_apps_interaction_handler_;
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
   PhoneConnectedView* connected_view_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(RecentAppButtonsViewTest, TaskViewVisibility) {
   // The recent app view is not visible if the NotifyRecentAppAddedOrUpdated
   // function never be called, e.g. device boot.
   EXPECT_FALSE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
 
   // The feature state is enabled but no recent app has been added yet, we
   // should not show the recent app buttons view.
@@ -108,12 +126,90 @@ TEST_F(RecentAppButtonsViewTest, TaskViewVisibility) {
 
   EXPECT_TRUE(recent_apps_view()->GetVisible());
   EXPECT_FALSE(recent_apps_view()->recent_app_buttons_view_->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
 
   // The feature state is disabled so we should not show all recent apps view.
   FeatureStateChanged(FeatureState::kDisabledByUser);
   recent_apps_view()->Update();
 
   EXPECT_FALSE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
+}
+
+TEST_F(RecentAppButtonsViewTest,
+       TaskViewVisibility_NetworkConnectionFlagDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
+                            features::kEcheLauncherIconsInMoreAppsButton},
+      /*disabled_features=*/{features::kEcheNetworkConnectionState});
+
+  EXPECT_FALSE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
+
+  FeatureStateChanged(FeatureState::kEnabledByUser);
+  recent_apps_view()->Update();
+
+  EXPECT_TRUE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(recent_apps_view()->recent_app_buttons_view_->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
+
+  FeatureStateChanged(FeatureState::kDisabledByUser);
+  recent_apps_view()->Update();
+
+  EXPECT_FALSE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
+}
+
+TEST_F(RecentAppButtonsViewTest, LoadingStateVisibility) {
+  EXPECT_FALSE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
+
+  NotifyRecentAppAddedOrUpdated();
+  FeatureStateChanged(FeatureState::kEnabledByUser);
+  SetRecentAppsHandlerUiState(RecentAppsUiState::LOADING);
+  recent_apps_view()->Update();
+
+  EXPECT_TRUE(recent_apps_view()->GetVisible());
+  EXPECT_TRUE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
+
+  SetRecentAppsHandlerUiState(RecentAppsUiState::ITEMS_VISIBLE);
+  recent_apps_view()->Update();
+
+  EXPECT_TRUE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
+  EXPECT_TRUE(recent_apps_view()->recent_app_buttons_view_->GetVisible());
+}
+
+TEST_F(RecentAppButtonsViewTest, ConnectionFailedStateVisibility) {
+  EXPECT_FALSE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
+
+  NotifyRecentAppAddedOrUpdated();
+  FeatureStateChanged(FeatureState::kEnabledByUser);
+  SetRecentAppsHandlerUiState(RecentAppsUiState::CONNECTION_FAILED);
+  recent_apps_view()->Update();
+
+  EXPECT_TRUE(recent_apps_view()->GetVisible());
+  EXPECT_TRUE(GetLoadingView()->GetVisible());
+  EXPECT_TRUE(GetErrorButton()->GetVisible());
+
+  SetRecentAppsHandlerUiState(RecentAppsUiState::ITEMS_VISIBLE);
+  recent_apps_view()->Update();
+
+  EXPECT_TRUE(recent_apps_view()->GetVisible());
+  EXPECT_FALSE(GetLoadingView()->GetVisible());
+  EXPECT_FALSE(GetErrorButton()->GetVisible());
+  EXPECT_TRUE(recent_apps_view()->recent_app_buttons_view_->GetVisible());
 }
 
 TEST_F(RecentAppButtonsViewTest, SingleRecentAppButtonsView) {

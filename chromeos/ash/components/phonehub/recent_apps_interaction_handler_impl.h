@@ -83,6 +83,11 @@ class RecentAppsInteractionHandlerImpl
     return connection_status_;
   }
 
+  void set_connection_status_for_testing(
+      eche_app::mojom::ConnectionStatus connection_status) {
+    connection_status_ = connection_status;
+  }
+
  private:
   friend class RecentAppsInteractionHandlerTest;
 
@@ -90,6 +95,7 @@ class RecentAppsInteractionHandlerImpl
   void SaveRecentAppMetadataListToPref();
   void ComputeAndUpdateUiState();
   void ClearRecentAppMetadataListAndPref();
+  RecentAppsUiState GetUiStateFromConnectionStatus();
   base::flat_set<int64_t> GetUserIdsWithDisplayRecentApps();
 
   // Whether this class has finished loading |recent_app_metadata_list_| from

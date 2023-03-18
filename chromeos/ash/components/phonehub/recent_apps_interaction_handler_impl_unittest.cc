@@ -15,6 +15,7 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/prefs/testing_pref_service.h"
+#include "recent_apps_interaction_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -24,6 +25,7 @@ namespace {
 
 using FeatureState = multidevice_setup::mojom::FeatureState;
 using HostStatus = multidevice_setup::mojom::HostStatus;
+using ConnectionStatus = eche_app::mojom::ConnectionStatus;
 
 // Garbage color for the purpose of verification in these tests.
 const SkColor kIconColor = SkColorSetRGB(0x12, 0x34, 0x56);
@@ -240,10 +242,18 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     handler().NotifyRecentAppAddedOrUpdated(app_metadata2, now);
   }
 
-  void NotifyConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus connection_status) {
+  void NotifyConnectionStatusChanged(ConnectionStatus connection_status) {
     eche_connection_status_observer_->OnConnectionStatusChanged(
         connection_status);
+  }
+
+  void SetConnectionStatus(ConnectionStatus connection_status) {
+    interaction_handler_->set_connection_status_for_testing(connection_status);
+  }
+
+  RecentAppsInteractionHandler::RecentAppsUiState
+  GetUiStateFromConnectionStatus() {
+    return interaction_handler_->GetUiStateFromConnectionStatus();
   }
 
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
@@ -631,6 +641,7 @@ TEST_F(RecentAppsInteractionHandlerTest,
                                 /*icon_color=*/absl::nullopt,
                                 /*icon_is_monochrome=*/true, expected_user_id1,
                                 proto::AppStreamabilityStatus::STREAMABLE);
+  SetConnectionStatus(ConnectionStatus::kConnectionStatusConnected);
   SetAppsAccessStatus(true);
   handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
   SetEcheFeatureState(FeatureState::kEnabledByUser);
@@ -651,6 +662,7 @@ TEST_F(RecentAppsInteractionHandlerTest,
                                 /*icon_is_monochrome=*/true, expected_user_id1,
                                 proto::AppStreamabilityStatus::STREAMABLE);
 
+  SetConnectionStatus(ConnectionStatus::kConnectionStatusConnected);
   SetAppsAccessStatus(true);
   handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
   SetEcheFeatureState(FeatureState::kEnabledByUser);
@@ -683,6 +695,7 @@ TEST_F(RecentAppsInteractionHandlerTest,
        UiStateChangedToVisibleWhenRecentAppBeAdded) {
   SetEcheFeatureState(FeatureState::kEnabledByUser);
   SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+  SetConnectionStatus(ConnectionStatus::kConnectionStatusConnected);
   SetAppsAccessStatus(true);
   SetNotificationAccess(true);
 
@@ -838,29 +851,26 @@ TEST_F(RecentAppsInteractionHandlerTest, GetUserIdSet) {
 }
 
 TEST_F(RecentAppsInteractionHandlerTest, OnConnectionStatusChanged) {
-  EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
-
   // Start in the Disconnected state.
-  NotifyConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus::kConnectionStatusConnecting);
   EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusConnecting);
+            ConnectionStatus::kConnectionStatusDisconnected);
+
+  NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            ConnectionStatus::kConnectionStatusConnecting);
+
+  NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            ConnectionStatus::kConnectionStatusConnected);
+
+  NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusFailed);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            ConnectionStatus::kConnectionStatusFailed);
 
   NotifyConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus::kConnectionStatusConnected);
+      ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusConnected);
-
-  NotifyConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
-  EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
-
-  NotifyConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
-  EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+            ConnectionStatus::kConnectionStatusDisconnected);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest,
@@ -873,27 +883,60 @@ TEST_F(RecentAppsInteractionHandlerTest,
   // Start in the Disconnected state. When flag is disabled, the state should
   // never change.
   EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+            ConnectionStatus::kConnectionStatusDisconnected);
+
+  NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            ConnectionStatus::kConnectionStatusDisconnected);
+
+  NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            ConnectionStatus::kConnectionStatusDisconnected);
+
+  NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusFailed);
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            ConnectionStatus::kConnectionStatusDisconnected);
 
   NotifyConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus::kConnectionStatusConnecting);
+      ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+            ConnectionStatus::kConnectionStatusDisconnected);
+}
 
-  NotifyConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus::kConnectionStatusConnected);
-  EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+TEST_F(RecentAppsInteractionHandlerTest, GetUiStateFromConnectionStatus) {
+  RecentAppsInteractionHandler::RecentAppsUiState ui_state;
 
-  NotifyConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
+  SetConnectionStatus(ConnectionStatus::kConnectionStatusDisconnected);
+  ui_state = GetUiStateFromConnectionStatus();
   EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+            ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(ui_state, RecentAppsInteractionHandler::RecentAppsUiState::LOADING);
 
-  NotifyConnectionStatusChanged(
-      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  SetConnectionStatus(ConnectionStatus::kConnectionStatusConnecting);
+  ui_state = GetUiStateFromConnectionStatus();
   EXPECT_EQ(handler().connection_status_for_testing(),
-            eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected);
+            ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(ui_state, RecentAppsInteractionHandler::RecentAppsUiState::LOADING);
+
+  SetConnectionStatus(ConnectionStatus::kConnectionStatusConnected);
+  ui_state = GetUiStateFromConnectionStatus();
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(ui_state,
+            RecentAppsInteractionHandler::RecentAppsUiState::ITEMS_VISIBLE);
+
+  SetConnectionStatus(ConnectionStatus::kConnectionStatusFailed);
+  ui_state = GetUiStateFromConnectionStatus();
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            ConnectionStatus::kConnectionStatusFailed);
+  EXPECT_EQ(ui_state,
+            RecentAppsInteractionHandler::RecentAppsUiState::CONNECTION_FAILED);
+
+  SetConnectionStatus(ConnectionStatus::kConnectionStatusDisconnected);
+  ui_state = GetUiStateFromConnectionStatus();
+  EXPECT_EQ(handler().connection_status_for_testing(),
+            ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(ui_state, RecentAppsInteractionHandler::RecentAppsUiState::LOADING);
 }
 
 }  // namespace ash::phonehub

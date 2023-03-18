@@ -83,6 +83,10 @@ class RecentAppsInteractionHandler {
       const std::vector<Notification::AppMetadata>& streamable_apps) = 0;
   virtual void RemoveStreamableApp(const proto::App streamable_app) = 0;
 
+  void set_ui_state_for_testing(RecentAppsUiState ui_state) {
+    ui_state_ = ui_state;
+  }
+
  protected:
   RecentAppsInteractionHandler();
 
