@@ -525,8 +525,8 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
                                          bool tracks_raster_invalidations,
                                          cc::LayerTreeHost* layer_tree_host) {
   recordreplay::Assert(
-      "[RUN-657-1540] PendingLayer::UpdateCompositedLayer %d %d %d",
-      layer_tree_host ? layer_tree_host->GetId() : 0,
+      "[RUN-657-1540] PendingLayer::UpdateCompositedLayer %d %d %d %d",
+      compositing_type_, layer_tree_host ? layer_tree_host->GetId() : 0,
       old_pending_layer && old_pending_layer->cc_layer_
           ? old_pending_layer->cc_layer_->id()
           : 0,
