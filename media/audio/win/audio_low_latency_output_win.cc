@@ -29,6 +29,7 @@
 #include "media/audio/win/audio_session_event_listener_win.h"
 #include "media/audio/win/avrt_wrapper_win.h"
 #include "media/audio/win/core_audio_util_win.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/limits.h"
@@ -89,9 +90,6 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
     : creating_thread_id_(base::PlatformThread::CurrentId()),
       manager_(manager),
       glitch_reporter_(SystemGlitchReporter::StreamType::kRender),
-      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
-                                         base::Unretained(manager_),
-                                         /*trace_start=*/false)),
       format_(),
       params_(params),
       opened_(false),
@@ -390,6 +388,12 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   num_written_frames_ = endpoint_buffer_size_frames_;
   last_position_ = 0;
   last_qpc_position_ = 0;
+
+  // Recreate `peak_detector_` everytime we create a new `render_thread_`, to
+  // avoid ThreadChecker DCHECKs.
+  peak_detector_ = std::make_unique<AmplitudePeakDetector>(base::BindRepeating(
+      &AudioManager::TraceAmplitudePeak, base::Unretained(manager_),
+      /*trace_start=*/false));
 
   // Create and start the thread that will drive the rendering by waiting for
   // render events.
@@ -758,7 +762,7 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         memset(audio_data, 0, packet_size_frames_);
       }
 
-      peak_detector_.FindPeak(audio_bus_.get());
+      peak_detector_->FindPeak(audio_bus_.get());
 
       // Release the buffer space acquired in the GetBuffer() call.
       // Render silence if we were not able to fill up the buffer totally.
@@ -778,7 +782,7 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
         frames_filled, reinterpret_cast<float*>(audio_data));
 
-    peak_detector_.FindPeak(audio_bus_.get());
+    peak_detector_->FindPeak(audio_bus_.get());
 
     // Release the buffer space acquired in the GetBuffer() call.
     // Render silence if we were not able to fill up the buffer totally.
@@ -880,6 +884,7 @@ void WASAPIAudioOutputStream::StopThread() {
     }
 
     render_thread_.reset();
+    peak_detector_.reset();
 
     // Ensure that we don't quit the main thread loop immediately next
     // time Start() is called.
