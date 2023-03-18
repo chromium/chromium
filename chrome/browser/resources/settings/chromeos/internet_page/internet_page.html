@@ -11,15 +11,6 @@
     margin-inline-end: 16px;
   }
 
-  #createCustomApnButton iron-icon {
-    --iron-icon-fill-color: var(--text-color);
-    margin-inline-end: 8px;
-  }
-
-  #createCustomApnButton[disabled] iron-icon {
-    --iron-icon-fill-color: var(--disabled);
-  }
-
   #apnTooltip {
     --paper-tooltip-background: var(--cros-tooltip-background-color);
     --paper-tooltip-text-color: var(--cros-tooltip-label-color);
@@ -140,7 +131,7 @@
               on-click="onCreateCustomApnClicked_"
               class="cancel-button"
               disabled="[[isCreateCustomApnButtonDisabled_]]">
-            <iron-icon icon="cr:add"></iron-icon>
+            <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
             $i18n{apnPageAddNewApn}
           </cr-button>
         </div>

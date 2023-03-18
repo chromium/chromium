@@ -1,8 +1,4 @@
 <style include="settings-shared iron-flex">
-  iron-icon[icon='cr:add'] {
-    --iron-icon-fill-color: var(--cros-icon-color-prominent);
-    margin-inline-end: 8px;
-  }
 </style>
 <os-settings-animated-pages id="pages" section="bluetooth">
   <div route-path="default">
@@ -19,7 +15,7 @@
           <cr-button id="pairNewDevice"
               on-click="onStartPairing_"
               class="cancel-button">
-            <iron-icon icon="cr:add">
+            <iron-icon icon="cr:add" slot="prefix-icon">
             </iron-icon>
             $i18n{bluetoothPairNewDevice}
           </cr-button>

@@ -89,10 +89,6 @@
   #toggleSpacer {
     padding-top: 33px;  /* Part of a 48px spacer (33px + 12px + 3px). */
   }
-
-  iron-icon {
-    margin-inline-start: 16px;
-  }
 </style>
 <template is="dom-if" if="[[showBasicPage_(
     currentRoute_, hasExpandedSection_)]]">
@@ -199,7 +195,9 @@
     <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
         aria-expanded$="[[boolToString_(advancedToggleExpanded)]]">
       <span>$i18n{advancedPageTitle}</span>
-      <iron-icon icon="[[getArrowIcon_(advancedToggleExpanded)]]">
+      <iron-icon
+        icon="[[getArrowIcon_(advancedToggleExpanded)]]"
+        slot="suffix-icon">
       </iron-icon>
     </cr-button>
   </h2>

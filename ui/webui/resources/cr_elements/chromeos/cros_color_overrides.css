@@ -23,6 +23,11 @@ To get Chrome OS System Colors, an element must:
   color: var(--cros-link-color);
 }
 
+:host-context([cros]) cr-button[has-prefix-icon_],
+:host-context([cros]) cr-button[has-suffix-icon_] {
+  --iron-icon-fill-color: currentColor;
+}
+
 :host-context([cros]) cr-dialog::part(dialog) {
   --cr-dialog-background-color: var(--cros-bg-color-elevation-3);
   background-image: none;

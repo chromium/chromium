@@ -42,16 +42,7 @@
   }
 
   #addLanguages {
-    --iron-icon-fill-color: var(--cr-link-color);
     margin-top: 16px;
-  }
-
-  #addLanguages[disabled] {
-    --iron-icon-fill-color: var(--cros-icon-color-disabled);
-  }
-
-  #addLanguagesIcon {
-    margin-inline-end: 8px;
   }
 
   cr-checkbox {
@@ -122,7 +113,8 @@
             disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
             on-click="onAddLanguagesClick_"
             deep-link-focus-id$="[[Setting.kAddLanguage]]">
-          <iron-icon id="addLanguagesIcon" icon="cr:add"></iron-icon>
+          <iron-icon id="addLanguagesIcon" icon="cr:add" slot="prefix-icon">
+          </iron-icon>
           $i18n{addLanguages}
         </cr-button>
       </div>

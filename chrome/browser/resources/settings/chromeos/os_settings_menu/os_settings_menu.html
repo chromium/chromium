@@ -204,7 +204,7 @@
       aria-expanded$="[[boolToString_(advancedOpened)]]"
       on-click="onAdvancedButtonToggle_">
     <span>$i18n{advancedPageTitle}</span>
-    <iron-icon icon="[[arrowState_(advancedOpened)]]">
+    <iron-icon icon="[[arrowState_(advancedOpened)]]" slot="suffix-icon">
     </iron-icon>
   </cr-button>
   <iron-collapse id="advancedSubmenu" opened="[[advancedOpened]]">

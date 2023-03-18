@@ -17,11 +17,6 @@
     padding-inline-start: 20px;
   }
 
-  #manageContactsButton iron-icon {
-    --iron-icon-fill-color: var(--text-color);
-    margin-inline-end: 8px;
-  }
-
   #flex {
     flex: 1;
   }
@@ -40,7 +35,7 @@
   </div>
   <div class="layout horizontal center" slot="button-container">
     <cr-button id="manageContactsButton" on-click="onManageContactsClick_">
-      <iron-icon icon="cr:open-in-new"></iron-icon>
+      <iron-icon icon="cr:open-in-new" slot="prefix-icon"></iron-icon>
       <span>$i18n{nearbyShareManageContactsLabel}</span>
     </cr-button>
     <div id="flex"></div>
