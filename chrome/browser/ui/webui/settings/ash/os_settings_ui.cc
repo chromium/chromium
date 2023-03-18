@@ -97,6 +97,9 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
       base::make_span(kOsSettingsResources, kOsSettingsResourcesSize),
       IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML);
   html_source->DisableTrustedTypesCSP();
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
 
   ManagedUIHandler::Initialize(web_ui, html_source);
 }
