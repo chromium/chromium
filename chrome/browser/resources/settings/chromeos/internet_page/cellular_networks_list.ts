@@ -7,7 +7,6 @@
  * states
  */
 
-import 'chrome://resources/ash/common/cellular_setup/cellular_eid_dialog.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';

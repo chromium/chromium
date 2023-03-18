@@ -183,33 +183,6 @@ suite('CellularNetworksList', function() {
             CellularSetupPageName.ESIM_FLOW_UI);
       });
 
-  test('Show EID and QR code dialog', async () => {
-    eSimManagerRemote.addEuiccForTest(1);
-    init();
-    addESimSlot();
-    await flushAsync();
-    let eidDialog = cellularNetworkList.shadowRoot.querySelector('.eid-dialog');
-    assertFalse(!!eidDialog);
-
-    const tripleDot = cellularNetworkList.shadowRoot.querySelector('#moreESim');
-    assertTrue(!!tripleDot);
-    tripleDot.click();
-    await flushAsync();
-
-    const actionMenu =
-        cellularNetworkList.shadowRoot.querySelector('cr-action-menu');
-    assertTrue(!!actionMenu);
-    assertTrue(actionMenu.open);
-
-    const showEidBtn = actionMenu.querySelector('button');
-    assertTrue(!!showEidBtn);
-    showEidBtn.click();
-    await flushAsync();
-
-    eidDialog = cellularNetworkList.shadowRoot.querySelector('.eid-dialog');
-    assertTrue(!!eidDialog);
-  });
-
   test('Install pending eSIM profile', async () => {
     eSimManagerRemote.addEuiccForTest(1);
     init();

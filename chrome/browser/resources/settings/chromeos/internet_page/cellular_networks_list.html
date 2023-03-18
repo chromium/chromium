@@ -107,28 +107,6 @@
                   globalPolicy)]]"
               on-click="onAddEsimButtonTap_">
           </cr-icon-button>
-          <div class="separator"></div>
-        </template>
-        <cr-icon-button id="moreESim" class="icon-more-vert"
-            title="$i18n{moreActions}"
-            on-click="onEsimDotsClick_">
-        </cr-icon-button>
-        <cr-lazy-render id="menu">
-          <template>
-            <cr-action-menu>
-              <button class="dropdown-item"
-                  on-click="onShowEidDialogTap_"
-                  role="menuitem">
-                $i18n{eidPopupMenuItemTitle}
-              </button>
-            </cr-action-menu>
-          </template>
-        </cr-lazy-render>
-        <template is="dom-if" if="[[shouldShowEidDialog_]]" restamp>
-          <cellular-eid-dialog class="eid-dialog"
-              on-close="onCloseEidDialog_"
-              euicc="[[euicc_]]">
-          </cellular-eid-dialog>
         </template>
       </div>
     </div>

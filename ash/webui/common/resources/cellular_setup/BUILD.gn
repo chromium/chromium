@@ -15,7 +15,6 @@ js_type_check("closure_compile_module") {
     ":activation_verification_page",
     ":base_page",
     ":button_bar",
-    ":cellular_eid_dialog",
     ":cellular_setup",
     ":cellular_setup_delegate",
     ":cellular_types",
@@ -207,13 +206,6 @@ js_library("esim_flow_ui") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("cellular_eid_dialog") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
-  ]
 }
 
 js_library("cellular_setup") {

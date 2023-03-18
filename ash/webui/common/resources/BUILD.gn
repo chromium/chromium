@@ -48,7 +48,6 @@ web_component_files = [
   "cellular_setup/profile_discovery_list_page.js",
   "cellular_setup/provisioning_page.js",
   "cellular_setup/psim_flow_ui.js",
-  "cellular_setup/cellular_eid_dialog.js",
   "cellular_setup/setup_loading_page.js",
   "cr_picture/cr_camera.js",
   "cr_picture/cr_picture_list.js",
@@ -433,7 +432,6 @@ checked_in_dts_files = [
 
   "cellular_setup/base_page.d.ts",
   "cellular_setup/button_bar.d.ts",
-  "cellular_setup/cellular_eid_dialog.d.ts",
   "cellular_setup/cellular_setup.d.ts",
   "cellular_setup/esim_flow_ui.d.ts",
   "cellular_setup/profile_discovery_list_page.d.ts",
