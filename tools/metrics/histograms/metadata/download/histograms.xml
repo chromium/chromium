@@ -155,8 +155,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonType}ButtonActionTime"
-    units="ms" expires_after="2023-03-07">
-  <owner>drubery@chromium.org</owner>
+    units="ms" expires_after="2024-03-07">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the time (in ms) between the Download bubble warning subpage being
@@ -187,8 +187,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
-    units="ms" expires_after="2023-03-07">
-  <owner>drubery@chromium.org</owner>
+    units="ms" expires_after="2024-03-07">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the time (in ms) for which the full view (opened manually) or the
@@ -200,8 +200,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.{DownloadBubbleViewType}ViewSize"
-    units="items" expires_after="2023-03-07">
-  <owner>drubery@chromium.org</owner>
+    units="items" expires_after="2024-03-07">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Measures the size of the full view (opened manually) or the partial view
