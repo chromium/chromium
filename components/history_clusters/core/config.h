@@ -324,6 +324,10 @@ struct Config {
   // visits within a cluster. Will always be greater than or equal to 0.
   float search_results_page_ranking_weight = 2.0;
 
+  // Returns the weight to use for visits with URL-keyed images when ranking
+  // visits within a cluster. Will always be greater than or equal to 0.
+  float has_url_keyed_image_ranking_weight = 1.5;
+
   // The `kHistoryClustersNavigationContextClustering` feature and child params.
 
   // Whether to use the new clustering path that does context clustering at

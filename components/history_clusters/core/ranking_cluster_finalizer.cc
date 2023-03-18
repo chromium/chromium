@@ -70,6 +70,13 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
       it->second.set_is_srp();
     }
 
+    // Check if the visit had a URL keyed image and it can be fetched when shown
+    // in the UI.
+    if (visit.annotated_visit.content_annotations.has_url_keyed_image &&
+        visit.annotated_visit.visit_row.is_known_to_sync) {
+      it->second.set_has_url_keyed_image();
+    }
+
     // Additional/future attribute checks go here.
   }
 }

@@ -338,6 +338,12 @@ Config::Config() {
         "search_results_page_ranking_weight",
         search_results_page_ranking_weight);
     DCHECK_GE(search_results_page_ranking_weight, 0.0f);
+
+    has_url_keyed_image_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
+        features::kOnDeviceClusteringVisitRanking,
+        "has_url_keyed_image_ranking_weight",
+        has_url_keyed_image_ranking_weight);
+    DCHECK_GE(has_url_keyed_image_ranking_weight, 0.0f);
   }
 
   // The `kHistoryClustersNavigationContextClustering` feature and child params.
