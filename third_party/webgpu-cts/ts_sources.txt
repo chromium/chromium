@@ -303,7 +303,6 @@ src/webgpu/api/validation/queue/destroyed/texture.spec.ts
 src/webgpu/api/validation/render_pass/attachment_compatibility.spec.ts
 src/webgpu/api/validation/render_pass/render_pass_descriptor.spec.ts
 src/webgpu/api/validation/render_pass/resolve.spec.ts
-src/webgpu/api/validation/render_pass/storeOp.spec.ts
 src/webgpu/api/validation/render_pipeline/common.ts
 src/webgpu/api/validation/render_pipeline/depth_stencil_state.spec.ts
 src/webgpu/api/validation/render_pipeline/fragment_state.spec.ts
