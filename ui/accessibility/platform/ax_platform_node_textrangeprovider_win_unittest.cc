@@ -5233,6 +5233,39 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_EQ(end_offset, selection.focus_offset);
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestScrollIntoViewOnOnscreenElement) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer
+    ++++++3 kTextField
+  )HTML"));
+  update.nodes[0].relative_bounds.bounds = gfx::RectF(0, 0, 200, 200);
+  update.nodes[1].relative_bounds.bounds = gfx::RectF(0, 0, 100, 100);
+  update.nodes[2].SetValue("hello world test");
+  update.nodes[2].relative_bounds.bounds = gfx::RectF(50, 50, 20, 20);
+  update.nodes[2].relative_bounds.offset_container_id = 1;
+
+  Init(update);
+  AXNode* root_node = GetRoot();
+
+  AXNode* gc = root_node->children()[0];
+  AXNode* text_field = gc->children()[0];
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, text_field);
+
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->ScrollIntoView(/* align_to_top */ true));
+  base::win::ScopedSafearray rectangles;
+  text_range_provider->GetBoundingRectangles(rectangles.Receive());
+
+  // Element was already fully onscreen, so there should be no change
+  // to its location.
+  std::vector<double> expected_rect = {50, 50, 20, 20};
+  EXPECT_UIA_SAFEARRAY_EQ(rectangles.Get(), expected_rect);
+  EXPECT_EQ(50, text_field->data().relative_bounds.bounds.y());
+}
+
 // TODO(crbug.com/1124051): Remove this test once this crbug is fixed.
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderSelectListMarker) {

@@ -1019,6 +1019,19 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_SCROLLINTOVIEW);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL();
 
+  AXPlatformNode* start_platform_node =
+      GetOwner()->GetDelegate()->GetFromTreeIDAndNodeID(
+          start()->tree_id(), start()->GetAnchor()->id());
+  AXPlatformNode* end_platform_node =
+      GetOwner()->GetDelegate()->GetFromTreeIDAndNodeID(
+          end()->tree_id(), end()->GetAnchor()->id());
+
+  // If both anchors are onscreen, don't scroll.
+  if (!start_platform_node->GetDelegate()->IsOffscreen() &&
+      !end_platform_node->GetDelegate()->IsOffscreen()) {
+    return S_OK;
+  }
+
   const AXPositionInstance start_common_ancestor =
       start()->LowestCommonAncestorPosition(
           *end(), ax::mojom::MoveDirection::kBackward);
