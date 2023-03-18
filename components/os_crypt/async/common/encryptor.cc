@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/types/pass_key.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,7 +17,6 @@ Encryptor::Encryptor(Encryptor&& other) = default;
 Encryptor& Encryptor::operator=(Encryptor&& other) = default;
 
 Encryptor::Encryptor() = default;
-Encryptor::Encryptor(base::PassKey<OSCryptAsync> passkey) {}
 
 Encryptor::~Encryptor() = default;
 
