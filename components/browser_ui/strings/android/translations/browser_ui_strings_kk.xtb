@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Жайылған – жию үшін басыңыз.</translation>
 <translation id="2586657967955657006">Буфер</translation>
 <translation id="2597457036804169544">Сайттарға қараңғы режим қолданылмайды.</translation>
+<translation id="2606760465469169465">Автоматты тексеру</translation>
 <translation id="2621115761605608342">Белгілі бір сайт үшін JavaScript бағдарламасына рұқсат беру.</translation>
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2677748264148917807">Шығу</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Сіз таңдаған контактілер <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтымен бөлісіледі.</translation>
 <translation id="5216942107514965959">Соңғы кіру: бүгін</translation>
 <translation id="5225463052809312700">Камераны қосу</translation>
+<translation id="5229337741799419985">Бұл параметр жеке басыңызды көрсетпей немесе сайттардың браузерді қолдану тарихын көруіне рұқсат етпей жұмыс істейді.</translation>
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" өшіру</translation>
 <translation id="528192093759286357">Толық экраннан шығу үшін үстіңгі жақтан сүйреп, "Артқа" түймесін түртіңіз.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6689172468748959065">Профиль фотосуреттері</translation>
 <translation id="6697925417670533197">Жүктеп алынып жатқандар</translation>
+<translation id="6701547804986694515">Сіз кірген сайт бот емес екеніңізді растайтын ақпаратты Chrome-мен сақтай алады. Шолуды жалғастыра отырып, сайттар Chrome-мен тексеріп, шынайы адам екеніңізді алдыңғы кірген сайтпен растай алады.</translation>
 <translation id="6722828510648505498">Идентификация қызметтері жіберген аккаунтқа кіру хабарлары бөгеледі.</translation>
 <translation id="6746124502594467657">Төмен қарай жылжыту</translation>
 <translation id="6749077623962119521">Рұқсаттар бастапқы күйіне қайтарылсын ба?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Кескін таңдау</translation>
 <translation id="8801436777607969138">Белгілі бір сайт үшін JavaScript бағдарламасын бөгеуге болады.</translation>
 <translation id="8803526663383843427">Қосулы кезде</translation>
+<translation id="8805385115381080995">Шолу жылдамырақ, себебі сайт сізден шынайы адам екеніңізді растауды сұрамайды.</translation>
 <translation id="8816026460808729765">Сайттардың датчиктерді пайдалануына тыйым салу</translation>
 <translation id="8823559166155093873">Cookie файлдарын бөгеу</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Бұл бет қауіпті.</translation>
 <translation id="9201023452444595544">Барлық офлайн деректер өшіріледі.</translation>
 <translation id="930525582205581608">Бұл сайт ұмытылсын ба?</translation>
+<translation id="947156494302904893">Сіз кірген сайттар бот емес, шынайы адам екеніңізді растай алады.</translation>
 <translation id="967624055006145463">Сақталған деректер</translation>
 </translationbundle>

@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Vytlačené</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1962550982027027473">Vyžaduje sa predvolený názov prístupového bodu (APN)</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Profilová fotka na Googli</translation>
 <translation id="1979103255016296513">Uplynul termín zmeny hesla</translation>
 <translation id="1999615961760456652">Prihlasovací portál</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Latencia servera DNS výrazne prekračuje povolenú úroveň</translation>
 <translation id="3328783797891415197">Test prebieha</translation>
 <translation id="3340011300870565703">Úroveň batérie pravého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3369013195428705271">Naozaj chcete vymazať celú históriu tlače? Prebiehajúce tlačové úlohy nebudú vymazané.</translation>
 <translation id="3404249063913988450">Aktivovať šetrič obrazovky</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Čiernobielo</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
+<translation id="4150201353443180367">Displej</translation>
 <translation id="4155551848414053977">Skontrolujte, či je skener zapnutý a dostupný prostredníctvom vašej siete alebo priameho pripojenia</translation>
 <translation id="4159784952369912983">Purpurová</translation>
 <translation id="4170180284036919717">Nasnímať fotku</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Snímka obrazovky</translation>
 <translation id="4258281355379922695">Latencia protokolu HTTP</translation>
 <translation id="4271957103967917607">Zobraziť na celú obrazovku</translation>
+<translation id="4275663329226226506">Médiá</translation>
 <translation id="4289540628985791613">Prehľad</translation>
 <translation id="4289849978083912975">Prezentácia</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Skontrolujte skener a skúste to znova. Uistite sa, že na uloženie naskenovaných súborov je v zariadení dostatok priestoru.</translation>
 <translation id="4985509611418653372">Spustiť</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Stránky</translation>
 <translation id="4999333166442584738">Skryť prehľad</translation>
 <translation id="500920857929044050">Zastaviť test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Nenašli sa žiadne servery DNS</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943235353293548836">Pretrvávajúci interval keepalive</translation>
+<translation id="7953669802889559161">Vstupy</translation>
 <translation id="7955587717700691983">Klávesnica s rozhraním Bluetooth</translation>
 <translation id="7960831585769876809">Teplota</translation>
 <translation id="7977800524392185497">Ak sa chcete pripojiť k sieti <ph name="NETWORK_NAME" />, prejdite do Nastavení</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>
 <translation id="8045012663542226664">Vypnutie zvuku mikrofónu</translation>
 <translation id="8075838845814659848">Zostávajúca úroveň batérie</translation>
+<translation id="8076492880354921740">Karty</translation>
 <translation id="8082366717211101304">DNS sa nedá preložiť v aplikáciách pre Android</translation>
 <translation id="808894953321890993">Zmeniť heslo</translation>
 <translation id="8094062939584182041">Povoliť Googlu posielať e‐maily týkajúce sa tohto problému</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Požiadať o údaje počítadiel návštevnosti</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vyberte <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Nástroje pre vývojárov</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Priložiť</translation>
 <translation id="8206859287963243715">Mobilné</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi‑Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8820457400746201697">Presuňte modrý dotykový bod na akciu. Vyberte priradený kláves na prispôsobenie.</translation>
+<translation id="8820817407110198400">Záložky</translation>
 <translation id="8834539327799336565">Aktuálne pripojené</translation>
 <translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8855781559874488009">Prostredníctvom brány firewall sa nedá pripojiť k webom HTTP</translation>

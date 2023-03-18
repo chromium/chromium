@@ -868,7 +868,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Conectividade<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Nenhum}=1{dados de login para 1 conta}one{dados de login para # conta}other{dados de login para # contas}}</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141641372357166056">Nenhuma decisão de consentimento</translation>
 <translation id="3145945101586104090">Falha ao decodificar resposta</translation>
@@ -3364,7 +3363,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">LIMPAR FORMULÁRIO</translation>
 <translation id="936602727769022409">Você pode perder o acesso à sua Conta do Google. O Chromium recomenda que sua senha seja alterada agora. Solicitaremos que você faça login.</translation>
 <translation id="937457230470581909">Zoológicos, aquários e reservas</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quais dados são usados<ph name="END_BOLD" />: seus temas de anúncios se baseiam no histórico de navegação recente, uma lista de sites que você visitou usando o Chrome neste dispositivo.</translation>

@@ -93,6 +93,7 @@
 <translation id="257931822824936280">ተዘርግቷል - ለመሰብሰብ ጠቅ ያድርጉ</translation>
 <translation id="2586657967955657006">የቅንጥብ ሰሌዳ</translation>
 <translation id="2597457036804169544">ጠቆር ያለ ገጽታን ጣቢያዎች ላይ አትተግብር</translation>
+<translation id="2606760465469169465">በራስ-ሰር ማረጋገጥ</translation>
 <translation id="2621115761605608342">ጃቫስክሪፕትን ለአንድ የተወሰነ ጣቢያ ፍቀድ።</translation>
 <translation id="2653659639078652383">አስገባ</translation>
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">የመረጧቸው እውቂያዎች ለ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ይጋራሉ።</translation>
 <translation id="5216942107514965959">መጨረሻ የተጎበኘው ዛሬ</translation>
 <translation id="5225463052809312700">ካሜራን አብራ</translation>
+<translation id="5229337741799419985">ይህ ቅንብር እርስዎን ሳይለይ ወይም ጣቢያዎች የአሰሳ ታሪክዎን እንዲያዩ ሳይፈቅድ ይሠራል</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5264323282659631142">«<ph name="CHIP_LABEL" />»ን ያስወግዱ</translation>
 <translation id="528192093759286357">ከሙሉ ማያ ገጽ ለመውጣት ከላይ ይጎትቱ እና የተመለስ አዝራሩን ይንኩ።</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6689172468748959065">የመገለጫ ፎቶዎች</translation>
 <translation id="6697925417670533197">ንቁ ውርዶች</translation>
+<translation id="6701547804986694515">የሚጎበኙት ጣቢያ ቦት አለመሆንዎን የሚያረጋግጥ መረጃ በChrome ሊያስቀምጥ ይችላል። ማሰስዎን ሲቀጥሉ እውነተኛ ሰው ሊሆኑ እንደሚችሉ ጣቢያዎች በChrome መፈተሽ እና እርስዎ ከዚህ ቀደም በጎበኙት ጣቢያ ላይ ማረጋገጥ ይችላሉ።</translation>
 <translation id="6722828510648505498">የመግቢያ መጠይቆችን ከማንነት አገልግሎቶች ያግዱ።</translation>
 <translation id="6746124502594467657">ወደታች አውርድ</translation>
 <translation id="6749077623962119521">ፈቃዶችን ዳግም ይጀመሩ?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">ምስል ይምረጡ</translation>
 <translation id="8801436777607969138">ጃቫስክሪፕትን ለአንድ የተወሰነ ጣቢያ አግድ።</translation>
 <translation id="8803526663383843427">ሲበራ</translation>
+<translation id="8805385115381080995">አንድ ጣቢያ እርስዎ እውነተኛ ሰው መሆንዎን እንዲያረጋግጡ ሊጠይቅዎ የሚችልበት ዕድል አነስተኛ ስለሆነ ማሰስ ፈጣን ነው</translation>
 <translation id="8816026460808729765">ጣቢያዎች ዳሳሾችን እንዳይደርሱ ያግዱ</translation>
 <translation id="8823559166155093873">ኩኪዎችን አግድ</translation>
 <translation id="8847988622838149491">ዩ ኤስ ቢ</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">ይህ ገጽ አደገኛ ነው</translation>
 <translation id="9201023452444595544">ማናቸውም የመስመር ውጭ ውሂብ ይጸዳል</translation>
 <translation id="930525582205581608">ይህ ጣቢያ ይረሳ?</translation>
+<translation id="947156494302904893">የሚጎበኟቸው ጣቢያዎች እርስዎ ቦት ሳይሆኑ እውነተኛ ሰው እንደሆኑ ማረጋገጥ ይችላሉ</translation>
 <translation id="967624055006145463">የተከማቸ ውሂብ</translation>
 </translationbundle>

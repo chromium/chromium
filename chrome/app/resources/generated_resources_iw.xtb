@@ -932,6 +932,7 @@
 <translation id="1796588414813960292">תכונות שצריכות צלילים לא יפעלו</translation>
 <translation id="1797117170091578105">‏אפשר לשחק באמצעות המקלדת של Chromebook. ניתן להתאים אישית את המקשים לפעולות ספציפיות.</translation>
 <translation id="1800502858278951817">לא התקבלה בקשה מתוסף כלשהו לקרוא ולשנות את <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">‏מקש החיפוש + O, ואז W</translation>
 <translation id="1802624026913571222">מעבר למצב שינה כשסוגרים את הכיסוי</translation>
 <translation id="1802687198411089702">הדף לא מגיב. אפשר לחכות או לצאת.</translation>
 <translation id="1803531841600994172">שפת היעד של התרגום</translation>
@@ -1190,6 +1191,7 @@
 <translation id="2023167225947895179">‏ייתכן שיהיה קל לנחש את ה-PIN</translation>
 <translation id="202352106777823113">ההורדה נמשכה זמן רב מדי, והיא נעצרה על ידי הרשת.</translation>
 <translation id="2024195579772565064">מחיקת מנוע החיפוש</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> קרס. יש ללחוץ על בלון זה כדי לטעון מחדש את התוסף.</translation>
 <translation id="2028449514182362831">תכונות שצריכות חיישני תנועה לא יפעלו</translation>
 <translation id="202918510990975568">יש להזין את הסיסמה כדי לקבוע את הגדרות האבטחה ולהיכנס לחשבון</translation>
@@ -1266,6 +1268,7 @@
 <translation id="2090165459409185032">‏כדי לשחזר את המידע מהחשבון, יש לעבור אל: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">חיבור באופן אוטומטי עם ההתחברות</translation>
 <translation id="2090876986345970080">הגדרה של אבטחת מערכת</translation>
+<translation id="2091887806945687916">צליל</translation>
 <translation id="2092356157625807382">‏<ph name="BEGIN_H3" />תכונות לניפוי באגים<ph name="END_H3" />
       <ph name="BR" />
       יש לך אפשרות להפעיל תכונות לניפוי באגים במכשיר ChromeOS כדי להתקין ולבדוק קוד מותאם אישית במכשיר שלך. כך ניתן:<ph name="BR" />
@@ -3189,6 +3192,7 @@
 <translation id="3778868487658107119">‏אפשר לשאול אותו שאלות ולומר לו לבצע פעולות. העוזר הפרטי של Google מוכן תמיד לסייע לך.</translation>
 <translation id="3780542776224651912">ל<ph name="BRAND" /> אין אפשרות לבדוק אם הסיסמאות שלך נחשפו בפרצות באבטחת מידע. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="3781742599892759500">‏גישה של Linux למיקרופון</translation>
+<translation id="3783725005098956899">הצגת היומן</translation>
 <translation id="3783889407390048282">‏עליך לפנות מקום כדי לא לאבד את הגישה ל-Android.</translation>
 <translation id="3784472333786002075">‏קובצי cookie הם קבצים שנוצרים על ידי אתרים. יש שני סוגים של קובצי cookie: קובצי cookie של צד ראשון נוצרים על ידי האתר שנכנסת אליו. האתר מופיע בסרגל הכתובות. קובצי cookie של צד שלישי נוצרים על-ידי אתרים אחרים. האתרים האלה הם הבעלים של חלק מהתוכן בדף האינטרנט שנכנסת אליו, כמו מודעות או תמונות.</translation>
 <translation id="3785308913036335955">הצגת קיצור דרך אל יישומים</translation>
@@ -8301,6 +8305,7 @@
 <translation id="8419098111404128271">תוצאות לחיפוש "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">עריכת ערכים במילון</translation>
 <translation id="8421361468937925547">כתוביות מיידיות (באנגלית בלבד)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">המגש חסר</translation>
 <translation id="8424250197845498070">נחסם על ידי ההגנה המתקדמת</translation>
 <translation id="8425213833346101688">שינוי</translation>
@@ -8971,7 +8976,6 @@
 <translation id="9026731007018893674">הורדה</translation>
 <translation id="9026852570893462412">הפעולה עשויה להימשך מספר דקות. מתבצעת הורדה של המכונה הווירטואלית.</translation>
 <translation id="9027459031423301635">פתיחת קישור בכרטיסייה &amp;חדשה</translation>
-<translation id="9027707169256972235">הסרה</translation>
 <translation id="9030515284705930323">‏הארגון שלך לא הפעיל את חנות Google Play בחשבון שלך. למידע נוסף, יש לפנות למנהל המערכת.</translation>
 <translation id="9030754204056345429">מהיר יותר</translation>
 <translation id="9030785788945687215">Gmail</translation>

@@ -683,6 +683,7 @@
 <translation id="259821504105826686">Arts photographiques et numériques</translation>
 <translation id="2601150049980261779">Films de romance</translation>
 <translation id="2604589665489080024">Musique pop</translation>
+<translation id="2606760465469169465">Vérification automatique</translation>
 <translation id="2610561535971892504">Cliquer pour copier</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />n'enregistre pas<ph name="END_EMPHASIS" /> les informations suivantes :
         <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Essayer d'exécuter Connectivity Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Accéder à <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Aucun}=1{données de connexion de 1 compte}one{données de connexion de # compte}other{données de connexion de # comptes}}</translation>
 <translation id="3141093262818886744">Ouvrir quand même</translation>
 <translation id="3141641372357166056">Aucune décision de consentement</translation>
 <translation id="3145945101586104090">Échec du décodage de la réponse</translation>
@@ -1900,6 +1900,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> Chrome supprime automatiquement les sites ayant de plus de quatre semaines. Un site que vous visitez de nouveau peut réapparaître dans la liste. Vous pouvez également empêcher un site de vous suggérer des annonces et désactiver les annonces suggérées par le site à tout moment dans les paramètres de Chrome.</translation>
 <translation id="5610142619324316209">De vérifier la connexion</translation>
 <translation id="5610807607761827392">Vous pouvez gérer les cartes et les adresses dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Enregistrer dans le compte</translation>
 <translation id="561165882404867731">Traduisez cette page avec Google Traduction</translation>
 <translation id="5612720917913232150">L'URL <ph name="URL" /> veut utiliser la position de votre ordinateur</translation>
 <translation id="561669346091975195">Émissions de science-fiction et de fantastique</translation>
@@ -3186,6 +3187,7 @@ Détails supplémentaires :
 <translation id="8806285662264631610">Produits pour le bain et le corps</translation>
 <translation id="8807160976559152894">Couper après chaque page</translation>
 <translation id="8809203544698246977">Les sujets bloqués apparaissent ici</translation>
+<translation id="8811470563853401328">Enregistrer l'adresse dans le compte?</translation>
 <translation id="8813277370772331957">Me le rappeler plus tard</translation>
 <translation id="8814707942599948500">Enveloppe C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour mettre à jour Chrome dans les paramètres de Chrome</translation>
@@ -3279,6 +3281,7 @@ Détails supplémentaires :
 <translation id="9042617223719777575">Grande capacité</translation>
 <translation id="9044359186343685026">Utiliser Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Ces actions nécessitent que la politique <ph name="POLICY_NAME" /> soit définie sur <ph name="POLICY_VALUE" /> : <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 po x 36 po</translation>
 <translation id="9049981332609050619">Vous avez essayé d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat non valide.</translation>
 <translation id="9050666287014529139">Phrase de passe</translation>
@@ -3358,7 +3361,6 @@ Détails supplémentaires :
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">EFFACER LE CONTENU DU FORMULAIRE</translation>
 <translation id="936602727769022409">Vous risquez de perdre l'accès à votre compte Google. Chromium recommande de modifier votre mot de passe immédiatement. Vous serez invité à vous connecter.</translation>
 <translation id="937457230470581909">Zoos, aquariums et réserves naturelles</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> Vos sujets d'annonces sont basés sur votre historique de navigation récent, soit une liste des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>

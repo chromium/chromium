@@ -423,7 +423,6 @@
 <translation id="3151786313568798007">方向</translation>
 <translation id="3153444934357957346">使用多帳戶登入功能時，一次最多只能登入 <ph name="MULTI_PROFILE_USER_LIMIT" /> 個帳戶。</translation>
 <translation id="3154351730702813399">裝置管理員可能會監控你的瀏覽活動。</translation>
-<translation id="3157931365184549694">還原</translation>
 <translation id="316086887565479535">範本中有不支援的應用程式</translation>
 <translation id="3161500364292033097">關閉桌面和視窗</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在復原 <ph name="DEVICE_TYPE" />。你的裝置將會重設，且所有資料將遭到刪除。</translation>
@@ -1162,7 +1161,6 @@
 <translation id="6781002679438061620">桌面 9</translation>
 <translation id="6782182743534150858">桌面 13</translation>
 <translation id="6786750046913594791">關閉資料夾</translation>
-<translation id="6787595647772650851">還原上一個工作階段</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="679368458793552943">放大鏡開啟時放大畫面</translation>
 <translation id="6801878137098616817">最近編輯過</translation>

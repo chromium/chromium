@@ -119,6 +119,7 @@
 <translation id="1947737735496445907">Imechapishwa</translation>
 <translation id="1951012854035635156">Mratibu</translation>
 <translation id="1962550982027027473">APN chaguomsingi inahitajika</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Picha ya wasifu kwenye Google</translation>
 <translation id="1979103255016296513">Muda wa kubadilisha nenosiri umeisha</translation>
 <translation id="1999615961760456652">Ukurasa wa Mwanzo</translation>
@@ -253,6 +254,7 @@
 <translation id="3310640316857623290">Muda wa kusubiri wa DNS umezidi zaidi kiwango cha juu kinachoruhusiwa</translation>
 <translation id="3328783797891415197">Jaribio linatekelezwa</translation>
 <translation id="3340011300870565703">Kiwango cha chaji cha spika ya masikioni ya kulia ni asilimia <ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Umeunganishwa</translation>
 <translation id="3369013195428705271">Una uhakika kuwa ungependa kufuta historia yote ya kuchapisha? Kazi unazoendelea kuchapisha hazitafutwa.</translation>
 <translation id="3404249063913988450">Washa taswira ya skrini</translation>
@@ -340,6 +342,7 @@
 <translation id="4131410914670010031">Nyeusi na nyeupe</translation>
 <translation id="4145784616224233563">Kinga mtandao ya HTTP</translation>
 <translation id="4147897805161313378">Picha kwenye Google</translation>
+<translation id="4150201353443180367">Onyesho</translation>
 <translation id="4155551848414053977">Hakikisha kichanganuzi kimewashwa na kinapatikana kupitia mtandao wako au muunganisho wa moja kwa moja</translation>
 <translation id="4159784952369912983">Zambarau</translation>
 <translation id="4170180284036919717">Piga picha</translation>
@@ -355,6 +358,7 @@
 <translation id="4250229828105606438">Picha ya skrini</translation>
 <translation id="4258281355379922695">Muda wa Kusubiri Maombi ya HTTPS</translation>
 <translation id="4271957103967917607">Angalia Skrini Nzima</translation>
+<translation id="4275663329226226506">Vyombo vya Habari</translation>
 <translation id="4289540628985791613">Muhtasari</translation>
 <translation id="4289849978083912975">Onyesho la slaidi</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
@@ -447,6 +451,7 @@
 <translation id="498186245079027698">Kagua kichanganuzi kisha ujaribu tena. Hakikisha kuna nafasi ya kutosha kwenye kompyuta yako ya kuhifadhi faili zilizochanganuliwa.</translation>
 <translation id="4985509611418653372">Tekeleza</translation>
 <translation id="4987769320337599931">Kinga mtandao</translation>
+<translation id="4988526792673242964">Kurasa</translation>
 <translation id="4999333166442584738">Ficha ripoti</translation>
 <translation id="500920857929044050">Komesha jaribio</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -770,6 +775,7 @@
 <translation id="7936303884198020182">Hakuna seva za majina zilizopatikana</translation>
 <translation id="7942349550061667556">Nyekundu</translation>
 <translation id="7943235353293548836">Kipindi cha kutuma ujumbe endelevu wa kukagua muunganisho</translation>
+<translation id="7953669802889559161">Mbinu za kuingiza data</translation>
 <translation id="7955587717700691983">Kibodi yenye bluetooth</translation>
 <translation id="7960831585769876809">Halijoto</translation>
 <translation id="7977800524392185497">Ili ujiunge kwenye mtandao wa <ph name="NETWORK_NAME" />, nenda kwenye Mipangilio</translation>
@@ -782,6 +788,7 @@
 <translation id="8041089156583427627">Tuma Maoni</translation>
 <translation id="8045012663542226664">Maikrofoni imezimwa</translation>
 <translation id="8075838845814659848">Chaji iliyosalia</translation>
+<translation id="8076492880354921740">Vichupo</translation>
 <translation id="8082366717211101304">Imeshindwa kusuluhisha DNS kutoka kwenye programu za Android</translation>
 <translation id="808894953321890993">Badilisha nenosiri</translation>
 <translation id="8094062939584182041">Ruhusu Google ikutumie barua pepe kuhusu hitilafu hii</translation>
@@ -791,6 +798,7 @@
 <translation id="8132480444149501833">Omba Hesabu za Trafiki</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Chagua <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Zana za wasanidi programu</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Ambatisha</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>
@@ -858,6 +866,7 @@
 <translation id="8798441408945964110">Jina la mtoa huduma</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Mandhari</translation>
+<translation id="8820817407110198400">Alamisho</translation>
 <translation id="8834539327799336565">Vilivyounganishwa kwa sasa</translation>
 <translation id="8845001906332463065">Pata usaidizi</translation>
 <translation id="8855781559874488009">Imeshindwa kuunganisha kwenye tovuti za HTTP kupitia kinga mtandao</translation>

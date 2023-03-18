@@ -93,6 +93,7 @@
 <translation id="257931822824936280">বিস্তাৰ কৰা আছে - সংকোচন কৰিবলৈ ক্লিক কৰক।</translation>
 <translation id="2586657967955657006">ক্লিপব'ৰ্ড</translation>
 <translation id="2597457036804169544">ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ নকৰিব</translation>
+<translation id="2606760465469169465">স্বয়ংক্ৰিয় সত্যাপন</translation>
 <translation id="2621115761605608342">নিৰ্দিষ্ট ছাইটৰ বাবে JavaScriptক অনুমতি দিয়ক।</translation>
 <translation id="2653659639078652383">দাখিল কৰক</translation>
 <translation id="2677748264148917807">ত্যাগ কৰক</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">আপুনি বাছনি কৰা সম্পৰ্কবোৰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
 <translation id="5216942107514965959">শেষবাৰ আজি চাইছে</translation>
 <translation id="5225463052809312700">কেমেৰা অন কৰক</translation>
+<translation id="5229337741799419985">এই ছেটিংটোৱে আপোনাক চিনাক্ত নকৰাকৈ অথবা ছাইটসমূহক আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস চোৱাৰ অনুমতি নিদিয়াকৈ কাম কৰে</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ আঁতৰাওক</translation>
 <translation id="528192093759286357">সম্পূৰ্ণ স্ক্ৰীনৰ পৰা প্ৰস্থান কৰিবলৈ ওপৰৰ পৰা টানি আনক আৰু বেক বুটামটো টিপক।</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6689172468748959065">প্র’ফাইল ফট’সমূহ</translation>
 <translation id="6697925417670533197">সক্রিয় ডাউনল’ডসমূহ</translation>
+<translation id="6701547804986694515">আপুনি চোৱা এটা ছাইটে Chromeৰ জৰিয়তে তথ্য ছেভ কৰিব পাৰে যি আপুনি ব’ট নহয় বুলি সত্যাপন কৰে। আপুনি ব্ৰাউজ কৰি থাকিলে, ছাইটসমূহে Chromeৰ জৰিয়তে পৰীক্ষা কৰিব পাৰে আৰু আপুনি পূৰ্বে চোৱা ছাইটৰ পৰা সত্যাপন কৰিব পাৰে যে আপুনি এগৰাকী প্ৰকৃত ব্যৱহাৰকাৰী হোৱাৰ সম্ভাৱনা বেছি</translation>
 <translation id="6722828510648505498">পৰিচয় সেৱাসমূহৰ পৰা ছাইন-ইনৰ প্ৰম্প্‌ট অৱৰোধ কৰক।</translation>
 <translation id="6746124502594467657">তললৈ নিয়ক</translation>
 <translation id="6749077623962119521">অনুমতি ৰিছেট কৰিবনে?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">কোনো প্ৰতিচ্ছবি বাছনি কৰক</translation>
 <translation id="8801436777607969138">কোনো নির্দিষ্ট ছাইটৰ বাবে JavaScript অৱৰোধ কৰক।</translation>
 <translation id="8803526663383843427">অন কৰা থাকিলে</translation>
+<translation id="8805385115381080995">ব্ৰাউজিং দ্ৰুত হৈছে কাৰণ এটা ছাইটে আপোনাক আপুনি এগৰাকী প্ৰকৃত ব্যক্তি বুলি সত্যাপন কৰিবলৈ কোৱাৰ সম্ভাৱনা কম</translation>
 <translation id="8816026460808729765">ছেন্সৰসমূহ এক্সেছ কৰাত ছাইটসমূহ অৱৰোধ কৰক</translation>
 <translation id="8823559166155093873">কুকীসমূহ অৱৰোধ কৰক</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">এই পৃষ্ঠাখন বিপজ্জনক</translation>
 <translation id="9201023452444595544">সকলো অফলাইন ডেটা মচা হ’ব</translation>
 <translation id="930525582205581608">এই ছাইটটো পাহৰি যাব নেকি?</translation>
+<translation id="947156494302904893">আপুনি চোৱা ছাইটসমূহে আপুনি এগৰাকী প্ৰকৃত ব্যক্তি আৰু ব’ট নহয় বুলি সত্যাপন কৰিব পাৰে</translation>
 <translation id="967624055006145463">ডেটা ষ্ট’ৰ কৰা হ’ল</translation>
 </translationbundle>

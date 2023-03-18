@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Atspausdinta</translation>
 <translation id="1951012854035635156">Padėjėjas</translation>
 <translation id="1962550982027027473">Būtinas numatytasis APN</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">„Google“ profilio nuotrauka</translation>
 <translation id="1979103255016296513">Vėluojama pakeisti slaptažodį</translation>
 <translation id="1999615961760456652">Fiksuotasis portalas</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
 <translation id="3328783797891415197">Vykdomas bandymas</translation>
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Prijungta</translation>
 <translation id="3369013195428705271">Ar tikrai norite išvalyti visą spausdinimo istoriją? Vykdomos spausdinimo užduotys nebus išvalytos.</translation>
 <translation id="3404249063913988450">Įgalinti ekrano užsklandą</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Nespalvotai</translation>
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
+<translation id="4150201353443180367">Pateiktis</translation>
 <translation id="4155551848414053977">Įsitikinkite, kad skaitytuvas įjungtas ir pasiekiamas tinkle arba tiesioginiu ryšiu</translation>
 <translation id="4159784952369912983">Violetinė</translation>
 <translation id="4170180284036919717">Fotografuoti</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Ekrano kopija</translation>
 <translation id="4258281355379922695">HTTP delsa</translation>
 <translation id="4271957103967917607">Peržiūrėti per visą ekraną</translation>
+<translation id="4275663329226226506">Medija</translation>
 <translation id="4289540628985791613">Apžvalga</translation>
 <translation id="4289849978083912975">Skaidrių demonstracija</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Patikrinkite skaitytuvą ir bandykite dar kartą. Įsitikinkite, kad vietinėje sistemoje pakanka vietos nuskaitytiems failams išsaugoti.</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
 <translation id="4987769320337599931">Užkarda</translation>
+<translation id="4988526792673242964">Psl.</translation>
 <translation id="4999333166442584738">Slėpti ataskaitą</translation>
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Domenų pavadinimų serverių nerasta</translation>
 <translation id="7942349550061667556">Raudona</translation>
 <translation id="7943235353293548836">Nuolatinio palaikymo intervalas</translation>
+<translation id="7953669802889559161">Įvestys</translation>
 <translation id="7955587717700691983">„Bluetooth“ klaviatūra</translation>
 <translation id="7960831585769876809">Temperatūra</translation>
 <translation id="7977800524392185497">Norėdami prisijungti prie „<ph name="NETWORK_NAME" />“ tinklo, eikite į Nustatymus</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>
 <translation id="8045012663542226664">Mikrofono nutildymas</translation>
 <translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
+<translation id="8076492880354921740">Skirtukai</translation>
 <translation id="8082366717211101304">Nepavyko pateikti DNS iš „Android“ programų</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
 <translation id="8094062939584182041">Leisti „Google“ siųsti jums el. laišką apie šią problemą</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Pateikti srauto skaitiklių užklausą</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Pasirinkite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Kūrėjo įrankiai</translation>
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="8183974620058026102">Pridėti</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">WI-Fi</translation>
 <translation id="8818152010000655963">Ekrano fonas</translation>
 <translation id="8820457400746201697">Mėlyną lietimo tašką perkelkite į veiksmą. Pasirinkite susietą klavišą, kurį norite tinkinti.</translation>
+<translation id="8820817407110198400">Žymės</translation>
 <translation id="8834539327799336565">Šiuo metu susieti</translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
 <translation id="8855781559874488009">Nepavyko prisijungti per užkardą prie HTTP svetainių</translation>

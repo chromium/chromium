@@ -613,6 +613,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="15373452373711364">Großer Cursor</translation>
 <translation id="1540605929960647700">Demomodus aktivieren</translation>
 <translation id="1541346352678737112">Kein Netzwerk gefunden</translation>
+<translation id="154198613844929213">{0,plural, =0{Daten werden jetzt gelöscht.}=1{Daten werden gelöscht in: 1 Sekunde}other{Daten werden gelöscht in: # Sekunden}}</translation>
 <translation id="1542137295869176367">Deine Anmeldedaten konnten nicht aktualisiert werden</translation>
 <translation id="1542514202066550870">Über diesen Tab werden VR-Inhalte für ein Headset abgespielt.</translation>
 <translation id="1543284117603151572">Aus Edge importiert</translation>
@@ -881,6 +882,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1766575458646819543">Vollbildmodus beendet</translation>
 <translation id="1766957085594317166">Speichere Passwörter sicher in deinem Google-Konto und du musst sie nie wieder eingeben</translation>
 <translation id="1767043563165955993">Für Android-Apps verwenden</translation>
+<translation id="1767508543310534319">Satzzeichenecho</translation>
 <translation id="1768212860412467516">Feedback geben zu „<ph name="EXPERIMENT_NAME" />“.</translation>
 <translation id="1768278914020124551">Hoppla! Beim Kontaktieren des Anmeldeservers ist ein Problem aufgetreten. Überprüfe bitte deine Netzwerkverbindung und den Domainnamen und versuche es noch einmal.</translation>
 <translation id="1769104665586091481">Link in neuem &amp;Fenster öffnen</translation>
@@ -918,6 +920,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
 <translation id="1797117170091578105">Du kannst zum Spielen deine Chromebook-Tastatur verwenden und Tasten bestimmte Aktionen zuweisen.</translation>
 <translation id="1800502858278951817">Keine Erweiterungen haben angefragt, Daten auf <ph name="SITE_NAME" /> abzurufen und zu ändern</translation>
+<translation id="180203835522132923">Suchtaste + O, anschließend W</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
 <translation id="1802687198411089702">Die Seite reagiert nicht. Du kannst warten, bis sie wieder reagiert, oder sie schließen.</translation>
 <translation id="1803531841600994172">Sprache, in die übersetzt wird</translation>
@@ -1175,6 +1178,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="2023167225947895179">Diese PIN kann leicht erraten werden</translation>
 <translation id="202352106777823113">Der Download hat zu lange gedauert und wurde vom Netzwerk gestoppt.</translation>
 <translation id="2024195579772565064">Suchmaschine löschen</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ist abgestürzt. Klicke auf dieses Fenster, um die Erweiterung erneut zu laden.</translation>
 <translation id="2028449514182362831">Funktionen, die Bewegungssensoren benötigen, funktionieren dann nicht</translation>
 <translation id="202918510990975568">Gib dein Passwort ein, um die Sicherheits- und Anmeldungseinstellungen zu konfigurieren</translation>
@@ -1251,6 +1255,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2090165459409185032">Besuche die folgende Seite, um deine Kontoinformationen wiederzuherstellen: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Stellt automatisch eine Verbindung her, wenn du dich anmeldest.</translation>
 <translation id="2090876986345970080">Sicherheitseinstellung des Systems</translation>
+<translation id="2091887806945687916">Ton</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Funktionen zur Fehlerbehebung<ph name="END_H3" />
       <ph name="BR" />
       Du kannst die Funktionen zur Fehlerbehebung auf deinem Chrome OS-Gerät aktivieren, um benutzerdefinierten Code auf dem Gerät zu installieren und zu testen. Dadurch kannst du<ph name="BR" />
@@ -2959,6 +2964,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="360180734785106144">Neue Funktionen anbieten, sobald sie verfügbar sind</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3602870520245633055">Drucken und scannen</translation>
+<translation id="3602894439067790744">Nummern vorlesen als</translation>
 <translation id="3603622770190368340">Netzwerkzertifikat anfordern</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} Konto mit demselben Passwort}other{{COUNT} Konten mit demselben Passwort}}</translation>
 <translation id="3605780360466892872">Hemdträger</translation>
@@ -3169,6 +3175,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3778868487658107119">Du kannst ihm Fragen stellen und ihn Dinge erledigen lassen. Er ist immer für dich da.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kann deine Passwörter nicht auf Datenpannen prüfen. Versuch es bitte später noch einmal.</translation>
 <translation id="3781742599892759500">Mikrofonzugriff für Linux</translation>
+<translation id="3783725005098956899">Protokoll anzeigen</translation>
 <translation id="3783889407390048282">Gib Speicherplatz frei, damit du den Zugriff auf Android nicht verlierst.</translation>
 <translation id="3784472333786002075">Cookies sind Dateien, die durch Websites erstellt werden. Es gibt zwei Arten von Cookies: Eigene Cookies werden von der Website erstellt, die du besuchst. Die Website wird in der Adressleiste angezeigt. Drittanbieter-Cookies werden von anderen Websites erstellt. Diesen Websites gehören einige der Inhalte, wie z. B. Werbeanzeigen oder Bilder, die du auf der besuchten Website siehst.</translation>
 <translation id="3785308913036335955">Verknüpfung "Apps" anzeigen</translation>
@@ -4309,6 +4316,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="481574578487123132">Verknüpfte Geräte</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Details</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 Lesezeichen gelöscht}other{{COUNT} Lesezeichen gelöscht}}</translation>
+<translation id="4819323978093861656">{0,plural, =0{Wird jetzt geschlossen.}=1{Wird geschlossen in: 1 Sekunde}other{Wird geschlossen in: # Sekunden}}</translation>
 <translation id="4819607494758673676">Google Assistant-Benachrichtigungen</translation>
 <translation id="4820236583224459650">Als aktives Ticket festlegen</translation>
 <translation id="4821935166599369261">&amp;Profilerstellung aktiviert</translation>
@@ -4738,6 +4746,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5225463052809312700">Kamera einschalten</translation>
 <translation id="5227679487546032910">Blaugrüner Standardavatar</translation>
 <translation id="5228579091201413441">Synchronisierung aktivieren</translation>
+<translation id="5229337741799419985">Diese Einstellung funktioniert, ohne dass dabei deine Identität preisgegeben oder Websites erlaubt wird, deinen Browserverlauf einzusehen</translation>
 <translation id="5230516054153933099">Fenster</translation>
 <translation id="5233019165164992427">NaCl-Debug-Port</translation>
 <translation id="5233231016133573565">Prozess-ID</translation>
@@ -4899,6 +4908,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5372579129492968947">Erweiterung loslösen</translation>
 <translation id="5372632722660566343">Ohne Konto fortfahren</translation>
 <translation id="5375318608039113175">Wenn du Nearby Share mit diesen Kontakten verwenden möchtest, musst du deinen Kontakten die mit ihren Google-Konten verknüpften E-Mail-Adressen hinzufügen.</translation>
+<translation id="5375577102295339548">Websites können helfen, zu bestätigen, dass du kein Bot bist</translation>
 <translation id="5376094717770783089">Fordert Zugriff an</translation>
 <translation id="5376169624176189338">Klicken, um zurückzugehen. Gedrückt halten, um den Verlauf aufzurufen</translation>
 <translation id="5376931455988532197">Datei zu groß</translation>
@@ -4933,6 +4943,9 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Aus deinem Google-Konto</translation>
 <translation id="5411022484772257615">Registrierung bei einer Bildungseinrichtung konnte nicht abgeschlossen werden</translation>
+<translation id="5411856344659127989">Wenn du ein Konto für jemand anderen hinzufügen möchtest, kannst du <ph name="LINK_BEGIN" />deinem <ph name="DEVICE_TYPE" /> eine neue Person hinzufügen<ph name="LINK_END" />.
+
+Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten möglicherweise für dieses Konto. Du kannst deine Google-Konten in den <ph name="SETTINGS_LINK_BEGIN" />Einstellungen<ph name="SETTINGS_LINK_END" /> verwalten.</translation>
 <translation id="5413640305322530561">Weitere Informationen über Diagnose und Nutzungsdaten</translation>
 <translation id="5414198321558177633">Profilliste wird aktualisiert. Das kann einige Minuten dauern.</translation>
 <translation id="5414566801737831689">Die Symbole der von dir besuchten Websites lesen</translation>
@@ -5277,6 +5290,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5723967018671998714">Drittanbieter-Cookies sind im Inkognitomodus gesperrt</translation>
 <translation id="5724642200346111167">Websitedaten werden von deinem Gerät gelöscht, wenn du alle Fenster schließt</translation>
 <translation id="5727728807527375859">Erweiterungen, Apps und Designs können deinen Computer beschädigen. Möchtest du den Vorgang wirklich fortsetzen?</translation>
+<translation id="5728235544432023605">Streamingsitzung reagiert nicht. Bitte über <ph name="DEVICE_NAME" /> beenden.</translation>
 <translation id="5728450728039149624">Optionen für die Smart Lock-Displaysperre</translation>
 <translation id="5729712731028706266">&amp;Ansicht</translation>
 <translation id="5731247495086897348">Einfügen und &amp;aufrufen</translation>
@@ -5361,6 +5375,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5804259315582798390">Fehler beim Aktivieren der lokalen Datenwiederherstellung</translation>
 <translation id="5805268472388605531">Drücke und halte die Tasten gedrückt, um Akzentzeichen und Sonderzeichen zu sehen</translation>
+<translation id="5805354171420804923">Suchergebnisse mit der neuen Seitenleiste schneller vergleichen</translation>
 <translation id="5805697420284793859">Fenstermanager</translation>
 <translation id="5806447147478173900">Von angezeigten Websites belegter Speicherplatz insgesamt: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Standard)</translation>
@@ -6342,6 +6357,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6700093763382332031">Sperre für SIM-Karte</translation>
 <translation id="6700480081846086223"><ph name="HOST_NAME" /> übertragen</translation>
 <translation id="6701535245008341853">Profil konnte nicht geladen werden.</translation>
+<translation id="6701547804986694515">Von dir besuchte Websites können Informationen in Chrome speichern, die belegen, dass du kein Bot bist. Wenn du dann weitersurfst, können Websites diese Daten von Chrome abrufen und über eine zuvor von dir besuchte Website bestätigen, dass du wahrscheinlich eine echte Person bist.</translation>
 <translation id="6701824422332982935">Seite aktualisieren, um diese Erweiterungen zu verwenden</translation>
 <translation id="6702639462873609204">&amp;Bearbeiten...</translation>
 <translation id="6703212423117969852">Du kannst es später in Chrome noch einmal versuchen.</translation>
@@ -7119,6 +7135,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7409735910987429903">Websites senden möglicherweise Pop-ups zum Anzeigen von Werbung oder bringen dich mithilfe von Weiterleitungen zu Websites, die du möglicherweise gar nicht besuchen möchtest</translation>
 <translation id="7409854300652085600">Lesezeichen wurden importiert.</translation>
 <translation id="7410344089573941623">Nachfragen, wenn <ph name="HOST" /> auf Kamera und Mikrofon zugreifen möchte</translation>
+<translation id="7410421966064092098">Websites können nicht helfen, zu bestätigen, dass du kein Bot bist</translation>
 <translation id="7410852728357935715">Auf ein Gerät streamen</translation>
 <translation id="7411614333737930931">Bitte starte das Gerät neu und versuche es noch einmal</translation>
 <translation id="741204030948306876">Ja, bitte</translation>
@@ -7245,6 +7262,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Tastenkombinationen anzeigen</translation>
 <translation id="7522255036471229694">Sag „Hey Google“.</translation>
+<translation id="7523117833414447032">Beim Lesen von Großbuchstaben</translation>
 <translation id="7523585675576642403">Profil umbenennen</translation>
 <translation id="7525067979554623046">Erstellen</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{noch 1}other{{NUM_DOWNLOADS} weitere}}</translation>
@@ -8270,6 +8288,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8419098111404128271">Suchergebnisse für "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">Wörterbucheinträge bearbeiten</translation>
 <translation id="8421361468937925547">Automatische Untertitel (nur auf Englisch)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Fach fehlt</translation>
 <translation id="8424250197845498070">Vom erweiterten Sicherheitsprogramm blockiert</translation>
 <translation id="8425213833346101688">Ändern</translation>
@@ -8684,6 +8703,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8804419452060773146">Wird geöffnet in</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Tab in ein anderes Fenster verschieben}other{Tabs in ein anderes Fenster verschieben}}</translation>
 <translation id="8805140816472474147">Synchronisierungseinstellungen bestätigen, um die Synchronisierung zu starten.</translation>
+<translation id="8805385115381080995">Das Surfen ist so schneller, da es weniger wahrscheinlich ist, dass eine Website dich darum bittet, deine Identität als echte Person zu bestätigen</translation>
 <translation id="8806680466228877631">Mit "<ph name="SHORTCUT" />" lassen sich versehentlich geschlossene Tabs wieder öffnen</translation>
 <translation id="8807588541160250261">Wenn keine Geräte verbunden sind</translation>
 <translation id="8807632654848257479">Stabil</translation>
@@ -8840,6 +8860,9 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="894360074127026135">Netscape International Step-up</translation>
 <translation id="8943937581166190941">Eine Erweiterung verwendet ein HID-Gerät</translation>
 <translation id="8944099748578356325">Den Akku schneller verbrauchen (aktueller Stand: <ph name="BATTERY_PERCENTAGE" /> %)</translation>
+<translation id="8944725102565796255">Wenn du dieses Konto nur einmal verwenden möchten, kannst du <ph name="GUEST_LINK_BEGIN" />das Gerät als Gast verwenden<ph name="GUEST_LINK_END" />. Wenn du ein Konto für jemand anderen hinzufügen möchtest, kannst du <ph name="LINK_BEGIN" />deinem <ph name="DEVICE_TYPE" /> eine neue Person hinzufügen<ph name="LINK_END" />.
+
+Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten möglicherweise für dieses Konto. Du kannst deine Google-Konten in den <ph name="SETTINGS_LINK_BEGIN" />Einstellungen<ph name="SETTINGS_LINK_END" /> verwalten.</translation>
 <translation id="8945274638472141382">Symbolgröße</translation>
 <translation id="8946359700442089734">Die Debugging-Funktionen wurden auf diesem <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät nicht vollständig aktiviert.</translation>
 <translation id="894763922177556086">Gut</translation>
@@ -8938,7 +8961,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="9026731007018893674">Download</translation>
 <translation id="9026852570893462412">Der Vorgang kann einige Minuten dauern. Virtuelle Maschine wird heruntergeladen.</translation>
 <translation id="9027459031423301635">Link in neuem Tab öffnen</translation>
-<translation id="9027707169256972235">Entfernen</translation>
 <translation id="9030515284705930323">Deine Organisation hat den Google Play Store für dein Konto nicht aktiviert. Weitere Informationen erhältst du von deinem Administrator.</translation>
 <translation id="9030754204056345429">Schneller</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -9176,6 +9198,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="942532530371314860"><ph name="APP_NAME" /> hat einen Chrome-Tab und Audio freigegeben.</translation>
 <translation id="944799160843436808">Beim Einrichten von Steam auf Chromebook ist ein Problem aufgetreten</translation>
 <translation id="945522503751344254">Feedback geben</translation>
+<translation id="947156494302904893">Websites, die du besuchst, können bestätigen, dass du eine echte Person und kein Bot bist</translation>
 <translation id="947329552760389097">&amp;Elemente untersuchen</translation>
 <translation id="947526284350604411">Meine Antwort</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> kann Dateien in diesem Ordner nicht öffnen, weil er Systemdateien enthält</translation>

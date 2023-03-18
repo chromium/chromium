@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">அச்சிடப்பட்டது</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">இயல்பு APN அவசியம்</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google சுயவிவரப் படம்</translation>
 <translation id="1979103255016296513">கடவுச்சொல்லை மாற்ற வேண்டும்</translation>
 <translation id="1999615961760456652">கேப்டிவ் போர்டல்</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடக் குறிப்பிடத்தக்க அளவு அதிகமாக உள்ளது</translation>
 <translation id="3328783797891415197">சோதனை நடைபெறுகிறது</translation>
 <translation id="3340011300870565703">வலதுபக்க இயர்பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369013195428705271">இதுவரையிலான அச்சுப் பணிகள் அனைத்தையும் அழிக்கவா? செயல்பாட்டில் இருக்கும் அச்சுப் பணிகள் அழிக்கப்படாது.</translation>
 <translation id="3404249063913988450">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">திரை</translation>
 <translation id="4155551848414053977">ஸ்கேனர் இயக்கப்பட்டிருப்பதையும் அது உங்கள் நெட்வொர்க் மூலமாகவோ நேரடியாகவோ இணைக்கப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும்</translation>
 <translation id="4159784952369912983">பர்பிள்</translation>
 <translation id="4170180284036919717">படமெடு</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
 <translation id="4258281355379922695">HTTP தாமதம்</translation>
 <translation id="4271957103967917607">முழுத்திரையில் காட்டும்</translation>
+<translation id="4275663329226226506">ஊடகம்</translation>
 <translation id="4289540628985791613">மேலோட்டம்</translation>
 <translation id="4289849978083912975">ஸ்லைடு ஷோ</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">ஸ்கேனரைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும். ஸ்கேன் செய்த ஃபைல்களைச் சேமிக்க போதுமான இடம் இருப்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
 <translation id="4987769320337599931">ஃபயர்வால்</translation>
+<translation id="4988526792673242964">பக்கங்கள்</translation>
 <translation id="4999333166442584738">அறிக்கையை மறை</translation>
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
 <translation id="7942349550061667556">சிவப்பு</translation>
 <translation id="7943235353293548836">பெர்சிஸ்டெண்ட் கீப்-அலைவ் இன்டெர்வல்</translation>
+<translation id="7953669802889559161">உள்ளீட்டு முறைகள்</translation>
 <translation id="7955587717700691983">புளூடூத் கீபோர்டு</translation>
 <translation id="7960831585769876809">வெப்பநிலை</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> நெட்வொர்க்கில் இணைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="8045012663542226664">மைக்ரோஃபோனை ஒலியடக்கும்</translation>
 <translation id="8075838845814659848">மீதமுள்ள சார்ஜ்</translation>
+<translation id="8076492880354921740">தாவல்கள்</translation>
 <translation id="8082366717211101304">Android ஆப்ஸில் இருந்து DNS கோரிக்கையைத் தீர்க்க முடியவில்லை</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
 <translation id="8094062939584182041">இந்தச் சிக்கல் குறித்து எனக்கு மின்னஞ்சல் அனுப்ப Googleளை அனுமதி</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">டிராஃபிக் கவுண்ட்டர்களைக் கோரு</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ஐத் தேர்ந்தெடுங்கள்</translation>
+<translation id="8151185429379586178">டெவெலப்பர் கருவிகள்</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">இணை</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">வைஃபை</translation>
 <translation id="8818152010000655963">வால்பேப்பர்</translation>
 <translation id="8820457400746201697">நீல வண்ண டச் பாயிண்ட்டை ஒரு செயலுக்கு நகர்த்தவும். பிரத்தியேகமாக்க, தொடர்புடைய பட்டனைத் தேர்ந்தெடுக்கவும்.</translation>
+<translation id="8820817407110198400">புக்மார்க்குகள்</translation>
 <translation id="8834539327799336565">தற்போது இணைக்கப்பட்டுள்ளவை</translation>
 <translation id="8845001906332463065">உதவி பெறுக</translation>
 <translation id="8855781559874488009">HTTP இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>

@@ -374,6 +374,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3595252146048399851">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="3603009562372709545">Copiar URL do Link</translation>
 <translation id="3607167657931203000">Dados de preenchimento automático</translation>
+<translation id="3608008480985212611">Iniciar sessão para gerir as suas preferências.</translation>
 <translation id="3609785682760573515">A sincronizar…</translation>
 <translation id="3631443864840848029">Certifique-se de que está a guardar a sua palavra-passe atual para este site.</translation>
 <translation id="3638472932233958418">Pré-carregar Páginas Web</translation>
@@ -480,6 +481,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4474494258097106883">Concebido para o iPhone</translation>
 <translation id="4476574785019001431">Definições</translation>
 <translation id="448433063499977729">A sincronização foi desativada</translation>
+<translation id="4489536976005181779">{count,plural, =1{Página adicionada à sua Lista de leitura na sua conta, {email}}other{Páginas adicionadas à sua Lista de leitura na sua conta, {email}}}</translation>
 <translation id="4496373720959965247">Adicione separadores e alterne entre páginas.</translation>
 <translation id="4502566650163919158">Rever agora</translation>
 <translation id="4505980578794259603">Última verificação: <ph name="TIME" />.</translation>

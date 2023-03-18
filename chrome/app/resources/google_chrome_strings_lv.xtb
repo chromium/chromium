@@ -10,6 +10,7 @@
 <translation id="110877069173485804">Šis ir jūsu pārlūks Chrome</translation>
 <translation id="1125124144982679672">Kas izmanto pārlūku Chrome?</translation>
 <translation id="1142745911746664600">Nevar atjaunināt Chrome</translation>
+<translation id="1149651794389918149">Pierakstieties pārlūkā Chrome. Ja vēlaties pierakstīties kontā tikai vienreiz, varat <ph name="GUEST_LINK_BEGIN" />izmantot ierīci viesa režīmā<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Par Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Atvērt pārlūkā Chrome</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
@@ -169,6 +170,7 @@
 <translation id="4147555960264124640">Jūs pierakstāties ar pārvaldītu kontu un nodrošināt, ka tā administrators var pārvaldīt jūsu Google Chrome profilu. Jūsu Chrome dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet saistīt šos datus ar citu kontu. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Notiek instalēšana...</translation>
 <translation id="4149882025268051530">Instalētājam neizdevās atarhivēt arhīvu. Lūdzu, vēlreiz lejupielādējiet Google Chrome.</translation>
+<translation id="4153934450158521343">Chrome drīz tiks aizvērts, un dati tiks izdzēsti</translation>
 <translation id="4191857738314598978">{0,plural, =1{Restartējiet pārlūku Chrome vienas dienas laikā}zero{Restartējiet pārlūku Chrome # dienu laikā}one{Restartējiet pārlūku Chrome # dienas laikā}other{Restartējiet pārlūku Chrome # dienu laikā}}</translation>
 <translation id="4205939740494406371">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles. Mēģiniet vēlreiz pēc 24 stundām vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Notiek atcelšana...</translation>
@@ -214,6 +216,7 @@
 <translation id="4970880042055371251">Chrome OS versija</translation>
 <translation id="4970947549776831107">Pārlūkā Chrome šis fails tika bloķēts, jo šī tipa faili ir bīstami.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots vienu minūti. Pārlūkošanas dati tiek izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.}zero{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots # minūtes. Pārlūkošanas dati tiek izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.}one{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots # minūti. Pārlūkošanas dati tiek izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.}other{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots # minūtes. Pārlūkošanas dati tiek izdzēsti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes.}}</translation>
 <translation id="5098668839038261629">Iestatījumam esot ieslēgtam, jūs tiksiet izrakstīts arī no pārlūka Chrome.</translation>
 <translation id="5132929315877954718">Atklājiet lieliskas lietotnes, spēles, paplašinājumus un motīvus, ko varat izmantot pārlūkā Google Chrome.</translation>
 <translation id="5139423532931106058">Pielāgot Chrome profilu</translation>
@@ -264,12 +267,14 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome beta versija</translation>
 <translation id="6235018212288296708">Ienākošo savienojumu kārtula pārlūkam Google Chrome, lai atļautu mDNS datplūsmu.</translation>
+<translation id="624230925347970731">Chrome drīz tiks aizvērts</translation>
 <translation id="6247557882553405851">Google paroļu pārvaldnieks</translation>
 <translation id="6273793429163604305">Lūdzu, uzgaidiet...</translation>
 <translation id="6291089322031436445">Chrome Dev lietotnes</translation>
 <translation id="6291549208091401781">Pārlūks Google Chrome jau ir instalēts visiem jūsu datora lietotājiem.</translation>
 <translation id="6326175484149238433">Noņemt no pārlūka Chrome</translation>
 <translation id="6327105987658262776">Atjauninājums nav pieejams.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Jūsu administrators automātiski dzēš pārlūkošanas datus, ja pārlūks nav izmantots vienu minūti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Jūsu esošās cilnes paliks atvērtas.}zero{Jūsu administrators automātiski dzēš pārlūkošanas datus, ja pārlūks nav izmantots # minūtes. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Jūsu esošās cilnes paliks atvērtas.}one{Jūsu administrators automātiski dzēš pārlūkošanas datus, ja pārlūks nav izmantots # minūti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Jūsu esošās cilnes paliks atvērtas.}other{Jūsu administrators automātiski dzēš pārlūkošanas datus, ja pārlūks nav izmantots # minūtes. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Jūsu esošās cilnes paliks atvērtas.}}</translation>
 <translation id="6412673304250309937">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošu vietņu sarakstu, kas glabājas pārlūkprogrammā Chrome. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var nosūtīt attiecīgo URL un lapas satura fragmentus uz funkciju Droša pārlūkošana.</translation>
 <translation id="6418662306461808273">Vai pāriet uz esošo Chrome profilu?</translation>
 <translation id="6493527311031785448">Google Chrome mēģina <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -299,6 +304,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 
 Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un lietotnēm. Varat pārvaldīt savus Google kontus sadaļā <ph name="SETTINGS_LINK_BEGIN" />Iestatījumi<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Viens no jūsu vecākiem ir izslēdzis “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chrome. Nav atļauts pievienot šo: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7071827361006050863">Pārlūkā Chrome drīz tiks dzēsti pārlūkošanas dati</translation>
 <translation id="7085332316435785646">Izvēlieties, vai iekļaut Chrome vēsturi, lai iegūtu personalizētākas iespējas Google pakalpojumos.</translation>
 <translation id="7088681679121566888">Chrome jaunākā versija jau ir instalēta.</translation>
 <translation id="7098166902387133879">Pārlūkā Google Chrome tiek izmantots mikrofons.</translation>
@@ -360,6 +366,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8290100596633877290">Eh! Google Chrome ir avarējis. Vai restartēt to tūlīt?</translation>
 <translation id="8342675569599923794">Šis fails ir bīstams, tāpēc Chrome to bloķēja.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kā mēs izmantojam šos datus:<ph name="END_BOLD" /> vietnes pārlūkā Chrome var glabāt informāciju par jūsu interesēm. Piemēram, ja apmeklējat kādu vietni, lai iegādātos apavus maratona skriešanai, vietne var noteikt, ka interesējaties par maratonu skriešanu. Ja vēlāk apmeklēsiet citu vietni, lai reģistrētos sacensībām, šajā vietnē var tikt rādīta skriešanas apavu reklāma, pamatojoties uz jūsu interesēm.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots vienu minūti.}zero{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots # minūtes.}one{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots # minūti.}other{Jūsu administrators automātiski aizver pārlūku Chrome, ja tas nav izmantots # minūtes.}}</translation>
 <translation id="8370517070665726704">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kā mēs izmantojam šos datus:<ph name="END_BOLD" /> pārlūkā Chrome var aptuveni noteikt jūsu intereses. Vēlāk kāda jūsu apmeklēta vietne var pieprasīt pārlūkam Chrome atļauju skatīt jūsu intereses, lai personalizētu jums rādāmās reklāmas.</translation>
 <translation id="8387459386171870978">Turpināt lietot Chrome</translation>

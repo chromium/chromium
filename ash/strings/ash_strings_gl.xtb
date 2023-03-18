@@ -154,6 +154,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1715293566947629045">Desactivando perfil. Agarda uns minutos.</translation>
 <translation id="1719094688023114093">A función Subtítulos instantáneos está activada.</translation>
 <translation id="1720011244392820496">Activar Sincronización wifi</translation>
+<translation id="1720230731642245863">A zona wifi está desactivada</translation>
 <translation id="1731815243805539470">Cambia ao usuario anterior</translation>
 <translation id="1733996486177697563">Cambia do tema claro ao escuro, e viceversa. Mantén premido o escritorio e despois selecciona Estilo e fondo de pantalla.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" detectable por dispositivos Bluetooth.</translation>
@@ -422,7 +423,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3151786313568798007">Orientación</translation>
 <translation id="3153444934357957346">Só podes ter ata <ph name="MULTI_PROFILE_USER_LIMIT" /> contas no inicio de sesión múltiple.</translation>
 <translation id="3154351730702813399">O administrador do dispositivo pode supervisar a actividade de navegación.</translation>
-<translation id="3157931365184549694">Restaurar</translation>
 <translation id="316086887565479535">Aplicacións non compatibles no modelo</translation>
 <translation id="3161500364292033097">Pechar o escritorio e as ventás</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está cambiando o teu dispositivo (<ph name="DEVICE_TYPE" />) a unha versión anterior. O dispositivo restablecerase e eliminaranse todos os datos.</translation>
@@ -589,6 +589,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="394485226368336402">Configuración do audio</translation>
 <translation id="3945319193631853098">Toca para completar a configuración</translation>
 <translation id="3945867833895287237">Conectándose á zona wifi...</translation>
+<translation id="3950272133184491871">Queres pechar sesión agora?</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3969043077941541451">Desactivar</translation>
@@ -986,6 +987,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5920710855273935292">O micrófono está silenciado.</translation>
+<translation id="5924855612669061715">A zona wifi está activada</translation>
 <translation id="5946788582095584774">A función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Seguimento do rendemento activado</translation>
@@ -1162,7 +1164,6 @@ Nova instalación</translation>
 <translation id="6781002679438061620">Escritorio 9</translation>
 <translation id="6782182743534150858">Escritorio 13</translation>
 <translation id="6786750046913594791">Pechar cartafol</translation>
-<translation id="6787595647772650851">Restaurar última sesión</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="679368458793552943">Achega o zoom cando a lupa está activada</translation>
 <translation id="6801878137098616817">Editouse recentemente</translation>
@@ -1360,6 +1361,7 @@ Nova instalación</translation>
 <translation id="7848989271541991537">Moveuse á páxina <ph name="PAGE_NUMBER" />, fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Para acceder ao modo Visión xeral, pasa tres dedos cara arriba</translation>
+<translation id="7862292329216937261">Para usar o dispositivo como invitado, tes que pechar sesión e, a continuación, seleccionar Navegar como invitado na parte de abaixo da pantalla.</translation>
 <translation id="7866482334467279021">activado</translation>
 <translation id="7868900307798234037">Desbloqueo con impresión dixital</translation>
 <translation id="7872195908557044066">O teu administrador está restablecendo a eSIM. Agarda uns minutos.</translation>
@@ -1402,6 +1404,7 @@ Nova instalación</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menú da configuración de accesibilidade</translation>
 <translation id="8044457332620420407">A luz traseira do teclado está apagada</translation>
+<translation id="8048077032188362328">O teu administrador desactivou a zona wifi.</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8051716679295756675">Xa existe un modelo chamado <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiouse no portapapeis</translation>
@@ -1618,6 +1621,7 @@ Nova instalación</translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9100887602489003640">Engadindo perfil. Agarda uns minutos.</translation>
 <translation id="9105450214093926548">Non se pode iniciar sesión cun segundo usuario mentres se executa o navegador Lacros. Utiliza un segundo perfil de navegador en Lacros ou ben pecha o navegador e téntao de novo.</translation>
+<translation id="9120448753905017833">Desactivamos a wifi para empezar a usar a zona wifi con datos móbiles. Pode que se apliquen custos.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Non se pode gravar contido protexido</translation>
 <translation id="9161053988251441839">APLICACIÓNS SUXERIDAS</translation>

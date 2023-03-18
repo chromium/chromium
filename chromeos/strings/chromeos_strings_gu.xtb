@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">દસ્તાવેજનું ફીડર (એક બાજુથી)</translation>
 <translation id="1643449475550628585">વૉલપેપરની છબી દરરોજ બદલો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
+<translation id="1651925268237749928">તમે શેર કરેલો આલ્બમ પસંદ કર્યો છે. અન્ય લોકો ફોટા ઉમેરી અથવા બદલી શકે છે. તમારું વૉલપેપર હાલમાં આ આલ્બમમાં ન હોય તેવા ફોટાનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="1662989795263954667">બંધ - શાહી ખલાસ થઈ ગઈ</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />નો પ્રીવ્યૂ કરો</translation>
 <translation id="1668469839109562275">બિલ્ટ-ઇન VPN</translation>
@@ -120,6 +121,7 @@
 <translation id="1947737735496445907">પ્રિન્ટ થઈ ગયું</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">ડિફૉલ્ટ APN આવશ્યક છે</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google પ્રોફાઇલ ફોટો</translation>
 <translation id="1979103255016296513">પાસવર્ડ બદલવાની તારીખ નીકળી ગઈ છે</translation>
 <translation id="1999615961760456652">કૅપ્ટિવ પોર્ટલ</translation>
@@ -240,6 +242,7 @@
 <translation id="319101249942218879">અવતારની છબી બદલવામાં આવી</translation>
 <translation id="3192947282887913208">ઑડિયો ફાઇલો</translation>
 <translation id="3199982728237701504">દસ્તાવેજનું ફીડર (બન્ને બાજુથી)</translation>
+<translation id="3201315366910775591">અન્ય લોકો શેર કરેલા આલ્બમ અપડેટ કરી શકે છે</translation>
 <translation id="3211671540163313381">કીમૅપિંગ ડી-પૅડ</translation>
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
 <translation id="3226657629376379887">લેઆઉટ ક્રિયા મેનૂ</translation>
@@ -253,6 +256,7 @@
 <translation id="3310640316857623290">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં ઘણી વધુ છે</translation>
 <translation id="3328783797891415197">પરીક્ષણ ચાલુ છે</translation>
 <translation id="3340011300870565703">ડિવાઇસના જમણા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3369013195428705271">શું તમે ખરેખર પ્રિન્ટનો બધો ઇતિહાસ સાફ કરવા માગો છો? તમારી હાલની પ્રિન્ટ જોબ સાફ કરવામાં આવશે નહીં.</translation>
 <translation id="3404249063913988450">સ્ક્રીન સેવર ચાલુ કરો</translation>
@@ -340,6 +344,7 @@
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
 <translation id="4145784616224233563">HTTP ફાયરવૉલ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">ડિસ્પ્લે</translation>
 <translation id="4155551848414053977">ખાતરી કરો કે સ્કૅનર ચાલુ કરેલું છે અને તમારા નેટવર્ક અથવા સીધા જોડાણ મારફતે ઉપલબ્ધ છે</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4170180284036919717">ફોટો લો</translation>
@@ -355,6 +360,7 @@
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4258281355379922695">HTTPની વિલંબતા</translation>
 <translation id="4271957103967917607">પૂર્ણ સ્ક્રીન જુઓ</translation>
+<translation id="4275663329226226506">મીડિયા</translation>
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
 <translation id="4289849978083912975">સ્લાઇડ શો</translation>
 <translation id="4297501883039923494">બંધ - અજાણી ભૂલ</translation>
@@ -447,6 +453,7 @@
 <translation id="498186245079027698">તમારું સ્કૅનર ચેક કરો અને ફરી પ્રયાસ કરો. ખાતરી કરો કે સ્કૅન કરેલી ફાઇલોને સાચવવા માટે પૂરતી સ્થાનિક સ્પેસ હોય.</translation>
 <translation id="4985509611418653372">ચલાવો</translation>
 <translation id="4987769320337599931">ફાયરવૉલ</translation>
+<translation id="4988526792673242964">પેજ</translation>
 <translation id="4999333166442584738">રિપોર્ટ છુપાવો</translation>
 <translation id="500920857929044050">પરીક્ષણ રોકો</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -658,6 +665,7 @@
 <translation id="6838167112108853532">આ APNને બંધ કરી કે કાઢી શકતા નથી. ખાતરી કરો કે જોડેલા APN જે ચાલુ કરેલા છે, તેને બંધ કરવામાં અથવા કાઢી નાખવામાં આવ્યા છે.</translation>
 <translation id="6853312040151791195">ડિસ્ચાર્જ થવાની ટકાવારી</translation>
 <translation id="6889786074662672253">ફરી શરૂ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
+<translation id="6900701049656042631">આ આલ્બમમાં કોઈ ફોટા નથી. ફોટા ઉમેરવા માટે, <ph name="LINK" /> પર જાઓ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> પર પાછા જાઓ</translation>
 <translation id="6910312834584889076">સ્કૅનરનું કવર ખુલ્લું છે. કવર બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6911383237894364323">મીડિયા સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>
@@ -772,6 +780,7 @@
 <translation id="7936303884198020182">IP કન્ફિગ્યુરેશનમાં કોઈ નામ સર્વર મળ્યા નથી</translation>
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7943235353293548836">સતત keepalive અવધિ</translation>
+<translation id="7953669802889559161">ઇનપુટ</translation>
 <translation id="7955587717700691983">બ્લૂટૂથ કીબોર્ડ</translation>
 <translation id="7960831585769876809">તાપમાન</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> નેટવર્ક સાથે જોડાવા માટે, સેટિંગમાં જાઓ</translation>
@@ -784,6 +793,7 @@
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
 <translation id="8045012663542226664">માઇક્રોફોનને મ્યૂટ કરવાની કી</translation>
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
+<translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8094062939584182041">Googleને આ સમસ્યા વિશે તમને ઇમેઇલ કરવાની મંજૂરી આપો</translation>
@@ -793,6 +803,7 @@
 <translation id="8132480444149501833">ટ્રાફિક કાઉન્ટરની વિનંતી કરો</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> પસંદ કરો</translation>
+<translation id="8151185429379586178">વિકાસકર્તા સાધનો</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">જોડો</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
@@ -861,6 +872,7 @@
 <translation id="8814190375133053267">વાઇ-ફાઇ</translation>
 <translation id="8818152010000655963">વૉલપેપર</translation>
 <translation id="8820457400746201697">વાદળી રંગના ટચ પૉઇન્ટને ઍક્શન પર ખસેડો. કસ્ટમાઇઝ કરવા માટે સંકળાયેલી કી પસંદ કરો.</translation>
+<translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8855781559874488009">ફાયરવૉલ મારફતે HTTP વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>

@@ -12,6 +12,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="110877069173485804">Voici votre navigateur Chrome</translation>
 <translation id="1125124144982679672">Qui utilise Chrome?</translation>
 <translation id="1142745911746664600">Impossible de mettre à jour Google Chrome</translation>
+<translation id="1149651794389918149">Connectez-vous à Chrome. Si vous ne souhaitez vous connecter qu'une seule fois à un compte, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">À propos de Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Ouvrir dans Chrome</translation>
 <translation id="1203500561924088507">Merci pour l'installation. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
@@ -171,6 +172,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4147555960264124640">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Google Chrome. Vos données de Google Chrome, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="4149882025268051530">Le programme d'installation n'a pas réussi à décompresser l'archive. Veuillez télécharger Google Chrome de nouveau.</translation>
+<translation id="4153934450158521343">Chrome va bientôt se fermer et supprimer des données</translation>
 <translation id="4191857738314598978">{0,plural, =1{Redémarrer Chrome d'ici un jour}one{Redémarrer Chrome d'ici # jour}other{Redémarrer Chrome d'ici # jours}}</translation>
 <translation id="4205939740494406371">Chrome ne peut pas vérifier vos mots de passe. Réessayez après 24 heures ou <ph name="BEGIN_LINK" />effectuez une vérification des mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annulation en cours…</translation>
@@ -216,6 +218,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4970880042055371251">Version de Chrome OS</translation>
 <translation id="4970947549776831107">Chrome a bloqué le téléchargement parce que ce type de fichier est dangereux</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Votre administrateur ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant 1 minute. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}one{Votre administrateur ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minute. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}other{Votre administrateur ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}}</translation>
 <translation id="5098668839038261629">Si ce paramètre est activé, vous serez aussi déconnecté de Chrome</translation>
 <translation id="5132929315877954718">Découvrez des applications, des jeux, des extensions et des thèmes exceptionnels conçus pour Google Chrome.</translation>
 <translation id="5139423532931106058">Personnaliser votre profil Chrome</translation>
@@ -268,12 +271,14 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> — Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome bêta</translation>
 <translation id="6235018212288296708">Règle de trafic entrant pour Google Chrome autorisant le trafic mDNS.</translation>
+<translation id="624230925347970731">Chrome se fermera bientôt</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6273793429163604305">À vos marques…</translation>
 <translation id="6291089322031436445">Applications Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome est déjà installé pour tous les utilisateurs sur votre ordinateur.</translation>
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
 <translation id="6327105987658262776">Aucune mise à jour n'est proposée.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Votre administrateur supprime automatiquement les données de navigation lorsqu'elles ne sont pas utilisées pendant 1 minute. Cela peut inclure l'historique, le remplissage automatique et les téléchargements. Vos onglets existants resteront ouverts.}one{Votre administrateur supprime automatiquement les données de navigation lorsqu'elles ne sont pas utilisées pendant # minute. Cela peut inclure l'historique, le remplissage automatique et les téléchargements. Vos onglets existants resteront ouverts.}other{Votre administrateur supprime automatiquement les données de navigation lorsqu'elles ne sont pas utilisées pendant # minutes. Cela peut inclure l'historique, le remplissage automatique et les téléchargements. Vos onglets existants resteront ouverts.}}</translation>
 <translation id="6412673304250309937">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant?</translation>
 <translation id="6493527311031785448">Google Chrome essaie de <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -303,6 +308,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 
 Les autorisations que vous avez déjà accordées à des sites Web et à des applications peuvent s'appliquer à ce compte. Vous pouvez gérer vos comptes Google dans les <ph name="SETTINGS_LINK_BEGIN" />Paramètres<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Ton parent a désactivé le paramètre « Autorisations pour les sites, les applications et les extensions » dans Chrome. L'activation de ce <ph name="EXTENSION_TYPE_PARAMETER" /> n'est pas autorisée.</translation>
+<translation id="7071827361006050863">Chrome va bientôt supprimer les données de navigation</translation>
 <translation id="7085332316435785646">Choisissez si vous souhaitez inclure l'historique de Chrome pour rendre vos expériences des services Google plus personnalisées</translation>
 <translation id="7088681679121566888">Chrome est à jour</translation>
 <translation id="7098166902387133879">Google Chrome se sert de votre microphone.</translation>
@@ -364,6 +370,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8290100596633877290">Google Chrome a planté. Voulez-vous le relancer maintenant?</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car il est dangereux.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chrome. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Votre administrateur ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant 1 minute.}one{Votre administrateur ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minute.}other{Votre administrateur ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes.}}</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> Chrome peut estimer vos centres d'intérêt. Ultérieurement, un site que vous visitez peut demander à Chrome de voir vos centres d'intérêt afin de personnaliser les annonces que vous voyez.</translation>
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>

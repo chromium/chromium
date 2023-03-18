@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Skrevet ut</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Et standard APN kreves</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profilbilde</translation>
 <translation id="1979103255016296513">Det er på høy tid å endre passordet</translation>
 <translation id="1999615961760456652">Obligatorisk side</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
 <translation id="3328783797891415197">Testen kjøres</translation>
 <translation id="3340011300870565703">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i høyre øreplugg.</translation>
+<translation id="3360306038446926262">Vinduer</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3369013195428705271">Er du sikker på at du vil tømme hele utskriftsloggen? Utskriftsjobber som allerede er i gang, fjernes ikke.</translation>
 <translation id="3404249063913988450">Slå på skjermspareren</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="4145784616224233563">HTTP-brannmur</translation>
 <translation id="4147897805161313378">Google Foto</translation>
+<translation id="4150201353443180367">Skjerm</translation>
 <translation id="4155551848414053977">Sørg for at skanneren er påslått og tilgjengelig via nettverket eller en direktetilkobling</translation>
 <translation id="4159784952369912983">Fiolett</translation>
 <translation id="4170180284036919717">Ta et bilde</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Skjermdump</translation>
 <translation id="4258281355379922695">HTTP-tidsforsinkelse</translation>
 <translation id="4271957103967917607">Vis i fullskjerm</translation>
+<translation id="4275663329226226506">Medier</translation>
 <translation id="4289540628985791613">Oversikt</translation>
 <translation id="4289849978083912975">Lysbildefremvisning</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="4987769320337599931">Brannmur</translation>
+<translation id="4988526792673242964">Sider</translation>
 <translation id="4999333166442584738">Skjul rapporten</translation>
 <translation id="500920857929044050">Stans testen</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943235353293548836">Vedvarende keepalive-intervall</translation>
+<translation id="7953669802889559161">Inndatametoder</translation>
 <translation id="7955587717700691983">Bluetooth-tastatur</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="7977800524392185497">For å koble til et <ph name="NETWORK_NAME" />-nettverk, gå til Innstillinger</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8045012663542226664">Kutt mikrofonlyden</translation>
 <translation id="8075838845814659848">Gjenværende batteri</translation>
+<translation id="8076492880354921740">Faner</translation>
 <translation id="8082366717211101304">Kan ikke foreta DNS-oppslag fra Android-apper</translation>
 <translation id="808894953321890993">Endre passord</translation>
 <translation id="8094062939584182041">La Google sende deg e-post om dette problemet</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Be om trafikktellere</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Velg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Utviklerverktøy</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Tilknytt</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Bakgrunn</translation>
 <translation id="8820457400746201697">Flytt det blå berøringspunktet til en handling. Velg den tilknyttede nøkkelen for å tilpasse.</translation>
+<translation id="8820817407110198400">Bokmerker</translation>
 <translation id="8834539327799336565">Tilkoblet nå</translation>
 <translation id="8845001906332463065">Få hjelp</translation>
 <translation id="8855781559874488009">Kan ikke koble til HTTP-nettsteder gjennom brannmuren</translation>

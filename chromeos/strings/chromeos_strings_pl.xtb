@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Podajnik dokumentów (jednostronny)</translation>
 <translation id="1643449475550628585">Zmieniaj obraz tapety codziennie</translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="1651925268237749928">Wybrałeś(-aś) album udostępniony. Inne osoby mogą dodawać i zmieniać zdjęcia. Tapeta może pokazywać zdjęcia spoza tego albumu.</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
 <translation id="1664796644829245314">Wyświetl podgląd: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
@@ -120,6 +121,7 @@
 <translation id="1947737735496445907">Wydrukowano</translation>
 <translation id="1951012854035635156">Asystent</translation>
 <translation id="1962550982027027473">Domyślny punkt APN jest wymagany</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Zdjęcie profilowe Google</translation>
 <translation id="1979103255016296513">Zaległa zmiana hasła</translation>
 <translation id="1999615961760456652">Portal przechwytujący</translation>
@@ -240,6 +242,7 @@
 <translation id="319101249942218879">Zmieniono obraz awatara</translation>
 <translation id="3192947282887913208">Pliki dźwiękowe</translation>
 <translation id="3199982728237701504">Podajnik dokumentów (dwustronny)</translation>
+<translation id="3201315366910775591">Inni użytkownicy mogą aktualizować albumy udostępnione</translation>
 <translation id="3211671540163313381">Mapowanie pada kierunkowego</translation>
 <translation id="3226405216343213872">Szukam skanerów</translation>
 <translation id="3226657629376379887">Menu działań dotyczących układu</translation>
@@ -253,6 +256,7 @@
 <translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
 <translation id="3328783797891415197">Test w toku</translation>
 <translation id="3340011300870565703">Poziom naładowania baterii prawej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Okna</translation>
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3369013195428705271">Czy na pewno chcesz usunąć całą historię drukowania? Bieżące zadania drukowania nie zostaną usunięte.</translation>
 <translation id="3404249063913988450">Włącz wygaszacz ekranu</translation>
@@ -340,6 +344,7 @@
 <translation id="4131410914670010031">Czarno-biały</translation>
 <translation id="4145784616224233563">Zapora sieciowa HTTP</translation>
 <translation id="4147897805161313378">Zdjęcia Google</translation>
+<translation id="4150201353443180367">Wyświetlacz</translation>
 <translation id="4155551848414053977">Upewnij się, że skaner jest włączony i dostępny przez sieć lub połączenie bezpośrednie</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4170180284036919717">Zrób zdjęcie</translation>
@@ -355,6 +360,7 @@
 <translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4258281355379922695">Opóźnienie HTTP</translation>
 <translation id="4271957103967917607">Wyświetl na pełnym ekranie</translation>
+<translation id="4275663329226226506">Multimedia</translation>
 <translation id="4289540628985791613">Przegląd</translation>
 <translation id="4289849978083912975">Pokaz slajdów</translation>
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
@@ -447,6 +453,7 @@
 <translation id="498186245079027698">Sprawdź skaner i spróbuj ponownie. Upewnij się, że na urządzeniu masz miejsce na zapisanie zeskanowanych plików.</translation>
 <translation id="4985509611418653372">Uruchom</translation>
 <translation id="4987769320337599931">Zapora sieciowa</translation>
+<translation id="4988526792673242964">Strony</translation>
 <translation id="4999333166442584738">Ukryj raport</translation>
 <translation id="500920857929044050">Zatrzymaj test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -658,6 +665,7 @@
 <translation id="6838167112108853532">Tego punktu APN nie można wyłączyć ani usunąć. Upewnij się, że dołączone punkty APN, które były włączone, zostały wyłączone lub usunięte.</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
 <translation id="6889786074662672253">Podczas ponownego uruchamiania nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Ponowne uruchamianie potrwa kilka minut – w tym czasie urządzenie zewnętrzne może nie działać.</translation>
+<translation id="6900701049656042631">Ten album nie zawiera zdjęć. Aby je dodać, wejdź na <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Powrót do aplikacji <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Pokrywa skanera jest otwarta. Zamknij ją i spróbuj ponownie.</translation>
 <translation id="6911383237894364323">Nie udało się połączyć z serwerami multimediów</translation>
@@ -772,6 +780,7 @@
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7943235353293548836">Trwały odstęp utrzymywania aktywności</translation>
+<translation id="7953669802889559161">Metody wprowadzania</translation>
 <translation id="7955587717700691983">Klawiatura Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Aby połączyć się z siecią <ph name="NETWORK_NAME" />, otwórz Ustawienia</translation>
@@ -784,6 +793,7 @@
 <translation id="8041089156583427627">Prześlij opinię</translation>
 <translation id="8045012663542226664">Wyciszenie mikrofonu</translation>
 <translation id="8075838845814659848">Stan naładowania</translation>
+<translation id="8076492880354921740">Karty</translation>
 <translation id="8082366717211101304">Nie udało się znaleźć DNS w aplikacjach na Androida</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
 <translation id="8094062939584182041">Zezwalaj Google na wysyłanie e-maili dotyczących tego problemu</translation>
@@ -793,6 +803,7 @@
 <translation id="8132480444149501833">Poproś o liczniki natężenia ruchu</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Wybierz <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
+<translation id="8151185429379586178">Narzędzia dla deweloperów</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Załącz</translation>
 <translation id="8206859287963243715">Komórka</translation>
@@ -861,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8820457400746201697">Przenieś niebieski punkt kontaktu do działania. Aby dostosować, wybierz powiązany klawisz.</translation>
+<translation id="8820817407110198400">Zakładki</translation>
 <translation id="8834539327799336565">Obecnie połączone</translation>
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
 <translation id="8855781559874488009">Nie udało się połączyć z witrynami HTTP przez zaporę sieciową</translation>

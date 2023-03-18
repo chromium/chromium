@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">인쇄됨</translation>
 <translation id="1951012854035635156">어시스턴트</translation>
 <translation id="1962550982027027473">기본 APN이 필요합니다.</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google 프로필 사진</translation>
 <translation id="1979103255016296513">비밀번호 변경 기한 지남</translation>
 <translation id="1999615961760456652">종속 포털</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS 지연 시간이 허용되는 기준을 훨씬 초과했습니다.</translation>
 <translation id="3328783797891415197">테스트 실행 중</translation>
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">흑백</translation>
 <translation id="4145784616224233563">HTTP 방화벽</translation>
 <translation id="4147897805161313378">Google 포토</translation>
+<translation id="4150201353443180367">디스플레이</translation>
 <translation id="4155551848414053977">스캐너가 켜져 있으며 네트워크 또는 직접 연결을 통해 사용 가능한지 확인하세요.</translation>
 <translation id="4159784952369912983">보라색</translation>
 <translation id="4170180284036919717">사진 찍기</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="4258281355379922695">HTTP 지연 시간</translation>
 <translation id="4271957103967917607">전체 화면 보기</translation>
+<translation id="4275663329226226506">미디어</translation>
 <translation id="4289540628985791613">개요</translation>
 <translation id="4289849978083912975">슬라이드쇼</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">스캐너를 확인한 후 다시 시도해 보세요. 스캔된 파일을 저장하기에 공간이 충분한지 확인합니다.</translation>
 <translation id="4985509611418653372">실행</translation>
 <translation id="4987769320337599931">방화벽</translation>
+<translation id="4988526792673242964">페이지</translation>
 <translation id="4999333166442584738">보고서 숨기기</translation>
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">네임서버를 찾을 수 없습니다.</translation>
 <translation id="7942349550061667556">빨간색</translation>
 <translation id="7943235353293548836">영구 연결 유지 간격</translation>
+<translation id="7953669802889559161">입력</translation>
 <translation id="7955587717700691983">블루투스 키보드</translation>
 <translation id="7960831585769876809">온도</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> 네트워크에 참여하려면 설정으로 이동하세요.</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8045012663542226664">마이크 음소거</translation>
 <translation id="8075838845814659848">배터리 잔량</translation>
+<translation id="8076492880354921740">탭</translation>
 <translation id="8082366717211101304">Android 앱에서 DNS를 변환할 수 없습니다.</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8094062939584182041">Google에서 이 문제에 관한 이메일을 보내도록 허용</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">트래픽 카운터 요청</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택</translation>
+<translation id="8151185429379586178">개발자 도구</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">접속</translation>
 <translation id="8206859287963243715">휴대전화</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">배경화면</translation>
 <translation id="8820457400746201697">파란색 터치 포인트를 작업으로 이동합니다. 연결된 키를 선택하여 맞춤설정합니다.</translation>
+<translation id="8820817407110198400">북마크</translation>
 <translation id="8834539327799336565">현재 연결된 기기</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8855781559874488009">방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>

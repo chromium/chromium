@@ -423,7 +423,6 @@
 <translation id="3151786313568798007">การวางแนว</translation>
 <translation id="3153444934357957346">คุณมีบัญชีได้สูงสุด <ph name="MULTI_PROFILE_USER_LIMIT" /> บัญชีในการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="3154351730702813399">ผู้ดูแลระบบของอุปกรณ์อาจตรวจสอบกิจกรรมการท่องเว็บของคุณ</translation>
-<translation id="3157931365184549694">คืนค่า</translation>
 <translation id="316086887565479535">แอปที่ไม่รองรับในเทมเพลต</translation>
 <translation id="3161500364292033097">ปิดเดสก์และหน้าต่าง</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> จะย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
@@ -1162,7 +1161,6 @@
 <translation id="6781002679438061620">เดสก์ที่ 9</translation>
 <translation id="6782182743534150858">เดสก์ที่ 13</translation>
 <translation id="6786750046913594791">ปิดโฟลเดอร์</translation>
-<translation id="6787595647772650851">กู้คืนเซสชันล่าสุด</translation>
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="679368458793552943">ซูมเข้าเมื่อแว่นขยายเปิดอยู่</translation>
 <translation id="6801878137098616817">แก้ไขเมื่อเร็วๆ นี้</translation>

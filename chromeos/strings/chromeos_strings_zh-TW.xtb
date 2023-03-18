@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1951012854035635156">小幫手</translation>
 <translation id="1962550982027027473">請輸入預設 APN</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google 個人資料相片</translation>
 <translation id="1979103255016296513">已超過密碼變更期限</translation>
 <translation id="1999615961760456652">網頁認證入口</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS 延遲時間大幅超過允許的門檻</translation>
 <translation id="3328783797891415197">正在執行測試</translation>
 <translation id="3340011300870565703">裝置的右側無線耳機電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
+<translation id="3360306038446926262">視窗</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369013195428705271">確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4147897805161313378">Google 相簿</translation>
+<translation id="4150201353443180367">顯示設定</translation>
 <translation id="4155551848414053977">請確認掃描器已開啟，而且可供透過網路或直接連線使用</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4170180284036919717">拍攝相片</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4258281355379922695">HTTP 延遲</translation>
 <translation id="4271957103967917607">以全螢幕模式瀏覽</translation>
+<translation id="4275663329226226506">媒體</translation>
 <translation id="4289540628985791613">總覽</translation>
 <translation id="4289849978083912975">播放投影片</translation>
 <translation id="4297501883039923494">已停止 - 不明的錯誤</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">請檢查掃描器，然後再試一次。另請確認本機有足夠空間可以儲存掃描的檔案。</translation>
 <translation id="4985509611418653372">執行</translation>
 <translation id="4987769320337599931">防火牆</translation>
+<translation id="4988526792673242964">網頁</translation>
 <translation id="4999333166442584738">隱藏報告</translation>
 <translation id="500920857929044050">停止測試</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">找不到任何名稱伺服器</translation>
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7943235353293548836">持續保持運作時間間隔</translation>
+<translation id="7953669802889559161">輸入法</translation>
 <translation id="7955587717700691983">藍牙鍵盤</translation>
 <translation id="7960831585769876809">溫度</translation>
 <translation id="7977800524392185497">如要加入 <ph name="NETWORK_NAME" /> 網路，請前往「設定」頁面</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8045012663542226664">將麥克風設為靜音</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
+<translation id="8076492880354921740">分頁</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8094062939584182041">允許 Google 透過電子郵件通知你這個問題的相關資訊</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">要求流量計數器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">選取「<ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />」</translation>
+<translation id="8151185429379586178">開發人員工具</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">連接</translation>
 <translation id="8206859287963243715">手機</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">桌布</translation>
 <translation id="8820457400746201697">將藍色觸控點移至所需動作，選取關聯的按鍵即可自訂。</translation>
+<translation id="8820817407110198400">書籤</translation>
 <translation id="8834539327799336565">目前已連線的裝置</translation>
 <translation id="8845001906332463065">尋求協助</translation>
 <translation id="8855781559874488009">無法透過防火牆連線到 HTTP 網站</translation>

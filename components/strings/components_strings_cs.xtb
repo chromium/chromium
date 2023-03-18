@@ -683,6 +683,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="259821504105826686">Fotografie a digitální umění</translation>
 <translation id="2601150049980261779">Romantické filmy</translation>
 <translation id="2604589665489080024">Populární hudba</translation>
+<translation id="2606760465469169465">Automatické ověření</translation>
 <translation id="2610561535971892504">Kliknutím zkopírujte</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" /> následující informace:
           <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Zkuste spustit Diagnostiku připojení<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Přejít na web <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Žádné}=1{přihlašovací údaje pro 1 účet}few{přihlašovací údaje pro # účty}many{přihlašovací údaje pro # účtu}other{přihlašovací údaje pro # účtů}}</translation>
 <translation id="3141093262818886744">Přesto otevřít</translation>
 <translation id="3141641372357166056">Žádné rozhodnutí ohledně souhlasu</translation>
 <translation id="3145945101586104090">Dekódování odpovědi se nezdařilo</translation>
@@ -1896,6 +1896,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Jak můžete svá data spravovat:<ph name="END_BOLD" /> Informace z webů starší než 4 týdny Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. V nastavení Chromu také můžete kdykoliv webu zakázat, aby vám navrhoval reklamy nebo reklamy navrhované weby vypnout.</translation>
 <translation id="5610142619324316209">Zkontrolovat připojení</translation>
 <translation id="5610807607761827392">Karty a adresy můžete spravovat v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Uložit do účtu</translation>
 <translation id="561165882404867731">Přeložte tuto stránku pomocí Překladače Google</translation>
 <translation id="5612720917913232150">Web <ph name="URL" /> chce použít polohu vašeho počítače</translation>
 <translation id="561669346091975195">Televizní seriály sci-fi a fantasy</translation>
@@ -3181,6 +3182,7 @@ Další podrobnosti:
 <translation id="8806285662264631610">Koupelnové přípravky a péče o tělo</translation>
 <translation id="8807160976559152894">Oříznutí za každou stránkou</translation>
 <translation id="8809203544698246977">Zde se zobrazují blokovaná témata</translation>
+<translation id="8811470563853401328">Uložit adresu do účtu?</translation>
 <translation id="8813277370772331957">Připomenout později</translation>
 <translation id="8814707942599948500">Obálka C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter aktualizujete Chrome v nastavení Chromu</translation>
@@ -3274,6 +3276,7 @@ Další podrobnosti:
 <translation id="9042617223719777575">Velká kapacita</translation>
 <translation id="9044359186343685026">Použít Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Tyto akce vyžadují, aby byla zásada <ph name="POLICY_NAME" /> nastavena na <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 × 36 palců</translation>
 <translation id="9049981332609050619">Pokusili jste se přejít do domény <ph name="DOMAIN" />, ale server předložil certifikát, jehož platnost vypršela.</translation>
 <translation id="9050666287014529139">Heslová fráze</translation>
@@ -3353,7 +3356,6 @@ Další podrobnosti:
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="922152298093051471">Přizpůsobit Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">VYMAZAT FORMULÁŘ</translation>
 <translation id="936602727769022409">Mohli byste ztratit přístup k účtu Google. Chromium doporučuje okamžitě změnit heslo. Budete vyzváni k přihlášení.</translation>
 <translation id="937457230470581909">Zoologické zahrady, akvária a podobná zařízení</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Jaké údaje používáme:<ph name="END_BOLD" /> Témata reklam vycházejí z historie prohlížení, což je seznam webů, které jste navštívili v Chromu na tomto zařízení.</translation>

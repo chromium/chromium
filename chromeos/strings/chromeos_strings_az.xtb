@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Sənəd Bəsləyici (Bir tərəfli)</translation>
 <translation id="1643449475550628585">Hər gün divar kağızı şəklini dəyişdirin</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
+<translation id="1651925268237749928">Paylaşılan albom seçmisiniz. Digər şəxslər foto əlavə edə və ya dəyişə bilər. Divar kağızında bu albomda olmayan fotolardan istifadə edilmiş ola bilər.</translation>
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
 <translation id="1664796644829245314">Önizləyin: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Daxili VPN</translation>
@@ -120,6 +121,7 @@
 <translation id="1947737735496445907">Çap edilib</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Defolt APN tələb olunur</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google profil şəkli</translation>
 <translation id="1979103255016296513">Parol dəyişikliyinin gecikməsi</translation>
 <translation id="1999615961760456652">Giriş Portalı</translation>
@@ -240,6 +242,7 @@
 <translation id="319101249942218879">Avatar şəkli dəyişib</translation>
 <translation id="3192947282887913208">Audio Fayllar</translation>
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
+<translation id="3201315366910775591">Digər şəxslər paylaşılan albomları yeniləyə bilər</translation>
 <translation id="3211671540163313381">Düymə uyğunlaşdırması - D-pad</translation>
 <translation id="3226405216343213872">Skanerlər axtarılır</translation>
 <translation id="3226657629376379887">Tərtibat üzrə əməliyyatlar menyusu</translation>
@@ -253,6 +256,7 @@
 <translation id="3310640316857623290">DNS gecikməsi icazə verilən həddən xeyli yuxarıdır</translation>
 <translation id="3328783797891415197">Test icra edilir</translation>
 <translation id="3340011300870565703">Sağ qulaqlığın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Qoşuludur</translation>
 <translation id="3369013195428705271">Bütün çap tarixçəsini silmək istədiyinizə əminsiniz? Davam edən çap işləriniz silinməyəcək.</translation>
 <translation id="3404249063913988450">Ekran qoruyucusunu aktiv edin</translation>
@@ -340,6 +344,7 @@
 <translation id="4131410914670010031">Ağ və qara</translation>
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
 <translation id="4147897805161313378">Google Foto</translation>
+<translation id="4150201353443180367">Ekran</translation>
 <translation id="4155551848414053977">Skanerin aktiv olduğuna, şəbəkə və ya birbaşa qoşulma üzərindən əlçatan olduğuna əmin olun</translation>
 <translation id="4159784952369912983">Bənövşəyi</translation>
 <translation id="4170180284036919717">Foto çəkin</translation>
@@ -355,6 +360,7 @@
 <translation id="4250229828105606438">Skrinşot</translation>
 <translation id="4258281355379922695">HTTP Gecikməsi</translation>
 <translation id="4271957103967917607">Tam Ekranda BAxın</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Baxış</translation>
 <translation id="4289849978083912975">Slayd şou</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
@@ -447,6 +453,7 @@
 <translation id="498186245079027698">Skaneri yoxlayın və yenidən cəhd edin. Skan edilmiş faylları saxlamaq üçün diskdə kifayət qədər yer olduğuna əmin olun.</translation>
 <translation id="4985509611418653372">İşə salın</translation>
 <translation id="4987769320337599931">Qoruyucu divar</translation>
+<translation id="4988526792673242964">Səhifələr</translation>
 <translation id="4999333166442584738">Hesabatı gizlədin</translation>
 <translation id="500920857929044050">Testi dayandırın</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -658,6 +665,7 @@
 <translation id="6838167112108853532">Bu APN'i deaktiv etmək və ya silmək mümkün deyil. Əlavə edilmiş aktiv APN'lərin deaktiv edildiyinə və ya silindiyinə əmin olun.</translation>
 <translation id="6853312040151791195">Deşarj faizi</translation>
 <translation id="6889786074662672253">Yenidən başlatma zamanı bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu, bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
+<translation id="6900701049656042631">Albomda foto yoxdur. Foto əlavə etmək üçün <ph name="LINK" /> ünvanına keçin</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> səhifəsinə qayıdın</translation>
 <translation id="6910312834584889076">Skanerin qapağı açıqdır. Qapağı bağlayıb yenidən sınayın.</translation>
 <translation id="6911383237894364323">Media serverlərinə qoşulmaq olmur</translation>
@@ -772,6 +780,7 @@
 <translation id="7936303884198020182">Ad serveri tapılmadı</translation>
 <translation id="7942349550061667556">Qırmızı</translation>
 <translation id="7943235353293548836">Davamlı aktivlik mesajı intervalı</translation>
+<translation id="7953669802889559161">Daxiletmələr</translation>
 <translation id="7955587717700691983">Bluetooth klaviatura</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> şəbəkəsinə qoşulmaq üçün Ayarlara keçin</translation>
@@ -784,6 +793,7 @@
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="8045012663542226664">Mikrofonun səssiz düyməsi</translation>
 <translation id="8075838845814659848">Qalan şarj</translation>
+<translation id="8076492880354921740">Tablar</translation>
 <translation id="8082366717211101304">Android tətbiqlərindən DNS'i həll etmək olmur</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8094062939584182041">Google'un bu problemlə bağlı sizə e-məktub göndərməsinə icazə verin</translation>
@@ -793,6 +803,7 @@
 <translation id="8132480444149501833">Nəqliyyat Sayğacları Sorğulayın</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seçin</translation>
+<translation id="8151185429379586178">Developer alətləri</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Əlavə edin</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -861,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Divar kağızı</translation>
 <translation id="8820457400746201697">Mavi toxunma nöqtəsini əməliyyata doğru hərəkət etdirin. Fərdiləşdirmək üçün əlaqələndirilmiş düyməni seçin.</translation>
+<translation id="8820817407110198400">Əlfəcinlər</translation>
 <translation id="8834539327799336565">Hazırda qoşulub</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8855781559874488009">Alov divarı aktiv olduqda HTTP vebsaytlarına qoşulmaq olmur</translation>

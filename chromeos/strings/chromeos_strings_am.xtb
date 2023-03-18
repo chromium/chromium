@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">ታትሟል</translation>
 <translation id="1951012854035635156">ረዳት</translation>
 <translation id="1962550982027027473">ነባሪ ኤፒኤን ያስፈልጋል</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">የGoogle መገለጫ ፎቶ</translation>
 <translation id="1979103255016296513">የይለፍ ቃል ለውጥ ማድረጊያ ጊዜው አልፏል</translation>
 <translation id="1999615961760456652">ተያዥ መግቢያ</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በጉልህ ይበልጣል</translation>
 <translation id="3328783797891415197">ሙከራ በማሄድ ላይ</translation>
 <translation id="3340011300870565703">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% የቀኝ ጆሮ ማዳመጫ ባትሪ አለው።</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">ተያይዟል</translation>
 <translation id="3369013195428705271">እርግጠኛ ነዎት ሁሉንም የህትመት ታሪክ ማጥፋት ይፈልጋሉ? በመካሄድ ላይ ያሉ የህትመት ስራዎችዎ አይጠፉም።</translation>
 <translation id="3404249063913988450">የማያ ገጽ ማቆያን አንቃ</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">ጥቁር እና ነጭ</translation>
 <translation id="4145784616224233563">የHTTP ኬላ</translation>
 <translation id="4147897805161313378">Google ፎቶዎች</translation>
+<translation id="4150201353443180367">ማሳያ</translation>
 <translation id="4155551848414053977">ቃኚው መብራቱን እና በእርስዎ አውታረ መረብ ወይም በቀጥታ ግንኙነት በኩል የሚገኝ መሆኑን ያረጋግጡ</translation>
 <translation id="4159784952369912983">ሐምራዊ</translation>
 <translation id="4170180284036919717">ፎቶ አንሳ</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">ቅጽበታዊ ገጽ እይታ</translation>
 <translation id="4258281355379922695">የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="4271957103967917607">ሙሉ ማያ ገጽ ይመልከቱ</translation>
+<translation id="4275663329226226506">ማህደረ መረጃ</translation>
 <translation id="4289540628985791613">ማጠቃለያ</translation>
 <translation id="4289849978083912975">የተንሸራታች ትዕይንት</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">መቃኛውን ይፈትሹ እና እንደገና ይሞክሩ። የተቃኙ ፋይሎችን ለማስቀመጥ በቂ አከባቢያዊ ቦታ መኖሩን ያረጋግጡ።</translation>
 <translation id="4985509611418653372">አሂድ</translation>
 <translation id="4987769320337599931">ኬላ</translation>
+<translation id="4988526792673242964">ገፆች</translation>
 <translation id="4999333166442584738">ሪፖርትን ደብቅ</translation>
 <translation id="500920857929044050">ሙከራን አቁም</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">ምንም የስም አገልጋዮች አልተገኙም</translation>
 <translation id="7942349550061667556">ቀይ</translation>
 <translation id="7943235353293548836">የማያቋርጥ እንደነቃ አቆይ ክፍተት</translation>
+<translation id="7953669802889559161">ግቤቶች</translation>
 <translation id="7955587717700691983">የብሉቱዝ ቁልፍ ሰሌዳ</translation>
 <translation id="7960831585769876809">የሙቀት መጠን</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> አውታረ መረብን ለመቀላቀል ወደ ቅንብሮች ይሂዱ</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>
 <translation id="8045012663542226664">የማይክሮፎን ድምጸ-ከል ማድረጊያ</translation>
 <translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
+<translation id="8076492880354921740">ትሮች</translation>
 <translation id="8082366717211101304">ከAndroid መተግበሪያዎች ዲኤንኤስን መፍታት አልተቻለም</translation>
 <translation id="808894953321890993">የይለፍ ቃል ለውጥ</translation>
 <translation id="8094062939584182041">Google ስለዚህ ችግር ኢሜይል እንዲልክልዎ ይፍቀዱለት</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">የትራፊክ ቆጣሪዎችን ጠይቅ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ን ምረጥ</translation>
+<translation id="8151185429379586178">የገንቢ መሳሪያዎች</translation>
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8183974620058026102">አባሪ አድርግ</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">ልጣፍ</translation>
 <translation id="8820457400746201697">ሰማያዊውን የመንኪያ ነጥብ ወደ ተግባር ይውሰዱት። ለማበጀት የተያያዘውን ቁልፍ ይምረጡ።</translation>
+<translation id="8820817407110198400">ዕልባቶች</translation>
 <translation id="8834539327799336565">አሁን ላይ ተገናኝቷል</translation>
 <translation id="8845001906332463065">እገዛ ያግኙ</translation>
 <translation id="8855781559874488009">በኬላ በኩል ወደ ኤችቲቲፒ ድር ጣቢያዎች መገናኘት አይቻልም</translation>

@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Išskleista – spustelėkite, kad sutrauktumėte</translation>
 <translation id="2586657967955657006">Iškarpinė</translation>
 <translation id="2597457036804169544">Netaikyti tamsiosios temos svetainėms</translation>
+<translation id="2606760465469169465">Automatinis patvirtinimas</translation>
 <translation id="2621115761605608342">Leisti „JavaScript“ konkrečioje svetainėje.</translation>
 <translation id="2653659639078652383">Pateikti</translation>
 <translation id="2677748264148917807">Išeiti</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Pasirinkti kontaktai bus bendrinami su <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Paskutinį kartą lankytasi šiandien</translation>
 <translation id="5225463052809312700">Įjungti fotoaparatą</translation>
+<translation id="5229337741799419985">Šis nustatymas veikia jūsų neidentifikuojant ir neleidžiant svetainėms matyti jūsų naršymo istorijos</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
 <translation id="5264323282659631142">Pašalinti „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Vilkite žymeklį nuo viršaus ir palieskite mygtuką „Atgal“, kad išeitumėte iš viso ekrano režimo.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6689172468748959065">Profilio nuotraukos</translation>
 <translation id="6697925417670533197">Aktyvūs atsisiuntimai</translation>
+<translation id="6701547804986694515">Svetainė, kurioje lankotės, sistemoje „Chrome“ gali išsaugoti informaciją, pagal kurią patvirtinama, kad esate ne robotas. Jums naršant toliau, svetainės gali tikrinti sistemoje „Chrome“ ir iš ankstesnės svetainės, kurioje lankėtės, patvirtinti, kad tikriausiai esate realus asmuo</translation>
 <translation id="6722828510648505498">Blokuoti raginimus prisijungti iš tapatybės nustatymo paslaugų.</translation>
 <translation id="6746124502594467657">Perkelti žemyn</translation>
 <translation id="6749077623962119521">Iš naujo nustatyti leidimus?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Pasirinkti vaizdą</translation>
 <translation id="8801436777607969138">Blokuoti „JavaScript“ konkrečioje svetainėje.</translation>
 <translation id="8803526663383843427">Kada įjungta</translation>
+<translation id="8805385115381080995">Naršymo procesas greitesnis, nes mažiau tikėtina, kad bus prašoma patvirtinti, jos esate realus asmuo</translation>
 <translation id="8816026460808729765">Svetainės blokuojamos, kad nepasiektų jutiklių</translation>
 <translation id="8823559166155093873">Blokuoti slapukus</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
 <translation id="9201023452444595544">Visi neprisijungus pasiekiami duomenys bus išvalyti</translation>
 <translation id="930525582205581608">Pamiršti šią svetainę?</translation>
+<translation id="947156494302904893">Svetainės, kuriose lankotės, gali patvirtinti, kad esate realus asmuo, o ne robotas</translation>
 <translation id="967624055006145463">Saugomi duomenys</translation>
 </translationbundle>

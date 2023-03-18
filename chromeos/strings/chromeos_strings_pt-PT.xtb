@@ -102,6 +102,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Tipo de autenticação</translation>
 <translation id="1782199038061388045">tradução</translation>
+<translation id="1790209694022261219">Janelas e espaços de trabalho</translation>
 <translation id="1792647875738159689">A cancelar a digitalização…</translation>
 <translation id="1801418420130173017">Desativar tema escuro</translation>
 <translation id="1807246157184219062">Claro</translation>
@@ -121,6 +122,7 @@
 <translation id="1947737735496445907">Impressão concluída</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1962550982027027473">É necessário um APN predefinido</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Foto do perfil do Google</translation>
 <translation id="1979103255016296513">Alteração da palavra-passe vencida</translation>
 <translation id="1999615961760456652">Portal cativo</translation>
@@ -255,6 +257,7 @@
 <translation id="3310640316857623290">Latência de DNS significativamente acima do limite permitido.</translation>
 <translation id="3328783797891415197">A executar teste…</translation>
 <translation id="3340011300870565703">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria no auricular direito.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3369013195428705271">Tem a certeza de que pretende limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
 <translation id="3404249063913988450">Ativar proteção de ecrã</translation>
@@ -342,6 +345,7 @@
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
+<translation id="4150201353443180367">Visualização</translation>
 <translation id="4155551848414053977">Certifique-se de que o lscannerestá ativado e disponível através da sua rede ou de uma ligação direta.</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4170180284036919717">Tirar uma foto</translation>
@@ -357,6 +361,7 @@
 <translation id="4250229828105606438">Captura de ecrã</translation>
 <translation id="4258281355379922695">Latência de HTTP</translation>
 <translation id="4271957103967917607">Ver ecrã inteiro</translation>
+<translation id="4275663329226226506">Multimédia</translation>
 <translation id="4289540628985791613">Vista geral</translation>
 <translation id="4289849978083912975">Apresentação de diapositivos</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
@@ -364,6 +369,7 @@
 <translation id="4311195029067684288">Completo</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> premida</translation>
 <translation id="435692326371619097">Faça a gestão das definições do APN (Nome do Ponto de Acesso) da rede. Os APNs estabelecem uma ligação entre uma rede móvel e a Internet. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Repor todos os atalhos</translation>
 <translation id="4378373042927530923">Não foi executada.</translation>
 <translation id="4378551569595875038">A ligar...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -449,6 +455,7 @@
 <translation id="498186245079027698">Verifique o scanner e tente novamente. Certifique-se de que existe espaço local suficiente para guardar os ficheiros digitalizados.</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Páginas </translation>
 <translation id="4999333166442584738">Ocultar relatório</translation>
 <translation id="500920857929044050">Parar teste</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +782,7 @@
 <translation id="7936303884198020182">Não foram encontrados servidores de nomes.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943235353293548836">Intervalo keep-alive persistente</translation>
+<translation id="7953669802889559161">Métodos de introdução</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Para estabelecer ligação a uma rede <ph name="NETWORK_NAME" />, aceda às Definições</translation>
@@ -787,6 +795,7 @@
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8045012663542226664">Desativação do som do microfone</translation>
 <translation id="8075838845814659848">Carregamento restante</translation>
+<translation id="8076492880354921740">Separadores</translation>
 <translation id="8082366717211101304">Não é possível resolver o DNS a partir de apps Android</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>
 <translation id="8094062939584182041">Permitir que a Google lhe envie um email acerca deste problema</translation>
@@ -796,6 +805,7 @@
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selecionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Ferramentas do programador</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Anexar</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
@@ -864,6 +874,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Imagem de fundo</translation>
 <translation id="8820457400746201697">Mova o ponto de toque azul para uma ação. Selecione a tecla associada para personalizar.</translation>
+<translation id="8820817407110198400">Marcadores</translation>
 <translation id="8834539327799336565">Atualmente ligados</translation>
 <translation id="8845001906332463065">Obter ajuda</translation>
 <translation id="8855781559874488009">Não é possível estabelecer ligação através da firewall a Websites HTTP</translation>

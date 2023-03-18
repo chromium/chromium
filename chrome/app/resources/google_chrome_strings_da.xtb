@@ -10,6 +10,7 @@
 <translation id="110877069173485804">Dette er din Chrome-browser</translation>
 <translation id="1125124144982679672">Hvem bruger Chrome?</translation>
 <translation id="1142745911746664600">Chrome kan ikke opdateres</translation>
+<translation id="1149651794389918149">Log ind på Chrome. Hvis du kun vil logge ind på en konto én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruge enheden som gæst<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Om ChromeOS</translation>
 <translation id="1154147086299354128">Åbn i Chr&amp;ome</translation>
 <translation id="1203500561924088507">Tak for installationen. Du skal genstarte browseren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
@@ -168,6 +169,7 @@
 <translation id="4147555960264124640">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Google Chrome. Dine Chrome-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installerer...</translation>
 <translation id="4149882025268051530">Installationsprogrammet kunne ikke pakke arkivet ud. Download Google Chrome igen.</translation>
+<translation id="4153934450158521343">Chrome lukkes snart, og dataene slettes</translation>
 <translation id="4191857738314598978">{0,plural, =1{Genstart Chrome inden for én dag}one{Genstart Chrome inden for # dag}other{Genstart Chrome inden for # dage}}</translation>
 <translation id="4205939740494406371">Chrome kan ikke tjekke dine adgangskoder. Prøv igen efter 24 timer, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annullerer…</translation>
@@ -213,6 +215,7 @@
 <translation id="4970880042055371251">ChromeOS-version</translation>
 <translation id="4970947549776831107">Chrome har blokeret denne fil, fordi denne type fil er skadelig</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Din administrator lukker automatisk Chrome, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, Autofyld og downloads.}one{Din administrator lukker automatisk Chrome, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, Autofyld og downloads.}other{Din administrator lukker automatisk Chrome, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, Autofyld og downloads.}}</translation>
 <translation id="5098668839038261629">Når den er slået til, bliver du også logget ud af Chrome</translation>
 <translation id="5132929315877954718">Find fantastiske apps, spil, udvidelser og temaer til Google Chrome.</translation>
 <translation id="5139423532931106058">Tilpas din Chrome-profil</translation>
@@ -261,12 +264,14 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6235018212288296708">Indgående regel for Google Chrome om at tillade mDNS-trafik.</translation>
+<translation id="624230925347970731">Chrome lukkes snart</translation>
 <translation id="6247557882553405851">Google Adgangskodeadministrator</translation>
 <translation id="6273793429163604305">Klar…</translation>
 <translation id="6291089322031436445">Apps i udviklerversionen af Chrome</translation>
 <translation id="6291549208091401781">Google Chrome er allerede installeret for alle brugere på computeren.</translation>
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
 <translation id="6327105987658262776">Der er ingen opdatering tilgængelig.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Din administrator sletter automatisk browserdataene, når browseren ikke bruges i 1 minut. Disse kan omfatte historik, Autofyld og downloads. Dine eksisterende faner forbliver åbne.}one{Din administrator sletter automatisk browserdataene, når browseren ikke bruges i # minut. Disse kan omfatte historik, Autofyld og downloads. Dine eksisterende faner forbliver åbne.}other{Din administrator sletter automatisk browserdataene, når browseren ikke bruges i # minutter. Disse kan omfatte historik, Autofyld og downloads. Dine eksisterende faner forbliver åbne.}}</translation>
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="6418662306461808273">Vil du skifte til den eksisterende Chrome-profil?</translation>
 <translation id="6493527311031785448">Google Chrome forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -296,6 +301,7 @@
 
 De tilladelser, du har givet til websites og apps, gælder muligvis for denne konto. Du kan administrere dine Google-konti under <ph name="SETTINGS_LINK_BEGIN" />Indstillinger<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chrome. Det er ikke tilladt at tilføje denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7071827361006050863">Chrome sletter snart browserdataene</translation>
 <translation id="7085332316435785646">Vælg, om du vil inkludere Chrome-historikken for at få mere tilpassede oplevelser i Googles tjenester</translation>
 <translation id="7088681679121566888">Chrome er opdateret</translation>
 <translation id="7098166902387133879">Google Chrome bruger din mikrofon.</translation>
@@ -357,6 +363,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8290100596633877290">Hovsa! Google Chrome er gået ned. Vil du genstarte nu?</translation>
 <translation id="8342675569599923794">Denne fil er farlig, så Chrome har blokeret den.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger med Chrome om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Din administrator lukker automatisk Chrome, når den ikke bruges i 1 minut.}one{Din administrator lukker automatisk Chrome, når den ikke bruges i # minut.}other{Din administrator lukker automatisk Chrome, når den ikke bruges i # minutter.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chrome kan estimere dine interesser. Senere kan et website, du besøger, anmode Chrome om at se dine interesser med henblik på at tilpasse de annoncer, du ser.</translation>
 <translation id="8387459386171870978">Fortsæt med at bruge Chrome</translation>

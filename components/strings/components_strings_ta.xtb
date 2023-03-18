@@ -867,7 +867,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />கனெக்டிவிட்டி டயக்னஸ்டிக்ஸ் கருவியை இயக்கவும்<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" />க்கு செல்</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{ஏதுமில்லை}=1{1 கணக்கின் உள்நுழைவுத் தரவு}other{# கணக்குகளின் உள்நுழைவுத் தரவு}}</translation>
 <translation id="3141093262818886744">பரவாயில்லை, திற</translation>
 <translation id="3141641372357166056">ஒப்புதல் முடிவு எதுவுமில்லை</translation>
 <translation id="3145945101586104090">பதிலைக் குறிநீக்கம் செய்வதில் தோல்வி</translation>
@@ -3354,7 +3353,6 @@
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chromeமைப் பிரத்தியேகப்படுத்து</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">படிவத்தை அழி</translation>
 <translation id="936602727769022409">உங்கள் Google கணக்கிற்கான அணுகலை நீங்கள் இழக்கக்கூடும். இப்போதே உங்கள் கடவுச்சொல்லை மாற்றுமாறு Chromium பரிந்துரைக்கிறது. அதற்கு நீங்கள் உள்நுழைய வேண்டும்.</translation>
 <translation id="937457230470581909">உயிரியல் பூங்காக்கள், மீன் காட்சியகங்கள் &amp; சரணாலயங்கள்</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />எந்தெந்தத் தரவு பயன்படுத்தப்படுகிறது:<ph name="END_BOLD" /> நீங்கள் சமீபத்தில் இணையத்தில் பார்த்தவை, இந்தச் சாதனத்தில் Chrome உலாவியைப் பயன்படுத்தி நீங்கள் பார்வையிட்ட தளங்கள் ஆகியவற்றின் அடிப்படையில் உங்கள் விளம்பரத் தலைப்புகள் இருக்கும்.</translation>

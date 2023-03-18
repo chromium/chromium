@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Wedi'i ehangu - cliciwch i grebachu.</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
 <translation id="2597457036804169544">Peidio â defnyddio'r thema dywyll ar gyfer gwefannau</translation>
+<translation id="2606760465469169465">Awtoddilysu</translation>
 <translation id="2621115761605608342">Caniatáu JavaScript ar wefan benodol.</translation>
 <translation id="2653659639078652383">Danfon</translation>
 <translation id="2677748264148917807">Gadael</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Bydd y cysylltiadau rydych yn eu dewis yn cael eu rhannu gyda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Ymwelwyd ddiwethaf heddiw</translation>
 <translation id="5225463052809312700">Troi'r camera ymlaen</translation>
+<translation id="5229337741799419985">Mae'r gosodiad hwn yn gweithio heb eich adnabod na chaniatáu i wefannau weld eich hanes pori</translation>
 <translation id="5234764350956374838">Diystyru</translation>
 <translation id="5264323282659631142">Tynnu '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Llusgwch o'r brig a chyffyrddwch â'r botwm nôl i adael y sgrîn lawn.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Clirio</translation>
 <translation id="6689172468748959065">Lluniau proffil</translation>
 <translation id="6697925417670533197">Lawrlwythiadau gweithredol</translation>
+<translation id="6701547804986694515">Gall gwefan rydych yn ymweld â hi gadw gwybodaeth gyda Chrome sy'n dilysu nad bot ydych chi. Wrth i chi barhau i bori, gall gwefannau wirio gyda Chrome a chadarnhau gyda gwefan flaenorol rydych wedi ymweld â hi eich bod yn debygol o fod yn berson go iawn</translation>
 <translation id="6722828510648505498">Rhwystro anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
 <translation id="6746124502594467657">Symud i lawr</translation>
 <translation id="6749077623962119521">Ailosod caniatadau?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Dewiswch lun</translation>
 <translation id="8801436777607969138">Rhwystro JavaScript ar gyfer gwefan benodol.</translation>
 <translation id="8803526663383843427">Pan fydd ymlaen</translation>
+<translation id="8805385115381080995">Mae pori yn gyflymach oherwydd bod gwefan yn llai tebygol o ofyn i chi gadarnhau eich bod yn berson go iawn</translation>
 <translation id="8816026460808729765">Rhwystro gwefannau rhag cael mynediad at synwyryddion</translation>
 <translation id="8823559166155093873">Rhwystro cwcis</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Mae'r dudalen hon yn beryglus</translation>
 <translation id="9201023452444595544">Bydd unrhyw ddata all-lein yn cael eu clirio</translation>
 <translation id="930525582205581608">Anghofio'r wefan hon?</translation>
+<translation id="947156494302904893">Gall gwefannau rydych yn ymweld â nhw gadarnhau eich bod yn berson go iawn ac nid bot</translation>
 <translation id="967624055006145463">Data a storiwyd</translation>
 </translationbundle>

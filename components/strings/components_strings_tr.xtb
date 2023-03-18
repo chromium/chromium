@@ -868,7 +868,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Bağlantı Teşhislerini çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Git: <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Yok}=1{1 hesaba ait oturum açma verileri}other{# hesaba ait oturum açma verileri}}</translation>
 <translation id="3141093262818886744">Yine de aç</translation>
 <translation id="3141641372357166056">İzin kararı yok</translation>
 <translation id="3145945101586104090">Yanıtın kodu çözülemedi</translation>
@@ -3363,7 +3362,6 @@ Ek ayrıntılar:
 <translation id="9219103736887031265">Resimler</translation>
 <translation id="922152298093051471">Chrome'u özelleştir</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">FORMU TEMİZLE</translation>
 <translation id="936602727769022409">Google Hesabınıza erişimi kaybedebilirsiniz. Chromium, şifrenizi hemen değiştirmenizi önerir. Oturum açmanız istenecektir.</translation>
 <translation id="937457230470581909">Hayvanat Bahçeleri, akvaryumlar ve doğa koruma alanları</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Kullanılan veriler:<ph name="END_BOLD" /> Reklam konularınız, bu cihazda Chrome'u kullanarak ziyaret ettiğiniz sitelerin listesi olan son tarama geçmişinize göre belirlenir.</translation>

@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Rozbaleno – kliknutím sbalíte</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2597457036804169544">Nepoužívat pro weby tmavý motiv</translation>
+<translation id="2606760465469169465">Automatické ověření</translation>
 <translation id="2621115761605608342">Povolit JavaScript pro konkrétní web.</translation>
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2677748264148917807">Odejít</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Vybrané kontakty budou sdíleny s webem <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Naposledy navštíveno dnes</translation>
 <translation id="5225463052809312700">Zapnout kameru</translation>
+<translation id="5229337741799419985">Toto nastavení funguje, aniž by webům umožňovalo identifikovat vás nebo zjistit vaši historii prohlížení</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5264323282659631142">Odstranit položku <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Režim celé obrazovky ukončíte přetažením z horního okraje obrazovky a klepnutím na tlačítko Zpět.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Aktivní stahování</translation>
+<translation id="6701547804986694515">Navštívený web může do Chromu uložit informace, které potvrzují, že nejste robot. Při dalším procházení může Chrome na požádání jinému webu sdělit, že vás předchozí web ověřil jako pravděpodobně důvěryhodného uživatele.</translation>
 <translation id="6722828510648505498">Blokovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
 <translation id="6746124502594467657">Posunout dolů</translation>
 <translation id="6749077623962119521">Resetovat oprávnění?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Vybrat obrázek</translation>
 <translation id="8801436777607969138">Blokovat JavaScript na konkrétním webu.</translation>
 <translation id="8803526663383843427">Když je tato funkce zapnutá</translation>
+<translation id="8805385115381080995">Procházení je rychlejší, protože je méně pravděpodobné, že vás web požádá o ověření, že jste skutečná osoba</translation>
 <translation id="8816026460808729765">Blokovat webům přístup k senzorům</translation>
 <translation id="8823559166155093873">Blokování souborů cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Tato stránka je nebezpečná</translation>
 <translation id="9201023452444595544">Veškerá data offline budou vymazána</translation>
 <translation id="930525582205581608">Zapomenout tento web?</translation>
+<translation id="947156494302904893">Weby, které navštěvujete, mohou ověřit, že jste člověk, a ne robot</translation>
 <translation id="967624055006145463">Uložená data</translation>
 </translationbundle>

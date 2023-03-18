@@ -93,6 +93,7 @@
 <translation id="257931822824936280">विस्‍तृत केले - संकुचित करण्‍यासाठी क्‍लिक करा.</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2597457036804169544">साइटवर गडद थीम लागू करू नका</translation>
+<translation id="2606760465469169465">ऑटो पडताळणी</translation>
 <translation id="2621115761605608342">विशिष्ट साइटसाठी JavaScript ला अनुमती द्या.</translation>
 <translation id="2653659639078652383">सबमिट करा</translation>
 <translation id="2677748264148917807">सोडा</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">तुम्ही निवडलेले संपर्क <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />सोबत शेअर केले जातील.</translation>
 <translation id="5216942107514965959">आज शेवटची भेट दिली</translation>
 <translation id="5225463052809312700">कॅमेरा सुरू करा</translation>
+<translation id="5229337741799419985">हे सेटिंग तुम्हाला ओळखल्याशिवाय किंवा साइटला तुमचा ब्राउझिंग इतिहास पाहण्याची अनुमती न देता काम करते</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' काढून टाका</translation>
 <translation id="528192093759286357">शीर्ष पासून ड्रॅग करा आणि फुलस्क्रीन मधून बाहेर पडण्यासाठी परत बटणास स्पर्श करा.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6689172468748959065">प्रोफाइल फोटो</translation>
 <translation id="6697925417670533197">सुरू असलेली डाउनलोड</translation>
+<translation id="6701547804986694515">तुम्ही भेट देता ती साइट Chrome सह माहिती सेव्ह करू शकते, जी तुम्ही बॉट नाही हे प्रमाणित करते. तुम्ही ब्राउझ करणे पुढे सुरू ठेवता, तसे साइट Chrome सह तपासू शकतात आणि तुम्ही खरी व्यक्ती असल्याची भेट दिलेल्या मागील साइटवरून पडताळणी करू शकतात</translation>
 <translation id="6722828510648505498">ओळखीच्या सेवांकडून मिळणाऱ्या साइन इन सूचना ब्लॉक करा.</translation>
 <translation id="6746124502594467657">खाली हलवा</translation>
 <translation id="6749077623962119521">परवानग्या रीसेट करायच्या आहेत का?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">इमेज निवडा</translation>
 <translation id="8801436777607969138">विशिष्ट साइटसाठी JavaScript ब्लॉक करा.</translation>
 <translation id="8803526663383843427">सुरू असल्यास</translation>
+<translation id="8805385115381080995">ब्राउझिंग जलद आहे, कारण साइट तुम्हाला खरी व्यक्ती असल्याची पडताळणी करण्यास सांगण्याची शक्यता कमी आहे</translation>
 <translation id="8816026460808729765">साइटना सेन्सर ॲक्सेस करण्यापासून ब्लॉक करा</translation>
 <translation id="8823559166155093873">कुकी ब्लॉक करा</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">हे पेज धोकादायक आहे</translation>
 <translation id="9201023452444595544">कोणताही ऑफलाइन डेटा साफ केला जाईल</translation>
 <translation id="930525582205581608">ही साइट विसरायची का?</translation>
+<translation id="947156494302904893">तुम्ही खरी व्यक्ती आहात आणि बॉट नाही याची तुम्ही भेट देता त्या साइट पडताळणी करू शकतात</translation>
 <translation id="967624055006145463">डेटा स्टोअर केला</translation>
 </translationbundle>

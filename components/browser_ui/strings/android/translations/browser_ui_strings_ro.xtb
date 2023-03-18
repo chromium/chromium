@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Afișare extinsă – dă clic pentru a restrânge.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2597457036804169544">Nu aplica tema întunecată pe site-uri</translation>
+<translation id="2606760465469169465">Verificare automată</translation>
 <translation id="2621115761605608342">Permite JavaScript pentru un anumit site.</translation>
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2677748264148917807">Ieși</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Persoanele de contact pe care le selectezi vor fi trimise site-ului <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Accesat ultima dată azi</translation>
 <translation id="5225463052809312700">Activează camera foto</translation>
+<translation id="5229337741799419985">Această setare funcționează fără să te identifice sau să permită site-urilor să îți vadă istoricul de navigare</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5264323282659631142">Elimină „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Trage din partea de sus și atinge butonul Înapoi pentru a ieși din ecranul complet.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6689172468748959065">Fotografii de profil</translation>
 <translation id="6697925417670533197">Descărcări active</translation>
+<translation id="6701547804986694515">Un site pe care îl accesezi poate salva informații în Chrome care validează faptul că nu ești o aplicație bot. În timp ce navighezi, site-urile pot să solicite informații de la Chrome și să confirme cu ajutorul unui site pe care l-ai accesat anterior că ești o persoană reală.</translation>
 <translation id="6722828510648505498">Blochează solicitările de conectare de la serviciile de identitate.</translation>
 <translation id="6746124502594467657">Mutați în jos</translation>
 <translation id="6749077623962119521">Resetezi permisiunile?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Selectează o imagine</translation>
 <translation id="8801436777607969138">Blochează JavaScript pentru un anumit site.</translation>
 <translation id="8803526663383843427">Când opțiunea este activată</translation>
+<translation id="8805385115381080995">Navigarea este mai rapidă deoarece este mai puțin probabil ca un site să îți solicite să confirmi că ești o persoană reală</translation>
 <translation id="8816026460808729765">Blochează întotdeauna accesul site-urilor la senzori</translation>
 <translation id="8823559166155093873">Blochează cookie-urile</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Pagina este periculoasă</translation>
 <translation id="9201023452444595544">Toate datele offline vor fi șterse</translation>
 <translation id="930525582205581608">Elimini acest site?</translation>
+<translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
 <translation id="967624055006145463">Date stocate</translation>
 </translationbundle>

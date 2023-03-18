@@ -683,6 +683,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="259821504105826686">Fotokonst och digital konst</translation>
 <translation id="2601150049980261779">Romantik</translation>
 <translation id="2604589665489080024">Popmusik</translation>
+<translation id="2606760465469169465">Verifiera automatiskt</translation>
 <translation id="2610561535971892504">Klicka för att kopiera</translation>
 <translation id="2617988307566202237">Följande information sparas <ph name="BEGIN_EMPHASIS" />inte<ph name="END_EMPHASIS" /> i Chrome:
         <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Testa att köra anslutningsdiagnostik<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Besök <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Ingen}=1{inloggningsuppgifter för 1 konto}other{inloggningsuppgifter för # konton}}</translation>
 <translation id="3141093262818886744">Öppna ändå</translation>
 <translation id="3141641372357166056">Inget samtyckesbeslut</translation>
 <translation id="3145945101586104090">Det gick inte att avkoda svaret</translation>
@@ -1900,6 +1900,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> Chrome raderar automatiskt webbplatser som är äldre än fyra veckor. Om du besöker en webbplats på nytt kan den dyka upp på listan igen. Du kan även blockera webbplatser från att föreslå annonser för dig och inaktivera föreslagna annonser på webbplatser när som helst i inställningarna för Chrome.</translation>
 <translation id="5610142619324316209">kontrollera anslutningen</translation>
 <translation id="5610807607761827392">Du hanterar kort och adresser under <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Spara i kontot</translation>
 <translation id="561165882404867731">Översätt den här sidan med Google Översätt</translation>
 <translation id="5612720917913232150"><ph name="URL" /> vill använda datorns plats</translation>
 <translation id="561669346091975195">Science fiction och fantasy på tv</translation>
@@ -3187,6 +3188,7 @@ Mer information:
 <translation id="8806285662264631610">Dusch- och badprodukter</translation>
 <translation id="8807160976559152894">Beskär efter varje sida</translation>
 <translation id="8809203544698246977">Blockerade ämnen visas här</translation>
+<translation id="8811470563853401328">Vill du spara adressen i kontot?</translation>
 <translation id="8813277370772331957">Påminn mig senare</translation>
 <translation id="8814707942599948500">C8-kuvert</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill uppdatera Chrome i inställningarna för Chrome</translation>
@@ -3280,6 +3282,7 @@ Mer information:
 <translation id="9042617223719777575">Stor kapacitet</translation>
 <translation id="9044359186343685026">Använd Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Dessa åtgärder kräver att principen <ph name="POLICY_NAME" /> ställs in på <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 tum</translation>
 <translation id="9049981332609050619">Du försökte nå <ph name="DOMAIN" /> men servern angav ett ogiltigt certifikat.</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
@@ -3359,7 +3362,6 @@ Mer information:
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">RENSA FORMULÄRET</translation>
 <translation id="936602727769022409">Du kan förlora tillgången till Google-kontot. Du rekommenderas att ändra lösenordet nu. Du blir uppmanad att logga in.</translation>
 <translation id="937457230470581909">Djurparker, akvarier och djurreservat</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Vilken data som används:<ph name="END_BOLD" /> Dina annonsämnen baseras på din senaste webbhistorik, en lista över webbplatser du har besökt i Chrome på den här enheten.</translation>

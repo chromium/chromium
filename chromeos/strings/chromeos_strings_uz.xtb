@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Chop etildi</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Standart APN talab qilinadi</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google profil surati</translation>
 <translation id="1979103255016296513">Parolni almashtirish muddati tugadi</translation>
 <translation id="1999615961760456652">Kirish portali</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS kutish vaqti ruxsat etilgan chegaradan juda baland</translation>
 <translation id="3328783797891415197">Tekshirilmoqda</translation>
 <translation id="3340011300870565703">Qurilmaning oʻng quloqlik batareyasi quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3360306038446926262">Oynalar</translation>
 <translation id="3368922792935385530">Ulangan</translation>
 <translation id="3369013195428705271">Chop etish tarixi tozalansinmi? Joriy chop etish vazifalari oʻchirib tashlanmaydi.</translation>
 <translation id="3404249063913988450">Ekran lavhasini faollashtirish</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Oq-qora</translation>
 <translation id="4145784616224233563">HTTP Fayrvol</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Ekran</translation>
 <translation id="4155551848414053977">Skaner yoqilganini va tarmoq orqali ishlashi yoki bevosita ulanganini tekshiring</translation>
 <translation id="4159784952369912983">Siyohrang</translation>
 <translation id="4170180284036919717">Suratga olish</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Skrinshot</translation>
 <translation id="4258281355379922695">HTTP kechikishi</translation>
 <translation id="4271957103967917607">Toʻliq ekranli rejimda koʻrish</translation>
+<translation id="4275663329226226506">Kamera va mikrofon</translation>
 <translation id="4289540628985791613">Umumiy</translation>
 <translation id="4289849978083912975">Slayd-shou</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Skanerni tekshiring va qayta urining. Skanerlangan fayllarni saqlash uchun joy yetarli ekanini tekshiring.</translation>
 <translation id="4985509611418653372">Ishga tushirish</translation>
 <translation id="4987769320337599931">Himoya devori</translation>
+<translation id="4988526792673242964">Sahifalar</translation>
 <translation id="4999333166442584738">Hisobotni yopish</translation>
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
 <translation id="7942349550061667556">Qizil</translation>
 <translation id="7943235353293548836">Aloqani muntazam ushlab turish intervali</translation>
+<translation id="7953669802889559161">Manbalar</translation>
 <translation id="7955587717700691983">Bluetooth klaviatura</translation>
 <translation id="7960831585769876809">Harorat</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> nomli tarmoqqa ulanish uchun Sozlamalarni oching</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="8045012663542226664">Mikrofon oʻchiq</translation>
 <translation id="8075838845814659848">Batareya quvvati</translation>
+<translation id="8076492880354921740">Varaqlar</translation>
 <translation id="8082366717211101304">Android ilovalardan DNS manzil olish imkonsiz</translation>
 <translation id="808894953321890993">Parolni almashtirish</translation>
 <translation id="8094062939584182041">Bu muammo yuzasidan Google email qaytarishiga ruxsat</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Traffik hisoblagichlarini chaqirish</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Tanlash: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Dasturchi vositalari</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Biriktirish</translation>
 <translation id="8206859287963243715">Uyali</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fon rasmi</translation>
 <translation id="8820457400746201697">Harakatni bajarish uchun koʻk teginish nuqtasini harakatlantiring. Sozlash uchun tegishli tugmani tanlang.</translation>
+<translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="8834539327799336565">Hozirda ulangan</translation>
 <translation id="8845001906332463065">Yordam</translation>
 <translation id="8855781559874488009">HTTP saytlarga himoya devori orqali ulanish imkonsiz</translation>

@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Đã in</translation>
 <translation id="1951012854035635156">Trợ lý</translation>
 <translation id="1962550982027027473">Cần có APN mặc định</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Ảnh hồ sơ trên Google</translation>
 <translation id="1979103255016296513">Đã quá hạn thay đổi mật khẩu</translation>
 <translation id="1999615961760456652">Trang xác thực</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đáng kể</translation>
 <translation id="3328783797891415197">Đang chạy quá trình kiểm tra</translation>
 <translation id="3340011300870565703">Tai nghe phải còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
 <translation id="3404249063913988450">Bật trình bảo vệ màn hình</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="4145784616224233563">Tường lửa HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Hiển thị</translation>
 <translation id="4155551848414053977">Hãy đảm bảo máy quét đã bật và ở trạng thái sẵn sàng thông qua mạng của bạn hoặc một đường kết nối trực tiếp</translation>
 <translation id="4159784952369912983">Tím</translation>
 <translation id="4170180284036919717">Chụp ảnh</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="4258281355379922695">Độ trễ của yêu cầu HTTP</translation>
 <translation id="4271957103967917607">Xem toàn màn hình</translation>
+<translation id="4275663329226226506">Truyền thông</translation>
 <translation id="4289540628985791613">Tổng quan</translation>
 <translation id="4289849978083912975">Bản trình chiếu</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Hãy kiểm tra trình quét rồi thử lại. Đảm bảo máy có đủ dung lượng để lưu các tệp đã quét.</translation>
 <translation id="4985509611418653372">Chạy</translation>
 <translation id="4987769320337599931">Tường lửa</translation>
+<translation id="4988526792673242964">Trang</translation>
 <translation id="4999333166442584738">Ẩn báo cáo</translation>
 <translation id="500920857929044050">Dừng kiểm tra</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Không tìm thấy máy chủ định danh</translation>
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7943235353293548836">Khoảng thời gian duy trì hoạt động liên tục</translation>
+<translation id="7953669802889559161">Phương thức nhập</translation>
 <translation id="7955587717700691983">Bàn phím Bluetooth</translation>
 <translation id="7960831585769876809">Nhiệt độ</translation>
 <translation id="7977800524392185497">Để kết nối với mạng <ph name="NETWORK_NAME" />, hãy đi tới phần Cài đặt</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Gửi ý kiến phản hồi</translation>
 <translation id="8045012663542226664">Tắt micrô</translation>
 <translation id="8075838845814659848">Mức pin còn lại</translation>
+<translation id="8076492880354921740">Thẻ</translation>
 <translation id="8082366717211101304">Không thể phân giải DNS từ các ứng dụng Android</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8094062939584182041">Cho phép Google gửi email về vấn đề này cho bạn</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Yêu cầu Bộ đếm lưu lượng truy cập</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Chọn <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Công cụ dành cho nhà phát triển</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Đính kèm</translation>
 <translation id="8206859287963243715">Di động</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Hình nền</translation>
 <translation id="8820457400746201697">Di chuyển điểm chạm màu xanh dương tới một thao tác. Chọn phím liên kết để tuỳ chỉnh.</translation>
+<translation id="8820817407110198400">Dấu trang</translation>
 <translation id="8834539327799336565">Hiện đang kết nối</translation>
 <translation id="8845001906332463065">Nhận trợ giúp</translation>
 <translation id="8855781559874488009">Không thể kết nối với các trang web HTTP qua tường lửa</translation>

@@ -9,6 +9,7 @@
 <translation id="113122355610423240">Chromium és el navegador predeterminat</translation>
 <translation id="1131805035311359397">Per comprovar si les teves contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Quant a Chromium</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{El teu administrador tanca Chromium automàticament quan no s'utilitza durant 1 minut. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}other{El teu administrador tanca Chromium automàticament quan no s'utilitza durant # minuts. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}}</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Estalvi de memòria ha fet que Chromium sigui més ràpid</translation>
 <translation id="1315551408014407711">Configura el teu perfil de Chromium nou</translation>
@@ -23,6 +24,7 @@
 <translation id="1640672724030957280">S'està baixant...</translation>
 <translation id="1708666629004767631">Hi ha disponible una versió nova més segura de Chromium.</translation>
 <translation id="17264556997921157">Pots veure i suprimir els temes d'interès que els llocs web utilitzen per mostrar-te anuncis. Chromium estima els teus interessos basant-se en l'historial de navegació recent.</translation>
+<translation id="1733725117201708356">Chromium suprimirà les dades de navegació aviat</translation>
 <translation id="1745121272106313518">Chromium es reiniciarà d'aquí a <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Permet que Chromium s'executi en segon pla</translation>
 <translation id="1779356040007214683">Perquè Chromium sigui més segur, hem desactivat algunes de les extensions que no apareixen a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
@@ -53,6 +55,7 @@
 <translation id="2384373936468275798">Chromium OS no ha pogut sincronitzar les teves dades perquè la informació d'inici de sessió del teu compte no està actualitzada.</translation>
 <translation id="2396765026452590966">L'extensió <ph name="EXTENSION_NAME" /> ha canviat la pàgina que es mostra quan inicieu Chromium.</translation>
 <translation id="2401032172288869980">Chromium necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
+<translation id="2478295928299953161">Chromium es tancarà aviat</translation>
 <translation id="2483889755041906834">A Chromium</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
 <translation id="2560420686485554789">Chromium necessita accedir a l'emmagatzematge per baixar fitxers</translation>
@@ -171,6 +174,7 @@
 <translation id="4987820182225656817">Els convidats poden utilitzar Chromium sense deixar-hi rastre.</translation>
 <translation id="4994636714258228724">Afegeix-me a Chromium</translation>
 <translation id="5114678101347489141">Chromium està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys informació teva</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{El teu administrador tanca Chromium automàticament quan no s'utilitza durant 1 minut.}other{El teu administrador tanca Chromium automàticament quan no s'utilitza durant # minuts.}}</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ja té la sessió iniciada en aquest perfil de Chromium. Es crearà un perfil de Chromium nou per a <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="5277894862589591112">Torna a iniciar Chromium perquè s'apliquin els canvis</translation>
@@ -214,6 +218,7 @@
 <translation id="6119438414301547735">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chromium</translation>
 <translation id="6120345080069858279">Chromium desarà aquesta contrasenya al Compte de Google. No caldrà que la recordis.</translation>
 <translation id="6129621093834146363">Chromium ha bloquejat <ph name="FILE_NAME" /> perquè és perillós.</translation>
+<translation id="6132897690380286411">Chromium es tancarà aviat i suprimirà les dades</translation>
 <translation id="6134968993075716475">Navegació segura està desactivada. Chromium recomana activar-la.</translation>
 <translation id="6145820983052037069">Pots canviar entre perfils de Chromium aquí</translation>
 <translation id="6183079672144801177">Assegura't que tinguis la sessió iniciada a Chromium a <ph name="TARGET_DEVICE_NAME" /> i prova d'enviar-ho de nou.</translation>
@@ -233,6 +238,7 @@
 <translation id="6327105987658262776">No hi ha cap actualització disponible.</translation>
 <translation id="6333502561965082103">Hi ha una altra operació en curs a Chromium. Torna-ho a provar més tard.</translation>
 <translation id="6334986366598267305">Ara resulta més fàcil utilitzar Chromium amb el vostre compte de Google i en ordinadors compartits.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{El teu administrador suprimeix automàticament les dades de navegació quan no es fan servir durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes que estan obertes, continuaran així.}other{El teu administrador suprimeix automàticament les dades de navegació quan no s'utilitzen durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes que estan obertes, continuaran així.}}</translation>
 <translation id="6373523479360886564">Confirmeu que voleu desinstal·lar Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: Chromium pot estimar els teus interessos. Després, un lloc web que visitis pot demanar els teus interessos a Chromium per personalitzar els anuncis que veus.</translation>
 <translation id="6403826409255603130">Chromium és un navegador web que executa les pàgines web i les aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navegueu per Internet amb més seguretat amb protecció inserida a Chromium contra el programari maliciós i contra la pesca de credencials.</translation>
@@ -363,6 +369,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8986207147630327271">Estàs afegint un perfil de treball a aquest navegador i donant control al teu administrador únicament sobre el perfil de treball.</translation>
 <translation id="9019929317751753759">Per tal que Chromium sigui més segur, hem desactivat algunes de les extensions que no figuren a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
+<translation id="907832235989677238">Inicia la sessió a Chromium. Si vols iniciar la sessió en un compte només una vegada, pots <ph name="GUEST_LINK_BEGIN" />utilitzar el dispositiu com a convidat<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9089354809943900324">Chromium no està actualitzat</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium es reiniciarà d'aquí a 1 hora}other{Chromium es reiniciarà d'aquí a # hores}}</translation>
 <translation id="9106612006984859720">Per obtenir actualitzacions de Chromium en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.1.</translation>

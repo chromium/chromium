@@ -937,6 +937,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1796588414813960292">Eiginleikar sem þarfnast hljóðs munu ekki virka</translation>
 <translation id="1797117170091578105">Spilaðu með Chromebook lyklaborðinu. Þú getur sérsniðið lykla fyrir ákveðnar aðgerðir.</translation>
 <translation id="1800502858278951817">Engar viðbætur hafa beðið um að lesa og gera breytingar á <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">Leita + O og svo W</translation>
 <translation id="1802624026913571222">Svefn þegar hulstrið er lokað</translation>
 <translation id="1802687198411089702">Síðan svarar ekki. Þú getur beðið eftir henni eða hætt.</translation>
 <translation id="1803531841600994172">Tungumál sem þýða á yfir á</translation>
@@ -1196,6 +1197,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="2023167225947895179">Hugsanlega er auðvelt að giska á PIN-númerið</translation>
 <translation id="202352106777823113">Niðurhalið tók of langan tíma og netið stöðvaði það.</translation>
 <translation id="2024195579772565064">Eyða leitarvél</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> hrundi. Smelltu á þessa blöðru að endurhlaða viðbótina.</translation>
 <translation id="2028449514182362831">Eiginleikar sem þurfa hreyfiskynjara virka ekki</translation>
 <translation id="202918510990975568">Færðu inn aðgangsorðið til að stilla öryggi og innskráningu</translation>
@@ -1272,6 +1274,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2090165459409185032">Til að endurheimta reikningsupplýsingarnar þínar skaltu fara á: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Tengist sjálfkrafa þegar þú skráir þig inn.</translation>
 <translation id="2090876986345970080">Öryggisstilling kerfis</translation>
+<translation id="2091887806945687916">Hljóð</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Eiginleikar villuleitar<ph name="END_H3" />
     <ph name="BR" />
     Þú getur gert villuleitareiginleika virka í ChromeOS tækinu þínu til að setja upp og prófa eigin kóða í tækinu.  Þetta gerir þér kleift að:<ph name="BR" />
@@ -3202,6 +3205,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3778868487658107119">Spyrðu hann spurninga. Biddu hann um að gera eitthvað fyrir þig. Þetta er þitt eigið Google, alltaf reiðubúið til aðstoðar.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> getur ekki athugað hvort aðgangsorðin þín hafi komið fram í öryggisbroti. Reyndu aftur síðar.</translation>
 <translation id="3781742599892759500">Aðgangur að hljóðnema í Linux</translation>
+<translation id="3783725005098956899">Sýna annál</translation>
 <translation id="3783889407390048282">Losaðu um pláss til að forðast að missa aðgang að Android.</translation>
 <translation id="3784472333786002075">Fótspor eru skrár sem vefsvæði búa til. Það eru tvær tegundir af fótsporum: Fótspor frá fyrsta aðila eru búin til af vefsvæðinu sem þú heimsækir. Vefsvæðið kemur fram á veffangastikunni. Fótspor frá þriðja aðila eru búin til af öðrum vefsvæðum. Þessi vefsvæði eiga eitthvað af efninu, eins og auglýsingar eða myndir, sem þú sérð á vefsvæðinu sem þú heimsækir.</translation>
 <translation id="3785308913036335955">Sýna flýtileiðir í forrit</translation>
@@ -8329,6 +8333,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8419098111404128271">Leitarniðurstöður fyrir „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="8420308167132684745">Breyta orðabókarfærslum</translation>
 <translation id="8421361468937925547">Skjátextar í rauntíma (aðeins á ensku)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Bakki er ekki til staðar</translation>
 <translation id="8424250197845498070">Ítarleg vernd setti á bannlista</translation>
 <translation id="8425213833346101688">Breyta</translation>
@@ -9003,7 +9008,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9026731007018893674">niðurhal</translation>
 <translation id="9026852570893462412">Þetta ferli gæti tekið nokkrar mínútur. Sækir sýndarvélina.</translation>
 <translation id="9027459031423301635">Opna &amp;tengil í nýjum flipa</translation>
-<translation id="9027707169256972235">Fjarlægja</translation>
 <translation id="9030515284705930323">Fyrirtækið þitt hefur ekki virkjað Google Play Store fyrir reikninginn þinn. Hafðu samband við stjórnanda til að fá frekari upplýsingar.</translation>
 <translation id="9030754204056345429">Hraðar</translation>
 <translation id="9030785788945687215">Gmail</translation>

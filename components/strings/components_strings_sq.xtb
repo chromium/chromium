@@ -683,6 +683,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="259821504105826686">Artet fotografike dhe dixhitale</translation>
 <translation id="2601150049980261779">Filmat romantikë</translation>
 <translation id="2604589665489080024">Muzika pop</translation>
+<translation id="2606760465469169465">Verifiko automatikisht</translation>
 <translation id="2610561535971892504">Kliko për të kopjuar</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" /> informacionet e mëposhtme:
           <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Provo të ekzekutosh diagnostikimin e lidhjes<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Shko te <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Asnjë}=1{të dhënat e identifikimit për 1 llogari}other{të dhënat e identifikimit për # llogari}}</translation>
 <translation id="3141093262818886744">Hape sidoqoftë</translation>
 <translation id="3141641372357166056">Nuk ka vendim për pëlqimin</translation>
 <translation id="3145945101586104090">Dekodimi i përgjigjes dështoi</translation>
@@ -1900,6 +1900,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin në mënyrë automatike sajtet që janë më të vjetra se 4 javë. Një sajt që e viziton përsëri mund të shfaqet përsëri në listë. Gjithashtu mund të bllokosh një sajt që të mos sugjerojë reklama për ty dhe mund t'i çaktivizosh reklamat e sugjeruara nga sajtet në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="5610142619324316209">Të kontrollosh lidhjen</translation>
 <translation id="5610807607761827392">Mund t'i menaxhosh kartat dhe adresat te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Ruaje te llogaria</translation>
 <translation id="561165882404867731">Përktheje këtë faqe me "Përkthe me Google"</translation>
 <translation id="5612720917913232150"><ph name="URL" /> do të përdorë vendndodhjen e kompjuterit tënd</translation>
 <translation id="561669346091975195">Shfaqjet televizive fantashkencë dhe të fantazisë</translation>
@@ -3185,6 +3186,7 @@ Detaje shtesë:
 <translation id="8806285662264631610">Produktet për larjen dhe trupin</translation>
 <translation id="8807160976559152894">Prerje pas çdo faqeje</translation>
 <translation id="8809203544698246977">Temat e bllokuara shfaqen këtu</translation>
+<translation id="8811470563853401328">Të ruhet adresa te llogaria?</translation>
 <translation id="8813277370772331957">Më kujto më vonë</translation>
 <translation id="8814707942599948500">Zarf C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të përditësuar Chrome nga cilësimet e tua të Chrome</translation>
@@ -3278,6 +3280,7 @@ Detaje shtesë:
 <translation id="9042617223719777575">Kapacitet i madh</translation>
 <translation id="9044359186343685026">Përdor Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Këto veprime kërkojnë që politika <ph name="POLICY_NAME" /> të caktohet si "<ph name="POLICY_VALUE" />": <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 inç</translation>
 <translation id="9049981332609050619">Tentove të gjeje <ph name="DOMAIN" />, por serveri paraqiti një certifikatë të pavlefshme.</translation>
 <translation id="9050666287014529139">Shprehje kalimi</translation>
@@ -3357,7 +3360,6 @@ Detaje shtesë:
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="922152298093051471">Personalizo Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">PASTRO FORMULARIN</translation>
 <translation id="936602727769022409">Mund të humbësh qasjen në "Llogarinë tënde të Google". Chromium rekomandon që ta ndryshosh fjalëkalimin tani. Do të të kërkohet që të identifikohesh.</translation>
 <translation id="937457230470581909">Kopshtet zoologjike, akuariumet dhe rezervuarët</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Çfarë të dhënash përdoren:<ph name="END_BOLD" /> Temat e tua të reklamave bazohen në historikun tënd të shfletimit së fundi, një listë sajtesh që ke vizituar duke përdorur Chrome në këtë pajisje.</translation>

@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Vista ampliada (fai clic para contraela).</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
 <translation id="2597457036804169544">Non se lles aplica o tema escuro aos sitios</translation>
+<translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2621115761605608342">Permite a execución de JavaScript para un sitio específico.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Saír</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Os contactos que selecciones compartiranse con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Visitouse hoxe por última vez</translation>
 <translation id="5225463052809312700">Acender cámara</translation>
+<translation id="5229337741799419985">Esta opción de configuración non te identifica nin permite que os sitios vexan o teu historial de navegación</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5264323282659631142">Quitar <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrastra desde a parte superior e toca o botón Volver para saír da pantalla completa.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Descargas activas</translation>
+<translation id="6701547804986694515">Calquera sitio que visites pode gardar información en Chrome que confirme que non es un bot. A medida que navegues, os sitios poderán facer comprobacións con Chrome e verificar, cun sitio que xa visitases, que é probable que sexas unha persoa real</translation>
 <translation id="6722828510648505498">Bloquea as solicitudes de inicio de sesión dos servizos de identidade.</translation>
 <translation id="6746124502594467657">Mover cara abaixo</translation>
 <translation id="6749077623962119521">Queres restablecer os permisos?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Selecciona unha imaxe</translation>
 <translation id="8801436777607969138">Bloquea JavaScript para un sitio específico.</translation>
 <translation id="8803526663383843427">Se a función está activada</translation>
+<translation id="8805385115381080995">Navegarás máis rápido porque é menos problable que os sitios che pidan que verifiques que es unha persoa real</translation>
 <translation id="8816026460808729765">Impide que os sitios accedan aos sensores</translation>
 <translation id="8823559166155093873">Bloquear cookies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Esta páxina é perigosa</translation>
 <translation id="9201023452444595544">Todos os datos sen conexión borraranse</translation>
 <translation id="930525582205581608">Queres esquecer este sitio?</translation>
+<translation id="947156494302904893">Os sitios que visites poden verificar que es unha persoa real e non un bot</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 </translationbundle>

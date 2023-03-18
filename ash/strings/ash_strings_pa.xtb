@@ -154,6 +154,7 @@
 <translation id="1715293566947629045">ਪ੍ਰੋਫਾਈਲ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>
 <translation id="1719094688023114093">ਲਾਈਵ ਸੁਰਖੀਆਂ ਚਾਲੂ ਹਨ।</translation>
 <translation id="1720011244392820496">ਵਾਈ-ਫਾਈ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="1720230731642245863">ਹੌਟਸਪੌਟ ਬੰਦ ਹੈ</translation>
 <translation id="1731815243805539470">ਪਿਛਲੇ ਵਰਤੋਂਕਾਰ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1733996486177697563">ਗੂੜ੍ਹੇ ਅਤੇ ਹਲਕੇ ਥੀਮ ਵਿਚਕਾਰ ਸਵਿੱਚ ਕਰੋ। ਡੈਸਕਟਾਪ 'ਤੇ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ, ਫਿਰ 'ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ' ਚੁਣੋ।</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਨੂੰ ਦਿਸ ਰਿਹਾ ਹੈ।</translation>
@@ -422,7 +423,6 @@
 <translation id="3151786313568798007">ਦਿਸ਼ਾਮਾਨ</translation>
 <translation id="3153444934357957346">ਤੁਸੀਂ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਵਿੱਚ ਸਿਰਫ਼ <ph name="MULTI_PROFILE_USER_LIMIT" /> ਤੱਕ ਖਾਤੇ ਰੱਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3154351730702813399">ਡੀਵਾਈਸ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਸਕਦਾ ਹੈ।</translation>
-<translation id="3157931365184549694">ਰੀਸਟੋਰ ਕਰੋ</translation>
 <translation id="316086887565479535">ਟੈਮਪਲੇਟ ਵਿੱਚ ਅਸਮਰਥਿਤ ਐਪਾਂ</translation>
 <translation id="3161500364292033097">ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
@@ -588,6 +588,7 @@
 <translation id="394485226368336402">ਆਡੀਓ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3945319193631853098">ਸੈੱਟਅੱਪ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="3945867833895287237">ਹੌਟਸਪੌਟ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="3950272133184491871">ਕੀ ਹੁਣੇ ਸਾਈਨ ਆਉਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3950820424414687140">ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3962859241508114581">ਪਿਛਲਾ ਟਰੈਕ</translation>
 <translation id="3969043077941541451">ਬੰਦ ਹੈ</translation>
@@ -986,6 +987,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5920710855273935292">ਮਾਈਕ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
+<translation id="5924855612669061715">ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ਚਾਲੂ ਹੈ।</translation>
 <translation id="5947494881799873997">ਵਾਪਸ ਲਿਆਓ</translation>
 <translation id="595202126637698455">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਸਮਰਥਿਤ</translation>
@@ -1161,7 +1163,6 @@
 <translation id="6781002679438061620">ਡੈਸਕ 9</translation>
 <translation id="6782182743534150858">ਡੈਸਕ 13</translation>
 <translation id="6786750046913594791">ਫੋਲਡਰ ਬੰਦ ਕਰੋ</translation>
-<translation id="6787595647772650851">ਪਿਛਲੇ ਸੈਸ਼ਨ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="679368458793552943">ਵੱਡਦਰਸ਼ੀ ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਜ਼ੂਮ ਵਧਾਓ</translation>
 <translation id="6801878137098616817">ਹਾਲ ਹੀ ਵਿੱਚ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -1359,6 +1360,7 @@
 <translation id="7848989271541991537">ਪੰਨਾ <ph name="PAGE_NUMBER" />, ਕਤਾਰ <ph name="ROW_NUMBER" />, ਕਾਲਮ <ph name="COLUMN_NUMBER" /> 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">ਰੂਪ-ਰੇਖਾ ਦੇ ਅੰਦਰ ਜਾਣ ਲਈ ਤਿੰਨ ਉਂਗਲਾਂ ਨਾਲ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
+<translation id="7862292329216937261">ਡੀਵਾਈਸ ਮਹਿਮਾਨ ਵਜੋਂ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ ਸਾਈਨ-ਆਊਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ ਅਤੇ ਫਿਰ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਾਂ 'ਮਹਿਮਾਨ ਵਜੋਂ ਬ੍ਰਾਊਜ਼ ਕਰੋ' ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="7866482334467279021">ਚਾਲੂ</translation>
 <translation id="7868900307798234037">ਫਿੰਗਰਪ੍ਰਿੰਟ ਨਾਲ ਅਣਲਾਕ ਕਰਨਾ</translation>
 <translation id="7872195908557044066">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੇ ਈ-ਸਿਮ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>
@@ -1401,6 +1403,7 @@
 <translation id="8036504271468642248">ਪਿਛਲਾ ਵਾਕ</translation>
 <translation id="8042893070933512245">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8044457332620420407">ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਬੰਦ ਹੈ</translation>
+<translation id="8048077032188362328">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="8048123526339889627">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ਨਾਮਕ ਟੈਮਪਲੇਟ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="8052898407431791827">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
@@ -1617,6 +1620,7 @@
 <translation id="9098969848082897657">ਫ਼ੋਨ ਖਮੋਸ਼ ਕਰੋ</translation>
 <translation id="9100887602489003640">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ।</translation>
 <translation id="9105450214093926548">Lacros ਬ੍ਰਾਊਜ਼ਰ ਚੱਲਣ ਦੌਰਾਨ ਦੂਜੇ ਵਰਤੋਂਕਾਰ ਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਇਸਦੀ ਬਜਾਏ Lacros ਵਿੱਚ ਦੂਜੇ ਬ੍ਰਾਊਜ਼ਰ ਪ੍ਰੋਫਾਈਲ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ Lacros ਨੂੰ ਬੰਦ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="9120448753905017833">ਅਸੀਂ ਮੋਬਾਈਲ ਡਾਟਾ ਰਾਹੀਂ ਹੌਟਸਪੌਟ ਵਰਤਣਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਵਾਈ-ਫਾਈ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਇਸ ਨਾਲ ਡਾਟਾ ਖਰਚੇ ਲਏ ਜਾ ਸਕਦੇ ਹਨ।</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ਜਾਂ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਨੂੰ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="9161053988251441839">ਸੁਝਾਈਆਂ ਗਈਆਂ ਐਪਾਂ</translation>

@@ -925,6 +925,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1796588414813960292">Le funzionalità che richiedono l'audio non funzioneranno</translation>
 <translation id="1797117170091578105">Gioca usando la tastiera di Chromebook. Puoi personalizzare i tasti assegnando loro azioni specifiche.</translation>
 <translation id="1800502858278951817">Nessuna estensione ha chiesto di leggere e modificare il sito <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">Tasto per la ricerca + O, poi W</translation>
 <translation id="1802624026913571222">Sospendi alla chiusura dello schermo</translation>
 <translation id="1802687198411089702">La pagina non risponde. Puoi aspettare oppure chiuderla.</translation>
 <translation id="1803531841600994172">Lingua in cui tradurre</translation>
@@ -1183,6 +1184,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="2023167225947895179">Il PIN potrebbe essere facile da indovinare</translation>
 <translation id="202352106777823113">Il download stava richiedendo troppo tempo ed è stato interrotto dalla rete.</translation>
 <translation id="2024195579772565064">Elimina motore di ricerca</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559">Arresto anomalo di <ph name="APP_NAME" />. Fai clic su questo fumetto per riavviare l'estensione.</translation>
 <translation id="2028449514182362831">Le funzionalità che richiedono sensori di movimento non funzioneranno</translation>
 <translation id="202918510990975568">Inserisci la password per configurare sicurezza e accesso</translation>
@@ -1259,6 +1261,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2090165459409185032">Visita il sito google.com/accounts/recovery per recuperare i dati del tuo account</translation>
 <translation id="2090507354966565596">Si connette automaticamente quando effettui l'accesso</translation>
 <translation id="2090876986345970080">Impostazioni di sicurezza del sistema</translation>
+<translation id="2091887806945687916">Audio</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Funzioni di debug<ph name="END_H3" />
       <ph name="BR" />
       Puoi attivare le funzioni di debug sul dispositivo ChromeOS al fine di installare e testare codice personalizzato sul dispositivo. Questa funzionalità consente di:<ph name="BR" />
@@ -3186,6 +3189,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3778868487658107119">Chiedigli tutto quello che vuoi e fatti aiutare nelle tue attività. Google è personalizzato per te ed è sempre al tuo fianco.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> non può controllare se le tue password sono state compromesse nell'ambito di violazioni dei dati. Riprova più tardi.</translation>
 <translation id="3781742599892759500">Accesso al microfono su Linux</translation>
+<translation id="3783725005098956899">Mostra log</translation>
 <translation id="3783889407390048282">Libera spazio per evitare di perdere l'accesso ad Android.</translation>
 <translation id="3784472333786002075">I cookie sono file creati dai siti web. Esistono due tipi di cookie: i cookie originali, che vengono creati dal sito visitato, visualizzato nella barra degli indirizzi, e i cookie di terze parti, che vengono creati da altri siti. Questi ultimi sono proprietari di alcuni dei contenuti, ad esempio annunci o immagini, che vengono visualizzati sul sito web che visiti.</translation>
 <translation id="3785308913036335955">Mostra scorciatoia app</translation>
@@ -8310,6 +8314,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8419098111404128271">Risultati di ricerca per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">Modifica voci dizionario</translation>
 <translation id="8421361468937925547">Sottotitoli in tempo reale (solo in inglese)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Vassoio mancante</translation>
 <translation id="8424250197845498070">Bloccato dalla protezione avanzata</translation>
 <translation id="8425213833346101688">Cambia</translation>
@@ -8983,7 +8988,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9026731007018893674">download</translation>
 <translation id="9026852570893462412">Questa procedura potrebbe richiedere alcuni minuti. Download della macchina virtuale in corso.</translation>
 <translation id="9027459031423301635">Apri link in un'altra &amp;scheda</translation>
-<translation id="9027707169256972235">Rimuovi</translation>
 <translation id="9030515284705930323">La tua organizzazione non ha attivato Google Play Store per il tuo account. Contatta l'amministratore per avere ulteriori informazioni.</translation>
 <translation id="9030754204056345429">Più veloce</translation>
 <translation id="9030785788945687215">Gmail</translation>

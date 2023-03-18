@@ -481,6 +481,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4474494258097106883">Built for your iPhone</translation>
 <translation id="4476574785019001431">Settings</translation>
 <translation id="448433063499977729">Sync has been turned off</translation>
+<translation id="4489536976005181779">{count,plural, =1{Page added to your reading list in your account, {email}}other{Pages added to your reading list in your account, {email}}}</translation>
 <translation id="4496373720959965247">Add tabs and switch between pages</translation>
 <translation id="4502566650163919158">Check now</translation>
 <translation id="4505980578794259603">Last checked <ph name="TIME" />.</translation>

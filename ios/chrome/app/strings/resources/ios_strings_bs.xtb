@@ -542,7 +542,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="48274138579728272">Označi kao pročitano</translation>
 <translation id="4833686396768033263">Nedavne kartice nisu dostupne</translation>
 <translation id="4833786495304741580">Automatski šalje Googleu statistiku korištenja i izvještaje o padovima aplikacije.</translation>
-<translation id="4834499902900503484">Kada ste prijavljeni u Chrome, zaporke koje spremite spremit će se na vaš Google račun. Da biste to isključili, <ph name="BEGIN_LINK" />idite na postavke<ph name="END_LINK" />.</translation>
+<translation id="4834499902900503484">Kada ste prijavljeni u Chrome, lozinke koje sačuvate će se pohraniti na Google računu. Da ovo isključite, <ph name="BEGIN_LINK" />idite u postavke<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Vaše oznake, historija, lozinke i drugi podaci neće se više sinhronizirati s vašim Google računom.</translation>
 <translation id="4844899002472726590">Pogledajte i uredite teme koje vas zanimaju</translation>
 <translation id="4848999860252535517">Izbrisati lozinku za <ph name="WEBSITE" />?</translation>
@@ -686,7 +686,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5899314093904173337">Da dijelite sadržaj s osobama u blizini, dozvolite im da skeniraju ovaj QR kôd pomoću kamere ili aplikacije za skeniranje QR koda.</translation>
 <translation id="5911030830365207728">Google Prevodilac</translation>
 <translation id="5913600720976431809">Opcije za prijevod stranice</translation>
-<translation id="5922999516621365983">Povucite karticu ovdje da biste je prikvačili.</translation>
+<translation id="5922999516621365983">Povucite karticu ovamo da je zakačite.</translation>
 <translation id="5938160824633642847">Vaš uređaj je skoro pun. Oslobodite prostor i pokušajte ponovo.</translation>
 <translation id="5948291296578561264">Ovo vam omogućava da sačuvate fotografije u biblioteku fotografija.</translation>
 <translation id="5951816930277761335">Podijelite link</translation>

@@ -684,6 +684,7 @@
 <translation id="259821504105826686">फ़ोटोग्राफ़िक और डिजिटल आर्ट</translation>
 <translation id="2601150049980261779">रोमैंटिक फ़िल्में</translation>
 <translation id="2604589665489080024">पॉप म्यूज़िक</translation>
+<translation id="2606760465469169465">अपने-आप पुष्टि करने की अनुमति</translation>
 <translation id="2610561535971892504">क्लिक टू कॉपी</translation>
 <translation id="2617988307566202237">Chrome यहां बताई गई जानकारी को <ph name="BEGIN_EMPHASIS" />सेव नहीं करेगा<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -868,7 +869,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />कनेक्टिविटी निदान चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> पर जाएं</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{कोई नहीं}=1{एक खाते का साइन-इन डेटा}one{# खातों का साइन-इन डेटा}other{# खातों का साइन-इन डेटा}}</translation>
 <translation id="3141093262818886744">फिर भी खोलें</translation>
 <translation id="3141641372357166056">सहमति से जुड़ा कोई फ़ैसला नहीं लिया गया</translation>
 <translation id="3145945101586104090">उत्तर डीकोड करने में विफल</translation>
@@ -1900,6 +1900,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />अपना डेटा कैसे मैनेज करें:<ph name="END_BOLD" /> Chrome, उन साइटों को अपने-आप मिटा देता है जो चार हफ़्ते से ज़्यादा पुरानी होती हैं. किसी साइट को फिर से विज़िट करने पर, उसे सूची में दोबारा शामिल किया जा सकता है. आप जब चाहें, Chrome की सेटिंग में जाकर, किसी साइट को विज्ञापनों का सुझाव देने से रोका जा सकता है. साथ ही, साइट की ओर से सुझाए गए विज्ञापनों को बंद किया जा सकता है.</translation>
 <translation id="5610142619324316209">कनेक्शन की जाँच करें</translation>
 <translation id="5610807607761827392">आप <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में कार्ड और पते प्रबंधित कर सकते हैं.</translation>
+<translation id="5611398002774823980">खाते में सेव करें</translation>
 <translation id="561165882404867731">Google Translate की मदद से इस पेज का अनुवाद करें</translation>
 <translation id="5612720917913232150"><ph name="URL" /> आपके कंप्यूटर के स्थान का उपयोग करना चाहता है</translation>
 <translation id="561669346091975195">साइंस-फ़िक्शन पर आधारित टीवी शो और फैंटेसी शो</translation>
@@ -3187,6 +3188,7 @@
 <translation id="8806285662264631610">नहाने और शरीर की देखभाल से जुड़े प्रॉडक्ट</translation>
 <translation id="8807160976559152894">हर एक पेज के बाद ट्रिम करें</translation>
 <translation id="8809203544698246977">ब्लॉक किए गए विषय यहां दिखते हैं</translation>
+<translation id="8811470563853401328">क्या आपको खाते में पता सेव करना है?</translation>
 <translation id="8813277370772331957">मुझे बाद में याद दिलाएं</translation>
 <translation id="8814707942599948500">C8 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग से Chrome अपडेट करने के लिए, Tab के बाद Enter दबाएं</translation>
@@ -3280,6 +3282,7 @@
 <translation id="9042617223719777575">ज़्यादा क्षमता</translation>
 <translation id="9044359186343685026">टच आईडी का इस्तेमाल करें</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">इन कार्रवाइयों के लिए, <ph name="POLICY_NAME" /> नीति को <ph name="POLICY_VALUE" /> पर सेट करना ज़रूरी है: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 इंच</translation>
 <translation id="9049981332609050619">आपने <ph name="DOMAIN" /> पर पहुंचने की कोशिश की लेकिन सर्वर ने एक अमान्‍य प्रमाणपत्र पेश किया.</translation>
 <translation id="9050666287014529139">पासफ़्रेज़ (लंबा पासवर्ड)</translation>
@@ -3359,7 +3362,6 @@
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="922152298093051471">Chrome को पसंद के मुताबिक बनाएं</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">फ़ॉर्म साफ़ करें</translation>
 <translation id="936602727769022409">आप अपने Google खाते का ऐक्सेस खो सकते हैं. क्रोमियम आपको इसी समय अपना पासवर्ड बदलने का सुझाव देता है. आपको साइन इन करने को कहा जाएगा.</translation>
 <translation id="937457230470581909">चिड़ियाघर, अक्वेरियम, और अभयारण्य</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />किस डेटा का इस्तेमाल किया जाता है:<ph name="END_BOLD" /> आपके विज्ञापन के विषय, आपके हाल ही के ब्राउज़िंग इतिहास और इस डिवाइस पर Chrome का इस्तेमाल करके विज़िट की गई साइटों की सूची पर आधारित होते हैं.</translation>

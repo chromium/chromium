@@ -683,6 +683,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="259821504105826686">Seni fotografi &amp; digital</translation>
 <translation id="2601150049980261779">Film romantis</translation>
 <translation id="2604589665489080024">Musik pop</translation>
+<translation id="2606760465469169465">Verifikasi otomatis</translation>
 <translation id="2610561535971892504">Klik untuk menyalin</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />tidak akan menyimpan<ph name="END_EMPHASIS" /> informasi berikut:
           <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Coba jalankan Diagnostik Konektivitas<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Buka <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Tidak ada}=1{data login untuk 1 akun}other{data login untuk # akun}}</translation>
 <translation id="3141093262818886744">Tetap buka</translation>
 <translation id="3141641372357166056">Tidak ada keputusan izin</translation>
 <translation id="3145945101586104090">Gagal mendekodekan tanggapan</translation>
@@ -1899,6 +1899,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Cara Anda dapat mengelola data Anda:<ph name="END_BOLD" /> Chrome otomatis menghapus situs yang tersimpan lebih dari 4 minggu. Situs yang Anda buka lagi mungkin akan muncul kembali di daftar. Anda juga dapat memblokir situs agar tidak menyarankan iklan dan menonaktifkan iklan yang disarankan situs kapan saja di setelan Chrome.</translation>
 <translation id="5610142619324316209">Periksa sambungan</translation>
 <translation id="5610807607761827392">Anda dapat mengelola kartu dan alamat di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Simpan di akun</translation>
 <translation id="561165882404867731">Terjemahkan halaman ini dengan Google Terjemahan</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ingin menggunakan lokasi komputer Anda</translation>
 <translation id="561669346091975195">Acara TV fiksi ilmiah &amp; fantasi</translation>
@@ -3181,6 +3182,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8806285662264631610">Produk mandi &amp; perawatan tubuh</translation>
 <translation id="8807160976559152894">Trim setelah setiap halaman tercetak</translation>
 <translation id="8809203544698246977">Topik yang diblokir akan muncul di sini</translation>
+<translation id="8811470563853401328">Simpan alamat di akun?</translation>
 <translation id="8813277370772331957">Ingatkan saya nanti</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengupdate Chrome dari setelan Chrome</translation>
@@ -3274,6 +3276,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9042617223719777575">Kapasitas Besar</translation>
 <translation id="9044359186343685026">Gunakan Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Tindakan ini mengharuskan kebijakan <ph name="POLICY_NAME" /> disetel ke <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 inci (60 x 91 cm)</translation>
 <translation id="9049981332609050619">Anda berupaya menjangkau <ph name="DOMAIN" />, tetapi server menyajikan sertifikat yang tidak valid.</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>
@@ -3353,7 +3356,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9219103736887031265">Gambar</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">HAPUS FORMULIR</translation>
 <translation id="936602727769022409">Anda dapat kehilangan akses ke Akun Google Anda. Chromium merekomendasikan untuk mengubah sandi Anda sekarang. Anda akan diminta untuk login.</translation>
 <translation id="937457230470581909">Kebun binatang, akuarium &amp; cagar alam</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Data yang digunakan:<ph name="END_BOLD" /> Topik iklan Anda didasarkan pada histori penjelajahan terbaru, yaitu daftar situs yang telah Anda buka menggunakan Chrome di perangkat ini.</translation>

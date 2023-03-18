@@ -868,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />연결 진단 프로그램을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" />(으)로 이동</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{없음}=1{계정 1개의 로그인 데이터}other{계정 #개의 로그인 데이터}}</translation>
 <translation id="3141093262818886744">무시하고 열기</translation>
 <translation id="3141641372357166056">동의 결정 없음</translation>
 <translation id="3145945101586104090">응답 디코딩 실패</translation>
@@ -3361,7 +3360,6 @@
 <translation id="9219103736887031265">이미지</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">양식 지우기</translation>
 <translation id="936602727769022409">Google 계정에 액세스하지 못할 수 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다. 로그인하라는 메시지가 표시됩니다.</translation>
 <translation id="937457230470581909">동물원, 수족관 및 보호구역</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 광고 주제는 내가 이 기기에서 Chrome을 사용하여 방문한 사이트의 목록인 최근 방문 기록을 기반으로 합니다.</translation>

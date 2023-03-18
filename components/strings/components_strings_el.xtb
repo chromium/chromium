@@ -868,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Δοκιμάστε να εκτελέσετε τα Διαγνωστικά στοιχεία συνδεσιμότητας<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Μετάβαση σε <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Κανένα}=1{δεδομένα σύνδεσης για 1 λογαριασμό}other{δεδομένα σύνδεσης για # λογαριασμούς}}</translation>
 <translation id="3141093262818886744">Άνοιγμα ούτως ή άλλως</translation>
 <translation id="3141641372357166056">Χωρίς απόφαση συναίνεσης</translation>
 <translation id="3145945101586104090">Αποτυχία αποκωδικοποίησης απόκρισης</translation>
@@ -3369,7 +3368,6 @@
 <translation id="9219103736887031265">Εικόνες</translation>
 <translation id="922152298093051471">Προσαρμογή του Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ΔΙΑΓΡΑΦΗ ΦΟΡΜΑΣ</translation>
 <translation id="936602727769022409">Μπορεί να χάσετε την πρόσβαση στον Λογαριασμό σας Google. Το Chromium συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα. Θα σας ζητηθεί να συνδεθείτε.</translation>
 <translation id="937457230470581909">Ζωολογικοί κήποι, ενυδρεία και προστατευόμενες περιοχές</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Ποια δεδομένα χρησιμοποιούνται:<ph name="END_BOLD" /> Τα θέματα διαφημίσεων βασίζονται στο πρόσφατο ιστορικό περιήγησης, μια λίστα των ιστοτόπων που έχετε επισκεφτεί χρησιμοποιώντας το Chrome σε αυτήν τη συσκευή.</translation>

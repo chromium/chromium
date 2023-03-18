@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Ispisano</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1962550982027027473">Potreban je zadani APN</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Fotografija Google profila</translation>
 <translation id="1979103255016296513">Zakašnjela promjena zaporke</translation>
 <translation id="1999615961760456652">Zaštitni portal</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Latencija DNS-a značajno iznad dopuštenog praga</translation>
 <translation id="3328783797891415197">Test se izvodi</translation>
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije za desnu slušalicu.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Spojeno</translation>
 <translation id="3369013195428705271">Jeste li sigurni da želite izbrisati svu povijest ispisa? Zadaci ispisa u tijeku neće se izbrisati.</translation>
 <translation id="3404249063913988450">Omogućivanje čuvara zaslona</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Crno-bijelo</translation>
 <translation id="4145784616224233563">Vatrozid za HTTP</translation>
 <translation id="4147897805161313378">Google fotografije</translation>
+<translation id="4150201353443180367">Zaslon</translation>
 <translation id="4155551848414053977">Provjerite je li skener uključen i dostupan putem vaše mreže ili izravne veze</translation>
 <translation id="4159784952369912983">Ljubičasto</translation>
 <translation id="4170180284036919717">Fotografiraj</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Snimka zaslona</translation>
 <translation id="4258281355379922695">Latencija HTTP-a</translation>
 <translation id="4271957103967917607">Prikaži na cijelom zaslonu</translation>
+<translation id="4275663329226226506">Mediji</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4289849978083912975">Prezentacija</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata pogreška</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Provjerite skener i pokušajte ponovo. Provjerite ima li dovoljno lokalnog prostora za spremanje skeniranih datoteka.</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="4987769320337599931">Vatrozid</translation>
+<translation id="4988526792673242964">Stranice</translation>
 <translation id="4999333166442584738">Sakrij izvješće</translation>
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Nije pronađen nijedan poslužitelj naziva</translation>
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7943235353293548836">Postojani keepalive interval</translation>
+<translation id="7953669802889559161">Unosi</translation>
 <translation id="7955587717700691983">Bluetooth tipkovnica</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Da biste se pridružili <ph name="NETWORK_NAME" /> mreži, otvorite postavke</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="8045012663542226664">Mikrofon isključen</translation>
 <translation id="8075838845814659848">Preostala razina napunjenosti</translation>
+<translation id="8076492880354921740">Kartice</translation>
 <translation id="8082366717211101304">Razrješavanje DNS-a iz Android aplikacija nije uspjelo</translation>
 <translation id="808894953321890993">Promjena zaporke</translation>
 <translation id="8094062939584182041">Dopustite Googleu da vam pošalje e-poruku o tom problemu</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Zatraži brojače prometa</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Odaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Alati za razvojne programere</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Priloži</translation>
 <translation id="8206859287963243715">Mobitel</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Pozadina</translation>
 <translation id="8820457400746201697">Premjestite plavu točku dodira na radnju. Odaberite povezani ključ da biste ga prilagodili.</translation>
+<translation id="8820817407110198400">Knjižne oznake</translation>
 <translation id="8834539327799336565">Trenutačno povezano</translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8855781559874488009">Povezivanje s HTTP web-lokacijama putem vatrozida nije uspjelo</translation>

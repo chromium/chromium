@@ -155,6 +155,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1715293566947629045">Profilis išjungiamas. Palaukite kelias minutes.</translation>
 <translation id="1719094688023114093">Subtitrai realiuoju laiku įjungti.</translation>
 <translation id="1720011244392820496">„Wi-Fi“ sinchronizavimo įjungimas</translation>
+<translation id="1720230731642245863">Viešosios interneto prieigos taškas išjungtas</translation>
 <translation id="1731815243805539470">Perjungti į ankstesnį naudotoją</translation>
 <translation id="1733996486177697563">Perjunkite iš tamsiosios į šviesiąją temą ir atvirkščiai. Palieskite ir palaikykite darbalaukyje, tada pasirinkite „Ekrano fonas ir stilius“.</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ matomas „Bluetooth“ įrenginiams.</translation>
@@ -427,7 +428,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3151786313568798007">Orientacija</translation>
 <translation id="3153444934357957346">Naudodami kelių paskyrų funkciją, galite turėti iki <ph name="MULTI_PROFILE_USER_LIMIT" /> paskyr.</translation>
 <translation id="3154351730702813399">Įrenginio administratorius gali stebėti jūsų naršymo veiklą.</translation>
-<translation id="3157931365184549694">Atkurti</translation>
 <translation id="316086887565479535">Nepalaikomos programos šablone</translation>
 <translation id="3161500364292033097">Uždaryti darbalaukį ir langus</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> grąžina ankstesnę „<ph name="DEVICE_TYPE" />“ versiją. Jūsų įrenginys bus nustatytas iš naujo ir visi duomenys bus ištrinti.</translation>
@@ -596,6 +596,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="394485226368336402">Garso nustatymai</translation>
 <translation id="3945319193631853098">Palieskite, kad baigtumėte sąranką</translation>
 <translation id="3945867833895287237">Prisijungiama prie viešosios interneto prieigos taško...</translation>
+<translation id="3950272133184491871">Atsijungti dabar?</translation>
 <translation id="3950820424414687140">Prisijungti</translation>
 <translation id="3962859241508114581">Ankstesnis takelis</translation>
 <translation id="3969043077941541451">Išjungta</translation>
@@ -1002,6 +1003,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5920710855273935292">Mikrofonas nutildytas.</translation>
+<translation id="5924855612669061715">Viešosios interneto prieigos taškas įjungtas</translation>
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ įjungta.</translation>
 <translation id="5947494881799873997">Grąžinti</translation>
 <translation id="595202126637698455">Įgalintas našumo stebėjimas</translation>
@@ -1179,7 +1181,6 @@ Naujas įdiegimas</translation>
 <translation id="6781002679438061620">9 darbalaukis</translation>
 <translation id="6782182743534150858">13 darbalaukis</translation>
 <translation id="6786750046913594791">Uždaryti aplanką</translation>
-<translation id="6787595647772650851">Atkurti paskutinį seansą</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="679368458793552943">Artinti, kai įjungtas didintuvas</translation>
 <translation id="6801878137098616817">Neseniai redaguota</translation>
@@ -1378,6 +1379,7 @@ Naujas įdiegimas</translation>
 <translation id="7848989271541991537">Perkelta į <ph name="PAGE_NUMBER" /> puslapį, <ph name="ROW_NUMBER" /> eilutę, <ph name="COLUMN_NUMBER" /> stulpelį.</translation>
 <translation id="7851768487828137624">Kanarų</translation>
 <translation id="7860671499921112077">Perbraukite aukštyn trimis pirštais, kad apsilankytumėte „Apžvalgos“ skiltyje</translation>
+<translation id="7862292329216937261">Jei norite naudoti įrenginį kaip svečias, turite atsijungti ir ekrano apačioje pasirinkti „Naršyti kaip svečiui“.</translation>
 <translation id="7866482334467279021">įjungta</translation>
 <translation id="7868900307798234037">Atrakinama naudojant kontrolinį kodą</translation>
 <translation id="7872195908557044066">Administratorius iš naujo nustato jūsų „eSIM“ kortelę. Palaukite kelias minutes.</translation>
@@ -1422,6 +1424,7 @@ Naujas įdiegimas</translation>
 <translation id="8036504271468642248">Ankstesnis sakinys</translation>
 <translation id="8042893070933512245">Atidaryti pritaikomumo nustatymų meniu</translation>
 <translation id="8044457332620420407">Klaviatūra foninis apšvietimas išjungtas</translation>
+<translation id="8048077032188362328">Administratorius išjungė viešosios interneto prieigos tašką.</translation>
 <translation id="8048123526339889627">„Bluetooth“ nustatymai</translation>
 <translation id="8051716679295756675">Šablonas pavadinimu „<ph name="DESK_TEMPLATE_NAME" />“ jau yra</translation>
 <translation id="8052898407431791827">Nukopijuota į iškarpinę</translation>
@@ -1641,6 +1644,7 @@ Naujas įdiegimas</translation>
 <translation id="9098969848082897657">Telefono nutildymas</translation>
 <translation id="9100887602489003640">Pridedamas profilis. Palaukite kelias minutes.</translation>
 <translation id="9105450214093926548">Antrojo naudotojo prisijungimo funkcija nepalaikoma, kol vykdoma „Lacros“ naršyklė. Naudokite antrosios naršyklės profilį sistemoje „Lacros“ arba uždarykite „Lacros“ ir bandykite dar kartą.</translation>
+<translation id="9120448753905017833">Išjungėme „Wi-Fi“, kad būtų galima pradėti naudoti viešosios interneto prieigos tašką per mobiliojo ryšio duomenis. Dėl to gali būti taikomi duomenų mokesčiai.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> arba <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Negalima įrašyti apsaugoto turinio</translation>
 <translation id="9161053988251441839">SIŪLOMOS PROGRAMOS</translation>

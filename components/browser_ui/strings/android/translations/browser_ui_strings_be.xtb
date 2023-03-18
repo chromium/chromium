@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Разгорнута. Націсніце, каб згарнуць.</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
 <translation id="2597457036804169544">Не прымяняць цёмную тэму да сайтаў</translation>
+<translation id="2606760465469169465">Аўтаматычная праверка</translation>
 <translation id="2621115761605608342">Дазвол JavaScript на канкрэтным сайце.</translation>
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2677748264148917807">Выйсці</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Выбраныя вамі кантакты будуць абагулены з сайтам <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Апошняе наведванне: сёння</translation>
 <translation id="5225463052809312700">Уключыць камеру</translation>
+<translation id="5229337741799419985">Вашы персанальныя даныя пры гэтым не раскрываюцца, а сайты не маюць доступу да вашай гісторыі прагляду сайтаў</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
 <translation id="5264323282659631142">Выдаліць чып "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Каб выйсці з поўнаэкраннага рэжыму, правядзіце зверху ўніз і націсніце кнопку "Назад".</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6689172468748959065">Фота профілю</translation>
 <translation id="6697925417670533197">Актыўныя спампоўкі</translation>
+<translation id="6701547804986694515">Наведаны вамі сайт можа захаваць у Chrome інфармацыю пра тое, што вы не бот. Гэта дазваляе іншым сайтам, якія вы наведваеце, запытваць гэты даныя ў Chrome, каб правяраць, ці сапраўды вы чалавек.</translation>
 <translation id="6722828510648505498">Блакіраваць запыты на ўваход ад сэрвісаў ідэнтыфікацыі.</translation>
 <translation id="6746124502594467657">Перамясціць ніжэй</translation>
 <translation id="6749077623962119521">Скінуць дазволы?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Выберыце відарыс</translation>
 <translation id="8801436777607969138">Блакіраванне JavaScript для канкрэтнага сайта.</translation>
 <translation id="8803526663383843427">Калі функцыя ўключана</translation>
+<translation id="8805385115381080995">Прагляд старонак робіцца хутчэйшым, бо сайты з меншай імавернасцю будуць прасіць вас пацвердзіць, што вы сапраўды чалавек</translation>
 <translation id="8816026460808729765">Забараніць сайтам доступ да датчыкаў</translation>
 <translation id="8823559166155093873">Блакіраваць файлы cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Гэта старонка небяспечная</translation>
 <translation id="9201023452444595544">Усе пазасеткавыя даныя будуць выдалены</translation>
 <translation id="930525582205581608">Забыць гэты сайт?</translation>
+<translation id="947156494302904893">Наведаныя вамі сайты могуць правяраць, ці вы не бот</translation>
 <translation id="967624055006145463">Захаваныя даныя</translation>
 </translationbundle>

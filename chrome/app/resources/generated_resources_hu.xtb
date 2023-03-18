@@ -937,6 +937,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1796588414813960292">A hangot igénylő funkciók nem működnek majd</translation>
 <translation id="1797117170091578105">Játszhat a Chromebook billentyűzetével. Az egyes billentyűket a kívánt műveletekhez rendelheti.</translation>
 <translation id="1800502858278951817">Egyetlen bővítmény se kérte a(z) <ph name="SITE_NAME" /> olvasását vagy módosítását</translation>
+<translation id="180203835522132923">Keresés + O, majd W</translation>
 <translation id="1802624026913571222">Alvó mód bekapcsolása a képernyő lecsukásakor</translation>
 <translation id="1802687198411089702">Az oldal nem válaszol. Várakozhat tovább, vagy bezárhatja.</translation>
 <translation id="1803531841600994172">Fordítás célnyelve</translation>
@@ -1195,6 +1196,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="2023167225947895179">A PIN-kód könnyen kitalálható</translation>
 <translation id="202352106777823113">A letöltés túl sokáig tartott, ezért a hálózat leállította.</translation>
 <translation id="2024195579772565064">Keresőmotor törlése</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559">A(z) <ph name="APP_NAME" /> összeomlott. A bővítmény ismételt betöltéséhez kattintson erre a buborékra.</translation>
 <translation id="2028449514182362831">A mozgásérzékelőket igénylő funkciók nem működnek</translation>
 <translation id="202918510990975568">Adja meg jelszavát a biztonság és a bejelentkezés beállításához</translation>
@@ -1271,6 +1273,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2090165459409185032">Fiókadatainak helyreállításához lépjen a következő oldalra: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Automatikus csatlakozás bejelentkezéskor</translation>
 <translation id="2090876986345970080">Rendszerbiztonsági beállítás</translation>
+<translation id="2091887806945687916">Hang</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Hibakeresési funkciók<ph name="END_H3" />
       <ph name="BR" />
       ChromeOS-eszközén engedélyezheti a hibakeresési funkciókat, melyekkel egyéni kódot telepíthet és tesztelhet az eszközén. Ezzel az alábbiakra nyílik lehetősége:<ph name="BR" />
@@ -3201,6 +3204,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3778868487658107119">Tegyen fel neki kérdéseket. Adjon neki utasításokat. Az Ön személyes Google-ja mindig segítségre kész.</translation>
 <translation id="3780542776224651912">A <ph name="BRAND" /> nem tudja ellenőrizni, hogy jelszavai érintettek voltak-e adatvédelmi incidensekben. Próbálja újra később.</translation>
 <translation id="3781742599892759500">A Linux mikrofon-hozzáférése</translation>
+<translation id="3783725005098956899">Napló megjelenítése</translation>
 <translation id="3783889407390048282">Szabadítson fel tárhelyet, hogy ne veszítse el az Androidhoz való hozzáférését.</translation>
 <translation id="3784472333786002075">A cookie-k webhelyek által létrehozott fájlok. Kétféle cookie-t különböztetünk meg: A belső cookie-kat a meglátogatott webhelyek hozzák létre. Az adott webhely a címsávban látható. A harmadik féltől származó cookie-kat más webhelyek hozzák létre. Ezek a webhelyek birtokolják a meglátogatott webhelyeken látható tartalom bizonyos részét (például hirdetéseket vagy képeket).</translation>
 <translation id="3785308913036335955">Alkalmazások gyorsparancs megjelenítése</translation>
@@ -4242,6 +4246,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4708849949179781599">Kilépés a <ph name="PRODUCT_NAME" />-ból</translation>
 <translation id="4711638718396952945">A beállítások visszaállítása</translation>
 <translation id="4713409221649555176">Törlés az összes ablak bezárásakor</translation>
+<translation id="4715631922189108923">Felhasználónév szerkesztése</translation>
 <translation id="47158868804223727">Kattintson a csoport nevére a kibontásához vagy összecsukásához</translation>
 <translation id="4716483597559580346">Powerwash művelet a nagyobb biztonság érdekében</translation>
 <translation id="471759229191973607">Téma módosítása</translation>
@@ -8092,6 +8097,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8203732864715032075">Értesítések küldése, valamint a számítógép alapértelmezettként való megjegyzése a Messages alkalmazásban. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="8205432712228803050">Sor kerülhet a kijelzők és perifériák gyors visszaállítására. A módosítás életbe léptetéséhez válassza le, majd csatlakoztassa újra a perifériákat.</translation>
 <translation id="820568752112382238">Leggyakrabban felkeresett webhelyek</translation>
+<translation id="8206267832882844324">Megjegyzés szerkesztése</translation>
 <translation id="8206745257863499010">Énekes</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8207404892907560325">Azonosítókulcs kiválasztása</translation>
@@ -8331,6 +8337,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8419098111404128271">Keresési találatok a következőre: <ph name="SEARCH_TEXT" /></translation>
 <translation id="8420308167132684745">Szótár címszavainak szerkesztése</translation>
 <translation id="8421361468937925547">Élő feliratozás (csak angol nyelven)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Hiányzó tálca</translation>
 <translation id="8424250197845498070">Letiltotta a Speciális védelem</translation>
 <translation id="8425213833346101688">Módosítás</translation>
@@ -9005,7 +9012,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9026731007018893674">letöltés</translation>
 <translation id="9026852570893462412">Ez a folyamat néhány percet is igénybe vehet. A virtuális gép letöltése folyamatban van.</translation>
 <translation id="9027459031423301635">Link megnyitása új &amp;lapon</translation>
-<translation id="9027707169256972235">Eltávolítás</translation>
 <translation id="9030515284705930323">Szervezete még nem engedélyezte a Google Play Áruház szolgáltatást a fiókjánál. További tájékoztatásért forduljon rendszergazdájához.</translation>
 <translation id="9030754204056345429">Gyorsabb</translation>
 <translation id="9030785788945687215">Gmail</translation>

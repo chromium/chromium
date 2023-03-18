@@ -868,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />ಸಂಪರ್ಕ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ರನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ‌<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> ಗೆ ಹೋಗಿ</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಖಾತೆಯ ಸೈನ್ ಇನ್ ಡೇಟಾ}one{# ಖಾತೆಗಳ ಸೈನ್ ಇನ್ ಡೇಟಾ}other{# ಖಾತೆಗಳ ಸೈನ್ ಇನ್ ಡೇಟಾ}}</translation>
 <translation id="3141093262818886744">ಹೇಗಿದ್ದರೂ ತೆರೆಯಿರಿ</translation>
 <translation id="3141641372357166056">ಸಮ್ಮತಿಯ ನಿರ್ಧಾರವಿಲ್ಲ</translation>
 <translation id="3145945101586104090">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಡೀಕೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
@@ -3359,7 +3358,6 @@
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ಫಾರ್ಮ್ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="936602727769022409">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಪ್ರವೇಶವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಈಗಲೇ ಬದಲಾಯಿಸುವಂತೆ Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ. ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮನ್ನು ಕೇಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="937457230470581909">ಮೃಗಾಲಯಗಳು, ಅಕ್ವೇರಿಯಮ್‌ಗಳು ಮತ್ತು ಅಭಯಾರಣ್ಯಗಳು</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ಯಾವ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ:<ph name="END_BOLD" /> ನಿಮ್ಮ ಆ್ಯಡ್ ವಿಷಯವು ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಈ ಸಾಧನದಲ್ಲಿ Chrome ಬಳಸಿಕೊಂಡು ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಆಧರಿಸಿವೆ.</translation>

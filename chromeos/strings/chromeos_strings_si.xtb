@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">ලේඛන සංග්‍රාහකය (තනි-පැත්තක)</translation>
 <translation id="1643449475550628585">වෝල්පේපර රූපය දිනපතා වෙනස් කරන්න</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
+<translation id="1651925268237749928">ඔබ බෙදා ගත් ඇල්බමයක් තෝරා ඇත. වෙනත් පුද්ගලයින්ට ඡායාරූප එක් කිරීමට හෝ වෙනස් කිරීමට හැක. ඔබේ වෝල්පේපරය දැනට මෙම ඇල්බමයේ නොමැති ඡායාරූප භාවිතා කළ හැක.</translation>
 <translation id="1662989795263954667">නැවතිණි - තීන්ත අවසන් විය</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> පෙරදසුන</translation>
 <translation id="1668469839109562275">තිළැලි VPN</translation>
@@ -120,6 +121,7 @@
 <translation id="1947737735496445907">මුද්‍රණය කරන ලදි</translation>
 <translation id="1951012854035635156">සහායක</translation>
 <translation id="1962550982027027473">පෙරනිමි APN එකක් අවශ්‍යයි</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google පැතිකඩ ඡායාරූපය</translation>
 <translation id="1979103255016296513">මුරපදය වෙනස් කිරීම කල් ගොස් ඇත</translation>
 <translation id="1999615961760456652">පිවිසුම් දොරටුව</translation>
@@ -240,6 +242,7 @@
 <translation id="319101249942218879">නියුරු රූපය වෙනස් කරන ලදි</translation>
 <translation id="3192947282887913208">ශ්‍රව්‍ය ගොනුව</translation>
 <translation id="3199982728237701504">ලේඛන සංග්‍රාහකය (ද්විත්ව-පැති)</translation>
+<translation id="3201315366910775591">බෙදා ගත් ඇල්බම වෙනත් පුද්ගලයින් විසින් යාවත්කාලීන කළ හැක</translation>
 <translation id="3211671540163313381">යතුරු අනුරූපණ ඩී-පෑඩ්</translation>
 <translation id="3226405216343213872">ස්කෑනර සඳහා සොයමින්</translation>
 <translation id="3226657629376379887">පිරිසැලසුම් ක්‍රියා මෙනුව</translation>
@@ -253,6 +256,7 @@
 <translation id="3310640316857623290">DNS පමාව ඉඩ දිය හැකි මායිමෙන් සැලකිය යුතු ලෙස ඉහළය</translation>
 <translation id="3328783797891415197">පරීක්ෂණය ධාවනය වෙමින්</translation>
 <translation id="3340011300870565703">උපාංගයට දකුණු බඩ් බැටරිය <ph name="BATTERY_PERCENTAGE" />% ක් ඇත.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">සම්බන්ධ කළ</translation>
 <translation id="3369013195428705271">ඔබට මුද්‍රණ ඉතිහාස සියල්ල හිස් කිරීමට අවශ්‍ය බව ඔබට තහවුරුද? ඔබේ පවතින මුද්‍රණ වැඩ හිස් නොකෙරේ.</translation>
 <translation id="3404249063913988450">තිර සුරැකුම සබල කරන්න</translation>
@@ -340,6 +344,7 @@
 <translation id="4131410914670010031">කළු සහ සුදු</translation>
 <translation id="4145784616224233563">HTTP ෆයර්වෝලය</translation>
 <translation id="4147897805161313378">Google ඡායාරූප</translation>
+<translation id="4150201353443180367">සංදර්ශකය</translation>
 <translation id="4155551848414053977">ස්කෑනරය ක්‍රියාත්මක කර ඇති බව සහ ඔබගේ ජාලය හරහා හෝ සෘජු සබැඳුමක් හරහා ලබා ගත හැකි බව සහතික කර ගන්න</translation>
 <translation id="4159784952369912983">දම්</translation>
 <translation id="4170180284036919717">ඡායාරූපයක් ගන්න</translation>
@@ -355,6 +360,7 @@
 <translation id="4250229828105606438">තිරරූපය</translation>
 <translation id="4258281355379922695">HTTP පමාව</translation>
 <translation id="4271957103967917607">පූර්ණ තිරය බලන්න</translation>
+<translation id="4275663329226226506">මාධ්‍ය</translation>
 <translation id="4289540628985791613">දළ විශ්ලේෂණය</translation>
 <translation id="4289849978083912975">ස්ලයිඩ දැක්ම</translation>
 <translation id="4297501883039923494">නැවතිණි - නොදන්නා දෝෂයකි</translation>
@@ -447,6 +453,7 @@
 <translation id="498186245079027698">ස්කෑනරය පරීක්ෂා කර නැවත උත්සාහ කරන්න. ස්කෑන් කළ ගොනු සුරැකීමට ප්‍රමාණවත් ස්ථානීය ඉඩක් ඇති බවට සහතික කර ගන්න.</translation>
 <translation id="4985509611418653372">ධාවනය කරන්න</translation>
 <translation id="4987769320337599931">ෆයර් වෝලය</translation>
+<translation id="4988526792673242964">පිටු</translation>
 <translation id="4999333166442584738">වාර්තාව සඟවන්න</translation>
 <translation id="500920857929044050">පරීක්ෂණය නවත්වන්න</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -658,6 +665,7 @@
 <translation id="6838167112108853532">මෙම APN අබල කිරීමට හෝ ඉවත් කිරීමට නොහැක. සබල කළ අමුණා ඇති APNs අබල කර හෝ ඉවත් කර ඇති බවට වග බලා ගන්න.</translation>
 <translation id="6853312040151791195">විසර්ජන වේගය</translation>
 <translation id="6889786074662672253">යළි ආරම්භ කිරීම අතරතුර, මෙම බාහිර උපාංගය විසන්ධි කිරීම හෝ ඔබගේ පරිගණකය වැසීම නොකරන්න. ඔබට මෙම කවුළුව කුඩා කළ හැකිය. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකි අතර මෙම කාලය තුළ ඔබගේ බාහිර උපාංගය ක්‍රියා නොකළ හැකිය.</translation>
+<translation id="6900701049656042631">මෙම ඇල්බමයට ඡායාරූප කිසිවක් නොමැත. ඡායාරූප එක් කිරීම සඳහා, <ph name="LINK" /> වෙත යන්න</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> වෙත ආපසු</translation>
 <translation id="6910312834584889076">ස්කෑනරයේ ආවරණය විවෘතයි. කවරය වසා නැවත උත්සාහ කරන්න.</translation>
 <translation id="6911383237894364323">මාධ්‍ය සේවාදායක වෙත සබැඳීමට නොහැකිය</translation>
@@ -772,6 +780,7 @@
 <translation id="7936303884198020182">නම් සේවාදායක හමු නොවීය</translation>
 <translation id="7942349550061667556">රතු</translation>
 <translation id="7943235353293548836">ස්ථිර keepalive විරාමය</translation>
+<translation id="7953669802889559161">ආදාන</translation>
 <translation id="7955587717700691983">බ්ලූටූත් යතුරු පුවරුව</translation>
 <translation id="7960831585769876809">උෂ්ණත්වය</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ජාලයකට එක් වීමට, සැකසීම් වෙත යන්න</translation>
@@ -784,6 +793,7 @@
 <translation id="8041089156583427627">ප්‍රතිපෝෂණ යවන්න</translation>
 <translation id="8045012663542226664">මයික්‍රෆෝනය නිහඬ කිරීම</translation>
 <translation id="8075838845814659848">ඉතිරි ආරෝපණය</translation>
+<translation id="8076492880354921740">පටිති</translation>
 <translation id="8082366717211101304">Android යෙදුම් වෙතින් DNS විසඳිය නොහැකිය</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
 <translation id="8094062939584182041">මෙම ගැටලුව පිළිබඳව ඔබට ඉ-තැපැල් කිරීමට Google හට ඉඩ දෙන්න</translation>
@@ -793,6 +803,7 @@
 <translation id="8132480444149501833">තදබදය ගණනය කිරීම් ඉල්ලන්න</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> තෝරන්න</translation>
+<translation id="8151185429379586178">සංවර්ධක උපකරණ</translation>
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
 <translation id="8183974620058026102">අමුණන්න</translation>
 <translation id="8206859287963243715">සෙලියුලර්</translation>
@@ -861,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">වෝල්පේපරය</translation>
 <translation id="8820457400746201697">නිල් ස්පර්ශ ලක්ෂ්‍යය ක්‍රියාවකට ගෙන යන්න. අභිරුචිකරණය කිරීමට ආශ්‍රිත යතුර තෝරන්න.</translation>
+<translation id="8820817407110198400">පිටුසන්</translation>
 <translation id="8834539327799336565">දැනට සම්බන්ධ වී ඇත</translation>
 <translation id="8845001906332463065">උදවු ලබා ගන්න</translation>
 <translation id="8855781559874488009">HTTP වෙබ් අඩවිවලට ෆයර්වෝලය හරහා සම්බන්ධ විය නොහැකිය</translation>

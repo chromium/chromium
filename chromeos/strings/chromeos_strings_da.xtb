@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Udskrevet</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Et standard-APN er påkrævet</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profilbillede</translation>
 <translation id="1979103255016296513">Adgangskoden mangler at blive ændret</translation>
 <translation id="1999615961760456652">Loginportal</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3328783797891415197">Testen kører</translation>
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Tilsluttet</translation>
 <translation id="3369013195428705271">Er du sikker på, at du vil rydde hele udskriftshistorikken? Dine igangværende udskriftsjobs ryddes ikke.</translation>
 <translation id="3404249063913988450">Aktivér Pauseskærm</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Sort/hvid</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
+<translation id="4150201353443180367">Skærm</translation>
 <translation id="4155551848414053977">Tjek, at scanneren er tændt og tilgængelig via dit netværk eller en direkte forbindelse</translation>
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4170180284036919717">Tag et billede</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">HTTP-forsinkelse</translation>
 <translation id="4271957103967917607">Se i fuld skærm</translation>
+<translation id="4275663329226226506">Medier</translation>
 <translation id="4289540628985791613">Oversigt</translation>
 <translation id="4289849978083912975">Slide show</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Tjek scanneren, og prøv igen. Sørg for, at der er nok lokal lagerplads til at gemme de scannede filer.</translation>
 <translation id="4985509611418653372">Kør</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Sider</translation>
 <translation id="4999333166442584738">Skjul rapport</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7943235353293548836">Fast keepalive-interval</translation>
+<translation id="7953669802889559161">Indtastningsmetoder</translation>
 <translation id="7955587717700691983">Bluetooth-tastatur</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="7977800524392185497">Gå til Indstillinger for at oprette forbindelse til et <ph name="NETWORK_NAME" />-netværk</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8045012663542226664">Slå mikrofonens lyd fra</translation>
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
+<translation id="8076492880354921740">Faner</translation>
 <translation id="8082366717211101304">Der kan ikke udføres DNS-oversættelse fra Android-apps</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8094062939584182041">Giv Google tilladelse til at kontakte dig via mail vedrørende dette problem</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Anmod om trafiktællere</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vælg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Udviklerværktøjer</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Vedhæft</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Baggrund</translation>
 <translation id="8820457400746201697">Flyt det blå touchpunkt for at foretage en handling. Vælg den tilknyttede tast for at tilpasse den.</translation>
+<translation id="8820817407110198400">Bogmærker</translation>
 <translation id="8834539327799336565">Forbundet lige nu</translation>
 <translation id="8845001906332463065">Få hjælp</translation>
 <translation id="8855781559874488009">Der kan ikke oprettes forbindelse via firewallen til HTTPS-websites</translation>

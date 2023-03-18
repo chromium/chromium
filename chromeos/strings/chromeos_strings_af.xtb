@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Gedruk</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">’n Verstek-APN word vereis</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profielfoto</translation>
 <translation id="1979103255016296513">Wagwoord moes al verander geword het</translation>
 <translation id="1999615961760456652">Kontroleringsportaal</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS-traagheid is aansienlik bo toelaatbare drempel</translation>
 <translation id="3328783797891415197">Toets loop tans</translation>
 <translation id="3340011300870565703">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in regterknoppie.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3369013195428705271">Is jy seker jy wil alle drukgeskiedenis uitvee? Jou aangaande druktake sal nie uitgevee word nie.</translation>
 <translation id="3404249063913988450">Aktiveer sluimerskerm</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Swart en wit</translation>
 <translation id="4145784616224233563">HTTP-brandmuur</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
+<translation id="4150201353443180367">Vertoon</translation>
 <translation id="4155551848414053977">Maak seker dat die skandeerder aangeskakel is en via jou netwerk of 'n direkte verbinding beskikbaar is</translation>
 <translation id="4159784952369912983">Pers</translation>
 <translation id="4170180284036919717">Neem 'n foto</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Skermkiekie</translation>
 <translation id="4258281355379922695">HTTP-traagheid</translation>
 <translation id="4271957103967917607">Bekyk volskerm</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Oorsig</translation>
 <translation id="4289849978083912975">Skyfievertoning</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Gaan die skandeerder na en probeer weer. Maak seker daar is genoeg plaaslike spasie om lêers wat geskandeer is, te stoor.</translation>
 <translation id="4985509611418653372">Laat loop</translation>
 <translation id="4987769320337599931">Brandmuur</translation>
+<translation id="4988526792673242964">Bladsye</translation>
 <translation id="4999333166442584738">Versteek verslag</translation>
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="7942349550061667556">Rooi</translation>
 <translation id="7943235353293548836">Aanhoudende Hou Aktief-interval</translation>
+<translation id="7953669802889559161">Invoere</translation>
 <translation id="7955587717700691983">Bluetooth-sleutelbord</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
 <translation id="7977800524392185497">Gaan na Instellings om by 'n <ph name="NETWORK_NAME" />-netwerk aan te sluit</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Stuur terugvoer</translation>
 <translation id="8045012663542226664">Demp mikrofoon</translation>
 <translation id="8075838845814659848">Oorblywende batterykrag</translation>
+<translation id="8076492880354921740">Oortjies</translation>
 <translation id="8082366717211101304">Kan nie DNS van Android-programme af oplos nie</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
 <translation id="8094062939584182041">Laat Google toe om vir jou ’n e-pos oor hierdie kwessie te stuur</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Versoek verkeertellers</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Kies <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Ontwikkelaarnutsgoed</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Heg aan</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Muurpapier</translation>
 <translation id="8820457400746201697">Beweeg die blou raakpunt na ’n handeling toe. Kies die geassosieerde sleutel om te pasmaak.</translation>
+<translation id="8820817407110198400">Boekmerke</translation>
 <translation id="8834539327799336565">Tans gekoppel</translation>
 <translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8855781559874488009">Kan nie deur brandmuur aan HTTP-webwerwe koppel nie</translation>

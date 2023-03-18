@@ -541,6 +541,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="48274138579728272">Marquer comme lu</translation>
 <translation id="4833686396768033263">Les onglets récents ne sont pas accessibles</translation>
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google.</translation>
+<translation id="4834499902900503484">Lorsque vous êtes connecté à Chrome, les mots de passe que vous enregistrez sont enregistrés dans votre compte Google. Pour désactiver cette option, <ph name="BEGIN_LINK" />accédez aux paramètres<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="4844899002472726590">Affichez et modifiez les sujets qui vous intéressent</translation>
 <translation id="4848999860252535517">Supprimer le mot de passe pour <ph name="WEBSITE" />?</translation>
@@ -684,6 +685,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5899314093904173337">Pour partager du contenu avec des personnes à proximité, faites-leur numériser ce code QR avec leur appareil photo ou une application de numérisation de code QR</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
 <translation id="5913600720976431809">Options pour traduire la page</translation>
+<translation id="5922999516621365983">Faites glisser l'onglet ici pour l'épingler.</translation>
 <translation id="5938160824633642847">Votre appareil est presque plein. Libérez de l'espace et réessayez.</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer vos photos dans votre bibliothèque de photos.</translation>
 <translation id="5951816930277761335">Partager le lien</translation>
@@ -1134,6 +1136,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
 <translation id="8953046091948372197">Vous trouverez vos mots de passe ici</translation>
 <translation id="895541991026785598">Signaler un problème</translation>
+<translation id="8971545611707025079">Revérifier</translation>
 <translation id="8974714402877957201">1. Ouvrez Réglages de l'iPad</translation>
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8976414606286374109">Les cartes seront enregistrées dans votre compte Google.</translation>

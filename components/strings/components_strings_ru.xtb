@@ -868,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Выполните диагностику подключения<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Перейти на страницу <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Нет}=1{данные для входа в 1 аккаунт}one{данные для входа в # аккаунт}few{данные для входа в # аккаунта}many{данные для входа в # аккаунтов}other{данные для входа в # аккаунта}}</translation>
 <translation id="3141093262818886744">Все равно открыть</translation>
 <translation id="3141641372357166056">пользователь ещё не принял решение</translation>
 <translation id="3145945101586104090">Не удалось декодировать ответ</translation>
@@ -3361,7 +3360,6 @@
 <translation id="9219103736887031265">Картинки</translation>
 <translation id="922152298093051471">Настроить Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ОЧИСТИТЬ ФОРМУ</translation>
 <translation id="936602727769022409">Вы можете потерять доступ к аккаунту Google. Рекомендуем немедленно сменить пароль. После этого потребуется снова войти в аккаунт.</translation>
 <translation id="937457230470581909">Зоопарки, аквариумы и заповедники</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Какие данные используются.<ph name="END_BOLD" /> Темы рекламы подбираются на основе истории браузера – списка сайтов, которые вы открывали в Chrome на этом устройстве.</translation>

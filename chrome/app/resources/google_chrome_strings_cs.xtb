@@ -12,6 +12,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="110877069173485804">Toto je váš Chrome</translation>
 <translation id="1125124144982679672">Kdo Chrome používá?</translation>
 <translation id="1142745911746664600">Chrome nelze aktualizovat</translation>
+<translation id="1149651794389918149">Přihlaste se do Chromu. Pokud se k nějakému účtu chcete přihlásit pouze jednorázově, můžete <ph name="GUEST_LINK_BEGIN" />zařízení použít jako host<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">O systému ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Otevřít v Chromu</translation>
 <translation id="1203500561924088507">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je potřeba restartovat prohlížeč.</translation>
@@ -172,6 +173,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4147555960264124640">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem Google Chrome. Vaše údaje prohlížeče Chrome, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu Google, ale nebudete je moci přidružit k jinému účtu. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Instalace...</translation>
 <translation id="4149882025268051530">Instalačnímu programu se nepodařilo rozbalit archiv. Stáhněte prosím Google Chrome ještě jednou.</translation>
+<translation id="4153934450158521343">Chrome se brzy zavře a smaže data</translation>
 <translation id="4191857738314598978">{0,plural, =1{Do jednoho dne Chrome restartujte}few{Do # dní Chrome restartujte}many{Do # dne Chrome restartujte}other{Do # dní Chrome restartujte}}</translation>
 <translation id="4205939740494406371">Chrome nemůže zkontrolovat vaše hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Rušení...</translation>
@@ -217,6 +219,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4970880042055371251">Verze systému ChromeOS</translation>
 <translation id="4970947549776831107">Chrome tento soubor zablokoval, protože tento typ souboru je nebezpečný</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Váš administrátor nakonfiguroval Chrome tak, aby se po 1 minutě nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}few{Váš administrátor nakonfiguroval Chrome tak, aby se po # minutách nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}many{Váš administrátor nakonfiguroval Chrome tak, aby se po # minuty nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}other{Váš administrátor nakonfiguroval Chrome tak, aby se po # minutách nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}}</translation>
 <translation id="5098668839038261629">Když zapnete tuto možnost, budete také odhlášeni z Chromu</translation>
 <translation id="5132929315877954718">Objevte skvělé aplikace, hry, rozšíření a motivy prohlížeče Google Chrome.</translation>
 <translation id="5139423532931106058">Upravit profil Chrome</translation>
@@ -269,12 +272,14 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Pravidlo příchozího provozu pro aplikaci Google Chrome, které povolí provoz mDNS.</translation>
+<translation id="624230925347970731">Chrome se brzy zavře</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6273793429163604305">Připravit…</translation>
 <translation id="6291089322031436445">Chrome Dev – aplikace</translation>
 <translation id="6291549208091401781">Prohlížeč Google Chrome je na tomto počítači již nainstalován pro všechny uživatele.</translation>
 <translation id="6326175484149238433">Odstranit z Chromu</translation>
 <translation id="6327105987658262776">Nejsou k dispozici žádné aktualizace.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Váš administrátor nakonfiguroval automatické smazání údajů o prohlížení po 1 minutě nečinnosti. To může zahrnovat historii, automatické vyplňování a stažené soubory. Vaše stávající karty zůstanou otevřené.}few{Váš administrátor nakonfiguroval automatické smazání údajů o prohlížení po # minutách nečinnosti. To může zahrnovat historii, automatické vyplňování a stažené soubory. Vaše stávající karty zůstanou otevřené.}many{Váš administrátor nakonfiguroval automatické smazání údajů o prohlížení po # minuty nečinnosti. To může zahrnovat historii, automatické vyplňování a stažené soubory. Vaše stávající karty zůstanou otevřené.}other{Váš administrátor nakonfiguroval automatické smazání údajů o prohlížení po # minutách nečinnosti. To může zahrnovat historii, automatické vyplňování a stažené soubory. Vaše stávající karty zůstanou otevřené.}}</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="6418662306461808273">Přepnout na stávající profil Chrome?</translation>
 <translation id="6493527311031785448">Google Chrome se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -304,6 +309,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 
 Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Své účty Google můžete spravovat v <ph name="SETTINGS_LINK_BEGIN" />Nastavení<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Tvůj rodič pro Chrome vypnul možnost Oprávnění pro weby, aplikace a rozšíření. Přidání tohoto <ph name="EXTENSION_TYPE_PARAMETER" /> není povoleno.</translation>
+<translation id="7071827361006050863">Chrome brzy smaže údaje o prohlížení</translation>
 <translation id="7085332316435785646">Zvolte, zda pro lépe personalizované prostředí ve službách Google chcete zahrnout historii Chromu</translation>
 <translation id="7088681679121566888">Chrome je aktuální</translation>
 <translation id="7098166902387133879">Google Chrome používá váš mikrofon.</translation>
@@ -365,6 +371,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8290100596633877290">Ouha! Prohlížeč Google Chrome spadl. Restartovat?</translation>
 <translation id="8342675569599923794">Tento soubor je nebezpečný, proto jej Chrome zablokoval.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Jak tyto údaje využíváme:<ph name="END_BOLD" /> Weby mohou v prohlížeči Chrome ukládat informace o vašich zájmech. Např. když navštívíte web, kde se prodávají boty na maraton, web může definovat váš zájem jako běhání maratonů. Když později navštívíte jiný web s registrací na závod, může se vám na něm na základě vašich zájmů zobrazit reklama na boty na běhání.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Váš administrátor nakonfiguroval Chrome tak, aby se po 1 minutě nečinnosti automaticky zavřel.}few{Váš administrátor nakonfiguroval Chrome tak, aby se po # minutách nečinnosti automaticky zavřel.}many{Váš administrátor nakonfiguroval Chrome tak, aby se po # minuty nečinnosti automaticky zavřel.}other{Váš administrátor nakonfiguroval Chrome tak, aby se po # minutách nečinnosti automaticky zavřel.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Jak tyto údaje využíváme:<ph name="END_BOLD" /> Chrome dokáže odhadovat vaše zájmy. Později může navštívený web požádat Chrome o sdělení vašich zájmů, aby vám mohl přizpůsobit zobrazované reklamy.</translation>
 <translation id="8387459386171870978">Pokračovat v používání Chromu</translation>

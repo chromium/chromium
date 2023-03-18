@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Vista desplegada (feu clic per replegar-la)</translation>
 <translation id="2586657967955657006">Porta-retalls</translation>
 <translation id="2597457036804169544">No apliquis el tema fosc als llocs web</translation>
+<translation id="2606760465469169465">Verificació automàtica</translation>
 <translation id="2621115761605608342">Permet JavaScript en un lloc web concret.</translation>
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2677748264148917807">Surt</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Darrera visita: avui</translation>
 <translation id="5225463052809312700">Activa la càmera</translation>
+<translation id="5229337741799419985">Aquesta opció de configuració funciona sense identificar-te ni permetre que els llocs web vegin el teu historial de navegació</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5264323282659631142">Suprimeix <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrossegueu la pantalla des de la part superior i toqueu el botó Enrere per sortir de la pantalla completa.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6689172468748959065">Fotos de perfil</translation>
 <translation id="6697925417670533197">Baixades actives</translation>
+<translation id="6701547804986694515">Els llocs web que visites poden desar informació a Chrome que validi que no ets un bot. Mentre continuïs navegant, els llocs web podran recórrer a Chrome per verificar que ets una persona real mitjançant llocs web que hagis visitat anteriorment.</translation>
 <translation id="6722828510648505498">Bloqueja les sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>
 <translation id="6746124502594467657">Mou avall</translation>
 <translation id="6749077623962119521">Vols restablir els permisos?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Selecciona una imatge</translation>
 <translation id="8801436777607969138">Bloqueja JavaScript en un lloc web concret.</translation>
 <translation id="8803526663383843427">Quan està activada</translation>
+<translation id="8805385115381080995">La navegació és més ràpida perquè és menys probable que un lloc web et demani que verifiquis que ets una persona real</translation>
 <translation id="8816026460808729765">Impedeix que els llocs web accedeixin als sensors</translation>
 <translation id="8823559166155093873">Bloqueja les galetes</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>
 <translation id="9201023452444595544">S'esborraran totes les dades sense connexió</translation>
 <translation id="930525582205581608">Vols oblidar aquest lloc web?</translation>
+<translation id="947156494302904893">Els llocs web que visites poden verificar que ets una persona real i no un bot</translation>
 <translation id="967624055006145463">Dades emmagatzemades</translation>
 </translationbundle>

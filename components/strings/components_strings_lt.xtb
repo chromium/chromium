@@ -683,6 +683,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="259821504105826686">Fotografijos ir skaitmeninis menas</translation>
 <translation id="2601150049980261779">Romantiniai filmai</translation>
 <translation id="2604589665489080024">Popmuzika</translation>
+<translation id="2606760465469169465">Automatinis patvirtinimas</translation>
 <translation id="2610561535971892504">Spustelėkite, jei norite kopijuoti</translation>
 <translation id="2617988307566202237">„Chrome“ <ph name="BEGIN_EMPHASIS" />nesaugos<ph name="END_EMPHASIS" /> šios informacijos:
           <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Pabandykite paleisti ryšio diagnostikos įrankį<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Eiti į <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Nėra}=1{1 paskyros prisijungimo duomenys}one{# paskyros prisijungimo duomenys}few{# paskyrų prisijungimo duomenys}many{# paskyros prisijungimo duomenys}other{# paskyrų prisijungimo duomenys}}</translation>
 <translation id="3141093262818886744">Vis tiek atidaryti</translation>
 <translation id="3141641372357166056">Nėra sprendimo dėl sutikimo</translation>
 <translation id="3145945101586104090">Iššifruojant atsakymą įvyko klaida</translation>
@@ -1901,6 +1901,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kaip galite tvarkyti savo duomenis:<ph name="END_BOLD" /> „Chrome“ automatiškai ištrina senesnes nei keturių savaičių svetaines. Jei dar kartą apsilankysite svetainėje, ji gali vėl atsirasti sąraše. Taip pat galite bet kuriuo metu užblokuoti svetainę, kad ji negalėtų siūlyti skelbimų, ir išjungti svetainių siūlomus skelbimus „Chrome“ nustatymuose.</translation>
 <translation id="5610142619324316209">Patikrinti ryšį</translation>
 <translation id="5610807607761827392">Korteles ir adresus galite tvarkyti skiltyje <ph name="BEGIN_LINK" />Nustatymai<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Išsaugoti paskyroje</translation>
 <translation id="561165882404867731">Verskite šį puslapį naudodami „Google“ vertėją</translation>
 <translation id="5612720917913232150"><ph name="URL" /> nori naudoti kompiuterio vietovę</translation>
 <translation id="561669346091975195">TV mokslinės fantastikos ir fantastinės laidos</translation>
@@ -3188,6 +3189,7 @@ Papildoma išsami informacija:
 <translation id="8806285662264631610">Vonios ir kūno priežiūros produktai</translation>
 <translation id="8807160976559152894">Apkarpymas po kiekvieno puslapio</translation>
 <translation id="8809203544698246977">Čia rodomos užblokuotos temos</translation>
+<translation id="8811470563853401328">Išsaugoti adresą paskyroje?</translation>
 <translation id="8813277370772331957">Priminti vėliau</translation>
 <translation id="8814707942599948500">C8 vokas</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad „Chrome“ nustatymuose būtų atnaujinta naršyklė „Chrome“</translation>
@@ -3281,6 +3283,7 @@ Papildoma išsami informacija:
 <translation id="9042617223719777575">Didelė talpa</translation>
 <translation id="9044359186343685026">Naudoti „Touch ID“</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Kad būtų galima atlikti šiuos veiksmus, politika „<ph name="POLICY_NAME" />“ turi būti nustatyta kaip „<ph name="POLICY_VALUE" />“: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 col.</translation>
 <translation id="9049981332609050619">Bandėte pasiekti <ph name="DOMAIN" />, bet serveris pateikė neteisingą sertifikatą.</translation>
 <translation id="9050666287014529139">Slaptafrazė</translation>
@@ -3360,7 +3363,6 @@ Papildoma išsami informacija:
 <translation id="9219103736887031265">Vaizdai</translation>
 <translation id="922152298093051471">Tinkinti „Chrome“</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">CLEAR FORM</translation>
 <translation id="936602727769022409">Galite prarasti prieigą prie „Google“ paskyros. „Chromium“ rekomenduoja pakeisti slaptažodį dabar. Bus prašoma prisijungti.</translation>
 <translation id="937457230470581909">Zoologijos sodai, akvariumai ir draustiniai</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Kokie duomenys naudojami:<ph name="END_BOLD" /> skelbimų temos yra pagrįstos jūsų naujausia naršymo istorija, svetainių, kuriose lankėtės naudodami „Chrome“ šiame įrenginyje, sąrašu.</translation>

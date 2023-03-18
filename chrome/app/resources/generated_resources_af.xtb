@@ -936,6 +936,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1796588414813960292">Kenmerke wat klank nodig het, sal nie werk nie</translation>
 <translation id="1797117170091578105">Gebruik jou Chromebook-sleutelbord om te speel Jy kan sleutels pasmaak vir spesifieke handelinge.</translation>
 <translation id="1800502858278951817">Geen uitbreidings het versoek om <ph name="SITE_NAME" /> te lees en te verander nie</translation>
+<translation id="180203835522132923">Soek + O, dan W</translation>
 <translation id="1802624026913571222">Slaap wanneer omhulsel toe is</translation>
 <translation id="1802687198411089702">Hierdie bladsy reageer nie. Jy kan daarvoor wag of uitgaan.</translation>
 <translation id="1803531841600994172">Taal om in te vertaal</translation>
@@ -1195,6 +1196,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="2023167225947895179">PIN kan dalk maklik geraai word</translation>
 <translation id="202352106777823113">Die aflaai het te lank gevat en is deur die netwerk gestop.</translation>
 <translation id="2024195579772565064">Vee soekenjin uit</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> het omgeval. Klik hierdie ballon om hierdie uitbreiding te herlaai.</translation>
 <translation id="2028449514182362831">Kenmerke wat bewegingsensors nodig het, sal nie werk nie</translation>
 <translation id="202918510990975568">Voer jou wagwoord in om sekuriteit en aanmelding op te stel</translation>
@@ -1271,6 +1273,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2090165459409185032">Om jou rekeninginligting te herwin, gaan na: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Koppel outomaties wanneer jy aanmeld</translation>
 <translation id="2090876986345970080">Stelselsekuriteitsinstelling</translation>
+<translation id="2091887806945687916">Klank</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Ontfoutingkenmerke<ph name="END_H3" />
       <ph name="BR" />
       Jy kan die ontfoutingkenmerke op jou Chrome-bedryfstelseltoestel aktiveer om gepasmaakte kode op jou toestel te installeer en te toets. Dit sal dit vir jou moontlik maak om:<ph name="BR" />
@@ -3201,6 +3204,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3778868487658107119">Vra dit vrae. Sê dit aan om dinge te doen. Dis jou eie persoonlike Google en dis altyd gereed om te help.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kan nie nagaan of jou wagwoorde deur dataskendings geraak is nie. Probeer later weer.</translation>
 <translation id="3781742599892759500">Linux-mikrofoontoegang</translation>
+<translation id="3783725005098956899">Wys loglêer</translation>
 <translation id="3783889407390048282">Maak spasie beskikbaar om te keer dat jy toegang tot Android verloor.</translation>
 <translation id="3784472333786002075">Webkoekies is lêers wat deur webwerwe geskep word. Daar is twee soorte webkoekies: Eersteparty-webkoekies word geskep deur die werf wat jy besoek. Die werf word in die adresbalk gewys. Derdeparty-webkoekies word deur ander werwe geskep. Hierdie werwe besit van die inhoud, soos advertensies of prente, wat jy sien op die webwerf wat jy besoek.</translation>
 <translation id="3785308913036335955">Wys programkortpad</translation>
@@ -8329,6 +8333,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8419098111404128271">Soekresultate vir "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">Redigeer woordeboekinskrywings</translation>
 <translation id="8421361468937925547">Intydse Onderskrifte (net Engels)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Laai ontbreek</translation>
 <translation id="8424250197845498070">Geblokkeer deur Gevorderde Beskerming</translation>
 <translation id="8425213833346101688">Verander</translation>
@@ -9002,7 +9007,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9026731007018893674">aflaai</translation>
 <translation id="9026852570893462412">Hierdie proses kan 'n paar minute neem. Laai tans die virtuele masjien af.</translation>
 <translation id="9027459031423301635">Maak skakel in nuwe oortjie oop</translation>
-<translation id="9027707169256972235">Verwyder</translation>
 <translation id="9030515284705930323">Jou organisasie het nie Google Play Winkel vir jou rekening geaktiveer nie. Kontak jou administrateur vir meer inligting.</translation>
 <translation id="9030754204056345429">Vinniger</translation>
 <translation id="9030785788945687215">Gmail</translation>

@@ -9,6 +9,7 @@
 <translation id="113122355610423240">Chromium er din standardbrowser</translation>
 <translation id="1131805035311359397">Du kan tjekke, om dine adgangskoder er beskyttet mod brud på datasikkerheden og andre sikkerhedsproblemer ved at <ph name="BEGIN_LINK" />logge ind på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{Din administrator lukker automatisk Chromium, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, Autofyld og downloads.}one{Din administrator lukker automatisk Chromium, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, Autofyld og downloads.}other{Din administrator lukker automatisk Chromium, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, Autofyld og downloads.}}</translation>
 <translation id="1203500561924088507">Tak for installationen. Du skal genstarte browseren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Hukommelsessparefunktion har gjort Chromium hurtigere</translation>
 <translation id="1315551408014407711">Konfigurer din nye Chromium-profil</translation>
@@ -23,6 +24,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1708666629004767631">Der findes en ny og mere sikker version af Chromium.</translation>
 <translation id="17264556997921157">Du kan se og fjerne interesseområder, som websites bruger til at vise annoncer. Chromium estimerer dine interesser på baggrund af din seneste browserhistorik.</translation>
+<translation id="1733725117201708356">Chromium sletter snart browserdataene</translation>
 <translation id="1745121272106313518">Chromium genstarter om <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Lad Chromium køre i baggrunden</translation>
 <translation id="1779356040007214683">For at gøre Chromium sikrere har vi slået nogle udvidelser fra, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
@@ -53,6 +55,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2384373936468275798">Chromium OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="2396765026452590966">Udvidelsen "<ph name="EXTENSION_NAME" />" har ændret din startside i Chromium.</translation>
 <translation id="2401032172288869980">Chromium skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
+<translation id="2478295928299953161">Chromium lukkes snart</translation>
 <translation id="2483889755041906834">I Chromium</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
 <translation id="2560420686485554789">Chromium skal have lageradgang for at downloade filer</translation>
@@ -171,6 +174,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4987820182225656817">Gæster kan bruge Chromium uden at efterlade noget.</translation>
 <translation id="4994636714258228724">Tilføj dig selv i Chromium</translation>
 <translation id="5114678101347489141">Chromium afprøver nye funktioner, der giver websites mulighed for at levere den samme browseroplevelse med færre af dine data</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{Din administrator lukker automatisk Chromium, når den ikke bruges i 1 minut.}one{Din administrator lukker automatisk Chromium, når den ikke bruges i # minut.}other{Din administrator lukker automatisk Chromium, når den ikke bruges i # minutter.}}</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chromium-profil. Denne handling vil oprette en ny Chromium-profil til <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Åbn Chromium igen for at anvende ændringerne</translation>
@@ -214,6 +218,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6119438414301547735">Tillad, at udvidelsen viser adgangsanmodninger på Chromium-værktøjslinjen</translation>
 <translation id="6120345080069858279">Chromium gemmer denne adgangskode på din Google-konto. Du behøver ikke at huske den.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> er skadelig, så Chromium har blokeret den.</translation>
+<translation id="6132897690380286411">Chromium lukkes snart, og dataene slettes</translation>
 <translation id="6134968993075716475">Beskyttet browsing er deaktiveret. Chromium anbefaler, at du aktiverer funktionen.</translation>
 <translation id="6145820983052037069">Her kan du skifte mellem Chromium-profiler</translation>
 <translation id="6183079672144801177">Sørg for, at du er logget ind på Chromium på din <ph name="TARGET_DEVICE_NAME" />, og prøv derefter at sende igen.</translation>
@@ -233,6 +238,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6327105987658262776">Der er ingen opdatering tilgængelig.</translation>
 <translation id="6333502561965082103">En anden handling i Chromium er i gang. Prøv igen senere.</translation>
 <translation id="6334986366598267305">Det er nu blevet nemmere at bruge Chromium med din Google-konto og på delte computere.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Din administrator sletter automatisk browserdataene, når browseren ikke bruges i 1 minut. Disse kan omfatte historik, Autofyld og downloads. Dine eksisterende faner forbliver åbne.}one{Din administrator sletter automatisk browserdataene, når browseren ikke bruges i # minut. Disse kan omfatte historik, Autofyld og downloads. Dine eksisterende faner forbliver åbne.}other{Din administrator sletter automatisk browserdataene, når browseren ikke bruges i # minutter. Disse kan omfatte historik, Autofyld og downloads. Dine eksisterende faner forbliver åbne.}}</translation>
 <translation id="6373523479360886564">Er du sikker på, at du vil afinstallere Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chromium kan estimere dine interesser. Senere kan et website, du besøger, anmode Chromium om at se dine interesser med henblik på at tilpasse de annoncer, du ser.</translation>
 <translation id="6403826409255603130">Chromium er en webbrowser, der kører websider og apps med lynets hast. Den er hurtig, stabil og brugervenlig. Beskyttelse mod malware og phishing er indbygget i Chromium, så du kan søge mere sikkert på internettet.</translation>
@@ -363,6 +369,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8986207147630327271">Du er ved at føje en arbejdsprofil til denne browser, og du giver kun din administrator kontrol over arbejdsprofilen.</translation>
 <translation id="9019929317751753759">For at gøre Chromium mere sikker har vi deaktiveret følgende udvidelser, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
+<translation id="907832235989677238">Log ind på Chromium. Hvis du kun vil logge ind på en konto én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruge enheden som gæst<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium genstarter om en time}one{Chromium genstarter om # time}other{Chromium genstarter om # timer}}</translation>
 <translation id="9106612006984859720">Hvis du vil have fremtidige Chromium-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 8.1.</translation>

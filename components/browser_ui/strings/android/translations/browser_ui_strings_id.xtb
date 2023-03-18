@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Diperluas - klik untuk menciutkan</translation>
 <translation id="2586657967955657006">Papan klip</translation>
 <translation id="2597457036804169544">Jangan terapkan tema gelap ke situs</translation>
+<translation id="2606760465469169465">Verifikasi otomatis</translation>
 <translation id="2621115761605608342">Izinkan JavaScript untuk situs tertentu.</translation>
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2677748264148917807">Keluar</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Terakhir dibuka hari ini</translation>
 <translation id="5225463052809312700">Aktifkan kamera</translation>
+<translation id="5229337741799419985">Setelan ini berfungsi tanpa mengidentifikasi Anda atau mengizinkan situs melihat histori penjelajahan Anda</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5264323282659631142">Hapus '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Tarik dari atas dan ketuk tombol kembali untuk keluar dari mode layar penuh.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Download aktif</translation>
+<translation id="6701547804986694515">Situs yang Anda buka dapat menyimpan info dengan Chrome yang memvalidasi bahwa Anda bukan bot. Saat Anda terus menjelajah, situs dapat mengonfirmasi ke Chrome dan memverifikasi dengan situs sebelumnya yang telah Anda buka bahwa Anda kemungkinan adalah orang sungguhan</translation>
 <translation id="6722828510648505498">Blokir perintah login dari layanan identitas.</translation>
 <translation id="6746124502594467657">Berpindah ke bawah</translation>
 <translation id="6749077623962119521">Reset izin?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Pilih gambar</translation>
 <translation id="8801436777607969138">Blokir JavaScript untuk situs tertentu.</translation>
 <translation id="8803526663383843427">Saat aktif</translation>
+<translation id="8805385115381080995">Penjelajahan lebih cepat karena situs cenderung tidak meminta Anda untuk memverifikasi bahwa Anda adalah orang sungguhan</translation>
 <translation id="8816026460808729765">Memblokir situs agar tidak mengakses sensor</translation>
 <translation id="8823559166155093873">Blokir cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
 <translation id="9201023452444595544">Semua data offline akan dihapus</translation>
 <translation id="930525582205581608">Lupakan situs ini?</translation>
+<translation id="947156494302904893">Situs yang Anda buka dapat memverifikasi bahwa Anda adalah orang sungguhan dan bukan bot</translation>
 <translation id="967624055006145463">Data disimpan</translation>
 </translationbundle>

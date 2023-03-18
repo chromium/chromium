@@ -864,7 +864,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Abiarazi Konexioen diagnostikoak<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Joan <ph name="DOMAIN" /> domeinura</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Bat ere ez}=1{kontu bateko saio-hasierari buruzko datuak}other{# kontutako saio-hasierari buruzko datuak}}</translation>
 <translation id="3141093262818886744">Ireki halere</translation>
 <translation id="3141641372357166056">Ez da hartu baimenaren inguruko erabakirik</translation>
 <translation id="3145945101586104090">Ezin izan da deskodetu erantzuna</translation>
@@ -3341,7 +3340,6 @@ Xehetasun gehiago:
 <translation id="9219103736887031265">Irudiak</translation>
 <translation id="922152298093051471">Pertsonalizatu Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">GARBITU INPRIMAKIA</translation>
 <translation id="936602727769022409">Google-ko konturako sarbidea gal zenezake. Pasahitza aldatzea gomendatzen dizu Chromium-ek. Horretarako, saioa hasi beharko duzu.</translation>
 <translation id="937457230470581909">Zooak, akuarioak eta erreserbak</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Zein datu erabiltzen dira?<ph name="END_BOLD" /> Azkenaldiko arakatze-historian daude oinarrituta iragarkien gaiak; hau da, gailu honetan Chrome-ren bidez bisitatutako webguneen zerrendan.</translation>

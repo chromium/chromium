@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Басып шығарылған</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">Әдепкі APN қажет</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google профилі фотосуреті</translation>
 <translation id="1979103255016296513">Құпия сөзді өзгертуге берілген мерзім аяқталды</translation>
 <translation id="1999615961760456652">Адаптивті портал</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS кідірісі рұқсат етілетін шектен әлдеқайда жоғары.</translation>
 <translation id="3328783797891415197">Тексерілуде</translation>
 <translation id="3340011300870565703">Оң құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3360306038446926262">Терезелер</translation>
 <translation id="3368922792935385530">Қосылған</translation>
 <translation id="3369013195428705271">Басып шығару тарихын шынымен толығымен тазалағыңыз келе ме? Қазір орындалып жатқан басып шығару жұмысының деректері сақталады.</translation>
 <translation id="3404249063913988450">Скринсейверді қосу</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Қара мен ақ</translation>
 <translation id="4145784616224233563">HTTP брандмауэрі</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Дисплей</translation>
 <translation id="4155551848414053977">Сканеріңіз қосылып тұруы керек және желі немесе тікелей қосылым арқылы қолжетімді болуы тиіс.</translation>
 <translation id="4159784952369912983">Күлгін</translation>
 <translation id="4170180284036919717">Суретке түсіру</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4258281355379922695">HTTP кідірісі</translation>
 <translation id="4271957103967917607">Толық экран режимі</translation>
+<translation id="4275663329226226506">Мультимедиа</translation>
 <translation id="4289540628985791613">Шолу</translation>
 <translation id="4289849978083912975">Слайдшоу</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Сканерді тексеріп, әрекетті қайталаңыз. Сканерленген файлдарды сақтайтын орынның жеткілікті екенін тексеріңіз.</translation>
 <translation id="4985509611418653372">Іске қосу</translation>
 <translation id="4987769320337599931">Брандмауэр</translation>
+<translation id="4988526792673242964">Беттер</translation>
 <translation id="4999333166442584738">Есепті жасыру</translation>
 <translation id="500920857929044050">Тексеруді тоқтату</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="7942349550061667556">Қызыл</translation>
 <translation id="7943235353293548836">Тұрақты keepalive жиілігі</translation>
+<translation id="7953669802889559161">Енгізу әдістері</translation>
 <translation id="7955587717700691983">Bluetooth пернетақтасы</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> желісіне қосылу үшін "Параметрлер" бетіне өтіңіз.</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8045012663542226664">Микрофон дыбысын өшіру</translation>
 <translation id="8075838845814659848">Қалған заряд</translation>
+<translation id="8076492880354921740">Қойындылар</translation>
 <translation id="8082366717211101304">Android қолданбаларынан DNS-ті анықтау мүмкін емес.</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="8094062939584182041">Google-ға осы мәселе туралы электрондық хат жіберуге рұқсат ету</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Трафик есептегіштерін сұрау</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> таңдау</translation>
+<translation id="8151185429379586178">Әзірлеуші құралдары</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Тіркеу</translation>
 <translation id="8206859287963243715">Ұялы</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тұсқағаз</translation>
 <translation id="8820457400746201697">Көк сенсорлық нүктені әрекетке жылжытыңыз. Бейімдеу үшін байланысты кілтті таңдаңыз.</translation>
+<translation id="8820817407110198400">Бетбелгілер</translation>
 <translation id="8834539327799336565">Қазір жалғанғандар</translation>
 <translation id="8845001906332463065">Анықтама алу</translation>
 <translation id="8855781559874488009">Брандмауэр арқылы HTTP веб-сайттарына қосылу мүмкін емес.</translation>

@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Напечатано</translation>
 <translation id="1951012854035635156">Ассистент</translation>
 <translation id="1962550982027027473">Укажите точку доступа по умолчанию</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Фото профиля Google</translation>
 <translation id="1979103255016296513">Истек срок изменения пароля</translation>
 <translation id="1999615961760456652">Страница входа</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
 <translation id="3328783797891415197">Идет проверка</translation>
 <translation id="3340011300870565703">Правый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="3360306038446926262">Окна</translation>
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
 <translation id="3404249063913988450">Включить заставку</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Черно-белая печать</translation>
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
+<translation id="4150201353443180367">Экран</translation>
 <translation id="4155551848414053977">Убедитесь, что сканер работает и доступен для подключения напрямую или по сети.</translation>
 <translation id="4159784952369912983">Фиолетовый</translation>
 <translation id="4170180284036919717">Сделать снимок</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4258281355379922695">Время ожидания HTTP</translation>
 <translation id="4271957103967917607">Перейти в полноэкранный режим</translation>
+<translation id="4275663329226226506">Камера и микрофон </translation>
 <translation id="4289540628985791613">Обзор</translation>
 <translation id="4289849978083912975">Слайд-шоу</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
 <translation id="4985509611418653372">Проверить</translation>
 <translation id="4987769320337599931">Брандмауэр</translation>
+<translation id="4988526792673242964">Страницы</translation>
 <translation id="4999333166442584738">Скрыть отчет</translation>
 <translation id="500920857929044050">Прекратить проверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7943235353293548836">Постоянный интервал keepalive</translation>
+<translation id="7953669802889559161">Способы ввода</translation>
 <translation id="7955587717700691983">Клавиатура Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7977800524392185497">Чтобы подключиться к сети <ph name="NETWORK_NAME" />, перейдите в настройки.</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="8045012663542226664">Микрофон</translation>
 <translation id="8075838845814659848">Уровень заряда</translation>
+<translation id="8076492880354921740">Вкладки</translation>
 <translation id="8082366717211101304">Не удается выполнить DNS-преобразование в приложениях для Android.</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8094062939584182041">Разрешить Google отправлять вам сообщения об этой проблеме по электронной почте</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Запросить счетчики трафика</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Выбрать вариант "<ph name="TOPIC_SOURCE" />" (<ph name="TOPIC_SOURCE_DESC" />)</translation>
+<translation id="8151185429379586178">Инструменты разработчика</translation>
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Сотовый</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Обои</translation>
 <translation id="8820457400746201697">Чтобы выполнить действие, переместите синюю точку касания. Для настройки выберите связанную клавишу.</translation>
+<translation id="8820817407110198400">Закладки</translation>
 <translation id="8834539327799336565">Текущие подключения</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8855781559874488009">Не удается подключиться к HTTP-сайтам через брандмауэр.</translation>

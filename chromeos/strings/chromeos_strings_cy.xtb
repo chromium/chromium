@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Bwydydd Dogfennau (Un ochr)</translation>
 <translation id="1643449475550628585">Newid y llun papur wal yn ddyddiol</translation>
 <translation id="1644574205037202324">Hanes</translation>
+<translation id="1651925268237749928">Rydych wedi dewis albwm a rennir. Gall pobl eraill ychwanegu neu newid lluniau. Mae'n bosib y bydd eich papur wal yn defnyddio lluniau nad ydynt yn yr albwm hwn ar hyn o bryd.</translation>
 <translation id="1662989795263954667">Wedi stopio - Allan o inc</translation>
 <translation id="1664796644829245314">Rhagolwg <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integredig</translation>
@@ -120,6 +121,7 @@
 <translation id="1947737735496445907">Argraffwyd</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">Mae angen APN diofyn</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Llun proffil Google</translation>
 <translation id="1979103255016296513">Rydych yn hwyr yn newid eich cyfrinair</translation>
 <translation id="1999615961760456652">Porth Caeth</translation>
@@ -240,6 +242,7 @@
 <translation id="319101249942218879">Wedi newid y llun rhithffurf</translation>
 <translation id="3192947282887913208">Ffeiliau Sain</translation>
 <translation id="3199982728237701504">Bwydydd Dogfen (Dwy ochr)</translation>
+<translation id="3201315366910775591">Gall albymau a rennir gael eu diweddaru gan bobl eraill</translation>
 <translation id="3211671540163313381">D-pad mapio allweddi</translation>
 <translation id="3226405216343213872">Wrthi'n chwilio am sganwyr</translation>
 <translation id="3226657629376379887">Dewislen gweithredoedd cynllun</translation>
@@ -340,6 +343,7 @@
 <translation id="4131410914670010031">Du a gwyn</translation>
 <translation id="4145784616224233563">Wal dân HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Sgrîn</translation>
 <translation id="4155551848414053977">Gwnewch yn siŵr bod y sganiwr wedi'i droi ymlaen a'i fod ar gael drwy'ch rhwydwaith neu gysylltiad uniongyrchol</translation>
 <translation id="4159784952369912983">Porffor</translation>
 <translation id="4170180284036919717">Tynnu llun</translation>
@@ -447,6 +451,7 @@
 <translation id="498186245079027698">Gwiriwch y sganiwr a rhowch gynnig arall arni. Gwnewch yn siŵr bod digon o le lleol i gadw ffeiliau sydd wedi'u sganio.</translation>
 <translation id="4985509611418653372">Rhedeg</translation>
 <translation id="4987769320337599931">Wal dân</translation>
+<translation id="4988526792673242964">Tudalennau</translation>
 <translation id="4999333166442584738">Cuddio'r adroddiad</translation>
 <translation id="500920857929044050">Stopio'r prawf</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -658,6 +663,7 @@
 <translation id="6838167112108853532">Methu ag analluogi na thynnu'r APN hwn. Sicrhewch fod APN atodedig sydd wedi'u galluogi wedi'u hanalluogi neu eu tynnu.</translation>
 <translation id="6853312040151791195">Cyfradd dadwefru</translation>
 <translation id="6889786074662672253">Tra ailgychwyn, peidiwch â dadblygio'r ddyfais allanol hon na diffodd eich cyfrifiadur. Gallwch leihau'r ffenestr hon. Gall hyn gymryd ychydig funudau ac mae'n bosib na fydd eich dyfais allanol yn gweithio yn ystod y cyfnod hwn.</translation>
+<translation id="6900701049656042631">Nid oes gan yr albwm hwn unrhyw luniau. I ychwanegu lluniau, ewch i <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Nôl i <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Mae gorchudd y sganiwr ar agor. Caewch y gorchudd a rhowch gynnig arall arni.</translation>
 <translation id="6911383237894364323">Methu â chysylltu â gweinyddion cyfryngau</translation>
@@ -772,6 +778,7 @@
 <translation id="7936303884198020182">Ni chanfuwyd gweinyddion enwau</translation>
 <translation id="7942349550061667556">Coch</translation>
 <translation id="7943235353293548836">Cyfnod cadw'n fyw parhaus</translation>
+<translation id="7953669802889559161">Mewnbynnau</translation>
 <translation id="7955587717700691983">Bysellfwrdd Bluetooth</translation>
 <translation id="7960831585769876809">Tymheredd</translation>
 <translation id="7977800524392185497">I ymuno â rhwydwaith <ph name="NETWORK_NAME" />, ewch i'r Gosodiadau</translation>
@@ -784,6 +791,7 @@
 <translation id="8041089156583427627">Anfon adborth</translation>
 <translation id="8045012663542226664">Distewi'r meicroffon</translation>
 <translation id="8075838845814659848">Faint o fatri sy'n weddill</translation>
+<translation id="8076492880354921740">Tabiau</translation>
 <translation id="8082366717211101304">Methu â datrys DNS o apiau Android</translation>
 <translation id="808894953321890993">Newid cyfrinair</translation>
 <translation id="8094062939584182041">Caniatáu i Google anfon e-bost atoch am y broblem hon</translation>
@@ -861,6 +869,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Papur wal</translation>
 <translation id="8820457400746201697">Symudwch y pwynt cyffwrdd glas i weithred. Dewiswch yr allwedd gysylltiedig i'w haddasu.</translation>
+<translation id="8820817407110198400">Nodau tudalen</translation>
 <translation id="8834539327799336565">Wedi'i gysylltu ar hyn o bryd</translation>
 <translation id="8845001906332463065">Cael help</translation>
 <translation id="8855781559874488009">Methu â chysylltu â gwefannau HTTP drwy fur cadarn</translation>

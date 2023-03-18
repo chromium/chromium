@@ -477,6 +477,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3587596251841506391">Help improve security on the web</translation>
 <translation id="3597179440835065298">Get better suggestions</translation>
 <translation id="3602290021589620013">Preview</translation>
+<translation id="360901359071773787">Delete last 15 minutes?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Manage windows</translation>
 <translation id="3631987586758005671">Sharing to <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5517095782334947753">You have bookmarks, history, passwords and other settings from <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">When trials are on and if Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month.</translation>
 <translation id="5524843473235508879">Redirect blocked.</translation>
+<translation id="554297709083131118">Following data from the last 15 minutes will be deleted</translation>
 <translation id="5548606607480005320">Safety check</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
@@ -1262,6 +1264,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="78270725016672455">Your computer wants to register this device for signing in to a site</translation>
 <translation id="7844171778363018843">No data selected to sync</translation>
 <translation id="7846296061357476882">Google services</translation>
+<translation id="7847228556075070294">Deleted history, cookies and other data</translation>
 <translation id="784934925303690534">Time range</translation>
 <translation id="7851858861565204677">Other devices</translation>
 <translation id="7853202427316060426">Activity</translation>

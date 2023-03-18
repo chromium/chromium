@@ -152,6 +152,7 @@
 <translation id="132301787627749051">クリップボードにある画像を検索します</translation>
 <translation id="1323433172918577554">もっと見る</translation>
 <translation id="132390688737681464">住所の保存と入力</translation>
+<translation id="1329916999021038454">報告を送信</translation>
 <translation id="1330449323196174374">左観音折り</translation>
 <translation id="1333745675627230582">Chrome Dino ゲームをプレイ</translation>
 <translation id="1333989956347591814">ただし、次の相手に<ph name="BEGIN_EMPHASIS" />あなたのアクティビティが知られる<ph name="END_EMPHASIS" />可能性はあります。
@@ -527,6 +528,7 @@
 <translation id="219906046732893612">リフォーム</translation>
 <translation id="2202020181578195191">有効期限（年）を正しい形式で入力してください</translation>
 <translation id="2202627062836089804">カードの裏面</translation>
+<translation id="2204482073374652408">更新が完了しました。</translation>
 <translation id="22081806969704220">トレイ 3</translation>
 <translation id="2210794033760923560">レポートをアップロード</translation>
 <translation id="2212579473415663542">この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されました。住所はすべてのデバイスの各種 Google サービスで使用できます。</translation>
@@ -615,6 +617,7 @@
 <translation id="2441854154602066476">タップ操作で入力できるお支払い方法が表示されています。キーボードは非表示です。</translation>
 <translation id="2448295565072560657">ログイン中にこのデバイスに接続された周辺機器</translation>
 <translation id="2450021089947420533">ジャーニー</translation>
+<translation id="2456755709261364512">バッテリーの残量が <ph name="REQUIRED_BATTERY_PRECENT" />% 以上である必要があります</translation>
 <translation id="2463739503403862330">入力する</translation>
 <translation id="2465655957518002998">配達方法を選択</translation>
 <translation id="2465688316154986572">ステープル</translation>
@@ -661,6 +664,7 @@
 <translation id="2552246211866555379">はがき</translation>
 <translation id="2552295903035773204">今後、画面ロックを使用してカードを確認する</translation>
 <translation id="2553853292994445426">セキュア DNS の設定を確認してください。接続できないセキュア DNS サーバーを設定している可能性があります。</translation>
+<translation id="255497580849974774">更新中はデバイスを充電器に接続したままにしてください。</translation>
 <translation id="2556876185419854533">編集の取り消し（&amp;U）</translation>
 <translation id="2557417190997681027">出張旅行</translation>
 <translation id="2562087035394240049">ノウハウ、Q&amp;A、専門コンテンツ</translation>
@@ -864,7 +868,6 @@
 <translation id="3120730422813725195">ELO</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />接続診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> に移動</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{なし}=1{1 件のアカウントのログインデータ}other{# 件のアカウントのログインデータ}}</translation>
 <translation id="3141093262818886744">開く</translation>
 <translation id="3141641372357166056">同意に関する判断なし</translation>
 <translation id="3145945101586104090">応答をデコードできませんでした</translation>
@@ -893,6 +896,7 @@
 <translation id="320323717674993345">支払いをキャンセル</translation>
 <translation id="3203366800380907218">ウェブから</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
+<translation id="3208701679386778924">ChromeOS の今後の更新に役立てるため、報告を送信してください。</translation>
 <translation id="3209034400446768650">このページでは料金が請求される可能性があります</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> でのアクティビティは監視されています</translation>
 <translation id="3215092763954878852">WebAuthn を使用できませんでした</translation>
@@ -1118,6 +1122,7 @@
 <translation id="3715545959749027023">セキュリティ イベントが Chrome によって報告されると、そのイベントに関するデータが管理者に送信されます。送信されるデータには、Chrome でアクセスしたページの URL、ファイルの名前やメタデータ、ブラウザやタブの障害のほか、ウェブベースのアプリケーションやデバイス、Chrome へのログインに使用したユーザー名が含まれる可能性があります。</translation>
 <translation id="3715597595485130451">Wi-Fi 接続</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />プロキシ、ファイアウォール、DNS の設定を確認する<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">更新中は、デバイスを最大 10 分間使用できなくなります。</translation>
 <translation id="372429172604983730">このエラーの原因としては、ウィルス対策ソフトウェア、ファイアウォール ソフトウェア、ウェブ フィルタリング ソフトウェア、プロキシ ソフトウェアなどが考えられます。</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
 <translation id="3733139489341305600">自律走行車</translation>
@@ -1155,6 +1160,7 @@
 <translation id="3807366285948165054">画像の X 軸移動</translation>
 <translation id="3807873520724684969">有害なコンテンツがブロックされました。</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3812398568375898177">ChromeOS での Android アプリのパフォーマンスを改善する重要な更新です。</translation>
 <translation id="3815434930383843058">8x12 インチ</translation>
 <translation id="3816482573645936981">値（優先）</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1259,6 +1265,7 @@
 <translation id="4110652170750985508">お支払いの確認</translation>
 <translation id="4111546256784973544">ペイントボール</translation>
 <translation id="4112140312785995938">後方に移動</translation>
+<translation id="4113354056388982663">Android のパフォーマンスに関する重要な更新</translation>
 <translation id="4114146879518089587">サイトへ移動</translation>
 <translation id="4116663294526079822">このサイトでは常に許可</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1439,6 +1446,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google 翻訳を使用してこのページを翻訳します</translation>
 <translation id="4514308731478712184">ジャーニーをオフにする</translation>
 <translation id="4515275063822566619">Chrome と Google アカウント（<ph name="ACCOUNT_EMAIL" />）に保存されているクレジット カードと住所です。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
+<translation id="4519245469315452746">更新プロセス中にデバイスが中断されました。</translation>
 <translation id="4520048001084013693">このファイルのダウンロードは管理者が設定したポリシーによってブロックされています</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm（<ph name="ORIENTATION" />）</translation>
 <translation id="4521280267704259211">モナコ封筒</translation>
@@ -1528,6 +1536,7 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> の検索候補</translation>
 <translation id="4742407542027196863">パスワードを管理…</translation>
+<translation id="4743275772928623722">システムは更新されましたが、一部のアプリやファイルを復元できませんでした。アプリは自動的に再ダウンロードされます。</translation>
 <translation id="4744514002166662487">プレゼンテーションを作成</translation>
 <translation id="4744603770635761495">実行ファイルのパス</translation>
 <translation id="4749011317274908093">シークレット モードです</translation>
@@ -2230,6 +2239,7 @@
 <translation id="646793340882508547">アドベンチャー ゲーム</translation>
 <translation id="6468485451923838994">フォント</translation>
 <translation id="647261751007945333">デバイス ポリシー</translation>
+<translation id="647330291963761005">アップデートをインストールしています</translation>
 <translation id="6475672344094591109">アクセスするサイトが、広告のパフォーマンスを測定するための情報を提示するよう Chrome に求めることがあります。Chrome では、サイト間で共有できる情報を制限することにより、ユーザーのプライバシーを保護しています。</translation>
 <translation id="6476284679642588870">お支払い方法を管理</translation>
 <translation id="6486200200930923183">ドキュメンタリー映画</translation>
@@ -2303,6 +2313,7 @@
 <translation id="6688775486821967877">仮想カードは現在ご利用いただけません。しばらくしてからもう一度お試しください。</translation>
 <translation id="6689249931105087298">相対的（黒点の補正あり）</translation>
 <translation id="6689271823431384964">ログインしている場合は、その Google アカウントにカードを保存できます。この動作は設定で変更できます。カード名義人はアカウントから取得されます。</translation>
+<translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> 以上の空き容量を確保してください</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Google アカウントでデバイスを探します</translation>
 <translation id="6696588630955820014">[このタブを共有] ボタンです。Enter キーを押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有できます</translation>
 <translation id="6698381487523150993">作成:</translation>
@@ -2366,6 +2377,7 @@
 <translation id="6864189428899665393">267x389 mm</translation>
 <translation id="686485648936420384">消費者資源</translation>
 <translation id="6865412394715372076">現在、このカードを確認できません</translation>
+<translation id="6868573634057275953">更新を再開</translation>
 <translation id="6869334554832814367">個人ローン</translation>
 <translation id="6873456682041376666">上トレイ</translation>
 <translation id="6874604403660855544">追加のやり直し（&amp;R）</translation>
@@ -2522,9 +2534,11 @@
 <translation id="722454870747268814">新しいシークレット タブ</translation>
 <translation id="7233592378249864828">確認シートの印刷</translation>
 <translation id="7234638337680728591">ガソリン料金、燃費</translation>
+<translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% 完了 | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">今後このサイトではこのメッセージを表示しない</translation>
 <translation id="7238585580608191973">SHA-256 指紋</translation>
 <translation id="7240120331469437312">証明書のサブジェクトの代替名</translation>
+<translation id="7241863998525879494">想定される動作</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />、<ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{一致: # 件}other{一致: # 件}}</translation>
@@ -2745,6 +2759,7 @@
 <translation id="7698864304447945242">Google Play 開発者サービス（AR）を更新しますか？</translation>
 <translation id="7699293099605015246">記事は現在利用できません</translation>
 <translation id="7701040980221191251">なし</translation>
+<translation id="7701544340847569275">更新は完了しましたが、エラーが発生しました</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> にアクセスする（安全ではありません）<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">スキー、スノーボード</translation>
 <translation id="7706689436519265630">コピーまたは移動したファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存される場合があります。</translation>
@@ -3347,7 +3362,6 @@
 <translation id="9219103736887031265">画像</translation>
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">フォームをクリア</translation>
 <translation id="936602727769022409">Google アカウントにアクセスできなくなる可能性があります。Chromium で今すぐパスワードを変更することをおすすめします。変更の際には、ログインするよう求められます。</translation>
 <translation id="937457230470581909">動物園、水族館、自然保護地域</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 広告のトピックは、最近の閲覧履歴（このデバイスで Chrome を使用してアクセスしたサイトのリスト）に基づきます。</translation>

@@ -683,6 +683,7 @@
 <translation id="259821504105826686">Фотографски и цифрови изкуства</translation>
 <translation id="2601150049980261779">Романтични филми</translation>
 <translation id="2604589665489080024">Поп музика</translation>
+<translation id="2606760465469169465">Автоматично потвърждаване</translation>
 <translation id="2610561535971892504">Кликнете, за да копирате</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />няма да запазва<ph name="END_EMPHASIS" /> следната информация:
 <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Опитайте да стартирате диагностика на свързаността<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Към <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Няма}=1{данни за вход за 1 профил}other{данни за вход за # профила}}</translation>
 <translation id="3141093262818886744">Отваряне въпреки това</translation>
 <translation id="3141641372357166056">Няма решение относно съгласието</translation>
 <translation id="3145945101586104090">Декодирането на отговора не бе успешно</translation>
@@ -1900,6 +1900,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Как можете да управлявате данните си<ph name="END_BOLD" />: Chrome автоматично изтрива сайтовете, които са по-стари от 4 седмици. Ако отново посетите даден сайт, той може пак да се покаже в списъка. Също така можете да блокирате даден сайт, така че да не предлага реклами, и да изключите този тип реклами по всяко време от настройките на Chrome.</translation>
 <translation id="5610142619324316209">Проверете връзката.</translation>
 <translation id="5610807607761827392">Можете да управлявате картите и адресите от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Запазване в профила</translation>
 <translation id="561165882404867731">Преведете тази страница с Google Преводач</translation>
 <translation id="5612720917913232150"><ph name="URL" /> иска да използва местоположението на компютъра ви</translation>
 <translation id="561669346091975195">Телевизионни научнофантастични и фентъзи предавания</translation>
@@ -3186,6 +3187,7 @@
 <translation id="8806285662264631610">Продукти за баня и за тялото</translation>
 <translation id="8807160976559152894">Отрязване след всяка страница</translation>
 <translation id="8809203544698246977">Блокираните теми се показват тук</translation>
+<translation id="8811470563853401328">Адресът да се запази ли в профила?</translation>
 <translation id="8813277370772331957">Напомняне по-късно</translation>
 <translation id="8814707942599948500">Плик C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да актуализирате Chrome от настройките</translation>
@@ -3279,6 +3281,7 @@
 <translation id="9042617223719777575">Тава с голяма вместимост</translation>
 <translation id="9044359186343685026">Използване на Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Тези действия изискват за правилото <ph name="POLICY_NAME" /> да бъде зададено <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 инча</translation>
 <translation id="9049981332609050619">Опитахте да отворите <ph name="DOMAIN" />, но сървърът предостави невалиден сертификат.</translation>
 <translation id="9050666287014529139">Парола</translation>
@@ -3358,7 +3361,6 @@
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="922152298093051471">Персонализиране на Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ИЗЧИСТВАНЕ НА ФОРМУЛЯРА</translation>
 <translation id="936602727769022409">Възможно е да загубите достъп до профила си в Google. Chromium препоръчва да промените паролата си сега. Ще получите подкана за влизане в профила си.</translation>
 <translation id="937457230470581909">Зоопаркове, аквариуми и резервати</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Какви данни се използват<ph name="END_BOLD" />: Рекламните ви теми са въз основа на скорошната ви история на сърфиране – списък на сайтовете, които сте посетили чрез Chrome на това устройство.</translation>

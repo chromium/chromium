@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Одштампано</translation>
 <translation id="1951012854035635156">Помоћник</translation>
 <translation id="1962550982027027473">Подразумевани назив приступне тачке је обавезан</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Слика Google профила</translation>
 <translation id="1979103255016296513">Рок за промену лозинке је истекао</translation>
 <translation id="1999615961760456652">Улазни портал</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Кашњење DNS-а знатно премашује дозвољену граничну вредност</translation>
 <translation id="3328783797891415197">Тест је у току</translation>
 <translation id="3340011300870565703">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије десне слушалице.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Повезан</translation>
 <translation id="3369013195428705271">Желите ли стварно да обришете сву историју штампања? Задаци штампања који су у току се не бришу.</translation>
 <translation id="3404249063913988450">Омогућите чувар екрана</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Црно-бело</translation>
 <translation id="4145784616224233563">HTTP заштитни зид</translation>
 <translation id="4147897805161313378">Google слике</translation>
+<translation id="4150201353443180367">Екран</translation>
 <translation id="4155551848414053977">Проверите да ли је скенер укључен и доступан преко мреже или директне везе</translation>
 <translation id="4159784952369912983">Љубичаста</translation>
 <translation id="4170180284036919717">Сликајте</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Снимак екрана</translation>
 <translation id="4258281355379922695">HTTP кашњење</translation>
 <translation id="4271957103967917607">Прикажи преко целог екрана</translation>
+<translation id="4275663329226226506">Медији</translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4289849978083912975">Пројекција слајдова</translation>
 <translation id="4297501883039923494">Заустављено – непозната грешка</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Проверите скенер и пробајте поново. Уверите се да има довољно локалне меморије за чување скенираних фајлова.</translation>
 <translation id="4985509611418653372">Покрени</translation>
 <translation id="4987769320337599931">Заштитни зид</translation>
+<translation id="4988526792673242964">Странице</translation>
 <translation id="4999333166442584738">Сакриј извештај</translation>
 <translation id="500920857929044050">Заустави тест</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7943235353293548836">Трајни интервал одржавања линка</translation>
+<translation id="7953669802889559161">Уноси</translation>
 <translation id="7955587717700691983">Bluetooth тастатура</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7977800524392185497">Да бисте се придружили <ph name="NETWORK_NAME" /> мрежи, идите у Подешавања</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8045012663542226664">Искључивање звука микрофона</translation>
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
+<translation id="8076492880354921740">Картице</translation>
 <translation id="8082366717211101304">DNS не може да се разреши из Android апликација</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
 <translation id="8094062939584182041">Дозволите Google-у да вам пошаље имејл о овом проблему</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Затражи бројаче саобраћаја</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Изаберите <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Алатке за програмере</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Прилог</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8818152010000655963">Позадина</translation>
 <translation id="8820457400746201697">Преместите плаву тачку контакта у радњу. Изаберите одговарајући тастер да бисте га прилагодили.</translation>
+<translation id="8820817407110198400">Обележивачи</translation>
 <translation id="8834539327799336565">Тренутно повезани</translation>
 <translation id="8845001906332463065">Затражите помоћ</translation>
 <translation id="8855781559874488009">Не можете да се повежете са HTTP веб-сајтовима кроз заштитни зид</translation>

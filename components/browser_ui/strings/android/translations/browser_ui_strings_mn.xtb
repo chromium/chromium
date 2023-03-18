@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Өргөжсөн, энд дарж задална уу.</translation>
 <translation id="2586657967955657006">Түр санах ой</translation>
 <translation id="2597457036804169544">Сайтуудад бараан загварыг бүү ашигла</translation>
+<translation id="2606760465469169465">Автоматаар баталгаажуулах</translation>
 <translation id="2621115761605608342">JavaScript-г тодорхой сайтад зөвшөөрнө үү.</translation>
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Таны сонгох харилцагчдыг <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-тай хуваалцана.</translation>
 <translation id="5216942107514965959">Хамгийн сүүлд өнөөдөр зочилсон</translation>
 <translation id="5225463052809312700">Камерыг асаах</translation>
+<translation id="5229337741799419985">Энэ тохиргоо таныг тодорхойлолгүйгээр эсвэл сайтуудад таны хөтчийн түүхийг харахыг зөвшөөрөлгүйгээр ажилладаг</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />'-г хасах</translation>
 <translation id="528192093759286357">Бүтэн дэлгэцийн горимоос гарахын тулд дээрээс зөөгөөд, буцах товчлуурыг дарна уу.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6689172468748959065">Профайл зураг</translation>
 <translation id="6697925417670533197">Идэвхтэй татаж авсан файл</translation>
+<translation id="6701547804986694515">Таны зочилсон сайт таныг бот биш болохыг баталгаажуулдаг мэдээллийг Chrome-д хадгалах боломжтой. Таныг үргэлжлүүлэн үзэж байхад сайтууд Chrome-с шалгаж, таныг жинхэнэ хүн эсэхийг таны өмнө нь зочилсон сайтаас баталгаажуулах боломжтой</translation>
 <translation id="6722828510648505498">Таниулбарын үйлчилгээнүүдийн нэвтрэх сануулгыг блоклоно уу.</translation>
 <translation id="6746124502594467657">Доош зөөх</translation>
 <translation id="6749077623962119521">Зөвшөөрлүүдийг шинэчлэх үү?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Зураг сонгох</translation>
 <translation id="8801436777607969138">Зарим сайт дээр JavaScript-г блоклоно уу.</translation>
 <translation id="8803526663383843427">Асаалттай байх үед</translation>
+<translation id="8805385115381080995">Сайт танаас жинхэнэ хүн болохоо баталгаажуулахыг хүсэх магадлал багатай тул үзэхэд илүү хурдан байдаг</translation>
 <translation id="8816026460808729765">Сайтуудыг мэдрэгчид хандахыг хориглох</translation>
 <translation id="8823559166155093873">Күүкиг блоклох</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Энэ хуудас аюултай байна</translation>
 <translation id="9201023452444595544">Офлайн аливаа өгөгдлийг устгах болно</translation>
 <translation id="930525582205581608">Энэ сайтыг мартах уу?</translation>
+<translation id="947156494302904893">Сайтууд таныг жинхэнэ хүн бөгөөд бот биш болохыг баталгаажуулах боломжтой</translation>
 <translation id="967624055006145463">Хадгалсан өгөгдөл</translation>
 </translationbundle>

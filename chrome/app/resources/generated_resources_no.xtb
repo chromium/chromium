@@ -870,6 +870,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1744108098763830590">bakgrunnsside</translation>
 <translation id="1745732479023874451">Administrer kontakter</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Vil du åpne og redigere # filer i denne nettappen?}}</translation>
+<translation id="1748329107062243374">Bruk en tilgangsnøkkel fra <ph name="DEVICE_NAME" /> for å logge på <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Du kan lagre dette passordet i Google-kontoen din eller bare på denne enheten</translation>
 <translation id="1749733017156547309">Et passord kreves</translation>
 <translation id="1750172676754093297">Sikkerhetsnøkkelen din kan ikke lagre fingeravtrykk</translation>
@@ -931,6 +932,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1796588414813960292">Funksjoner som krever lyd, kommer ikke til å virke</translation>
 <translation id="1797117170091578105">Spill med Chromebook-tastaturet. Du kan tilpasse taster til bestemte handlinger.</translation>
 <translation id="1800502858278951817">Ingen utvidelser har bedt om å få lese eller endre <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">Søk + O og deretter W</translation>
 <translation id="1802624026913571222">Gå i hvilemodus når dekselet lukkes</translation>
 <translation id="1802687198411089702">Siden svarer ikke. Du kan vente på den eller avslutte.</translation>
 <translation id="1803531841600994172">Språket du vil oversette til</translation>
@@ -1189,6 +1191,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="2023167225947895179">Det kan være lett å gjette seg til PIN-koden</translation>
 <translation id="202352106777823113">Nedlastingen tok for lang tid og ble stoppet av nettverket.</translation>
 <translation id="2024195579772565064">Slett søkemotoren</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> har krasjet. Klikk på denne ballongen for å laste inn denne utvidelsen på nytt.</translation>
 <translation id="2028449514182362831">Funksjoner som krever bevegelsessensorer, kommer ikke til å virke</translation>
 <translation id="202918510990975568">Skriv inn passordet ditt for å konfigurere sikkerhet og pålogging</translation>
@@ -1265,6 +1268,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2090165459409185032">For å gjenopprette kontoinformasjonen din, gå til: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Kobles automatisk til når du logger på</translation>
 <translation id="2090876986345970080">Systemets sikkerhetsinnstillinger</translation>
+<translation id="2091887806945687916">Lyd</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Feilsøkingsfunksjoner<ph name="END_H3" />
     <ph name="BR" />
     Du kan slå på feilsøkingsfunksjonene på ChromeOS-enheten din for å installere og teste spesialtilpasset kode på enheten. Da kan du<ph name="BR" />
@@ -3195,6 +3199,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3778868487658107119">Still den spørsmål. Be den gjøre ting. Den er din personlige Google – alltid klar til å hjelpe.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kan ikke sjekke passordene dine mot databrudd. Prøv igjen senere.</translation>
 <translation id="3781742599892759500">Mikrofontilgang i Linux</translation>
+<translation id="3783725005098956899">Vis logg</translation>
 <translation id="3783889407390048282">Frigjør plass for å unngå å miste tilgangen til Android.</translation>
 <translation id="3784472333786002075">Informasjonskapsler er filer som opprettes av nettsteder. Det finnes to typer informasjonskapsler: Informasjonskapsler fra førstepart opprettes av nettstedet du besøker. Nettstedet vises i adressefeltet. Informasjonskapsler fra tredjeparter opprettes av andre nettsteder. Disse nettstedene eier noe av innholdet, for eksempel annonser eller bilder, som du ser på nettstedet du besøker.</translation>
 <translation id="3785308913036335955">Vis appsnarveien</translation>
@@ -3744,6 +3749,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4275397969489577657">Slå på loggføring av aktivitetsstrømmer</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4277434192562187284">XML-konfigurasjonskilde</translation>
+<translation id="4277529130885813215">Bruk en annen enhet</translation>
 <translation id="4278390842282768270">Tillatt</translation>
 <translation id="4278498748067682896">Du kommer til å bruke en Kiosk og skilt-oppgradering, som gjør at enheten kun kan kjøres i kiosk- eller skiltmodus. Hvis du vil at brukere skal logge på enheten, må du gå tilbake og registrere den med Chrome Enterprise-oppgraderingen.</translation>
 <translation id="4278779213160967034">Denne prosessen kan ta noen minutter. Laster ned filer.</translation>
@@ -4645,6 +4651,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5108967062857032718">Innstillinger – Fjern Android-apper</translation>
 <translation id="5109044022078737958">Sporty</translation>
 <translation id="5109816792918100764">Fjern <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Åpne gruppen i et nytt vindu</translation>
 <translation id="5111646998522066203">Avslutt inkognitomodus</translation>
 <translation id="5111692334209731439">&amp;Bokmerkebehandling</translation>
 <translation id="5111794652433847656">Det finnes ingen tilgangsnøkler for <ph name="APP_NAME" /> på denne enheten</translation>
@@ -7569,6 +7576,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7762243782113123335">Beklager, noe gikk galt. Send en tilbakemelding med #bruschetta i beskrivelsen. Feilkoden er <ph name="ERROR" /></translation>
 <translation id="7764225426217299476">Legg til adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> fra <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Åpne gruppen i et nytt vindu</translation>
 <translation id="7765158879357617694">Flytt</translation>
 <translation id="7765507180157272835">Bluetooth og wifi kreves</translation>
 <translation id="7766082757934713382">Bidrar til å redusere databruken i nettverket ved å sette automatiske app- og systemoppdateringer på pause</translation>
@@ -8319,6 +8327,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8419098111404128271">Søkeresultater for «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="8420308167132684745">Endre ordlisteoppføringer</translation>
 <translation id="8421361468937925547">Direkteteksting (kun på engelsk)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">En skuff mangler</translation>
 <translation id="8424250197845498070">Blokkert av Avansert beskyttelse</translation>
 <translation id="8425213833346101688">Endre</translation>
@@ -8687,6 +8696,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
         &lt;p&gt;Du kan likevel konfigurere via kommandolinjen. Les mer om flagg og miljøvariabler i &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Utfør sikkerhetsrelaterte oppgaver for organisasjonen din, som å administrere sertifikater og nøkler som er lagret på enheten</translation>
 <translation id="8755376271068075440">&amp;Større</translation>
+<translation id="8755584192133371929">Velg en fane du vil dele</translation>
 <translation id="875604634276263540">Nettadressen til bildet er ugyldig</translation>
 <translation id="8756969031206844760">Vil du oppdatere passordet?</translation>
 <translation id="8757203080302669031">Denne fanen søker aktivt etter Bluetooth-enheter.</translation>
@@ -8992,7 +9002,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9026731007018893674">last ned</translation>
 <translation id="9026852570893462412">Denne prosessen kan ta noen minutter. Laster ned den virtuelle maskinen.</translation>
 <translation id="9027459031423301635">Åpne link i ny &amp;fane</translation>
-<translation id="9027707169256972235">Fjern</translation>
 <translation id="9030515284705930323">Organisasjonen din har ikke slått på Google Play-butikken for kontoen din. Kontakt administratoren din for å få mer informasjon.</translation>
 <translation id="9030754204056345429">Raskere</translation>
 <translation id="9030785788945687215">Gmail</translation>

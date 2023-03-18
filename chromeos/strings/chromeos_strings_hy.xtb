@@ -79,6 +79,7 @@
 <translation id="1641857168437328880">Փաստաթղթերի մատակարար (միակողմանի)</translation>
 <translation id="1643449475550628585">Փոխել պաստառն ամեն օր</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
+<translation id="1651925268237749928">Դուք ընտրել եք ընդհանուր ալբոմ։ Այլ մարդիկ կարող են ավելացնել լուսանկարներ կամ փոփոխել դրանք։ Որպես պաստառ կարելի է օգտագործել լուսանկարներ, որոնք ներկայումս այս ալբոմում չեն։</translation>
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
 <translation id="1664796644829245314">Նախադիտում (<ph name="PREVIEW_OBJECT" />)</translation>
 <translation id="1668469839109562275">Ներկառուցված VPN</translation>
@@ -118,6 +119,7 @@
 <translation id="1947737735496445907">Տպված է</translation>
 <translation id="1951012854035635156">Օգնական</translation>
 <translation id="1962550982027027473">Պահանջվում է կանխադրված APN</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google պրոֆիլի լուսանկար</translation>
 <translation id="1979103255016296513">Գաղտնաբառի փոփոխման ժամկետն անցել է</translation>
 <translation id="1999615961760456652">Մուտքի էջ</translation>
@@ -238,6 +240,7 @@
 <translation id="319101249942218879">Ավատարի պատկերը փոխվել է</translation>
 <translation id="3192947282887913208">Աուդիո ֆայլեր</translation>
 <translation id="3199982728237701504">Փաստաթղթերի մատակարար (երկկողմանի)</translation>
+<translation id="3201315366910775591">Ընդհանուր ալբոմները կարող են թարմացվել այլ մարդկանց կողմից</translation>
 <translation id="3211671540163313381">Ստեղների նշանակման D-pad</translation>
 <translation id="3226405216343213872">Սկաներների որոնում</translation>
 <translation id="3226657629376379887">Դասավորության գործողությունների ընտրացանկ</translation>
@@ -251,6 +254,7 @@
 <translation id="3310640316857623290">DNS-ի հապաղումը մեծ առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="3328783797891415197">Փորձարկում</translation>
 <translation id="3340011300870565703">Աջ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
+<translation id="3360306038446926262">Պատուհաններ</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
 <translation id="3404249063913988450">Միացնել էկրանապահը</translation>
@@ -338,6 +342,7 @@
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
 <translation id="4145784616224233563">HTTP հրապատ</translation>
 <translation id="4147897805161313378">Google Լուսանկարներ</translation>
+<translation id="4150201353443180367">Էկրան</translation>
 <translation id="4155551848414053977">Համոզվեք, որ սկաներն աշխատում է և հասանելի է ցանցի կամ ուղիղ կապի միջոցով</translation>
 <translation id="4159784952369912983">Մանուշակագույն</translation>
 <translation id="4170180284036919717">Լուսանկարել</translation>
@@ -353,6 +358,7 @@
 <translation id="4250229828105606438">Սքրինշոթ</translation>
 <translation id="4258281355379922695">HTTP-ի հապաղում</translation>
 <translation id="4271957103967917607">Լիաէկրան ռեժիմ</translation>
+<translation id="4275663329226226506">Տեսախցիկ և խոսափող</translation>
 <translation id="4289540628985791613">Համատեսք</translation>
 <translation id="4289849978083912975">Պատկերահանդես</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
@@ -445,6 +451,7 @@
 <translation id="498186245079027698">Ստուգեք սկաները և նորից փորձեք։ Համոզվեք, որ սկանավորված ֆայլերը պահելու համար բավարար տարածք կա։</translation>
 <translation id="4985509611418653372">Գործարկել</translation>
 <translation id="4987769320337599931">Հրապատ</translation>
+<translation id="4988526792673242964">Էջեր</translation>
 <translation id="4999333166442584738">Թաքցնել հաշվետվությունը</translation>
 <translation id="500920857929044050">Դադարեցնել փորձարկումը</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -655,6 +662,7 @@
 <translation id="6838167112108853532">Հնարավոր չէ անջատել կամ հեռացնել այս APN-ը։ Համոզվեք, որ միացված և կցված APN-ներն անջատված են կամ հեռացված։</translation>
 <translation id="6853312040151791195">Լիցքաթափման արագությունը</translation>
 <translation id="6889786074662672253">Վերագործարկման ժամանակ մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Վերագործարկումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
+<translation id="6900701049656042631">Այս ալբոմում չկան լուսանկարներ։ Լուսանկարներ ավելացնելու համար անցեք <ph name="LINK" />։</translation>
 <translation id="6905724422583748843">Վերադառնալ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Սկաների կափարիչը բաց է։ Փակեք այն և նորից փորձեք։</translation>
 <translation id="6911383237894364323">Չհաջողվեց միանալ մեդիա սերվերներին</translation>
@@ -767,6 +775,7 @@
 <translation id="7936303884198020182">DNS սերվերներ չեն գտնվել</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
 <translation id="7943235353293548836">Keep-alive միացումների ստատիկ ինտերվալ</translation>
+<translation id="7953669802889559161">Ներածման մեթոդներ</translation>
 <translation id="7955587717700691983">Bluetooth ստեղնաշար</translation>
 <translation id="7960831585769876809">Ջերմաստիճան</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ցանցի միանալու համար անցեք Կարգավորումներ</translation>
@@ -779,6 +788,7 @@
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8045012663542226664">Խոսափողն անջատված է</translation>
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
+<translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
 <translation id="8094062939584182041">Թույլ տվեք Google-ին տեղեկացնել ձեզ էլփոստով այս խնդրի մասին</translation>
@@ -788,6 +798,7 @@
 <translation id="8132480444149501833">Հայցել թրաֆիկի հաշվիչներ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Ընտրել «<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />» տարբերակը</translation>
+<translation id="8151185429379586178">Ծրագրավորողի գործիքներ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Կցել</translation>
 <translation id="8206859287963243715">Բջջային</translation>
@@ -855,6 +866,7 @@
 <translation id="8798441408945964110">Մատակարարի անունը</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Պաստառ</translation>
+<translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="8834539327799336565">Միացված է</translation>
 <translation id="8845001906332463065">Օգնություն</translation>
 <translation id="8855781559874488009">Չհաջողվեց միանալ HTTP կայքերին հրապատի միջոցով</translation>

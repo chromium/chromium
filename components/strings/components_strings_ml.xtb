@@ -868,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />കണക്‌റ്റിവിറ്റി ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> എന്നതിലേക്ക് പോകുക</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു അക്കൗണ്ടിന്‍റെ സൈന്‍ ഇന്‍ ഡാറ്റ}other{# അക്കൗണ്ടുകളുടെ സൈന്‍ ഇന്‍ ഡാറ്റ}}</translation>
 <translation id="3141093262818886744">എന്തായാലും തുറക്കുക</translation>
 <translation id="3141641372357166056">സമ്മത തീരുമാനമൊന്നുമില്ല</translation>
 <translation id="3145945101586104090">പ്രതികരണം ഡീകോഡ് ചെയ്യുന്നത് പരാജയപ്പെട്ടു</translation>
@@ -3359,7 +3358,6 @@
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ഫോം മായ്‌ക്കുക</translation>
 <translation id="936602727769022409">നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടപ്പെടാനിടയുണ്ട്. ഇപ്പോൾ തന്നെ പാസ്‌വേഡ് മാറ്റാൻ Chromium ശുപാർശ ചെയ്യുന്നു. സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളോട് ആവശ്യപ്പെടും.</translation>
 <translation id="937457230470581909">മൃഗശാലകൾ, അക്വേറിയങ്ങൾ, വന്യമൃഗസങ്കേതം</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />എന്തൊക്കെ ഡാറ്റ ഉപയോഗിക്കുന്നു:<ph name="END_BOLD" /> ഈ ഉപകരണത്തിൽ Chrome ഉപയോഗിച്ച് നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകളുടെ ലിസ്റ്റായ, അടുത്തിടെയുള്ള ബ്രൗസിംഗ് ചരിത്രത്തെ അടിസ്ഥാനമാക്കിയുള്ളതാണ് നിങ്ങളുടെ പരസ്യ വിഷയങ്ങൾ.</translation>

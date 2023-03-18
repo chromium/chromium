@@ -428,7 +428,6 @@
 <translation id="3151786313568798007">Προσανατολισμός</translation>
 <translation id="3153444934357957346">Μπορείτε να χρησιμοποιήσετε έως <ph name="MULTI_PROFILE_USER_LIMIT" /> λογαριασμούς στη λειτουργία σύνδεσης σε πολλούς λογαριασμούς.</translation>
 <translation id="3154351730702813399">Ο διαχειριστής της συσκευής μπορεί να παρακολουθεί τη δραστηριότητα περιήγησής σας.</translation>
-<translation id="3157931365184549694">Επαναφορά</translation>
 <translation id="316086887565479535">Μη υποστηριζόμενες εφαρμογές στο πρότυπο</translation>
 <translation id="3161500364292033097">Κλείσιμο γραφείου και παραθύρων</translation>
 <translation id="316356270129335934">Ο τομέας <ph name="MANAGER" /> επαναφέρει τη συσκευή <ph name="DEVICE_TYPE" /> σε προηγούμενη έκδοση. Θα γίνει επαναφορά της συσκευής σας και όλα τα δεδομένα θα διαγραφούν.</translation>
@@ -1182,7 +1181,6 @@
 <translation id="6781002679438061620">Γραφείο 9</translation>
 <translation id="6782182743534150858">Γραφείο 13</translation>
 <translation id="6786750046913594791">Κλείσιμο φακέλου</translation>
-<translation id="6787595647772650851">Επαναφορά τελευταίας περιόδου λειτουργίας</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="679368458793552943">Μεγέθυνση όταν είναι ενεργοποιημένος ο μεγεθυντικός φακός</translation>
 <translation id="6801878137098616817">Έγινε επεξεργασία πρόσφατα</translation>
@@ -1234,6 +1232,7 @@
 <translation id="7026338066939101231">Μείωση</translation>
 <translation id="7029814467594812963">Έξοδος από συνεδρία</translation>
 <translation id="7032161822340700104">Επιτρέπονται μόνο 6 πρότυπα. Αφαιρέστε ένα πρότυπο για να αποθηκευτεί ένα νέο.</translation>
+<translation id="7034025838182392395">Η εφαρμογή <ph name="APP_NAME" /> θέλει να χρησιμοποιήσει τη συσκευή <ph name="DEVICE_NAME" />. Ενεργοποιήστε τον φυσικό διακόπτη της συσκευής <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Βοηθός Google</translation>
 <translation id="7042322267639375032">Σύμπτυξη περιοχής κατάστασης</translation>
 <translation id="7045033600005038336">Αντικατάσταση προτύπου;</translation>
@@ -1404,6 +1403,7 @@
 <translation id="793716872548410480">Πιέστε <ph name="SHORTCUT_KEY_NAME" /> + V για να δείτε το πρόχειρο. Τα τελευταία 5 στοιχεία που αντιγράψατε αποθηκεύονται στο πρόχειρο.</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7944023924886109030">Εμφάνιση όλων των συμβάντων για σήμερα</translation>
+<translation id="7947798320695032612">Η εφαρμογή <ph name="APP_NAME" /> θέλει να χρησιμοποιήσει τη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="7963992254934562106">Από <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Επιλογή φακέλου…</translation>

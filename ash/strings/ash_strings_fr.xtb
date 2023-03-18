@@ -154,6 +154,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1715293566947629045">Désactivation du profil. Attendez quelques minutes.</translation>
 <translation id="1719094688023114093">Sous-titres instantanés activés.</translation>
 <translation id="1720011244392820496">Activer Sync Wi-Fi</translation>
+<translation id="1720230731642245863">Le point d'accès est désactivé</translation>
 <translation id="1731815243805539470">Passer à l'utilisateur précédent</translation>
 <translation id="1733996486177697563">Basculez entre les thèmes sombre et clair. Appuyez de manière prolongée sur le bureau, puis sélectionnez "Fond d'écran et style".</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" est visible par les appareils Bluetooth.</translation>
@@ -422,7 +423,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3151786313568798007">Orientation</translation>
 <translation id="3153444934357957346">Vous ne pouvez vous connecter qu'à <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes au maximum dans le cadre de la connexion multicompte.</translation>
 <translation id="3154351730702813399">L'administrateur de cet appareil peut contrôler votre activité de navigation.</translation>
-<translation id="3157931365184549694">Restaurer</translation>
 <translation id="316086887565479535">Le modèle contient des applis non compatibles</translation>
 <translation id="3161500364292033097">Fermer le bureau et les fenêtres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> effectue un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
@@ -588,6 +588,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="394485226368336402">Paramètres audio</translation>
 <translation id="3945319193631853098">Appuyez pour terminer la configuration</translation>
 <translation id="3945867833895287237">Connexion à un point d'accès…</translation>
+<translation id="3950272133184491871">Se déconnecter maintenant ?</translation>
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="3962859241508114581">Titre précédent</translation>
 <translation id="3969043077941541451">Désactivé</translation>
@@ -986,6 +987,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5920710855273935292">Le son du micro est coupé.</translation>
+<translation id="5924855612669061715">Le point d'accès est activé</translation>
 <translation id="5946788582095584774">La fonctionnalité <ph name="FEATURE_NAME" /> est activée.</translation>
 <translation id="5947494881799873997">Rétablir</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
@@ -1162,7 +1164,6 @@ Nouvelle installation</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
 <translation id="6782182743534150858">Bureau 13</translation>
 <translation id="6786750046913594791">Fermer le dossier</translation>
-<translation id="6787595647772650851">Restaurer la dernière session</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="679368458793552943">Faire un zoom avant lorsque la loupe est activée</translation>
 <translation id="6801878137098616817">Modifié récemment</translation>
@@ -1360,6 +1361,7 @@ Nouvelle installation</translation>
 <translation id="7848989271541991537">Application déplacée vers la page <ph name="PAGE_NUMBER" />, ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Balayez l'écran vers le haut avec trois doigts pour accéder à l'aperçu</translation>
+<translation id="7862292329216937261">Pour utiliser l'appareil en tant qu'invité, vous devez vous déconnecter, puis sélectionner "Naviguer en tant qu'invité" en bas de l'écran.</translation>
 <translation id="7866482334467279021">activé</translation>
 <translation id="7868900307798234037">Déverrouillage en cours avec votre empreinte digitale</translation>
 <translation id="7872195908557044066">Votre administrateur réinitialise votre eSIM. Patientez quelques minutes.</translation>
@@ -1402,6 +1404,7 @@ Nouvelle installation</translation>
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8044457332620420407">Le rétroéclairage du clavier est désactivé</translation>
+<translation id="8048077032188362328">Votre administrateur a désactivé le point d'accès.</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
 <translation id="8051716679295756675">Le modèle "<ph name="DESK_TEMPLATE_NAME" />" existe déjà</translation>
 <translation id="8052898407431791827">Copié dans le presse-papiers</translation>
@@ -1617,6 +1620,7 @@ Nouvelle installation</translation>
 <translation id="9098969848082897657">Couper le son du téléphone</translation>
 <translation id="9100887602489003640">Ajout du profil… Attendez quelques minutes.</translation>
 <translation id="9105450214093926548">Un second utilisateur ne peut pas se connecter lorsque le navigateur Lacros est en cours d'exécution. Veuillez utiliser un second profil de navigateur dans Lacros ou fermer ce dernier, puis réessayer.</translation>
+<translation id="9120448753905017833">Nous avons désactivé le Wi-Fi pour commencer à utiliser le point d'accès via les données mobiles. Cela peut entraîner des frais liés à la consommation de données.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Impossible d'enregistrer un contenu protégé</translation>
 <translation id="9161053988251441839">SUGGESTIONS D'APPLICATIONS</translation>

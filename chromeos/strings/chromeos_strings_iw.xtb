@@ -119,6 +119,7 @@
 <translation id="1947737735496445907">הודפסה</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">‏נדרש APN כברירת מחדל</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">‏תמונת הפרופיל ב-Google</translation>
 <translation id="1979103255016296513">המועד האחרון לשינוי הסיסמה כבר חלף</translation>
 <translation id="1999615961760456652">פורטל שבוי</translation>
@@ -253,6 +254,7 @@
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
 <translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="3360306038446926262">חלונות</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
@@ -340,6 +342,7 @@
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">תצוגה</translation>
 <translation id="4155551848414053977">יש לוודא שהסורק מופעל וזמין דרך הרשת או דרך חיבור ישיר</translation>
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4170180284036919717">צילום תמונה</translation>
@@ -355,6 +358,7 @@
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4258281355379922695">‏זמן המתנה ל-HTTP</translation>
 <translation id="4271957103967917607">הצגת מסך מלא</translation>
+<translation id="4275663329226226506">מדיה</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4289849978083912975">מצגת</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
@@ -447,6 +451,7 @@
 <translation id="498186245079027698">יש לבדוק את הסורק ולנסות שוב. חשוב לוודא שיש במכשיר מספיק מקום לשמור את הקבצים הסרוקים.</translation>
 <translation id="4985509611418653372">הרצה</translation>
 <translation id="4987769320337599931">חומת אש</translation>
+<translation id="4988526792673242964">דפים</translation>
 <translation id="4999333166442584738">הסתרת הדוח</translation>
 <translation id="500920857929044050">הפסקת הבדיקה</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -770,6 +775,7 @@
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7943235353293548836">‏מרווח keepalive קבוע</translation>
+<translation id="7953669802889559161">שיטות קלט</translation>
 <translation id="7955587717700691983">‏מקלדת Bluetooth</translation>
 <translation id="7960831585769876809">טמפרטורה</translation>
 <translation id="7977800524392185497">כדי להצטרף לרשת <ph name="NETWORK_NAME" />, צריך לעבור להגדרות</translation>
@@ -782,6 +788,7 @@
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="8045012663542226664">השתקת המיקרופון</translation>
 <translation id="8075838845814659848">אחוז הסוללה שנותר לטעון</translation>
+<translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8082366717211101304">‏לא ניתן ליצור רזולוציית DNS לאפליקציות ל-Android</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
 <translation id="8094062939584182041">‏מתן הרשאה ל-Google לשלוח לך אימייל בנוגע לבעיה הזו</translation>
@@ -791,6 +798,7 @@
 <translation id="8132480444149501833">בקשה למוני תנועה</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">בחירת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">כלים למפתחים</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">צירוף</translation>
 <translation id="8206859287963243715">סלולארי</translation>
@@ -858,6 +866,7 @@
 <translation id="8798441408945964110">שם ספק</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">טפט</translation>
+<translation id="8820817407110198400">סימניות</translation>
 <translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8855781559874488009">‏לא ניתן להתחבר עם חומת אש לאתרי HTTP</translation>

@@ -925,6 +925,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1796588414813960292">Functies die afhankelijk zijn van geluid, werken niet</translation>
 <translation id="1797117170091578105">Speel met het toetsenbord van je Chromebook. Je kunt toetsen aan specifieke acties toewijzen.</translation>
 <translation id="1800502858278951817">Er zijn geen extensies die toestemming hebben gevraagd om <ph name="SITE_NAME" /> te lezen en te wijzigen</translation>
+<translation id="180203835522132923">Zoeken + O, dan W</translation>
 <translation id="1802624026913571222">Slaapstand als de klep wordt gesloten</translation>
 <translation id="1802687198411089702">De pagina reageert niet. Je kunt wachten tot deze reageert of de pagina afsluiten.</translation>
 <translation id="1803531841600994172">Taal om naartoe te vertalen</translation>
@@ -1183,6 +1184,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="2023167225947895179">De pincode is mogelijk makkelijk te raden</translation>
 <translation id="202352106777823113">Het downloaden duurde te lang en is door het netwerk gestopt.</translation>
 <translation id="2024195579772565064">Zoekmachine verwijderen</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> is vastgelopen. Klik op deze ballon om de extensie opnieuw te laden.</translation>
 <translation id="2028449514182362831">Functies waarvoor bewegingssensoren nodig zijn, werken niet</translation>
 <translation id="202918510990975568">Geef je wachtwoord op om beveiliging en inloggen te configureren</translation>
@@ -1259,6 +1261,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2090165459409185032">Als je je accountgegevens wilt herstellen, ga je naar: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Maakt automatisch verbinding als je inlogt</translation>
 <translation id="2090876986345970080">Instelling voor systeembeveiliging</translation>
+<translation id="2091887806945687916">Geluid</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Functies voor foutopsporing<ph name="END_H3" />
 <ph name="BR" />
 Je kunt de functies voor foutopsporing op je Chrome OS-apparaat aanzetten om aangepaste code op je apparaat te installeren en te testen. Hiermee kun je het volgende doen:<ph name="BR" />
@@ -3186,6 +3189,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3778868487658107119">Je kunt de Assistent vragen stellen en opdrachten geven. De Assistent is je eigen persoonlijke Google dat altijd klaarstaat om je te helpen.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kan je wachtwoorden niet checken op gegevenslekken. Probeer het later opnieuw.</translation>
 <translation id="3781742599892759500">Microfoontoegang voor Linux</translation>
+<translation id="3783725005098956899">Logbestand bekijken</translation>
 <translation id="3783889407390048282">Maak ruimte vrij om te voorkomen dat je de toegang tot Android kwijtraakt.</translation>
 <translation id="3784472333786002075">Cookies zijn bestanden die worden gemaakt door websites. Er zijn twee typen cookies: first-party cookies worden gemaakt door de site die je bezoekt. Je vindt de site in de adresbalk. Cookies van derden (third-party cookies) worden gemaakt door andere sites. Deze sites zijn eigenaar van een deel van de content (zoals advertenties of afbeeldingen) die je ziet op de website die je bezoekt.</translation>
 <translation id="3785308913036335955">Snelle link voor apps bekijken</translation>
@@ -4224,6 +4228,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4708849949179781599">Stop <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Instellingen herstellen</translation>
 <translation id="4713409221649555176">Verwijderen als je alle vensters sluit</translation>
+<translation id="4715631922189108923">Gebruikersnaam bewerken</translation>
 <translation id="47158868804223727">Klik op de groepsnaam om de groep uit te vouwen of samen te vouwen</translation>
 <translation id="4716483597559580346">Powerwash voor extra beveiliging</translation>
 <translation id="471759229191973607">Thema wijzigen</translation>
@@ -6610,6 +6615,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6903022061658753260">Je gegevens worden gesynchroniseerd voor alle Chrome-browsers waarin je synchronisatie voor dit account hebt aangezet. Ga naar de <ph name="LINK_BEGIN" />Chrome OS-instellingen<ph name="LINK_END" /> voor de synchronisatieopties van Chrome OS.</translation>
 <translation id="6903590427234129279">Alles (<ph name="URL_COUNT" />) openen</translation>
 <translation id="6903907808598579934">Synchronisatie aanzetten</translation>
+<translation id="6903916726032521638">Zoeken naar <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Toegang tot bestand intrekken</translation>
 <translation id="6904655473976120856">Druk op de app-knop om af te sluiten</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Google Wachtwoordmanager wordt na 1 minuut inactiviteit vergrendeld om je wachtwoorden te beschermen}other{Google Wachtwoordmanager wordt na {NUM_MINS} minuten inactiviteit vergrendeld om je wachtwoorden te beschermen}}</translation>
@@ -8063,6 +8069,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8203732864715032075">je meldingen te sturen en deze computer standaard te gebruiken voor Berichten. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Je schermen en randapparaten kunnen kort worden gereset. Haal de stekker van je randapparaten uit het stopcontact en sluit deze weer aan om deze wijziging door te voeren.</translation>
 <translation id="820568752112382238">Meest bezochte sites</translation>
+<translation id="8206267832882844324">Notitie bewerken</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8207404892907560325">Toegangssleutel kiezen</translation>
@@ -8302,6 +8309,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8419098111404128271">Zoekresultaten voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="8420308167132684745">Woordenboekitems bewerken</translation>
 <translation id="8421361468937925547">Live ondertiteling (alleen Engels)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Lade ontbreekt</translation>
 <translation id="8424250197845498070">Geblokkeerd door Geavanceerde beveiliging</translation>
 <translation id="8425213833346101688">Wijzigen</translation>
@@ -8680,6 +8688,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8762886931014513155">Je <ph name="DEVICE_TYPE" /> moet worden geüpdatet</translation>
 <translation id="8763927697961133303">USB-apparaat</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Alle zoekopdrachten voor <ph name="QUERY_CLUSTER_NAME" /> tonen</translation>
 <translation id="8767621466733104912">Chrome automatisch updaten voor alle gebruikers</translation>
 <translation id="8770406935328356739">Hoofddirectory van extensie</translation>
 <translation id="8771300903067484968">De achtergrond van de startpagina is gereset naar de standaardachtergrond.</translation>
@@ -8976,7 +8985,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9026731007018893674">download</translation>
 <translation id="9026852570893462412">Dit proces kan enkele minuten duren. De virtuele machine wordt gedownload.</translation>
 <translation id="9027459031423301635">Link openen op nieuw &amp;tabblad</translation>
-<translation id="9027707169256972235">Verwijderen</translation>
 <translation id="9030515284705930323">Je organisatie heeft de Google Play Store niet aangezet voor jouw account. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="9030754204056345429">Sneller</translation>
 <translation id="9030785788945687215">Gmail</translation>

@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Impression terminée</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">Veuillez indiquer un APN par défaut</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Photo du profil Google</translation>
 <translation id="1979103255016296513">Mot de passe à modifier</translation>
 <translation id="1999615961760456652">Portail captif</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Seuil de latence autorisé largement dépassé par le DNS</translation>
 <translation id="3328783797891415197">Test en cours</translation>
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
+<translation id="3360306038446926262">Fenêtres</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique des impressions ? Vos tâches d'impression en cours ne seront pas supprimées de cet historique.</translation>
 <translation id="3404249063913988450">Activer l'économiseur d'écran</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Écran</translation>
 <translation id="4155551848414053977">Assurez-vous que le scanner est allumé et disponible pour la connexion réseau ou filaire.</translation>
 <translation id="4159784952369912983">Violet</translation>
 <translation id="4170180284036919717">Prendre une photo</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Capture d'écran</translation>
 <translation id="4258281355379922695">Latence HTTP</translation>
 <translation id="4271957103967917607">Afficher en plein écran</translation>
+<translation id="4275663329226226506">Médias</translation>
 <translation id="4289540628985791613">Présentation</translation>
 <translation id="4289849978083912975">Diaporama</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Vérifiez le scanner et réessayez. Assurez-vous que l'espace de stockage local est suffisant pour y enregistrer les fichiers numérisés.</translation>
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="4987769320337599931">Pare-feu</translation>
+<translation id="4988526792673242964">Pages</translation>
 <translation id="4999333166442584738">Masquer le rapport</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Aucun serveur de noms trouvé</translation>
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7943235353293548836">Intervalle persistant de messages keepalive</translation>
+<translation id="7953669802889559161">Modes de saisie</translation>
 <translation id="7955587717700691983">Clavier Bluetooth</translation>
 <translation id="7960831585769876809">Température</translation>
 <translation id="7977800524392185497">Pour rejoindre un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Envoyer</translation>
 <translation id="8045012663542226664">Désactivation du micro</translation>
 <translation id="8075838845814659848">Niveau de charge</translation>
+<translation id="8076492880354921740">Onglets</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS depuis les applis Android</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8094062939584182041">Autoriser Google à vous informer de ce problème par e-mail</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Demander les compteurs de trafic</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
 <translation id="8143951647992294073">Sélectionnez <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Outils de développement</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8183974620058026102">Joindre</translation>
 <translation id="8206859287963243715">Mobile</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi </translation>
 <translation id="8818152010000655963">Fond d'écran</translation>
 <translation id="8820457400746201697">Déplacez le point de contact bleu vers une action. Sélectionnez la touche associée à personnaliser.</translation>
+<translation id="8820817407110198400">Favoris</translation>
 <translation id="8834539327799336565">Actuellement connectés</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8855781559874488009">Impossible de se connecter aux sites HTTP via le pare-feu</translation>

@@ -683,6 +683,7 @@
 <translation id="259821504105826686">የፎቶግራፍ እና ዲጂታል ስነ ጥበባት</translation>
 <translation id="2601150049980261779">የፍቅር ፊልሞች</translation>
 <translation id="2604589665489080024">ፖፕ ሙዚቃ</translation>
+<translation id="2606760465469169465">በራስ-ሰር ማረጋገጥ</translation>
 <translation id="2610561535971892504">ለመቅዳት ጠቅ ያድርጉ</translation>
 <translation id="2617988307566202237">Chrome የሚከተለውን መረጃ <ph name="BEGIN_EMPHASIS" />አያስቀምጥም<ph name="END_EMPHASIS" />፦
         <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />የግንኙነት መመርመሪያን አሂደው ይሞክሩ<ph name="END_LINK" /></translation>
 <translation id="3121994479408824897">ወደ <ph name="DOMAIN" /> ሂድ</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{ምንም}=1{የ1 መለያ የመለያ መግቢያ ውሂብ}one{የ# መለያዎች የመለያ መግቢያ ውሂብ}other{የ# መለያዎች የመለያ መግቢያ ውሂብ}}</translation>
 <translation id="3141093262818886744">ለማንኛውም ክፈት</translation>
 <translation id="3141641372357166056">ምንም የፈቃደኝነት ውሳኔ የለም</translation>
 <translation id="3145945101586104090">ምላሹን መግለጥ አልተሳካም</translation>
@@ -1899,6 +1899,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />ውሂብዎን እንዴት ማስተዳደር እንደሚችሉ፦<ph name="END_BOLD" /> Chrome ከ4 ሳምንታት በላይ የቆዩ ጣቢያዎችን በራስ-ሰር ይሰርዛል። እንደገና የሚጎበኙት ጣቢያ በዝርዝሩ ላይ እንደገና ሊታይ ይችላል። እንዲሁም አንድ ጣቢያ ለእርስዎ ማስታወቂያዎችን እንዳይጠቁም ማገድ እና በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ በጣቢያ የተጠቆሙ ማስታወቂያዎችን ማጥፋት ይችላሉ።</translation>
 <translation id="5610142619324316209">ግንኙነቱን መፈተሽ</translation>
 <translation id="5610807607761827392">ካርዶችን እና አድራሻዎችን በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ ማቀናበር ይችላሉ።</translation>
+<translation id="5611398002774823980">በመለያ ውስጥ አስቀምጥ</translation>
 <translation id="561165882404867731">በGoogle ትርጉም አማካኝነት ይህን ገጽ ይተርጉሙ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> የኮምፒውተርዎን አካባቢ መጠቀም ይፈልጋል</translation>
 <translation id="561669346091975195">የቲቪ ሳይሳዊ ልብወለድ እና ምናባዊ ትርዒቶች</translation>
@@ -3186,6 +3187,7 @@
 <translation id="8806285662264631610">የመታጠቢያ እና የሰውነት ምርቶች</translation>
 <translation id="8807160976559152894">ከእያንዳንዱ ገጽ በኋላ ከርክም</translation>
 <translation id="8809203544698246977">የታገዱ ርዕሶች እዚህ ላይ ይታያሉ</translation>
+<translation id="8811470563853401328">አድራሻ በመለያ ውስጥ ይቀመጥ?</translation>
 <translation id="8813277370772331957">ቆይተህ አስታውሰኝ</translation>
 <translation id="8814707942599948500">ሲ8 ፖስታ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ይጫኑ እና ከእርስዎ Chrome ቅንብሮች Chromeን ለማዘመን አስገባን ይጫኑ</translation>
@@ -3279,6 +3281,7 @@
 <translation id="9042617223719777575">ትልቅ የመያዝ አቅም</translation>
 <translation id="9044359186343685026">የንክኪ መታወቂያን ተጠቀም</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">እነዚህ እርምጃዎች የ<ph name="POLICY_NAME" /> መመሪያው ወደ <ph name="POLICY_VALUE" /> እንዲቀናበር ይጠይቃሉ፦ <ph name="ACTION_LIST" />።</translation>
 <translation id="9048662076076074925">24 x 36 ኢንች</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" />ን ለመድረስ ሞክረው ነበር፣ ግን አገልጋዩ ልክ ያልሆነ የእውቅና ማረጋገጫ ነው ያሳየው።</translation>
 <translation id="9050666287014529139">የይለፍ ሐረግ</translation>
@@ -3358,7 +3361,6 @@
 <translation id="9219103736887031265">ምስሎች</translation>
 <translation id="922152298093051471">Chromeን አብጅ</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ቅጽን አጽዳ</translation>
 <translation id="936602727769022409">የGoogle መለያዎን መዳረሻ ሊያጡ ይችላሉ። Chromium የይለፍ ቃልዎን አሁኑኑ እንዲቀይሩት ይመክራል። በመለያ እንዲገቡ ይጠየቃሉ።</translation>
 <translation id="937457230470581909">መካነ አራዊት፣ የውሃ ማጠራቀሚያዎች እና ጥበቃዎች</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ምን ውሂብ ጥቅም ላይ እንደሚውል፦<ph name="END_BOLD" /> የእርስዎ የማስታወቂያ ርዕሶች የተመሰረቱት በእርስዎ የቅርብ ጊዜ የአሰሳ ታሪክ ላይ ነው፣ ይህም በዚህ መሣሪያ ላይ Chromeን በመጠቀም የጎበኟቸው የጣቢያዎች ዝርዝር ነው።</translation>

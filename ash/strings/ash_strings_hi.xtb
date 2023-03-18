@@ -154,6 +154,7 @@
 <translation id="1715293566947629045">प्रोफ़ाइल बंद की जा रही है. थोड़ा इंतज़ार करें.</translation>
 <translation id="1719094688023114093">लाइव कैप्शन की सुविधा चालू है.</translation>
 <translation id="1720011244392820496">'वाई-फ़ाई सिंक' चालू करें</translation>
+<translation id="1720230731642245863">हॉटस्पॉट बंद है</translation>
 <translation id="1731815243805539470">पिछले उपयोगकर्ता पर स्विच करने के लिए</translation>
 <translation id="1733996486177697563">गहरे और हल्के रंग वाली थीम के बीच स्विच करें. डेस्कटॉप पर बटन को दबाकर रखें और 'वॉलपेपर और स्टाइल' चुनें.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" ब्लूटूथ डिवाइसों को दिख रहा है.</translation>
@@ -422,7 +423,6 @@
 <translation id="3151786313568798007">ओरिएंटेशन</translation>
 <translation id="3153444934357957346">एक से ज़्यादा साइन-इन की सुविधा के लिए आपके पास ज़्यादा से ज़्यादा <ph name="MULTI_PROFILE_USER_LIMIT" /> खाते हो सकते हैं.</translation>
 <translation id="3154351730702813399">डिवाइस व्यवस्थापक आपकी ब्राउज़िंग गतिविधि की निगरानी कर सकता है.</translation>
-<translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="316086887565479535">टेंप्लेट में मौजूद, काम नहीं करने वाले ऐप्लिकेशन</translation>
 <translation id="3161500364292033097">डेस्क और विंडो बंद करें</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, आपके <ph name="DEVICE_TYPE" /> को रोल बैक कर रहा है. आपका डिवाइस रीसेट हो जाएगा. साथ ही, आपका सारा डेटा मिट जाएगा.</translation>
@@ -590,6 +590,7 @@
 <translation id="394485226368336402">ऑडियो सेटिंग</translation>
 <translation id="3945319193631853098">सेट अप पूरा करने के लिए टैप करें</translation>
 <translation id="3945867833895287237">हॉटस्पॉट से कनेक्ट किया जा रहा है...</translation>
+<translation id="3950272133184491871">क्या आपको अभी साइन आउट करना है?</translation>
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="3962859241508114581">पिछला ट्रैक</translation>
 <translation id="3969043077941541451">बंद है</translation>
@@ -988,6 +989,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5920710855273935292">माइक म्यूट है.</translation>
+<translation id="5924855612669061715">हॉटस्पॉट चालू है</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> चालू है.</translation>
 <translation id="5947494881799873997">वापस लाएं</translation>
 <translation id="595202126637698455">निष्पादन ट्रेसिंग सक्षम है</translation>
@@ -1164,7 +1166,6 @@
 <translation id="6781002679438061620">डेस्क 9</translation>
 <translation id="6782182743534150858">डेस्क 13</translation>
 <translation id="6786750046913594791">फ़ोल्डर बंद करें</translation>
-<translation id="6787595647772650851">पिछले सेशन को पहले जैसा करें</translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="679368458793552943">ज़ूम करने की सुविधा चालू होने पर ज़ूम इन करने के लिए</translation>
 <translation id="6801878137098616817">इसमें, हाल ही में बदलाव किया गया था</translation>
@@ -1362,6 +1363,7 @@
 <translation id="7848989271541991537">पेज <ph name="PAGE_NUMBER" />, लाइन <ph name="ROW_NUMBER" />, कॉलम <ph name="COLUMN_NUMBER" /> पर जाएं.</translation>
 <translation id="7851768487828137624">कैनरी</translation>
 <translation id="7860671499921112077">खास जानकारी देखने के लिए, स्क्रीन पर तीन उंगलियों से ऊपर की ओर स्वाइप करें</translation>
+<translation id="7862292329216937261">डिवाइस का इस्तेमाल मेहमान के तौर पर करने के लिए, आपको साइन आउट करना होगा. इसके बाद, स्क्रीन पर सबसे नीचे मौजूद 'मेहमान के तौर पर ब्राउज़ करें' को चुनें.</translation>
 <translation id="7866482334467279021">चालू</translation>
 <translation id="7868900307798234037">फ़िंगरप्रिंट से अनलॉक करना</translation>
 <translation id="7872195908557044066">आपका एडमिन ई-सिम को रीसेट कर रहा है. थोड़ा इंतज़ार करें.</translation>
@@ -1404,6 +1406,7 @@
 <translation id="8036504271468642248">पिछले वाक्य पर जाएं</translation>
 <translation id="8042893070933512245">सुलभता सेटिंग मेन्यू खोलें</translation>
 <translation id="8044457332620420407">कीबोर्ड की बैकलाइट बंद है</translation>
+<translation id="8048077032188362328">आपके एडमिन ने हॉटस्पॉट बंद कर दिया है.</translation>
 <translation id="8048123526339889627">ब्लूटूथ की सेटिंग</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नाम का टेंप्लेट पहले से मौजूद है</translation>
 <translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
@@ -1620,6 +1623,7 @@
 <translation id="9098969848082897657">फ़ोन को साइलेंट करें</translation>
 <translation id="9100887602489003640">प्रोफ़ाइल जोड़ी जा रही है. थोड़ा इंतज़ार करें.</translation>
 <translation id="9105450214093926548">जब Lacros ब्राउज़र काम कर रहा हो, तब दूसरा उपयोगकर्ता साइन इन नहीं कर सकता. इसके बजाय, कृपया Lacros में कोई दूसरी ब्राउज़र प्रोफ़ाइल इस्तेमाल करें या Lacros को बंद करके, फिर से कोशिश करें.</translation>
+<translation id="9120448753905017833">हमने मोबाइल डेटा के ज़रिए हॉटस्पॉट का इस्तेमाल करने के लिए, वाई-फ़ाई बंद कर दिया है. इस डेटा के इस्तेमाल के लिए पैसे देने पड़ सकते हैं.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> या <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">सुरक्षित कॉन्टेंट को रिकॉर्ड नहीं किया जा सकता</translation>
 <translation id="9161053988251441839">सुझाए गए ऐप्लिकेशन</translation>

@@ -129,6 +129,7 @@
 <translation id="1576623706766186887">मॅग्निफायर सुरू असताना झूम आउट करा</translation>
 <translation id="1586324912145647027">एक ते आठ डेस्कवर जा</translation>
 <translation id="1589090746204042747">या सेशनमध्ये तुमची सर्व अ‍ॅक्टिव्हिटी अ‍ॅक्सेस करा</translation>
+<translation id="1604857178818051494">मीडिया थांबवा</translation>
 <translation id="1610778689852195798">"पहिल्यासारखे करा"</translation>
 <translation id="1611993646327628135">सुरू करा</translation>
 <translation id="1618835956950524778">शेल्फवरील लाँचर बटण हायलाइट करा</translation>
@@ -154,6 +155,7 @@
 <translation id="1715293566947629045">प्रोफाइल बंद करत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="1719094688023114093">लाइव्ह कॅप्शन सुरू आहे.</translation>
 <translation id="1720011244392820496">वाय-फाय सिंक सुरू करा</translation>
+<translation id="1720230731642245863">हॉटस्पॉट बंद आहे</translation>
 <translation id="1731815243805539470">मागील वापरकर्त्यावर स्विच करा</translation>
 <translation id="1733996486177697563">गडद आणि फिकट थीमदरम्यान स्विच करा. डेस्कटॉपवर स्‍पर्श करून धरून ठेवा, त्यानंतर वॉलपेपर आणि स्टाइल निवडा.</translation>
 <translation id="1736898441010944794">ब्लूटूथ डिव्‍हाइसना "<ph name="NAME" />" दृश्यमान आहे.</translation>
@@ -189,6 +191,7 @@
 <translation id="1862380676329487333">अपडेट करून साइन आउट करा</translation>
 <translation id="1864454756846565995">USB-C डिव्‍हाइस (मागील बाजूचे पोर्ट)</translation>
 <translation id="1869497990620230175">झटपट फाइल</translation>
+<translation id="1871023081802165724">मीडिया प्ले करा</translation>
 <translation id="1879018240766558464">गुप्त विंडोना सध्या सपोर्ट नाही. इतर ॲप्स सेव्ह केली जातील.</translation>
 <translation id="1882814835921407042">मोबाइल नेटवर्क नाही</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> वर मिरर करत आहे</translation>
@@ -240,6 +243,7 @@
 <translation id="2132302418721800944">फुल स्क्रीन रेकॉर्ड करा</translation>
 <translation id="2135456203358955318">डॉक केलेले भिंग</translation>
 <translation id="2148716181193084225">आज</translation>
+<translation id="2149229036084364364">मागील ट्रॅकवर जा</translation>
 <translation id="2161132820593978283">कॅमेरा फ्रेमिंग वापरून पहा, जेणेकरून व्हिडिओ कॉलवर तुम्ही स्क्रीनच्या मध्यभागी राहाल. ते क्विक सेटिंग्जमध्ये सुरू करा.</translation>
 <translation id="2170530631236737939">अवलोकन मधून बाहेर पडण्यासाठी तीन बोटांनी खाली स्वाइप करा</translation>
 <translation id="2185166372312820725">आधीच्या टॅबवर जा</translation>
@@ -369,6 +373,7 @@
 <translation id="2865888419503095837">नेटवर्क माहिती</translation>
 <translation id="2872353916818027657">प्राथमिक मॉनिटर स्वॅप करा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
+<translation id="2876338922445400217">स्क्रीनवर झूम इन करा</translation>
 <translation id="2878884018241093801">अलीकडील कोणतेही आयटम नाहीत</translation>
 <translation id="2885950158625301909">अधिक जाणून घ्या</translation>
 <translation id="2891209721153296020">"निवड रद्द करा"</translation>
@@ -393,6 +398,7 @@
 <translation id="3009178788565917040">आउटपुट</translation>
 <translation id="3009958530611748826">ज्यामध्ये सेव्ह करायचे आहे ते फोल्डर निवडा</translation>
 <translation id="301282384882049174">तुमच्या अ‍ॅडमिनिस्ट्रेटरने शेअर केलेले</translation>
+<translation id="3018135054368884502">मीडिया फास्ट फॉरवर्ड करा</translation>
 <translation id="3033545621352269033">सुरू</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> सह एकत्र करा</translation>
 <translation id="3036649622769666520">फाइल उघडा</translation>
@@ -422,7 +428,6 @@
 <translation id="3151786313568798007">अभिमुखता</translation>
 <translation id="3153444934357957346">मल्टिपल साइन इन मध्ये तुमच्याकडे जास्तीत जास्त फक्त <ph name="MULTI_PROFILE_USER_LIMIT" /> खाती असू शकतात.</translation>
 <translation id="3154351730702813399">डिव्हाइस प्रशासक कदाचित आपल्या ब्राउझिंग क्रियाकलापाचे परीक्षण करू शकतो.</translation>
-<translation id="3157931365184549694">पुनर्संचयित करा</translation>
 <translation id="316086887565479535">टेंप्लेटमधील सपोर्ट करत नसलेली ॲप्स</translation>
 <translation id="3161500364292033097">डेस्‍क आणि विंडो बंद करा</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> तुमचे <ph name="DEVICE_TYPE" /> मागे घेत आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>
@@ -497,6 +502,7 @@
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> डिव्हाइसशी कनेक्ट केले</translation>
 <translation id="3533126039236445965">शेल्फमधील अ‍ॅप्स</translation>
 <translation id="3542066395059568317">तुम्हाला शिफारशी दिसतील, जेणेकरून तुम्ही जिथे सोडले होते तेथून सुरू ठेवू शकता. तुम्ही शिफारशी काढून टाकण्यासाठी राइट-क्लिक करू शकता.</translation>
+<translation id="3546121235777416274">चित्रात-चित्र च्या विंडोवर फोकस करा</translation>
 <translation id="3552189655002856821">वाय-फाय बंद केले आहे</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> पिन केला गेला</translation>
 <translation id="3558768885091059911">कॅमेरा आणि मायक्रोफोनचा अ‍ॅक्सेस सुरू करायचा का?</translation>
@@ -576,6 +582,7 @@
 <translation id="3891340733213178823">साइन आउट करण्यासाठी Ctrl+Shift+Q दोनदा दाबा.</translation>
 <translation id="3893630138897523026">ChromeVox (वाचिक अभिप्राय)</translation>
 <translation id="3897533311200664389">मजकूर क्वेरी सुरू करा</translation>
+<translation id="3898464793473355515">घड्याळाच्‍या काट्याच्या दिशेने स्क्रीन ९० अंश फिरवा</translation>
 <translation id="3899995891769452915">व्हॉइस इनपुट</translation>
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" /> मध्ये तुमचे सेशन समाप्त होईल</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> वर कनेक्ट करीत आहे</translation>
@@ -589,6 +596,7 @@
 <translation id="394485226368336402">ऑडिओ सेटिंग्ज</translation>
 <translation id="3945319193631853098">सेट करणे पूर्ण करण्यासाठी टॅप करा</translation>
 <translation id="3945867833895287237">हॉटस्पॉटशी कनेक्ट करत आहे...</translation>
+<translation id="3950272133184491871">आता साइन आउट करायचे आहे का?</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
 <translation id="3962859241508114581">मागील ट्रॅक</translation>
 <translation id="3969043077941541451">बंद आहे</translation>
@@ -744,6 +752,7 @@
 <translation id="4702647871202761252">गोपनीयता स्क्रीन बंद आहे</translation>
 <translation id="4706121060329443414">नंतर डाउनलोड करण्याचा प्रयत्न केला जाईल. सध्या प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली जाईल.</translation>
 <translation id="470644585772471629">कलर इन्व्हर्जन</translation>
+<translation id="4708065238214351979">कीबोर्ड आणखी ब्राइट करा</translation>
 <translation id="4717575069099566988">तुमची USB-C केबल ही USB4 ला सपोर्ट करत नाही. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
 <translation id="4730374152663651037">वारंवार वापरलेले</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
@@ -770,6 +779,7 @@
 <translation id="4849058404725798627">कीबोर्ड फोकससह ऑब्जेक्ट हायलाइट करा</translation>
 <translation id="485592688953820832">कृती नाही (थांबवा)</translation>
 <translation id="485634149294284819">कीबोर्ड एंटर करण्याचा मेनू</translation>
+<translation id="485806788160414322">मीडिया प्ले करा किंवा थांबवा</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> डाउनलोड करण्यासाठी तुमचे नेटवर्क कनेक्शन तपासा</translation>
 <translation id="4864369630010738180">साइन इन करत आहे...</translation>
 <translation id="4864648187878336334">डेस्‍क १५</translation>
@@ -789,6 +799,7 @@
 <translation id="492453977506755176">कॅप्चर मोड की</translation>
 <translation id="4925542575807923399">या खात्याच्या ॲडमिनिस्ट्रेटरला हे खाते एका एकाहून अधिक साइन इन सेशनमधील प्रथम साइन इन केलेले खाते असणे आवश्यक आहे.</translation>
 <translation id="4929163402621253029">तुम्ही बोलत आहात का? तुम्ही म्यूट केले आहे. अधिक जाणून घ्या</translation>
+<translation id="493076006037866439">स्क्रीनवर झूम आउट करा</translation>
 <translation id="4936329710968938986">प्रत्येकजण, बंद आहे</translation>
 <translation id="4938176435186993759">सर्व सूचना लपवा</translation>
 <translation id="4945196315133970626">सूचना बंद करा</translation>
@@ -797,6 +808,7 @@
 <translation id="4952936045814352993">अलार्मचे आवाज बंद केले असताना फोन शोधा उपलब्ध नाही</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> हे मागील आवृत्तीवर स्विच करणे आवश्यक आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>
 <translation id="4961318399572185831">स्क्रीन कास्ट करा</translation>
+<translation id="4966431234408005599">व्‍हॉल्‍यूम वाढवा</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ता <ph name="MINUTES" />मि <ph name="SECONDS" />से</translation>
 <translation id="4975771730019223894">अ‍ॅप बॅजिंग</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
@@ -820,6 +832,7 @@
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="5078796286268621944">चुकीचा पिन</translation>
 <translation id="5083553833479578423">असिस्टंटची आणखी वैशिष्ट्ये अनलॉक करा.</translation>
+<translation id="5092436659250499817">कीबोर्ड बॅकलाइट सुरू/बंद करा</translation>
 <translation id="509790653408515442">तुम्ही तुमच्या फोनची अ‍ॅप्स स्ट्रीम कराल, तेव्हा ती येथे दिसतील</translation>
 <translation id="5098537242461068432">डेस्‍क आणि विंडो पुन्हा उघडल्या</translation>
 <translation id="5104236669533825617">स्क्रीनकास्ट तयार करू शकत नाही</translation>
@@ -844,6 +857,7 @@
 <translation id="5208059991603368177">सुरू करा</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> पर्यंत बंद</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
+<translation id="5229343007215035173">गोपनीयता स्क्रीन सुरू/बंद करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
 <translation id="523505283826916779">ॲक्सेसिबिलिटी सेटिंग्ज</translation>
 <translation id="5245201184978705914">ट्रान्स्क्रिप्ट जनरेट करू शकत नाही</translation>
@@ -957,6 +971,7 @@
 <translation id="576341972084747908">धोकादायक <ph name="FILENAME" /> डाउनलोड करा</translation>
 <translation id="5763928712329149804">शेल्फ पार्टी बंद आहे.</translation>
 <translation id="576453121877257266">रात्रीचा प्रकाश सुरू आहे.</translation>
+<translation id="5764569119212455782">निवडलेल्या शेवटच्या भाषेवर स्विच करा</translation>
 <translation id="5769373120130404283">गोपनीयता स्क्रीन</translation>
 <translation id="5773950591113557721">हे <ph name="APP_NAME" /> आणि कॅमेरा व मायक्रोफोन परवानग्यांसह सर्व अ‍ॅप्स आणि वेबसाइट अ‍ॅक्सेस करण्यास अनुमती देते</translation>
 <translation id="5774295353725270860">फायलीचा ॲप्लिकेशन उघडा</translation>
@@ -968,6 +983,7 @@
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
 <translation id="5825969630400862129">कनेक्‍ट केलेली डिव्हाइस सेटिंग्ज</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
+<translation id="5841296711770970362">पुढील ट्रॅकवर जा</translation>
 <translation id="584525477304726060">मोठे करण्यासाठी धरून ठेवा</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्ह केलेले नाही.</translation>
 <translation id="5860033963881614850">बंद</translation>
@@ -987,6 +1003,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5920710855273935292">माइक म्यूट केलेला आहे.</translation>
+<translation id="5924855612669061715">हॉटस्पॉट सुरू आहे</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> सुरू आहे.</translation>
 <translation id="5947494881799873997">परत करा</translation>
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
@@ -1102,6 +1119,7 @@
 <translation id="6497418457565568043">व्यत्यय आणू नका सुरू आहे</translation>
 <translation id="6500896621837555595">अपडेट करा</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> वर स्क्रीन कास्ट करीत आहे</translation>
+<translation id="6507618042428827377">उपलब्ध असलेल्या पुढील इनपुट पद्धतीवर स्विच करा</translation>
 <translation id="6508923215158854599">तुमचे Chromebook आणि Chromecast डिव्हाइस एकाच वाय-फाय नेटवर्कवर असल्याची खात्री करा.</translation>
 <translation id="6515727200518652613">कॅमेरा डिस्कनेक्ट झाला, पुन्हा कनेक्ट करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="6520517963145875092">कॅप्चर करण्यासाठी विंडो निवडा</translation>
@@ -1163,7 +1181,6 @@
 <translation id="6781002679438061620">डेस्‍क ९</translation>
 <translation id="6782182743534150858">डेस्‍क १३</translation>
 <translation id="6786750046913594791">फोल्डर बंद करा</translation>
-<translation id="6787595647772650851">शेवटचे सेशन रिस्टोअर करा</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="679368458793552943">मॅग्निफायर सुरू असताना झूम इन करा</translation>
 <translation id="6801878137098616817">अलीकडे संपादित केलेली</translation>
@@ -1362,6 +1379,7 @@
 <translation id="7848989271541991537">पेज <ph name="PAGE_NUMBER" />, पंक्ती <ph name="ROW_NUMBER" />, स्तंभ <ph name="COLUMN_NUMBER" /> वर हलवले.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">अवलोकन मध्ये एंटर करण्यासाठी तीन बोटांनी वर स्‍वाइप करा</translation>
+<translation id="7862292329216937261">अतिथी म्हणून डिव्हाइस वापरण्यासाठी, तुम्हाला साइन आउट करून नंतर स्क्रीनच्या तळाशी अतिथी म्हणून ब्राउझ करणे निवडावे लागेल.</translation>
 <translation id="7866482334467279021">सुरू</translation>
 <translation id="7868900307798234037">फिंगरप्रिंटने अनलॉक करत आहे</translation>
 <translation id="7872195908557044066">तुमचा ॲडमिनिस्ट्रेटर तुमचा eSIM रीसेट करत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
@@ -1386,6 +1404,7 @@
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7944023924886109030">आजचे सर्व इव्‍हेंट पहा</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ला तुमचे <ph name="DEVICE_NAME" /> वापरायचे आहे</translation>
+<translation id="7951630946012935453">कीबोर्ड डिम करा</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> कडून</translation>
 <translation id="7968693143708939792">फोल्डर निवडा…</translation>
 <translation id="797512352675305461">फुलस्क्रीन मॅग्निफायर सुरू किंवा बंद करा</translation>
@@ -1405,6 +1424,7 @@
 <translation id="8036504271468642248">मागील वाक्य</translation>
 <translation id="8042893070933512245">अ‍ॅक्सेसिबिलिटी सेटिंग्ज मेनू उघडा</translation>
 <translation id="8044457332620420407">कीबोर्ड बॅकलाइट बंद आहे</translation>
+<translation id="8048077032188362328">तुमच्या अ‍ॅडमिनिस्ट्रेटरने हॉटस्पॉट बंद केले आहे.</translation>
 <translation id="8048123526339889627">ब्लूटूथ सेटिंग्ज</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नावाचे टेंप्लेट आधीपासून अस्तित्वात आहे</translation>
 <translation id="8052898407431791827">क्लिपबोर्डवर कॉपी केले</translation>
@@ -1516,10 +1536,12 @@
 <translation id="8598235756057743477">नाव किंवा रंगानुसार तुमची ॲप्स क्रमाने लावा</translation>
 <translation id="8609384513243082612">नवीन टॅब उघडा</translation>
 <translation id="8614517853887502247">पाहण्यासंबंधित संरक्षण सुरू असल्याने, <ph name="APP_1_TITLE" /> आणि <ph name="APP_2_TITLE" /> सूचना लपवल्या आहेत</translation>
+<translation id="8619138598101195078">व्‍हॉल्‍यूम कमी करा</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> शी कनेक्ट केले</translation>
 <translation id="8630991711272431708">कॅमेराचा ॲक्सेस बंद करा</translation>
 <translation id="8631727435199967028">अ‍ॅक्सेसिबिलिटी सेटिंग्ज</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
+<translation id="8638637208069328956">मायक्रोफोन सुरू/बंद करा</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> शिल्लक</translation>
 <translation id="8641805545866562088">प्रोफाइल सूची रिफ्रेश करत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> टायमर</translation>
@@ -1538,6 +1560,7 @@
 <translation id="8717459106217102612">आधीचा शब्द किंवा अक्षर निवडा</translation>
 <translation id="8721053961083920564">व्‍हॉल्‍यूम टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्‍क्रीन कॅप्‍चर</translation>
+<translation id="8725214031272624704">उपलब्ध असलेल्या इनपुट पद्धतींची सूची दाखवा</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> वाजता संपेल</translation>
 <translation id="8734991477317290293">तो कदाचित तुमचे कीस्ट्रोक चोरण्याचा प्रयत्न करत असेल.</translation>
 <translation id="8735678380411481005">कीबोर्ड बॅकलाइटचा रंग</translation>
@@ -1622,6 +1645,7 @@
 <translation id="9100887602489003640">प्रोफाइल जोडत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="9105450214093926548">Lacros ब्राउझर रन होत असताना दुसऱ्या
 वापरकर्त्याला साइन इन करण्यास सपोर्ट नाही. त्याऐवजी कृपया Lacros मध्ये दुसरी ब्राउझर प्रोफाइल वापरा किंवा Lacros बंद करा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="9120448753905017833">मोबाइल डेटाद्वारे हॉटस्पॉट वापरणे सुरू करण्यासाठी आम्ही वायफाय बंद केले आहे. यासाठी मोबाइल डेटा शुल्क लागू शकते.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> किंवा <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">सुरक्षित आशय रेकॉर्ड करू शकत नाही</translation>
 <translation id="9161053988251441839">सुचवलेले अ‍ॅप्स</translation>

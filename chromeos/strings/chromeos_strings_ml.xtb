@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">ഡിഫോൾട്ട് ആയ ഒരു APN ആവശ്യമാണ്</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google പ്രൊഫൈൽ ഫോട്ടോ</translation>
 <translation id="1979103255016296513">പാസ്‌വേഡ് മാറ്റേണ്ട സമയം കഴിഞ്ഞു</translation>
 <translation id="1999615961760456652">ക്യാപ്‌റ്റീവ് പോർട്ടൽ</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ വളരെ മുകളിലാണ്</translation>
 <translation id="3328783797891415197">ടെസ്‌റ്റ് റൺ ചെയ്യുന്നു</translation>
 <translation id="3340011300870565703">ഉപകരണത്തിന്റെ വലത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
 <translation id="3369013195428705271">എല്ലാ പ്രിന്റ് ചരിത്രവും മായ്‌ക്കണമെന്ന് തീർച്ചയാണോ? നിങ്ങളുടെ പുരോഗതിയിലുള്ള പ്രിന്റ് ജോലികൾ മായ്ക്കില്ല.</translation>
 <translation id="3404249063913988450">സ്ക്രീൻ സേവർ പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
 <translation id="4145784616224233563">HTTP ഫയര്‍വാള്‍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">ഡിസ്‌പ്ലേ</translation>
 <translation id="4155551848414053977">സ്‌കാനർ ഓണാക്കിയിട്ടുണ്ടെന്നും നിങ്ങളുടെ നെറ്റ്‌വർക്കോ നേരിട്ടുള്ള കണക്ഷനോ വഴി അത് ലഭ്യമാണെന്നും ഉറപ്പാക്കുക</translation>
 <translation id="4159784952369912983">പര്‍പ്പിള്‍</translation>
 <translation id="4170180284036919717">ഫോട്ടോ എടുക്കുക</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="4258281355379922695">HTTP പ്രതികരണ സമയം</translation>
 <translation id="4271957103967917607">പൂർണ്ണ സ്‌ക്രീനിൽ കാണുക</translation>
+<translation id="4275663329226226506">മീഡിയ</translation>
 <translation id="4289540628985791613">അവലോകനം</translation>
 <translation id="4289849978083912975">സ്ലൈഡ് ഷോ</translation>
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">സ്കാനർ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക. സ്കാൻ ചെയ്ത ഫയലുകൾ സംരക്ഷിക്കാൻ മതിയായ ലോക്കൽ സ്പെയ്‍സ് ഉണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="4985509611418653372">റൺ ചെയ്യുക</translation>
 <translation id="4987769320337599931">ഫയർവാൾ</translation>
+<translation id="4988526792673242964">പേജുകള്‍</translation>
 <translation id="4999333166442584738">റിപ്പോർട്ട് മറയ്‌ക്കുക</translation>
 <translation id="500920857929044050">ടെസ്‌റ്റ് നിർത്തുക</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">നെയിം സെർവറുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
 <translation id="7943235353293548836">സജീവമായി നിലനിർത്താനുള്ള സ്ഥിര ഇടവേള</translation>
+<translation id="7953669802889559161">ഇൻപുട്ടുകൾ</translation>
 <translation id="7955587717700691983">Bluetooth കീബോർഡ്</translation>
 <translation id="7960831585769876809">താപനില</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> നെറ്റ്‌വർക്കിൽ ചേരാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="8045012663542226664">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ</translation>
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
+<translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8082366717211101304">Android ആപ്പുകളിൽ നിന്ന് DNS പരിഹരിക്കാനാകില്ല</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
 <translation id="8094062939584182041">ഈ പ്രശ്‌നത്തെ കുറിച്ച് നിങ്ങൾക്ക് ഇമെയിൽ അയയ്ക്കാൻ Google-നെ അനുവദിക്കുക</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">ട്രാഫിക് കൗണ്ടറുകൾ അഭ്യർത്ഥിക്കുക</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുക്കുക</translation>
+<translation id="8151185429379586178">ഡെവലപ്പര്‍ ടൂളുകൾ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">വാൾപേപ്പർ</translation>
 <translation id="8820457400746201697">നീല ടച്ച് പോയിന്റ് ഒരു പ്രവർത്തനത്തിലേക്ക് നീക്കുക. ഇഷ്‌ടാനുസൃതമാക്കാൻ അനുബന്ധ കീ തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8834539327799336565">നിലവിൽ കണക്റ്റ് ചെയ്‌തവ</translation>
 <translation id="8845001906332463065">സഹായം നേടുക</translation>
 <translation id="8855781559874488009">HTTP വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>

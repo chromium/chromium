@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Отпечатано</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1962550982027027473">Изисква се стандартно име на точката за достъп (APN)</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Снимка на потребителския профил в Google</translation>
 <translation id="1979103255016296513">Срокът за промяна на паролата е изтекъл</translation>
 <translation id="1999615961760456652">Портал за удостоверяване</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
 <translation id="3328783797891415197">Тестът се изпълнява</translation>
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3369013195428705271">Наистина ли искате да изчистите цялата история на отпечатването? Текущите задания за печат няма да бъдат изтрити.</translation>
 <translation id="3404249063913988450">Активиране на скрийнсейвъра</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="4145784616224233563">Защитна стена за HTTP</translation>
 <translation id="4147897805161313378">Google Снимки</translation>
+<translation id="4150201353443180367">Екран</translation>
 <translation id="4155551848414053977">Уверете се, че скенерът е включен и достъпен чрез мрежата ви или директна връзка</translation>
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4170180284036919717">Правене на снимка</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="4258281355379922695">Забавяне на HTTP</translation>
 <translation id="4271957103967917607">Преглед на цял екран</translation>
+<translation id="4275663329226226506">Медия</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4289849978083912975">Слайдшоу</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Проверете скенера и опитайте отново. Уверете се, че на устройството ви има достатъчно място за запазване на сканираните файлове.</translation>
 <translation id="4985509611418653372">Стартиране</translation>
 <translation id="4987769320337599931">Защитна стена</translation>
+<translation id="4988526792673242964">Страници</translation>
 <translation id="4999333166442584738">Скриване на отчета</translation>
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="7942349550061667556">червено</translation>
 <translation id="7943235353293548836">Постоянен интервал за проверка на връзката</translation>
+<translation id="7953669802889559161">Въвеждане</translation>
 <translation id="7955587717700691983">Клавиатура с Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7977800524392185497">За да се присъедините към <ph name="NETWORK_NAME" /> мрежа, отворете „Настройки“</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="8045012663542226664">Заглушаване на микрофона</translation>
 <translation id="8075838845814659848">Оставащ заряд</translation>
+<translation id="8076492880354921740">Раздели</translation>
 <translation id="8082366717211101304">Преобразуването от DNS не е възможно от приложения за Android</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
 <translation id="8094062939584182041">Разрешаване на Google да ви изпраща имейли за този проблем</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Заявяване на броячи за трафика</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Избиране на <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Инстр. за програмисти</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Първоначално свързване</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Тапет</translation>
 <translation id="8820457400746201697">Преместете синята точка на докосване до дадено действие. Изберете съответния клавиш за персонализиране.</translation>
+<translation id="8820817407110198400">Отметки</translation>
 <translation id="8834539327799336565">Свързани сега</translation>
 <translation id="8845001906332463065">Получете помощ</translation>
 <translation id="8855781559874488009">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTP</translation>

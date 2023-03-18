@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Надрукавана</translation>
 <translation id="1951012854035635156">Памочнік</translation>
 <translation id="1962550982027027473">Тып APN павінен быць стандартным</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Відарыс профілю Google</translation>
 <translation id="1979103255016296513">Пратэрмінавана змена пароля</translation>
 <translation id="1999615961760456652">Партал узаемадзеяння</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Затрымка DNS значна перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="3328783797891415197">Выконваецца праверка</translation>
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Вокны</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369013195428705271">Сапраўды выдаліць гісторыю друку? Бягучыя заданні друку выдалены не будуць.</translation>
 <translation id="3404249063913988450">Уключыць застаўку</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Чорна-белы друк</translation>
 <translation id="4145784616224233563">Брандмаўар HTTP</translation>
 <translation id="4147897805161313378">Google Фота</translation>
+<translation id="4150201353443180367">Дысплэй</translation>
 <translation id="4155551848414053977">Упэўніцеся, што сканер уключаны і даступны праз вашу сетку або прамое падключэнне.</translation>
 <translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4170180284036919717">Зрабіць фота</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Здымак экрана</translation>
 <translation id="4258281355379922695">Затрымка HTTP-запытаў</translation>
 <translation id="4271957103967917607">Праглядзець у поўнаэкранным рэжыме</translation>
+<translation id="4275663329226226506">Мультымедыя</translation>
 <translation id="4289540628985791613">Агляд</translation>
 <translation id="4289849978083912975">Слайд-шоу</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Праверце сканер і паўтарыце спробу. Упэўніцеся, што на прыладзе дастаткова месца для захавання файлаў адсканіраваных відарысаў.</translation>
 <translation id="4985509611418653372">Запусціць</translation>
 <translation id="4987769320337599931">Брандмаўар</translation>
+<translation id="4988526792673242964">Старонкі</translation>
 <translation id="4999333166442584738">Схаваць справаздачу</translation>
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Серверы даменных імён не знойдзены</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
 <translation id="7943235353293548836">Пастаянны інтэрвал для паведамлення keepalive</translation>
+<translation id="7953669802889559161">Метады ўводу</translation>
 <translation id="7955587717700691983">Клавіятура з Bluetooth</translation>
 <translation id="7960831585769876809">Тэмпература</translation>
 <translation id="7977800524392185497">Каб падключыцца да сеткі <ph name="NETWORK_NAME" />, перайдзіце ў Налады</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Адправіць водгук</translation>
 <translation id="8045012663542226664">Выключэнне гуку мікрафона</translation>
 <translation id="8075838845814659848">Узровень зараду акумулятара</translation>
+<translation id="8076492880354921740">Укладкі</translation>
 <translation id="8082366717211101304">Не ўдалося ажыццявіць DNS-пераўтварэнне з праграм для Android</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8094062939584182041">Дазволіць Google апавяшчаць вас па электроннай пошце пра гэту праблему</translation>
@@ -864,6 +871,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Шпалеры</translation>
 <translation id="8820457400746201697">Каб выканаць дзеянне, перамясціце сінюю кропку дотыку. Для наладжвання выберыце звязаную клавішу.</translation>
+<translation id="8820817407110198400">Закладкі</translation>
 <translation id="8834539327799336565">Падключаныя цяпер прылады</translation>
 <translation id="8845001906332463065">Атрымаць даведку</translation>
 <translation id="8855781559874488009">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTP</translation>

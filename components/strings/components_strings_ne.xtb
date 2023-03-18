@@ -868,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />जडान सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> मा जानुहोस्</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{कुनै पनि होइन}=1{१ खाताको साइन इनसम्बन्धी डेटा}other{# खाताहरूको साइन इनसम्बन्धी डेटा}}</translation>
 <translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
 <translation id="3141641372357166056">सहमति जनाउने कि नजनाउने भनेर निर्णय गरिएको छैन</translation>
 <translation id="3145945101586104090">प्रतिक्रिया डिकोड गर्न असफल भयो</translation>
@@ -3359,7 +3358,6 @@
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="922152298093051471">Chrome आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="933712198907837967">डाइनर्स क्लब</translation>
-<translation id="935608979562296692">फारम खाली गर्नुहोस्</translation>
 <translation id="936602727769022409">तपाईं आफ्नो Google खातामाथिको पहुँच गुमाउन सक्नुहुन्छ। Chromium तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ। तपाईंलाई साइन इन गर्न लगाइने छ।</translation>
 <translation id="937457230470581909">चिडियाखाना, एक्वारियम तथा आरक्षहरू</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />के कस्ता जानकारी प्रयोग गरिन्छ:<ph name="END_BOLD" /> तपाईंका विज्ञापनका विषयहरू तपाईंको हालसालैको ब्राउजिङ हिस्ट्री अर्थात् तपाईंले यो डिभाइसमा Chrome प्रयोग गरी खोलेका साइटहरूको सूचीमा आधारित हुन्छन्।</translation>

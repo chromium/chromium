@@ -869,7 +869,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />সংযোগের ডায়গনিস্টিক্স চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" />-এ যান</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{কোনও ডেটা নেই}=1{১টি অ্যাকাউন্টের জন্য সাইন-ইন ডেটা}one{#টি অ্যাকাউন্টের জন্য সাইন-ইন ডেটা}other{#টি অ্যাকাউন্টের জন্য সাইন-ইন ডেটা}}</translation>
 <translation id="3141093262818886744">যাই হোক, খুলতে চাই</translation>
 <translation id="3141641372357166056">সম্মতি সংক্রান্ত কোনও সিদ্ধান্ত নেই</translation>
 <translation id="3145945101586104090">প্রতিক্রিয়া ডিকোড করতে ব্যর্থ হয়েছে</translation>
@@ -3362,7 +3361,6 @@
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome কাস্টমাইজ করুন</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ফর্ম সাফ করুন</translation>
 <translation id="936602727769022409">আপনি আপনার Google অ্যাকাউন্টে অ্যাক্সেস হারাতে পারেন। Chromium-এর প্রস্তাব হল যে আপনি আপনার পাসওয়ার্ড এখনই পরিবর্তন করুন। আপনাকে আবার সাইন-ইন করতে বলা হবে।</translation>
 <translation id="937457230470581909">চিড়িয়াখানা, অ্যাকোয়ারিয়াম এবং সংরক্ষণ</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />কোন ডেটা ব্যবহার করা হয়:<ph name="END_BOLD" /> বিজ্ঞাপনের বিষয়গুলি আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে বেছে নেওয়া হয়। এক্ষেত্রে তা হল, ডিভাইসে Chrome ব্যবহার করে আপনি যেসব সাইট ভিজিট করেছেন তার একটি তালিকা।</translation>

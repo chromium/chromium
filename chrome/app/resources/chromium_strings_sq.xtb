@@ -11,6 +11,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="113122355610423240">Chromium është shfletuesi yt i parazgjedhur</translation>
 <translation id="1131805035311359397">Për të kontrolluar nëse fjalëkalimet e tua janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Rreth Chromium</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{Administratori yt e mbyll automatikisht Chromium kur ai nuk përdoret për 1 minutë. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}other{Administratori yt e mbyll automatikisht Chromium kur ai nuk përdoret për # minuta. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}}</translation>
 <translation id="1203500561924088507">Faleminderit që e instalove. Duhet të rinisësh shfletuesin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">"Kursyesi i memories" e ka bërë Chromium më të shpejtë</translation>
 <translation id="1315551408014407711">Konfiguro profilin tënd të ri të Chromium</translation>
@@ -25,6 +26,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="1640672724030957280">Po shkarkohet...</translation>
 <translation id="1708666629004767631">Ofrohet një version i ri më i sigurt i Chromium.</translation>
 <translation id="17264556997921157">Mund të shikosh dhe të heqësh temat e interesit që përdorin sajtet për të të shfaqur reklama. Chromium i përllogarit interesat e tu bazuar në historikun tënd të shfletimit së fundi.</translation>
+<translation id="1733725117201708356">Chromium do t'i fshijë së shpejti të dhënat e shfletimit</translation>
 <translation id="1745121272106313518">Chromium do të riniset pas <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Lejo që Chromium të ekzekutohet në sfond</translation>
 <translation id="1779356040007214683">Për ta bërë më të sigurt Chromium, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
@@ -55,6 +57,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="2384373936468275798">ChromiumOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë janë të papërditësuara.</translation>
 <translation id="2396765026452590966">Shtesa "<ph name="EXTENSION_NAME" />" ka ndryshuar se cila faqe shfaqet kur nis Chromium.</translation>
 <translation id="2401032172288869980">Chromium ka nevojë për lejet e kamerës dhe të mikrofonit për këtë sajt</translation>
+<translation id="2478295928299953161">Chromium do të mbyllet së shpejti</translation>
 <translation id="2483889755041906834">Në Chromium</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
 <translation id="2560420686485554789">Chromium ka nevojë për qasje te hapësira ruajtëse për të shkarkuar skedarë</translation>
@@ -173,6 +176,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4987820182225656817">Vizitorët mund të përdorin Chromium pa lënë asgjë prapa.</translation>
 <translation id="4994636714258228724">Shtoje veten te Chromium</translation>
 <translation id="5114678101347489141">Chromium po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{Administratori yt e mbyll automatikisht Chromium kur ai nuk përdoret për 1 minutë.}other{Administratori yt e mbyll automatikisht Chromium kur ai nuk përdoret për # minuta.}}</translation>
 <translation id="5224391634244552924">Nuk ka asnjë fjalëkalim të ruajtur. Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chromium. Kjo do të krijojë një profil të ri të Chromium për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Për të zbatuar ndryshimet, rinis Chromium</translation>
@@ -216,6 +220,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6119438414301547735">Lejo që shtesat të shfaqin kërkesat për qasje në shiritin e veglave të Chromium</translation>
 <translation id="6120345080069858279">Chromium do ta ruajë këtë fjalëkalim në llogarinë tënde të Google. Nuk është nevoja ta mbash mend.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> është i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
+<translation id="6132897690380286411">Chromium do të mbyllet dhe do t'i fshijë të dhënat së shpejti</translation>
 <translation id="6134968993075716475">"Shfletimi i sigurt" është joaktiv. Chromium rekomandon aktivizimin e tij.</translation>
 <translation id="6145820983052037069">Këtu mund të kalosh nga një profil i Chromium te një tjetër</translation>
 <translation id="6183079672144801177">Sigurohu që të jesh identifikuar në Chromium në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
@@ -235,6 +240,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6327105987658262776">Nuk ofrohet asnjë përditësim.</translation>
 <translation id="6333502561965082103">Një veprim tjetër në Chromium është në vazhdim. Provo përsëri më vonë.</translation>
 <translation id="6334986366598267305">Tani është më e lehtë të përdorësh Chromium me llogarinë tënde të Google dhe në kompjuter të ndarë.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Administratori yt i fshin automatikisht të dhënat e shfletimit kur ai nuk përdoret për 1 minutë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua ekzistuese do të qëndrojnë të hapura.}other{Administratori yt i fshin automatikisht të dhënat e shfletimit kur ai nuk përdoret për # minuta. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua ekzistuese do të qëndrojnë të hapura.}}</translation>
 <translation id="6373523479360886564">Je i sigurt që dëshiron ta çinstalosh Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Si i përdorim këto të dhëna:<ph name="END_BOLD" /> Chromium mund të përllogarisë interesat e tua. Më vonë, një sajt që ti viziton mund t'i kërkojë Chromium që të shikojë interesat e tua në mënyrë që të personalizojë reklamat që shikon.</translation>
 <translation id="6403826409255603130">Chromium është një shfletues uebi që ekzekuton faqe uebi dhe aplikacione me një shpejtësi jashtëzakonisht të lartë. Është i shpejtë, i qëndrueshëm dhe i lehtë në përdorim. Shfleto në ueb në mënyrë më të sigurt, me mbrojtje të integruar në Chromium kundër mashtrimeve dhe softuerëve keqdashës.</translation>
@@ -364,6 +370,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8986207147630327271">Po shton një profil pune në këtë shfletues dhe po i jep administratorit tënd kontrollin vetëm mbi profilin e punës.</translation>
 <translation id="9019929317751753759">Për ta bërë më të sigurt Chromium, çaktivizuam shtesën e mëposhtme që nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jetë shtuar pa dijeninë tënde.</translation>
 <translation id="9022552996538154597">Identifikohu në Chromium</translation>
+<translation id="907832235989677238">Identifikohu në Chromium. Nëse dëshiron të identifikohesh në një llogari vetëm një herë, mund <ph name="GUEST_LINK_BEGIN" />ta përdorësh pajisjen si vizitor<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9089354809943900324">Chromium nuk është i përditësuar</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium do të hapet përsëri për një orë}other{Chromium do të hapet përsëri për # orë}}</translation>
 <translation id="9106612006984859720">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.1.</translation>

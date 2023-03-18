@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">დაბეჭდილი</translation>
 <translation id="1951012854035635156">ასისტენტი</translation>
 <translation id="1962550982027027473">საჭიროა ნაგულისხმევი APN</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google პროფილის ფოტო</translation>
 <translation id="1979103255016296513">პაროლის შეცვლა დაგვიანებულია</translation>
 <translation id="1999615961760456652">ავტორიზაციის პორტალი</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS-ის რეაგირების დრო მნიშვნელოვნად აღემატება დასაშვებ ზღვარს</translation>
 <translation id="3328783797891415197">ტესტი გაშვებულია</translation>
 <translation id="3340011300870565703">მოწყობილობის მარჯვენა ყურსაცვამის ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">ფანჯრები</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
 <translation id="3369013195428705271">ნამდვილად გსურთ ბეჭდვის ისტორიის მთლიანად გასუფთავება? ბეჭდვის მიმდინარე დავალებები არ წაიშლება.</translation>
 <translation id="3404249063913988450">ეკრანმზოგის ჩართვა</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">შავი და თეთრი</translation>
 <translation id="4145784616224233563">HTTP ქსელის დაცვა</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">ჩვენება</translation>
 <translation id="4155551848414053977">დარწმუნდით, რომ სკანერი ჩართულია და ხელმისაწვდომია თქვენი ქსელისა თუ პირდაპირი კავშირის მეშვეობით</translation>
 <translation id="4159784952369912983">მეწამული</translation>
 <translation id="4170180284036919717">ფოტოს გადაღება</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
 <translation id="4258281355379922695">HTTP რეაგირების დრო</translation>
 <translation id="4271957103967917607">სრულ ეკრანზე ნახვა</translation>
+<translation id="4275663329226226506">მედია</translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="4289849978083912975">სლაიდშოუ</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4985509611418653372">გაშვება</translation>
 <translation id="4987769320337599931">ქსელის დაცვა</translation>
+<translation id="4988526792673242964">გვერდები</translation>
 <translation id="4999333166442584738">ანგარიშის დამალვა</translation>
 <translation id="500920857929044050">ტესტის შეწყვეტა</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">სახელების სერვერი ვერ მოიძებნა</translation>
 <translation id="7942349550061667556">წითელი</translation>
 <translation id="7943235353293548836">კავშირის მუდმივი შენარჩუნების ინტერვალი</translation>
+<translation id="7953669802889559161">შეყვანის მეთოდები</translation>
 <translation id="7955587717700691983">Bluetooth კლავიატურა</translation>
 <translation id="7960831585769876809">ტემპერატურა</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ქსელთან მისაერთებლად გადადით პარამეტრებზე</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">გამოხმაურება</translation>
 <translation id="8045012663542226664">მიკროფონის დადუმება</translation>
 <translation id="8075838845814659848">დარჩენილი მუხტი</translation>
+<translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8082366717211101304">DNS-ის დარეგულირება ვერ მოხერხდა Android აპებიდან</translation>
 <translation id="808894953321890993">პაროლის შეცვლა</translation>
 <translation id="8094062939584182041">ამ პრობლემის თაობაზე ელფოსტით დაკავშირების დაშვება Google-ისთვის</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">ტრაფიკის მთვლელების მოთხოვნა</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">აირჩიეთ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">დეველოპერის ხელსაწყოები</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">დანართი</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">ფონი</translation>
 <translation id="8820457400746201697">გადაიტანეთ შეხების ლურჯი წერტილი მოქმედებაზე. მოსარგებად აირჩიეთ დაკავშირებული კლავიში.</translation>
+<translation id="8820817407110198400">სანიშნეები</translation>
 <translation id="8834539327799336565">ამჟამად დაკავშირებული</translation>
 <translation id="8845001906332463065">დახმარების მიღება</translation>
 <translation id="8855781559874488009">ქსელის დაცვიდან HTTP ვებსაიტებთან დაკავშირება ვერ ხერხდება</translation>

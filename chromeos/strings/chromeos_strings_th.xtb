@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">พิมพ์แล้ว</translation>
 <translation id="1951012854035635156">ผู้ช่วย</translation>
 <translation id="1962550982027027473">ต้องมี APN เริ่มต้น</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">รูปโปรไฟล์ Google</translation>
 <translation id="1979103255016296513">เลยเวลาเปลี่ยนรหัสผ่านแล้ว</translation>
 <translation id="1999615961760456652">แคพทีฟพอร์ทัล</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้อย่างมีนัยสำคัญ</translation>
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
 <translation id="3340011300870565703">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างขวา <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3360306038446926262">หน้าต่าง</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
 <translation id="3404249063913988450">เปิดใช้โปรแกรมรักษาหน้าจอ</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">ขาวดำ</translation>
 <translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">การแสดงผล</translation>
 <translation id="4155551848414053977">ตรวจสอบว่าเครื่องสแกนเปิดอยู่และใช้งานได้ผ่านทางเครือข่ายของคุณหรือการเชื่อมต่อโดยตรง</translation>
 <translation id="4159784952369912983">ม่วง</translation>
 <translation id="4170180284036919717">ถ่ายรูป</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4258281355379922695">เวลาในตอบสนองของ HTTP</translation>
 <translation id="4271957103967917607">ดูแบบเต็มหน้าจอ</translation>
+<translation id="4275663329226226506">สื่อ</translation>
 <translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="4289849978083912975">แสดงภาพสไลด์</translation>
 <translation id="4297501883039923494">หยุดพิมพ์ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">ตรวจสอบเครื่องสแกนแล้วลองอีกครั้ง ตรวจดูว่ามีพื้นที่ว่างในเครื่องเพียงพอสำหรับบันทึกไฟล์ที่สแกน</translation>
 <translation id="4985509611418653372">เรียกใช้</translation>
 <translation id="4987769320337599931">ไฟร์วอลล์</translation>
+<translation id="4988526792673242964">หน้า</translation>
 <translation id="4999333166442584738">ซ่อนรายงาน</translation>
 <translation id="500920857929044050">หยุดการทดสอบ</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7943235353293548836">ระยะเวลาของ Keepalive ต่อเนื่อง</translation>
+<translation id="7953669802889559161">การป้อนข้อมูล</translation>
 <translation id="7955587717700691983">แป้นพิมพ์บลูทูธ</translation>
 <translation id="7960831585769876809">อุณหภูมิ</translation>
 <translation id="7977800524392185497">ไปที่การตั้งค่าเพื่อเข้าร่วมเครือข่าย <ph name="NETWORK_NAME" /></translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8045012663542226664">ปุ่มปิดเสียงไมโครโฟน</translation>
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
+<translation id="8076492880354921740">แท็บ</translation>
 <translation id="8082366717211101304">ไม่สามารถแปลง DNS จากแอป Android</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8094062939584182041">อนุญาตให้ Google ส่งอีเมลถึงคุณเกี่ยวกับปัญหานี้</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">เลือก <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">แนบ</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">วอลเปเปอร์</translation>
 <translation id="8820457400746201697">ย้ายจุดสัมผัสสีน้ำเงินไปยังการดำเนินการ เลือกแป้นที่เกี่ยวข้องเพื่อปรับแต่ง</translation>
+<translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="8834539327799336565">เชื่อมต่ออยู่</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
 <translation id="8855781559874488009">ไม่สามารถเชื่อมต่อผ่านไฟร์วอลล์ไปยังเว็บไซต์ HTTP</translation>

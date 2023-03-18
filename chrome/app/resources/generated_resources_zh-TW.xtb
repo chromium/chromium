@@ -925,6 +925,7 @@
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。你可以為特定動作自訂按鍵。</translation>
 <translation id="1800502858278951817">沒有任何擴充功能要求讀取及變更 <ph name="SITE_NAME" /> 的權限</translation>
+<translation id="180203835522132923">搜尋鍵 + O 鍵，然後按下 W 鍵</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁無回應。你可以等待網頁回應，也可以離開網頁。</translation>
 <translation id="1803531841600994172">譯文語言</translation>
@@ -1183,6 +1184,7 @@
 <translation id="2023167225947895179">你所輸入的 PIN 碼可能很容易被別人猜到</translation>
 <translation id="202352106777823113">下載時間過長，網路已中止下載。</translation>
 <translation id="2024195579772565064">刪除搜尋引擎</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> 當機了，請按一下這個提示框來重新載入擴充功能。</translation>
 <translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
 <translation id="202918510990975568">請輸入你的密碼以進行安全性與登入設定</translation>
@@ -1259,6 +1261,7 @@
 <translation id="2090165459409185032">如要還原您的帳戶資訊，請前往 google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">登入時自動連線</translation>
 <translation id="2090876986345970080">系統安全性設定</translation>
+<translation id="2091887806945687916">音訊</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />偵錯功能<ph name="END_H3" />
       <ph name="BR" />
       只要啟用 Chrome OS 裝置的偵錯功能，即可在裝置上安裝並測試自訂程式碼。這項功能可讓你：<ph name="BR" />
@@ -3186,6 +3189,7 @@
 <translation id="3778868487658107119">Google 助理可根據你的問題提供解答，或是依指令執行各種操作。它是你專屬的 Google 服務，隨時為你提供協助。</translation>
 <translation id="3780542776224651912"><ph name="BRAND" />無法檢查你的密碼是否在資料侵害事件中外洩，請稍後再試。</translation>
 <translation id="3781742599892759500">Linux 麥克風存取權</translation>
+<translation id="3783725005098956899">顯示記錄</translation>
 <translation id="3783889407390048282">請釋出空間，以免無法存取 Android。</translation>
 <translation id="3784472333786002075">Cookie 是網站所建立的檔案，可分為兩種類型：第一方 Cookie 由你造訪過的網站所建立，也就是網址列所顯示的網站。第三方 Cookie 由其他網站所建立。這類網站通常是在你造訪的網站上提供部分內容 (例如廣告或圖片) 的其他網站。</translation>
 <translation id="3785308913036335955">顯示應用程式捷徑</translation>
@@ -8307,6 +8311,7 @@
 <translation id="8419098111404128271">「<ph name="SEARCH_TEXT" />」的搜尋結果</translation>
 <translation id="8420308167132684745">編輯字典條目</translation>
 <translation id="8421361468937925547">即時字幕 (僅支援英文)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">缺少紙匣</translation>
 <translation id="8424250197845498070">遭到進階保護功能封鎖</translation>
 <translation id="8425213833346101688">變更</translation>
@@ -8980,7 +8985,6 @@
 <translation id="9026731007018893674">下載</translation>
 <translation id="9026852570893462412">正在下載虛擬機器，過程可能需要幾分鐘。</translation>
 <translation id="9027459031423301635">在新分頁中開啟連結(&amp;T)</translation>
-<translation id="9027707169256972235">移除</translation>
 <translation id="9030515284705930323">貴機構尚未為您的帳戶啟用 Google Play 商店。如需瞭解詳情，請與您的管理員聯絡。</translation>
 <translation id="9030754204056345429">較快</translation>
 <translation id="9030785788945687215">Gmail</translation>

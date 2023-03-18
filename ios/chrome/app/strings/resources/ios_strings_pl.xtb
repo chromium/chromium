@@ -374,6 +374,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3595252146048399851">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="3603009562372709545">Kopiuj URL linku</translation>
 <translation id="3607167657931203000">Autouzupełnianie</translation>
+<translation id="3608008480985212611">Zaloguj się, aby zarządzać ustawieniami.</translation>
 <translation id="3609785682760573515">Synchronizuję...</translation>
 <translation id="3631443864840848029">Upewnij się, że zapisujesz bieżące hasło do witryny.</translation>
 <translation id="3638472932233958418">Wstępne wczytywanie stron</translation>
@@ -541,6 +542,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="48274138579728272">Oznacz jako przeczytane</translation>
 <translation id="4833686396768033263">Ostatnie karty są niedostępne</translation>
 <translation id="4833786495304741580">Automatycznie przesyła do Google statystyki użytkowania i raporty o awariach.</translation>
+<translation id="4834499902900503484">Hasła, które zapiszesz po zalogowaniu się w Chrome, będą przechowywane na Twoim koncie Google. Aby wyłączyć tę funkcję, <ph name="BEGIN_LINK" />otwórz ustawienia<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Twoje zakładki, historia, hasła i inne ustawienia przestaną być synchronizowane z Twoim kontem Google.</translation>
 <translation id="4844899002472726590">Wyświetl tematy, które Cię interesują, i wprowadź w nich zmiany</translation>
 <translation id="4848999860252535517">Usunąć hasło do strony <ph name="WEBSITE" />?</translation>
@@ -684,6 +686,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5899314093904173337">Aby udostępnić ten kod QR osobom w pobliżu, pozwól im go zeskanować za pomocą aparatu lub aplikacji do skanowania kodów QR</translation>
 <translation id="5911030830365207728">Tłumacz Google</translation>
 <translation id="5913600720976431809">Opcje tłumaczenia strony</translation>
+<translation id="5922999516621365983">Przeciągnij kartę tutaj, żeby ją przypiąć.</translation>
 <translation id="5938160824633642847">Na urządzeniu brakuje wolnego miejsca. Zwolnij miejsce i spróbuj ponownie.</translation>
 <translation id="5948291296578561264">Umożliwia zapisywanie zdjęć w ich bibliotece.</translation>
 <translation id="5951816930277761335">Udostępnij link</translation>

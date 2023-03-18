@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">প্রিন্ট করা হয়েছে</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">ডিফল্ট APN দিতে হবে</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google প্রোফাইল ফটো</translation>
 <translation id="1979103255016296513">পাসওয়ার্ড পরিবর্তন করার সময় পেরিয়ে গেছে</translation>
 <translation id="1999615961760456652">ক্যাপটিভ পোর্টাল</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
 <translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
 <translation id="3340011300870565703">ডিভাইসের ডানদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
+<translation id="3360306038446926262">{0}Windows{/0}</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
 <translation id="3369013195428705271">আপনি কি সব প্রিন্ট ইতিহাস মুছে ফেলতে চান? এখন যে প্রিন্ট করার কাজগুলি চলছে সেগুলি মোছা হবে না।</translation>
 <translation id="3404249063913988450">স্ক্রিন সেভার চালু করুন</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">সাদা ও কালো</translation>
 <translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">প্রদর্শন</translation>
 <translation id="4155551848414053977">আপনার স্ক্যানার চালু এবং নেটওয়ার্ক বা সরাসরি কানেকশনের মাধ্যমে উপলভ্য রয়েছে তা দেখে নিন</translation>
 <translation id="4159784952369912983">বেগুনি</translation>
 <translation id="4170180284036919717">ফটো তুলুন</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="4258281355379922695">HTTP লেটেন্সি</translation>
 <translation id="4271957103967917607">ফুল স্ক্রিন দেখুন</translation>
+<translation id="4275663329226226506">মাধ্যম</translation>
 <translation id="4289540628985791613">ওভারভিউ</translation>
 <translation id="4289849978083912975">স্লাইড শো</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">স্ক্যানার চেক করে আবার চেষ্টা করুন। স্ক্যান করা ফাইল সেভ করার জন্য পর্যাপ্ত লোকাল স্পেস আছে কিনা দেখে নিন।</translation>
 <translation id="4985509611418653372">চালান</translation>
 <translation id="4987769320337599931">ফায়ারওয়াল</translation>
+<translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
 <translation id="4999333166442584738">রিপোর্ট লুকান</translation>
 <translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">ডোমেন নেম সার্ভার খুঁজে পাওয়া যায়নি</translation>
 <translation id="7942349550061667556">লাল</translation>
 <translation id="7943235353293548836">অবিরাম সক্রিয়-রাখা ইন্টারভ্যাল</translation>
+<translation id="7953669802889559161">ইনপুট</translation>
 <translation id="7955587717700691983">ব্লুটুথ কীবোর্ড</translation>
 <translation id="7960831585769876809">তাপমাত্রা</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> নেটওয়ার্কে যোগ দিতে, সেটিংস বিকল্পে যান</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8045012663542226664">'মাইক্রোফোন মিউট কী'</translation>
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
+<translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8082366717211101304">অ্যানড্রয়েড অ্যাপ থেকে ডিএনএস সংক্রান্ত সমস্যার সমাধান করা যাচ্ছে না</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="8094062939584182041">এই সমস্যা সম্পর্কে আপনাকে ইমেল পাঠানোর জন্য Google-কে অনুমতি দিন</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">ট্রাফিক কাউন্টার্স-এর অনুরোধ করুন</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> বেছে নিন</translation>
+<translation id="8151185429379586178">ডেভেলপার টুল</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">অ্যাটাচ করুন</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">ওয়াই-ফাই</translation>
 <translation id="8818152010000655963">ওয়ালপেপার</translation>
 <translation id="8820457400746201697">কোনও অ্যাকশন পারফর্ম করতে নীল রঙের টাচ পয়েন্ট সরান। কাস্টমাইজ করতে, অ্যাসোসিয়েট 'কী' বেছে নিন।</translation>
+<translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8834539327799336565">এখন কানেক্ট করা রয়েছে</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
 <translation id="8855781559874488009">ফায়ারওয়ালের সাহায্যে HTTP ওয়েবসাইটের সাথে কানেক্ট করা যাচ্ছে না</translation>

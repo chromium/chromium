@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Udvidet – klik for at skjule.</translation>
 <translation id="2586657967955657006">Udklipsholder</translation>
 <translation id="2597457036804169544">Anvend ikke Mørkt tema på websites</translation>
+<translation id="2606760465469169465">Automatisk verificering</translation>
 <translation id="2621115761605608342">Tillad JavaScript for et bestemt website.</translation>
 <translation id="2653659639078652383">Send</translation>
 <translation id="2677748264148917807">Forlad</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Senest besøgt i dag</translation>
 <translation id="5225463052809312700">Slå kamera til</translation>
+<translation id="5229337741799419985">Denne indstilling fungerer uden at identificere dig eller give websites tilladelse til at se din browserhistorik</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5264323282659631142">Fjern "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Træk fra toppen, og tryk på tilbageknappen igen for at afslutte fuld skærm.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>
+<translation id="6701547804986694515">Når du besøger et website, kan Chrome gemme oplysninger, der bekræfter, at du ikke er en bot. Når du derefter bruger nettet, kan websites ved hjælp af Chrome tjekke og verificere via et website, du tidligere har besøgt, at du sandsynligvis er en rigtig person</translation>
 <translation id="6722828510648505498">Bloker loginmeddelelser fra identitetstjenester</translation>
 <translation id="6746124502594467657">Flyt ned</translation>
 <translation id="6749077623962119521">Vil du nulstille tilladelserne?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Vælg et billede</translation>
 <translation id="8801436777607969138">Bloker JavaScript for et bestemt website.</translation>
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
+<translation id="8805385115381080995">Dette skaber færre afbrydelser, når du bruger nettet, da det er mindre sandsynligt, at et website beder dig om at verificere, at du er en rigtig person</translation>
 <translation id="8816026460808729765">Bloker adgang til sensorer på websites</translation>
 <translation id="8823559166155093873">Bloker cookies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Denne side er farlig</translation>
 <translation id="9201023452444595544">Alle offlinedata ryddes</translation>
 <translation id="930525582205581608">Vil du glemme dette website?</translation>
+<translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="967624055006145463">Lagrede data</translation>
 </translationbundle>

@@ -921,6 +921,7 @@
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
 <translation id="1800502858278951817">没有任何扩展程序曾请求读取和更改 <ph name="SITE_NAME" /> 数据</translation>
+<translation id="180203835522132923">搜索键 + O，然后按 W</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
 <translation id="1803531841600994172">翻译目标语言</translation>
@@ -1177,6 +1178,7 @@
 <translation id="2023167225947895179">该 PIN 码可能很容易被猜到</translation>
 <translation id="202352106777823113">下载时间过长，网络已停止下载。</translation>
 <translation id="2024195579772565064">删除搜索引擎</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559">“<ph name="APP_NAME" />”崩溃了。点击此信息框，以重新加载该扩展程序。</translation>
 <translation id="2028449514182362831">所有需要使用移动传感器的功能都将无法正常运行</translation>
 <translation id="202918510990975568">您必须输入密码，才能配置安全性和登录</translation>
@@ -1253,6 +1255,7 @@
 <translation id="2090165459409185032">要恢复您的帐号信息，请访问 google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">在您登录后自动连接</translation>
 <translation id="2090876986345970080">系统安全设置</translation>
+<translation id="2091887806945687916">声音</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />调试功能<ph name="END_H3" />
       <ph name="BR" />
       您可在 Chrome 操作系统设备上启用调试功能，以便在相应设备上安装并测试自定义代码。启用这些功能后，您可以：<ph name="BR" />
@@ -3179,6 +3182,7 @@
 <translation id="3778868487658107119">您可以向它询问各种问题，指示它处理各种事务。它是专门为您配置的 Google 助手，随时为您提供帮助。</translation>
 <translation id="3780542776224651912"><ph name="BRAND" />无法检查您的密码是否遭遇了数据泄露。请稍后重试。</translation>
 <translation id="3781742599892759500">Linux 麦克风使用权限</translation>
+<translation id="3783725005098956899">显示日志</translation>
 <translation id="3783889407390048282">请释放空间，以免失去对 Android 的访问权限。</translation>
 <translation id="3784472333786002075">Cookie 是由网站创建的文件。这些文件分为两类：第一方 Cookie 是由您访问过的网站创建而成，其网站会显示在地址栏中；第三方 Cookie 是由其他网站创建而成，这些网站拥有您在所访问网站上看到的部分内容（比如广告或图片）。</translation>
 <translation id="3785308913036335955">显示应用快捷方式</translation>
@@ -8304,6 +8308,7 @@
 <translation id="8419098111404128271">与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="8420308167132684745">修改字典条目</translation>
 <translation id="8421361468937925547">实时字幕（仅支持英文）</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">缺少送纸盘</translation>
 <translation id="8424250197845498070">已被“高级保护”机制屏蔽</translation>
 <translation id="8425213833346101688">更改</translation>
@@ -8979,7 +8984,6 @@
 <translation id="9026731007018893674">下载</translation>
 <translation id="9026852570893462412">此过程可能需要几分钟的时间。正在下载虚拟机。</translation>
 <translation id="9027459031423301635">在新标签页中打开链接(&amp;T)</translation>
-<translation id="9027707169256972235">移除</translation>
 <translation id="9030515284705930323">贵单位还没有为您的帐号启用 Google Play 商店。如需更多信息，请与管理员联系。</translation>
 <translation id="9030754204056345429">较快</translation>
 <translation id="9030785788945687215">Gmail</translation>

@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Sikeres nyomtatás</translation>
 <translation id="1951012854035635156">Segéd</translation>
 <translation id="1962550982027027473">Szükség van alapértelmezett APN-re</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profilfotó</translation>
 <translation id="1979103255016296513">Esedékes a jelszó frissítése</translation>
 <translation id="1999615961760456652">Hitelesítési portál</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">A DNS várakozási ideje jelentősen az engedélyezhető határérték felett van</translation>
 <translation id="3328783797891415197">A teszt fut</translation>
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Ablakok</translation>
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3369013195428705271">Biztosan törli a nyomtatási előzményeket? A folyamatban lévő nyomtatási feladatok nem szakadnak meg.</translation>
 <translation id="3404249063913988450">Képernyővédő engedélyezése</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Fekete-fehér</translation>
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
 <translation id="4147897805161313378">Google Fotók</translation>
+<translation id="4150201353443180367">Megjelenítés</translation>
 <translation id="4155551848414053977">Győződjön meg arról, hogy a szkenner be van kapcsolva, és hogy hozzáférhető a hálózaton vagy közvetlen kapcsolaton keresztül</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4170180284036919717">Fotó készítése</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="4258281355379922695">HTTP várakozási idő</translation>
 <translation id="4271957103967917607">Teljes képernyős nézet</translation>
+<translation id="4275663329226226506">Média</translation>
 <translation id="4289540628985791613">Áttekintés</translation>
 <translation id="4289849978083912975">Diavetítés</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Ellenőrizze a szkennert, majd próbálja újra. Győződjön meg arról, hogy van elég helyi tárhely a beolvasott fájlok mentéséhez.</translation>
 <translation id="4985509611418653372">Futtatás</translation>
 <translation id="4987769320337599931">Tűzfal</translation>
+<translation id="4988526792673242964">Oldal</translation>
 <translation id="4999333166442584738">Jelentés elrejtése</translation>
 <translation id="500920857929044050">Teszt leállítása</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Nem találhatók névszerverek</translation>
 <translation id="7942349550061667556">Piros</translation>
 <translation id="7943235353293548836">Folyamatos keepalive-időintervallum</translation>
+<translation id="7953669802889559161">Beviteli módszerek</translation>
 <translation id="7955587717700691983">Bluetooth-billentyűzet</translation>
 <translation id="7960831585769876809">Hőmérséklet</translation>
 <translation id="7977800524392185497">A(z) <ph name="NETWORK_NAME" />-hálózathoz való csatlakozáshoz nyissa meg a Beállításokat</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
 <translation id="8045012663542226664">Mikrofon némítása</translation>
 <translation id="8075838845814659848">Töltöttségi szint</translation>
+<translation id="8076492880354921740">Lapok</translation>
 <translation id="8082366717211101304">Nem sikerült feloldani a DNS-t androidos alkalmazásokról</translation>
 <translation id="808894953321890993">Jelszó módosítása</translation>
 <translation id="8094062939584182041">A problémáról szóló e-mail küldésének engedélyezése a Google számára</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Forgalomszámlálók kérése</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> kiválasztása</translation>
+<translation id="8151185429379586178">Fejlesztői eszközök</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Csatolás</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Háttérkép</translation>
 <translation id="8820457400746201697">A kék érintési pont áthelyezése egy műveletre. Válasszon billentyűt a személyre szabáshoz.</translation>
+<translation id="8820817407110198400">Könyvjelzők</translation>
 <translation id="8834539327799336565">Csatlakoztatva</translation>
 <translation id="8845001906332463065">Súgó</translation>
 <translation id="8855781559874488009">Nem lehet a tűzfalon keresztül HTTP-protokollt használó webhelyekhez csatlakozni</translation>

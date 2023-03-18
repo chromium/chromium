@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Syöttölaite (yksipuolinen)</translation>
 <translation id="1643449475550628585">Vaihda taustakuva päivittäin</translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="1651925268237749928">Olet valinnut jaetun albumin. Muut voivat lisätä tai muuttaa kuvia. Taustakuvaan saatetaan käyttää kuvia, jotka eivät tällä hetkellä sisälly tähän albumiin.</translation>
 <translation id="1662989795263954667">Pysähtynyt – Muste loppu</translation>
 <translation id="1664796644829245314">Esikatsele: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
@@ -120,6 +121,7 @@
 <translation id="1947737735496445907">Tulostettu</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">Oletus-APN on pakollinen</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profiilikuva</translation>
 <translation id="1979103255016296513">Salasanan vaihto myöhässä</translation>
 <translation id="1999615961760456652">Captive portal</translation>
@@ -240,6 +242,7 @@
 <translation id="319101249942218879">Avatarkuva vaihdettu</translation>
 <translation id="3192947282887913208">Äänitiedostot</translation>
 <translation id="3199982728237701504">Syöttölaite (kaksipuolinen)</translation>
+<translation id="3201315366910775591">Muut voivat päivittää jaettuja albumeita</translation>
 <translation id="3211671540163313381">Näppäinkartan suuntanäppäimet</translation>
 <translation id="3226405216343213872">Haetaan skannereita</translation>
 <translation id="3226657629376379887">Asettelun toimintovalikko</translation>
@@ -253,6 +256,7 @@
 <translation id="3310640316857623290">DNS-viive merkittävästi yli sallitun rajan</translation>
 <translation id="3328783797891415197">Testi käynnissä</translation>
 <translation id="3340011300870565703">Laitteen oikean kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
 <translation id="3404249063913988450">Ota näytönsäästäjä käyttöön</translation>
@@ -340,6 +344,7 @@
 <translation id="4131410914670010031">Mustavalkoinen</translation>
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
 <translation id="4147897805161313378">Google Kuvat</translation>
+<translation id="4150201353443180367">Näyttö</translation>
 <translation id="4155551848414053977">Varmista, että skanneri on päällä ja käytettävissä verkkosi tai suoran yhteyden kautta</translation>
 <translation id="4159784952369912983">Violetti</translation>
 <translation id="4170180284036919717">Ota kuva</translation>
@@ -355,6 +360,7 @@
 <translation id="4250229828105606438">Kuvakaappaus</translation>
 <translation id="4258281355379922695">HTTP-viive</translation>
 <translation id="4271957103967917607">Katso koko näytöllä</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="4289849978083912975">Diaesitys</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
@@ -447,6 +453,7 @@
 <translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
 <translation id="4985509611418653372">Suorita</translation>
 <translation id="4987769320337599931">Palomuuri</translation>
+<translation id="4988526792673242964">Sivut</translation>
 <translation id="4999333166442584738">Piilota raportti</translation>
 <translation id="500920857929044050">Lopeta testi</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -658,6 +665,7 @@
 <translation id="6838167112108853532">APN:ää ei voi poistaa käytöstä tai kokonaan. Varmista, että liitetyt, käyttöön otetut APN:t on poistettu käytöstä tai kokonaan.</translation>
 <translation id="6853312040151791195">Tyhjentymisnopeus</translation>
 <translation id="6889786074662672253">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laite käynnistyy uudelleen. Voit pienentää ikkunan. Uudelleenkäynnistyksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
+<translation id="6900701049656042631">Tässä albumissa ei ole kuvia. Jos haluat lisätä kuvia, avaa <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Palaa: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skannerin kansi on auki. Sulje kansi ja yritä uudelleen.</translation>
 <translation id="6911383237894364323">Mediapalvelimiin ei saada yhteyttä</translation>
@@ -772,6 +780,7 @@
 <translation id="7936303884198020182">Nimipalvelimia ei löydy</translation>
 <translation id="7942349550061667556">Punainen</translation>
 <translation id="7943235353293548836">Pysyvä keepalive-viestin toistoväli</translation>
+<translation id="7953669802889559161">Syötteet</translation>
 <translation id="7955587717700691983">Bluetooth-näppäimistö</translation>
 <translation id="7960831585769876809">Lämpötila</translation>
 <translation id="7977800524392185497">Liity <ph name="NETWORK_NAME" />-verkkoon avaamalla Asetukset</translation>
@@ -784,6 +793,7 @@
 <translation id="8041089156583427627">Lähetä palautetta</translation>
 <translation id="8045012663542226664">Mikrofonin mykistys</translation>
 <translation id="8075838845814659848">Virtaa jäljellä</translation>
+<translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8082366717211101304">DNS:n selvitys ei onnistu Android-sovelluksilla</translation>
 <translation id="808894953321890993">Vaihda salasana</translation>
 <translation id="8094062939584182041">Salli Googlen lähettää sinulle sähköpostia tästä ongelmasta</translation>
@@ -793,6 +803,7 @@
 <translation id="8132480444149501833">Pyydä liikennelaskureita</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Valitse <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Kehittäjän työkalut</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Liitä</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
@@ -861,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Taustakuva</translation>
 <translation id="8820457400746201697">Siirrä sininen kosketuspiste toimintoon. Muokkaa sitä valitsemalla siihen liittyvä näppäin.</translation>
+<translation id="8820817407110198400">Kirjanmerkit</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8855781559874488009">HTTP-sivustoihin ei voi yhdistää palomuurin läpi</translation>

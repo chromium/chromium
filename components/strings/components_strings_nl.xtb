@@ -868,7 +868,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Voer Verbindingsdiagnose uit<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Naar <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Geen}=1{inloggegevens voor één account}other{inloggegevens voor # accounts}}</translation>
 <translation id="3141093262818886744">Toch openen</translation>
 <translation id="3141641372357166056">Geen beslissing over toestemming</translation>
 <translation id="3145945101586104090">Kan reactie niet decoderen</translation>
@@ -3356,7 +3355,6 @@ Aanvullende informatie:
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">FORMULIER LEEGMAKEN</translation>
 <translation id="936602727769022409">Je kunt de toegang tot je Google-account kwijtraken. Chromium raadt je aan je wachtwoord nu te wijzigen. Je wordt gevraagd in te loggen op je account.</translation>
 <translation id="937457230470581909">Dierentuinen, aquaria en natuurreservaten</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je advertentieonderwerpen zijn gebaseerd op je recente browsegeschiedenis, een lijst met sites die je via Chrome op dit apparaat hebt bezocht.</translation>

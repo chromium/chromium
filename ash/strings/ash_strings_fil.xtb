@@ -427,7 +427,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3151786313568798007">Oryentasyon</translation>
 <translation id="3153444934357957346">Maaari ka lang magkaroon ng hanggang <ph name="MULTI_PROFILE_USER_LIMIT" /> (na) account sa maraming pag-sign in.</translation>
 <translation id="3154351730702813399">Maaaring subaybayan ng admin ng device ang iyong aktibidad sa pag-browse.</translation>
-<translation id="3157931365184549694">Ipanumbalik</translation>
 <translation id="316086887565479535">Mga hindi sinusuportahang app sa template</translation>
 <translation id="3161500364292033097">Isara ang desk at mga window</translation>
 <translation id="316356270129335934">Iniro-roll back ng <ph name="MANAGER" /> ang iyong <ph name="DEVICE_TYPE" />. Mare-reset ang iyong device at made-delete ang lahat ng data.</translation>
@@ -1179,7 +1178,6 @@ Kaka-install lang</translation>
 <translation id="6781002679438061620">Desk 9</translation>
 <translation id="6782182743534150858">Desk 13</translation>
 <translation id="6786750046913594791">Isara ang folder</translation>
-<translation id="6787595647772650851">I-restore ang huling session</translation>
 <translation id="6790428901817661496">I-play</translation>
 <translation id="679368458793552943">Mag-zoom in kapag naka-on ang magnifier</translation>
 <translation id="6801878137098616817">Na-edit kamakailan</translation>

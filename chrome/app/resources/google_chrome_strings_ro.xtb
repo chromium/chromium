@@ -10,6 +10,7 @@
 <translation id="110877069173485804">Acesta este browserul dvs. Chrome</translation>
 <translation id="1125124144982679672">Cine folosește Chrome?</translation>
 <translation id="1142745911746664600">Chrome nu se poate actualiza</translation>
+<translation id="1149651794389918149">Conectează-te la Chrome. Dacă vrei să te conectezi o singură dată la un cont, poți să <ph name="GUEST_LINK_BEGIN" />folosești dispozitivul ca invitat<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Despre sistemul de operare Chrome</translation>
 <translation id="1154147086299354128">&amp;Deschide în Chrome</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
@@ -167,6 +168,7 @@
 <translation id="4147555960264124640">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Google Chrome. Datele Chrome, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu un alt cont. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Se instalează...</translation>
 <translation id="4149882025268051530">Programul de instalare nu a putut decomprima arhiva. Descarcă din nou Google Chrome.</translation>
+<translation id="4153934450158521343">În curând, Chrome se va închide și va șterge datele</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relansează Chrome în cel mult o zi}few{Relansează Chrome în cel mult # zile}other{Relansează Chrome în cel mult # de zile}}</translation>
 <translation id="4205939740494406371">Chrome nu îți poate verifica parolele. Încearcă din nou după 24 de ore sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Se anulează…</translation>
@@ -212,6 +214,7 @@
 <translation id="4970880042055371251">Versiunea sistemului de operare Chrome</translation>
 <translation id="4970947549776831107">Chrome a blocat fișierul deoarece acest tip de fișier este periculos</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Administratorul închide automat Chrome dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Administratorul închide automat Chrome dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Administratorul închide automat Chrome dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="5098668839038261629">Când opțiunea este activată, te vei deconecta de la Chrome</translation>
 <translation id="5132929315877954718">Descoperă aplicații, jocuri, extensii și teme extraordinare pentru Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizează-ți profilul Chrome</translation>
@@ -260,12 +263,14 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Regula de intrare pentru Google Chrome pentru a permite traficul mDNS.</translation>
+<translation id="624230925347970731">Chrome se va închide în curând</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6273793429163604305">Pe locuri…</translation>
 <translation id="6291089322031436445">Aplicații Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome este instalat deja pentru toți utilizatorii de pe computerul tău.</translation>
 <translation id="6326175484149238433">Eliminați din Chrome</translation>
 <translation id="6327105987658262776">Nu este disponibilă nicio actualizare.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de un minut. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}few{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de # minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}other{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de # de minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}}</translation>
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
 <translation id="6493527311031785448">Google Chrome încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -295,6 +300,7 @@
 
 Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot aplica acestui cont. Îți poți gestiona Conturile Google din <ph name="SETTINGS_LINK_BEGIN" />Setări<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chrome. Adăugarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>
+<translation id="7071827361006050863">Chrome va șterge în curând datele de navigare</translation>
 <translation id="7085332316435785646">Alege dacă se include istoricul Chrome pentru experiențe mai personalizate în serviciile Google</translation>
 <translation id="7088681679121566888">Chrome este actualizat</translation>
 <translation id="7098166902387133879">Google Chrome utilizează microfonul.</translation>
@@ -356,6 +362,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8290100596633877290">Hopa! Google Chrome s-a blocat. Repornești acum?</translation>
 <translation id="8342675569599923794">Fișierul este periculos, așadar Chrome l-a blocat.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> site-urile pot stoca informații în Chrome despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Administratorul închide automat Chrome dacă nu este folosit timp de un minut.}few{Administratorul închide automat Chrome dacă nu este folosit timp de # minute.}other{Administratorul închide automat Chrome dacă nu este folosit timp de # de minute.}}</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> Chrome îți poate estima interesele. Ulterior, un site pe care-l accesezi poate solicita browserului Chrome să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="8387459386171870978">Continuă să folosești Chrome</translation>

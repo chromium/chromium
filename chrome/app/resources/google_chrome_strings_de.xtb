@@ -10,6 +10,7 @@
 <translation id="110877069173485804">Dies ist dein persönlicher Chrome-Browser</translation>
 <translation id="1125124144982679672">Wer verwendet gerade Chrome?</translation>
 <translation id="1142745911746664600">Chrome kann nicht aktualisiert werden</translation>
+<translation id="1149651794389918149">Melde dich in Chrome an. Wenn du dich nur einmal in einem Konto anmelden möchtest, kannst du <ph name="GUEST_LINK_BEGIN" />das Gerät als Gast verwenden<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Über ChromeOS</translation>
 <translation id="1154147086299354128">In Chr&amp;ome öffnen</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
@@ -168,6 +169,7 @@
 <translation id="4147555960264124640">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Google Chrome-Profil. Deine Chrome-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
 <translation id="4149882025268051530">Das Installationsprogramm konnte das Archiv nicht dekomprimieren. Lade Google Chrome erneut herunter.</translation>
+<translation id="4153934450158521343">Browserdaten in Chrome werden bald gelöscht und der Browser geschlossen</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome innerhalb eines Tages neu starten}other{Chrome innerhalb von # Tagen neu starten}}</translation>
 <translation id="4205939740494406371">Chrome kann deine Passwörter nicht prüfen. Versuche es in 24 Stunden noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Wird abgebrochen…</translation>
@@ -213,6 +215,7 @@
 <translation id="4970880042055371251">Chrome OS-Version</translation>
 <translation id="4970947549776831107">Chrome hat diese Datei blockiert, weil der Dateityp gefährlich ist</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
 <translation id="5098668839038261629">Wenn aktiviert, wirst du auch aus Chrome abgemeldet</translation>
 <translation id="5132929315877954718">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Google Chrome.</translation>
 <translation id="5139423532931106058">Chrome-Profil personalisieren</translation>
@@ -261,12 +264,14 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome</translation>
+<translation id="624230925347970731">Chrome wird bald geschlossen</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6273793429163604305">Auf die Plätze…</translation>
 <translation id="6291089322031436445">Chrome Dev-Apps</translation>
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf deinem Computer installiert.</translation>
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6327105987658262776">Es ist kein Update verfügbar.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Dein Administrator hat festgelegt, dass Browserdaten automatisch gelöscht werden, wenn Chromium eine Minute lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine aktuellen Tabs bleiben geöffnet.}other{Dein Administrator hat festgelegt, dass Browserdaten automatisch gelöscht werden, wenn Chromium # Minuten lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine aktuellen Tabs bleiben geöffnet.}}</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
 <translation id="6493527311031785448">Google Chrome versucht, <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -296,6 +301,7 @@
 
 Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten möglicherweise für dieses Konto. Du kannst deine Google-Konten in den <ph name="SETTINGS_LINK_BEGIN" />Einstellungen<ph name="SETTINGS_LINK_END" /> verwalten.</translation>
 <translation id="7062128746136194023">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chrome deaktiviert. Das Hinzufügen dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
+<translation id="7071827361006050863">Browserdaten in Chrome werden bald gelöscht</translation>
 <translation id="7085332316435785646">Wähle, ob der Chrome-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
 <translation id="7088681679121566888">Chrome ist auf dem neuesten Stand</translation>
 <translation id="7098166902387133879">Google Chrome verwendet dein Mikrofon.</translation>
@@ -357,6 +363,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8290100596633877290">Google Chrome ist abgestürzt. Jetzt neu starten?</translation>
 <translation id="8342675569599923794">Diese Datei ist schädlich und wurde von Chrome blockiert.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Websites können Daten zu deinen Interessen bei Chrome speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird.}other{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Chrome kann deine Interessen schätzen. Wenn du eine Website besuchst, kann diese von Chrome dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren.</translation>
 <translation id="8387459386171870978">Chrome weiterhin verwenden</translation>

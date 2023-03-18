@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Impresso</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1962550982027027473">Um APN padrão é obrigatório</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Foto do perfil do Google</translation>
 <translation id="1979103255016296513">O prazo para a alteração de senha foi ultrapassado</translation>
 <translation id="1999615961760456652">Portal cativo</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Latência do DNS significativamente acima do limite permitido</translation>
 <translation id="3328783797891415197">Teste em execução</translation>
 <translation id="3340011300870565703">O fone direito tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">Tem certeza de que quer limpar todo o histórico? Os trabalhos de impressão atuais não serão apagados.</translation>
 <translation id="3404249063913988450">Ativar o protetor de tela</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
+<translation id="4150201353443180367">Exibição</translation>
 <translation id="4155551848414053977">Confira se o scanner está ligado e disponível pela rede ou por uma conexão direta</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4170180284036919717">Tirar uma foto</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="4258281355379922695">Latência do HTTP</translation>
 <translation id="4271957103967917607">Ver em tela cheia</translation>
+<translation id="4275663329226226506">Mídia</translation>
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="4289849978083912975">Apresentação de slides</translation>
 <translation id="4297501883039923494">Parado (erro desconhecido)</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Confira o scanner e tente novamente. Confirme se há armazenamento local suficiente para salvar os arquivos digitalizados.</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Páginas</translation>
 <translation id="4999333166442584738">Ocultar relatório</translation>
 <translation id="500920857929044050">Interromper teste</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Nenhum servidor de nomes encontrado</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943235353293548836">Intervalo de sinal de atividade permanente</translation>
+<translation id="7953669802889559161">Entradas</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Para se conectar a uma rede <ph name="NETWORK_NAME" />, acesse as Configurações</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Enviar comentários</translation>
 <translation id="8045012663542226664">Desativar o microfone</translation>
 <translation id="8075838845814659848">Carga restante</translation>
+<translation id="8076492880354921740">Guias</translation>
 <translation id="8082366717211101304">Não foi possível resolver o DNS em apps Android</translation>
 <translation id="808894953321890993">Alterar senha</translation>
 <translation id="8094062939584182041">Permitir que o Google envie um e-mail para você sobre esse problema</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
 <translation id="8143951647992294073">Selecionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Ferramentas para desenvolvedores</translation>
 <translation id="8179976553408161302">Entrar</translation>
 <translation id="8183974620058026102">Anexar</translation>
 <translation id="8206859287963243715">Celular</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Plano de fundo</translation>
 <translation id="8820457400746201697">Mover o ponto de contato azul para uma ação. Selecione a tecla associada para personalizar.</translation>
+<translation id="8820817407110198400">Favoritos</translation>
 <translation id="8834539327799336565">Conectados no momento</translation>
 <translation id="8845001906332463065">Ajuda</translation>
 <translation id="8855781559874488009">O firewall impediu a conexão a sites HTTP</translation>

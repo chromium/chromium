@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Na-print</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">Kinakailangan ng default na APN</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Larawan sa profile sa Google</translation>
 <translation id="1979103255016296513">Overdue na ang pagpapalit ng password</translation>
 <translation id="1999615961760456652">Captive Portal</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
+<translation id="3360306038446926262">Mga Window</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
 <translation id="3404249063913988450">I-enable ang screen saver</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Itim at puti</translation>
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Display</translation>
 <translation id="4155551848414053977">Tiyaking naka-on ang scanner at available ito sa pamamagitan ng iyong network o ng isang direktang koneksyon</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4170180284036919717">Kumuha ng larawan</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">Latency ng HTTP</translation>
 <translation id="4271957103967917607">Tingnan nang Full Screen</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="4289849978083912975">Slide show</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Suriin ang scanner at subukan ulit. Tiyaking may sapat na lokal na space para mag-save ng mga na-scan na file.</translation>
 <translation id="4985509611418653372">Patakbuhin</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Mga Page</translation>
 <translation id="4999333166442584738">Itago ang ulat</translation>
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7943235353293548836">Persistent keepalive Interval</translation>
+<translation id="7953669802889559161">Mga Input</translation>
 <translation id="7955587717700691983">Bluetooth na keyboard</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Para sumali sa isang <ph name="NETWORK_NAME" /> network, pumunta sa Mga Setting</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8045012663542226664">Pang-mute ng mikropono</translation>
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
+<translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8094062939584182041">Payagan ang Google na mag-email sa iyo tungkol sa isyung ito</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Humiling ng Mga Traffic Counter</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Piliin ang <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Mga tool ng developer</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">I-attach</translation>
 <translation id="8206859287963243715">Cellular</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8820457400746201697">Ilipat ang asul na touch point sa isang pagkilos. Piliin ang nauugnay na key para mag-customize.</translation>
+<translation id="8820817407110198400">Mga Bookmark</translation>
 <translation id="8834539327799336565">Kasalukuyang nakakonekta</translation>
 <translation id="8845001906332463065">Humingi ng tulong</translation>
 <translation id="8855781559874488009">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP na website</translation>

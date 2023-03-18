@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Printată</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1962550982027027473">Este necesar un APN prestabilit</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Fotografie de profil Google</translation>
 <translation id="1979103255016296513">Ai depășit timpul limită pentru schimbarea parolei</translation>
 <translation id="1999615961760456652">Portal captiv</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="3360306038446926262">Ferestre</translation>
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
 <translation id="3404249063913988450">Activează screensaverul</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Alb-negru</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
+<translation id="4150201353443180367">Ecran</translation>
 <translation id="4155551848414053977">Scanerul trebuie să fie pornit și disponibil prin rețea sau prin conexiune directă</translation>
 <translation id="4159784952369912983">Mov</translation>
 <translation id="4170180284036919717">Fotografiază</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4258281355379922695">Latența solicitărilor HTTP</translation>
 <translation id="4271957103967917607">Afișează pe tot ecranul</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Prezentare generală</translation>
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
 <translation id="4985509611418653372">Rulează</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Pagini</translation>
 <translation id="4999333166442584738">Ascunde raportul</translation>
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Nu s-au găsit servere de nume</translation>
 <translation id="7942349550061667556">Roșu</translation>
 <translation id="7943235353293548836">Interval keep-alive persistent</translation>
+<translation id="7953669802889559161">Metode de introducere a textului</translation>
 <translation id="7955587717700691983">Tastatură Bluetooth</translation>
 <translation id="7960831585769876809">Temperatură</translation>
 <translation id="7977800524392185497">Pentru a te conecta la o rețea <ph name="NETWORK_NAME" />, accesează Setările</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Trimiteți feedback</translation>
 <translation id="8045012663542226664">Dezactivează sunetul microfonului</translation>
 <translation id="8075838845814659848">Nivel de încărcare rămas</translation>
+<translation id="8076492880354921740">File</translation>
 <translation id="8082366717211101304">Nu se poate rezolva solicitarea DNS din aplicații pentru Android</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
 <translation id="8094062939584182041">Permite ca Google să-ți trimită e-mail despre această problemă</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Solicită contoare de trafic</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selectează <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Instrumente dezvoltator</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Atașează</translation>
 <translation id="8206859287963243715">Celular</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Imaginea de fundal</translation>
 <translation id="8820457400746201697">Mută punctul de contact albastru pe o acțiune. Selectează tasta asociată pentru personalizare.</translation>
+<translation id="8820817407110198400">Marcaje</translation>
 <translation id="8834539327799336565">Conectat</translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8855781559874488009">Nu se poate conecta la site-uri HTTP prin firewall</translation>

@@ -154,6 +154,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1715293566947629045">Deaktiverer profilen. Vent et par minutter.</translation>
 <translation id="1719094688023114093">Livetekstning er aktiveret.</translation>
 <translation id="1720011244392820496">Aktivér Wi-Fi-synkronisering</translation>
+<translation id="1720230731642245863">Hotspottet er deaktiveret</translation>
 <translation id="1731815243805539470">Skift til forrige bruger</translation>
 <translation id="1733996486177697563">Skift mellem Mørkt og Lyst tema. Hold fingeren på skrivebordet, og vælg derefter Baggrund og stil.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" kan ses af Bluetooth-enheder.</translation>
@@ -422,7 +423,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3151786313568798007">Retning</translation>
 <translation id="3153444934357957346">Du kan kun have op til <ph name="MULTI_PROFILE_USER_LIMIT" /> konti i samlet login fra flere konti.</translation>
 <translation id="3154351730702813399">Administratoren af enheden kan overvåge din browseraktivitet.</translation>
-<translation id="3157931365184549694">Gendan</translation>
 <translation id="316086887565479535">Der er apps, som ikke understøttes, i skabelonen</translation>
 <translation id="3161500364292033097">Luk skrivebord og vinduer</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> skifter til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>
@@ -589,6 +589,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="394485226368336402">Lydindstillinger</translation>
 <translation id="3945319193631853098">Tryk for at afslutte konfigurationen</translation>
 <translation id="3945867833895287237">Opretter forbindelse til hotspot…</translation>
+<translation id="3950272133184491871">Vil du logge ud nu?</translation>
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="3962859241508114581">Forrige nummer</translation>
 <translation id="3969043077941541451">Fra</translation>
@@ -987,6 +988,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5920710855273935292">Mikrofonen er slået fra.</translation>
+<translation id="5924855612669061715">Hotspottet er aktiveret</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er aktiveret.</translation>
 <translation id="5947494881799873997">Fortryd</translation>
 <translation id="595202126637698455">Sporing af ydelsen er aktiveret</translation>
@@ -1163,7 +1165,6 @@ Installeret for nylig</translation>
 <translation id="6781002679438061620">Skrivebord 9</translation>
 <translation id="6782182743534150858">Skrivebord 13</translation>
 <translation id="6786750046913594791">Luk mappe</translation>
-<translation id="6787595647772650851">Gendan seneste session</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="679368458793552943">Zoom ind, når luppen er aktiveret</translation>
 <translation id="6801878137098616817">Redigeret for nylig</translation>
@@ -1361,6 +1362,7 @@ Installeret for nylig</translation>
 <translation id="7848989271541991537">Flyttet til side <ph name="PAGE_NUMBER" />, række <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Stryg opad med tre fingre for at åbne oversigten</translation>
+<translation id="7862292329216937261">Hvis du vil bruge enheden som gæst, skal du logge ud og derefter vælge Anvend som gæst nederst på skærmen.</translation>
 <translation id="7866482334467279021">til</translation>
 <translation id="7868900307798234037">Låser op med fingeraftryk</translation>
 <translation id="7872195908557044066">Din administrator er ved at nulstille dit eSIM. Vent et par minutter.</translation>
@@ -1403,6 +1405,7 @@ Installeret for nylig</translation>
 <translation id="8036504271468642248">Forrige sætning</translation>
 <translation id="8042893070933512245">Åbn menuen med indstillinger for hjælpefunktioner</translation>
 <translation id="8044457332620420407">Baggrundslyset på tastaturet er slukket</translation>
+<translation id="8048077032188362328">Din administrator har deaktiveret hotspottet.</translation>
 <translation id="8048123526339889627">Bluetooth-indstillinger</translation>
 <translation id="8051716679295756675">Der findes allerede en skabelon med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>
@@ -1619,6 +1622,7 @@ Installeret for nylig</translation>
 <translation id="9098969848082897657">Sæt telefonen på lydløs</translation>
 <translation id="9100887602489003640">Profilen tilføjes. Vent et par minutter.</translation>
 <translation id="9105450214093926548">Det er ikke muligt at logge ind med en yderligere bruger, mens Lacros-browseren kører. Du skal i stedet bruge en yderligere browserprofil i Lacros, eller du kan lukke Lacros og prøve igen.</translation>
+<translation id="9120448753905017833">Vi har deaktiveret Wi-Fi, og der bruges hotspot via mobildata. Dette kan medføre dataomkostninger.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Der kan ikke optages beskyttet indhold</translation>
 <translation id="9161053988251441839">FORESLÅEDE APPS</translation>

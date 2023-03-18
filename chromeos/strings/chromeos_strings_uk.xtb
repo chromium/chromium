@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Пристрій автоподачі документів (односторонній)</translation>
 <translation id="1643449475550628585">Змінювати фоновий малюнок щодня</translation>
 <translation id="1644574205037202324">Історія</translation>
+<translation id="1651925268237749928">Ви вибрали спільний альбом. Інші користувачі можуть додавати й змінювати фотографії в ньому. Для фонового малюнка можуть використовуватися фотографії, яких немає в цьому альбомі.</translation>
 <translation id="1662989795263954667">Зупинено – закінчилося чорнило</translation>
 <translation id="1664796644829245314">Попередньо переглянути файл "<ph name="PREVIEW_OBJECT" />"</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
@@ -120,6 +121,7 @@
 <translation id="1947737735496445907">Надруковано</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1962550982027027473">Укажіть точку доступу за умовчанням</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Фотографія профілю Google</translation>
 <translation id="1979103255016296513">Час для зміни пароля минув</translation>
 <translation id="1999615961760456652">Адаптивний портал</translation>
@@ -240,6 +242,7 @@
 <translation id="319101249942218879">Аватар змінено</translation>
 <translation id="3192947282887913208">Аудіофайли</translation>
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
+<translation id="3201315366910775591">Інші користувачі можуть оновлювати спільні альбоми</translation>
 <translation id="3211671540163313381">Панель керування для опції "Прив’язка клавіш"</translation>
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3226657629376379887">Меню дій для макета</translation>
@@ -253,6 +256,7 @@
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
 <translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">ОС Windows</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
 <translation id="3404249063913988450">Активувати заставку</translation>
@@ -340,6 +344,7 @@
 <translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="4145784616224233563">Брандмауер HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
+<translation id="4150201353443180367">Екран</translation>
 <translation id="4155551848414053977">Переконайтеся, що сканер увімкнений і доступний у мережі або через пряме з'єднання</translation>
 <translation id="4159784952369912983">Пурпуровий</translation>
 <translation id="4170180284036919717">Як зробити фотографію</translation>
@@ -355,6 +360,7 @@
 <translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="4258281355379922695">Затримка HTTP</translation>
 <translation id="4271957103967917607">Переглянути в повноекранному режимі</translation>
+<translation id="4275663329226226506">Медіа-дані</translation>
 <translation id="4289540628985791613">Огляд</translation>
 <translation id="4289849978083912975">Слайд-шоу</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
@@ -447,6 +453,7 @@
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
 <translation id="4985509611418653372">Виконати</translation>
 <translation id="4987769320337599931">Брандмауер</translation>
+<translation id="4988526792673242964">Сторінки</translation>
 <translation id="4999333166442584738">Сховати звіт</translation>
 <translation id="500920857929044050">Зупинити перевірку</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -658,6 +665,7 @@
 <translation id="6838167112108853532">Не вдалося вимкнути або вилучити цю точку доступу. Переконайтеся, що ввімкнені точки доступу, які підключено, вимкнено або вилучено.</translation>
 <translation id="6853312040151791195">Швидкість розряджання</translation>
 <translation id="6889786074662672253">Поки відбувається перезапуск, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Перезапуск може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
+<translation id="6900701049656042631">У цьому альбомі немає фотографій. Щоб додати фото, перейдіть на сторінку <ph name="LINK" />.</translation>
 <translation id="6905724422583748843">Повернутися на сторінку <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Кришка сканера відкрита. Закрийте її та повторіть спробу.</translation>
 <translation id="6911383237894364323">Не вдалося підключитися до медіасерверів</translation>
@@ -772,6 +780,7 @@
 <translation id="7936303884198020182">не знайдено серверів імен</translation>
 <translation id="7942349550061667556">Червоний</translation>
 <translation id="7943235353293548836">Постійний інтервал повідомлення keepalive</translation>
+<translation id="7953669802889559161">Методи введення</translation>
 <translation id="7955587717700691983">Клавіатура з Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7977800524392185497">Щоб приєднатися до мережі <ph name="NETWORK_NAME" />, перейдіть у налаштування</translation>
@@ -784,6 +793,7 @@
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8045012663542226664">Вимкнення звуку мікрофона</translation>
 <translation id="8075838845814659848">Рівень заряду</translation>
+<translation id="8076492880354921740">Вкладки</translation>
 <translation id="8082366717211101304">Не вдається перетворити DNS із додатків для Android</translation>
 <translation id="808894953321890993">Змінити пароль</translation>
 <translation id="8094062939584182041">Дозволити Google надсилати вам електронні листи щодо цієї проблеми</translation>
@@ -793,6 +803,7 @@
 <translation id="8132480444149501833">Надіслати запит на лічильники трафіку</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Вибрати тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />"</translation>
+<translation id="8151185429379586178">Інструменти розробника</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Вкласти</translation>
 <translation id="8206859287963243715">Мобільний</translation>
@@ -861,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Фоновий малюнок</translation>
 <translation id="8820457400746201697">Перемістіть синю точку дотику до дії. Щоб налаштувати, виберіть пов’язану клавішу.</translation>
+<translation id="8820817407110198400">Закладки</translation>
 <translation id="8834539327799336565">Підключено</translation>
 <translation id="8845001906332463065">Отримати довідку</translation>
 <translation id="8855781559874488009">Не вдається підключитися до веб-сайтів HTTP через брандмауер</translation>

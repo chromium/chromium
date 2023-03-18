@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">प्रिन्ट गरियो</translation>
 <translation id="1951012854035635156">सहायक</translation>
 <translation id="1962550982027027473">डिफल्ट APN अनिवार्य रूपमा अन गर्नु पर्छ</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google प्रोफाइल फोटो</translation>
 <translation id="1979103255016296513">पासवर्ड परिवर्तन गर्न ढिला भइसकेको छ</translation>
 <translation id="1999615961760456652">क्याप्टिभ पोर्टल</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्याधिक मात्रामा बढी छ</translation>
 <translation id="3328783797891415197">परीक्षण चलिरहेको छ</translation>
 <translation id="3340011300870565703">यो डिभाइसको दायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369013195428705271">आफूले गरेका प्रिन्टको सबै इतिहास मेटाउन खोज्नुभएकै हो? भइरहेका प्रिन्टिङ कार्यहरू मेटाइने छैनन्।</translation>
 <translation id="3404249063913988450">स्क्रिन सेभर सक्षम पार्नुहोस्</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">कालो र सेतो</translation>
 <translation id="4145784616224233563">HTTP फायरवाल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">प्रदर्शन</translation>
 <translation id="4155551848414053977">स्क्यानर अन छ र उक्त स्क्यानर तपाईंको नेटवर्क वा कुनै डाइरेक्ट कनेक्सनमार्फत प्रयोग गर्न मिल्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="4159784952369912983">बैजनी</translation>
 <translation id="4170180284036919717">फोटो खिच्नुहोस्</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="4258281355379922695">HTTP विलम्बता</translation>
 <translation id="4271957103967917607">फुल स्क्रिनमा हेर्नुहोस्</translation>
+<translation id="4275663329226226506">मिडिया</translation>
 <translation id="4289540628985791613">समीक्षा</translation>
 <translation id="4289849978083912975">Slide show</translation>
 <translation id="4297501883039923494">रोकियो - अज्ञात त्रुटि भयो</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">स्क्यानर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। स्क्यान गरिएका फाइलहरू सुरक्षित गर्न चाहिने पर्याप्त खाली ठाउँ छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4985509611418653372">चलाउनुहोस्</translation>
 <translation id="4987769320337599931">फायरवाल</translation>
+<translation id="4988526792673242964">पृष्ठहरू</translation>
 <translation id="4999333166442584738">रिपोर्ट लुकाउनुहोस्</translation>
 <translation id="500920857929044050">परीक्षण रोक्नुहोस्</translation>
 <translation id="5017508259293544172">छलाङ</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7943235353293548836">पर्सिस्टेन्ट किपअलाइभ इन्टर्भल</translation>
+<translation id="7953669802889559161">इनपुटहरू</translation>
 <translation id="7955587717700691983">ब्लुटुथ भएको किबोर्ड</translation>
 <translation id="7960831585769876809">तापक्रम</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमा कनेक्ट गर्न सेटिङमा जानुहोस्</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8045012663542226664">माइक्रोफोन म्युट गर्ने की</translation>
 <translation id="8075838845814659848">बाँकी ब्याट्री</translation>
+<translation id="8076492880354921740">ट्याबहरू</translation>
 <translation id="8082366717211101304">Android एपहरूबाट DNS समाधान गर्न सकिएन</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8094062939584182041">Google लाई तपाईंलाई यो समस्याका बारेमा इमेल पठाउने अनुमति दिनुहोस्</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">ट्राफिक काउन्टरसम्बन्धी जानकारी माग्दै अनुरोध पठाउनुहोस्</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चयन गर्नुहोस्</translation>
+<translation id="8151185429379586178">विकासकर्ता उपकरणहरू</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8183974620058026102">एट्याच गर्नुहोस्</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">वालपेपर</translation>
 <translation id="8820457400746201697">नीलो रङको टच पोइन्ट सारेर एक्सन पोइन्टमा राख्नुहोस्। सम्बन्धित की कस्टमाइज गर्न सो की चयन गर्नुहोस्।</translation>
+<translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="8834539327799336565">हाल कनेक्ट गरिएका डिभाइस</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8855781559874488009">फायरवाल पार गरेर HTTP वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>

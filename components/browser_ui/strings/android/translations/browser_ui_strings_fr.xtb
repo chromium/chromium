@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Développé – Cliquer pour réduire</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
 <translation id="2597457036804169544">Le thème sombre n'est pas appliqué aux sites</translation>
+<translation id="2606760465469169465">Validation automatique</translation>
 <translation id="2621115761605608342">Autorisez le langage JavaScript pour un site spécifique.</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2677748264148917807">Quitter</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Les contacts que vous sélectionnez seront partagés avec <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Dernière visite : aujourd'hui</translation>
 <translation id="5225463052809312700">Activer la caméra</translation>
+<translation id="5229337741799419985">Ce paramètre ne permet pas de vous identifier ni d'autoriser les sites à consulter votre historique de navigation</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5264323282659631142">Supprimer "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Pour quitter le mode plein écran, faites glisser un doigt du haut vers le bas, puis appuyez sur le bouton Retour.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6689172468748959065">Photos de profil</translation>
 <translation id="6697925417670533197">Téléchargements actifs</translation>
+<translation id="6701547804986694515">Un site auquel vous accédez peut enregistrer des informations dans Chrome pour confirmer que vous n'êtes pas un robot. À mesure que vous naviguez, les sites peuvent vérifier à partir des données de Chrome et d'un site auquel vous avez accédé précédemment que vous êtes probablement une personne bien réelle.</translation>
 <translation id="6722828510648505498">Bloquer les invites de connexion des services d'identité.</translation>
 <translation id="6746124502594467657">Descendre</translation>
 <translation id="6749077623962119521">Réinitialiser les autorisations ?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Sélectionner une image</translation>
 <translation id="8801436777607969138">Bloquez JavaScript sur un site spécifique.</translation>
 <translation id="8803526663383843427">Lorsque la fonctionnalité est activée</translation>
+<translation id="8805385115381080995">La navigation est plus rapide, car les sites sont moins susceptibles de vous demander de confirmer que vous êtes une personne bien réelle</translation>
 <translation id="8816026460808729765">Bloque l'accès aux capteurs pour certains sites</translation>
 <translation id="8823559166155093873">Bloquer les cookies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Cette page est dangereuse</translation>
 <translation id="9201023452444595544">Toutes les données hors connexion vont être effacées</translation>
 <translation id="930525582205581608">Effacer pour ce site ?</translation>
+<translation id="947156494302904893">Les sites auxquels vous accédez peuvent vérifier que vous êtes une personne et non un robot</translation>
 <translation id="967624055006145463">Données stockées</translation>
 </translationbundle>

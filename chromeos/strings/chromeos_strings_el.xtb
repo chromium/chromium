@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Εκτυπώθηκε</translation>
 <translation id="1951012854035635156">Βοηθός</translation>
 <translation id="1962550982027027473">Απαιτείται προεπιλεγμένο APN</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Φωτογραφία προφίλ Google</translation>
 <translation id="1979103255016296513">Εκπρόθεσμη αλλαγή κωδικού πρόσβασης</translation>
 <translation id="1999615961760456652">Πύλη υποδοχής</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3369013195428705271">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλο το ιστορικό εκτύπωσης; Οι τρέχουσες εργασίες εκτύπωσης δεν θα διαγραφούν.</translation>
 <translation id="3404249063913988450">Ενεργοποίηση προφύλαξης οθόνης.</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Ασπρόμαυρο</translation>
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
+<translation id="4150201353443180367">Οθόνη</translation>
 <translation id="4155551848414053977">Βεβαιωθείτε ότι ο σαρωτής είναι ενεργοποιημένος και διαθέσιμος μέσω του δικτύου σας ή μέσω άμεσης σύνδεσης.</translation>
 <translation id="4159784952369912983">Μοβ</translation>
 <translation id="4170180284036919717">Λήψη φωτογραφίας</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Στιγμιότυπο οθόνης</translation>
 <translation id="4258281355379922695">Λανθάνων χρόνος HTTP</translation>
 <translation id="4271957103967917607">Προβολή πλήρους οθόνης</translation>
+<translation id="4275663329226226506">Μέσα</translation>
 <translation id="4289540628985791613">Επισκόπηση</translation>
 <translation id="4289849978083912975">Προβολή διαφανειών</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
 <translation id="4987769320337599931">Τείχος προστασίας</translation>
+<translation id="4988526792673242964">Σελίδες</translation>
 <translation id="4999333166442584738">Απόκρυψη αναφοράς</translation>
 <translation id="500920857929044050">Διακοπή δοκιμής</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7943235353293548836">Χρονικό διάστημα συνεχούς μηνύματος keepalive</translation>
+<translation id="7953669802889559161">Μέθοδοι εισαγωγής</translation>
 <translation id="7955587717700691983">Πληκτρολόγιο Bluetooth</translation>
 <translation id="7960831585769876809">Θερμοκρασία</translation>
 <translation id="7977800524392185497">Για να συμμετάσχετε σε ένα δίκτυο <ph name="NETWORK_NAME" />, μεταβείτε στις Ρυθμίσεις.</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Αποστολή σχολίων</translation>
 <translation id="8045012663542226664">Σίγαση μικροφώνου</translation>
 <translation id="8075838845814659848">Υπόλοιπο φόρτισης</translation>
+<translation id="8076492880354921740">Καρτέλες</translation>
 <translation id="8082366717211101304">Δεν είναι δυνατή η επίλυση DNS από εφαρμογές Android.</translation>
 <translation id="808894953321890993">Αλλαγή κωδικού πρόσβασης</translation>
 <translation id="8094062939584182041">Επιτρέψτε στην Google να σας στέλνει μηνύματα ηλεκτρονικού ταχυδρομείου σχετικά με αυτό το ζήτημα</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Αίτημα για μετρητές επισκεψιμότητας</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Επιλέξτε <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Εργαλεία για προγραμματιστές</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Προσθήκη</translation>
 <translation id="8206859287963243715">Κινητό</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Ταπετσαρία</translation>
 <translation id="8820457400746201697">Μετακινήστε το μπλε σημείο επαφής σε μια ενέργεια. Επιλέξτε το συσχετισμένο πλήκτρο για προσαρμογή.</translation>
+<translation id="8820817407110198400">Σελιδοδείκτες</translation>
 <translation id="8834539327799336565">Συνδεδεμένες αυτήν τη στιγμή</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8855781559874488009">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP.</translation>

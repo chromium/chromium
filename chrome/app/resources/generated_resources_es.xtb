@@ -617,6 +617,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="15373452373711364">Cursor del ratón grande</translation>
 <translation id="1540605929960647700">Habilitar modo Demo</translation>
 <translation id="1541346352678737112">No se ha encontrado ninguna red</translation>
+<translation id="154198613844929213">{0,plural, =0{Eliminando}=1{Se eliminarán en 1 segundo}other{Se eliminarán en # segundos}}</translation>
 <translation id="1542137295869176367">No se han podido actualizar tus datos de inicio de sesión</translation>
 <translation id="1542514202066550870">Esta pestaña está proyectando contenido de realidad virtual a un visor.</translation>
 <translation id="1543284117603151572">Importado desde Edge</translation>
@@ -924,6 +925,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1796588414813960292">Las funciones que requieran reproducir sonido no funcionarán</translation>
 <translation id="1797117170091578105">Juega con el teclado de tu Chromebook. Puedes personalizar teclas con acciones específicas.</translation>
 <translation id="1800502858278951817">Ninguna extensión ha solicitado leer y cambiar <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">Tecla de búsqueda + O y, después, W</translation>
 <translation id="1802624026913571222">Suspender cuando se cierre la tapa</translation>
 <translation id="1802687198411089702">La página no responde. Puedes esperar a que lo haga o cerrarla.</translation>
 <translation id="1803531841600994172">Idioma al que quieres traducir</translation>
@@ -1182,6 +1184,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="2023167225947895179">Es posible que el PIN sea fácil de averiguar</translation>
 <translation id="202352106777823113">La descarga estaba tardando demasiado y la red la ha detenido.</translation>
 <translation id="2024195579772565064">Eliminar buscador</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ha dejado de funcionar. Haz clic en este globo a para volver a cargar la extensión.</translation>
 <translation id="2028449514182362831">Las funciones que necesiten sensores de movimiento no se podrán utilizar</translation>
 <translation id="202918510990975568">Introduce tu contraseña para configurar la seguridad y el inicio de sesión</translation>
@@ -1258,6 +1261,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2090165459409185032">Para recuperar la información de tu cuenta, accede a la página google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Se conecta automáticamente cuando inicias sesión</translation>
 <translation id="2090876986345970080">Configuración de seguridad del sistema</translation>
+<translation id="2091887806945687916">Sonido</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Funciones de depuración<ph name="END_H3" />
       <ph name="BR" />
       Puedes habilitar las funciones de depuración en tu dispositivo ChromeOS para instalar y probar código personalizado en tu dispositivo. De esta forma podrás:<ph name="BR" />
@@ -2011,6 +2015,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="272741954544380994">Buscar imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">No volver a recordármelo</translation>
 <translation id="2727712005121231835">Tamaño real</translation>
+<translation id="2727744317940422214">Se ha producido un error. Envíanos tus comentarios e incluye el hashtag #bruschetta en la descripción. El código de error es <ph name="ERROR" />. No se ha podido eliminar. Es posible que tengas que hacerlo manualmente.</translation>
 <translation id="2729314457178420145">Borrar también los datos de navegación (<ph name="URL" />), lo que puede hacer que se cierre tu sesión en Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome está investigando nuevas formas de reducir el seguimiento y protegerte aún más cuando navegues por Internet. Además, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> y te permite gestionarlos. Así, los sitios que visites podrán solicitar información a Chrome sobre tus intereses para mostrarte anuncios.</translation>
 <translation id="2730029791981212295">Creando copia de seguridad de las aplicaciones y archivos de Linux</translation>
@@ -3185,6 +3190,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3778868487658107119">Puedes hacerle preguntas e indicarle tareas para que las realice. Esta función, siempre lista para ayudarte, te permite utilizar Google de forma personalizada.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> no puede comprobar tus contraseñas en busca de brechas de seguridad de datos. Inténtalo de nuevo más tarde.</translation>
 <translation id="3781742599892759500">Acceso a micrófono en Linux</translation>
+<translation id="3783725005098956899">Mostrar registro</translation>
 <translation id="3783889407390048282">Libera espacio para no perder el acceso a Android.</translation>
 <translation id="3784472333786002075">Las cookies son archivos que crean los sitios web. Existen dos tipos de cookies: las cookies propias las crea el sitio web al que accedes. El sitio web se muestra en la barra de direcciones. Las cookies de terceros las crean otros sitios web. Parte del contenido que ves en el sitio web que visitas, como anuncios o imágenes, pertenece a esos otros sitios web.</translation>
 <translation id="3785308913036335955">Mostrar acceso directo de aplicaciones</translation>
@@ -4326,6 +4332,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, detalles</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}other{{COUNT} marcadores eliminados}}</translation>
+<translation id="4819323978093861656">{0,plural, =0{Cerrando}=1{Se cerrarán en 1 segundo}other{Se cerrarán en # segundos}}</translation>
 <translation id="4819607494758673676">Notificaciones del Asistente de Google</translation>
 <translation id="4820236583224459650">Definir como ticket activo</translation>
 <translation id="4821935166599369261">Perfiles &amp;habilitados</translation>
@@ -4755,6 +4762,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5225463052809312700">Activar cámara</translation>
 <translation id="5227679487546032910">Avatar verde azulado predeterminado</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
+<translation id="5229337741799419985">Este ajuste funciona sin identificarte ni permitir que los sitios vean tu historial de navegación</translation>
 <translation id="5230516054153933099">Ventana</translation>
 <translation id="5233019165164992427">Puerto de depuración NaCl</translation>
 <translation id="5233231016133573565">ID de proceso</translation>
@@ -4916,6 +4924,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5372579129492968947">No fijar extensión</translation>
 <translation id="5372632722660566343">Continuar sin cuenta</translation>
 <translation id="5375318608039113175">Para usar Compartir con Nearby con estos contactos, añade a tus contactos las direcciones de correo electrónico vinculadas a sus cuentas de Google.</translation>
+<translation id="5375577102295339548">Los sitios pueden ayudar a verificar que no eres un bot</translation>
 <translation id="5376094717770783089">Solicita acceso</translation>
 <translation id="5376169624176189338">Haz clic para retroceder una página o pulsa unos segundos para ver el historial</translation>
 <translation id="5376931455988532197">El archivo es demasiado grande.</translation>
@@ -4950,6 +4959,9 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">De tu cuenta de Google</translation>
 <translation id="5411022484772257615">No se ha podido completar el registro de cuenta de centro educativo</translation>
+<translation id="5411856344659127989">Si quieres añadir una cuenta para otra persona, <ph name="LINK_BEGIN" />añade una persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
+
+Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta cuenta. Puedes gestionar tus cuentas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="5413640305322530561">Más información sobre los datos de diagnóstico y de uso</translation>
 <translation id="5414198321558177633">Actualizando la ficha del perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="5414566801737831689">Leer los iconos de los sitios web que visites</translation>
@@ -5296,6 +5308,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5723967018671998714">Las cookies de terceros están bloqueadas en el modo Incógnito</translation>
 <translation id="5724642200346111167">Los datos de sitios se borrarán del dispositivo cuando cierres todas las ventanas</translation>
 <translation id="5727728807527375859">Las extensiones, las aplicaciones y los temas pueden dañar tu ordenador. ¿Seguro que quieres continuar?</translation>
+<translation id="5728235544432023605">El envío de contenido no responde. Detenlo desde <ph name="DEVICE_NAME" />.</translation>
 <translation id="5728450728039149624">Opciones de bloqueo de pantalla Smart Lock</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pega&amp;r y acceder</translation>
@@ -6365,6 +6378,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6700093763382332031">Bloqueo de la SIM del móvil</translation>
 <translation id="6700480081846086223">Enviar <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">No se ha podido obtener el perfil.</translation>
+<translation id="6701547804986694515">Con Chrome, los sitios que visitas pueden guardar información que verifica que eres no eres un bot. A medida que sigas navegando, los sitios podrán realizar comprobaciones con Chrome y verificar, con un sitio que hayas visitado anteriormente, que es probable que seas una persona real.</translation>
 <translation id="6701824422332982935">Vuelve a cargar la página para usar estas extensiones</translation>
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6703212423117969852">Puedes volver a intentarlo después en Chrome.</translation>
@@ -7143,6 +7157,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7409735910987429903">Los sitios web podrían enviar ventanas emergentes para mostrarte anuncios o utilizar redirecciones para llevarte a sitios web que quizás no quieras visitar.</translation>
 <translation id="7409854300652085600">Marcadores importados.</translation>
 <translation id="7410344089573941623">Preguntar si <ph name="HOST" /> quiere acceder a la cámara y al micrófono</translation>
+<translation id="7410421966064092098">Los sitios no pueden ayudar a verificar que no eres un bot</translation>
 <translation id="7410852728357935715">Enviar a un dispositivo</translation>
 <translation id="7411614333737930931">Reinicia el dispositivo y vuelve a intentarlo</translation>
 <translation id="741204030948306876">Sí, acepto</translation>
@@ -7548,6 +7563,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7758450972308449809">Ajusta los extremos de la pantalla</translation>
 <translation id="7760004034676677601">¿Es esta la página de inicio que esperabas?</translation>
 <translation id="7762024824096060040">No se puede usar esta cuenta</translation>
+<translation id="7762243782113123335">Se ha producido un error. Envíanos tus comentarios e incluye el hashtag #bruschetta en la descripción. El código de error es <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Añadir dirección</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> desde <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -8299,6 +8315,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8419098111404128271">Resultados de búsqueda de "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">Editar entradas de diccionario</translation>
 <translation id="8421361468937925547">Subtítulos automáticos (solo en inglés)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Falta la bandeja</translation>
 <translation id="8424250197845498070">Bloqueado por Protección Avanzada</translation>
 <translation id="8425213833346101688">Cambiar</translation>
@@ -8647,6 +8664,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8740247629089392745">Puedes darle este Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configuración ya casi está lista, así que ha llegado la hora de explorar.</translation>
 <translation id="8740672167979365981">Actualización de ChromeOS necesaria</translation>
 <translation id="8741944563400125534">Guía de configuración de accesibilidad con interruptores</translation>
+<translation id="8742395827132970586">No se ha podido instalar. Eliminando.</translation>
 <translation id="8742998548129056176">Esta página muestra información general sobre el dispositivo y su uso (como el nivel de batería, la actividad del sistema y en las aplicaciones, y los errores). Sirve para mejorar Android, y parte de los datos recogidos también mejoran las aplicaciones y ayudan a los partners de Google, como los desarrolladores de Android, a mejorar sus productos y aplicaciones.</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8745034592125932220">No tiene permiso para guardar datos en tu dispositivo</translation>
@@ -8713,6 +8731,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8804419452060773146">Se abre en</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mover pestaña a otra ventana}other{Mover pestañas a otra ventana}}</translation>
 <translation id="8805140816472474147">Confirma los ajustes de sincronización para iniciarla.</translation>
+<translation id="8805385115381080995">La navegación es más rápida porque es menos probable que un sitio te pida que verifiques que eres una persona real</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> te permite volver a abrir las pestañas cerradas por error</translation>
 <translation id="8807588541160250261">Cuando no haya ningún dispositivo conectado</translation>
 <translation id="8807632654848257479">Estable</translation>
@@ -8869,6 +8888,9 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="894360074127026135">Certificado Step-Up International de Netscape</translation>
 <translation id="8943937581166190941">Una extensión está usando un dispositivo HID</translation>
 <translation id="8944099748578356325">Consumirá batería de forma más rápida (carga actual: <ph name="BATTERY_PERCENTAGE" />%)</translation>
+<translation id="8944725102565796255">Si quieres usar esta cuenta solo una vez, puedes <ph name="GUEST_LINK_BEGIN" />usar el dispositivo como invitado<ph name="GUEST_LINK_END" />. Si quieres añadir una cuenta para otra persona, <ph name="LINK_BEGIN" />añade una persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
+
+Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta cuenta. Puedes gestionar tus cuentas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Tamaño del icono</translation>
 <translation id="8946359700442089734">Las funciones de depuración no se han habilitado completamente en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Buena</translation>
@@ -8967,7 +8989,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9026731007018893674">descarga</translation>
 <translation id="9026852570893462412">Descargando la máquina virtual. Este proceso puede tardar unos minutos.</translation>
 <translation id="9027459031423301635">Abrir enlace en una &amp;pestaña nueva</translation>
-<translation id="9027707169256972235">Quitar</translation>
 <translation id="9030515284705930323">Tu organización no ha habilitado Google Play Store en tu cuenta. Ponte en contacto con el administrador para obtener más información.</translation>
 <translation id="9030754204056345429">Más rápida</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -9210,6 +9231,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="942532530371314860"><ph name="APP_NAME" /> está compartiendo audio y una pestaña de Chrome.</translation>
 <translation id="944799160843436808">No se ha podido configurar Steam en Chromebook</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
+<translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>
 <translation id="947526284350604411">Tu respuesta</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> no puede abrir los archivos de esta carpeta porque son archivos del sistema</translation>

@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Prentað</translation>
 <translation id="1951012854035635156">Aðstoðarmaður</translation>
 <translation id="1962550982027027473">Sjálfgefinn aðgangsstaður er nauðsynlegur</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google prófílmynd</translation>
 <translation id="1979103255016296513">Breyting á aðgangsorði komin fram yfir tíma</translation>
 <translation id="1999615961760456652">Innskráningarsíða</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS-biðtími er töluvert yfir leyfðum þröskuldi</translation>
 <translation id="3328783797891415197">Próf í gangi</translation>
 <translation id="3340011300870565703">Rafhleðsla hægra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Gluggar</translation>
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3369013195428705271">Viltu örugglega hreinsa allan prentferil? Prentverk sem eru í gangi verða ekki hreinsuð.</translation>
 <translation id="3404249063913988450">Virkja skjávara</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Svarthvítt</translation>
 <translation id="4145784616224233563">HTTP-eldveggur</translation>
 <translation id="4147897805161313378">Google-myndir</translation>
+<translation id="4150201353443180367">Skjár</translation>
 <translation id="4155551848414053977">Gakktu úr skugga um að kveikt sé á skannanum og hann tiltækur í gegnum nettengingu eða beintengingu</translation>
 <translation id="4159784952369912983">Purpurarauður</translation>
 <translation id="4170180284036919717">Taka mynd</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="4258281355379922695">HTTP-biðtími</translation>
 <translation id="4271957103967917607">Skoða á öllum skjánum</translation>
+<translation id="4275663329226226506">Margmiðlun</translation>
 <translation id="4289540628985791613">Yfirlit</translation>
 <translation id="4289849978083912975">Skyggnusýning</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Athugaðu skannann og reyndu aftur. Gakktu úr skugga um að nægilegt pláss sé á tækinu fyrir skannaðar skrár.</translation>
 <translation id="4985509611418653372">Keyra</translation>
 <translation id="4987769320337599931">Eldveggur</translation>
+<translation id="4988526792673242964">Síður</translation>
 <translation id="4999333166442584738">Fela skýrslu</translation>
 <translation id="500920857929044050">Stöðva próf</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Engir nafnaþjónar fundust</translation>
 <translation id="7942349550061667556">Rauður</translation>
 <translation id="7943235353293548836">Viðvarandi bil til að halda tengingu</translation>
+<translation id="7953669802889559161">Innsláttur</translation>
 <translation id="7955587717700691983">Bluetooth-lyklaborð</translation>
 <translation id="7960831585769876809">Hitastig</translation>
 <translation id="7977800524392185497">Opnaðu stillingarnar til að tengjast <ph name="NETWORK_NAME" /> netkerfi</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8045012663542226664">Slökkva á hljóðnema</translation>
 <translation id="8075838845814659848">Hleðsla eftir</translation>
+<translation id="8076492880354921740">Flipar</translation>
 <translation id="8082366717211101304">Ekki er hægt að leysa úr DNS frá Android forritum</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
 <translation id="8094062939584182041">Leyfa Google að senda þér tölvupóst vegna vandamálsins</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Biðja um talningu umferðar</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Velja <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Forritunartól</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Hengja við</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Veggfóður</translation>
 <translation id="8820457400746201697">Færðu bláa snertipunktinn yfir í aðgerð. Veldu tengdan lykil til að sérsníða.</translation>
+<translation id="8820817407110198400">Bókamerki</translation>
 <translation id="8834539327799336565">Tengt núna</translation>
 <translation id="8845001906332463065">Fá hjálp</translation>
 <translation id="8855781559874488009">Ekki er hægt að tengjast HTTP-vefsvæðum í gegnum eldvegg</translation>

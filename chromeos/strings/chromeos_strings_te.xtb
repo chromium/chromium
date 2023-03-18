@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">ప్రింట్ అయింది</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">ఆటోమేటిక్ సెట్టింగ్ APN అవసరం</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google ప్రొఫైల్ ఫోటో</translation>
 <translation id="1979103255016296513">పాస్‌వర్డ్‌ మార్చాల్సిన గడువు ముగిసింది</translation>
 <translation id="1999615961760456652">క్యాప్టివ్ పోర్టల్</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి మించి ఉంది</translation>
 <translation id="3328783797891415197">పరీక్ష రన్ అవుతోంది</translation>
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
+<translation id="3360306038446926262">విండోలు</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ హిస్టరీ మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
 <translation id="3404249063913988450">స్క్రీన్ సేవర్‌ను ఎనేబుల్ చేయి</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
 <translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">డిస్‌ప్లే</translation>
 <translation id="4155551848414053977">స్కానర్ ఆన్ చేయబడి ఉందని, అలాగే నెట్‌వర్క్ లేదా ప్రత్యక్ష కనెక్షన్ ద్వారా అందుబాటులో ఉందని నిర్ధారించుకోండి</translation>
 <translation id="4159784952369912983">వంగపండు రంగు</translation>
 <translation id="4170180284036919717">ఫోటో తీయండి</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="4258281355379922695">HTTP ప్రతిస్పందన సమయం</translation>
 <translation id="4271957103967917607">ఫుల్ స్క్రీన్‌లో చూడండి</translation>
+<translation id="4275663329226226506">మీడియా</translation>
 <translation id="4289540628985791613">స్థూలదృష్టి</translation>
 <translation id="4289849978083912975">స్లయిడ్ షో</translation>
 <translation id="4297501883039923494">ఆగిపోయింది - తెలియని ఎర్రర్</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
 <translation id="4987769320337599931">ఫైర్‌వాల్</translation>
+<translation id="4988526792673242964">పేజీలు</translation>
 <translation id="4999333166442584738">రిపోర్ట్‌ను దాచు</translation>
 <translation id="500920857929044050">పరీక్షను ఆపండి</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">పేరుతో సర్వర్‌లు కనుగొనబడలేదు</translation>
 <translation id="7942349550061667556">ఎరుపు</translation>
 <translation id="7943235353293548836">నిరంతర ఎక్స్‌టెన్షన్ యాక్టివిటీకీ సంబంధించిన ఇంట‌ర్‌వెల్</translation>
+<translation id="7953669802889559161">ఇన్‌పుట్‌లు</translation>
 <translation id="7955587717700691983">బ్లూటూత్ కీబోర్డ్</translation>
 <translation id="7960831585769876809">ఉష్ణోగ్రత</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> నెట్‌వర్క్‌లో చేరడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
 <translation id="8045012663542226664">మైక్రోఫోన్ మ్యూట్</translation>
 <translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
+<translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8082366717211101304">Android యాప్‌ల నుండి DNSను పరిష్కరించడం సాధ్యపడదు</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
 <translation id="8094062939584182041">ఈ సమస్యకు గురించి మీకు ఈమెయిల్ చేయడానికి Googleకు అనుమతినివ్వండి</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">ట్రాఫిక్ కౌంటర్‌ల కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ని ఎంచుకోండి</translation>
+<translation id="8151185429379586178">డెవలపర్ సాధనాలు</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">అటాచ్ చేయండి</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">వాల్‌పేపర్</translation>
 <translation id="8820457400746201697">నీలం రంగు టచ్ పాయింట్‌ను యాక్షన్ పాయింట్‌కు తరలించండి. అనుకూలంగా మార్చడానికి అనుబంధిత కీని ఎంచుకోండి.</translation>
+<translation id="8820817407110198400">బుక్‌మార్క్‌లు</translation>
 <translation id="8834539327799336565">ప్రస్తుతం కనెక్ట్ చేయబడింది</translation>
 <translation id="8845001906332463065">సహాయం పొందండి</translation>
 <translation id="8855781559874488009">HTTP వెబ్‌సైట్‌లకు ఫైర్‌వాల్ ద్వారా కనెక్ట్ చేయడం సాధ్యపడదు</translation>

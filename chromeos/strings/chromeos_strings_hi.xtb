@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">प्रिंट किया गया</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">डिफ़ॉल्ट एपीएन चालू करना ज़रूरी है</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google खाते पर प्रोफ़ाइल फ़ोटो</translation>
 <translation id="1979103255016296513">पासवर्ड बदलने का समय निकल चुका है</translation>
 <translation id="1999615961760456652">कैप्टिव पोर्टल</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
 <translation id="3328783797891415197">टेस्ट चल रहा है</translation>
 <translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
 <translation id="3404249063913988450">स्क्रीन सेवर चालू करें</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
 <translation id="4145784616224233563">एचटीटीपी फ़ायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">डिसप्ले</translation>
 <translation id="4155551848414053977">पक्का करें कि स्कैनर चालू हो और आपके नेटवर्क या डायरेक्ट कनेक्शन के ज़रिए उपलब्ध हो</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4170180284036919717">फ़ोटो लें</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4258281355379922695">एचटीटीपी अनुरोधों में इंतज़ार का समय</translation>
 <translation id="4271957103967917607">फ़ुल स्क्रीन में देखें</translation>
+<translation id="4275663329226226506">मीडिया</translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4289849978083912975">स्लाइड शो</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">स्कैनर की जांच करके फिर से कोशिश करें. पक्का करें कि स्कैन की गई फ़ाइलों को सेव करने के लिए, डिवाइस में खाली जगह हो.</translation>
 <translation id="4985509611418653372">चलाएं</translation>
 <translation id="4987769320337599931">फ़ायरवॉल</translation>
+<translation id="4988526792673242964">पेज</translation>
 <translation id="4999333166442584738">रिपोर्ट छिपाएं</translation>
 <translation id="500920857929044050">टेस्ट बंद करें</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">कोई भी नाम सर्वर नहीं मिला</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7943235353293548836">परसिस्टेंट कीपअलाइव इंटरवल</translation>
+<translation id="7953669802889559161">इनपुट</translation>
 <translation id="7955587717700691983">ब्लूटूथ से कनेक्ट होने वाले कीबोर्ड</translation>
 <translation id="7960831585769876809">तापमान</translation>
 <translation id="7977800524392185497">किसी <ph name="NETWORK_NAME" /> नेटवर्क से जुड़ने के लिए, सेटिंग पर जाएं</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8045012663542226664">माइक्रोफ़ोन को म्यूट करने का बटन</translation>
 <translation id="8075838845814659848">इतने प्रतिशत चार्ज होना बाकी है</translation>
+<translation id="8076492880354921740">टैब</translation>
 <translation id="8082366717211101304">Android ऐप्लिकेशन से डीएनएस की समस्या ठीक नहीं की जा सकती</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
 <translation id="8094062939584182041">Google को इस समस्या के बारे में ईमेल भेजने की अनुमति दें</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">ट्रैफ़िक काउंटर का अनुरोध करें</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चुनें</translation>
+<translation id="8151185429379586178">डेवलपर टूल</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">अटैच करें</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">वाई-फ़ाई </translation>
 <translation id="8818152010000655963">वॉलपेपर</translation>
 <translation id="8820457400746201697">नीले रंग के टच पॉइंट को कार्रवाई में ले जाएं. पसंद के मुताबिक बनाने के लिए, बटन चुनें.</translation>
+<translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8834539327799336565">फ़िलहाल, कनेक्ट किए गए डिवाइस</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8855781559874488009">फ़ायरवॉल के ज़रिए, एचटीटीपी वेबसाइटों से नहीं जोड़ा जा सकता</translation>

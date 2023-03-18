@@ -12,6 +12,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="110877069173485804">Det här är Chrome</translation>
 <translation id="1125124144982679672">Vem ska använda Chrome?</translation>
 <translation id="1142745911746664600">Det gick inte att uppdatera Chrome</translation>
+<translation id="1149651794389918149">Logga in i Chrome. Om du bara vill logga in en gång med ett konto kan du <ph name="GUEST_LINK_BEGIN" />använda enheten som gäst<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Om Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Öppna i Chrome</translation>
 <translation id="1203500561924088507">Tack för att du installerat programmet. Du måste starta om webbläsaren innan du använder <ph name="BUNDLE_NAME" />.</translation>
@@ -172,6 +173,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4147555960264124640">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Google Chrome-profil. Dina Chrome-uppgifter, t.ex. dina appar, bokmärken, din historik, dina lösenord och andra inställningar, knyts permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dessa uppgifter till ett annat konto. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installerar...</translation>
 <translation id="4149882025268051530">Det gick inte att packa upp arkivet med installationsfilen. Ladda ned Google Chrome igen.</translation>
+<translation id="4153934450158521343">Chrome avslutas snart och data raderas</translation>
 <translation id="4191857738314598978">{0,plural, =1{Starta om Chrome inom en dag}other{Starta om Chrome inom # dagar}}</translation>
 <translation id="4205939740494406371">Chrome kan inte kontrollera dina lösenord. Försök igen om 24 timmar eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Avbryter …</translation>
@@ -217,6 +219,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4970880042055371251">Chrome OS-version</translation>
 <translation id="4970947549776831107">Den här filen blockerades av Chrome eftersom den här typen av filer är farliga</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Administratören avslutar Chrome automatiskt när det inte använts på en minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Administratören avslutar Chrome automatiskt när det inte använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="5098668839038261629">När inställningen är aktiverad loggas du också ut från Chrome</translation>
 <translation id="5132929315877954718">Upptäck fantastiska program, spel, tillägg och teman för Google Chrome.</translation>
 <translation id="5139423532931106058">Anpassa din Chrome-profil</translation>
@@ -269,12 +272,14 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Regel som tillåter inkommande mDNS-trafik för Google Chrome.</translation>
+<translation id="624230925347970731">Chrome avslutas snart</translation>
 <translation id="6247557882553405851">Google Lösenordshantering</translation>
 <translation id="6273793429163604305">Klara …</translation>
 <translation id="6291089322031436445">Appar i Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome har redan installerats för alla användare på datorn.</translation>
 <translation id="6326175484149238433">Ta bort från Chrome</translation>
 <translation id="6327105987658262776">Det finns ingen tillgänglig uppdatering.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Administratören raderar automatiskt webbinformation när Chromium inte använts på en minut. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}other{Administratören raderar automatiskt webbinformation när Chromium inte använts på # minuter. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}}</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6418662306461808273">Vill du byta till en befintlig Chrome-profil?</translation>
 <translation id="6493527311031785448">Google Chrome försöker att <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -304,6 +309,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 
 Behörigheter som du redan har gett webbplatser och appar kan gälla för det här kontot. Du kan hantera dina Google-konton i <ph name="SETTINGS_LINK_BEGIN" />inställningarna<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome. Det är inte tillåtet att lägga till denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7071827361006050863">Webbinformation raderas snart i Chrome</translation>
 <translation id="7085332316435785646">Välj om du vill inkludera Chrome-historiken och få en mer anpassad upplevelse i Googles tjänster</translation>
 <translation id="7088681679121566888">Chrome har uppdaterats</translation>
 <translation id="7098166902387133879">Google Chrome använder din mikrofon.</translation>
@@ -365,6 +371,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8290100596633877290">Hoppsan! Google Chrome har kraschat. Vill du starta om nu?</translation>
 <translation id="8342675569599923794">Filen är farlig och har blockerats av Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om dina intressen med Chrome. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Administratören avslutar Chrome automatiskt när det inte använts på en minut.}other{Administratören avslutar Chrome automatiskt när det inte använts på # minuter.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Chrome kan göra en uppskattning av dina intressen. Senare kan en webbplats fråga efter dina intressen i Chrome för att anpassa vilka annonser som visas.</translation>
 <translation id="8387459386171870978">Fortsätt att använda Chrome</translation>

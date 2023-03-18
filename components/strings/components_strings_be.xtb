@@ -683,6 +683,7 @@
 <translation id="259821504105826686">Фатаграфічнае і лічбавае мастацтва</translation>
 <translation id="2601150049980261779">Фільмы пра каханне</translation>
 <translation id="2604589665489080024">Поп-музыка</translation>
+<translation id="2606760465469169465">Аўтаматычная праверка</translation>
 <translation id="2610561535971892504">Капіруецца адным націсканнем</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" /> наступную інфармацыю:
         <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Паспрабаваць запусціць дыягностыку падключэння<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Перайсці на <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Няма}=1{даныя ўваходу для 1 уліковага запісу}one{даныя ўваходу для # уліковага запісу}few{даныя ўваходу для # уліковых запісаў}many{даныя ўваходу для # уліковых запісаў}other{даныя ўваходу для # уліковага запісу}}</translation>
 <translation id="3141093262818886744">Усё роўна адкрыць</translation>
 <translation id="3141641372357166056">рашэнне адносна згоды яшчэ не прынята</translation>
 <translation id="3145945101586104090">Не ўдалося дэкадаваць адказ</translation>
@@ -1899,6 +1899,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Як кіраваць сваімі данымі.<ph name="END_BOLD" /> Chrome аўтаматычна выдаляе сайты, дададзеныя ў спіс больш чым 4 тыдні таму назад. Сайт, які вы наведаеце паўторна, можа з'явіцца ў спісе зноў. Вы можаце забараніць прапаноўваць вам рэкламу канкрэтнаму сайту або наогул адключыць рэкламу, якая прапануецца сайтамі, у любы час у наладах Chrome.</translation>
 <translation id="5610142619324316209">Праверыць падключэнне</translation>
 <translation id="5610807607761827392">Кіраваць карткамі і адрасамі можна ў <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Захаваць ва ўліковым запісе</translation>
 <translation id="561165882404867731">Перакласці старонку з дапамогай Перакладчыка Google</translation>
 <translation id="5612720917913232150"><ph name="URL" /> запытвае доступ да вашага месцазнаходжання</translation>
 <translation id="561669346091975195">Тэлеперадачы на тэму фантастыкі і фэнтэзі</translation>
@@ -3186,6 +3187,7 @@
 <translation id="8806285662264631610">Тавары для ванны і цела</translation>
 <translation id="8807160976559152894">Абрэзка пасля кожнай старонкі</translation>
 <translation id="8809203544698246977">Заблакіраваныя тэмы будуць паказвацца тут</translation>
+<translation id="8811470563853401328">Захаваць адрас ва ўліковым запісе?</translation>
 <translation id="8813277370772331957">Нагадаць пазней</translation>
 <translation id="8814707942599948500">Канверт C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб абнавіць браўзер Chrome праз яго налады, націсніце Tab, затым Enter</translation>
@@ -3279,6 +3281,7 @@
 <translation id="9042617223719777575">Вялікая ёмістасць</translation>
 <translation id="9044359186343685026">Выкарыстоўваць Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />.–.<ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Каб выканаць дзеянні <ph name="ACTION_LIST" />, задайце для палітыкі <ph name="POLICY_NAME" /> значэнне <ph name="POLICY_VALUE" />.</translation>
 <translation id="9048662076076074925">24 x 36 цаляў</translation>
 <translation id="9049981332609050619">Вы спрабавалі трапіць на дамен <ph name="DOMAIN" />, але сервер выдаў несапраўдны сертыфікат.</translation>
 <translation id="9050666287014529139">Фраза-пароль</translation>
@@ -3358,7 +3361,6 @@
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="922152298093051471">Наладзіць Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">АЧЫСЦІЦЬ ФОРМУ</translation>
 <translation id="936602727769022409">Вы можаце страціць доступ да свайго Уліковага запісу Google. Chromium рэкамендуе змяніць пароль. Вас папросяць увайсці ва ўліковы запіс.</translation>
 <translation id="937457230470581909">Заапаркі, акіянарыумы і запаведнікі</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Якія даныя выкарыстоўваюцца.<ph name="END_BOLD" /> Тэмы вашай рэкламы асноўваюцца на нядаўняй гісторыі прагляду сайтаў – спісе сайтаў, якія вы адкрывалі ў Chrome на гэтай прыладзе.</translation>

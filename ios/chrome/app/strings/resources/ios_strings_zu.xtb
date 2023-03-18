@@ -374,6 +374,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3595252146048399851">Ungahlala ukhetha ukuthi yini ezovunyelaniswa <ph name="BEGIN_LINK" />kumasethingi<ph name="END_LINK" />. I-Google ingase iqondanise nomuntu siqu i-Search namanye amasevisi ngokususelwe emlandweni wakho.</translation>
 <translation id="3603009562372709545">Kopisha i-URL yesixhumanisi</translation>
 <translation id="3607167657931203000">Gcwalisa ngokuzenzakalela idatha</translation>
+<translation id="3608008480985212611">Ngena ngemvume ukuze uphathe okuncanyelwayo kwakho.</translation>
 <translation id="3609785682760573515">Iyavumelanisa...</translation>
 <translation id="3631443864840848029">Qiniseka ukuthi ulondoloza iphasiwedi yakho yamanje yaleli sayithi.</translation>
 <translation id="3638472932233958418">Layisha ngaphambili amakhasi wewebhu</translation>
@@ -541,6 +542,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="48274138579728272">Maka njengokufundiwe</translation>
 <translation id="4833686396768033263">Amathebhu wakamuva Awatholakali</translation>
 <translation id="4833786495304741580">Ithumela ngokuzenzakalela izibalo zokusetshenziswa nemibiko yokuphahlazeka ku-Google.</translation>
+<translation id="4834499902900503484">Uma ungene ngemvume ku-Chrome, amaphasiwedi owalondolozayo azongena ku-Google Account yakho (<ph name="BEGIN_LINK" />). Ukuvala lokhu, <ph name="END_LINK" />iya kumasethingi.</translation>
 <translation id="4840495572919996524">Amabhukhimakhi akho, umlando, amaphasiwedi, nokuningi ngeke kusavunyelaniswa ku-akhawunti yakho ye-Google.</translation>
 <translation id="4844899002472726590">Bona futhi hlela izihloko onentshisekelo kuzo</translation>
 <translation id="4848999860252535517">Sula Iphasiwedi ye-<ph name="WEBSITE" /></translation>
@@ -684,6 +686,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5899314093904173337">Ukuze wabelane nabantu abaseduze, bavumele ukuthi baskene le khodi ye-QR ngekhamera noma ngohlelo lokusebenza lokuskena i-QR</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Izinketho zokuhumusha ikhasi</translation>
+<translation id="5922999516621365983">Hudula ithebhu lapha ukuze uyiphine.</translation>
 <translation id="5938160824633642847">Idivayisi yakho isicishe igcwele. Khulula isikhala uphinde uzame futhi.</translation>
 <translation id="5948291296578561264">Lokhu kukuvumela ukuthi ulondoloze izithombe kulabhulali yakho yezithombe.</translation>
 <translation id="5951816930277761335">Yabelana Ngelinki</translation>
@@ -1134,6 +1137,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8952559610785099500">Engeza Iphasiwedi</translation>
 <translation id="8953046091948372197">Uzothola amabhukhimakhi wakho lapha</translation>
 <translation id="895541991026785598">Bika inkinga</translation>
+<translation id="8971545611707025079">Hlola Futhi</translation>
 <translation id="8974714402877957201">1. Vula Amasethingi we-iPad</translation>
 <translation id="8976382372951310360">Usizo</translation>
 <translation id="8976414606286374109">Amakhadi alondolozwa ku-akhawunti yakho ye-Google.</translation>

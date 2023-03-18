@@ -623,6 +623,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="15373452373711364">Velik miškin kazalec</translation>
 <translation id="1540605929960647700">Omogočanje predstavitvenega načina</translation>
 <translation id="1541346352678737112">Ni omrežja</translation>
+<translation id="154198613844929213">{0,plural, =0{Brisanje.}=1{Brisanje čez: 1 sekundo}one{Brisanje čez: # sekundo}two{Brisanje čez: # sekundi}few{Brisanje čez: # sekunde}other{Brisanje čez: # sekund}}</translation>
 <translation id="1542137295869176367">Podatkov za prijavo ni bilo mogoče posodobiti.</translation>
 <translation id="1542514202066550870">Ta zavihek predvaja vsebino VR v slušalkah z mikrofonom.</translation>
 <translation id="1543284117603151572">Uvoženo iz brskalnika Edge</translation>
@@ -938,6 +939,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1796588414813960292">Funkcije, ki potrebujejo zvok, ne bodo delovale.</translation>
 <translation id="1797117170091578105">Igrajte s tipkovnico Chromebooka. Tipke lahko prilagodite določenim dejanjem.</translation>
 <translation id="1800502858278951817">Nobena razširitev ni zahtevala branja in spreminjanja spletnega mesta <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">Tipka za iskanje + O, nato W</translation>
 <translation id="1802624026913571222">Preklop v stanje pripravljenosti, ko je pokrov zaprt</translation>
 <translation id="1802687198411089702">Ta spletna stran se ne odziva. Lahko počakate ali jo zaprete.</translation>
 <translation id="1803531841600994172">Jezik prevoda</translation>
@@ -1197,6 +1199,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="2023167225947895179">Kodo PIN je morda preprosto uganiti</translation>
 <translation id="202352106777823113">Prenos je trajal predolgo in ga je ustavilo omrežje.</translation>
 <translation id="2024195579772565064">Izbris iskalnika</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559">Razširitev <ph name="APP_NAME" /> se je zrušila. Kliknite ta oblaček, da jo znova naložite.</translation>
 <translation id="2028449514182362831">Funkcije, ki potrebujejo tipala gibanja, ne bodo delovale</translation>
 <translation id="202918510990975568">Vnesite geslo, če želite konfigurirati varnost in prijavo</translation>
@@ -1273,6 +1276,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2090165459409185032">Če želite obnoviti podatke računa, pojdite na: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Samodejno se poveže, ko se prijavite.</translation>
 <translation id="2090876986345970080">Varnostna nastavitev sistema</translation>
+<translation id="2091887806945687916">Zvok</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Funkcije za odpravljanje napak<ph name="END_H3" />
       <ph name="BR" />
       Če želite v napravi Chrome OS namestiti in preizkusiti kodo po meri, lahko v njej omogočite funkcije za odpravljanje napak. S tem boste lahko:<ph name="BR" />
@@ -2028,6 +2032,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="272741954544380994">Iskanje slike s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne opominjaj me več</translation>
 <translation id="2727712005121231835">Dejanska velikost</translation>
+<translation id="2727744317940422214">Prišlo je do napake. Pošljite povratne informacije z oznako #bruschetta v opisu. Koda napake je <ph name="ERROR" />. Čiščenje ni uspelo, morda ga bo treba izvesti ročno.</translation>
 <translation id="2729314457178420145">Izbriši tudi podatke brskanja (<ph name="URL" />), s čimer ste lahko odjavljeni iz domene Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome išče nove načine za zmanjšanje sledenja in zagotavljanje, da boste med brskanjem še varnejši. Chrome prav tako <ph name="ESTIMATE_INTERESTS_LINK" /> in omogoča, da jih upravljate. Nato lahko spletna mesta, ki jih obiščete, od Chroma zahtevajo vaša zanimanja, da vam prikažejo oglase.</translation>
 <translation id="2730029791981212295">Varnostno kopiranje aplikacij in datotek za Linux</translation>
@@ -3202,6 +3207,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3778868487658107119">Postavite mu vprašanja ali mu naročite, kaj naj naredi. Je vaš osebni Google, ki vam je vedno pripravljen priskočiti na pomoč.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> ne more preveriti vaših gesel glede podatkovnih kršitev. Poskusite znova pozneje.</translation>
 <translation id="3781742599892759500">Dostop do mikrofona v Linuxu</translation>
+<translation id="3783725005098956899">Prikaz dnevnika</translation>
 <translation id="3783889407390048282">Sprostite prostor, da ne boste izgubili dostopa do Androida.</translation>
 <translation id="3784472333786002075">Piškotki so datoteke, ki jih ustvarijo spletna mesta. Obstajata dve vrsti piškotkov: Piškotke domene ustvari spletno mesto, ki ga obiščete. Spletno mesto je prikazano v naslovni vrstici. Piškotke drugih spletnih mest ustvarijo druga spletna mesta. Ta spletna mesta imajo v lasti nekatero vsebino, na primer oglase ali slike, ki jo vidite na spletnem mestu, ki ga obiščete.</translation>
 <translation id="3785308913036335955">Pokaži bližnjico do aplikacij</translation>
@@ -4345,6 +4351,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="481574578487123132">Povezane naprave</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, podrobnosti</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 zaznamek je izbrisan}one{{COUNT} zaznamek je izbrisan}two{{COUNT} zaznamka sta izbrisana}few{{COUNT} zaznamki so izbrisani}other{{COUNT} zaznamkov je izbrisanih}}</translation>
+<translation id="4819323978093861656">{0,plural, =0{Zapiranje.}=1{Zapiranje čez: 1 sekundo}one{Zapiranje čez: # sekundo}two{Zapiranje čez: # sekundi}few{Zapiranje čez: # sekunde}other{Zapiranje čez: # sekund}}</translation>
 <translation id="4819607494758673676">Obvestila Pomočnika Google</translation>
 <translation id="4820236583224459650">Nastavi kot aktiven kartonček</translation>
 <translation id="4821935166599369261">&amp;Profiliranje je omogočeno</translation>
@@ -4774,6 +4781,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5225463052809312700">Vklopi kamero</translation>
 <translation id="5227679487546032910">Privzeti modrozeleni avatar</translation>
 <translation id="5228579091201413441">Omogoči sinhronizacijo</translation>
+<translation id="5229337741799419985">Ta nastavitev deluje, ne da bi prišlo do vaše osebne prepoznave ali da bi bil spletnim mestom omogočen ogled vaše zgodovine brskanja.</translation>
 <translation id="5230516054153933099">Okno</translation>
 <translation id="5233019165164992427">Vrata za odpravljanje napak NaCl</translation>
 <translation id="5233231016133573565">ID procesa</translation>
@@ -4935,6 +4943,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5372579129492968947">Odpenjanje razširitve</translation>
 <translation id="5372632722660566343">Nadaljuj brez računa</translation>
 <translation id="5375318608039113175">Če želite s temi stiki uporabljati funkcijo Deljenje v bližini, vsakemu od njih dodajte e-poštni naslov, povezan z njegovim računom Google.</translation>
+<translation id="5375577102295339548">Spletna mesta vam lahko pomagajo potrditi, da niste bot</translation>
 <translation id="5376094717770783089">Zahteva dostop</translation>
 <translation id="5376169624176189338">Kliknite, če se želite vrniti nazaj, za ogled zgodovine pa zadržite</translation>
 <translation id="5376931455988532197">Datoteka je prevelika</translation>
@@ -4969,6 +4978,9 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5408750356094797285">Povečava: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Iz računa Google</translation>
 <translation id="5411022484772257615">Vpisa v šolo ni bilo mogoče dokončati</translation>
+<translation id="5411856344659127989">Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
+
+Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljajo za ta račun. Račune Google lahko upravljate v <ph name="SETTINGS_LINK_BEGIN" />nastavitvah<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="5413640305322530561">Preberite več o diagnostičnih podatkih in podatkih o uporabi</translation>
 <translation id="5414198321558177633">Osveževanje seznama profilov. To lahko traja nekaj minut.</translation>
 <translation id="5414566801737831689">Branje ikon spletnih mest, ki jih obiščete</translation>
@@ -5317,6 +5329,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5723967018671998714">Piškotki drugih spletnih mest so blokirani v anonimnem načinu</translation>
 <translation id="5724642200346111167">Podatki spletnih mest se izbrišejo iz naprave, ko zaprete vsa okna</translation>
 <translation id="5727728807527375859">Razširitve, aplikacije in teme lahko škodujejo računalniku. Ali ste prepričani, da želite nadaljevati?</translation>
+<translation id="5728235544432023605">Predvajanje se ne odziva. Ustavite ga v napravi <ph name="DEVICE_NAME" />.</translation>
 <translation id="5728450728039149624">Možnosti zaklepanja zaslona Smart Lock</translation>
 <translation id="5729712731028706266">&amp;Pogled</translation>
 <translation id="5731247495086897348">&amp;Prilepi in nadaljuj</translation>
@@ -6392,6 +6405,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6700093763382332031">Zaklepanje kartice SIM za mobilno omrežje</translation>
 <translation id="6700480081846086223">Predvajanje <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Profila ni bilo mogoče dobiti.</translation>
+<translation id="6701547804986694515">Spletno mesto, ki ga obiščete, lahko v Chromu shrani podatke, ki potrjujejo, da niste bot. Med brskanjem se lahko spletna mesta obrnejo na Chrome in pri prejšnjem spletnem mestu, ki ste ga obiskali, potrdijo, da ste verjetno resnična oseba.</translation>
 <translation id="6701824422332982935">Znova naložite stran, če želite uporabiti te razširitve</translation>
 <translation id="6702639462873609204">&amp;Uredi ...</translation>
 <translation id="6703212423117969852">Poskusite znova pozneje v Chromu.</translation>
@@ -7170,6 +7184,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7409735910987429903">Spletna mesta lahko prikazujejo oglase v pojavnih oknih ali uporabljajo preusmeritve na spletna mesta, ki jih morda ne želite obiskati.</translation>
 <translation id="7409854300652085600">Zaznamki so uvoženi.</translation>
 <translation id="7410344089573941623">Vprašaj, če <ph name="HOST" /> zahteva dostop do kamere in mikrofona</translation>
+<translation id="7410421966064092098">Spletna mesta vam ne morejo pomagati potrditi, da niste bot</translation>
 <translation id="7410852728357935715">Predvajanje v oddaljeni napravi</translation>
 <translation id="7411614333737930931">Znova zaženite napravo in poskusite znova.</translation>
 <translation id="741204030948306876">Da, sem za</translation>
@@ -7575,6 +7590,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7758450972308449809">Prilagodite meje zaslona</translation>
 <translation id="7760004034676677601">Ali je to začetna stran, ki ste jo pričakovali?</translation>
 <translation id="7762024824096060040">Tega računa ni mogoče uporabiti</translation>
+<translation id="7762243782113123335">Prišlo je do napake. Pošljite povratne informacije z oznako #bruschetta v opisu. Koda napake je <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Dodaj naslov</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> iz <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Premakni</translation>
@@ -8326,6 +8342,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8419098111404128271">Rezultati iskanja za poizvedbo »<ph name="SEARCH_TEXT" />«</translation>
 <translation id="8420308167132684745">Urejanje slovarskih vnosov</translation>
 <translation id="8421361468937925547">Samodejni podnapisi (samo angleščina)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Ni pladnja</translation>
 <translation id="8424250197845498070">Blokirala dodatna zaščita</translation>
 <translation id="8425213833346101688">Spremeni</translation>
@@ -8674,6 +8691,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8740247629089392745">Ta Chromebook lahko predate osebi <ph name="SUPERVISED_USER_NAME" />. Nastavitev je skoraj dokončana, čas je za raziskovanje.</translation>
 <translation id="8740672167979365981">Zahtevana je posodobitev sistema ChromeOS Flex</translation>
 <translation id="8741944563400125534">Vodnik za nastavitev stikalnega dostopa</translation>
+<translation id="8742395827132970586">Namestitev ni uspela, poteka čiščenje</translation>
 <translation id="8742998548129056176">Gre za splošne podatke o napravi in njeni uporabi, kot so raven napolnjenosti baterije, dejavnost sistema in aplikacij ter napake. Ti podatki bodo uporabljeni za izboljšanje sistema Android. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android, izboljšati aplikacije in izdelke.</translation>
 <translation id="8744641000906923997">Romadži</translation>
 <translation id="8745034592125932220">Shranjevanje podatkov v napravo ni dovoljeno</translation>
@@ -8743,6 +8761,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8804419452060773146">Odpre se v</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Premakni zavihek v drugo okno}one{Premakni zavihke v drugo okno}two{Premakni zavihke v drugo okno}few{Premakni zavihke v drugo okno}other{Premakni zavihke v drugo okno}}</translation>
 <translation id="8805140816472474147">Potrdite nastavitve sinhronizacije, če želite začeti sinhronizacijo.</translation>
+<translation id="8805385115381080995">Brskanje je hitrejše, ker je manj verjetno, da vas bo spletno mesto pozvalo, da potrdite, da ste resnična oseba.</translation>
 <translation id="8806680466228877631"><ph name="SHORTCUT" /> lahko odpre pomotoma zaprte zavihke</translation>
 <translation id="8807588541160250261">Kadar ni povezana nobena naprava</translation>
 <translation id="8807632654848257479">Stabilna</translation>
@@ -8899,6 +8918,9 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="894360074127026135">Nadgradnja Netscape International</translation>
 <translation id="8943937581166190941">Razširitev uporablja napravo HID</translation>
 <translation id="8944099748578356325">Hitrejša poraba energije akumulatorja (trenutno <ph name="BATTERY_PERCENTAGE" /> %)</translation>
+<translation id="8944725102565796255">Če želite ta račun uporabiti samo enkrat, lahko <ph name="GUEST_LINK_BEGIN" />napravo uporabljate kot gost<ph name="GUEST_LINK_END" />. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
+
+Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljajo za ta račun. Račune Google lahko upravljate v <ph name="SETTINGS_LINK_BEGIN" />nastavitvah<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="8945274638472141382">Velikost ikone</translation>
 <translation id="8946359700442089734">V tej napravi niso bile v celoti omogočene funkcije za odpravljanje napak: <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="894763922177556086">Dobra</translation>
@@ -8997,7 +9019,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9026731007018893674">prenos</translation>
 <translation id="9026852570893462412">To lahko traja nekaj minut. Prenašanje navideznega računalnika.</translation>
 <translation id="9027459031423301635">Povezavo odpri v novem &amp;zavihku</translation>
-<translation id="9027707169256972235">Odstrani</translation>
 <translation id="9030515284705930323">Organizacija za vaš račun ni omogočila Trgovine Google Play. Če želite več informacij, se obrnite na skrbnika.</translation>
 <translation id="9030754204056345429">Hitrejša</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -9240,6 +9261,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="942532530371314860">Aplikacija <ph name="APP_NAME" /> je v skupno rabo dala zavihek v Chromu in zvok.</translation>
 <translation id="944799160843436808">Pri nastavljanju aplikacije Steam v Chromebooku je prišlo do težave</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
+<translation id="947156494302904893">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resnična oseba in ne bot</translation>
 <translation id="947329552760389097">&amp;Pregled elementov</translation>
 <translation id="947526284350604411">Vaš odgovor</translation>
 <translation id="947667444780368238">Spletno mesto <ph name="ORIGIN" /> ne more odpreti datotek v tej mapi, ker so v njej sistemske datoteke.</translation>

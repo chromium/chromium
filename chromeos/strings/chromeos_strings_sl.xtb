@@ -80,6 +80,7 @@
 <translation id="1641857168437328880">Podajalnik dokumentov (enostransko)</translation>
 <translation id="1643449475550628585">Dnevna sprememba slike zaslonskega ozadja</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
+<translation id="1651925268237749928">Izbrali ste deljeni album. Drugi lahko dodajajo ali spreminjajo fotografije. Vaše zaslonsko ozadje bo morda uporabljalo fotografije, ki jih trenutno ni v tem albumu.</translation>
 <translation id="1662989795263954667">Ustavljeno – zmanjkalo je črnila</translation>
 <translation id="1664796644829245314">Predogled datoteke <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
@@ -120,6 +121,7 @@
 <translation id="1947737735496445907">Natisnjeno</translation>
 <translation id="1951012854035635156">Pomočnik</translation>
 <translation id="1962550982027027473">Privzeti APN je obvezen</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Fotografija za profil v Googlu</translation>
 <translation id="1979103255016296513">Rok za spremembo gesla je potekel</translation>
 <translation id="1999615961760456652">Prestrezni portal</translation>
@@ -240,6 +242,7 @@
 <translation id="319101249942218879">Slika avatarja je spremenjena</translation>
 <translation id="3192947282887913208">Zvočne datoteke</translation>
 <translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
+<translation id="3201315366910775591">Deljene albume lahko posodobijo drugi uporabniki</translation>
 <translation id="3211671540163313381">Smerni gumb pri razporejanju tipk</translation>
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
 <translation id="3226657629376379887">Meni z dejanji za postavitev</translation>
@@ -253,6 +256,7 @@
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
 <translation id="3328783797891415197">Preizkus se izvaja</translation>
 <translation id="3340011300870565703">Raven napolnjenosti baterije desne slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
 <translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
@@ -340,6 +344,7 @@
 <translation id="4131410914670010031">Črno-belo</translation>
 <translation id="4145784616224233563">Požarni zid HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
+<translation id="4150201353443180367">Prikaz</translation>
 <translation id="4155551848414053977">Optični bralnik mora biti vklopljen in na voljo prek omrežja ali neposredne povezave.</translation>
 <translation id="4159784952369912983">Vijolična</translation>
 <translation id="4170180284036919717">Fotografiraj</translation>
@@ -355,6 +360,7 @@
 <translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="4258281355379922695">Zakasnitev HTTP</translation>
 <translation id="4271957103967917607">Ogled v celozaslonskem načinu</translation>
+<translation id="4275663329226226506">Predstavnost</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4289849978083912975">Diaprojekcija</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
@@ -447,6 +453,7 @@
 <translation id="498186245079027698">Preverite optični bralnik in poskusite znova. Poskrbite, da je na lokalnem disku dovolj prostora za shranjevanje optično prebranih datotek.</translation>
 <translation id="4985509611418653372">Izvedi</translation>
 <translation id="4987769320337599931">Požarni zid</translation>
+<translation id="4988526792673242964">Strani</translation>
 <translation id="4999333166442584738">Skrij poročilo</translation>
 <translation id="500920857929044050">Ustavi preizkus</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -658,6 +665,7 @@
 <translation id="6838167112108853532">Tega APN-ja ni mogoče onemogočiti ali odstraniti. Omogočeni povezani APN-ji morajo biti onemogočeni ali odstranjeni.</translation>
 <translation id="6853312040151791195">Hitrost praznjenja</translation>
 <translation id="6889786074662672253">Med posodabljanjem ne odklopite zunanje naprave ali izklopite računalnika. To okno lahko pomanjšate. Ta posodobitev bo morda trajala nekaj minut in zunanja naprava v tem času morda ne bo delovala.</translation>
+<translation id="6900701049656042631">V tem albumu ni fotografij. Fotografije lahko dodate na <ph name="LINK" />.</translation>
 <translation id="6905724422583748843">Nazaj na stran <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Pokrov optičnega bralnika je odprt. Zaprite ga in poskusite znova.</translation>
 <translation id="6911383237894364323">Povezave s strežniki za predstavnost ni bilo mogoče vzpostaviti.</translation>
@@ -772,6 +780,7 @@
 <translation id="7936303884198020182">Najden ni bil noben imenski strežnik</translation>
 <translation id="7942349550061667556">Rdeča</translation>
 <translation id="7943235353293548836">Trajni interval ohranjanja povezave</translation>
+<translation id="7953669802889559161">Načini vnosa</translation>
 <translation id="7955587717700691983">Tipkovnica Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Če se želite pridružiti omrežju <ph name="NETWORK_NAME" />, odprite nastavitve.</translation>
@@ -784,6 +793,7 @@
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="8045012663542226664">Izklop zvok mikrofona</translation>
 <translation id="8075838845814659848">Preostanek polnjenja</translation>
+<translation id="8076492880354921740">Zavihki</translation>
 <translation id="8082366717211101304">Iz aplikacij za Android ni mogoče razrešiti DNS-ja.</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>
 <translation id="8094062939584182041">Googlu dovolite, da se po e-pošti obrne na vas glede te težave</translation>
@@ -793,6 +803,7 @@
 <translation id="8132480444149501833">Zahtevaj števce prometa</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Izberite: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Orodja za razvijalce</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Vpetje</translation>
 <translation id="8206859287963243715">Prenosni</translation>
@@ -861,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Ozadje</translation>
 <translation id="8820457400746201697">Premaknite modro točko stika k dejanju. Izberite povezano tipko za prilagajanje.</translation>
+<translation id="8820817407110198400">Zaznamki</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
 <translation id="8855781559874488009">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTP prek požarnega zidu.</translation>

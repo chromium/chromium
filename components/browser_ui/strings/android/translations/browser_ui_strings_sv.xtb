@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Vyn har expanderats. Komprimera den genom att klicka.</translation>
 <translation id="2586657967955657006">Urklipp</translation>
 <translation id="2597457036804169544">Använd inte mörkt tema på webbplatser</translation>
+<translation id="2606760465469169465">Verifiera automatiskt</translation>
 <translation id="2621115761605608342">Tillåt JavaScript på en specifik webbplats.</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2677748264148917807">Lämna</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Kontakterna du väljer delas med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Besöktes senast i dag</translation>
 <translation id="5225463052809312700">Slå på kameran</translation>
+<translation id="5229337741799419985">Den här inställningen fungerar utan att du identifieras eller att webbplatser tillåts se din webbhistorik</translation>
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="5264323282659631142">Ta bort <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Dra uppifrån och tryck på bakåtknappen för att lämna helskärmsläget.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6689172468748959065">Profilfoton</translation>
 <translation id="6697925417670533197">Pågående nedladdningar</translation>
+<translation id="6701547804986694515">En webbplats du besöker kan spara information i Chrome som bekräftar att du inte är en bot. När du fortsätter surfa kan webbplatser kontrollera informationen med Chrome och verifiera med den föregående webbplatsen du besökte att du troligen är en riktig person.</translation>
 <translation id="6722828510648505498">Blockera inloggningsmeddelanden från identitetstjänster.</translation>
 <translation id="6746124502594467657">Flytta ned</translation>
 <translation id="6749077623962119521">Vill du återställa behörigheter?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Välj en bild</translation>
 <translation id="8801436777607969138">Blockera JavaScript på en enskild webbplats.</translation>
 <translation id="8803526663383843427">När funktionen är aktiverad</translation>
+<translation id="8805385115381080995">Du kan surfa snabbare eftersom det blir mindre sannolikt att en webbplats ber dig att verifiera att du är en riktig person</translation>
 <translation id="8816026460808729765">Blockera webbplatser från att använda enhetens sensorer</translation>
 <translation id="8823559166155093873">Blockera cookies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Den här sidan är farlig</translation>
 <translation id="9201023452444595544">All offlinedata raderas</translation>
 <translation id="930525582205581608">Vill du glömma den här webbplatsen?</translation>
+<translation id="947156494302904893">Webbplatser du besöker kan verifiera att du är en riktig person och inte en bot</translation>
 <translation id="967624055006145463">Sparad data</translation>
 </translationbundle>

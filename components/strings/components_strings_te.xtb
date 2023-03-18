@@ -685,6 +685,7 @@
 <translation id="259821504105826686">ఫోటోగ్రాఫిక్ &amp; డిజిటల్ ఆర్ట్స్</translation>
 <translation id="2601150049980261779">శృంగార సినిమాలు</translation>
 <translation id="2604589665489080024">పాప్ మ్యూజిక్</translation>
+<translation id="2606760465469169465">ఆటోమేటిక్‌గా వెరిఫై చేయండి</translation>
 <translation id="2610561535971892504">కాపీ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="2617988307566202237">Chrome ఈ కింది సమాచారాన్ని <ph name="BEGIN_EMPHASIS" />సేవ్ చేయదు<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -869,7 +870,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />కనెక్టివిటీ సమస్య విశ్లేషణలను అమలు చేయడం ప్రయత్నించండి<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" />కు వెళ్లు</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{ఏమీ లేవు}=1{1 ఖాతా సైన్ ఇన్ డేటా}other{# ఖాతాల సైన్ ఇన్ డేటా}}</translation>
 <translation id="3141093262818886744">ఏదేమైనా తెరవండి</translation>
 <translation id="3141641372357166056">సమ్మతి నిర్ణయం ఏదీ లేదు</translation>
 <translation id="3145945101586104090">ప్రతిస్పందనను డీకోడ్ చేయడంలో విఫలమైంది</translation>
@@ -1902,6 +1902,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />మీ డేటాను మీరు ఎలా మేనేజ్ చేయగలరు:<ph name="END_BOLD" /> Chrome 4 వారాల కంటే పాత సైట్‌లను  ఆటోమేటిక్‌గా తొలగిస్తుంది. మీరు మళ్లీ చూసే సైట్, లిస్ట్‌లో మళ్లీ కనిపించవచ్చు. ఏదైనా సైట్ మీకు యాడ్‌లను సూచించకుండా మీరు బ్లాక్ చేయవచ్చు, సైట్ సూచించే యాడ్‌లను ఎప్పుడైనా Chrome సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>
 <translation id="5610142619324316209">కనెక్షన్‌ను చెక్ చేయడం</translation>
 <translation id="5610807607761827392">మీరు కార్డ్‌లు మరియు అడ్రస్‌లను <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో నిర్వహించగలరు.</translation>
+<translation id="5611398002774823980">ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="561165882404867731">Google Translateతో ఈ పేజీని అనువదించండి</translation>
 <translation id="5612720917913232150"><ph name="URL" /> మీ కంప్యూటర్ స్థానాన్ని ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="561669346091975195">సైన్స్-ఫిక్షన్ &amp; ఫాంటసీ టీవీ షోలు</translation>
@@ -3188,6 +3189,7 @@
 <translation id="8806285662264631610">స్నానానికి వినియోగించే &amp; శరీర ప్రోడక్ట్‌లు</translation>
 <translation id="8807160976559152894">ప్రతి పేజీ తర్వాత కత్తిరించండి</translation>
 <translation id="8809203544698246977">బ్లాక్ చేసిన టాపిక్‌లు ఇక్కడ కనిపిస్తాయి</translation>
+<translation id="8811470563853401328">అడ్రస్‌ను ఖాతాలో సేవ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="8813277370772331957">నాకు తర్వాత గుర్తు చేయి</translation>
 <translation id="8814707942599948500">ఎన్వలప్ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Chrome సెట్టింగ్‌ల నుండి Chromeని అప్‌డేట్ చేయడానికి 'Tab' నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
@@ -3281,6 +3283,7 @@
 <translation id="9042617223719777575">లార్జ్ కెపాసిటీ</translation>
 <translation id="9044359186343685026">Touch IDని ఉపయోగించండి</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">ఈ చర్యలకు <ph name="POLICY_NAME" /> పాలసీని <ph name="POLICY_VALUE" />‌కు సెట్ చేయాల్సిన అవసరం ఉంది: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 అంగుళాలు</translation>
 <translation id="9049981332609050619">మీరు <ph name="DOMAIN" />ను చేరుకోవడానికి ప్రయత్నించారు, కానీ సర్వర్ ఒక చెల్లుబాటులో లేని ప్రమాణపత్రంను అందించింది.</translation>
 <translation id="9050666287014529139">రహస్య పదబంధం</translation>
@@ -3360,7 +3363,6 @@
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="922152298093051471">Chromeను అనుకూలంగా మార్చండి</translation>
 <translation id="933712198907837967">డైనర్స్ క్లబ్</translation>
-<translation id="935608979562296692">ఫారమ్‌ను తీసివేయండి</translation>
 <translation id="936602727769022409">మీరు మీ Google ఖాతాకు యాక్సెస్‌ని కోల్పోవచ్చు. మీరు ఇప్పుడే మీ పాస్‌వర్డ్‌ని మార్చాల్సిందిగా Chromium సిఫార్సు చేస్తోంది. మీరు సైన్ ఇన్ చేయాల్సి ఉంటుంది.</translation>
 <translation id="937457230470581909">జూలు, అక్వేరియమ్‌లు &amp; సంరక్షణ కేంద్రాలు</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ఏ డేటా ఉపయోగించబడుతుంది:<ph name="END_BOLD" /> మీ ఇటీవలి బ్రౌజింగ్ హిస్టరీ, అలాగే ఈ పరికరంలో Chromeను ఉపయోగించి మీరు తెరిచిన సైట్‌ల లిస్ట్ అనే అంశాలపై మీ యాడ్ టాపిక్‌లు ఆధారపడి ఉంటాయి.</translation>

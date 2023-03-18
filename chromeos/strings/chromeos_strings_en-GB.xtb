@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1014750484722996375">Desks</translation>
 <translation id="1018219910092211213">Can't resolve DNS</translation>
 <translation id="1018656279737460067">Cancelled</translation>
+<translation id="1022433422498218992">General controls</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">New feature available; use the up arrow key to learn more.</translation>
 <translation id="1059913517121127803">Couldn't start scanning</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Stopped – out of ink</translation>
 <translation id="1664796644829245314">Preview <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
+<translation id="1669047024429367828">Visibility</translation>
 <translation id="1672499492233627739">Webcam video feed</translation>
 <translation id="1676557873873341166">Taking video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS resolver present</translation>
+<translation id="1710499924611012470">Accessibility navigation</translation>
 <translation id="1715359911173058521">There's an issue communicating with the scanner. Check the network or USB connection and try again.</translation>
 <translation id="1717874160321062422">Managed by <ph name="FIRST_MANAGER" /> and <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Name servers</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Authentication type</translation>
 <translation id="1782199038061388045">translation</translation>
+<translation id="1790209694022261219">Windows and desks</translation>
 <translation id="1792647875738159689">Cancelling scanning</translation>
 <translation id="1801418420130173017">Disable Dark theme</translation>
 <translation id="1807246157184219062">Light</translation>
@@ -121,6 +126,7 @@
 <translation id="1947737735496445907">Printed</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">A default APN is required</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google profile photo</translation>
 <translation id="1979103255016296513">Password change overdue</translation>
 <translation id="1999615961760456652">Captive portal</translation>
@@ -134,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2085089206770112532">Display brightness down</translation>
+<translation id="2102231663024125441">Text editing</translation>
 <translation id="2105810540595158374">Device is a game controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB of <ph name="TOTAL_MEMORY" /> GB available</translation>
@@ -211,6 +218,7 @@
 <translation id="2859243502336719778">Critical update</translation>
 <translation id="2860473693272905224">Place another page on the scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
+<translation id="2873483161362553159">Browser navigation</translation>
 <translation id="2874939134665556319">Previous track</translation>
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="2902312830803030883">More actions</translation>
@@ -255,6 +263,7 @@
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
 <translation id="3328783797891415197">Test running</translation>
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369013195428705271">Are you sure you want to clear all print history? Your ongoing print jobs will not be cleared.</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
@@ -342,6 +351,7 @@
 <translation id="4131410914670010031">Black and white</translation>
 <translation id="4145784616224233563">HTTP firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Display</translation>
 <translation id="4155551848414053977">Make sure that the scanner is turned on and available via your network or a direct connection</translation>
 <translation id="4159784952369912983">Purple</translation>
 <translation id="4170180284036919717">Take a photo</translation>
@@ -357,6 +367,7 @@
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">HTTP latency</translation>
 <translation id="4271957103967917607">View full screen</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Overview</translation>
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
@@ -364,6 +375,7 @@
 <translation id="4311195029067684288">Full</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> key pressed</translation>
 <translation id="435692326371619097">Manage network APN settings. APNs establish a connection between a mobile network and the Internet. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Reset all shortcuts</translation>
 <translation id="4378373042927530923">Not run</translation>
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -449,6 +461,7 @@
 <translation id="498186245079027698">Check the scanner and try again. Make sure that there is enough local space to save scanned files.</translation>
 <translation id="4985509611418653372">Run</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Pages</translation>
 <translation id="4999333166442584738">Hide report</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -655,6 +668,7 @@
 <translation id="6766275201586212568">Failed DNS resolutions</translation>
 <translation id="6768237774506518020">High DNS resolution failure rate</translation>
 <translation id="6791471867139427246">keyboard light colour</translation>
+<translation id="6798678288485555829">Text navigation</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
 <translation id="6838167112108853532">Can't disable or remove this APN. Make sure that enabled attached APNs are disabled or removed.</translation>
@@ -775,6 +789,7 @@
 <translation id="7936303884198020182">No name servers found</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7943235353293548836">Persistent keepalive interval</translation>
+<translation id="7953669802889559161">Inputs</translation>
 <translation id="7955587717700691983">Bluetooth keyboard</translation>
 <translation id="7960831585769876809">Temperature</translation>
 <translation id="7977800524392185497">To join a <ph name="NETWORK_NAME" /> network, go to Settings</translation>
@@ -787,6 +802,7 @@
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8045012663542226664">Microphone mute</translation>
 <translation id="8075838845814659848">Remaining charge</translation>
+<translation id="8076492880354921740">Tabs</translation>
 <translation id="8082366717211101304">Can't resolve DNS from Android apps</translation>
 <translation id="808894953321890993">Change password</translation>
 <translation id="8094062939584182041">Allow Google to email you about this issue</translation>
@@ -796,6 +812,7 @@
 <translation id="8132480444149501833">Request traffic counters</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Select <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Developer tools</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Mobile</translation>
@@ -864,6 +881,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8820457400746201697">Move the blue touch point to an action. Select the associated key to customise.</translation>
+<translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8834539327799336565">Currently connected</translation>
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8855781559874488009">Can't connect through firewall to HTTP websites</translation>

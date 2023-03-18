@@ -683,6 +683,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="259821504105826686">Foto- og digitalkunst</translation>
 <translation id="2601150049980261779">Romantiske film</translation>
 <translation id="2604589665489080024">Popmusik</translation>
+<translation id="2606760465469169465">Automatisk verificering</translation>
 <translation id="2610561535971892504">Klik for at kopiere</translation>
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />gemmer ikke<ph name="END_EMPHASIS" /> følgende oplysninger:
         <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Prøv at køre Diagnosticering af forbindelse<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Gå til <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Ingen}=1{logindata for en konto}one{logindata for # konto}other{logindata for # konti}}</translation>
 <translation id="3141093262818886744">Åbn alligevel</translation>
 <translation id="3141641372357166056">Ingen beslutning om samtykke</translation>
 <translation id="3145945101586104090">Svaret kunne ikke afkodes</translation>
@@ -1900,6 +1900,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Sådan administrerer du dine data:<ph name="END_BOLD" /> Chrome sletter automatisk websites, der er mere end 4 uger gamle. Et website, du besøger igen, kan dukke op på listen igen. Du kan også til enhver tid blokere et website, så det ikke foreslår annoncer til dig, og deaktivere foreslåede annoncer fra websites i Chrome-indstillingerne.</translation>
 <translation id="5610142619324316209">Tjekke din forbindelse</translation>
 <translation id="5610807607761827392">Du kan administrere kort og adresser i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
+<translation id="5611398002774823980">Gem på konto</translation>
 <translation id="561165882404867731">Oversæt denne side med Google Oversæt</translation>
 <translation id="5612720917913232150"><ph name="URL" /> anmoder om at anvende computerens placering</translation>
 <translation id="561669346091975195">Tv-shows om science-fiction og fantasy</translation>
@@ -3187,6 +3188,7 @@ Yderligere oplysninger:
 <translation id="8806285662264631610">Bade- og hudplejeprodukter</translation>
 <translation id="8807160976559152894">Beskær efter hver side</translation>
 <translation id="8809203544698246977">Blokerede emner vises her</translation>
+<translation id="8811470563853401328">Vil du gemme adressen på kontoen?</translation>
 <translation id="8813277370772331957">Påmind mig senere</translation>
 <translation id="8814707942599948500">Konvolut C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at opdatere Chrome i dine Chrome-indstillinger</translation>
@@ -3280,6 +3282,7 @@ Yderligere oplysninger:
 <translation id="9042617223719777575">Stor kapacitet</translation>
 <translation id="9044359186343685026">Brug Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Disse handlinger kræver, at politikken <ph name="POLICY_NAME" /> er angivet som <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 tommer</translation>
 <translation id="9049981332609050619">Du har forsøgt at nå <ph name="DOMAIN" />, men serveren præsenterede et ugyldigt certifikat.</translation>
 <translation id="9050666287014529139">Adgangssætning</translation>
@@ -3359,7 +3362,6 @@ Yderligere oplysninger:
 <translation id="9219103736887031265">Billeder</translation>
 <translation id="922152298093051471">Tilpas Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">RYD FORMULAREN</translation>
 <translation id="936602727769022409">Du kan miste adgangen til din Google-konto. Chromium anbefaler, at du skifter din adgangskode nu. Du bliver bedt om at logge ind.</translation>
 <translation id="937457230470581909">Zoologiske haver, akvarier og reservater</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Følgende data bruges:<ph name="END_BOLD" /> Dine annonceemner er baseret på din seneste browserhistorik, som er en liste over websites, du har besøgt i Chrome på denne enhed.</translation>

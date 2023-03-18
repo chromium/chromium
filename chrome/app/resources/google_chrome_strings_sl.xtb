@@ -12,6 +12,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="110877069173485804">To je vaš Chrome</translation>
 <translation id="1125124144982679672">Kdo uporablja Chrome?</translation>
 <translation id="1142745911746664600">Chroma ni mogoče posodobiti</translation>
+<translation id="1149651794389918149">Prijavite se v Chrome. Če se želite v račun prijaviti samo enkrat, lahko <ph name="GUEST_LINK_BEGIN" />napravo uporabljate kot gost<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">O sistemu Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Odpri v Chromu</translation>
 <translation id="1203500561924088507">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati brskalnik.</translation>
@@ -172,6 +173,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4147555960264124640">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Google Chromu. Vaši podatki v Chromu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali z nadzorno ploščo za Google Račune, vendar jih ne boste mogli povezati z drugim računom. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Nameščanje ...</translation>
 <translation id="4149882025268051530">Namestitvenemu programu ni uspelo razširiti arhiva. Ponovno prenesite program Google Chrome.</translation>
+<translation id="4153934450158521343">Chrome se bo kmalu zaprl in izbrisal bo podatke</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome znova zaženite v enem dnevu}one{Chrome znova zaženite v # dnevu}two{Chrome znova zaženite v # dnevih}few{Chrome znova zaženite v # dnevih}other{Chrome znova zaženite v # dnevih}}</translation>
 <translation id="4205939740494406371">Chrome ne more preveriti vaših gesel. Poskusite znova čez 24 ur ali <ph name="BEGIN_LINK" />preverite gesla v računu Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Preklic …</translation>
@@ -217,6 +219,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4970880042055371251">Različica sistema Chrome OS</translation>
 <translation id="4970947549776831107">Chrome je blokiral to datoteko, ker gre za nevarno vrsto datoteke.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Skrbnik samodejno zapre Chrome, če ga ne uporabljate 1 minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}one{Skrbnik samodejno zapre Chrome, če ga ne uporabljate # minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}two{Skrbnik samodejno zapre Chrome, če ga ne uporabljate # minuti. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}few{Skrbnik samodejno zapre Chrome, če ga ne uporabljate # minute. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}other{Skrbnik samodejno zapre Chrome, če ga ne uporabljate # minut. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}}</translation>
 <translation id="5098668839038261629">Če je to vklopljeno, boste odjavljeni tudi iz Chroma.</translation>
 <translation id="5132929315877954718">Odkrijte zanimive aplikacije, igre, razširitve in teme za Google Chrome.</translation>
 <translation id="5139423532931106058">Prilagajanje profila v Chromu</translation>
@@ -269,12 +272,14 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> različica beta Google Chroma</translation>
 <translation id="6235018212288296708">Pravilo za dohodni promet za Google Chrome, ki omogoča promet mDNS.</translation>
+<translation id="624230925347970731">Chrome se bo kmalu zaprl</translation>
 <translation id="6247557882553405851">Google Upravitelj gesel</translation>
 <translation id="6273793429163604305">Na mesta …</translation>
 <translation id="6291089322031436445">Aplikacije za Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome je že nameščen za vse uporabnike v računalniku.</translation>
 <translation id="6326175484149238433">Odstrani iz Chroma</translation>
 <translation id="6327105987658262776">Na voljo ni nobena posodobitev.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Skrbnik samodejno izbriše podatke brskanja, ko brskalnika 1 minuto ne uporabljate. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Obstoječi zavihki bodo ostali odprti.}one{Skrbnik samodejno izbriše podatke brskanja, ko brskalnika # minuto ne uporabljate. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Obstoječi zavihki bodo ostali odprti.}two{Skrbnik samodejno izbriše podatke brskanja, ko brskalnika # minuti ne uporabljate. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Obstoječi zavihki bodo ostali odprti.}few{Skrbnik samodejno izbriše podatke brskanja, ko brskalnika # minute ne uporabljate. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Obstoječi zavihki bodo ostali odprti.}other{Skrbnik samodejno izbriše podatke brskanja, ko brskalnika # minut ne uporabljate. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Obstoječi zavihki bodo ostali odprti.}}</translation>
 <translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="6418662306461808273">Želite preklopiti na obstoječi profil v Chromu?</translation>
 <translation id="6493527311031785448">Google Chrome poskuša <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -304,6 +309,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 
 Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljajo za ta račun. Račune Google lahko upravljate v <ph name="SETTINGS_LINK_BEGIN" />nastavitvah<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome. Dodajanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7071827361006050863">Chrome bo kmalu izbrisal podatke brskanja</translation>
 <translation id="7085332316435785646">Izberite, ali želite, da je zaradi osebno bolj prilagojenih izkušenj v Googlovih storitvah vključena zgodovina v Chromu.</translation>
 <translation id="7088681679121566888">Chrome je posodobljen</translation>
 <translation id="7098166902387133879">Google Chrome uporablja vaš mikrofon.</translation>
@@ -365,6 +371,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8290100596633877290">Opa! Google Chrome se je zrušil. Ga želite znova zagnati?</translation>
 <translation id="8342675569599923794">Ta datoteka je nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kako uporabljamo te podatke:<ph name="END_BOLD" /> Spletna mesta lahko v Chromu shranjujejo podatke o vaših zanimanjih. Če na primer obiščete spletno mesto zaradi nakupa športnih copatov za maraton, bo spletno mesto morda določilo vaše zanimanje kot udeleževanje maratonov. Če pozneje obiščete drugo spletno mesto za registriranje za tek, vam lahko to spletno mesto glede na vaša zanimanja prikaže oglas za tekaško obutev.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Skrbnik samodejno zapre Chrome, če ga ne uporabljate 1 minuto.}one{Skrbnik samodejno zapre Chrome, če ga ne uporabljate # minuto.}two{Skrbnik samodejno zapre Chrome, če ga ne uporabljate # minuti.}few{Skrbnik samodejno zapre Chrome, če ga ne uporabljate # minute.}other{Skrbnik samodejno zapre Chrome, če ga ne uporabljate # minut.}}</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kako uporabljamo te podatke:<ph name="END_BOLD" /> Chrome lahko oceni vaša zanimanja. Pozneje lahko stran, ki jo obiščete, od Chroma zahteva ogled vaših zanimanj zaradi osebnega prilagajanj oglasov, ki so vam prikazani.</translation>
 <translation id="8387459386171870978">Še naprej uporabljaj Chrome</translation>

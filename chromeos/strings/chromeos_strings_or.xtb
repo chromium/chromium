@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">ଏକ ଡିଫଲ୍ଟ APN ଆବଶ୍ୟକ</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google ପ୍ରୋଫାଇଲ ଫଟୋ</translation>
 <translation id="1979103255016296513">ପାସ୍‌ୱାର୍ଡ ପରିବର୍ତ୍ତନର ସମୟ ବିଳମ୍ବ ହୋଇଯାଇଛି</translation>
 <translation id="1999615961760456652">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲ୍</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
 <translation id="3328783797891415197">ଟେଷ୍ଟ ଚାଲୁଛି</translation>
 <translation id="3340011300870565703">ଡିଭାଇସର ଡାହାଣପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369013195428705271">ଆପଣ ସମସ୍ତ ପ୍ରିଣ୍ଟ ଇତିହାସ ଖାଲି କରିବାକୁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ କି? ଆପଣଙ୍କ ଚାଲୁଥିବା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକ ଖାଲି ହେବ ନାହିଁ।</translation>
 <translation id="3404249063913988450">ସ୍କ୍ରିନ୍ ସେଭର୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="4145784616224233563">HTTP ଫାୟାରୱାଲ୍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">ଡିସ୍‌ପ୍ଲେ</translation>
 <translation id="4155551848414053977">ସ୍କାନରକୁ ଚାଲୁ କରାଯାଇଛି ଏବଂ ଏହା ଆପଣଙ୍କ ନେଟୱାର୍କ କିମ୍ବା ଏକ ସିଧାସଳଖ ସଂଯୋଗ ମାଧ୍ୟମରେ ଉପଲବ୍ଧ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="4159784952369912983">ବାଇଗଣୀ</translation>
 <translation id="4170180284036919717">ଗୋଟିଏ ଫଟୋ ଉଠାନ୍ତୁ</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">ସ୍କ୍ରିନ୍‍ସଟ୍</translation>
 <translation id="4258281355379922695">HTTP ଲାଟେନ୍ସି</translation>
 <translation id="4271957103967917607">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଦେଖନ୍ତୁ</translation>
+<translation id="4275663329226226506">ମିଡିଆ</translation>
 <translation id="4289540628985791613">ଅବଲୋକନ</translation>
 <translation id="4289849978083912975">ସ୍ଲାଇଡ ଶୋ</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">ସ୍କାନର୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଯଥେଷ୍ଟ ଲୋକାଲ୍ ସ୍ଥାନ ଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
 <translation id="4987769320337599931">ଫାୟାରୱାଲ୍</translation>
+<translation id="4988526792673242964">ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
 <translation id="4999333166442584738">ରିପୋର୍ଟ ଲୁଚାନ୍ତୁ</translation>
 <translation id="500920857929044050">ଟେଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">କୌଣସି ନେମ୍ ସର୍ଭର୍ ମିଳୁ ନାହିଁ</translation>
 <translation id="7942349550061667556">ନାଲି</translation>
 <translation id="7943235353293548836">ଅବିରତ କିପଆଲାଇଭ୍ ଇଣ୍ଟରଭାଲ୍</translation>
+<translation id="7953669802889559161">ଇନପୁଟଗୁଡ଼ିକ</translation>
 <translation id="7955587717700691983">ବ୍ଲୁଟୁଥ କୀବୋର୍ଡ</translation>
 <translation id="7960831585769876809">ତାପମାତ୍ରା</translation>
 <translation id="7977800524392185497">ଏକ <ph name="NETWORK_NAME" /> ନେଟୱାର୍କରେ ଯୋଗ ଦେବା ପାଇଁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="8045012663542226664">ମାଇକ୍ରୋଫୋନ ମ୍ୟୁଟ</translation>
 <translation id="8075838845814659848">ବାକି ଥିବା ଚାର୍ଜ</translation>
+<translation id="8076492880354921740">ଟାବ୍</translation>
 <translation id="8082366717211101304">Android ଆପଗୁଡ଼ିକରୁ DNSର ସମାଧାନ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="8094062939584182041">ଏହି ସମସ୍ୟା ବିଷୟରେ ଆପଣଙ୍କୁ ଇମେଲ କରିବା ପାଇଁ Googleକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
@@ -864,6 +871,7 @@
 <translation id="8814190375133053267">ୱାଇ-ଫାଇ</translation>
 <translation id="8818152010000655963">ୱାଲପେପର୍</translation>
 <translation id="8820457400746201697">ନୀଳ ଟଚ ପଏଣ୍ଟକୁ ଏକ କାର୍ଯ୍ୟକୁ ମୁଭ କରନ୍ତୁ। କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ସମ୍ବନ୍ଧିତ କୀ'କୁ ଚୟନ କରନ୍ତୁ।</translation>
+<translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8834539327799336565">ବର୍ତ୍ତମାନ ସଂଯୁକ୍ତ ଅଛି</translation>
 <translation id="8845001906332463065">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="8855781559874488009">ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTP ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>

@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">ພິມແລ້ວ</translation>
 <translation id="1951012854035635156">ຜູ້ຊ່ວຍ</translation>
 <translation id="1962550982027027473">ຈຳເປັນຕ້ອງມີ APN ຕາມຄ່າເລີ່ມຕົ້ນ</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">ຮູບໂປຣໄຟລ໌ Google</translation>
 <translation id="1979103255016296513">ກາຍກຳນົດປ່ຽນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="1999615961760456652">ຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ຫຼາຍ</translation>
 <translation id="3328783797891415197">ກຳລັງດຳເນີນການທົດສອບຢູ່</translation>
 <translation id="3340011300870565703">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຂວາເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
 <translation id="3369013195428705271">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບປະຫວັດການພິມທັງໝົດ? ວຽກການພິມທີ່ພວມດຳເນີນຢູ່ຂອງທ່ານຈະບໍ່ຖືກລຶບລ້າງ.</translation>
 <translation id="3404249063913988450">ເປີດການນຳໃຊ້ສະກຣີນເຊັບເວີແລ້ວ</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">ຂາວດໍາ</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google ຮູບພາບ</translation>
+<translation id="4150201353443180367">ການສະແດງຜົນ</translation>
 <translation id="4155551848414053977">ກວດໃຫ້ແນ່ໃຈວ່າເຄື່ອງສະແກນເປີດຢູ່ ແລະ ມີໃຫ້ຜ່ານເຄືອຂ່າຍຂອງທ່ານ ຫຼື ການເຊື່ອມຕໍ່ໂດຍກົງ</translation>
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4170180284036919717">ຖ່າຍຮູບ</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4258281355379922695">ການຕອບສະໜອງ HTTP</translation>
 <translation id="4271957103967917607">ເບິ່ງແບບເຕັມຈໍ</translation>
+<translation id="4275663329226226506">ມີເດຍ</translation>
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
 <translation id="4289849978083912975">​ສະ​ໄລ້​ໂຊ</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">ກວດເບິ່ງເຄື່ອງສະແກນ ແລ້ວລອງໃໝ່. ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ໃນເຄື່ອງຢ່າງພຽງພໍເພື່ອບັນທຶກໄຟລ໌ທີ່ສະແກນແລ້ວໄວ້.</translation>
 <translation id="4985509611418653372">ເອີ້ນໃຊ້</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">ໜ້າ</translation>
 <translation id="4999333166442584738">ເຊື່ອງລາຍງານ</translation>
 <translation id="500920857929044050">ຢຸດການທົດສອບ</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -776,6 +781,7 @@
 <translation id="7936303884198020182">ບໍ່ພົບເຊີບເວີຊື່</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
 <translation id="7943235353293548836">ໄລຍະເວລາຂອງ keepalive ຕໍ່ເນື່ອງ</translation>
+<translation id="7953669802889559161">ການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7955587717700691983">ແປ້ນພິມ Bluetooth</translation>
 <translation id="7960831585769876809">ອຸນຫະພູມ</translation>
 <translation id="7977800524392185497">ເພື່ອເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="NETWORK_NAME" />, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
@@ -788,6 +794,7 @@
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>
 <translation id="8045012663542226664">ປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
+<translation id="8076492880354921740">ແຖບ</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8094062939584182041">ອະນຸຍາດໃຫ້ Google ສົ່ງອີເມວຫາທ່ານກ່ຽວກັບບັນຫານີ້</translation>
@@ -797,6 +804,7 @@
 <translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">ເຄື່ອງ​ມື​ຜູ້ພັດ​ທະ​ນາ</translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8183974620058026102">ແນບໄຟລ໌</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
@@ -865,6 +873,7 @@
 <translation id="8814190375133053267">Wi​-Fi</translation>
 <translation id="8818152010000655963">ພາບພື້ນຫຼັງ</translation>
 <translation id="8820457400746201697">ຍ້າຍຈຸດສຳຜັດສີຟ້າໄປໃສ່ຄຳສັ່ງ. ເລືອກປຸ່ມທີ່ກ່ຽວຂ້ອງເພື່ອປັບແຕ່ງ.</translation>
+<translation id="8820817407110198400">ບຸກມາກ</translation>
 <translation id="8834539327799336565">ຕອນນີ້ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8845001906332463065">ຂໍການຊ່ວຍເຫຼືອ</translation>
 <translation id="8855781559874488009">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTP ໄດ້</translation>

@@ -863,7 +863,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />הפעלה של אבחון הקישוריות<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">מעבר אל <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{אין}=1{נתוני כניסה של חשבון אחד}one{נתוני כניסה של # חשבונות}two{נתוני כניסה של 2 חשבונות}other{נתוני כניסה של # חשבונות}}</translation>
 <translation id="3141093262818886744">אני רוצה לפתוח בכל זאת</translation>
 <translation id="3141641372357166056">אין החלטה לגבי הסכמה</translation>
 <translation id="3145945101586104090">פענוח התגובה נכשל</translation>
@@ -3347,7 +3346,6 @@ Del</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="922152298093051471">‏התאמה אישית של Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ניקוי הטופס</translation>
 <translation id="936602727769022409">‏ייתכן שמישהו אחר ישלול את הגישה שלך לחשבון Google. לגלישה בטוחה ב-Chromium, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="937457230470581909">גני חיות, אקווריומים ושמורות טבע</translation>
 <translation id="937804173274050966">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> נושאי המודעות מבוססים על היסטוריית הגלישה שלך מהזמן האחרון – רשימה של האתרים שבהם ביקרת באמצעות Chrome במכשיר הזה.</translation>

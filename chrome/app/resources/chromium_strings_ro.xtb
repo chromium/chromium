@@ -9,6 +9,7 @@
 <translation id="113122355610423240">Chromium este browserul prestabilit</translation>
 <translation id="1131805035311359397">Ca să verifici dacă parolele sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{Administratorul închide automat Chromium dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Administratorul închide automat Chromium dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Administratorul închide automat Chromium dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1261119230216066228">Datorită Economisirii memoriei, Chromium este mai rapid</translation>
 <translation id="1315551408014407711">Configurează noul profil Chromium</translation>
@@ -23,6 +24,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="1640672724030957280">Se descarcă…</translation>
 <translation id="1708666629004767631">Chromium este disponibil într-o versiune nouă și mai sigură.</translation>
 <translation id="17264556997921157">Poți să vezi și să elimini subiecte de interes folosite de site-uri pentru a-ți afișa anunțuri. Chromium îți estimează interesele pe baza istoricului tău de navigare recent.</translation>
+<translation id="1733725117201708356">În curând, Chromium va șterge datele de navigare</translation>
 <translation id="1745121272106313518">Chromium va reporni în <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Permiteți Chromium să ruleze în fundal</translation>
 <translation id="1779356040007214683">Pentru mai multă siguranță în Chromium, am dezactivat câteva extensii care nu sunt incluse în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugate fără știrea dvs.</translation>
@@ -53,6 +55,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="2384373936468275798">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul tău nu sunt actualizate.</translation>
 <translation id="2396765026452590966">Extensia „<ph name="EXTENSION_NAME" />” a modificat ce pagină se afișează când pornești Chromium.</translation>
 <translation id="2401032172288869980">Chromium are nevoie de acces la cameră și microfon pentru acest site</translation>
+<translation id="2478295928299953161">Chromium se va închide în curând</translation>
 <translation id="2483889755041906834">În Chromium</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
 <translation id="2560420686485554789">Pentru a descărca fișiere, Chromium necesită acces la stocare</translation>
@@ -171,6 +174,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="4987820182225656817">Invitații pot folosi Chromium fără a lăsa nicio urmă.</translation>
 <translation id="4994636714258228724">Adăugați-vă la Chromium</translation>
 <translation id="5114678101347489141">Chromium explorează noi funcții care le dau site-urilor posibilitatea să ofere aceeași experiență de navigare, folosind mai puține informații despre tine</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{Administratorul închide automat Chromium dacă nu este folosit timp de un minut.}few{Administratorul închide automat Chromium dacă nu este folosit timp de # minute.}other{Administratorul închide automat Chromium dacă nu este folosit timp de # de minute.}}</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chromium. Astfel, se va crea un nou profil Chromium pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Pentru a aplica modificările, relansează Chromium</translation>
@@ -214,6 +218,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6119438414301547735">Permite extensiei să afișeze solicitări de acces în bara de instrumente Chromium</translation>
 <translation id="6120345080069858279">Chromium va salva parola în Contul tău Google. Nu va trebui să o reții.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> este periculos, așadar Chromium l-a blocat.</translation>
+<translation id="6132897690380286411">În curând, Chromium se va închide și va șterge datele</translation>
 <translation id="6134968993075716475">Navigarea sigură este dezactivată. Chromium îți recomandă s-o activezi.</translation>
 <translation id="6145820983052037069">Aici poți comuta între profilurile Chromium</translation>
 <translation id="6183079672144801177">Asigură-te că te-ai conectat la Chromium pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
@@ -233,6 +238,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6327105987658262776">Nu este disponibilă nicio actualizare.</translation>
 <translation id="6333502561965082103">O altă operație din Chromium este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="6334986366598267305">Acum este mai ușor să folosiți Chromium cu Contul Google și pe computerele utilizate în comun.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de un minut. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}few{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de # minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}other{Administratorul șterge automat datele de navigare dacă browserul nu este folosit timp de # de minute. Aici pot fi incluse istoricul, completările automate și descărcările. Filele existente vor rămâne deschise.}}</translation>
 <translation id="6373523479360886564">Sigur doriți să dezinstalați Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> Chromium îți poate estima interesele. Ulterior, un site pe care-l accesezi poate solicita browserului Chromium să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="6403826409255603130">Chromium este un browser web care rulează pagini web și aplicații cu viteza fulgerului. Este rapid, stabil și ușor de utilizat. Navigați pe web în condiții de mai multă siguranță, beneficiind de o protecție sporită, încorporată în Chromium, împotriva programelor malware și a tentativelor de phishing.</translation>
@@ -362,6 +368,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8986207147630327271">Adaugi un profil de serviciu în acest browser și îi acorzi administratorului permisiunea de a gestiona numai profilul de serviciu.</translation>
 <translation id="9019929317751753759">Pentru mai multă siguranță în Chromium, am dezactivat următoarea extensie care nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugată fără știrea ta.</translation>
 <translation id="9022552996538154597">Conectați-vă la Chromium</translation>
+<translation id="907832235989677238">Conectează-te la Chromium. Dacă vrei să te conectezi o singură dată la un cont, poți să <ph name="GUEST_LINK_BEGIN" />folosești dispozitivul ca invitat<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9089354809943900324">Chromium nu este actualizat</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium se va relansa într-o oră}few{Chromium se va relansa în # ore}other{Chromium se va relansa în # de ore}}</translation>
 <translation id="9106612006984859720">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 8.1.</translation>

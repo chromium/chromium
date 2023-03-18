@@ -154,6 +154,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1715293566947629045">Inhabilitando perfil. Espera unos minutos.</translation>
 <translation id="1719094688023114093">Subtítulos automáticos activados.</translation>
 <translation id="1720011244392820496">Activar Sincronización Wi‑Fi</translation>
+<translation id="1720230731642245863">Punto de acceso desactivado</translation>
 <translation id="1731815243805539470">Cambiar a usuario anterior</translation>
 <translation id="1733996486177697563">Cambia entre el tema oscuro y el claro. Mantén pulsado el escritorio y, después, selecciona Fondo de pantalla y estilo.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" es visible para los dispositivos Bluetooth.</translation>
@@ -422,7 +423,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3151786313568798007">Orientación</translation>
 <translation id="3153444934357957346">Solo puedes tener un máximo de <ph name="MULTI_PROFILE_USER_LIMIT" /> cuentas en el inicio de sesión múltiple.</translation>
 <translation id="3154351730702813399">Es posible que el administrador del dispositivo supervise tu actividad de navegación.</translation>
-<translation id="3157931365184549694">Restaurar</translation>
 <translation id="316086887565479535">Hay aplicaciones no admitidas en la plantilla</translation>
 <translation id="3161500364292033097">Cerrar escritorio y ventanas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> va a restaurar tu <ph name="DEVICE_TYPE" />. Tu dispositivo se reiniciará y se eliminarán todos los datos.</translation>
@@ -590,6 +590,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="394485226368336402">Configuración de audio</translation>
 <translation id="3945319193631853098">Toca para completar la configuración</translation>
 <translation id="3945867833895287237">Conectándose al punto de acceso...</translation>
+<translation id="3950272133184491871">¿Cerrar sesión ahora?</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3962859241508114581">Canción anterior</translation>
 <translation id="3969043077941541451">Desactivado</translation>
@@ -988,6 +989,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
+<translation id="5924855612669061715">Punto de acceso activado</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> está activado.</translation>
 <translation id="5947494881799873997">Deshacer</translation>
 <translation id="595202126637698455">Se ha habilitado el control del rendimiento</translation>
@@ -1164,7 +1166,6 @@ Nueva instalación</translation>
 <translation id="6781002679438061620">Escritorio 9</translation>
 <translation id="6782182743534150858">Escritorio 13</translation>
 <translation id="6786750046913594791">Cerrar carpeta</translation>
-<translation id="6787595647772650851">Restaurar última sesión</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="679368458793552943">Ampliar cuando la lupa esté activada</translation>
 <translation id="6801878137098616817">Editado recientemente</translation>
@@ -1362,6 +1363,7 @@ Nueva instalación</translation>
 <translation id="7848989271541991537">Se ha movido a la página <ph name="PAGE_NUMBER" />, fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Desliza tres dedos hacia arriba para acceder a la vista general</translation>
+<translation id="7862292329216937261">Para usar el dispositivo como invitado, debes cerrar sesión y seleccionar Navegar como invitado en la parte inferior de la pantalla.</translation>
 <translation id="7866482334467279021">activado</translation>
 <translation id="7868900307798234037">Desbloqueando con huella digital</translation>
 <translation id="7872195908557044066">Tu administrador está restableciendo tu eSIM. Espera unos minutos.</translation>
@@ -1404,6 +1406,7 @@ Nueva instalación</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menú de configuración de accesibilidad</translation>
 <translation id="8044457332620420407">La retroiluminación del teclado está desactivada</translation>
+<translation id="8048077032188362328">Tu administrador ha desactivado el punto de acceso.</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8051716679295756675">Ya existe una plantilla llamada <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiada en el portapapeles</translation>
@@ -1620,6 +1623,7 @@ Nueva instalación</translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9100887602489003640">Añadiendo perfil. Espera unos minutos.</translation>
 <translation id="9105450214093926548">No es posible que un segundo usuario inicie sesión mientras el navegador Lacros se está ejecutando. Utiliza un perfil del navegador secundario en Lacros o cierra Lacros y vuelve a intentarlo.</translation>
+<translation id="9120448753905017833">Hemos desactivado la conexión Wi‑Fi para empezar a usar el punto de acceso mediante datos móviles. Es posible que se apliquen cargos por el uso de datos.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">No se puede grabar contenido protegido</translation>
 <translation id="9161053988251441839">APLICACIONES SUGERIDAS</translation>

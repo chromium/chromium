@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Vytištěno</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1962550982027027473">Výchozí APN je povinný</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Profilová fotka Google</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
 <translation id="1999615961760456652">Captive portál</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3328783797891415197">Běží test</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Černobíle</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
+<translation id="4150201353443180367">Displej</translation>
 <translation id="4155551848414053977">Zkontrolujte, zda je skener zapnutý a dostupný v síti nebo přes přímé připojení.</translation>
 <translation id="4159784952369912983">Nachová</translation>
 <translation id="4170180284036919717">Pořídit fotku</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Snímek obrazovky</translation>
 <translation id="4258281355379922695">Latence požadavků HTTP</translation>
 <translation id="4271957103967917607">Zobrazit na celé obrazovce</translation>
+<translation id="4275663329226226506">Média</translation>
 <translation id="4289540628985791613">Přehled</translation>
 <translation id="4289849978083912975">Prezentace</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Zkontrolujte skener a zkuste to znovu. Zkontrolujte, zda máte dostatek místního úložného prostoru k ukládání naskenovaných souborů.</translation>
 <translation id="4985509611418653372">Spustit</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Stránky</translation>
 <translation id="4999333166442584738">Skrýt přehled</translation>
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Nebyly nalezeny žádné názvové servery</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943235353293548836">Trvalý interval keepalive</translation>
+<translation id="7953669802889559161">Metody zadávání</translation>
 <translation id="7955587717700691983">Klávesnice Bluetooth</translation>
 <translation id="7960831585769876809">Teplota</translation>
 <translation id="7977800524392185497">Pokud se chcete připojit k síti <ph name="NETWORK_NAME" />, přejděte do sekce Nastavení</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
 <translation id="8045012663542226664">Ztlumení mikrofonu</translation>
 <translation id="8075838845814659848">Zbývající kapacita</translation>
+<translation id="8076492880354921740">Karty</translation>
 <translation id="8082366717211101304">Z aplikací pro Android nelze přeložit záznamy DNS</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
 <translation id="8094062939584182041">Povolit Googlu informovat vás o problému e-mailem</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Požadovat počítadla návštěvnosti</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vybrat možnost <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Nástroje pro vývojáře</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Připojit</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8820457400746201697">Přesuňte modrý kontaktní bod na akci. Vyberte přidruženou klávesu a proveďte přizpůsobení.</translation>
+<translation id="8820817407110198400">Záložky</translation>
 <translation id="8834539327799336565">Momentálně připojeno</translation>
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8855781559874488009">Přes firewall se nelze připojit k webům HTTP</translation>

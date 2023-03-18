@@ -189,6 +189,7 @@
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> を開く</translation>
 <translation id="4468959413250150279">特定のサイトの音声をミュートします。</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# 件の Cookie}other{# 件の Cookie}}</translation>
+<translation id="4478158430052450698">サイトごとにズーム設定をカスタマイズしやすくします</translation>
 <translation id="4479647676395637221">サイトにカメラの使用を許可する前に確認する（推奨）</translation>
 <translation id="4505788138578415521">URL のフルバージョンです</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>

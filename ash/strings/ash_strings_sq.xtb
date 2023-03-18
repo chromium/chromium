@@ -154,6 +154,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1715293566947629045">Profili po çaktivizohet. Prit disa minuta.</translation>
 <translation id="1719094688023114093">"Titrat në çast" janë aktivë.</translation>
 <translation id="1720011244392820496">Aktivizo "Sinkronizimin e Wi-Fi"</translation>
+<translation id="1720230731642245863">Zona e qasjes për internet është joaktive</translation>
 <translation id="1731815243805539470">Kalo te përdoruesi i mëparshëm</translation>
 <translation id="1733996486177697563">Ndërro mes temës së errët dhe temës së ndriçuar. Prek dhe mbaj prekur në desktop dhe më pas zgjidh "Imazhi i sfondit dhe stili".</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" i dukshëm për pajisjet me Bluetooth.</translation>
@@ -422,7 +423,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3151786313568798007">Orientimi</translation>
 <translation id="3153444934357957346">Mund të kesh vetëm deri në <ph name="MULTI_PROFILE_USER_LIMIT" /> llogari në identifikimin e shumëfishtë.</translation>
 <translation id="3154351730702813399">Administratori i pajisjes mund të monitorojë aktivitetin tënd të shfletimit.</translation>
-<translation id="3157931365184549694">Restauro</translation>
 <translation id="316086887565479535">Aplikacione të pambështetura në shabllon</translation>
 <translation id="3161500364292033097">Mbyll tavolinën e punës dhe dritaret</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> po kthen pas pajisjen tënde <ph name="DEVICE_TYPE" />. Pajisja do të rivendoset dhe të gjitha të dhënat do të fshihen.</translation>
@@ -588,6 +588,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="394485226368336402">Cilësimet e audios</translation>
 <translation id="3945319193631853098">Trokit për të përfunduar konfigurimin</translation>
 <translation id="3945867833895287237">Po lidhet me zonën e qasjes për internet...</translation>
+<translation id="3950272133184491871">Do të dalësh tani?</translation>
 <translation id="3950820424414687140">Identifikohu</translation>
 <translation id="3962859241508114581">Kënga e mëparshme</translation>
 <translation id="3969043077941541451">Joaktive</translation>
@@ -985,6 +986,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofoni është i çaktivizuar.</translation>
+<translation id="5924855612669061715">Zona e qasjes për internet është aktive</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> është aktive.</translation>
 <translation id="5947494881799873997">Riktheje</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>
@@ -1160,7 +1162,6 @@ Instalim i ri</translation>
 <translation id="6781002679438061620">Tavolina e punës 9</translation>
 <translation id="6782182743534150858">Tavolina e punës 13</translation>
 <translation id="6786750046913594791">Mbyll dosjen</translation>
-<translation id="6787595647772650851">Restauro sesionin e fundit</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="679368458793552943">Zmadho kur zmadhuesi është aktiv</translation>
 <translation id="6801878137098616817">Modifikuar së fundi</translation>
@@ -1358,6 +1359,7 @@ Instalim i ri</translation>
 <translation id="7848989271541991537">U zhvendos te faqja <ph name="PAGE_NUMBER" />, radha <ph name="ROW_NUMBER" />, kolona <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Rrëshqit shpejt lart me tre gishta për të hyrë te "Përmbledhja"</translation>
+<translation id="7862292329216937261">Për ta përdorur pajisjen si vizitor, duhet të dalësh dhe më pas të zgjedhësh "Shfleto si vizitor" në fund të ekranit.</translation>
 <translation id="7866482334467279021">aktivizuar</translation>
 <translation id="7868900307798234037">Po shkyçet me gjurmën e gishtit</translation>
 <translation id="7872195908557044066">Administratori yt po rivendos eSIM. Prit disa minuta.</translation>
@@ -1400,6 +1402,7 @@ Instalim i ri</translation>
 <translation id="8036504271468642248">Fjalia e mëparshme</translation>
 <translation id="8042893070933512245">Hap menynë e cilësimeve të qasshmërisë</translation>
 <translation id="8044457332620420407">Drita e pasme e tastierës është e fikur</translation>
+<translation id="8048077032188362328">Administratori yt e ka çaktivizuar zonën e qasjes për internet.</translation>
 <translation id="8048123526339889627">Cilësimet e Bluetooth-it</translation>
 <translation id="8051716679295756675">Shablloni me emrin "<ph name="DESK_TEMPLATE_NAME" />" ekziston tashmë</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
@@ -1616,6 +1619,7 @@ Instalim i ri</translation>
 <translation id="9098969848082897657">Vendose telefonin në heshtje</translation>
 <translation id="9100887602489003640">Profili po shtohet. Prit disa minuta.</translation>
 <translation id="9105450214093926548">Identifikimi si përdorues i dytë nuk mbështetet kur shfletuesi Lacros është në ekzekutim. Përdor një profil të dytë të shfletuesit në Lacros më mirë ose mbylle Lacros dhe provo përsëri.</translation>
+<translation id="9120448753905017833">E kemi çaktivizuar WiFi për të filluar përdorimin e zonës së qasjes për internet nëpërmjet të dhënave celulare. Kjo mund të shkaktojë kosto për të dhënat.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ose <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Përmbajtja e mbrojtur nuk mund të regjistrohet</translation>
 <translation id="9161053988251441839">APLIKACIONET E SUGJERUARA</translation>

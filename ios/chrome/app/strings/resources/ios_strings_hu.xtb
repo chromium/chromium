@@ -542,6 +542,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="48274138579728272">Megjelölés olvasottként</translation>
 <translation id="4833686396768033263">A nemrég megnyitott lapok nem állnak rendelkezésre</translation>
 <translation id="4833786495304741580">Automatikusan elküldi a használati statisztikákat és a hibajelentéseket a Google-nak.</translation>
+<translation id="4834499902900503484">Amikor be van jelentkezve a Chrome-ba, az Ön által mentett jelszavak a Google-fiókjába kerülnek. Ezt a viselkedést a <ph name="BEGIN_LINK" />beállítások<ph name="END_LINK" /> között kapcsolhatja ki.</translation>
 <translation id="4840495572919996524">Könyvjelzői, előzményei, jelszavai és más beállításai többé nem lesznek szinkronizálva a Google-fiókjával.</translation>
 <translation id="4844899002472726590">Megtekintheti és szerkesztheti az Önt érdeklő témákat</translation>
 <translation id="4848999860252535517">Biztosan törli a következőhöz tartozó jelszót: <ph name="WEBSITE" />?</translation>
@@ -685,6 +686,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5899314093904173337">Ha szeretné engedélyezni a megosztást a közelben lévő személyekkel, a Kamera vagy QR-kódok olvasására szolgáló alkalmazás segítségével olvastassa be velük ezt a QR-kódot</translation>
 <translation id="5911030830365207728">Google Fordító</translation>
 <translation id="5913600720976431809">Az oldal lefordításával kapcsolatos beállítások</translation>
+<translation id="5922999516621365983">Húzza ide a lapot a kitűzéshez.</translation>
 <translation id="5938160824633642847">Az eszköz tárhelye majdnem megtelt. Szabadítson fel helyet, és próbálja újra.</translation>
 <translation id="5948291296578561264">Segítségével fotókat menthet a fotótárba.</translation>
 <translation id="5951816930277761335">Ossza meg a linket</translation>

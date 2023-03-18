@@ -154,6 +154,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1715293566947629045">Notiek profila atspējošana. Uzgaidiet dažas minūtes.</translation>
 <translation id="1719094688023114093">Subtitri reāllaikā ir ieslēgti.</translation>
 <translation id="1720011244392820496">Wi-Fi sinhronizācijas ieslēgšana</translation>
+<translation id="1720230731642245863">Tīklājs ir izslēgts</translation>
 <translation id="1731815243805539470">Pāriet uz iepriekšējo lietotāju</translation>
 <translation id="1733996486177697563">Pārslēdzieties starp tumšo un gaišo motīvu. Pieskarieties un turiet darbvirsmā, pēc tam atlasiet “Fona tapete un stils”.</translation>
 <translation id="1736898441010944794">Bluetooth ierīces var uztvert šo ierīci: <ph name="NAME" />.</translation>
@@ -422,7 +423,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3151786313568798007">Orientācija</translation>
 <translation id="3153444934357957346">Vairākkārtējas pierakstīšanās laikā var izmantot ne vairāk kā <ph name="MULTI_PROFILE_USER_LIMIT" /> kontus.</translation>
 <translation id="3154351730702813399">Ierīces administrators var uzraudzīt jūsu pārlūkošanas darbības.</translation>
-<translation id="3157931365184549694">Atjaunot</translation>
 <translation id="316086887565479535">Veidnē ir neatbalstītas lietotnes</translation>
 <translation id="3161500364292033097">Aizvērt darbvietu un logus</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ierīcē <ph name="DEVICE_TYPE" /> atjauno iepriekšējo versiju. Ierīce tiks atiestatīta, un visi dati tiks izdzēsti.</translation>
@@ -589,6 +589,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="394485226368336402">Audio iestatījumi</translation>
 <translation id="3945319193631853098">Pieskarieties, lai pabeigtu iestatīšanu.</translation>
 <translation id="3945867833895287237">Notiek savienojuma izveide ar tīklāju...</translation>
+<translation id="3950272133184491871">Vai izrakstīties tagad?</translation>
 <translation id="3950820424414687140">Pierakstīties</translation>
 <translation id="3962859241508114581">Iepriekšējais ieraksts</translation>
 <translation id="3969043077941541451">Izslēgt</translation>
@@ -987,6 +988,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5920710855273935292">Mikrofons ir izslēgts.</translation>
+<translation id="5924855612669061715">Tīklājs ir ieslēgts</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> ir ieslēgta.</translation>
 <translation id="5947494881799873997">Atjaunot</translation>
 <translation id="595202126637698455">Veiktspējas izsekošana ir iespējota</translation>
@@ -1163,7 +1165,6 @@ Jauna instalācija</translation>
 <translation id="6781002679438061620">9. darbvieta</translation>
 <translation id="6782182743534150858">13. darbvieta</translation>
 <translation id="6786750046913594791">Aizvērt mapi</translation>
-<translation id="6787595647772650851">Atjaunot pēdējo sesiju</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="679368458793552943">Tuvināt, kad ieslēgta lupa</translation>
 <translation id="6801878137098616817">Nesen rediģēts</translation>
@@ -1361,6 +1362,7 @@ Jauna instalācija</translation>
 <translation id="7848989271541991537">Pārvietota uz <ph name="PAGE_NUMBER" />. lapu, <ph name="ROW_NUMBER" />. rindu, <ph name="COLUMN_NUMBER" />. sleju.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Lai atvērtu pārskatu, ar trim pirkstiem velciet augšup</translation>
+<translation id="7862292329216937261">Lai izmantotu ierīci viesa režīmā, izrakstieties un pēc tam ekrāna apakšdaļā atlasiet Pārlūkot kā viesim.</translation>
 <translation id="7866482334467279021">ieslēgts</translation>
 <translation id="7868900307798234037">Notiek atbloķēšana ar pirksta nospiedumu</translation>
 <translation id="7872195908557044066">Administrators atiestata jūsu eSIM. Uzgaidiet dažas minūtes.</translation>
@@ -1403,6 +1405,7 @@ Jauna instalācija</translation>
 <translation id="8036504271468642248">Iepriekšējais teikums</translation>
 <translation id="8042893070933512245">Atvērt pieejamības iestatījumu izvēlni</translation>
 <translation id="8044457332620420407">Tastatūras fona apgaismojums ir izslēgts.</translation>
+<translation id="8048077032188362328">Jūsu administrators ir izslēdzis tīklāju.</translation>
 <translation id="8048123526339889627">Bluetooth iestatījumi</translation>
 <translation id="8051716679295756675">Veidne ar nosaukumu “<ph name="DESK_TEMPLATE_NAME" />” jau pastāv.</translation>
 <translation id="8052898407431791827">Kopēts starpliktuvē</translation>
@@ -1619,6 +1622,7 @@ Jauna instalācija</translation>
 <translation id="9098969848082897657">Izslēgt tālruņa skaņu</translation>
 <translation id="9100887602489003640">Notiek profila pievienošana. Uzgaidiet dažas minūtes.</translation>
 <translation id="9105450214093926548">Pārlūka Lacros izmantošanas laikā netiek atbalstīta otra lietotāja pierakstīšanās. Lūdzu, tā vietā izmantojiet otru pārlūka profilu vai aizveriet pārlūku Lacros un mēģiniet vēlreiz.</translation>
+<translation id="9120448753905017833">Mēs esam izslēguši Wi-Fi, lai sāktu izmantot tīklāju, lietojot mobilos datus. Tādējādi var rasties izmaksas par datiem.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> vai <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Aizsargātu saturu nevar ierakstīt</translation>
 <translation id="9161053988251441839">IETEIKTĀS LIETOTNES</translation>

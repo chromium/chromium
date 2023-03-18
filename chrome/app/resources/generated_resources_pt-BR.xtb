@@ -938,6 +938,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1796588414813960292">Os recursos que precisam de som não funcionarão</translation>
 <translation id="1797117170091578105">Jogue com o teclado do Chromebook. Você pode personalizar quais teclas vão realizar ações específicas.</translation>
 <translation id="1800502858278951817">Nenhuma extensão solicitou a leitura ou mudança de <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">Pesquisa + O e depois W</translation>
 <translation id="1802624026913571222">Suspender quando a capa for fechada</translation>
 <translation id="1802687198411089702">A página não está respondendo. Você pode esperar até que ele volte a responder ou sair.</translation>
 <translation id="1803531841600994172">Traduzir para</translation>
@@ -1197,6 +1198,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="2023167225947895179">O PIN pode ser facilmente descoberto</translation>
 <translation id="202352106777823113">O download estava demorando muito e foi interrompido pela rede.</translation>
 <translation id="2024195579772565064">Excluir mecanismo de pesquisa</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> travou. Clique neste balão para recarregar a extensão.</translation>
 <translation id="2028449514182362831">Recursos que precisam de sensores de movimento não funcionarão</translation>
 <translation id="202918510990975568">Insira sua senha para configurar a segurança e o login</translation>
@@ -1273,6 +1275,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2090165459409185032">Para recuperar informações da sua conta, acesse: google.com.br/accounts/recovery</translation>
 <translation id="2090507354966565596">Conexão automática ao fazer login</translation>
 <translation id="2090876986345970080">Configuração de segurança do sistema</translation>
+<translation id="2091887806945687916">Som</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Recursos de depuração<ph name="END_H3" />
       <ph name="BR" />
       Você pode ativar os recursos de depuração no seu dispositivo ChromeOS para instalar e testar códigos personalizados nele. Isso permitirá:<ph name="BR" />
@@ -3204,6 +3207,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3778868487658107119">Faça perguntas ou diga a ele o que fazer. É o seu Google pessoal, sempre pronto para ajudar.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> não conseguiu verificar se as suas senhas aparecem em violações de dados. Tente de novo mais tarde.</translation>
 <translation id="3781742599892759500">Acesso ao microfone no Linux</translation>
+<translation id="3783725005098956899">Mostrar registro</translation>
 <translation id="3783889407390048282">Libere espaço para não perder o acesso ao Android.</translation>
 <translation id="3784472333786002075">Os cookies são arquivos criados pelos sites. Há dois tipos de cookies: os primários são criados pelo site que você visita. Esse é o site exibido na barra de endereço. Os cookies de terceiros são criados por outros sites. Esses sites possuem uma parte do conteúdo, como anúncios ou imagens, que você vê na página da Web visitada.</translation>
 <translation id="3785308913036335955">Mostrar atalho para aplicativos</translation>
@@ -6640,6 +6644,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6903022061658753260">Seus dados serão sincronizados entre todos os navegadores Chrome em que você ativou a sincronização para esta conta. Acesse as <ph name="LINK_BEGIN" />Configurações do ChromeOS<ph name="LINK_END" /> para ver as opções de sincronização.</translation>
 <translation id="6903590427234129279">Abrir todos (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Ativar a sincronização</translation>
+<translation id="6903916726032521638">Pesquisar "<ph name="QUERY_CLUSTER_NAME" />"</translation>
 <translation id="6904344821472985372">Revogar acesso a arquivos</translation>
 <translation id="6904655473976120856">Pressione o botão App para sair</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Para proteger suas senhas, o Gerenciador de senhas do Google é bloqueado depois de 1 minuto de inatividade.}one{Para proteger suas senhas, o Gerenciador de senhas do Google é bloqueado depois de {NUM_MINS} minuto de inatividade.}other{Para proteger suas senhas, o Gerenciador de senhas do Google é bloqueado depois de {NUM_MINS} minutos de inatividade.}}</translation>
@@ -8336,6 +8341,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8419098111404128271">Resultados de pesquisa para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">Editar entradas do dicionário</translation>
 <translation id="8421361468937925547">Legenda instantânea (somente em inglês)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Bandeja ausente</translation>
 <translation id="8424250197845498070">Bloqueado pelo recurso Proteção Avançada</translation>
 <translation id="8425213833346101688">Alterar</translation>
@@ -8714,6 +8720,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8762886931014513155">O <ph name="DEVICE_TYPE" /> precisa de uma atualização</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Mostrar todas as pesquisas por "<ph name="QUERY_CLUSTER_NAME" />"</translation>
 <translation id="8767621466733104912">Atualizar automaticamente o Chrome para todos os usuários</translation>
 <translation id="8770406935328356739">Diretório raiz da extensão</translation>
 <translation id="8771300903067484968">O plano de fundo da página inicial foi redefinido para o plano de fundo padrão.</translation>
@@ -9011,7 +9018,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9026731007018893674">download</translation>
 <translation id="9026852570893462412">O processo pode levar alguns minutos. Fazendo o download da máquina virtual.</translation>
 <translation id="9027459031423301635">Abrir link em uma nova &amp;guia</translation>
-<translation id="9027707169256972235">Remover</translation>
 <translation id="9030515284705930323">Sua organização não ativou a Google Play Store para sua conta. Entre em contato com seu administrador para receber mais informações.</translation>
 <translation id="9030754204056345429">Mais rápida</translation>
 <translation id="9030785788945687215">Gmail</translation>

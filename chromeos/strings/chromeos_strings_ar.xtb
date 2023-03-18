@@ -118,6 +118,7 @@
 <translation id="1947737735496445907">تمت الطباعة</translation>
 <translation id="1951012854035635156">المساعد</translation>
 <translation id="1962550982027027473">يجب إدخال اسم نقطة وصول تلقائي.</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">‏صورة الملف الشخصي في حساب Google</translation>
 <translation id="1979103255016296513">تأخير تغيير كلمة المرور</translation>
 <translation id="1999615961760456652">مدخل مشروط الوصول إليه</translation>
@@ -251,6 +252,7 @@
 <translation id="3310640316857623290">وقت استجابة "نظام أسماء النطاقات" أعلى بكثير من الحدّ الأقصى المسموح به.</translation>
 <translation id="3328783797891415197">الاختبار قيد التشغيل.</translation>
 <translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
@@ -338,6 +340,7 @@
 <translation id="4131410914670010031">أبيض وأسود</translation>
 <translation id="4145784616224233563">‏الجدار الناري لبروتوكل HTTP</translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
+<translation id="4150201353443180367">عرض</translation>
 <translation id="4155551848414053977">يُرجى التأكُّد من تشغيل الماسح الضوئي وتوفّره من خلال شبكتك أو الاتصال المباشر.</translation>
 <translation id="4159784952369912983">أرجواني</translation>
 <translation id="4170180284036919717">التقاط صورة</translation>
@@ -353,6 +356,7 @@
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="4258281355379922695">‏وقت استجابة بروتوكول HTTP</translation>
 <translation id="4271957103967917607">عرض بملء الشاشة</translation>
+<translation id="4275663329226226506">الوسائط</translation>
 <translation id="4289540628985791613">نظرة عامة</translation>
 <translation id="4289849978083912975">عرض الشرائح</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
@@ -445,6 +449,7 @@
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
 <translation id="4985509611418653372">تشغيل</translation>
 <translation id="4987769320337599931">الجدار الناري</translation>
+<translation id="4988526792673242964">الصفحات</translation>
 <translation id="4999333166442584738">إخفاء التقرير</translation>
 <translation id="500920857929044050">إيقاف الاختبار</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -767,6 +772,7 @@
 <translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
 <translation id="7942349550061667556">أحمر</translation>
 <translation id="7943235353293548836">الفاصل الدائم لرسالة التحقّق من الاتصال</translation>
+<translation id="7953669802889559161">أساليب الإدخال</translation>
 <translation id="7955587717700691983">لوحة مفاتيح تتضمّن بلوتوث</translation>
 <translation id="7960831585769876809">درجة الحرارة</translation>
 <translation id="7977800524392185497">للانضمام إلى شبكة <ph name="NETWORK_NAME" />، انتقِل إلى "الإعدادات".</translation>
@@ -779,6 +785,7 @@
 <translation id="8041089156583427627">إرسال تعليقات</translation>
 <translation id="8045012663542226664">كتم صوت الميكروفون</translation>
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
+<translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8082366717211101304">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS) من تطبيقات Android.</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8094062939584182041">‏السماح بتلقّي رسائل إلكترونية من Google حول هذه المشكلة</translation>
@@ -788,6 +795,7 @@
 <translation id="8132480444149501833">طلب عدّادات حركة بيانات الشبكة</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">اختيار <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">أدوات مطوري البرامج</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">إرفاق</translation>
 <translation id="8206859287963243715">خلوي</translation>
@@ -855,6 +863,7 @@
 <translation id="8798441408945964110">اسم مقدم الخدمة</translation>
 <translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>
 <translation id="8818152010000655963">الخلفية</translation>
+<translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
 <translation id="8855781559874488009">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP.</translation>

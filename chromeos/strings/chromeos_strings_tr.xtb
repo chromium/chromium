@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Yazdırıldı</translation>
 <translation id="1951012854035635156">Asistan</translation>
 <translation id="1962550982027027473">Varsayılan bir APN gerekli</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google profil fotoğrafı</translation>
 <translation id="1979103255016296513">Şifre değişikliği zamanı geçti</translation>
 <translation id="1999615961760456652">Giriş Portalı</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
 <translation id="3328783797891415197">Test çalışıyor</translation>
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
 <translation id="4147897805161313378">Google Fotoğraflar</translation>
+<translation id="4150201353443180367">Ekran</translation>
 <translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
 <translation id="4159784952369912983">Mor</translation>
 <translation id="4170180284036919717">Fotoğraf çek</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
 <translation id="4258281355379922695">HTTP Gecikmesi</translation>
 <translation id="4271957103967917607">Tam Ekran görüntüle</translation>
+<translation id="4275663329226226506">Medya</translation>
 <translation id="4289540628985791613">Genel bakış</translation>
 <translation id="4289849978083912975">Slayt gösterisi</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Tarayıcıyı kontrol edip tekrar deneyin. Taranan dosyaların kaydedilmesi için yeterli yerel alan bulunduğundan emin olun.</translation>
 <translation id="4985509611418653372">Çalıştır</translation>
 <translation id="4987769320337599931">Güvenlik duvarı</translation>
+<translation id="4988526792673242964">Sayfalar</translation>
 <translation id="4999333166442584738">Raporu gizle</translation>
 <translation id="500920857929044050">Testi durdur</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Alan adı sunucusu bulunamadı</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7943235353293548836">Kalıcı keepalive Aralığı</translation>
+<translation id="7953669802889559161">Girişler</translation>
 <translation id="7955587717700691983">Bluetooth klavye</translation>
 <translation id="7960831585769876809">Sıcaklık</translation>
 <translation id="7977800524392185497">Bir <ph name="NETWORK_NAME" /> ağına katılmak için Ayarlar'a gidin</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Görüş bildirin</translation>
 <translation id="8045012663542226664">Mikrofonun sesini kapatma</translation>
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
+<translation id="8076492880354921740">Sekmeler</translation>
 <translation id="8082366717211101304">Android uygulamalarından DNS çözümlenemiyor</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8094062939584182041">Google'ın bu sorunla ilgili olarak size e-posta göndermesine izin verin</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Trafik Sayaçlarını İste</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Seç: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Geliştirici araçları</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Ekle</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Kablosuz Ağ</translation>
 <translation id="8818152010000655963">Duvar kağıdı</translation>
 <translation id="8820457400746201697">Mavi temas noktasını bir işleme taşıyın. Özelleştirmek istediğiniz ilişkili anahtarı seçin.</translation>
+<translation id="8820817407110198400">Yer işaretleri</translation>
 <translation id="8834539327799336565">Şu anda bağlı</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8855781559874488009">HTTP web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>

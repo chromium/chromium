@@ -936,6 +936,7 @@
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1797117170091578105">Chromebook 키보드를 사용하여 플레이합니다. 특정 작업에 맞게 키를 맞춤설정할 수 있습니다.</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" /> 사이트를 읽고 변경하도록 요청한 확장 프로그램이 없음</translation>
+<translation id="180203835522132923">검색 + O를 누른 후 W</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
 <translation id="1803531841600994172">번역 타겟 언어</translation>
@@ -1196,6 +1197,7 @@
 <translation id="2023167225947895179">추측하기 쉬운 PIN입니다.</translation>
 <translation id="202352106777823113">다운로드가 너무 오래 걸려 네트워크에서 중단했습니다.</translation>
 <translation id="2024195579772565064">검색엔진 삭제</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" />이(가) 다운되었습니다. 확장 프로그램을 다시 로드하려면 이 풍선을 클릭하세요.</translation>
 <translation id="2028449514182362831">움직임 감지 센서가 필요한 기능이 작동하지 않음</translation>
 <translation id="202918510990975568">비밀번호를 입력하여 보안을 구성하고 로그인하세요.</translation>
@@ -1272,6 +1274,7 @@
 <translation id="2090165459409185032">계정 정보를 복구하려면 google.com/accounts/recovery 페이지로 이동하세요.</translation>
 <translation id="2090507354966565596">로그인하면 자동으로 연결</translation>
 <translation id="2090876986345970080">시스템 보안 설정</translation>
+<translation id="2091887806945687916">소리</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />디버깅 기능<ph name="END_H3" />
     <ph name="BR" />
     기기에 맞춤 코드를 설치하고 테스트하기 위해 ChromeOS 기기에서 디버깅 기능을 사용 설정할 수 있습니다. 이를 통해 다음 작업을 할 수 있습니다.<ph name="BR" />
@@ -3203,6 +3206,7 @@
 <translation id="3778868487658107119">질문을 하고 작업을 지시하세요. 나만의 Google이 언제든지 도와드립니다.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" />에서 비밀번호가 정보 유출로 인해 노출되었는지 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="3781742599892759500">Linux 마이크 액세스</translation>
+<translation id="3783725005098956899">로그 표시</translation>
 <translation id="3783889407390048282">Android에 계속 액세스하려면 여유 공간을 확보하세요.</translation>
 <translation id="3784472333786002075">쿠키는 웹사이트에서 생성된 파일로, 다음과 같은 2가지 유형이 있습니다. 제1사 쿠키는 사용자가 방문하는 사이트에 의해 생성됩니다. 이때 사이트가 주소 표시줄에 나타납니다. 제3사 쿠키는 다른 사이트, 즉 광고나 이미지 등 사용자가 방문하는 웹사이트에 표시되는 일부 콘텐츠를 소유한 사이트에 의해 생성됩니다.</translation>
 <translation id="3785308913036335955">앱 단축키 표시</translation>
@@ -8328,6 +8332,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />'에 대한 검색결과</translation>
 <translation id="8420308167132684745">사전 항목 수정</translation>
 <translation id="8421361468937925547">실시간 자막(영어 전용)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">트레이 없음</translation>
 <translation id="8424250197845498070">고급 보호 기능으로 차단됨</translation>
 <translation id="8425213833346101688">변경</translation>
@@ -9001,7 +9006,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9026731007018893674">다운로드</translation>
 <translation id="9026852570893462412">이 과정은 몇 분 정도 걸릴 수 있습니다. 가상 머신을 다운로드합니다.</translation>
 <translation id="9027459031423301635">새 탭에서 링크 열기(&amp;T)</translation>
-<translation id="9027707169256972235">삭제</translation>
 <translation id="9030515284705930323">조직에서 내 계정이 Google Play 스토어를 사용하도록 설정하지 않았습니다. 자세한 정보는 관리자에게 문의하세요.</translation>
 <translation id="9030754204056345429">조금 빠르게</translation>
 <translation id="9030785788945687215">Gmail</translation>

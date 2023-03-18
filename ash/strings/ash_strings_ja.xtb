@@ -96,6 +96,7 @@
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。矢印キーを使用して日付を変更します。</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />、インストール済みアプリ</translation>
+<translation id="1414919006379339073">現在のウィンドウを閉じる</translation>
 <translation id="1415846719612499304">ネットワーク リストを表示します。<ph name="STATE_TEXT" />。</translation>
 <translation id="1419738280318246476">通知に関する操作を行うには、デバイスのロックを解除してください</translation>
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
@@ -324,6 +325,7 @@
 <translation id="2621713457727696555">保護あり</translation>
 <translation id="263399434338050016">"すべて選択"</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2647092942972307022"><ph name="TOTAL_MEMORY" /> 中 <ph name="USED_MEMORY" /> 使用</translation>
 <translation id="2653019840645008922">ウィンドウ キャプチャ</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2658778018866295321">クリックしてドラッグ</translation>
@@ -421,7 +423,6 @@
 <translation id="3151786313568798007">向き</translation>
 <translation id="3153444934357957346">マルチログインに使用できるのは <ph name="MULTI_PROFILE_USER_LIMIT" /> アカウントまでです。</translation>
 <translation id="3154351730702813399">デバイス管理者が閲覧アクティビティを監視している可能性があります。</translation>
-<translation id="3157931365184549694">復元</translation>
 <translation id="316086887565479535">テンプレートでサポートされていないアプリ</translation>
 <translation id="3161500364292033097">デスクとウィンドウを閉じる</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックしています。デバイスはリセットされ、データはすべて削除されます。</translation>
@@ -617,6 +618,7 @@
 <translation id="4112140312785995938">後方に移動</translation>
 <translation id="4114315158543974537">Phone Hub をオンにする</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
+<translation id="411881149140864134">左側のデスクを有効にする</translation>
 <translation id="412298498316631026">ウィンドウ</translation>
 <translation id="4123259114412175274">Chromebook のロックを解除するには、スマートフォンの Bluetooth がオンになっていることをご確認ください</translation>
 <translation id="4125970834901680537">タブレット モードでアプリをストリーミングできません。ノートパソコン モードでもう一度お試しください。</translation>
@@ -629,6 +631,7 @@
 <translation id="4165275524535002941">ケーブルはディスプレイに対応していない可能性があります</translation>
 <translation id="4177913004758410636">{0,plural, =1{1 日以内にデバイスを更新してください}other{# 日以内にデバイスを更新してください}}</translation>
 <translation id="4181841719683918333">言語</translation>
+<translation id="4185671786623711291">アクティブなウィンドウを右側のデスクに移動する</translation>
 <translation id="4192112279662688596">または</translation>
 <translation id="4193857202545160520">クリックとキーを表示</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
@@ -707,6 +710,7 @@
 <translation id="453661520163887813">あと <ph name="TIME" /> で充電完了</translation>
 <translation id="4538824937723742295">全画面のスクリーンショットを撮影</translation>
 <translation id="4544483149666270818">録画するウィンドウを選択してください</translation>
+<translation id="4548482551627849548">アクティブなウィンドウを左側のデスクに移動する</translation>
 <translation id="4560576029703263363">オン</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
@@ -1095,6 +1099,7 @@
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> が期限までに <ph name="DEVICE_TYPE" /> を更新するよう求めています</translation>
 <translation id="649452524636452238">スマートカードの PIN</translation>
+<translation id="6495322433318104734">スクリーン セーバーを表示しています。終了するにはどれかキーを押してください</translation>
 <translation id="6495400115277918834">ピクチャー イン ピクチャーを開始しました。フォーカスするには Alt+Shift+V キーを押してください</translation>
 <translation id="6497418457565568043">サイレント モードがオンです</translation>
 <translation id="6500896621837555595">更新</translation>
@@ -1160,7 +1165,6 @@
 <translation id="6781002679438061620">デスク 9</translation>
 <translation id="6782182743534150858">デスク 13</translation>
 <translation id="6786750046913594791">フォルダを閉じる</translation>
-<translation id="6787595647772650851">最後のセッションを復元</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="679368458793552943">拡大鏡がオンのときにズームインします</translation>
 <translation id="6801878137098616817">最近編集したファイル</translation>
@@ -1288,6 +1292,7 @@
 <translation id="746232733191930409">画面の録画モード</translation>
 <translation id="7466449121337984263">センサーをタッチしてください</translation>
 <translation id="7477793887173910789">音楽、動画、その他のメディアを操作します</translation>
+<translation id="7489261257412536105">全画面表示を開始または終了する</translation>
 <translation id="7490360161041035804">Google ドライブなどの重要なファイルを固定できます。固定するには、該当のファイルにカーソルを合わせるか、ファイルアプリで該当のファイルを右クリックします。</translation>
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
 <translation id="7508690557411636492">過去 1 か月以内に開いたファイル</translation>
@@ -1444,6 +1449,7 @@
 <translation id="8230305195727960608">色反転モード</translation>
 <translation id="8233140502441622270">キーボード ショートカット アプリを開きます</translation>
 <translation id="8236042855478648955">休憩の時間です</translation>
+<translation id="8239034820133090126">右側のデスクを有効にする</translation>
 <translation id="8246282815785366524">ようこそ、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />、アプリ</translation>
@@ -1493,6 +1499,7 @@
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="8496402167048257517">ニアバイシェア設定を表示します</translation>
 <translation id="8507563469658346379">全ユーザー対象（<ph name="REMAINING_TIME" />）</translation>
+<translation id="8511123073331775246">新しいデスクを作成する</translation>
 <translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。ロックを解除するにはパスワードをご入力ください</translation>
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
@@ -1503,6 +1510,7 @@
 <translation id="8546059259582788728">並べ替えを元に戻しました</translation>
 <translation id="8551588720239073785">日時の設定</translation>
 <translation id="8553395910833293175">すべてのデスクに割り当て済みです。</translation>
+<translation id="8555757996376137129">現在のデスクを削除する</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> を更新するよう推奨しています</translation>
 <translation id="8563862697512465947">通知設定</translation>
 <translation id="857201607579416096">メニューは画面右下に移動しました。</translation>

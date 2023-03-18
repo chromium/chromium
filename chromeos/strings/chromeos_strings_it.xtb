@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Stampato</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1962550982027027473">È richiesto un APN predefinito</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Foto del profilo Google</translation>
 <translation id="1979103255016296513">Modifica della password scaduta</translation>
 <translation id="1999615961760456652">Captive portal</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">la latenza DNS è sostanzialmente al di sopra della soglia consentita</translation>
 <translation id="3328783797891415197">Test in esecuzione</translation>
 <translation id="3340011300870565703">Percentuale di batteria dell'auricolare destro del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="3360306038446926262">Finestre</translation>
 <translation id="3368922792935385530">Connesso</translation>
 <translation id="3369013195428705271">Vuoi cancellare l'intera cronologia di stampa? I processi di stampa in corso non verranno cancellati.</translation>
 <translation id="3404249063913988450">Abilita salvaschermo</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">In bianco e nero</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
+<translation id="4150201353443180367">Display</translation>
 <translation id="4155551848414053977">Assicurati che lo scanner sia acceso e disponibile tramite la tua rete o una connessione diretta</translation>
 <translation id="4159784952369912983">Viola</translation>
 <translation id="4170180284036919717">Scatta una foto</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">Latenza HTTP</translation>
 <translation id="4271957103967917607">Visualizza a schermo intero</translation>
+<translation id="4275663329226226506">Multimediali</translation>
 <translation id="4289540628985791613">Panoramica</translation>
 <translation id="4289849978083912975">Presentazione</translation>
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Controlla lo scanner e riprova. Assicurati di avere spazio locale sufficiente per salvare i file sottoposti a scansione.</translation>
 <translation id="4985509611418653372">Esegui</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Pagine</translation>
 <translation id="4999333166442584738">Nascondi rapporto</translation>
 <translation id="500920857929044050">Interrompi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">nessun server dei nomi trovato</translation>
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7943235353293548836">Intervallo keepalive persistente</translation>
+<translation id="7953669802889559161">Metodi di immissione</translation>
 <translation id="7955587717700691983">Tastiera Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Per collegarti alla rete <ph name="NETWORK_NAME" />, vai alle Impostazioni</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8045012663542226664">Disattivazione dell'audio del microfono</translation>
 <translation id="8075838845814659848">Carica rimanente</translation>
+<translation id="8076492880354921740">Schede</translation>
 <translation id="8082366717211101304">Impossibile risolvere la richiesta DNS da app Android</translation>
 <translation id="808894953321890993">Cambia password</translation>
 <translation id="8094062939584182041">Consenti a Google di inviarti email relative a questo problema</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Richiedi contatori di traffico</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Seleziona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Strumenti per sviluppatori</translation>
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8183974620058026102">Allega</translation>
 <translation id="8206859287963243715">Cellulare</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Sfondo</translation>
 <translation id="8820457400746201697">Sposta il punto di contatto blu su un'azione. Seleziona la chiave associata da personalizzare.</translation>
+<translation id="8820817407110198400">Preferiti</translation>
 <translation id="8834539327799336565">Attualmente connesso</translation>
 <translation id="8845001906332463065">Richiedi assistenza</translation>
 <translation id="8855781559874488009">Impossibile collegarti tramite il firewall ai siti web HTTP</translation>

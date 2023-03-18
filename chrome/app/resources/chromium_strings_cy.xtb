@@ -11,6 +11,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="113122355610423240">Chromium yw eich porwr diofyn</translation>
 <translation id="1131805035311359397">I wirio a yw'ch cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Ynghylch Chromium</translation>
+<translation id="1202417120496358351">{COUNT,plural, =1{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am 1 funud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.}zero{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.}two{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # funud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.}few{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.}many{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.}other{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.}}</translation>
 <translation id="1203500561924088507">Diolch am osod. Rhaid i chi ailgychwyn eich porwr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Mae Arbedwr Cof wedi gwneud Chromium yn Gyflymach</translation>
 <translation id="1315551408014407711">Gosod eich proffil Chromium newydd</translation>
@@ -25,6 +26,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="1640672724030957280">Wrthi'n lawrlwytho...</translation>
 <translation id="1708666629004767631">Mae fersiwn newydd, fwy diogel o Chromium ar gael.</translation>
 <translation id="17264556997921157">Gallwch weld a dileu pynciau o ddiddordeb y mae gwefannau'n eu defnyddio i ddangos hysbysebion i chi. Mae Chromium yn amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori diweddar.</translation>
+<translation id="1733725117201708356">Bydd Chromium yn dileu data pori yn fuan</translation>
 <translation id="1745121272106313518">Bydd Chromium yn ailddechrau mewn <ph name="REMAINING_TIME" /></translation>
 <translation id="1774152462503052664">Caniatáu i Chromium rhedeg yn y cefndir</translation>
 <translation id="1779356040007214683">I wneud Chromium yn fwy diogel, gwnaethom analluogi rhai estyniadau nad ydynt wedi'u rhestru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac mae'n bosib eu bod wedi'u hychwanegu heb i chi wybod.</translation>
@@ -55,6 +57,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2384373936468275798">Ni allai ChromiumOS gysoni'ch data gan fod manylion mewngofnodi eich cyfrif yn hen.</translation>
 <translation id="2396765026452590966">Mae'r estyniad "<ph name="EXTENSION_NAME" />" wedi newid pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chromium.</translation>
 <translation id="2401032172288869980">Mae angen caniatâd camera a meicroffon ar Chromium ar gyfer y wefan hon</translation>
+<translation id="2478295928299953161">Bydd Chromium yn cau yn fuan</translation>
 <translation id="2483889755041906834">Yn Chromium</translation>
 <translation id="2485422356828889247">Dadosod</translation>
 <translation id="2560420686485554789">Mae angen mynediad storfa ar Chromium i lawrlwytho ffeiliau</translation>
@@ -173,6 +176,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4987820182225656817">Gall gwesteion ddefnyddio Chromium heb adael unrhyw beth ar ôl.</translation>
 <translation id="4994636714258228724">Ychwanegu eich hun at Chromium</translation>
 <translation id="5114678101347489141">Mae Chromium yn archwilio nodweddion newydd sy'n caniatáu i wefannau roi'r un profiad pori gan ddefnyddio llai o'ch gwybodaeth</translation>
+<translation id="51579499820286700">{COUNT,plural, =1{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am 1 funud.}zero{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud.}two{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # funud.}few{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud.}many{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud.}other{Mae eich gweinyddwr yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud.}}</translation>
 <translation id="5224391634244552924">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="5252179775517634216">Mae <ph name="EXISTING_USER" /> wedi'i fewngofnodi yn barod i'r proffil Chromium hwn. Bydd hyn yn creu proffil Chromium newydd ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">I gymhwyso'ch newidiadau, ail-lansiwch Chromium</translation>
@@ -216,6 +220,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6119438414301547735">Caniatáu i estyniad ddangos ceisiadau am fynediad ym mar offer Chromium</translation>
 <translation id="6120345080069858279">Bydd Chromium yn cadw'r cyfrinair hwn yn eich Cyfrif Google. Ni fydd yn rhaid i chi ei gofio.</translation>
 <translation id="6129621093834146363">Mae <ph name="FILE_NAME" /> yn beryglus, felly mae Chromium wedi ei rhwystro.</translation>
+<translation id="6132897690380286411">Bydd Chromium yn cau ac yn dileu data yn fuan</translation>
 <translation id="6134968993075716475">Mae Pori'n Ddiogel wedi'i ddiffodd. Mae Chromium yn argymell ei droi ymlaen.</translation>
 <translation id="6145820983052037069">Gallwch newid rhwng proffiliau Chromium yma</translation>
 <translation id="6183079672144801177">Gwnewch yn siŵr eich bod wedi mewngofnodi i Chromium ar eich <ph name="TARGET_DEVICE_NAME" /> a rhowch gynnig arall arni.</translation>
@@ -235,6 +240,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6327105987658262776">Nid oes diweddariad ar gael.</translation>
 <translation id="6333502561965082103">Mae gweithred arall ar Chromium ar y gweill. Rhowch gynnig arall arni nes ymlaen.</translation>
 <translation id="6334986366598267305">Mae hi bellach yn haws defnyddio Chromium gyda'ch Cyfrif Google ar gyfrifiaduron cyffredin.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Mae eich gweinyddwr yn dileu data pori yn awtomatig pan na chaiff eu defnyddio am 1 funud. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau. Bydd eich tabiau presennol yn aros ar agor.}zero{Mae eich gweinyddwr yn dileu data pori yn awtomatig pan na chaiff eu defnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau. Bydd eich tabiau presennol yn aros ar agor.}two{Mae eich gweinyddwr yn dileu data pori yn awtomatig pan na chaiff eu defnyddio am # funud. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau. Bydd eich tabiau presennol yn aros ar agor.}few{Mae eich gweinyddwr yn dileu data pori yn awtomatig pan na chaiff eu defnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau. Bydd eich tabiau presennol yn aros ar agor.}many{Mae eich gweinyddwr yn dileu data pori yn awtomatig pan na chaiff eu defnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau. Bydd eich tabiau presennol yn aros ar agor.}other{Mae eich gweinyddwr yn dileu data pori yn awtomatig pan na chaiff ei ddefnyddio defnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau. Bydd eich tabiau presennol yn aros ar agor.}}</translation>
 <translation id="6373523479360886564">Ydych chi'n siŵr eich bod am ddadosod Chromium?</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Sut rydym yn defnyddio'r data hyn:<ph name="END_BOLD" /> Gall Chromium amcangyfrif eich diddordebau. Yn nes ymlaen, gall gwefan rydych yn ymweld â hi ofyn i Chromium weld eich diddordebau er mwyn personoleiddio'r hysbysebion rydych yn eu gweld.</translation>
 <translation id="6403826409255603130">Porwr gwe yw Chromium sy'n rhedeg tudalennau gwe a rhaglenni mewn chwinciad. Mae'n gyflym, sefydlog ac yn hawdd ei ddefnyddio. Porwch y we yn fwy diogel gyda diogelwch rhag maleiswedd a gwe-rwydo pwrpasol yn Chromium.</translation>
@@ -365,6 +371,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8986207147630327271">Rydych yn ychwanegu proffil gwaith i'r porwr hwn ac yn rhoi rheolaeth i'ch gweinyddwr dros y proffil gwaith yn unig.</translation>
 <translation id="9019929317751753759">I wneud Chromium yn fwy diogel, gwnaethom analluogi'r estyniad canlynol nad yw wedi'i restru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac a allai fod wedi'i ychwanegu heb i chi wybod.</translation>
 <translation id="9022552996538154597">Mewngofnodi i Chromium</translation>
+<translation id="907832235989677238">Mewngofnodi i Chromium. Os ydych chi am fewngofnodi cyfrif unwaith yn unig, gallwch <ph name="GUEST_LINK_BEGIN" />ddefnyddio'r ddyfais fel gwestai<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9089354809943900324">Mae Chromium yn hen</translation>
 <translation id="9093206154853821181">{0,plural, =1{Bydd Chromium yn ail-lansio mewn awr}zero{Bydd Chromium yn ail-lansio mewn # awr}two{Bydd Chromium yn ail-lansio mewn # awr}few{Bydd Chromium yn ail-lansio mewn # awr}many{Bydd Chromium yn ail-lansio mewn # awr}other{Bydd Chromium yn ail-lansio mewn # awr}}</translation>
 <translation id="9106612006984859720">I gael diweddariadau Chromium yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.1.</translation>

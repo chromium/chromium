@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Google Drive кэшіңіз өшірілді.</translation>
 <translation id="2239068707900391003">Кофе ұстаған адам</translation>
 <translation id="2251368349685848079">Себеттен қалпына келтіру</translation>
+<translation id="2278133026967558505">Барлық веб-сайт және URL мекенжайы арқылы файлды пайдалану</translation>
 <translation id="2282155092769082568">Автоматты конфигурациялау URL мекенжайы:</translation>
 <translation id="2284767815536050991">алынбалы жад</translation>
 <translation id="2288278176040912387">Пластина ойнатқыш</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">Аутентификация серверінің идентификациясын тексеру үшін "Балама атау тақырыбы сәйкестігі" немесе "Домен суффиксі сәйкестігі" жоқ.</translation>
 <translation id="7165320105431587207">Желіні реттеу мүмкін емес</translation>
 <translation id="7170041865419449892">Ауқымнан тыс</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> қоспағанда, барлық веб-сайт және URL мекенжайы арқылы файлды пайдалану</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Файлды басқаша сақтау</translation>

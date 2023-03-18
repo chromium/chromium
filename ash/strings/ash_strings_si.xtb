@@ -154,6 +154,7 @@
 <translation id="1715293566947629045">පැතිකඩ අබල කරමින්. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="1719094688023114093">සජීවී සිරස්තල ක්‍රියාත්මකයි.</translation>
 <translation id="1720011244392820496">Wi-Fi සමමුහුර්තකරණය ක්‍රියාත්මක කරන්න</translation>
+<translation id="1720230731642245863">හොට්ස්පොට් ක්‍රියා විරහිතයි</translation>
 <translation id="1731815243805539470">පෙර පරිශීලක වෙත මාරු කරන්න</translation>
 <translation id="1733996486177697563">අඳුරු සහ ළා තේමා අතර මාරු වන්න. ඩෙස්ක්ටොප් එක ස්පර්ශ කර අල්ලාගෙන සිටින්න, අනතුරුව වෝල්පේපරය සහ ශෛලිය තෝරන්න.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" බ්ලූටූත් උපාංගවලට දෘශ්‍යමාන වේ.</translation>
@@ -422,7 +423,6 @@
 <translation id="3151786313568798007">දිශානතිය</translation>
 <translation id="3153444934357957346">ඔබට බහුවිධ පිරීමෙහි ගිණුම් <ph name="MULTI_PROFILE_USER_LIMIT" />ක් දක්වා පමණක් තිබිය හැකිය.</translation>
 <translation id="3154351730702813399">උපාංග පරිපාලක ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් නිරීක්ෂණය කළ හැකිය:</translation>
-<translation id="3157931365184549694">ප්‍රතිසාධනය</translation>
 <translation id="316086887565479535">අච්චුව තුළ සහාය නොදක්වන යෙදුම්</translation>
 <translation id="3161500364292033097">ඩෙස්ක් සහ කවුළු වසන්න</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ඔබගේ <ph name="DEVICE_TYPE" /> ආපසු පෙරළයි. ඔබගේ උපාංගය යළි සකසනු ඇති අතර සියලු දත්ත මකනු ඇත.</translation>
@@ -588,6 +588,7 @@
 <translation id="394485226368336402">ශ්‍රව්‍ය සැකසීම්</translation>
 <translation id="3945319193631853098">පිහිටුවීම අවසන් කිරීමට තට්ටු කරන්න</translation>
 <translation id="3945867833895287237">හොට්ස්පොට් වෙත සම්බන්ධ වෙමින්...</translation>
+<translation id="3950272133184491871">දැන් වරන්න ද?</translation>
 <translation id="3950820424414687140">පුරන්න</translation>
 <translation id="3962859241508114581">පෙර ඛණ්ඩය</translation>
 <translation id="3969043077941541451">ක්‍රියාවිරහිතයි</translation>
@@ -985,6 +986,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> <ph name="MAIL" /></translation>
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5920710855273935292">මයිකය නිහඬයි.</translation>
+<translation id="5924855612669061715">හොට්ස්පොට් ක්‍රියාත්මකයි</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ක්‍රියාත්මකයි.</translation>
 <translation id="5947494881799873997">ප්‍රතිවර්තනය</translation>
 <translation id="595202126637698455">ක්‍රියාකරිත්ව හඹායෑම සබල කෙරිණි</translation>
@@ -1161,7 +1163,6 @@
 <translation id="6781002679438061620">9 වෙනි මේසය</translation>
 <translation id="6782182743534150858">13 වෙනි මේසය</translation>
 <translation id="6786750046913594791">ෆෝල්ඩරය වසන්න</translation>
-<translation id="6787595647772650851">පසුගිය සැසිය ප්‍රතිසාධනය කරන්න</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="679368458793552943">විශාලකය සක්‍රීයව ඇති විට විශාලන කරන්න</translation>
 <translation id="6801878137098616817">මෑතදී සංස්කරණය කරන ලදී</translation>
@@ -1359,6 +1360,7 @@
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" /> වෙනි පිටුව, <ph name="ROW_NUMBER" /> වෙනි පේළිය, <ph name="COLUMN_NUMBER" /> වෙනි තීරුව වෙත ගෙන ගියා.</translation>
 <translation id="7851768487828137624">කැනරි</translation>
 <translation id="7860671499921112077">දළ විශ්ලේෂණයට ඇතුළු වීමට ඇඟිලි තුනකින් ඉහළට ස්වයිප් කරන්න</translation>
+<translation id="7862292329216937261">උපාංගය ආගන්තුකයෙකු ලෙස භාවිතය සඳහා, ඔබ වැරීමට සහ පසුව තිරයෙහි පහළින් ඇති ආගන්තුකයෙකු ලෙස බ්‍රවුස් කරන්න තේරීමට අවශ්‍ය වේ.</translation>
 <translation id="7866482334467279021">ක්‍රියාත්මකයි</translation>
 <translation id="7868900307798234037">ඇඟිලි සලකුණ සමඟ අඟුල අරින්න</translation>
 <translation id="7872195908557044066">ඔබගේ පරිපාලක ඔබගේ eSIM යළි සකසයි. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
@@ -1401,6 +1403,7 @@
 <translation id="8036504271468642248">පෙර වාක්‍යය</translation>
 <translation id="8042893070933512245">ප්‍රවේශ්‍යතා සැකසීම් මෙනුව විවෘත කරන්න</translation>
 <translation id="8044457332620420407">යතුරුපුවරු පසුආලෝකය ක්‍රියාවිරහිතයි</translation>
+<translation id="8048077032188362328">ඔබේ පරිපාලකයා හොට්ස්පොට් ක්‍රියාවිරහිත කර ඇත.</translation>
 <translation id="8048123526339889627">බ්ලූටූත් සැකසීම්</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> නැමති අච්චුව දැනටමත් පවතී</translation>
 <translation id="8052898407431791827">පසුරු පුවරුවට පිටපත් කරන ලදි</translation>
@@ -1617,6 +1620,7 @@
 <translation id="9098969848082897657">දුරකථනය නිහඬ කරන්න</translation>
 <translation id="9100887602489003640">පැතිකඩ එක් කිරීම. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="9105450214093926548">Lacros බ්‍රව්සරය ධාවනය වන විට දෙවන පරිශීලකයෙකු පිරීමට සහාය නොදක්වයි. කරුණාකර ඒ වෙනුවට Lacros හි දෙවන බ්‍රව්සර පැතිකඩක් භාවිත කරන්න හෝ Lacros වසා නැවත උත්සාහ කරන්න.</translation>
+<translation id="9120448753905017833">ජංගම දත්ත හරහා හොට්ස්පොට් භාවිතය ඇරඹීමට අපි WiFi ක්‍රියා විරහිත කළෙමු. මෙය දත්ත වියදම් දැරීමට සිදු විය හැක.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> හෝ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">ආරක්ෂිත අන්තර්ගතය පටිගත කළ නොහැකිය</translation>
 <translation id="9161053988251441839">යෝජිත යෙදුම්</translation>

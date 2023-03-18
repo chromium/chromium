@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Vaša je predmemorija Google diska izbrisana.</translation>
 <translation id="2239068707900391003">Osoba drži šalicu kave</translation>
 <translation id="2251368349685848079">Vrati iz otpada</translation>
+<translation id="2278133026967558505">Pristup datoteci za sve web-lokacije i URL-ove</translation>
 <translation id="2282155092769082568">URL za automatsku konfiguraciju:</translation>
 <translation id="2284767815536050991">prijenosna pohrana</translation>
 <translation id="2288278176040912387">Gramofon</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Nedostaje "podudaranje alternativnog naziva predmeta" ili "podudaranje domenskog nastavka" za potvrdu identiteta poslužitelja za autentifikaciju</translation>
 <translation id="7165320105431587207">Konfiguriranje mreže nije uspjelo</translation>
 <translation id="7170041865419449892">Izvan raspona</translation>
+<translation id="7179579940054351344">Pristup datoteci za sve web-lokacije i URL-ove osim za <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Spremi datoteku kao</translation>

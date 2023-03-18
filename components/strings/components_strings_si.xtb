@@ -683,6 +683,7 @@
 <translation id="259821504105826686">ඡායාරූප සහ ඩිජිටල් කලා</translation>
 <translation id="2601150049980261779">ප්‍රේම වෘත්තාන්ත චිත්‍රපට</translation>
 <translation id="2604589665489080024">පොප් සංගීතය</translation>
+<translation id="2606760465469169465">ස්වයංව සත්‍යාපනය කරන්න</translation>
 <translation id="2610561535971892504">පිටපත් කිරීමට ක්ලික් කිරීම</translation>
 <translation id="2617988307566202237">Chrome පහත තොරතුරු <ph name="BEGIN_EMPHASIS" />නොසුරකිනු ඇත<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />සම්බන්ධතා දෝෂහරණ ධාවනය කිරීමට උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> වෙත යන්න</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{කිසිවක් නැත}=1{1 ගිණුමක් සඳහා පුරන දත්ත}one{ගිණුම් #ක් සඳහා පුරන දත්ත}other{ගිණුම් #ක් සඳහා පුරන දත්ත}}</translation>
 <translation id="3141093262818886744">කෙසේ වුවත් විවෘත කරන්න</translation>
 <translation id="3141641372357166056">කැමැත්ත තීරණයක් නැත</translation>
 <translation id="3145945101586104090">ප්‍රතිචාර විකේතනය කිරීම අසාර්ථකයි</translation>
@@ -1900,6 +1900,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />ඔබට ඔබේ දත්ත කළමනාකරණය කළ හැකි ආකාරය:<ph name="END_BOLD" /> Chrome සති 4කට වඩා පැරණි අඩවි ස්වයංව මකා දමයි. ඔබ නැවත පිවිසෙන අඩවියක් ලැයිස්තුවේ නැවත දිස් විය හැක. ඔබට අඩවියක් ඔබ වෙනුවෙන් දැන්වීම් යෝජනා කිරීමෙන් අවහිර කිරීමට සහ Chrome සැකසීම් තුළ ඕනෑම වේලාවක අඩවි-යෝජිත දැන්වීම් ක්‍රියා විරහිත කිරීමට ද හැක.</translation>
 <translation id="5610142619324316209">සම්බන්ධතාව පරීක්ෂා කරමින්</translation>
 <translation id="5610807607761827392">ඔබට කාඩ්පත් සහ ලිපින <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ කළමනාකරණය කළ හැකිය.</translation>
+<translation id="5611398002774823980">ගිණුමේ සුරකින්න</translation>
 <translation id="561165882404867731">Google පරිවර්තනය සමඟ මෙම පිටුව පරිවර්තනය කරන්න</translation>
 <translation id="5612720917913232150"><ph name="URL" /> හට ඔබේ පරිගණකයේ පිහිටීම භාවිතා කිරීමට අවශ්‍යයි</translation>
 <translation id="561669346091975195">TV විද්‍යා-ප්‍රබන්ධ සහ මනඃකල්පිත වැඩසටහන්</translation>
@@ -3186,6 +3187,7 @@
 <translation id="8806285662264631610">නාන සහ ශරීර නිෂ්පාදන</translation>
 <translation id="8807160976559152894">සෑම පිටුවකටම පසුව කප්පාදු කරන්න</translation>
 <translation id="8809203544698246977">අවහිර කළ මාතෘකා මෙහි දිස් වේ</translation>
+<translation id="8811470563853401328">ගිණුමේ ලිපිනය සුරකින්න ද?</translation>
 <translation id="8813277370772331957">මට පසුව සිහිකැඳවන්න</translation>
 <translation id="8814707942599948500">ලියුම් කවරය C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
@@ -3279,6 +3281,7 @@
 <translation id="9042617223719777575">Large Capacity</translation>
 <translation id="9044359186343685026">ස්පර්ශ හැඳුනුම භාවිත කරන්න</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">මෙම ක්‍රියාවන්ට <ph name="POLICY_NAME" /> ප්‍රතිපත්තිය <ph name="POLICY_VALUE" /> වෙත සැකසීම අවශ්‍ය වේ: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">අඟ 24 x 36</translation>
 <translation id="9049981332609050619">ඔබ <ph name="DOMAIN" /> වෙත පිවිසීමට උත්සාහ කර තිබේ, නමුත් සර්වරය ඉදිරිපත් කළේ වැරදි සහතිකයකි.</translation>
 <translation id="9050666287014529139">රහස්වැකිය</translation>
@@ -3358,7 +3361,6 @@
 <translation id="9219103736887031265">රූප</translation>
 <translation id="922152298093051471">Chrome අභිරුචිකරණය කරන්න</translation>
 <translation id="933712198907837967">ඩයිනර් සමාජය</translation>
-<translation id="935608979562296692">පෝරමය හිස් කරන්න</translation>
 <translation id="936602727769022409">ඔබට ඔබේ Google ගිණුමට ප්‍රවේශය අහිමි විය හැක. Chromium දැන් ඔබේ මුරපදය වෙනස් කිරීම නිර්දේශ කරයි. පුරන ලෙස ඔබෙන් අසනු ලැබේ.</translation>
 <translation id="937457230470581909">සත්වෝද්‍යාන, මින්මැදුර සහ සංරක්ෂණ</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />භාවිතා කරන දත්ත:<ph name="END_BOLD" /> ඔබේ දැන්වීම් මාතෘකා ඔබේ මෑත බ්‍රවුස් කිරීමේ ඉතිහාසය මත පදනම් වේ, ඔබ මෙම උපාංගයේ Chrome භාවිතා කර පැමිණි අඩවි ලැයිස්තුවකි.</translation>

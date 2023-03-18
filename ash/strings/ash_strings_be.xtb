@@ -154,6 +154,7 @@
 <translation id="1715293566947629045">Ідзе адключэнне профілю. Пачакайце некалькі хвілін.</translation>
 <translation id="1719094688023114093">Імгненныя субцітры ўключаны.</translation>
 <translation id="1720011244392820496">Уключыце сінхранізацыю Wi-Fi</translation>
+<translation id="1720230731642245863">Хот-спот выключаны</translation>
 <translation id="1731815243805539470">Пераключыцца на папярэдняга карыстальніка</translation>
 <translation id="1733996486177697563">Вы можаце пераключацца паміж цёмнай і светлай тэмамі. Націсніце на працоўны стол і ўтрымлівайце палец, а затым выберыце "Шпалеры і стыль".</translation>
 <translation id="1736898441010944794">Прылада "<ph name="NAME" />" бачная прыладам з Bluetooth.</translation>
@@ -422,7 +423,6 @@
 <translation id="3151786313568798007">Арыентацыя</translation>
 <translation id="3153444934357957346">Максімальная колькасць уліковых запісаў для функцыі ўваходу ў некалькі ўліковых запісаў: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Адміністратар прылады можа сачыць за вашымі дзеяннямі ў браўзеры.</translation>
-<translation id="3157931365184549694">Аднавіць</translation>
 <translation id="316086887565479535">У шаблоне ёсць праграмы, якія не падтрымліваюцца</translation>
 <translation id="3161500364292033097">Закрыць працоўны стол і вокны</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> выконвае адкат на прыладзе <ph name="DEVICE_TYPE" />. Налады прылады будуць скінуты, а ўсе даныя выдалены.</translation>
@@ -587,6 +587,7 @@
 <translation id="394485226368336402">Налады гуку</translation>
 <translation id="3945319193631853098">Дакраніцеся, каб завяршыць наладжванне</translation>
 <translation id="3945867833895287237">Ідзе падключэнне да хот-спота...</translation>
+<translation id="3950272133184491871">Выйсці з уліковага запісу?</translation>
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3962859241508114581">Папярэдні трэк</translation>
 <translation id="3969043077941541451">Выключана</translation>
@@ -984,6 +985,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5920710855273935292">Мікрафон выключаны.</translation>
+<translation id="5924855612669061715">Хот-спот уключаны</translation>
 <translation id="5946788582095584774">Стан функцыі "<ph name="FEATURE_NAME" />": уключана.</translation>
 <translation id="5947494881799873997">Вярнуць</translation>
 <translation id="595202126637698455">Уключана трасіроўка прадукцыйнасці</translation>
@@ -1159,7 +1161,6 @@
 <translation id="6781002679438061620">Працоўны стол 9</translation>
 <translation id="6782182743534150858">Працоўны стол 13</translation>
 <translation id="6786750046913594791">Закрыць папку</translation>
-<translation id="6787595647772650851">Аднавіць апошні сеанс</translation>
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="679368458793552943">Павялічыць маштаб пры ўключанай лупе</translation>
 <translation id="6801878137098616817">Зменена нядаўна</translation>
@@ -1357,6 +1358,7 @@
 <translation id="7848989271541991537">Перамешчана на старонку <ph name="PAGE_NUMBER" />, радок <ph name="ROW_NUMBER" />, слупок <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Правядзіце трыма пальцамі ўверх, каб увайсці ў рэжым Агляду</translation>
+<translation id="7862292329216937261">Каб карыстацца прыладай у гасцявым рэжыме, вам неабходна выйсці з уліковага запісу, а затым у ніжняй частцы экрана выбраць "Праглядаць як госць".</translation>
 <translation id="7866482334467279021">ўключаны</translation>
 <translation id="7868900307798234037">Разблакіроўка па адбітку пальца</translation>
 <translation id="7872195908557044066">Адміністратар выконвае скід вашай eSIM-карты. Пачакайце некалькі хвілін.</translation>
@@ -1399,6 +1401,7 @@
 <translation id="8036504271468642248">Папярэдні сказ</translation>
 <translation id="8042893070933512245">Адкрыць меню налад спецыяльных магчымасцей</translation>
 <translation id="8044457332620420407">Падсветка клавіятуры выключана</translation>
+<translation id="8048077032188362328">Адміністратар выключыў хот-спот.</translation>
 <translation id="8048123526339889627">Налады Bluetooth</translation>
 <translation id="8051716679295756675">Ужо існуе шаблон з назвай "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Скапіравана ў буфер абмену</translation>
@@ -1615,6 +1618,7 @@
 <translation id="9098969848082897657">Тэлефон без гуку</translation>
 <translation id="9100887602489003640">Ідзе дадаванне профілю. Пачакайце некалькі хвілін.</translation>
 <translation id="9105450214093926548">Падчас работы браўзера Lacros уваход у некалькі ўліковых запісаў не падтрымліваецца. Выкарыстайце другі профіль браўзера або закрыйце Lacros і паўтарыце спробу.</translation>
+<translation id="9120448753905017833">Мы выключылі Wi-Fi, каб можна было пачаць выкарыстоўваць хот-спот з мабільным інтэрнэтам. За перадачу даных можа спаганяцца плата.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Запіс немагчымы з-за наяўнасці на экране абароненага змесціва</translation>
 <translation id="9161053988251441839">ПРАПАНАВАНЫЯ ПРАГРАМЫ</translation>

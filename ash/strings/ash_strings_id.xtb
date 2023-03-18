@@ -154,6 +154,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1715293566947629045">Menonaktifkan profil. Tunggu beberapa menit.</translation>
 <translation id="1719094688023114093">Teks Otomatis aktif.</translation>
 <translation id="1720011244392820496">Aktifkan Wi-Fi Sync</translation>
+<translation id="1720230731642245863">Hotspot nonaktif</translation>
 <translation id="1731815243805539470">Beralih ke pengguna sebelumnya</translation>
 <translation id="1733996486177697563">Berpindah-pindah antara tema gelap dan terang. Sentuh lama desktop, lalu pilih Wallpaper &amp; Gaya.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" dapat dilihat oleh perangkat Bluetooth.</translation>
@@ -422,7 +423,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3151786313568798007">Orientasi</translation>
 <translation id="3153444934357957346">Anda hanya dapat memiliki maksimum <ph name="MULTI_PROFILE_USER_LIMIT" /> akun dalam fitur multi-login.</translation>
 <translation id="3154351730702813399">Admin perangkat dapat memantau aktivitas akses internet Anda.</translation>
-<translation id="3157931365184549694">Pulihkan</translation>
 <translation id="316086887565479535">Aplikasi yang tidak didukung di template</translation>
 <translation id="3161500364292033097">Tutup desktop dan jendela</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> me-roll back <ph name="DEVICE_TYPE" />. Perangkat Anda akan direset dan semua data akan dihapus.</translation>
@@ -589,6 +589,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="394485226368336402">Setelan audio</translation>
 <translation id="3945319193631853098">Ketuk untuk menyelesaikan penyiapan</translation>
 <translation id="3945867833895287237">Menghubungkan ke hotspot...</translation>
+<translation id="3950272133184491871">Logout sekarang?</translation>
 <translation id="3950820424414687140">Login</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3969043077941541451">Nonaktif</translation>
@@ -987,6 +988,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5920710855273935292">Mikrofon dibisukan.</translation>
+<translation id="5924855612669061715">Hotspot aktif</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktif.</translation>
 <translation id="5947494881799873997">Kembalikan</translation>
 <translation id="595202126637698455">Kinerja pelacakan aktif</translation>
@@ -1163,7 +1165,6 @@ Baru diinstal</translation>
 <translation id="6781002679438061620">Desktop 9</translation>
 <translation id="6782182743534150858">Desktop 13</translation>
 <translation id="6786750046913594791">Tutup folder</translation>
-<translation id="6787595647772650851">Pulihkan sesi terakhir</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="679368458793552943">Perbesar saat kaca pembesar diaktifkan</translation>
 <translation id="6801878137098616817">Diedit baru-baru ini</translation>
@@ -1361,6 +1362,7 @@ Baru diinstal</translation>
 <translation id="7848989271541991537">Dipindahkan ke Halaman <ph name="PAGE_NUMBER" />, baris <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Geser ke atas dengan tiga jari untuk masuk ke Ringkasan</translation>
+<translation id="7862292329216937261">Untuk menggunakan perangkat sebagai tamu, Anda harus logout lalu memilih Jelajahi sebagai Tamu di bagian bawah layar.</translation>
 <translation id="7866482334467279021">aktif</translation>
 <translation id="7868900307798234037">Membuka kunci dengan sidik jari</translation>
 <translation id="7872195908557044066">Administrator sedang mereset eSIM Anda. Tunggu beberapa menit.</translation>
@@ -1403,6 +1405,7 @@ Baru diinstal</translation>
 <translation id="8036504271468642248">Kalimat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu setelan aksesibilitas</translation>
 <translation id="8044457332620420407">Lampu latar keyboard menyala</translation>
+<translation id="8048077032188362328">Administrator Anda telah menonaktifkan Hotspot.</translation>
 <translation id="8048123526339889627">Setelan Bluetooth</translation>
 <translation id="8051716679295756675">Template bernama <ph name="DESK_TEMPLATE_NAME" /> sudah ada</translation>
 <translation id="8052898407431791827">Disalin ke papan klip</translation>
@@ -1619,6 +1622,7 @@ Baru diinstal</translation>
 <translation id="9098969848082897657">Senyapkan suara ponsel</translation>
 <translation id="9100887602489003640">Menambahkan profil. Tunggu beberapa menit.</translation>
 <translation id="9105450214093926548">Login pengguna kedua tidak didukung saat browser Lacros sedang berjalan. Gunakan profil browser kedua di Lacros atau tutup Lacros lalu coba lagi.</translation>
+<translation id="9120448753905017833">Kami telah menonaktifkan Wi-Fi untuk mulai menggunakan Hotspot melalui Data seluler. Anda mungkin akan dikenai biaya data.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> atau <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Tidak dapat merekam konten yang dilindungi</translation>
 <translation id="9161053988251441839">APLIKASI YANG DISARANKAN</translation>

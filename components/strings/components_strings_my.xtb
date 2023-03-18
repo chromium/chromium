@@ -873,7 +873,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />ချိတ်ဆက်မှုဆိုင်ရာပြဿနာရှာဖွေမှု ပြုလုပ်ကြည့်ပါ<ph name="END_LINK" />။</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> သို့ သွားပါ</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{အကောင့် ၁ ခုအတွက် လက်မှတ်ထိုးဝင်ရန် ဒေတာ}other{အကောင့် # ခုအတွက် လက်မှတ်ထိုးဝင်ရန် ဒေတာ}}</translation>
 <translation id="3141093262818886744">မည်သို့ပင်ဖြစ်စေ ဖွင့်ရန်</translation>
 <translation id="3141641372357166056">သဘောတူညီမှု ဆုံးဖြတ်ချက် မရှိပါ</translation>
 <translation id="3145945101586104090">တုံ့ပြန်ချက်ကို ကုဒ်ဖွင့် မရခဲ့</translation>
@@ -3364,7 +3363,6 @@
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ပုံစံ ရှင်းရန်</translation>
 <translation id="936602727769022409">သင်၏ Google အကောင့်ကို အသုံးပြုခွင့် ဆုံးရှုံးနိုင်သည်။ သင့်စကားဝှက်ကို ယခုပင်ပြောင်းရန် Chromium က အကြံပြုပါသည်။ သင့်အား လက်မှတ်ထိုးဝင်ခိုင်းပါမည်။</translation>
 <translation id="937457230470581909">တိရစ္ဆာန်ရုံ၊ ငါးပြတိုက်နှင့် ထိန်းသိမ်းထားရှိမှုများ</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />အသုံးပြုသည့် ဒေတာ-<ph name="END_BOLD" /> သင်၏ ကြော်ငြာအကြောင်းအရာများကို မကြာသေးမီက ကြည့်ရှုမှုမှတ်တမ်းအပေါ် အခြေခံထားသည်။ ၎င်းသည် ဤစက်တွင် Chrome ဖြင့် သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်များ၏ စာရင်းဖြစ်သည်။</translation>

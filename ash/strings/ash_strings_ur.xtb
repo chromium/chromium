@@ -428,7 +428,6 @@
 <translation id="3151786313568798007">سمت بندی</translation>
 <translation id="3153444934357957346">آپ متعدد سائن ان میں صرف <ph name="MULTI_PROFILE_USER_LIMIT" /> اکاؤنٹس تک رکھ سکتے ہیں۔</translation>
 <translation id="3154351730702813399">آلہ کا منتظم آپ کی براؤزنگ سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
-<translation id="3157931365184549694">بحال کریں</translation>
 <translation id="316086887565479535">تمثیل میں غیر تعاون یافتہ ایپس</translation>
 <translation id="3161500364292033097">ڈیسک اور ونڈوز بند کریں</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> آپ کے <ph name="DEVICE_TYPE" /> کو واپس کر رہا ہے۔ آپ کا آلہ ری سیٹ ہو جائے گا اور تمام ڈیٹا حذف ہو جائے گا۔</translation>
@@ -1178,7 +1177,6 @@
 <translation id="6781002679438061620">ڈیسک 9</translation>
 <translation id="6782182743534150858">ڈیسک 13</translation>
 <translation id="6786750046913594791">فولڈر بند کریں</translation>
-<translation id="6787595647772650851">آخری سیشن بحال کریں</translation>
 <translation id="6790428901817661496">چلائیں</translation>
 <translation id="679368458793552943">میگنیفائر کے آن ہونے پر زوم ان کریں</translation>
 <translation id="6801878137098616817">حال ہی میں ترمیم کیا گیا</translation>
@@ -1230,6 +1228,7 @@
 <translation id="7026338066939101231">تخفیف</translation>
 <translation id="7029814467594812963">سیشن سے خارج ہوں</translation>
 <translation id="7032161822340700104">صرف 6 تمثیلات کی اجازت ہے۔ کوئی نئی تمثیل محفوظ کرنے کے لیے ایک تمثیل ہٹائیں۔</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" /> استعمال کرنا چاہتی ہے۔ اپنے آلے کا فزیکل <ph name="DEVICE_NAME" /> سوئچ آن کریں۔</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، Google اسسٹنٹ</translation>
 <translation id="7042322267639375032">اسٹیٹس ایریا کو سکیڑیں</translation>
 <translation id="7045033600005038336">تمثیل تبدیل کریں؟</translation>
@@ -1400,6 +1399,7 @@
 <translation id="793716872548410480">‏اپنا کلپ بورڈ دیکھنے کے لئے ‎<ph name="SHORTCUT_KEY_NAME" /> +‎ ‎V کو دبائیں۔ آپ کے کاپی کردہ آخری 5 آئٹمز کو آپ کے کلپ بورڈ میں محفوظ کیا گیا ہے۔</translation>
 <translation id="7942349550061667556">سرخ</translation>
 <translation id="7944023924886109030">آج کے سبھی ایونٹس دیکھیں</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> آپ کا <ph name="DEVICE_NAME" /> استعمال کرنا چاہتی ہے</translation>
 <translation id="7951630946012935453">مدھم کی بورڈ</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> سے</translation>
 <translation id="7968693143708939792">فولڈر منتخب کریں...</translation>

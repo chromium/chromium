@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1962550982027027473">必须提供默认 APN</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google 个人资料照片</translation>
 <translation id="1979103255016296513">密码更改期限已过</translation>
 <translation id="1999615961760456652">强制门户</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
+<translation id="3360306038446926262">窗口</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4147897805161313378">Google 相册</translation>
+<translation id="4150201353443180367">显示</translation>
 <translation id="4155551848414053977">请确保扫描仪已开机，且已直接或通过网络连接到设备</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4170180284036919717">拍照</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4258281355379922695">HTTP 延迟时间</translation>
 <translation id="4271957103967917607">全屏查看</translation>
+<translation id="4275663329226226506">媒体</translation>
 <translation id="4289540628985791613">概述</translation>
 <translation id="4289849978083912975">幻灯片</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">请检查扫描仪，然后重试。另请确保有足够的本地空间来保存扫描版文件。</translation>
 <translation id="4985509611418653372">运行</translation>
 <translation id="4987769320337599931">防火墙</translation>
+<translation id="4988526792673242964">页面</translation>
 <translation id="4999333166442584738">隐藏报告</translation>
 <translation id="500920857929044050">停止测试</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="7942349550061667556">红色</translation>
 <translation id="7943235353293548836">持久 keepalive 的时间间隔</translation>
+<translation id="7953669802889559161">输入法</translation>
 <translation id="7955587717700691983">蓝牙键盘</translation>
 <translation id="7960831585769876809">温度</translation>
 <translation id="7977800524392185497">若要加入“<ph name="NETWORK_NAME" />”网络，请转到“设置”</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8045012663542226664">麦克风静音</translation>
 <translation id="8075838845814659848">剩余电量</translation>
+<translation id="8076492880354921740">标签页</translation>
 <translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8094062939584182041">允许 Google 就此问题向您发送电子邮件</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">请求流量计数器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">选择 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">开发者工具</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">附加</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">壁纸</translation>
 <translation id="8820457400746201697">将蓝色接触点移至某个操作。选择要自定义的关联键。</translation>
+<translation id="8820817407110198400">书签</translation>
 <translation id="8834539327799336565">目前已连接</translation>
 <translation id="8845001906332463065">获取帮助</translation>
 <translation id="8855781559874488009">无法通过防火墙连接到 HTTP 网站</translation>

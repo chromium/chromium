@@ -10,6 +10,7 @@
 <translation id="110877069173485804">Ini Chrome Anda</translation>
 <translation id="1125124144982679672">Siapa yang menggunakan Chrome?</translation>
 <translation id="1142745911746664600">Tidak dapat mengupdate Chrome</translation>
+<translation id="1149651794389918149">Login ke Chrome. Jika Anda hanya ingin login ke akun sekali, Anda dapat <ph name="GUEST_LINK_BEGIN" />menggunakan perangkat sebagai tamu<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Tentang ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Buka di Chrome</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
@@ -168,6 +169,7 @@
 <translation id="4147555960264124640">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Google Chrome Anda. Data Chrome Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="4149882025268051530">Instalatur gagal mendekompresi arsip. Download kembali Google Chrome.</translation>
+<translation id="4153934450158521343">Chrome akan segera ditutup serta menghapus data</translation>
 <translation id="4191857738314598978">{0,plural, =1{Luncurkan ulang Chrome dalam satu hari}other{Luncurkan ulang Chrome dalam # hari}}</translation>
 <translation id="4205939740494406371">Chrome tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Membatalkan...</translation>
@@ -213,6 +215,7 @@
 <translation id="4970880042055371251">Versi ChromeOS</translation>
 <translation id="4970947549776831107">Chrome memblokir file ini karena jenis file ini berbahaya</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5064155331105009416">{COUNT,plural, =1{Administrator akan otomatis menutup Chrome jika tidak digunakan selama 1 menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}other{Administrator akan otomatis menutup Chrome jika tidak digunakan selama # menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}}</translation>
 <translation id="5098668839038261629">Jika aktif, Anda juga akan logout dari Chrome</translation>
 <translation id="5132929315877954718">Temukan aplikasi, game, ekstensi, dan tema yang hebat untuk Google Chrome.</translation>
 <translation id="5139423532931106058">Sesuaikan profil Chrome Anda</translation>
@@ -261,12 +264,14 @@
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Inbound rule untuk Google Chrome guna mengizinkan lalu lintas mDNS.</translation>
+<translation id="624230925347970731">Chrome akan segera ditutup</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
 <translation id="6273793429163604305">Bersiap-siap...</translation>
 <translation id="6291089322031436445">Aplikasi Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="6326175484149238433">Hapus dari Chrome</translation>
 <translation id="6327105987658262776">Tidak ada update yang tersedia.</translation>
+<translation id="6365489425007284765">{COUNT,plural, =1{Administrator akan otomatis menghapus data penjelajahan saat browser tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}other{Administrator akan otomatis menghapus data penjelajahan saat browser tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}}</translation>
 <translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
 <translation id="6493527311031785448">Google Chrome sedang mencoba <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -296,6 +301,7 @@
 
 Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini. Anda dapat mengelola Akun Google Anda di <ph name="SETTINGS_LINK_BEGIN" />Setelan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chrome. Tindakan menambahkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>
+<translation id="7071827361006050863">Chrome akan segera menghapus data penjelajahan</translation>
 <translation id="7085332316435785646">Pilih apakah akan menyertakan histori Chrome untuk mendapatkan pengalaman yang lebih dipersonalisasi di layanan Google</translation>
 <translation id="7088681679121566888">Chrome sudah versi terbaru</translation>
 <translation id="7098166902387133879">Google Chrome menggunakan mikrofon Anda.</translation>
@@ -357,6 +363,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8290100596633877290">Aduh! Google Chrome ngadat. Luncurkan ulang sekarang?</translation>
 <translation id="8342675569599923794">File ini berbahaya, jadi Chrome telah memblokirnya.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Situs dapat menyimpan informasi tentang minat Anda ke Chrome. Misalnya, jika Anda mengunjungi suatu situs untuk membeli sepatu maraton, situs tersebut dapat menetapkan minat Anda sebagai lari maraton. Kemudian, jika Anda mengunjungi situs lain untuk mendaftar lomba lari, situs tersebut dapat menampilkan iklan sepatu lari berdasarkan minat Anda.</translation>
+<translation id="8353032963013852497">{COUNT,plural, =1{Administrator akan otomatis menutup Chrome jika tidak digunakan selama 1 menit.}other{Administrator akan otomatis menutup Chrome jika tidak digunakan selama # menit.}}</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome dapat memperkirakan minat Anda. Kemudian, situs yang Anda buka dapat meminta Chrome untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="8387459386171870978">Terus gunakan Chrome</translation>

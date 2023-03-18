@@ -154,6 +154,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1715293566947629045">S'està desactivant el perfil. Espera uns minuts.</translation>
 <translation id="1719094688023114093">La funció Subtítols instantanis està activada.</translation>
 <translation id="1720011244392820496">Activa Sincronització Wi-Fi</translation>
+<translation id="1720230731642245863">El punt d'accés Wi‐Fi està desactivat</translation>
 <translation id="1731815243805539470">Canvia a l'usuari anterior</translation>
 <translation id="1733996486177697563">Canvia entre els temes clar i fosc. Mantén premut l'escriptori i, a continuació, selecciona Estil i fons de pantalla.</translation>
 <translation id="1736898441010944794"><ph name="NAME" /> és visible per als dispositius Bluetooth.</translation>
@@ -422,7 +423,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3151786313568798007">Orientació</translation>
 <translation id="3153444934357957346">Només pots tenir <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes com a màxim en un inici de sessió múltiple.</translation>
 <translation id="3154351730702813399">És possible que l'administrador del dispositiu supervisi l'activitat de navegació.</translation>
-<translation id="3157931365184549694">Restaura</translation>
 <translation id="316086887565479535">Aplicacions no admeses a la plantilla</translation>
 <translation id="3161500364292033097">Tanca l'escriptori i les finestres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> està tornant el dispositiu <ph name="DEVICE_TYPE" /> a una versió anterior. El dispositiu es restablirà i totes les dades se suprimiran.</translation>
@@ -589,6 +589,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="394485226368336402">Configuració d'àudio</translation>
 <translation id="3945319193631853098">Toca per completar la configuració</translation>
 <translation id="3945867833895287237">S'està connectant a un punt d'accés…</translation>
+<translation id="3950272133184491871">Vols tancar la sessió ara?</translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3969043077941541451">Desactivada</translation>
@@ -987,6 +988,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">El micròfon està silenciat.</translation>
+<translation id="5924855612669061715">El punt d'accés Wi‑Fi està activat</translation>
 <translation id="5946788582095584774">La funció <ph name="FEATURE_NAME" /> està activada.</translation>
 <translation id="5947494881799873997">Reverteix</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
@@ -1163,7 +1165,6 @@ Instal·lació nova</translation>
 <translation id="6781002679438061620">Escriptori 9</translation>
 <translation id="6782182743534150858">Escriptori 13</translation>
 <translation id="6786750046913594791">Tanca la carpeta</translation>
-<translation id="6787595647772650851">Restaura la darrera sessió</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="679368458793552943">Amplia quan la lupa estigui activada</translation>
 <translation id="6801878137098616817">Editat fa poc</translation>
@@ -1358,6 +1359,7 @@ Instal·lació nova</translation>
 <translation id="7848989271541991537">S'ha mogut a la pàgina <ph name="PAGE_NUMBER" />, fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Fes lliscar tres dits cap amunt per entrar a Visió general</translation>
+<translation id="7862292329216937261">Per utilitzar el dispositiu com a convidat, tanca la sessió i, a la part inferior de la pantalla, selecciona Navega com a convidat.</translation>
 <translation id="7866482334467279021">activat</translation>
 <translation id="7868900307798234037">Has desbloquejat el dispositiu amb empremta digital</translation>
 <translation id="7872195908557044066">L'administrador està restablint l'eSIM. Espera uns minuts.</translation>
@@ -1400,6 +1402,7 @@ Instal·lació nova</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Obre el menú de configuració d'accessibilitat</translation>
 <translation id="8044457332620420407">La il·luminació a contrallum del teclat està desactivada</translation>
+<translation id="8048077032188362328">L'administrador ha desactivat el punt d'accés Wi‐Fi.</translation>
 <translation id="8048123526339889627">Configuració del Bluetooth</translation>
 <translation id="8051716679295756675">La plantilla anomenada <ph name="DESK_TEMPLATE_NAME" /> ja existeix</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
@@ -1616,6 +1619,7 @@ Instal·lació nova</translation>
 <translation id="9098969848082897657">Silencia el telèfon</translation>
 <translation id="9100887602489003640">S'està afegint el perfil. Espera uns minuts.</translation>
 <translation id="9105450214093926548">Mentre s'executa el navegador Lacros, no s'admet l'inici de sessió amb un segon usuari. Utilitza un altre perfil del navegador o tanca Lacros i torna-ho a provar.</translation>
+<translation id="9120448753905017833">Hem desactivat la Wi-Fi per començar a utilitzar el punt d'accés Wi‐Fi mitjançant dades mòbils. Això pot comportar costos addicionals.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">No es pot gravar contingut protegit</translation>
 <translation id="9161053988251441839">APLICACIONS SUGGERIDES</translation>

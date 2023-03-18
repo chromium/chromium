@@ -154,6 +154,7 @@
 <translation id="1715293566947629045">Профайлыг идэвхгүй болгож байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="1719094688023114093">Шууд тайлбар асаалттай байна.</translation>
 <translation id="1720011244392820496">Wi-Fi синкийг асаана уу</translation>
+<translation id="1720230731642245863">Сүлжээний цэг унтраалттай байна</translation>
 <translation id="1731815243805539470">Өмнөх хэрэглэгч рүү сэлгэх</translation>
 <translation id="1733996486177697563">Бараан болон цайвар загварын хооронд сэлгэнэ үү. Дэлгэц дээр хүрээд удаан дарж, дараа нь Дэлгэцийн зураг &amp; стилийг сонгоно уу.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" нь Bluetooth төхөөрөмжүүдэд харагдана.</translation>
@@ -422,7 +423,6 @@
 <translation id="3151786313568798007">Чиглэл</translation>
 <translation id="3153444934357957346">Та олон зэрэг нэвтрэлтэд хамгийн ихдээ <ph name="MULTI_PROFILE_USER_LIMIT" /> бүртгэл ашиглах боломжтой.</translation>
 <translation id="3154351730702813399">Төхөөрөмжийн админ таны хайлтын үйл ажиллагааг хянаж байж магадгүй.</translation>
-<translation id="3157931365184549694">Дахин сэргээх</translation>
 <translation id="316086887565479535">Загвар дахь дэмжигдээгүй аппууд</translation>
 <translation id="3161500364292033097">Дэлгэц болон цонхнуудыг хаана уу</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> таны <ph name="DEVICE_TYPE" />-г өмнөх хувилбар луу нь буцааж байна. Таны төхөөрөмжийг шинэчилж, бүх өгөгдлийг устгана.</translation>
@@ -589,6 +589,7 @@
 <translation id="394485226368336402">Аудио тохиргоо</translation>
 <translation id="3945319193631853098">Тохируулгыг дуусгахын тулд товшино уу</translation>
 <translation id="3945867833895287237">Сүлжээний цэгт холбогдож байна...</translation>
+<translation id="3950272133184491871">Одоо гарах уу?</translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="3962859241508114581">Өмнөх бичлэг</translation>
 <translation id="3969043077941541451">Унтраах</translation>
@@ -986,6 +987,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5920710855273935292">Микрофоны дууг хаасан.</translation>
+<translation id="5924855612669061715">Сүлжээний цэг асаалттай байна</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> асаалттай байна.</translation>
 <translation id="5947494881799873997">Буцаах</translation>
 <translation id="595202126637698455">Гүйцэтгэлийн ажиглалтыг идэвхжүүлсэн</translation>
@@ -1162,7 +1164,6 @@
 <translation id="6781002679438061620">9-р дэлгэц</translation>
 <translation id="6782182743534150858">13-р дэлгэц</translation>
 <translation id="6786750046913594791">Хавтасыг хаах</translation>
-<translation id="6787595647772650851">Сүүлийн харилцан үйлдлийг сэргээх</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="679368458793552943">Томруулагч асаалттай үед томруулах</translation>
 <translation id="6801878137098616817">Саяхан зассан</translation>
@@ -1360,6 +1361,7 @@
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" />-р хуудас, <ph name="ROW_NUMBER" />-р мөр, <ph name="COLUMN_NUMBER" />-р багана руу зөөсөн.</translation>
 <translation id="7851768487828137624">Канар</translation>
 <translation id="7860671499921112077">Тоймд нэвтрэхийн тулд гурван хуруугаараа дээш шударна уу</translation>
+<translation id="7862292329216937261">Төхөөрөмжийг зочноор ашиглахын тулд та гараад дараа нь дэлгэцийн доор байх Зочноор үзэхийг сонгох шаардлагатай.</translation>
 <translation id="7866482334467279021">асаалттай</translation>
 <translation id="7868900307798234037">Түгжээг хурууны хээгээр тайлж байна</translation>
 <translation id="7872195908557044066">Таны администратор eSIM-г тань шинэчилж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
@@ -1402,6 +1404,7 @@
 <translation id="8036504271468642248">Өмнөх өгүүлбэр</translation>
 <translation id="8042893070933512245">Хандалтын тохиргооны цэсийг нээх</translation>
 <translation id="8044457332620420407">Гарын арын гэрэл унтраалттай байна</translation>
+<translation id="8048077032188362328">Таны администратор сүлжээний цэгийг унтраасан.</translation>
 <translation id="8048123526339889627">Bluetooth тохиргоо</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> нэртэй загвар аль хэдийн байна</translation>
 <translation id="8052898407431791827">Түр санах ойд хуулсан</translation>
@@ -1619,6 +1622,7 @@
 <translation id="9098969848082897657">Утасны дууг хаах</translation>
 <translation id="9100887602489003640">Профайл нэмж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="9105450214093926548">Lacros хөтчийг ажиллуулж байх үед хоёр дахь хэрэглэгч нэвтрэхийг дэмждэггүй. Оронд нь Lacros-н хоёр дахь хөтчийн профайлыг ашиглах эсвэл Lacros-г хаагаад дахин оролдоно уу.</translation>
+<translation id="9120448753905017833">Бид Мобайл датагаар сүлжээний цэг ашиглаж эхлэхийн тулд Wi-Fi-г унтраасан. Энэ нь дата зардал гаргаж магадгүй.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> эсвэл <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Хамгаалалттай контентыг бичих боломжгүй</translation>
 <translation id="9161053988251441839">САНАЛ БОЛГОСОН АПП</translation>

@@ -935,6 +935,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1796588414813960292">Ääntä edellyttävät ominaisuudet eivät enää toimi</translation>
 <translation id="1797117170091578105">Pelaa Chromebookin näppäimistöllä. Voit määrittää näppäimiä tietyille toiminnoille.</translation>
 <translation id="1800502858278951817">Laajennukset eivät ole pyytäneet lupaa lukea ja muuttaa tätä: <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">Haku + O ja sitten W</translation>
 <translation id="1802624026913571222">Lepotila, kun kansi suljetaan</translation>
 <translation id="1802687198411089702">Tämä sivu ei vastaa. Voit odottaa sitä tai sulkea sen.</translation>
 <translation id="1803531841600994172">Kieli, johon käännetään</translation>
@@ -1194,6 +1195,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="2023167225947895179">PIN-koodi voi olla helppo arvata.</translation>
 <translation id="202352106777823113">Lataus kesti liian kauan, joten verkko pysäytti sen.</translation>
 <translation id="2024195579772565064">Poista hakukone</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> on kaatunut. Käynnistä laajennus uudelleen klikkaamalla tätä kuplaa.</translation>
 <translation id="2028449514182362831">Liiketunnistimia edellyttävät ominaisuudet eivät enää toimi</translation>
 <translation id="202918510990975568">Lisää salasana määrittääksesi suojauksen ja sisäänkirjautumisen</translation>
@@ -1270,6 +1272,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2090165459409185032">Saat tilisi tiedot takaisin käyttöön osoitteessa google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Muodostaa yhteyden automaattisesti, kun kirjaudut sisään</translation>
 <translation id="2090876986345970080">Järjestelmän turva-asetus</translation>
+<translation id="2091887806945687916">Ääni</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Virheenkorjausominaisuudet<ph name="END_H3" />
     <ph name="BR" />
     Voit ottaa virheenkorjausominaisuudet käyttöön, jos haluat asentaa ja testata muokattua koodia Chrome-käyttöjärjestelmää käyttävällä laitteella. Tällöin voit tehdä seuraavia asioita:<ph name="BR" />
@@ -2025,6 +2028,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="272741954544380994">Hae kuvaa: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Älä muistuta uudelleen</translation>
 <translation id="2727712005121231835">Todellinen koko</translation>
+<translation id="2727744317940422214">Jotain meni pieleen. Lähetä palautetta ja lisää kuvaukseen #bruschetta. Virhekoodi on <ph name="ERROR" />. Tyhjennys epäonnistui. Sinun on ehkä tehtävä se manuaalisesti.</translation>
 <translation id="2729314457178420145">Poista lisäksi selaustiedot (<ph name="URL" />). Tämä saattaa kirjata sinut ulos Google.comista. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome etsii uusia tapoja vähentää seurantaa ja pitää sinut entistä paremmin turvassa selatessasi. Chrome myös <ph name="ESTIMATE_INTERESTS_LINK" /> ja antaa sinun ylläpitää niitä. Avaamasi sivustot voivat sitten kysyä Chromelta kiinnostuksen kohteitasi näyttääkseen sinulle mainoksia.</translation>
 <translation id="2730029791981212295">Varmuuskopioidaan Linux-sovelluksia ja ‑tiedostoja</translation>
@@ -3199,6 +3203,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3778868487658107119">Voit kysyä siltä tietoa ja pyytää asioita – se on henkilökohtainen Googlesi ja aina valmiina auttamaan.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> ei voi tarkistaa salasanojasi tietosuojaloukkausten varalta. Yritä myöhemmin uudelleen.</translation>
 <translation id="3781742599892759500">Linuxin mikrofonin käyttöoikeus</translation>
+<translation id="3783725005098956899">Näytä loki</translation>
 <translation id="3783889407390048282">Vapauta tilaa, jotta et menetä pääsyä Androidiin.</translation>
 <translation id="3784472333786002075">Evästeet ovat verkkosivustojen luomia tiedostoja. Evästeitä on kahdentyyppisiä: ensimmäisen osapuolen evästeet luo sivusto, jolla käyt. Sivusto näkyy osoitepalkissa. Kolmannen osapuolen evästeet luo muut sivustot. Nämä sivustot omistavat mainoksia, kuvia tai muita sisältöjä, joita näet avaamallasi sivulla.</translation>
 <translation id="3785308913036335955">Näytä Apps-oikopolku</translation>
@@ -7571,6 +7576,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7758450972308449809">Säädä näytön rajoja</translation>
 <translation id="7760004034676677601">Onko tämä haluamasi saapumissivu?</translation>
 <translation id="7762024824096060040">Tiliä ei voi käyttää</translation>
+<translation id="7762243782113123335">Jotain meni pieleen. Lähetä palautetta ja lisää kuvaukseen #bruschetta. Virhekoodi on <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Lisää osoite</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> verkkotunnuksesta <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Siirrä</translation>
@@ -8322,6 +8328,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8419098111404128271">Tulokset haulle <ph name="SEARCH_TEXT" /></translation>
 <translation id="8420308167132684745">Muokkaa sanakirjan tietueita</translation>
 <translation id="8421361468937925547">Livetekstitys (vain englanniksi)</translation>
+<translation id="8422748173858722634">IMEI-koodi</translation>
 <translation id="8422787418163030046">Lokero puuttuu</translation>
 <translation id="8424250197845498070">Lisäsuojauksen estämä</translation>
 <translation id="8425213833346101688">Vaihda</translation>
@@ -8670,6 +8677,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> voi nyt saada tämän Chromebookin. Käyttöönotto on melkein valmis, pian on aika tutkia.</translation>
 <translation id="8740672167979365981">ChromeOS Flex on päivitettävä</translation>
 <translation id="8741944563400125534">Switch Access ‑käyttöönotto-ohjeet</translation>
+<translation id="8742395827132970586">Asennus epäonnistui, tyhjennetään</translation>
 <translation id="8742998548129056176">Nämä ovat yleisiä tietoja laitteestasi ja sen käytöstä (esim. akun varaustasosta, järjestelmän ja sovellusten toiminnasta sekä virheistä). Datan avulla Androidia parannetaan, ja koottua dataa käytetään Google-sovellusten, Android-kehittäjien tai muiden kumppanien sovellusten ja tuotteiden parantamiseen.</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8745034592125932220">Tietojen tallentaminen laitteelle on kielletty</translation>
@@ -8994,7 +9002,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9026731007018893674">lataus</translation>
 <translation id="9026852570893462412">Tämä voi kestää muutaman minuutin. Ladataan virtuaalikonetta.</translation>
 <translation id="9027459031423301635">Avaa linkki uudessa &amp;välilehdessä</translation>
-<translation id="9027707169256972235">Poista</translation>
 <translation id="9030515284705930323">Organisaatiosi ei ole sallinut tilillesi Google Play Kaupan käyttöä. Kysy lisätietoja järjestelmänvalvojaltasi.</translation>
 <translation id="9030754204056345429">Nopeampi</translation>
 <translation id="9030785788945687215">Gmail</translation>

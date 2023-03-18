@@ -683,6 +683,7 @@
 <translation id="259821504105826686">ਫ਼ੋਟੋਗ੍ਰਾਫ਼ੀ ਅਤੇ ਡਿਜੀਟਲ ਕਲਾਵਾਂ</translation>
 <translation id="2601150049980261779">ਰੁਮਾਂਸ ਵਾਲੀਆਂ ਫ਼ਿਲਮਾਂ</translation>
 <translation id="2604589665489080024">ਪੌਪ ਸੰਗੀਤ</translation>
+<translation id="2606760465469169465">ਸਵੈ-ਪੁਸ਼ਟੀਕਰਨ</translation>
 <translation id="2610561535971892504">ਕਾਪੀ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2617988307566202237">Chrome ਅੱਗੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਨੂੰ <ph name="BEGIN_EMPHASIS" />ਰੱਖਿਅਤ ਨਹੀਂ ਕਰੇਗਾ<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />ਕਨੈਕਟੀਵਿਟੀ ਨਿਦਾਨ ਨੂੰ ਚਲਾਉਣ ਦੁਆਰਾ ਅਜ਼ਮਾਓ<ph name="END_LINK" />।</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> 'ਤੇ ਜਾਓ</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਖਾਤੇ ਲਈ ਸਾਈਨ-ਇਨ ਡਾਟਾ}other{# ਖਾਤਿਆਂ ਲਈ ਸਾਈਨ-ਇਨ ਡਾਟਾ}}</translation>
 <translation id="3141093262818886744">ਫਿਰ ਵੀ ਖੋਲ੍ਹੋ</translation>
 <translation id="3141641372357166056">ਸਹਿਮਤੀ ਸੰਬੰਧੀ ਕੋਈ ਫ਼ੈਸਲਾ ਨਹੀਂ</translation>
 <translation id="3145945101586104090">ਜਵਾਬ ਡੀਕੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ</translation>
@@ -1897,6 +1897,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />ਤੁਸੀਂ ਆਪਣੇ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਿਵੇਂ ਕਰ ਸਕਦੇ ਹੋ:<ph name="END_BOLD" /> Chrome 4 ਹਫ਼ਤਿਆਂ ਤੋਂ ਵੱਧ ਪੁਰਾਣੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਆਪਣੇ ਆਪ ਮਿਟਾਉਂਦਾ ਰਹਿੰਦਾ ਹੈ। ਉਹ ਸਾਈਟ ਸੂਚੀ ਵਿੱਚ ਮੁੜ ਤੋਂ ਦਿਖਾਈ ਦੇ ਸਕਦੀ ਹੈ, ਜਿਸ 'ਤੇ ਤੁਸੀਂ ਦੁਬਾਰਾ ਜਾਂਦੇ ਹੋ। ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ, ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਵਿਗਿਆਪਨਾਂ ਦੇ ਸੁਝਾਅ ਦੇਣ ਤੋਂ ਬਲਾਕ ਵੀ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਸਾਈਟਾਂ ਵੱਲੋਂ ਸੁਝਾਏ ਗਏ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਬੰਦ ਵੀ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5610142619324316209">ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="5610807607761827392">ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਕਾਰਡਾਂ ਅਤੇ ਪਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="5611398002774823980">ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="561165882404867731">ਇਸ ਪੰਨੇ ਦਾ Google Translate ਨਾਲ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ਦੀ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੀ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਵਰਤਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="561669346091975195">ਵਿਗਿਆਨ ਗਲਪ ਅਤੇ ਕਾਲਪਨਿਕ ਟੀਵੀ ਸ਼ੋਅ</translation>
@@ -3182,6 +3183,7 @@
 <translation id="8806285662264631610">ਇਸ਼ਨਾਨ ਅਤੇ ਸਰੀਰ ਸੰਬੰਧੀ ਉਤਪਾਦ</translation>
 <translation id="8807160976559152894">ਹਰ ਪੰਨੇ ਤੋਂ ਬਾਅਦ ਕਟਾਈ</translation>
 <translation id="8809203544698246977">ਬਲਾਕ ਕੀਤੇ ਵਿਸ਼ੇ ਇੱਥੇ ਦਿਸਦੇ ਹਨ</translation>
+<translation id="8811470563853401328">ਕੀ ਖਾਤੇ ਵਿੱਚ ਪਤਾ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8813277370772331957">ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਯਾਦ ਕਰਵਾਓ</translation>
 <translation id="8814707942599948500">C8 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ ਆਪਣੀਆਂ Chrome ਸੈਟਿੰਗਾਂ ਤੋਂ Chrome ਅੱਪਡੇਟ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
@@ -3275,6 +3277,7 @@
 <translation id="9042617223719777575">ਜ਼ਿਆਦਾ ਸਮਰੱਥਾ</translation>
 <translation id="9044359186343685026">ਸਪਰਸ਼ ਆਈਡੀ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">ਇਨ੍ਹਾਂ ਕਾਰਵਾਈਆਂ ਲਈ <ph name="POLICY_NAME" /> ਨੀਤੀ ਨੂੰ <ph name="POLICY_VALUE" /> 'ਤੇ ਸੈੱਟ ਕਰਨਾ ਪਵੇਗਾ: <ph name="ACTION_LIST" />।</translation>
 <translation id="9048662076076074925">24 x 36 ਇੰਚ</translation>
 <translation id="9049981332609050619">ਤੁਸੀਂ <ph name="DOMAIN" /> ਤੱਕ ਪਹੁੰਚਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ, ਪਰ ਸਰਵਰ ਨੇ ਇੱਕ ਅਵੈਧ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪੇਸ਼ ਕੀਤਾ।</translation>
 <translation id="9050666287014529139">ਪਾਸਫਰੇਜ਼</translation>
@@ -3354,7 +3357,6 @@
 <translation id="9219103736887031265">ਚਿੱਤਰ</translation>
 <translation id="922152298093051471">Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ਫ਼ਾਰਮ ਹਟਾਓ</translation>
 <translation id="936602727769022409">ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਸਕਦੇ ਹੋ। Chromium ਵੱਲੋਂ ਹੁਣੇ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਕਿਹਾ ਜਾਵੇਗਾ।</translation>
 <translation id="937457230470581909">ਚਿੜਿਆਘਰ, ਜਲ ਜੀਵਸ਼ਾਲਾਵਾਂ ਅਤੇ ਪ੍ਰਤਿਪਾਲਣ ਖੇਤਰ</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ਕਿਹੜਾ ਡਾਟਾ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ:<ph name="END_BOLD" /> ਤੁਹਾਡੇ ਵਿਗਿਆਪਨ ਵਿਸ਼ੇ ਤੁਹਾਡੇ ਹਾਲੀਆ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ 'ਤੇ ਆਧਾਰਿਤ ਹੁੰਦੇ ਹਨ, ਜੋ ਸਾਈਟਾਂ ਦੀ ਉਹ ਸੂਚੀ ਹੁੰਦੀ ਹੈ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ Chrome ਦੀ ਵਰਤੋਂ ਨਾਲ ਗਏ ਹੋ।</translation>

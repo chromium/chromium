@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Een standaard APN is vereist</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Google-profielfoto</translation>
 <translation id="1979103255016296513">Wachtwoord moet dringend worden gewijzigd</translation>
 <translation id="1999615961760456652">Captive portal</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3328783797891415197">Test actief</translation>
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
+<translation id="3360306038446926262">Vensters</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
 <translation id="3404249063913988450">Screensaver aanzetten</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Zwart/wit</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
+<translation id="4150201353443180367">Weergave</translation>
 <translation id="4155551848414053977">Zorg dat de scanner aanstaat en beschikbaar is via je netwerk of een directe verbinding.</translation>
 <translation id="4159784952369912983">Paars</translation>
 <translation id="4170180284036919717">Foto maken</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4258281355379922695">HTTP-vertraging</translation>
 <translation id="4271957103967917607">Bekijken op volledig scherm</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Overzicht</translation>
 <translation id="4289849978083912975">Diavoorstelling</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Check de scanner en probeer het opnieuw. Zorg dat er voldoende lokale ruimte is om gescande bestanden op te slaan.</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
 <translation id="4987769320337599931">Firewall</translation>
+<translation id="4988526792673242964">Pagina's</translation>
 <translation id="4999333166442584738">Rapport verbergen</translation>
 <translation id="500920857929044050">Test stoppen</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7943235353293548836">Permanent keepalive-interval</translation>
+<translation id="7953669802889559161">Invoermethoden</translation>
 <translation id="7955587717700691983">Bluetooth-toetsenbord</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
 <translation id="7977800524392185497">Ga naar Instellingen als je verbinding wilt maken met een <ph name="NETWORK_NAME" />-netwerk</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Feedback sturen</translation>
 <translation id="8045012663542226664">Microfoon dempen</translation>
 <translation id="8075838845814659848">Resterende batterijlading</translation>
+<translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8094062939584182041">Toestaan dat Google je e-mail stuurt over dit probleem</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Verkeerstellers aanvragen</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecteren</translation>
+<translation id="8151185429379586178">Ontwikkelaarstools</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Bijvoegen</translation>
 <translation id="8206859287963243715">Mobiel</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Achtergrond</translation>
 <translation id="8820457400746201697">Verplaats het blauwe aanraakpunt naar een actie. Selecteer de bijbehorende sleutel om aan te passen.</translation>
+<translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8855781559874488009">Kan geen verbinding maken met HTTP-websites via een firewall</translation>

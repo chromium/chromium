@@ -518,6 +518,7 @@
 <translation id="4737560986434232178">最近使ったタブを検索</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4747097190499141774">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、同期をリセットする必要があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />、<ph name="STATE" />、このデバイスのみ、<ph name="URL" /></translation>
 <translation id="4751645464639803239">新しいシークレット タブ</translation>
 <translation id="4766112107778026136">Discover とフォロー</translation>
 <translation id="4775879719735953715">既定のブラウザ</translation>
@@ -941,6 +942,7 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
 <translation id="7603852183842204213">ブロックしたポップアップ: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7607521702806708809">パスワードを削除</translation>
+<translation id="7611459119367035420">固定したタブはここに表示されます。</translation>
 <translation id="7638584964844754484">パスフレーズが正しくありません</translation>
 <translation id="7646263789464975852">メニュー → 設定 → 安全確認</translation>
 <translation id="7646772052135772216">パスワード同期が機能していません</translation>
@@ -953,6 +955,7 @@
 <translation id="7701040980221191251">なし</translation>
 <translation id="7720410380936703141">再試行</translation>
 <translation id="7726702057919861819">メニュー → 履歴 → 閲覧履歴データの削除</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />、このデバイスのみ。</translation>
 <translation id="7738120385185846461">問題を報告する…</translation>
 <translation id="7741325291586284254">新しいシークレット タブ ページ</translation>
 <translation id="7744394900930577716">他のアプリのパスワード</translation>

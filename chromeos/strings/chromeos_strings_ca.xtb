@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Imprès</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Es necessita un APN predeterminat</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Foto de perfil de Google</translation>
 <translation id="1979103255016296513">Canvi de contrasenya vençut</translation>
 <translation id="1999615961760456652">Portal captiu</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
 <translation id="3328783797891415197">La prova s'està executant</translation>
 <translation id="3340011300870565703">L'auricular dret del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
+<translation id="3360306038446926262">Finestres</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
 <translation id="3404249063913988450">Activa l'estalvi de pantalla</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
+<translation id="4150201353443180367">Pantalla</translation>
 <translation id="4155551848414053977">Comprova que l'escàner estigui encès i disponible a través de la teva xarxa o d'una connexió directa</translation>
 <translation id="4159784952369912983">Porpra</translation>
 <translation id="4170180284036919717">Fes una foto</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4258281355379922695">Latència d'HTTP</translation>
 <translation id="4271957103967917607">Mostra en pantalla completa</translation>
+<translation id="4275663329226226506">Multimèdia</translation>
 <translation id="4289540628985791613">Visió general</translation>
 <translation id="4289849978083912975">Presentació de diapositives</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
 <translation id="4985509611418653372">Executa</translation>
 <translation id="4987769320337599931">Tallafoc</translation>
+<translation id="4988526792673242964">Pàgines</translation>
 <translation id="4999333166442584738">Amaga l'informe</translation>
 <translation id="500920857929044050">Atura la prova</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7943235353293548836">Interval de keepalive persistent</translation>
+<translation id="7953669802889559161">Introducció de text</translation>
 <translation id="7955587717700691983">Teclat Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7977800524392185497">Per unir-te a una xarxa <ph name="NETWORK_NAME" />, ves a Configuració</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="8045012663542226664">Silenci del micròfon</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
+<translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8094062939584182041">Permet que Google t'enviï un correu electrònic sobre aquest problema</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Sol·licita els comptadors de trànsit</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selecciona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Eines per a desenvolupadors</translation>
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8183974620058026102">Adjunta</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fons de pantalla</translation>
 <translation id="8820457400746201697">Mou el punt tàctil blau a una acció. Selecciona la tecla associada per personalitzar-la.</translation>
+<translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8834539327799336565">Connectats actualment</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8855781559874488009">No es pot establir la connexió amb llocs web HTTP a través del tallafoc</translation>

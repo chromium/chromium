@@ -93,6 +93,7 @@
 <translation id="257931822824936280">Inwetshiwe - chofoza ukuze ugoqe.</translation>
 <translation id="2586657967955657006">Ibhodi lokumanathisela</translation>
 <translation id="2597457036804169544">Ungayisebenzisi itimu emnyama kumasayithi</translation>
+<translation id="2606760465469169465">Qinisekisa ngokuzenzekelayo</translation>
 <translation id="2621115761605608342">Vumela i-JavaScript kusayithi elithile.</translation>
 <translation id="2653659639078652383">Hambisa</translation>
 <translation id="2677748264148917807">Hamba</translation>
@@ -224,6 +225,7 @@
 <translation id="5197729504361054390">Oxhumana nabo obakhethayo bazokwabiwa no-<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Kugcine ukuvakashelwa namuhla</translation>
 <translation id="5225463052809312700">Vula ikhamera</translation>
+<translation id="5229337741799419985">Leli sethingi lisebenza ngaphandle kokukhomba wena noma isayithi lakho ukubona umlando wakho wokubhrawuza.</translation>
 <translation id="5234764350956374838">Cashisa</translation>
 <translation id="5264323282659631142">Susa i-'<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Hudula kusukela phezulu uphinde uthinte inkinobho yokubuyela emuva ukuze uphume kusikrini esigcwele.</translation>
@@ -310,6 +312,7 @@
 <translation id="6643016212128521049">Sula</translation>
 <translation id="6689172468748959065">Izithombe zephrofayela</translation>
 <translation id="6697925417670533197">Ukulanda okusebenzayo</translation>
+<translation id="6701547804986694515">Isayithi olivakashelayo lingalondoloza ulwazi nge-Chrome eqinisekisa ukuthi awuyona i-bot. Njengoba uqhubeka nokubhrawuza, amasayithi angahlola nge-Chrome futhi aqinisekise ngesayithi yangaphambilini owake wayivakashela ukuthi kungenzeka ungumuntu wangempela.</translation>
 <translation id="6722828510648505498">Vimba imiyalo yokungena ngemvume evela kumasevisi kamazisi.</translation>
 <translation id="6746124502594467657">Hambisa phansi</translation>
 <translation id="6749077623962119521">Setha kabusha izimvume?</translation>
@@ -427,6 +430,7 @@
 <translation id="8751914237388039244">Khetha isithombe</translation>
 <translation id="8801436777607969138">Vimbela i-JavaScript kusayithi elithile.</translation>
 <translation id="8803526663383843427">Lapho kuvuliwe</translation>
+<translation id="8805385115381080995">Ukubhrawuza kuyashesha ngoba isayithi mancane amathuba okuthi likucele ukuthi uqinisekise ukuthi ungumuntu wangempela</translation>
 <translation id="8816026460808729765">Vimbela amasayithi kusukela ekufinyeleleni kuzinzwa</translation>
 <translation id="8823559166155093873">Vimba amakhukhi</translation>
 <translation id="8847988622838149491">I-USB</translation>
@@ -450,5 +454,6 @@
 <translation id="9162462602695099906">Leli khasi liyingozi</translation>
 <translation id="9201023452444595544">Noma iyiphi idatha engaxhunyiwe ku-inthanethi izosulwa</translation>
 <translation id="930525582205581608">Khohlwa le sayithi?</translation>
+<translation id="947156494302904893">Amasayithi owavakashelayo angaqinisekisa ukuthi ungumuntu wangempela hhayi i-bot</translation>
 <translation id="967624055006145463">Idatha ilondoloziwe</translation>
 </translationbundle>

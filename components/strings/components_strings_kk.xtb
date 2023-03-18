@@ -683,6 +683,7 @@
 <translation id="259821504105826686">Фотосурет және цифрлық кескін</translation>
 <translation id="2601150049980261779">Романтикалық фильмдер</translation>
 <translation id="2604589665489080024">Поп-музыка</translation>
+<translation id="2606760465469169465">Автоматты тексеру</translation>
 <translation id="2610561535971892504">Басып көшіру</translation>
 <translation id="2617988307566202237">Chrome келесі ақпаратты <ph name="BEGIN_EMPHASIS" />сақтамайды<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -867,7 +868,6 @@
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Connectivity Diagnostics құралын пайдаланып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> доменіне өту</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Жоқ}=1{1 аккаунтқа кіру деректері}other{# аккаунтқа кіру деректері}}</translation>
 <translation id="3141093262818886744">Бәрібір ашу</translation>
 <translation id="3141641372357166056">Келісім шешімі жоқ</translation>
 <translation id="3145945101586104090">Жауапты шифрсыздандыру сәтсіз аяқталды</translation>
@@ -1899,6 +1899,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Деректерді басқару жолы:<ph name="END_BOLD" /> Chrome 4 аптадан асқан сайттарды автоматты түрде жояды. Қайта кіретін сайтыңыз тізімде қайта шығуы мүмкін. Сонымен қатар кез келген уақытта Chrome параметрлерінен сайттың сізге жарнамалар ұсынуын бөгеуге және сайт ұсынған жарнамаларды өшіруге болады.</translation>
 <translation id="5610142619324316209">Байланысты тексеру</translation>
 <translation id="5610807607761827392">Карталарды және мекенжайларды <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөлімінде реттей аласыз.</translation>
+<translation id="5611398002774823980">Аккаунтта сақтау</translation>
 <translation id="561165882404867731">Осы бетті Google Translate арқылы аударыңыз.</translation>
 <translation id="5612720917913232150"><ph name="URL" /> компьютеріңіздің орналасқан жер деректерін пайдаланғысы келеді</translation>
 <translation id="561669346091975195">Ғылыми фантастикалық және фэнтези телешоулар</translation>
@@ -3185,6 +3186,7 @@
 <translation id="8806285662264631610">Ванна мен денеге арналған өнімдер</translation>
 <translation id="8807160976559152894">Әр беттен кейін кесу</translation>
 <translation id="8809203544698246977">Бөгелген тақырыптар осы жерде пайда болады</translation>
+<translation id="8811470563853401328">Мекенжайды аккаунтта сақтау керек пе?</translation>
 <translation id="8813277370772331957">Кейінірек еске салу</translation>
 <translation id="8814707942599948500">C8 хатқалтасы</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде Chrome-ды жаңарту үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
@@ -3278,6 +3280,7 @@
 <translation id="9042617223719777575">Үлкен сыйымдылық</translation>
 <translation id="9044359186343685026">Touch ID пайдалану</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">Мына әрекеттер <ph name="POLICY_NAME" /> саясатының <ph name="POLICY_VALUE" /> күйіне орнатылуын қажет етеді: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 дюйм</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер жарамсыз сертификат ұсынды.</translation>
 <translation id="9050666287014529139">Құпия фраза</translation>
@@ -3357,7 +3360,6 @@
 <translation id="9219103736887031265">Кескіндер</translation>
 <translation id="922152298093051471">Chrome-ды реттеу</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">ПІШІМДІ ӨЗГЕРТУ</translation>
 <translation id="936602727769022409">Google аккаунтыңызға кіре алмай қалуыңыз мүмкін. Chromium құпия сөзді қазір өзгертуге кеңес береді. Сонан соң аккаунтқа кіру сұралады.</translation>
 <translation id="937457230470581909">Хайуанаттар бағы, аквариумдер мен қорықтар</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Пайдаланылатын деректер:<ph name="END_BOLD" /> жарнама тақырыптары браузерді қолдану тарихына, осы құрылғыда Chrome көмегімен кірген сайттар тізіміне негізделген.</translation>

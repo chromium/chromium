@@ -121,6 +121,7 @@
 <translation id="1947737735496445907">Dicetak</translation>
 <translation id="1951012854035635156">Pembantu</translation>
 <translation id="1962550982027027473">APN lalai diperlukan</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Foto profil Google</translation>
 <translation id="1979103255016296513">Kata laluan perlu ditukar</translation>
 <translation id="1999615961760456652">Portal Terbolot</translation>
@@ -255,6 +256,7 @@
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
 <translation id="3340011300870565703">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kanan.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369013195428705271">Adakah anda pasti anda ingin mengosongkan semua sejarah cetak? Tugas cetak anda yang masih dijalankan tidak akan dipadamkan.</translation>
 <translation id="3404249063913988450">Dayakan penyelamat skrin</translation>
@@ -342,6 +344,7 @@
 <translation id="4131410914670010031">Hitam putih</translation>
 <translation id="4145784616224233563">Tembok Api HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
+<translation id="4150201353443180367">Paparan</translation>
 <translation id="4155551848414053977">Pastikan pengimbas dihidupkan dan tersedia melalui rangkaian anda atau sambungan langsung</translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4170180284036919717">Ambil foto</translation>
@@ -357,6 +360,7 @@
 <translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="4258281355379922695">Kependaman HTTP</translation>
 <translation id="4271957103967917607">Lihat Skrin Penuh</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="4289849978083912975">Tayangan slaid</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
@@ -449,6 +453,7 @@
 <translation id="498186245079027698">Periksa pengimbas dan cuba lagi. Pastikan terdapat ruang setempat yang mencukupi untuk menyimpan fail yang diimbas.</translation>
 <translation id="4985509611418653372">Jalankan</translation>
 <translation id="4987769320337599931">Tembok api</translation>
+<translation id="4988526792673242964">Halaman</translation>
 <translation id="4999333166442584738">Sembunyikan laporan</translation>
 <translation id="500920857929044050">Hentikan ujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -775,6 +780,7 @@
 <translation id="7936303884198020182">Pelayan tanpa nama ditemukan</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943235353293548836">Selang pengekal berterusan</translation>
+<translation id="7953669802889559161">Masukan</translation>
 <translation id="7955587717700691983">Papan kekunci Bluetooth</translation>
 <translation id="7960831585769876809">Suhu</translation>
 <translation id="7977800524392185497">Untuk menyertai rangkaian <ph name="NETWORK_NAME" />, pergi ke Tetapan</translation>
@@ -787,6 +793,7 @@
 <translation id="8041089156583427627">Hantar Maklum Balas</translation>
 <translation id="8045012663542226664">Redam Mikrofon</translation>
 <translation id="8075838845814659848">Baki cas</translation>
+<translation id="8076492880354921740">Tab</translation>
 <translation id="8082366717211101304">Tidak dapat menyelesaikan DNS daripada apl Android</translation>
 <translation id="808894953321890993">Tukar kata laluan</translation>
 <translation id="8094062939584182041">Benarkan Google menghantar e-mel tentang isu ini kepada anda</translation>
@@ -796,6 +803,7 @@
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Alat pembangun</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Lampir</translation>
 <translation id="8206859287963243715">Selular</translation>
@@ -864,6 +872,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Kertas dinding</translation>
 <translation id="8820457400746201697">Gerakkan titik sentuh biru kepada tindakan. Pilih kekunci yang berkaitan untuk disesuaikan.</translation>
+<translation id="8820817407110198400">Penanda buku</translation>
 <translation id="8834539327799336565">Tersambung pada masa ini</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8855781559874488009">Tidak dapat menyambung melalui tembok api ke laman web HTTP</translation>

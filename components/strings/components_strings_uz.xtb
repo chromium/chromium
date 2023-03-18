@@ -867,7 +867,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Aloqa diagnostikasi bilan tekshirib ko‘ring<ph name="END_LINK" /></translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> sahifasini ochish</translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Mavjud emas}=1{1 ta tizimga kirgan hisob axborotlari}other{# ta tizimga kirgan hisob axborotlari}}</translation>
 <translation id="3141093262818886744">Baribir ochilsin</translation>
 <translation id="3141641372357166056">Rozilik bildirilmagan</translation>
 <translation id="3145945101586104090">Javobni dekodlab bo‘lmadi</translation>
@@ -3356,7 +3355,6 @@ Batafsil axborot:
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="922152298093051471">Chromeni moslash</translation>
 <translation id="933712198907837967">Diners Club</translation>
-<translation id="935608979562296692">SHAKLNI TOZALASH</translation>
 <translation id="936602727769022409">Google hisobingiz xavf ostida. Parolingizni yangilashni tavsiya qilamiz. Hisobingizga qayta kirishingiz talab qilinadi.</translation>
 <translation id="937457230470581909">Hayvonot bogʻlari, akvarium va qoʻriqxonalar</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Qanday maʼlumotlar ishlatiladi:<ph name="END_BOLD" /> Reklamalardagi mavzular oxirgi brauzer tarixi asosida aniqlanadi, bunda Chrome orqali shu qurilmada ochilgan saytlar roʻyxati tuziladi.</translation>

@@ -937,6 +937,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1796588414813960292">Hindi gagana ang mga feature na nangangailangan ng tunog</translation>
 <translation id="1797117170091578105">Maglaro gamit ang iyong keyboard ng Chromebook. Puwede mong i-customize ang mga key para sa mga partikular na pagkilos.</translation>
 <translation id="1800502858278951817">Walang extension na humiling na i-read at baguhin ang <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">Search + O, pagkatapos ay W</translation>
 <translation id="1802624026913571222">I-sleep kapag nakasara ang cover</translation>
 <translation id="1802687198411089702">Hindi tumutugon ang page. Maaari mo itong hintayin o maaari kang lumabas.</translation>
 <translation id="1803531841600994172">Wika kung saan ita-translate</translation>
@@ -1196,6 +1197,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2023167225947895179">Posibleng mahulaan agad ang PIN na ito</translation>
 <translation id="202352106777823113">Masyadong matagal ang pag-download at pinahinto ito ng network.</translation>
 <translation id="2024195579772565064">I-delete ang search engine</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559">Nag-crash ang <ph name="APP_NAME" />. Mag-click sa lobong ito upang i-reload ang extension.</translation>
 <translation id="2028449514182362831">Hindi gagana ang mga feature na nangangailangan ng mga sensor ng paggalaw</translation>
 <translation id="202918510990975568">Ilagay ang iyong password para i-configure ang seguridad at pag-sign in</translation>
@@ -1272,6 +1274,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2090165459409185032">Upang i-recover ang impormasyon ng iyong account, pumunta sa: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Awtomatikong kumonekta kapag nag-log in ka</translation>
 <translation id="2090876986345970080">Setting ng seguridad ng system</translation>
+<translation id="2091887806945687916">Tunog</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Mga Feature ng Pag-debug<ph name="END_H3" />
       <ph name="BR" />
       Puwede mong i-enable ang mga feature ng pag-debug sa iyong ChromeOS Device para ma-install at masubukan ang custom na code sa device mo.  Magbibigay-daan ito sa iyo na:<ph name="BR" />
@@ -3202,6 +3205,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3778868487658107119">Tanungin ito. Utusan ito. Ito ang iyong personal na Google, laging handang tumulong.</translation>
 <translation id="3780542776224651912">Hindi matitingnan ng <ph name="BRAND" /> kung kasama ang iyong mga password sa mga data breach. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="3781742599892759500">Access sa mikropono ng Linux</translation>
+<translation id="3783725005098956899">Ipakita ang Log</translation>
 <translation id="3783889407390048282">Magbakante ng espasyo para maiwasan ang pagkawala ng access sa Android.</translation>
 <translation id="3784472333786002075">Ang cookies ay mga file na ginawa ng mga website. May dalawang uri ng cookies: Ginagawa ng site na iyong binibisita ang cookies ng first-party. Ipinapakita ang site sa address bar. Ginagawa ng iba pang site ang third-party na cookies. Pagmamay-ari ng mga site na ito ang ilan sa content, tulad ng mga ad o larawan, na nakikita mo sa website na iyong binibisita.</translation>
 <translation id="3785308913036335955">Ipakita ang Shortcut ng Apps</translation>
@@ -8326,6 +8330,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8419098111404128271">Mga resulta ng paghahanap para sa '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="8420308167132684745">I-edit ang mga entry sa diksyunaryo</translation>
 <translation id="8421361468937925547">Instant Caption (English lang)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Nawawala ang tray</translation>
 <translation id="8424250197845498070">Na-block ng Advanced na Proteksyon</translation>
 <translation id="8425213833346101688">Baguhin</translation>
@@ -8999,7 +9004,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9026731007018893674">i-download</translation>
 <translation id="9026852570893462412">Maaaring abutin nang ilang minuto ang prosesong ito. Dina-download ang virtual machine.</translation>
 <translation id="9027459031423301635">Buksan ang Link sa Bagong &amp;Tab</translation>
-<translation id="9027707169256972235">Alisin</translation>
 <translation id="9030515284705930323">Hindi na-enable ng iyong organisasyon ang Google Play Store para sa iyong account. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="9030754204056345429">Mas mabilis</translation>
 <translation id="9030785788945687215">Gmail</translation>

@@ -154,6 +154,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1715293566947629045">Wrthi'n analluogi'r proffil. Arhoswch ychydig funudau.</translation>
 <translation id="1719094688023114093">Mae Capsiynau Byw ymlaen.</translation>
 <translation id="1720011244392820496">Troi Cysoni Wi-Fi ymlaen</translation>
+<translation id="1720230731642245863">Mae'r Boethfan wedi'i diffodd</translation>
 <translation id="1731815243805539470">Newid i ddefnyddiwr blaenorol</translation>
 <translation id="1733996486177697563">Newidiwch rhwng thema dywyll a thema olau. Cyffwrddwch a daliwch ar y bwrdd gwaith, yna dewiswch Papur wal ac arddull.</translation>
 <translation id="1736898441010944794">Mae "<ph name="NAME" />" yn weladwy i ddyfeisiau Bluetooth.</translation>
@@ -422,7 +423,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3151786313568798007">Gogwydd</translation>
 <translation id="3153444934357957346">Dim ond hyd at <ph name="MULTI_PROFILE_USER_LIMIT" /> o gyfrifon y gallwch eu cael yn y modd mewngofnodi o sawl cyfrif.</translation>
 <translation id="3154351730702813399">Mae'n bosib y bydd gweinyddwr y ddyfais yn monitro eich gweithgarwch pori.</translation>
-<translation id="3157931365184549694">Adfer</translation>
 <translation id="316086887565479535">Apiau heb eu cefnogi mewn templed</translation>
 <translation id="3161500364292033097">Cau desg a ffenestri</translation>
 <translation id="316356270129335934">Mae <ph name="MANAGER" /> yn rholio eich <ph name="DEVICE_TYPE" /> yn ôl. Bydd eich dyfais yn ailosod a bydd eich data yn cael eu dileu.</translation>
@@ -587,6 +587,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="394485226368336402">Gosodiadau sain</translation>
 <translation id="3945319193631853098">Tapiwch i orffen gosod</translation>
 <translation id="3945867833895287237">Wrthi'n cysylltu â phoethfan...</translation>
+<translation id="3950272133184491871">Ydych chi am allgofnodi nawr?</translation>
 <translation id="3950820424414687140">Mewngofnodwch</translation>
 <translation id="3962859241508114581">Y Trac Blaenorol</translation>
 <translation id="3969043077941541451">Diffodd</translation>
@@ -984,6 +985,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5920710855273935292">Mae'r meic wedi'i ddistewi.</translation>
+<translation id="5924855612669061715">Mae'r Boethfan wedi'i throi ymlaen</translation>
 <translation id="5946788582095584774">Mae <ph name="FEATURE_NAME" /> wedi'i droi ymlaen.</translation>
 <translation id="5947494881799873997">Dychwelyd</translation>
 <translation id="595202126637698455">Mae olrhain perfformiad wedi'i alluogi</translation>
@@ -1159,7 +1161,6 @@ Gosodiad newydd</translation>
 <translation id="6781002679438061620">Desg 9</translation>
 <translation id="6782182743534150858">Desg 13</translation>
 <translation id="6786750046913594791">Cau'r ffolder</translation>
-<translation id="6787595647772650851">Adfer y sesiwn diwethaf</translation>
 <translation id="6790428901817661496">Chwarae</translation>
 <translation id="679368458793552943">Chwyddo pan fydd y chwyddwydr ymlaen</translation>
 <translation id="6801878137098616817">Golygwyd yn ddiweddar</translation>
@@ -1357,6 +1358,7 @@ Gosodiad newydd</translation>
 <translation id="7848989271541991537">Symudwyd i Dudalen <ph name="PAGE_NUMBER" />, rhes <ph name="ROW_NUMBER" />, colofn <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Sweipiwch i fyny gyda thri bys i ddechrau'r Trosolwg</translation>
+<translation id="7862292329216937261">I ddefnyddio'r ddyfais fel gwestai, mae angen i chi allgofnodi ac yna dewis Pori fel Gwestai ar waelod y sgrîn.</translation>
 <translation id="7866482334467279021">ymlaen</translation>
 <translation id="7868900307798234037">Wrthi'n datgloi gydag ôl bys</translation>
 <translation id="7872195908557044066">Mae eich gweinyddwr yn ailosod eich eSIM. Arhoswch ychydig funudau.</translation>
@@ -1399,6 +1401,7 @@ Gosodiad newydd</translation>
 <translation id="8036504271468642248">Brawddeg flaenorol</translation>
 <translation id="8042893070933512245">Agor dewislen gosodiadau hygyrchedd</translation>
 <translation id="8044457332620420407">Mae ôl-olau'r bysellfwrdd wedi'i ddiffodd</translation>
+<translation id="8048077032188362328">Mae eich gweinyddwr wedi diffodd y Boethfan.</translation>
 <translation id="8048123526339889627">Gosodiadau Bluetooth</translation>
 <translation id="8051716679295756675">Mae'r templed o'r enw <ph name="DESK_TEMPLATE_NAME" /> eisoes yn bodoli</translation>
 <translation id="8052898407431791827">Wedi'i gopïo i'r clipfwrdd</translation>
@@ -1615,6 +1618,7 @@ Gosodiad newydd</translation>
 <translation id="9098969848082897657">Distewi'r ffôn</translation>
 <translation id="9100887602489003640">Wrthi'n ychwanegu proffil. Arhoswch ychydig funudau.</translation>
 <translation id="9105450214093926548">Ni chefnogir mewngofnodi ail ddefnyddiwr pan fydd y porwr Lacros yn rhedeg. Defnyddiwch ail broffil porwr yn Lacros yn lle hynny neu caewch Lacros a rhowch gynnig arall arni.</translation>
+<translation id="9120448753905017833">Rydym wedi diffodd y WiFi i ddechrau defnyddio data'r Boethfan trwy Symudol. Gall hyn olygu costau data.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> neu <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">Methu â recordio cynnwys gwarchodedig</translation>
 <translation id="9161053988251441839">APIAU A AWGRYMIR</translation>

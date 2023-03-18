@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Herauszoomen</translation>
 <translation id="1510341833810331442">Websites dürfen keine Daten auf deinem Gerät speichern</translation>
 <translation id="1547123415014299762">Drittanbieter-Cookies sind erlaubt</translation>
+<translation id="1593426485665524382">Neue Aktionen auf dem oberen Teil des Bildschirms verfügbar</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Ähnliche Websites</translation>
 <translation id="1644574205037202324">Verlauf</translation>
@@ -92,6 +93,7 @@
 <translation id="257931822824936280">Maximiert – zum Minimieren klicken</translation>
 <translation id="2586657967955657006">Zwischenablage</translation>
 <translation id="2597457036804169544">Dunkles Design nicht auf Websites anwenden</translation>
+<translation id="2606760465469169465">Automatische Bestätigung</translation>
 <translation id="2621115761605608342">JavaScript für eine bestimmte Website zulassen.</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2677748264148917807">Verlassen</translation>
@@ -144,6 +146,7 @@
 <translation id="3600792891314830896">Websites stummschalten, die Ton wiedergeben</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3628308229821498208">Vorgeschlagene Suchanfragen</translation>
+<translation id="3721953990244350188">Schließen und nächste verfügbare Aktion anzeigen</translation>
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
 <translation id="3763247130972274048">Tippe links oder rechts im Video doppelt, um 10 s zu überspringen</translation>
 <translation id="3794286421982011626">Websites, die du besuchst, können Informationen zu deinen Aktivitäten speichern, um erwartungsgemäß zu funktionieren – beispielsweise um dafür zu sorgen, dass du angemeldet bleibst oder um Artikel in deinem Einkaufswagen zu speichern. Oft speichern Websites diese Informationen vorübergehend auf deinem Gerät.</translation>
@@ -221,6 +224,7 @@
 <translation id="5197729504361054390">Die von dir ausgewählten Kontakte werden mit <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> geteilt.</translation>
 <translation id="5216942107514965959">Heute zuletzt besucht</translation>
 <translation id="5225463052809312700">Kamera einschalten</translation>
+<translation id="5229337741799419985">Diese Einstellung funktioniert, ohne dass dabei deine Identität preisgegeben oder Websites erlaubt wird, deinen Browserverlauf einzusehen</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" entfernen</translation>
 <translation id="528192093759286357">Ziehe zum Beenden des Vollbildmodus von oben und tippe auf die Zurück-Taste.</translation>
@@ -307,6 +311,7 @@
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6689172468748959065">Profilfotos</translation>
 <translation id="6697925417670533197">Aktive Downloads</translation>
+<translation id="6701547804986694515">Von dir besuchte Websites können Informationen in Chrome speichern, die belegen, dass du kein Bot bist. Wenn du dann weitersurfst, können Websites diese Daten von Chrome abrufen und über eine zuvor von dir besuchte Website bestätigen, dass du wahrscheinlich eine echte Person bist.</translation>
 <translation id="6722828510648505498">Anmeldungsaufforderungen von Identitätsdiensten blockieren.</translation>
 <translation id="6746124502594467657">Nach unten</translation>
 <translation id="6749077623962119521">Berechtigungen zurücksetzen?</translation>
@@ -424,6 +429,7 @@
 <translation id="8751914237388039244">Bild auswählen</translation>
 <translation id="8801436777607969138">Hier kannst du Websites angeben, für die JavaScript blockiert werden soll.</translation>
 <translation id="8803526663383843427">Wenn aktiviert</translation>
+<translation id="8805385115381080995">Das Surfen ist so schneller, da es weniger wahrscheinlich ist, dass eine Website dich darum bittet, deine Identität als echte Person zu bestätigen</translation>
 <translation id="8816026460808729765">Zugriff auf Sensoren für Websites blockieren</translation>
 <translation id="8823559166155093873">Cookies blockieren</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -447,5 +453,6 @@
 <translation id="9162462602695099906">Diese Seite ist gefährlich</translation>
 <translation id="9201023452444595544">Alle Offlinedaten werden gelöscht</translation>
 <translation id="930525582205581608">Informationen auf dieser Website löschen?</translation>
+<translation id="947156494302904893">Websites, die du besuchst, können bestätigen, dass du eine echte Person und kein Bot bist</translation>
 <translation id="967624055006145463">Gespeicherte Daten</translation>
 </translationbundle>

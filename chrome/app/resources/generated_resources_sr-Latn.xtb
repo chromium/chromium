@@ -925,6 +925,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1796588414813960292">Funkcije kojima treba zvuk neće raditi</translation>
 <translation id="1797117170091578105">Igrajte pomoću Chromebook tastature. Možete da prilagodite tastere određenim radnjama.</translation>
 <translation id="1800502858278951817">Nijedan dodatak nije zatražio da čita i menja <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">Taster za pretragu + O, a zatim W</translation>
 <translation id="1802624026913571222">Pređi u stanje spavanja kada se poklopac zatvori</translation>
 <translation id="1802687198411089702">Stranica se ne odaziva. Možete da sačekate da počne da se odaziva ili da je zatvorite.</translation>
 <translation id="1803531841600994172">Jezik na koji želite da prevodite</translation>
@@ -1183,6 +1184,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="2023167225947895179">Ovaj PIN može lako da se pogodi</translation>
 <translation id="202352106777823113">Preuzimanje je trajalo predugo pa ga je mreža zaustavila.</translation>
 <translation id="2024195579772565064">Izbrišite pretraživač</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559">Dodatak <ph name="APP_NAME" /> je otkazao. Kliknite na ovaj oblačić da biste ga ponovo učitali.</translation>
 <translation id="2028449514182362831">Funkcije kojima su potrebni senzori pokreta neće raditi</translation>
 <translation id="202918510990975568">Unesite lozinku da biste konfigurisali bezbednost i prijavljivanje</translation>
@@ -1259,6 +1261,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2090165459409185032">Da biste vratili informacije o nalogu, idite na: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Automatski se povezuje kada se prijavite</translation>
 <translation id="2090876986345970080">Bezbednosno podešavanje sistema</translation>
+<translation id="2091887806945687916">Zvuk</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />Funkcije za otklanjanje grešaka<ph name="END_H3" />
     <ph name="BR" />
     Možete da omogućite funkcije za otklanjanje grešaka na Chrome OS uređaju da biste instalirali i testirali prilagođeni kôd na uređaju. To će vam omogućiti:<ph name="BR" />
@@ -3186,6 +3189,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3778868487658107119">Postavljajte mu pitanja. Dajte mu da radi nešto. To je vaš lični Google, uvek na usluzi.</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> ne može da proverava da li su lozinke ugrožene povredom podataka. Probajte ponovo kasnije.</translation>
 <translation id="3781742599892759500">Pristup mikrofonu za Linux</translation>
+<translation id="3783725005098956899">Prikaži evidenciju</translation>
 <translation id="3783889407390048282">Oslobodite prostor da ne biste izgubili pristup Android-u.</translation>
 <translation id="3784472333786002075">Kolačići su datoteke koje prave veb-sajtovi. Postoje dva tipa kolačića: Kolačiće prve strane pravi sajt koji posećujete. Sajt je prikazan na traci za adresu. Kolačiće treće strane prave drugi sajtovi. Ti sajtovi su vlasnici delova sadržaja koji vidite na posećenom veb-sajtu, poput oglasa ili slika.</translation>
 <translation id="3785308913036335955">Prikaži prečicu za aplikacije</translation>
@@ -8320,6 +8324,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8419098111404128271">Rezultati pretrage za „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="8420308167132684745">Izmeni unose u rečniku</translation>
 <translation id="8421361468937925547">Titl uživo (samo na engleskom)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Nedostaje fioka</translation>
 <translation id="8424250197845498070">Blokira Napredna zaštita</translation>
 <translation id="8425213833346101688">Promeni</translation>
@@ -8996,7 +9001,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="9026731007018893674">preuzimanje</translation>
 <translation id="9026852570893462412">Ovo može da potraje par minuta. Preuzima se virtuelna mašina.</translation>
 <translation id="9027459031423301635">Otvori link u novoj &amp;kartici</translation>
-<translation id="9027707169256972235">Ukloni</translation>
 <translation id="9030515284705930323">Organizacija nije omogućila Google Play prodavnicu za nalog. Kontaktirajte administratora za više informacija.</translation>
 <translation id="9030754204056345429">Brže</translation>
 <translation id="9030785788945687215">Gmail</translation>

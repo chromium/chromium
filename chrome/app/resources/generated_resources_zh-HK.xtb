@@ -935,6 +935,7 @@
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。您可為特定動作自訂按鍵。</translation>
 <translation id="1800502858278951817">沒有擴充程式要求讀取和變更 <ph name="SITE_NAME" /></translation>
+<translation id="180203835522132923">搜尋 + O，然後按 W</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁沒有回應，您可以繼續等待或離開。</translation>
 <translation id="1803531841600994172">翻譯目標語言</translation>
@@ -1195,6 +1196,7 @@
 <translation id="2023167225947895179">PIN 可能容易被猜中</translation>
 <translation id="202352106777823113">下載時間太長，已被網絡停止。</translation>
 <translation id="2024195579772565064">刪除搜尋引擎</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> 當機了，請按一下這個提示框來重新載入擴充功能。</translation>
 <translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
 <translation id="202918510990975568">請輸入您的密碼以進行安全性和登入設定</translation>
@@ -1271,6 +1273,7 @@
 <translation id="2090165459409185032">如要復原帳戶資料，請前往：google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">登入時自動連線</translation>
 <translation id="2090876986345970080">系統安全性設定</translation>
+<translation id="2091887806945687916">音效</translation>
 <translation id="2092356157625807382"><ph name="BEGIN_H3" />偵錯功能<ph name="END_H3" />
       <ph name="BR" />
       您可在 Chrome OS 裝置上啟用偵錯功能，以便您在裝置上安裝及測試自訂程式碼。這項功能可讓您：<ph name="BR" />
@@ -3201,6 +3204,7 @@
 <translation id="3778868487658107119">度身訂造的「Google 助理」隨時為您提供協助，不但可根據您的問題提供解答，還可以按指令執行各種操作。</translation>
 <translation id="3780542776224651912">「<ph name="BRAND" />」無法檢查您的密碼是否受資料外洩影響。請稍後再試。</translation>
 <translation id="3781742599892759500">Linux 的麥克風存取權</translation>
+<translation id="3783725005098956899">顯示記錄</translation>
 <translation id="3783889407390048282">請釋出空間，以免無法存取 Android。</translation>
 <translation id="3784472333786002075">Cookie 是網站所建立的檔案，並可分為兩種：第一方 Cookie 由您瀏覽的網站建立，網址列上會顯示該網站的網址。第三方 Cookie 則由其他網站建立。這些網站擁有您所瀏覽網站的部分內容，例如廣告和圖片。</translation>
 <translation id="3785308913036335955">顯示應用程式捷徑</translation>
@@ -8328,6 +8332,7 @@
 <translation id="8419098111404128271">「<ph name="SEARCH_TEXT" />」嘅搜尋結果</translation>
 <translation id="8420308167132684745">編輯字典條目</translation>
 <translation id="8421361468937925547">即時字幕 (僅支援英文)</translation>
+<translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">沒有紙匣</translation>
 <translation id="8424250197845498070">已由進階保護功能封鎖</translation>
 <translation id="8425213833346101688">變更</translation>
@@ -9002,7 +9007,6 @@
 <translation id="9026731007018893674">下載檔案</translation>
 <translation id="9026852570893462412">此程序可能需時幾分鐘。正在下載虛擬機器。</translation>
 <translation id="9027459031423301635">在新分頁中開啟連結(&amp;T)</translation>
-<translation id="9027707169256972235">移除</translation>
 <translation id="9030515284705930323">您的機構並未為您的帳戶啟用「Google Play 商店」。請聯絡您的管理員，以取得更多資料。</translation>
 <translation id="9030754204056345429">較快</translation>
 <translation id="9030785788945687215">Gmail</translation>
