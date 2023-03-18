@@ -5,9 +5,9 @@
 #ifndef BASE_STRINGS_STRING_PIECE_RUST_H_
 #define BASE_STRINGS_STRING_PIECE_RUST_H_
 
-#include "base/rust_buildflags.h"
+#include "build/rust/rust_buildflags.h"
 
-#if BUILDFLAG(BUILD_RUST_BASE_CONVERSIONS)
+#if BUILDFLAG(TOOLCHAIN_HAS_RUST)
 
 #include <stdint.h>
 
@@ -39,6 +39,6 @@ inline StringPiece RustStrToStringPiece(rust::Str str) {
 
 }  // namespace base
 
-#endif  // BUILDFLAG(BUILD_RUST_BASE_CONVERSIONS)
+#endif  // BUILDFLAG(TOOLCHAIN_HAS_RUST)
 
 #endif  // BASE_STRINGS_STRING_PIECE_RUST_H_

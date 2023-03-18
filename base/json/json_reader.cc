@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/rust_buildflags.h"
+#include "base/parsing_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(BUILD_RUST_JSON_READER)

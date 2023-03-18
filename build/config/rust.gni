@@ -75,11 +75,8 @@ declare_args() {
 declare_args() {
   # Individual Rust components. A separate declare_args so it can depend
   # on the previous args.
-
-  # Conversions between Rust types and C++ types.
-  enable_rust_base_conversions = enable_all_rust_features
-
-  # The base::JSONReader implementation. Requires base conversions.
+  #
+  # The base::JSONReader implementation.
   enable_rust_json = enable_all_rust_features
 
   # Support for chrome://crash-rust to check crash dump collection works.
