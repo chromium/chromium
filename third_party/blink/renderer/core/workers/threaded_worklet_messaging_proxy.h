@@ -39,7 +39,10 @@ class CORE_EXPORT ThreadedWorkletMessagingProxy
   void Trace(Visitor*) const override;
 
  protected:
-  explicit ThreadedWorkletMessagingProxy(ExecutionContext*);
+  explicit ThreadedWorkletMessagingProxy(
+      ExecutionContext*,
+      scoped_refptr<base::SingleThreadTaskRunner>
+          parent_agent_group_task_runner = nullptr);
 
   ThreadedWorkletObjectProxy& WorkletObjectProxy();
 
@@ -48,7 +51,9 @@ class CORE_EXPORT ThreadedWorkletMessagingProxy
 
   virtual std::unique_ptr<ThreadedWorkletObjectProxy> CreateObjectProxy(
       ThreadedWorkletMessagingProxy*,
-      ParentExecutionContextTaskRunners*);
+      ParentExecutionContextTaskRunners*,
+      scoped_refptr<base::SingleThreadTaskRunner>
+          parent_agent_group_task_runner);
 
   std::unique_ptr<ThreadedWorkletObjectProxy> worklet_object_proxy_;
 };

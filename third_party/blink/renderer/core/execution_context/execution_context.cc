@@ -242,6 +242,14 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
     origin = worklet_scope->DocumentSecurityOrigin();
   else
     origin = GetSecurityOrigin();
+
+  if (!origin) {
+    // TODO(crbug.com/1419253): Shared storage worklet architecture currently
+    // has a null security origin.
+    CHECK(IsSharedStorageWorkletGlobalScope());
+    return false;
+  }
+
   if (SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(origin))
     return true;
 

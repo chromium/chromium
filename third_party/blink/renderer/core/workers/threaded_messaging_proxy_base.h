@@ -61,7 +61,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
                             const String& message,
                             std::unique_ptr<SourceLocation>);
 
-  void WorkerThreadTerminated();
+  virtual void WorkerThreadTerminated();
 
   // Number of live messaging proxies, used by leak detection.
   static int ProxyCount();
@@ -69,7 +69,10 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   virtual void Trace(Visitor*) const;
 
  protected:
-  explicit ThreadedMessagingProxyBase(ExecutionContext*);
+  explicit ThreadedMessagingProxyBase(
+      ExecutionContext*,
+      scoped_refptr<base::SingleThreadTaskRunner>
+          parent_agent_group_task_runner = nullptr);
 
   void InitializeWorkerThread(
       std::unique_ptr<GlobalScopeCreationParams>,
@@ -78,6 +81,9 @@ class CORE_EXPORT ThreadedMessagingProxyBase
 
   ExecutionContext* GetExecutionContext() const;
   ParentExecutionContextTaskRunners* GetParentExecutionContextTaskRunners()
+      const;
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetParentAgentGroupTaskRunner()
       const;
 
   // May return nullptr after termination is requested.
@@ -93,9 +99,12 @@ class CORE_EXPORT ThreadedMessagingProxyBase
 
   Member<ExecutionContext> execution_context_;
 
-  // Accessed cross-thread when worker thread posts tasks to the parent.
+  // Accessed cross-thread when worker thread posts tasks to the parent. Only
+  // one of `parent_execution_context_task_runners_` and
+  // `parent_agent_group_task_runner_` will be set.
   CrossThreadPersistent<ParentExecutionContextTaskRunners>
       parent_execution_context_task_runners_;
+  scoped_refptr<base::SingleThreadTaskRunner> parent_agent_group_task_runner_;
 
   std::unique_ptr<WorkerThread> worker_thread_;
 

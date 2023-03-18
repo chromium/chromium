@@ -22,7 +22,8 @@ AudioWorkletObjectProxy::AudioWorkletObjectProxy(
     float context_sample_rate)
     : ThreadedWorkletObjectProxy(
           static_cast<ThreadedWorkletMessagingProxy*>(messaging_proxy_weak_ptr),
-          parent_execution_context_task_runners),
+          parent_execution_context_task_runners,
+          /*parent_agent_group_task_runner=*/nullptr),
       context_sample_rate_(context_sample_rate) {}
 
 void AudioWorkletObjectProxy::DidCreateWorkerGlobalScope(

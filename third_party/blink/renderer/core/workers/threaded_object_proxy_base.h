@@ -39,16 +39,26 @@ class CORE_EXPORT ThreadedObjectProxyBase : public WorkerReportingProxy {
   void DidTerminateWorkerThread() override;
 
  protected:
-  explicit ThreadedObjectProxyBase(ParentExecutionContextTaskRunners*);
+  explicit ThreadedObjectProxyBase(ParentExecutionContextTaskRunners*,
+                                   scoped_refptr<base::SingleThreadTaskRunner>
+                                       parent_agent_group_task_runner);
   virtual CrossThreadWeakPersistent<ThreadedMessagingProxyBase>
   MessagingProxyWeakPtr() = 0;
   ParentExecutionContextTaskRunners* GetParentExecutionContextTaskRunners();
+  scoped_refptr<base::SingleThreadTaskRunner> GetParentAgentGroupTaskRunner();
 
  private:
+  // Note: Only one of `parent_execution_context_task_runners_` and
+  // `parent_agent_group_task_runner_` will be set.
+
   // Used to post a task to ThreadedMessagingProxyBase on the parent context
   // thread.
   CrossThreadPersistent<ParentExecutionContextTaskRunners>
       parent_execution_context_task_runners_;
+
+  // Used to post a task to ThreadedMessagingProxyBase on the parent agent group
+  // thread.
+  scoped_refptr<base::SingleThreadTaskRunner> parent_agent_group_task_runner_;
 };
 
 }  // namespace blink

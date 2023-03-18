@@ -18,6 +18,11 @@
 namespace blink {
 
 void ThreadedObjectProxyBase::CountFeature(WebFeature feature) {
+  if (!GetParentExecutionContextTaskRunners()) {
+    DCHECK(GetParentAgentGroupTaskRunner());
+    return;
+  }
+
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
@@ -30,6 +35,11 @@ void ThreadedObjectProxyBase::ReportConsoleMessage(
     mojom::ConsoleMessageLevel level,
     const String& message,
     SourceLocation* location) {
+  if (!GetParentExecutionContextTaskRunners()) {
+    DCHECK(GetParentAgentGroupTaskRunner());
+    return;
+  }
+
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
@@ -39,6 +49,17 @@ void ThreadedObjectProxyBase::ReportConsoleMessage(
 }
 
 void ThreadedObjectProxyBase::DidCloseWorkerGlobalScope() {
+  if (!GetParentExecutionContextTaskRunners()) {
+    DCHECK(GetParentAgentGroupTaskRunner());
+
+    PostCrossThreadTask(
+        *GetParentAgentGroupTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(&ThreadedMessagingProxyBase::TerminateGlobalScope,
+                            MessagingProxyWeakPtr()));
+
+    return;
+  }
+
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
@@ -47,6 +68,17 @@ void ThreadedObjectProxyBase::DidCloseWorkerGlobalScope() {
 }
 
 void ThreadedObjectProxyBase::DidTerminateWorkerThread() {
+  if (!GetParentExecutionContextTaskRunners()) {
+    DCHECK(GetParentAgentGroupTaskRunner());
+
+    PostCrossThreadTask(
+        *GetParentAgentGroupTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(&ThreadedMessagingProxyBase::WorkerThreadTerminated,
+                            MessagingProxyWeakPtr()));
+
+    return;
+  }
+
   // This will terminate the MessagingProxy.
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
@@ -60,9 +92,16 @@ ThreadedObjectProxyBase::GetParentExecutionContextTaskRunners() {
   return parent_execution_context_task_runners_.Get();
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+ThreadedObjectProxyBase::GetParentAgentGroupTaskRunner() {
+  return parent_agent_group_task_runner_;
+}
+
 ThreadedObjectProxyBase::ThreadedObjectProxyBase(
-    ParentExecutionContextTaskRunners* parent_execution_context_task_runners)
+    ParentExecutionContextTaskRunners* parent_execution_context_task_runners,
+    scoped_refptr<base::SingleThreadTaskRunner> parent_agent_group_task_runner)
     : parent_execution_context_task_runners_(
-          parent_execution_context_task_runners) {}
+          parent_execution_context_task_runners),
+      parent_agent_group_task_runner_(parent_agent_group_task_runner) {}
 
 }  // namespace blink

@@ -2861,6 +2861,61 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool(),
                          describe_param);
 
+// TODO(yaoxia): when the majority of the blink-style worklet migration is done,
+// we should remove this test suite and just parameterize the existing tests.
+class BlinkStyleSharedStorageBrowserTest : public SharedStorageBrowserTestBase {
+ public:
+  BlinkStyleSharedStorageBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kSharedStorageAPI,
+          {{"SharedStorageWorkletImplementationType", "blink_style"}}}},
+        /*disabled_features=*/{});
+  }
+
+  ~BlinkStyleSharedStorageBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BlinkStyleSharedStorageBrowserTest, AddModule_Success) {
+  GURL main_frame_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs run_function_body_replacement;
+  run_function_body_replacement.emplace_back("{{SCRIPT_BODY}}", "let a = 1;");
+
+  GURL module_script_url = https_server()->GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/customizable_script.js",
+                    run_function_body_replacement));
+
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents(),
+      JsReplace("sharedStorage.worklet.addModule($1)", module_script_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(BlinkStyleSharedStorageBrowserTest, AddModule_Failure) {
+  GURL main_frame_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs run_function_body_replacement;
+  run_function_body_replacement.emplace_back("{{SCRIPT_BODY}}", "a;");
+
+  GURL module_script_url = https_server()->GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/customizable_script.js",
+                    run_function_body_replacement));
+
+  EvalJsResult result = EvalJs(
+      shell()->web_contents(),
+      JsReplace("sharedStorage.worklet.addModule($1)", module_script_url));
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("ReferenceError: a is not defined"));
+}
+
 class SharedStorageAllowURNsInIframesBrowserTest
     : public base::test::WithFeatureOverride,
       public SharedStorageBrowserTestBase {
