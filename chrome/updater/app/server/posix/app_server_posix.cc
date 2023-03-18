@@ -20,11 +20,6 @@ AppServerPosix::AppServerPosix() = default;
 AppServerPosix::~AppServerPosix() = default;
 
 void AppServerPosix::TaskStarted() {
-  main_task_runner_->PostTask(FROM_HERE,
-                              BindOnce(&AppServerPosix::MarkTaskStarted, this));
-}
-
-void AppServerPosix::MarkTaskStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++tasks_running_;
   VLOG(2) << "Starting task, " << tasks_running_ << " tasks running";

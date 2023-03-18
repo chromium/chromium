@@ -32,7 +32,6 @@ class AppServerPosix : public AppServer {
   base::TimeDelta ServerKeepAlive();
   void TaskStarted();
   void TaskCompleted();
-  void MarkTaskStarted();
   void AcknowledgeTaskCompletion();
 
   // Overrides of AppServer.
