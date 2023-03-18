@@ -49,6 +49,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "adaptive-button-in-top-toolbar-translate",
+    "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "adaptive-charging",
     "owners": [ "thanhdng" ],
     "expiry_milestone": 115

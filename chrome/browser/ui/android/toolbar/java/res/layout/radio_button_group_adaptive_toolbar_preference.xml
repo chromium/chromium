@@ -54,6 +54,15 @@ found in the LICENSE file.
           app:iconSrc="@drawable/btn_mic"
           app:primaryText="@string/adaptive_toolbar_button_preference_voice_search" />
 
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/adaptive_option_translate"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:paddingTop="10dp"
+          app:iconSrc="@drawable/ic_translate"
+          app:primaryText="@string/adaptive_toolbar_button_preference_translate" />
+
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 
 </LinearLayout>

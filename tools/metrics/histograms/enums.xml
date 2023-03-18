@@ -1451,6 +1451,7 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="Auto"/>
   <int value="6" label="Price tracking"/>
   <int value="7" label="Reader mode"/>
+  <int value="8" label="Translate"/>
 </enum>
 
 <enum name="AdaptiveToolbarRadioButtonState">
@@ -1461,6 +1462,8 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="New tab"/>
   <int value="5" label="Share"/>
   <int value="6" label="Voice"/>
+  <int value="7" label="Translate"/>
+  <int value="8" label="Auto with translate"/>
 </enum>
 
 <enum name="AdaptiveToolbarSegmentSwitch">
@@ -59216,6 +59219,7 @@ from previous Chrome versions.
   <int value="-1603026968"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:disabled"/>
   <int value="-1601374850" label="DialMediaRouteProvider:disabled"/>
+  <int value="-1600382958" label="AdaptiveButtonInTopToolbarTranslate:enabled"/>
   <int value="-1600277666" label="SidePanelCompanion:disabled"/>
   <int value="-1600187674" label="ClipboardUnsanitizedContent:enabled"/>
   <int value="-1599538279" label="enable-md-policy-page"/>
@@ -62559,6 +62563,7 @@ from previous Chrome versions.
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
   <int value="251367892" label="PersistentQuotaIsTemporaryQuota:disabled"/>
   <int value="254497185" label="VideoPlayerJsModules:enabled"/>
+  <int value="255027960" label="AdaptiveButtonInTopToolbarTranslate:disabled"/>
   <int value="255274700" label="Canvas2dStaysGPUOnReadback:enabled"/>
   <int value="255375615" label="stop-non-timers-in-background:enabled"/>
   <int value="255765456"

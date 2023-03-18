@@ -32,6 +32,8 @@ chromium-metrics-reviews@google.com.
       summary="the new tab adaptive button in the top toolbar"/>
   <variant name="IPH_AdaptiveButtonInTopToolbarCustomization_Share"
       summary="the share adaptive button in the top toolbar"/>
+  <variant name="IPH_AdaptiveButtonInTopToolbarCustomization_Translate"
+      summary="the translate adaptive button in the top toolbar"/>
   <variant name="IPH_AdaptiveButtonInTopToolbarCustomization_VoiceSearch"
       summary="the voice search adaptive button in the top toolbar"/>
   <variant name="IPH_AddToHomescreenMessage"

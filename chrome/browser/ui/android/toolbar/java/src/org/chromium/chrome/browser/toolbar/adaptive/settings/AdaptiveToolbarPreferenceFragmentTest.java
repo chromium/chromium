@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPT
 
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.View;
 
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.filters.SmallTest;
@@ -44,7 +45,8 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-        SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
+        SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID,
+        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE})
 public class AdaptiveToolbarPreferenceFragmentTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -143,6 +145,57 @@ public class AdaptiveToolbarPreferenceFragmentTest {
             Assert.assertEquals(
                     AdaptiveToolbarButtonVariant.VOICE, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.VOICE,
+                    SharedPreferencesManager.getInstance().readInt(
+                            ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+        });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE)
+    public void testTranslateOption_Enabled() {
+        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+        scenario.onFragment(fragment -> {
+            mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
+                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+
+            // Select Translate.
+            Assert.assertEquals(R.id.adaptive_option_translate,
+                    getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getId());
+            selectButton(AdaptiveToolbarButtonVariant.TRANSLATE);
+            assertButtonCheckedCorrectly("Translate", AdaptiveToolbarButtonVariant.TRANSLATE);
+            Assert.assertEquals(
+                    AdaptiveToolbarButtonVariant.TRANSLATE, mRadioPreference.getSelection());
+            Assert.assertEquals(AdaptiveToolbarButtonVariant.TRANSLATE,
+                    SharedPreferencesManager.getInstance().readInt(
+                            ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+        });
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE)
+    public void testTranslateOption_Disabled() {
+        // Set initial preference to translate.
+        SharedPreferencesManager.getInstance().writeInt(
+                ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.TRANSLATE);
+        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+        scenario.onFragment(fragment -> {
+            mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
+                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+
+            // Translate option should be hidden, and we should have reverted back to "Auto".
+            Assert.assertEquals(R.id.adaptive_option_translate,
+                    getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getId());
+            Assert.assertEquals(
+                    View.GONE, getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getVisibility());
+            assertButtonCheckedCorrectly("Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
+            Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
+            Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO,
                     SharedPreferencesManager.getInstance().readInt(
                             ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
         });

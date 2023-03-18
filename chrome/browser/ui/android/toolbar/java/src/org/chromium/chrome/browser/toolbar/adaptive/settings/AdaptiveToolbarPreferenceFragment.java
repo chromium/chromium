@@ -13,6 +13,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStats;
@@ -54,6 +55,8 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
         mRadioButtonGroup = (RadioButtonGroupAdaptiveToolbarPreference) findPreference(
                 PREF_ADAPTIVE_RADIO_GROUP);
         mRadioButtonGroup.setCanUseVoiceSearch(getCanUseVoiceSearch());
+        mRadioButtonGroup.setCanUseTranslate(
+                AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled());
         mRadioButtonGroup.setStatePredictor(new AdaptiveToolbarStatePredictor(
                 new ActivityAndroidPermissionDelegate(new WeakReference(getActivity()))));
         mRadioButtonGroup.setOnPreferenceChangeListener((preference, newValue) -> {

@@ -34,9 +34,11 @@ public class RadioButtonGroupAdaptiveToolbarPreference
     private @NonNull RadioButtonWithDescription mNewTabButton;
     private @NonNull RadioButtonWithDescription mShareButton;
     private @NonNull RadioButtonWithDescription mVoiceSearchButton;
+    private @NonNull RadioButtonWithDescription mTranslateButton;
     private @AdaptiveToolbarButtonVariant int mSelected;
     private @Nullable AdaptiveToolbarStatePredictor mStatePredictor;
     private boolean mCanUseVoiceSearch = true;
+    private boolean mCanUseTranslate;
 
     public RadioButtonGroupAdaptiveToolbarPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -57,7 +59,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
         mShareButton = (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_share);
         mVoiceSearchButton =
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_voice_search);
-        updateVoiceButtonVisibility();
+        mTranslateButton =
+                (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_translate);
 
         initializeRadioButtonSelection();
         RecordUserAction.record("Mobile.AdaptiveToolbarButton.SettingsPage.Opened");
@@ -85,6 +88,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
             mAutoButton.setDescriptionText(getContext().getString(
                     R.string.adaptive_toolbar_button_preference_based_on_your_usage_description,
                     getButtonString(uiState.autoButtonCaption)));
+            updateVoiceButtonVisibility();
+            updateTranslateButtonVisibility();
         });
         AdaptiveToolbarStats.recordRadioButtonStateAsync(mStatePredictor, /*onStartup=*/true);
     }
@@ -101,6 +106,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
             mSelected = AdaptiveToolbarButtonVariant.SHARE;
         } else if (mVoiceSearchButton.isChecked()) {
             mSelected = AdaptiveToolbarButtonVariant.VOICE;
+        } else if (mTranslateButton.isChecked()) {
+            mSelected = AdaptiveToolbarButtonVariant.TRANSLATE;
         } else {
             assert false : "No matching setting found.";
         }
@@ -132,6 +139,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
                 return mShareButton;
             case AdaptiveToolbarButtonVariant.VOICE:
                 return mVoiceSearchButton;
+            case AdaptiveToolbarButtonVariant.TRANSLATE:
+                return mTranslateButton;
         }
         return null;
     }
@@ -149,6 +158,9 @@ public class RadioButtonGroupAdaptiveToolbarPreference
             case AdaptiveToolbarButtonVariant.VOICE:
                 stringRes = R.string.adaptive_toolbar_button_preference_voice_search;
                 break;
+            case AdaptiveToolbarButtonVariant.TRANSLATE:
+                stringRes = R.string.adaptive_toolbar_button_preference_translate;
+                break;
             default:
                 assert false : "Unknown variant " + variant;
         }
@@ -160,11 +172,33 @@ public class RadioButtonGroupAdaptiveToolbarPreference
         updateVoiceButtonVisibility();
     }
 
+    void setCanUseTranslate(boolean canUseTranslate) {
+        mCanUseTranslate = canUseTranslate;
+        updateTranslateButtonVisibility();
+    }
+
     private void updateVoiceButtonVisibility() {
-        if (mVoiceSearchButton == null) return;
-        mVoiceSearchButton.setVisibility(mCanUseVoiceSearch ? View.VISIBLE : View.GONE);
-        if (mVoiceSearchButton.isChecked() && !mCanUseVoiceSearch) {
+        updateButtonVisibility(mVoiceSearchButton, mCanUseVoiceSearch);
+    }
+
+    private void updateTranslateButtonVisibility() {
+        updateButtonVisibility(mTranslateButton, mCanUseTranslate);
+    }
+
+    /**
+     * Updates a button's visibility based on a boolean value. If the button is currently checked
+     * and it needs to be hidden then we check the default "Auto" button.
+     * @param button A radio button to show or hide.
+     * @param shouldBeVisible Whether the button should be hidden or not.
+     */
+    private void updateButtonVisibility(
+            RadioButtonWithDescription button, boolean shouldBeVisible) {
+        if (button == null) return;
+
+        button.setVisibility(shouldBeVisible ? View.VISIBLE : View.GONE);
+        if (button.isChecked() && !shouldBeVisible) {
             mAutoButton.setChecked(true);
+            onCheckedChanged(mGroup, mAutoButton.getId());
         }
     }
 }

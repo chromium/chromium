@@ -9,6 +9,7 @@
 // Values must be numbered from 0 and can't have gaps.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// Be sure to keep in sync with AdaptiveToolbarButtonVariant in enums.xml.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.toolbar.adaptive
 enum class AdaptiveToolbarButtonVariant {
   // Button type is unknown. Used as default in backend logic.
@@ -28,7 +29,9 @@ enum class AdaptiveToolbarButtonVariant {
   kPriceTracking = 6,
   // Reader mode action.
   kReaderMode = 7,
-  kMaxValue = kReaderMode,
+  // Translate page action.
+  kTranslate = 8,
+  kMaxValue = kTranslate,
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_ADAPTIVE_TOOLBAR_ENUMS_H_

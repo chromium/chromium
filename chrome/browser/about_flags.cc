@@ -562,6 +562,8 @@ const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysShare[] = {
     {"mode", "always-share"}};
 const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysVoice[] = {
     {"mode", "always-voice"}};
+const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysTranslate[] = {
+    {"mode", "always-translate"}};
 const FeatureEntry::FeatureVariation kAdaptiveButtonInTopToolbarVariations[] = {
     {"Always None", kAdaptiveButton_AlwaysNone,
      std::size(kAdaptiveButton_AlwaysNone), nullptr},
@@ -571,6 +573,8 @@ const FeatureEntry::FeatureVariation kAdaptiveButtonInTopToolbarVariations[] = {
      std::size(kAdaptiveButton_AlwaysShare), nullptr},
     {"Always Voice", kAdaptiveButton_AlwaysVoice,
      std::size(kAdaptiveButton_AlwaysVoice), nullptr},
+    {"Always Translate", kAdaptiveButton_AlwaysTranslate,
+     std::size(kAdaptiveButton_AlwaysTranslate), nullptr},
 };
 
 const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_NewTab[] = {
@@ -4200,6 +4204,11 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kAdaptiveButtonInTopToolbar,
          kAdaptiveButtonInTopToolbarVariations,
          "OptionalToolbarButton")},
+    {"adaptive-button-in-top-toolbar-translate",
+     flag_descriptions::kAdaptiveButtonInTopToolbarTranslateName,
+     flag_descriptions::kAdaptiveButtonInTopToolbarTranslateDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAdaptiveButtonInTopToolbarTranslate)},
     {"adaptive-button-in-top-toolbar-customization",
      flag_descriptions::kAdaptiveButtonInTopToolbarCustomizationName,
      flag_descriptions::kAdaptiveButtonInTopToolbarCustomizationDescription,

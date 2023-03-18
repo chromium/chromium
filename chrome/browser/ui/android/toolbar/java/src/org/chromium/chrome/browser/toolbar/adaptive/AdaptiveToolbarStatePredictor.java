@@ -147,10 +147,22 @@ public class AdaptiveToolbarStatePredictor {
      * @return Given a segment, whether it is a valid segment that can be shown to the user.
      */
     private boolean isValidSegment(@AdaptiveToolbarButtonVariant int variant) {
-        if (variant == AdaptiveToolbarButtonVariant.UNKNOWN) return false;
-        return variant == AdaptiveToolbarButtonVariant.NEW_TAB
-                || variant == AdaptiveToolbarButtonVariant.SHARE
-                || variant == AdaptiveToolbarButtonVariant.VOICE;
+        switch (variant) {
+            case AdaptiveToolbarButtonVariant.NEW_TAB:
+            case AdaptiveToolbarButtonVariant.SHARE:
+            case AdaptiveToolbarButtonVariant.VOICE:
+            case AdaptiveToolbarButtonVariant.TRANSLATE:
+                return true;
+            case AdaptiveToolbarButtonVariant.UNKNOWN:
+            case AdaptiveToolbarButtonVariant.NONE:
+            case AdaptiveToolbarButtonVariant.AUTO:
+            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+            case AdaptiveToolbarButtonVariant.READER_MODE:
+                return false;
+            default:
+                assert false : "Invalid adaptive toolbar button variant: " + variant;
+                return false;
+        }
     }
 
     private boolean canShowUi(boolean isReady) {
@@ -203,11 +215,15 @@ public class AdaptiveToolbarStatePredictor {
     }
 
     private boolean isVariantEnabled(@AdaptiveToolbarButtonVariant int variant) {
-        if (variant == AdaptiveToolbarButtonVariant.VOICE) {
-            if (mAndroidPermissionDelegate == null) return true;
-            return VoiceRecognitionUtil.isVoiceSearchEnabled(mAndroidPermissionDelegate);
+        switch (variant) {
+            case AdaptiveToolbarButtonVariant.VOICE:
+                if (mAndroidPermissionDelegate == null) return true;
+                return VoiceRecognitionUtil.isVoiceSearchEnabled(mAndroidPermissionDelegate);
+            case AdaptiveToolbarButtonVariant.TRANSLATE:
+                return AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled();
+            default:
+                return true;
         }
-        return true;
     }
 
     /**

@@ -21953,6 +21953,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTopToolbarTranslateButton">
+  <owner>salg@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <description>
+    The user tapped on the top toolbar's translate button.
+  </description>
+</action>
+
 <action name="MobileTopToolbarVoiceButton">
   <owner>jds@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -36709,6 +36717,8 @@ should be able to be added at any place in this file.
       label="For AdaptiveButtonInTopToolbarCustomization new tab feature."/>
   <suffix name="AdaptiveButtonInTopToolbarCustomization_Share"
       label="For AdaptiveButtonInTopToolbarCustomization share feature."/>
+  <suffix name="AdaptiveButtonInTopToolbarCustomization_Translate"
+      label="For AdaptiveButtonInTopToolbarCustomization translate feature."/>
   <suffix name="AdaptiveButtonInTopToolbarCustomization_VoiceSearch"
       label="For AdaptiveButtonInTopToolbarCustomization voice search
              feature."/>
