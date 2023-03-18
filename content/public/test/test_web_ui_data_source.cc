@@ -55,6 +55,10 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
 
   WebUIDataSource* GetWebUIDataSource() override { return source_.get(); }
 
+  void AddDataSourceForBrowserContext(BrowserContext* context) override {
+    URLDataManager::AddWebUIDataSource(context, GetWebUIDataSource());
+  }
+
  private:
   scoped_refptr<WebUIDataSourceImplWithPublicData> source_;
 };

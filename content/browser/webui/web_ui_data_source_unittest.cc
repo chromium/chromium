@@ -83,11 +83,9 @@ class WebUIDataSourceTest : public testing::Test {
  private:
   void SetUp() override {
     SetContentClient(&client_);
-    WebUIDataSource* source = WebUIDataSourceImpl::Create("host");
-    WebUIDataSourceImpl* source_impl =
-        static_cast<WebUIDataSourceImpl*>(source);
-    source_impl->disable_load_time_data_defaults_for_testing();
-    source_ = base::WrapRefCounted(source_impl);
+    WebUIDataSourceImpl* source = new WebUIDataSourceImpl("host");
+    source->disable_load_time_data_defaults_for_testing();
+    source_ = base::WrapRefCounted(source);
   }
 
   BrowserTaskEnvironment task_environment_;

@@ -43,10 +43,10 @@ class ManagedUIHandlerTest : public testing::Test {
         std::make_unique<policy::PolicyServiceImpl>(std::move(providers)));
     profile_ = builder.Build();
 
-    // We use a random source_name here as calling Add() can replace existing
-    // sources with the same name (which might destroy the memory addressed by
-    // |source_->GetWebUIDataSource()|.
-    content::WebUIDataSource::Add(profile(), source_->GetWebUIDataSource());
+    // `source_` has been created with a random name, so calling
+    // AddDataSourceForBrowserContext() won't accidentally destroy other data
+    // sources.
+    source_->AddDataSourceForBrowserContext(profile());
   }
 
   void TearDown() override { policy_provider()->Shutdown(); }

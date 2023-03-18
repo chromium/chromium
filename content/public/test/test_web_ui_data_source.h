@@ -15,6 +15,7 @@ class GURL;
 
 namespace content {
 
+class BrowserContext;
 class WebUIDataSource;
 
 class TestWebUIDataSource {
@@ -31,6 +32,8 @@ class TestWebUIDataSource {
   virtual int URLToIdrOrDefault(const GURL& url) = 0;
 
   virtual WebUIDataSource* GetWebUIDataSource() = 0;
+
+  virtual void AddDataSourceForBrowserContext(BrowserContext* context) = 0;
 };
 
 }  // namespace content

@@ -39,20 +39,9 @@ namespace content {
 // static
 WebUIDataSource* WebUIDataSource::CreateAndAdd(BrowserContext* browser_context,
                                                const std::string& source_name) {
-  WebUIDataSource* data_source = WebUIDataSource::Create(source_name);
-  WebUIDataSource::Add(browser_context, data_source);
+  auto* data_source = new WebUIDataSourceImpl(source_name);
+  URLDataManager::AddWebUIDataSource(browser_context, data_source);
   return data_source;
-}
-
-// static
-WebUIDataSource* WebUIDataSource::Create(const std::string& source_name) {
-  return new WebUIDataSourceImpl(source_name);
-}
-
-// static
-void WebUIDataSource::Add(BrowserContext* browser_context,
-                          WebUIDataSource* source) {
-  URLDataManager::AddWebUIDataSource(browser_context, source);
 }
 
 // static
