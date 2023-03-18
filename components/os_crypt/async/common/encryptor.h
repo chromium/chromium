@@ -15,6 +15,7 @@
 
 namespace os_crypt_async {
 
+class EncryptorTestBase;
 class OSCryptAsync;
 
 // This class is used for data encryption. A thread-safe instance can be
@@ -48,6 +49,7 @@ class Encryptor {
                                    std::string* plaintext) const;
 
  private:
+  friend class EncryptorTestBase;
   friend class OSCryptAsync;
 
   // Used for cloning and creation of the template instance.
