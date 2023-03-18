@@ -30,6 +30,9 @@ select.md-select {
 
 .checkbox cr-checkbox {
   min-height: var(--print-preview-row-height);
+}
+
+:host-context(html:not([chrome-refresh-2023])) .checkbox cr-checkbox {
   --cr-checkbox-ripple-size: var(--print-preview-row-height);
 }
 

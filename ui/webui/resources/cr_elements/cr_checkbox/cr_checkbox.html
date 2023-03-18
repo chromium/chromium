@@ -47,6 +47,7 @@
             var(--cr-fallback-color-outline));
         --cr-checkbox-ripple-checked-color: var(--cr-active-background-color);
         --cr-checkbox-ripple-unchecked-color: var(--cr-active-background-color);
+        --cr-checkbox-ripple-offset: 50%;
         --cr-checkbox-ripple-opacity: 1;
       }
 
@@ -168,6 +169,10 @@
       :host-context([dir=rtl]) paper-ripple {
         left: auto;
         right: var(--cr-checkbox-ripple-offset);
+      }
+
+      :host-context([chrome-refresh-2023]) paper-ripple {
+        transform: translate(-50%, -50%);
       }
 
       #label-container {
