@@ -100,6 +100,55 @@ To get Chrome OS System Colors, an element must:
   --cr-secondary-text-color: var(--cros-sys-secondary);
 }
 
+/* Button */
+:host-context(body.jelly-enabled) cr-button {
+  /* Default button colors */
+  --text-color: var(--cros-sys-on_primary_container);
+  --ink-color: var(--cros-sys-ripple_primary);
+  --iron-icon-fill-color: currentColor;
+  --hover-bg-color: var(--cros-sys-hover_on_subtle);
+  --ripple-opacity: .1;
+
+  /* Action button colors */
+  --bg-action: var(--cros-sys-primary);
+  --ink-color-action: var(--cros-sys-ripple_primary);
+  --text-color-action: var(--cros-sys-on_primary);
+  --hover-bg-action: var(--cros-sys-hover_on_prominent);
+  --ripple-opacity-action: 1;
+
+  /* Disabled button colors */
+  --disabled-bg: var(--cros-sys-disabled_container);
+  --disabled-bg-action: var(--cros-sys-disabled_container);
+  --disabled-text-color: var(--cros-sys-disabled);
+
+  background-color: var(--cros-sys-primary_container);
+  border: none;
+}
+
+:host-context(body.jelly-enabled) cr-button:hover::part(hoverBackground) {
+  background-color: var(--hover-bg-color);
+  display: block;
+}
+
+:host-context(body.jelly-enabled) cr-button.action-button {
+  background-color: var(--bg-action);
+}
+
+:host-context(body.jelly-enabled)
+    cr-button.action-button:hover::part(hoverBackground) {
+  background-color: var(--hover-bg-action);
+}
+
+:host-context(body.jelly-enabled) cr-button[disabled] {
+  background-color: var(--cros-sys-disabled_container);
+}
+
+:host-context(body.jelly-enabled):host-context(.focus-outline-visible)
+    cr-button:focus {
+  box-shadow: none;
+  outline: 2px solid var(--cros-sys-focus_ring);
+}
+
 /* Checkbox */
 :host-context(body.jelly-enabled) cr-checkbox {
   --cr-checkbox-checked-box-color: var(--cros-sys-primary);
