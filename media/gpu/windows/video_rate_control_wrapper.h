@@ -110,7 +110,7 @@ class VideoRateControlWrapperInternal : public VideoRateControlWrapper {
   // instantiated.
   static RateControlConfigType ConvertControlConfig(
       const RateControlConfig& config);
-  FrameParamsType ConvertFrameParams(const FrameParams& frame_params);
+  static FrameParamsType ConvertFrameParams(const FrameParams& frame_params);
 
   std::unique_ptr<RateCtrlType> impl_;
 };
