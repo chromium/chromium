@@ -82,7 +82,8 @@ class ProxyImplBase {
         if (SUCCEEDED(hr)) {
           return server;
         }
-        VLOG(2) << "::CoCreateInstance failed " << std::hex << hr;
+        VLOG(2) << "::CoCreateInstance failed: "
+                << base::win::WStringFromGUID(clsid) << ": " << std::hex << hr;
         if (hr == REGDB_E_CLASSNOTREG) {
           return base::unexpected(hr);
         }

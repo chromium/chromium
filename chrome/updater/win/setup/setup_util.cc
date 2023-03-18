@@ -265,18 +265,22 @@ void AddComServerWorkItems(const base::FilePath& com_server_path,
                            bool is_internal,
                            WorkItemList* list) {
   DCHECK(list);
+  VLOG(1) << __func__ << ": " << com_server_path << ": " << is_internal;
+
   if (com_server_path.empty()) {
     LOG(DFATAL) << "com_server_path is invalid.";
     return;
   }
 
   for (const auto& clsid : GetServers(is_internal, UpdaterScope::kUser)) {
+    VLOG(1) << "Registering clsid: " << base::win::WStringFromGUID(clsid);
     AddInstallServerWorkItems(HKEY_CURRENT_USER, clsid, com_server_path,
                               is_internal, list);
     AddInstallComProgIdWorkItems(UpdaterScope::kUser, clsid, list);
   }
 
   for (const auto& iid : GetInterfaces(is_internal, UpdaterScope::kUser)) {
+    VLOG(1) << "Registering interface: " << base::win::WStringFromGUID(iid);
     AddInstallComInterfaceWorkItems(HKEY_CURRENT_USER, com_server_path, iid,
                                     list);
   }
@@ -286,6 +290,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
                             bool internal_service,
                             WorkItemList* list) {
   DCHECK(::IsUserAnAdmin());
+  VLOG(1) << __func__ << ": " << com_service_path << ": " << internal_service;
 
   if (com_service_path.empty()) {
     LOG(DFATAL) << "com_service_path is invalid.";
@@ -315,11 +320,13 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
       com_service_command, com_switch, UPDATER_KEY, clsids, {}));
 
   for (const auto& clsid : clsids) {
+    VLOG(1) << "Registering clsid: " << base::win::WStringFromGUID(clsid);
     AddInstallComProgIdWorkItems(UpdaterScope::kSystem, clsid, list);
   }
 
   for (const auto& iid :
        GetInterfaces(internal_service, UpdaterScope::kSystem)) {
+    VLOG(1) << "Registering interface: " << base::win::WStringFromGUID(iid);
     AddInstallComInterfaceWorkItems(HKEY_LOCAL_MACHINE, com_service_path, iid,
                                     list);
   }
