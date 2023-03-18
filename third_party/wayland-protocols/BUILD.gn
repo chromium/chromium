@@ -23,6 +23,10 @@ wayland_protocol("extended_drag") {
   sources = [ "unstable/extended-drag/extended-drag-unstable-v1.xml" ]
 }
 
+wayland_protocol("fractional_scale_protocol") {
+  sources = [ "src/staging/fractional-scale/fractional-scale-v1.xml" ]
+}
+
 wayland_protocol("fullscreen_shell_protocol") {
   sources = [ "src/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml" ]
 }
