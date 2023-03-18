@@ -5,6 +5,7 @@
 #include "base/containers/contains.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/mojom/api_permission_id.mojom.h"
+#include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,24 +26,23 @@ TEST(ChromeAPIPermissionsUnitTest, AllApiPermissionsHaveACorrespondingFeature) {
   ASSERT_EQ(1u, all_api_permissions.count(mojom::APIPermissionID::kDownloads));
   ASSERT_EQ(1u, all_api_permissions.count(mojom::APIPermissionID::kStorage));
 
-  std::string kKnownBad[] = {
-      "homepage",         "searchProvider",     "startupPages",
-      "tabCaptureForTab", "newTabPageOverride",
-  };
-
   const FeatureProvider* permission_features =
       FeatureProvider::GetPermissionFeatures();
   // Iterate over every API permission and ensure each has an entry in
   // _permission_features.json.
   for (const auto* permission : all_api_permissions) {
+    // Internal-only permissions (which are generally used as implementation
+    // details) do not need to have a separate features entry.
+    if (permission->info()->is_internal()) {
+      continue;
+    }
+
     const Feature* feature =
         permission_features->GetFeature(permission->name());
-    if (!feature) {
-      EXPECT_TRUE(base::Contains(kKnownBad, permission->name()))
-          << "Missing _permission_features.json entry for permission '"
-          << permission->name()
-          << "'. Add a new entry in _permission_features.json to fix this.";
-    }
+    EXPECT_TRUE(feature)
+        << "Missing _permission_features.json entry for permission '"
+        << permission->name()
+        << "'. Add a new entry in _permission_features.json to fix this.";
   }
 }
 

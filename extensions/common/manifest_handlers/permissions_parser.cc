@@ -233,6 +233,9 @@ bool ParseHelper(Extension* extension,
   for (APIPermissionSet::const_iterator iter = api_permissions->begin();
        iter != api_permissions->end();
        ++iter) {
+    // All internal permissions should have been filtered out above.
+    DCHECK(!iter->info()->is_internal()) << iter->name();
+
     const Feature* feature = permission_features->GetFeature(iter->name());
 
     // The feature should exist since we just got an APIPermission for it. The
