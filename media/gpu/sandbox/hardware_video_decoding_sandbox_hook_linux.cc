@@ -65,7 +65,15 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnIntel(
   // TODO(b/210759684): we should open the render nodes for both libva and
   // minigbm before entering the sandbox so that we can remove this permission.
   command_set.set(sandbox::syscall_broker::COMMAND_OPEN);
-  AllowAccessToRenderNodes(permissions, /*include_sys_dev_char=*/false,
+
+  // This is added because libdrm does a stat() on a sysfs path on behalf of
+  // libva to determine if a particular FD refers to a DRM device (more details
+  // in b/271788848#comment2).
+  //
+  // TODO(b/210759684): we probably will need to do this for Linux as well.
+  command_set.set(sandbox::syscall_broker::COMMAND_STAT);
+
+  AllowAccessToRenderNodes(permissions, /*include_sys_dev_char=*/true,
                            /*read_write=*/false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(USE_VAAPI)
