@@ -710,7 +710,7 @@ attempts to access that field will DCHECK:
 
 ```cpp
 ValuePtr value = Value::NewIntValue(42);
-LOG(INFO) << "Value is " << value->string_value();  // DCHECK!
+LOG(INFO) << "Value is " << value->get_string_value();  // DCHECK!
 ```
 
 ### Sending Interfaces Over Interfaces
