@@ -225,7 +225,14 @@ class CppTypeGenerator(object):
     """Returns the #include lines for self._default_namespace.
     """
     c = Code()
-    if self._default_namespace.manifest_keys:
+
+    # The inclusion of the StringPiece header is dependent on either the
+    # presence of enums, or manifest keys.
+    include_string_piece = (self._default_namespace.manifest_keys or
+        any(type_.property_type is PropertyType.ENUM for type_ in
+            self._default_namespace.types.values()))
+
+    if include_string_piece:
       c.Append('#include "base/strings/string_piece.h"')
 
     # Note: It's possible that there are multiple dependencies from the same

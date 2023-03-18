@@ -772,9 +772,9 @@ class _Generator(object):
         # Scope the std::vector variable declaration inside braces.
         (c.Sblock('{')
           .Append('std::vector<std::string> %s;' % enum_list_var)
-          .Append('for (const auto& it : %s) {' % varname)
-          .Append('%s.push_back(%sToString(it));' % (enum_list_var,
-                                                     maybe_namespace))
+          .Sblock('for (const auto& it : %s) {' % varname)
+            .Append('%s.emplace_back(%sToString(it));' % (enum_list_var,
+                                                          maybe_namespace))
           .Eblock('}'))
 
         # Because the std::vector above is always created for both required and
@@ -782,7 +782,7 @@ class _Generator(object):
         # std::vector to create the values.
         (c.Append(code %
             self._GenerateCreateValueFromType(type_, enum_list_var, False))
-          .Append('}'))
+          .Eblock('}'))
         return c
 
     c.Append(code % self._GenerateCreateValueFromType(type_, var, is_ptr))
@@ -1220,7 +1220,7 @@ class _Generator(object):
       c.Append('// static')
     maybe_namespace = '' if cpp_namespace is None else '%s::' % cpp_namespace
 
-    c.Sblock('%s%s %sParse%s(const std::string& enum_string) {' %
+    c.Sblock('%s%s %sParse%s(base::StringPiece enum_string) {' %
                  (maybe_namespace, classname, maybe_namespace, classname))
     for _, enum_value in enumerate(
           self._type_helper.FollowRef(type_).enum_values):

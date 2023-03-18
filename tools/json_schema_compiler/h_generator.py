@@ -229,7 +229,7 @@ class _Generator(object):
       (c.Append()
         .Append('%sconst char* ToString(%s as_enum);' %
                 (maybe_static, classname))
-        .Append('%s%s Parse%s(const std::string& as_string);' %
+        .Append('%s%s Parse%s(base::StringPiece as_string);' %
                 (maybe_static, classname, classname))
       )
     elif type_.property_type in (PropertyType.CHOICES,

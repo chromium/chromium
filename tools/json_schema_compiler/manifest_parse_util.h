@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "tools/json_schema_compiler/util.h"
@@ -22,7 +23,7 @@ namespace manifest_parse_util {
 // |value| at the given |key|.
 void PopulateInvalidEnumValueError(
     base::StringPiece key,
-    const std::string& value,
+    base::StringPiece value,
     std::u16string* error,
     std::vector<base::StringPiece>* error_path_reversed);
 
@@ -169,7 +170,7 @@ bool ParseFromDictionary(const base::Value::Dict& dict,
 
 // Alias for pointer to a function which converts a string to an enum of type T.
 template <typename T>
-using StringToEnumConverter = T (*)(const std::string&);
+using StringToEnumConverter = T (*)(base::StringPiece);
 
 // Parses enum |out| from |dict| at the given |key|. On failure, returns false
 // and populates |error| and |error_path_reversed|.
@@ -197,7 +198,7 @@ bool ParseEnumFromDictionary(
   if (!value)
     return false;
 
-  const std::string str = value->GetString();
+  const std::string& str = value->GetString();
   T enum_value = converter(str);
   if (enum_value == none_value) {
     PopulateInvalidEnumValueError(key, str, error, error_path_reversed);

@@ -42,7 +42,7 @@ bool ParseHelper(const base::Value::Dict& dict,
 
 void PopulateInvalidEnumValueError(
     base::StringPiece key,
-    const std::string& value,
+    base::StringPiece value,
     std::u16string* error,
     std::vector<base::StringPiece>* error_path_reversed) {
   DCHECK(error);
@@ -51,8 +51,8 @@ void PopulateInvalidEnumValueError(
   DCHECK(error_path_reversed->empty());
 
   error_path_reversed->push_back(key);
-  *error = base::ASCIIToUTF16(
-      base::StringPrintf("Specified value '%s' is invalid.", value.c_str()));
+  *error = base::ASCIIToUTF16(base::StringPrintf(
+      "Specified value '%s' is invalid.", std::string(value).c_str()));
 }
 
 std::u16string GetArrayParseError(size_t error_index,
