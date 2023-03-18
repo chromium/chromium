@@ -3,6 +3,7 @@
     "gn_args": {
       "dcheck_always_on": true,
       "debuggable_apks": false,
+      "enable_all_rust_features": true,
       "enable_rust": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -17,6 +18,7 @@
   "android-rust-arm64-dbg": {
     "gn_args": {
       "debuggable_apks": false,
+      "enable_all_rust_features": true,
       "enable_rust": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
@@ -32,6 +34,7 @@
     "gn_args": {
       "dcheck_always_on": true,
       "debuggable_apks": false,
+      "enable_all_rust_features": true,
       "enable_rust": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -45,6 +48,7 @@
   },
   "linux-rust-x64-dbg": {
     "gn_args": {
+      "enable_all_rust_features": true,
       "enable_rust": true,
       "is_component_build": true,
       "is_debug": true,
@@ -56,6 +60,7 @@
   "linux-rust-x64-rel": {
     "gn_args": {
       "dcheck_always_on": true,
+      "enable_all_rust_features": true,
       "enable_rust": true,
       "is_component_build": false,
       "is_debug": false,
@@ -67,6 +72,7 @@
   "mac-rust-x64-rel": {
     "gn_args": {
       "dcheck_always_on": true,
+      "enable_all_rust_features": true,
       "enable_rust": true,
       "is_component_build": false,
       "is_debug": false,
@@ -77,6 +83,7 @@
   },
   "win-rust-x64-dbg": {
     "gn_args": {
+      "enable_all_rust_features": true,
       "enable_rust": true,
       "is_component_build": true,
       "is_debug": true,
@@ -88,6 +95,7 @@
   "win-rust-x64-rel": {
     "gn_args": {
       "dcheck_always_on": true,
+      "enable_all_rust_features": true,
       "enable_rust": true,
       "is_component_build": false,
       "is_debug": false,

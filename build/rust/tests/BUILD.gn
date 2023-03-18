@@ -42,7 +42,6 @@ group("deps") {
     ]
     if (target_has_exe) {
       deps += [
-        "bindgen_test",
         "test_aliased_deps:test_aliased_deps_exe",
         "test_bin_crate",
         "test_rlib_crate:test_rlib_crate_associated_bin",
@@ -50,12 +49,16 @@ group("deps") {
         "test_rust_multiple_dep_versions_exe",
         "test_rust_shared_library",
         "test_simple_rust_exe",
-        "//third_party/rust/bindgen/v0_60:bindgen",
       ]
+      if (enable_rust_bindgen) {
+        deps += [
+          "bindgen_test",
+          "//third_party/rust/bindgen/v0_60:bindgen",
+        ]
+      }
     }
     if (can_build_rust_unit_tests) {
       deps += [
-        "bindgen_test:bindgen_test_lib_unittests",
         "test_aliased_deps:test_aliased_deps_unittests",
         "test_cpp_including_rust:test_cpp_including_rust_unittests",
         "test_rlib_crate:target1_test_rlib_crate_v0_2_unittests",
@@ -73,6 +76,9 @@ group("deps") {
         # `//build/rust/run_rs_bindings_from_cc.py`.
         #"test_rs_bindings_from_cc:test_rs_bindings_from_cc_unittests",
       ]
+      if (enable_rust_bindgen) {
+        deps += [ "bindgen_test:bindgen_test_lib_unittests" ]
+      }
 
       # TODO(crbug.com/1297592): The bot isolate does not end up including any
       # .so files so the tests fail:

@@ -2516,11 +2516,11 @@
     ],
 
     'debug_bot_rust_android_arm64_reclient': [
-      'debug_bot_reclient', 'enable_rust', 'android', 'arm64',
+      'debug_bot_reclient', 'enable_rust', 'enable_all_rust_features', 'android', 'arm64',
     ],
 
     'debug_bot_rust_desktop_x64_reclient': [
-      'debug_bot_reclient', 'enable_rust', 'x64',
+      'debug_bot_reclient', 'enable_rust', 'enable_all_rust_features', 'x64',
     ],
 
     'debug_bot_x86_reclient': [
@@ -3504,18 +3504,19 @@
     ],
 
     'release_rust_android_arm32_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'android', 'arm',
+      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'enable_all_rust_features', 'android', 'arm',
     ],
+
     'release_rust_android_arm64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'android', 'arm64',
+      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'enable_all_rust_features', 'android', 'arm64',
     ],
 
     'release_rust_desktop_x64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'x64',
+      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'enable_all_rust_features', 'x64',
     ],
 
     'release_rust_linux_x64_android_toolchain_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'use_android_rust_toolchain', 'x64',
+      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'enable_all_rust_features', 'use_android_rust_toolchain', 'x64',
     ],
 
     'release_trybot': [
@@ -4096,6 +4097,10 @@
     'dx12vk': {
       # TODO(https://crbug.com/1010584): Explicitly enable DirectX 12.
       'mixins': ['enable_vulkan'],
+    },
+
+    'enable_all_rust_features': {
+      'gn_args': 'enable_all_rust_features=true',
     },
 
     # Enables backup ref ptr by changing the default value of the feature flag.

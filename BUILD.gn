@@ -855,23 +855,28 @@ group("all_rust") {
   deps = [ ":rust_build_tests" ]
 
   if (toolchain_has_rust) {
-    deps += [
-      "//mojo/public/rust",
-      "//mojo/public/rust:mojo_rust_tests",
-
-      # TODO(crbug.com/1291994): Determine whether it makes sense to build/run
-      # this even on Android. If not, remove this and figure out how to run it
-      # only on desktop testers.
-      "//tools/crates/gnrt:gnrt_unittests",
-      "//tools/crates/gnrt($host_toolchain)",
-    ]
+    if (enable_rust_mojo) {
+      deps += [
+        "//mojo/public/rust",
+        "//mojo/public/rust:mojo_rust_tests",
+      ]
+    }
+    if (enable_rust_gnrt) {
+      deps += [
+        # TODO(crbug.com/1291994): Determine whether it makes sense to build/run
+        # this even on Android. If not, remove this and figure out how to run it
+        # only on desktop testers.
+        "//tools/crates/gnrt:gnrt_unittests",
+        "//tools/crates/gnrt($host_toolchain)",
+      ]
+    }
   }
-  if (enable_rust) {
+  if (enable_rust_gtest_interop) {
     deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
   }
 }
 
-# This group and the following exist to give targets for the waterfall to refer to.
+# This group exists to give targets for the waterfall to refer to.
 group("rust_build_tests") {
   testonly = true
   deps = [ "//build/rust/tests" ]

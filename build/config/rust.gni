@@ -17,13 +17,11 @@ declare_args() {
   # is false.
   enable_rust = false
 
-  # Individual Rust components.
-  #
-  # The base::JSONReader implementation.
-  enable_rust_json = true
-
-  # Support for chrome://crash-rust to check crash dump collection works.
-  enable_rust_crash = true
+  # As we incrementally enable Rust on mainstream builders, we want to enable
+  # the toolchain (by switching 'enable_rust' to true) while still disabling
+  # almost all Rust features). Yet we still want to have some builders with
+  # all Rust features enabled.
+  enable_all_rust_features = false
 
   # Use the Rust toolchain built in-tree. See //tools/rust. The toolchain comes
   # with a prebuilt stdlib for the host platform.
@@ -72,6 +70,29 @@ declare_args() {
   # it is the regular toolchain, but when that toolchain has sanitizers, then
   # this variable is changed to avoid them.
   host_toolchain_no_sanitizers = host_toolchain
+}
+
+declare_args() {
+  # Individual Rust components. A separate declare_args so it can depend
+  # on the previous args.
+  #
+  # The base::JSONReader implementation.
+  enable_rust_json = enable_all_rust_features
+
+  # Support for chrome://crash-rust to check crash dump collection works.
+  enable_rust_crash = enable_all_rust_features
+
+  # Build the Rust bindgen tool. This requires libclang
+  enable_rust_bindgen = enable_all_rust_features
+
+  # Support for Rust mojo bindings. Needs bindgen.
+  enable_rust_mojo = enable_all_rust_features
+
+  # Support for the 'gnrt' Rust tool
+  enable_rust_gnrt = enable_all_rust_features
+
+  # Rust gtest interop
+  enable_rust_gtest_interop = enable_all_rust_features
 }
 
 # Platform support for "official" toolchains (Android or Chromium)
