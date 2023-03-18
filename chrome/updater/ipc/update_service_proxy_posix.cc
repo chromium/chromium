@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -32,7 +33,6 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/posix_util.h"
-#include "chrome/updater/util/util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,10 +44,6 @@
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class TimeDelta;
-}
 
 namespace updater {
 namespace {
@@ -285,8 +281,9 @@ void UpdateServiceProxy::CheckForUpdate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   mojom::UpdateService::UpdateCallback state_change_observer_callback =
-      MakeStateChangeObserver(OnCurrentSequence(state_update),
-                              OnCurrentSequence(std::move(callback)));
+      MakeStateChangeObserver(
+          base::BindPostTaskToCurrentDefault(state_update),
+          base::BindPostTaskToCurrentDefault(std::move(callback)));
   remote_->CheckForUpdate(
       app_id, static_cast<mojom::UpdateService::Priority>(priority),
       static_cast<mojom::UpdateService::PolicySameVersionUpdate>(
@@ -305,8 +302,9 @@ void UpdateServiceProxy::Update(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   mojom::UpdateService::UpdateCallback state_change_observer_callback =
-      MakeStateChangeObserver(OnCurrentSequence(state_update),
-                              OnCurrentSequence(std::move(callback)));
+      MakeStateChangeObserver(
+          base::BindPostTaskToCurrentDefault(state_update),
+          base::BindPostTaskToCurrentDefault(std::move(callback)));
   remote_->Update(app_id, install_data_index,
                   static_cast<mojom::UpdateService::Priority>(priority),
                   static_cast<mojom::UpdateService::PolicySameVersionUpdate>(
@@ -321,8 +319,9 @@ void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   mojom::UpdateService::UpdateAllCallback state_change_observer_callback =
-      MakeStateChangeObserver(OnCurrentSequence(state_update),
-                              OnCurrentSequence(std::move(callback)));
+      MakeStateChangeObserver(
+          base::BindPostTaskToCurrentDefault(state_update),
+          base::BindPostTaskToCurrentDefault(std::move(callback)));
   remote_->UpdateAll(std::move(state_change_observer_callback));
 }
 
@@ -336,8 +335,9 @@ void UpdateServiceProxy::Install(const RegistrationRequest& registration,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   mojom::UpdateService::InstallCallback state_change_observer_callback =
-      MakeStateChangeObserver(OnCurrentSequence(state_update),
-                              OnCurrentSequence(std::move(callback)));
+      MakeStateChangeObserver(
+          base::BindPostTaskToCurrentDefault(state_update),
+          base::BindPostTaskToCurrentDefault(std::move(callback)));
   remote_->Install(MakeRegistrationRequest(registration), client_install_data,
                    install_data_index,
                    static_cast<mojom::UpdateService::Priority>(priority),
@@ -362,8 +362,9 @@ void UpdateServiceProxy::RunInstaller(const std::string& app_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   mojom::UpdateService::RunInstallerCallback state_change_observer_callback =
-      MakeStateChangeObserver(OnCurrentSequence(state_update),
-                              OnCurrentSequence(std::move(callback)));
+      MakeStateChangeObserver(
+          base::BindPostTaskToCurrentDefault(state_update),
+          base::BindPostTaskToCurrentDefault(std::move(callback)));
   remote_->RunInstaller(app_id, installer_path, install_args, install_data,
                         install_settings,
                         std::move(state_change_observer_callback));
@@ -423,7 +424,7 @@ void UpdateServiceProxy::EnsureConnecting() {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           &Connect, scope_, 0, base::Time::Now() + kConnectionTimeout,
-          OnCurrentSequence(base::BindOnce(
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
               &UpdateServiceProxy::OnConnected, weak_factory_.GetWeakPtr(),
               remote_.BindNewPipeAndPassReceiver()))));
 }

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
@@ -102,7 +103,7 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   remote_->Run(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      OnCurrentSequence(std::move(callback))));
+      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
@@ -110,7 +111,7 @@ void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
   remote_->Hello(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      OnCurrentSequence(std::move(callback))));
+      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 UpdateServiceInternalProxy::~UpdateServiceInternalProxy() = default;
@@ -124,7 +125,7 @@ void UpdateServiceInternalProxy::EnsureConnecting() {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&Connect, scope_, 0,
                      base::Time::Now() + kConnectionTimeout,
-                     OnCurrentSequence(base::BindOnce(
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &UpdateServiceInternalProxy::OnConnected, this,
                          remote_.BindNewPipeAndPassReceiver()))));
 }

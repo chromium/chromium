@@ -85,38 +85,4 @@ TEST(Util, GetTagArgsForCommandLine) {
             "%7B%22homepage%22%3A%22http%3A%2F%2Fwww.google.com%");
 }
 
-TEST(Util, OnCurrentSequence) {
-  base::test::TaskEnvironment task_environment;
-
-  // A `sequence_checker` member must be used instead of a variable because
-  // depending on the build configuration the macro could remove its argument.
-  class Tester : public base::RefCountedThreadSafe<Tester> {
-   public:
-   private:
-    friend class base::RefCountedThreadSafe<Tester>;
-    virtual ~Tester() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
-    SEQUENCE_CHECKER(sequence_checker_);
-  };
-
-  // The closure to exit the loop can be posted from any sequence.
-  base::RunLoop run_loop;
-  auto exit_run_loop =
-      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); });
-
-  // Creates a `Tester` instance and captures it in a closure bound to this task
-  // runner. When the reply arrives and runs on the main sequence, it results
-  // in posting two callbacks on the task runner: the first callback releases
-  // `tester`, then the second callback makes `run_loop` exit.
-  base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindLambdaForTesting([&exit_run_loop]() {
-        return OnCurrentSequence(
-            base::BindOnce([](scoped_refptr<Tester> /*tester*/) {},
-                           base::MakeRefCounted<Tester>())
-                .Then(exit_run_loop));
-      }),
-      base::BindLambdaForTesting(
-          [](base::OnceClosure callback) { std::move(callback).Run(); }));
-  run_loop.Run();
-}
-
 }  // namespace updater

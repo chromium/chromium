@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/updater/tag.h"
@@ -203,12 +202,6 @@ absl::optional<base::FilePath> WriteInstallerDataToTempFile(
 
 // Creates and starts a thread pool for this process.
 void InitializeThreadPool(const char* name);
-
-// Adapts `callback` so that the callback is posted on the current sequence.
-template <typename CallbackT>
-[[nodiscard]] CallbackT OnCurrentSequence(CallbackT callback) {
-  return base::BindPostTaskToCurrentDefault(std::move(callback));
-}
 
 // Returns whether the user currently running the program is the right user for
 // the scope. This can be useful to avoid installing system updaters that are
