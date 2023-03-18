@@ -1804,7 +1804,7 @@ void OmniboxViewViews::AppendDropFormats(
 
 DragOperation OmniboxViewViews::OnDrop(const ui::DropTargetEvent& event) {
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  PerformDrop(event, output_drag_op);
+  PerformDrop(event, output_drag_op, /*drag_image_layer_owner=*/nullptr);
   return output_drag_op;
 }
 
@@ -1889,8 +1889,10 @@ void OmniboxViewViews::PermitExternalProtocolHandler() {
   ExternalProtocolHandler::PermitLaunchUrl();
 }
 
-void OmniboxViewViews::PerformDrop(const ui::DropTargetEvent& event,
-                                   ui::mojom::DragOperation& output_drag_op) {
+void OmniboxViewViews::PerformDrop(
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   if (HasTextBeingDragged()) {
     output_drag_op = DragOperation::kNone;
     return;

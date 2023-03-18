@@ -32,6 +32,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/compositor/layer_tree_owner.h"
 
 namespace ui {
 class DropTargetEvent;
@@ -298,10 +299,12 @@ class CONTENT_EXPORT WebContentsViewAura
 
   // Performs drop if it's run. Otherwise, it exits the drag. Returned by
   // GetDropCallback.
-  void PerformDropOrExitDrag(base::ScopedClosureRunner exit_drag,
-                             DropMetadata drop_metadata,
-                             std::unique_ptr<ui::OSExchangeData> data,
-                             ui::mojom::DragOperation& output_drag_op);
+  void PerformDropOrExitDrag(
+      base::ScopedClosureRunner exit_drag,
+      DropMetadata drop_metadata,
+      std::unique_ptr<ui::OSExchangeData> data,
+      ui::mojom::DragOperation& output_drag_op,
+      std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // For unit testing, registers a callback for when a drop operation
   // completes.

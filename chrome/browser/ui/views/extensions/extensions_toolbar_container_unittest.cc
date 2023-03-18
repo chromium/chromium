@@ -85,7 +85,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest, ReorderPinnedExtensions) {
   extensions_container()->OnDragUpdated(drop_event);
   auto drop_cb = extensions_container()->GetDropCallback(drop_event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(drop_event, output_drag_op);
+  std::move(drop_cb).Run(drop_event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
   WaitForAnimation();
 
   // Verify the new order is C, A, B.
@@ -203,7 +204,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RunDropCallback) {
   extensions_container()->OnDragUpdated(drop_event);
   auto cb = extensions_container()->GetDropCallback(drop_event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(drop_event, output_drag_op);
+  std::move(cb).Run(drop_event, output_drag_op,
+                    /*drag_image_layer_owner=*/nullptr);
   WaitForAnimation();
 
   EXPECT_THAT(
@@ -302,7 +304,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   // The drop callback should be invalidated, and items should be back in their
   // original order.
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(drop_event, output_drag_op);
+  std::move(cb).Run(drop_event, output_drag_op,
+                    /*drag_image_layer_owner=*/nullptr);
   WaitForAnimation();
 
   EXPECT_THAT(
@@ -352,7 +355,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest, InvalidateDropCallbackOnPrefChange) {
   // The drop callback should be invalidated, and items should be back in their
   // original order.
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(drop_event, output_drag_op);
+  std::move(cb).Run(drop_event, output_drag_op,
+                    /*drag_image_layer_owner=*/nullptr);
   WaitForAnimation();
 
   EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre());

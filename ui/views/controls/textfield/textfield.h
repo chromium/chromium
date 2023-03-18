@@ -26,6 +26,7 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/font_list.h"
@@ -656,8 +657,10 @@ class VIEWS_EXPORT Textfield : public View,
   void OnEnabledChanged();
 
   // Drops the dragged text.
-  void DropDraggedText(const ui::DropTargetEvent& event,
-                       ui::mojom::DragOperation& output_drag_op);
+  void DropDraggedText(
+      const ui::DropTargetEvent& event,
+      ui::mojom::DragOperation& output_drag_op,
+      std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // Returns the corner radius of the text field.
   float GetCornerRadius();

@@ -13,6 +13,7 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -50,7 +51,8 @@ class TestDropTargetView : public views::View {
   gfx::Point drop_location_;
 
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op) {
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
     drop_location_ = event.location();
     output_drag_op = ui::mojom::DragOperation::kCopy;
   }
@@ -105,7 +107,8 @@ TEST_F(DropHelperTest, DropCoordinates) {
 
   // Perform the drop.
   ui::mojom::DragOperation output_op = ui::mojom::DragOperation::kNone;
-  std::move(callback).Run(std::move(data), output_op);
+  std::move(callback).Run(std::move(data), output_op,
+                          /*drag_image_layer_owner=*/nullptr);
 
   // The test view always executes a copy operation.
   EXPECT_EQ(output_op, ui::mojom::DragOperation::kCopy);

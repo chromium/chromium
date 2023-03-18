@@ -1199,14 +1199,6 @@ aura::client::DragDropDelegate::DropCallback NativeWidgetAura::GetDropCallback(
                                        last_drop_operation_);
 }
 
-aura::client::DragDropDelegate::DropCallbackWithAnimation
-NativeWidgetAura::GetDropCallbackWithAnimation(
-    const ui::DropTargetEvent& event) {
-  DCHECK(drop_helper_);
-  return drop_helper_->GetDropCallbackWithAnimation(
-      event.data(), event.location(), last_drop_operation_);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetAura, wm::TransientWindowObserver implementation:
 

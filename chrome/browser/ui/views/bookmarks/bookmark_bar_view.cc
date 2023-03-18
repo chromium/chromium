@@ -2050,12 +2050,14 @@ const BookmarkNode* BookmarkBarView::GetParentNodeAndIndexForDrop(
   return parent_node;
 }
 
-void BookmarkBarView::PerformDrop(const bookmarks::BookmarkNodeData data,
-                                  const BookmarkNode* parent_node,
-                                  const size_t index,
-                                  const bool copy,
-                                  const ui::DropTargetEvent& event,
-                                  ui::mojom::DragOperation& output_drag_op) {
+void BookmarkBarView::PerformDrop(
+    const bookmarks::BookmarkNodeData data,
+    const BookmarkNode* parent_node,
+    const size_t index,
+    const bool copy,
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   DCHECK(data.is_valid());
   DCHECK(parent_node);
   DCHECK_NE(index, static_cast<size_t>(-1));

@@ -620,8 +620,6 @@ void DragDropController::Drop(aura::Window* target,
 
   aura::client::DragDropDelegate::DropCallback delegate_drop_cb =
       base::NullCallback();
-  aura::client::DragDropDelegate::DropCallbackWithAnimation
-      delegate_drop_cb_animation = base::NullCallback();
 
   ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
                         event.root_location_f(), allowed_operations_);
@@ -633,7 +631,6 @@ void DragDropController::Drop(aura::Window* target,
   }
 
   if (delegate) {
-    delegate_drop_cb_animation = delegate->GetDropCallbackWithAnimation(e);
     delegate_drop_cb = delegate->GetDropCallback(e);
   }
 
@@ -649,11 +646,11 @@ void DragDropController::Drop(aura::Window* target,
 
   DropIfAllowed(
       drag_data_.get(), current_drag_info_,
-      base::BindOnce(
-          &DragDropController::PerformDrop, weak_factory_.GetWeakPtr(),
-          drop_location_in_screen, e, std::move(drag_data_),
-          std::move(delegate_drop_cb), std::move(delegate_drop_cb_animation),
-          std::move(tab_drag_drop_delegate_), std::move(drag_cancel)));
+      base::BindOnce(&DragDropController::PerformDrop,
+                     weak_factory_.GetWeakPtr(), drop_location_in_screen, e,
+                     std::move(drag_data_), std::move(delegate_drop_cb),
+                     std::move(tab_drag_drop_delegate_),
+                     std::move(drag_cancel)));
 
   Cleanup();
 
@@ -815,7 +812,6 @@ void DragDropController::PerformDrop(
     ui::DropTargetEvent event,
     std::unique_ptr<ui::OSExchangeData> drag_data,
     aura::client::DragDropDelegate::DropCallback drop_cb,
-    aura::client::DragDropDelegate::DropCallbackWithAnimation drop_cb_animation,
     std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
     base::ScopedClosureRunner cancel_drag_callback) {
   // Event copy constructor dooesn't copy the target. That's why we set it here.
@@ -824,12 +820,12 @@ void DragDropController::PerformDrop(
   ui::Event::DispatcherApi(&event).set_target(drag_window_);
 
   ui::OSExchangeData copied_data(drag_data->provider().Clone());
-  if (!!drop_cb_animation) {
-    std::move(drop_cb_animation)
-        .Run(std::move(drag_data), operation_,
-             ::wm::RecreateLayers(drag_image_widget_->GetNativeWindow()));
-  } else if (!!drop_cb) {
-    std::move(drop_cb).Run(std::move(drag_data), operation_);
+  if (!!drop_cb) {
+    std::move(drop_cb).Run(
+        std::move(drag_data), operation_,
+        drag_image_widget_
+            ? ::wm::RecreateLayers(drag_image_widget_->GetNativeWindow())
+            : nullptr);
   }
 
   if (operation_ == DragOperation::kNone && tab_drag_drop_delegate) {

@@ -162,7 +162,8 @@ class MockAshNotificationDragDropDelegate
 
  private:
   void PerformDrop(std::unique_ptr<ui::OSExchangeData> data,
-                   ui::mojom::DragOperation& output_drag_op) {
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
     if (data->HasHtml() || data->HasFile()) {
       output_drag_op = ui::mojom::DragOperation::kCopy;
       if (data->HasHtml()) {

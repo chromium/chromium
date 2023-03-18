@@ -235,7 +235,8 @@ class WMHelper : public chromeos::PowerManagerClient::Observer,
   void PerformDrop(
       std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
       std::unique_ptr<ui::OSExchangeData> data,
-      ui::mojom::DragOperation& output_drag_op);
+      ui::mojom::DragOperation& output_drag_op,
+      std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   base::ObserverList<ExoWindowObserver> exo_window_observers_;
 

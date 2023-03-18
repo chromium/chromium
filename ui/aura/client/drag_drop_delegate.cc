@@ -25,12 +25,6 @@ DragUpdateInfo& DragUpdateInfo::operator=(const DragUpdateInfo& update_info) =
 
 DEFINE_UI_CLASS_PROPERTY_KEY(DragDropDelegate*, kDragDropDelegateKey, nullptr)
 
-DragDropDelegate::DropCallbackWithAnimation
-DragDropDelegate::GetDropCallbackWithAnimation(
-    const ui::DropTargetEvent& event) {
-  return base::NullCallback();
-}
-
 void SetDragDropDelegate(Window* window, DragDropDelegate* delegate) {
   window->SetProperty(kDragDropDelegateKey, delegate);
 }

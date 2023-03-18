@@ -14,6 +14,7 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/compositor/layer_tree_owner.h"
 
 class BrowserRootViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -48,7 +49,8 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
   root_view->OnDragUpdated(event);
   auto drop_cb = root_view->GetDropCallback(event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
+  std::move(drop_cb).Run(event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
 
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
   EXPECT_EQ(tab_strip_model->count(), 2);
@@ -72,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, MAYBE_PlainString) {
   EXPECT_NE(ui::DragDropTypes::DRAG_NONE, root_view->OnDragUpdated(event));
   auto cb = root_view->GetDropCallback(event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(event, output_drag_op);
+  std::move(cb).Run(event, output_drag_op, /*drag_image_layer_owner=*/nullptr);
   EXPECT_NE(ui::mojom::DragOperation::kNone, output_drag_op);
 }
 

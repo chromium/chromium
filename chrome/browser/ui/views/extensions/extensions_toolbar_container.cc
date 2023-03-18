@@ -922,7 +922,8 @@ void ExtensionsToolbarContainer::MovePinnedAction(
     size_t index,
     base::ScopedClosureRunner cleanup,
     const ui::DropTargetEvent& event,
-    ui::mojom::DragOperation& output_drag_op) {
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   model_->MovePinnedAction(action_id, index);
 
   output_drag_op = DragOperation::kMove;

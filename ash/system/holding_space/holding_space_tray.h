@@ -24,6 +24,7 @@
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -179,7 +180,8 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // Pins the dropped files `unpinned_file_paths` to the tray.
   void PerformDrop(std::vector<base::FilePath> unpinned_file_paths,
                    const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op);
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
   std::unique_ptr<aura::client::DragDropClientObserver> drag_drop_observer_;

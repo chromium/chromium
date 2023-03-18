@@ -1694,7 +1694,8 @@ TEST_F(MenuControllerTest, AsynchronousPerformDrop) {
                                    ui::DragDropTypes::DRAG_MOVE);
   auto drop_cb = controller->GetDropCallback(source, target_event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(target_event, output_drag_op);
+  std::move(drop_cb).Run(target_event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
 
   TestMenuDelegate* menu_delegate =
       static_cast<TestMenuDelegate*>(target->GetDelegate());
@@ -1776,7 +1777,8 @@ TEST_F(MenuControllerTest, AsycDropCallback) {
   EXPECT_EQ(0, controller_delegate->on_menu_closed_called());
 
   ui::mojom::DragOperation output_drag_op;
-  std::move(drop_cb).Run(target_event, output_drag_op);
+  std::move(drop_cb).Run(target_event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
   EXPECT_TRUE(menu_delegate->is_drop_performed());
 }
 

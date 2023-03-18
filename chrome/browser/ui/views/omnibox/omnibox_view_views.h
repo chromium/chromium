@@ -26,6 +26,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -316,7 +317,8 @@ class OmniboxViewViews
 
   // Drops dragged text and updates `output_drag_op` accordingly.
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op);
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // Helper method to construct part of the context menu.
   void MaybeAddSendTabToSelfItem(ui::SimpleMenuModel* menu_contents);

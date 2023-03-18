@@ -449,13 +449,13 @@ void AppsGridView::ResetForShowApps() {
 void AppsGridView::EndDragCallback(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
-    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner) {
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
   output_drag_op = ui::mojom::DragOperation::kMove;
   if (drag_view_) {
     drag_view_->OnDragEnded();
   }
-  drag_image_layer_ = std::move(old_layer_owner);
+  drag_image_layer_ = std::move(drag_image_layer_owner);
 
   EndDrag(/*cancel=*/false);
 }
@@ -1194,8 +1194,8 @@ void AppsGridView::UpdateControlVisibility(AppListViewState app_list_state) {
              app_list_state == AppListViewState::kFullscreenSearch);
 }
 
-views::View::DropCallbackWithAnimation
-AppsGridView::GetDropCallbackWithAnimation(const ui::DropTargetEvent& event) {
+views::View::DropCallback AppsGridView::GetDropCallback(
+    const ui::DropTargetEvent& event) {
   return app_list_features::IsDragAndDropRefactorEnabled()
              ? base::BindOnce(&AppsGridView::EndDragCallback,
                               base::Unretained(this))

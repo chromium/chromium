@@ -21,6 +21,7 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -357,7 +358,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
                    const size_t index,
                    const bool copy,
                    const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op);
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   int GetDropLocationModelIndexForTesting() const;
 

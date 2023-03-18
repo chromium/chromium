@@ -17,6 +17,7 @@
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/dragdrop/drag_drop_types.h"
 #import "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/test/widget_test.h"
@@ -149,10 +150,12 @@ class DragDropView : public View {
 
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override {
-    return base::BindOnce([](const ui::DropTargetEvent& event,
-                             ui::mojom::DragOperation& output_drag_op) {
-      output_drag_op = DragOperation::kMove;
-    });
+    return base::BindOnce(
+        [](const ui::DropTargetEvent& event,
+           ui::mojom::DragOperation& output_drag_op,
+           std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+          output_drag_op = DragOperation::kMove;
+        });
   }
 
  private:
@@ -331,7 +334,8 @@ class DragDropCloseView : public DragDropView {
 
  private:
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op) {
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
     GetWidget()->CloseNow();
     output_drag_op = DragOperation::kMove;
   }

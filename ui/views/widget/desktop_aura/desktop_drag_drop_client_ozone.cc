@@ -105,7 +105,8 @@ void PerformDrop(aura::client::DragDropDelegate::DropCallback drop_cb,
                  base::ScopedClosureRunner drag_cancel) {
   if (drop_cb) {
     auto output_drag_op = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(std::move(data_to_drop), output_drag_op);
+    std::move(drop_cb).Run(std::move(data_to_drop), output_drag_op,
+                           /*drag_image_layer_owner=*/nullptr);
   }
 
   base::IgnoreResult(drag_cancel.Release());

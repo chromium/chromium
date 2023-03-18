@@ -104,7 +104,8 @@ DragOperation DropHelper::OnDrop(const OSExchangeData& data,
                                  gfx::PointF(view_location), drag_operation);
   auto output_drag_op = ui::mojom::DragOperation::kNone;
   auto drop_cb = drop_view->GetDropCallback(drop_event);
-  std::move(drop_cb).Run(drop_event, output_drag_op);
+  std::move(drop_cb).Run(drop_event, output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
   return output_drag_op;
 }
 
@@ -135,56 +136,13 @@ DropHelper::DropCallback DropHelper::GetDropCallback(
   return base::BindOnce(
       [](const ui::DropTargetEvent& drop_event, View::DropCallback drop_cb,
          std::unique_ptr<ui::OSExchangeData> data,
-         ui::mojom::DragOperation& output_drag_op) {
-        // Bind the drop_event here instead of using the one that the callback
-        // is invoked with as that event is in window coordinates and callbacks
-        // expect View coordinates.
-        std::move(drop_cb).Run(drop_event, output_drag_op);
-      },
-      drop_event, std::move(drop_view_cb));
-}
-
-DropHelper::DropCallbackWithAnimation DropHelper::GetDropCallbackWithAnimation(
-    const OSExchangeData& data,
-    const gfx::Point& root_view_location,
-    int drag_operation) {
-  View* drop_view = target_view_;
-  if (!drop_view) {
-    return base::NullCallback();
-  }
-
-  if (drag_operation == ui::DragDropTypes::DRAG_NONE) {
-    drop_view->OnDragExited();
-    return base::NullCallback();
-  }
-
-  gfx::Point view_location(root_view_location);
-  View* root_view = drop_view->GetWidget()->GetRootView();
-  View::ConvertPointToTarget(root_view, drop_view, &view_location);
-  ui::DropTargetEvent drop_event(data, gfx::PointF(view_location),
-                                 gfx::PointF(view_location), drag_operation);
-
-  auto drop_view_cb = drop_view->GetDropCallbackWithAnimation(drop_event);
-  if (!drop_view_cb) {
-    return base::NullCallback();
-  }
-
-  // Only reset the target view when the helper successfully returns a callback.
-  // If no callback is returned here, GetDropCallback might still need the
-  // target view.
-  deepest_view_ = target_view_ = nullptr;
-
-  return base::BindOnce(
-      [](const ui::DropTargetEvent& drop_event,
-         View::DropCallbackWithAnimation drop_cb,
-         std::unique_ptr<ui::OSExchangeData> data,
          ui::mojom::DragOperation& output_drag_op,
-         std::unique_ptr<ui::LayerTreeOwner> old_layer_owner) {
+         std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
         // Bind the drop_event here instead of using the one that the callback
         // is invoked with as that event is in window coordinates and callbacks
         // expect View coordinates.
         std::move(drop_cb).Run(drop_event, output_drag_op,
-                               std::move(old_layer_owner));
+                               std::move(drag_image_layer_owner));
       },
       drop_event, std::move(drop_view_cb));
 }

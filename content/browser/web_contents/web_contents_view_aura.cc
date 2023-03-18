@@ -1738,7 +1738,8 @@ void WebContentsViewAura::PerformDropOrExitDrag(
     base::ScopedClosureRunner exit_drag,
     DropMetadata drop_metadata,
     std::unique_ptr<ui::OSExchangeData> data,
-    ui::mojom::DragOperation& output_drag_op) {
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   web_contents_->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(
           web_contents_->GetRenderViewHost()->GetWidget()->GetView(),

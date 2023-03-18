@@ -43,6 +43,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -162,7 +163,8 @@ class DragTestView : public views::View {
   void OnDragDone() override { drag_done_received_ = true; }
 
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op) {
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
     num_drops_++;
     output_drag_op = DragOperation::kCopy;
   }
@@ -322,7 +324,8 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
 
  private:
   void PerformDrop(std::unique_ptr<ui::OSExchangeData> data,
-                   ui::mojom::DragOperation& output_drag_op) {
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
     EXPECT_EQ(State::kDragUpdateInvoked, state_);
 
     state_ = State::kPerformDropInvoked;

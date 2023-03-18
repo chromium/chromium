@@ -160,8 +160,10 @@ views::View::DropCallback HomeButton::GetDropCallback(
                         weak_ptr_factory_.GetWeakPtr());
 }
 
-void HomeButton::UpdateHomePage(const ui::DropTargetEvent& event,
-                                ui::mojom::DragOperation& output_drag_op) {
+void HomeButton::UpdateHomePage(
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   GURL new_homepage_url;
   std::u16string title;
   if (event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,

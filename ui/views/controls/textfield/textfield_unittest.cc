@@ -2017,7 +2017,7 @@ TEST_F(TextfieldTest, DragAndDrop_AcceptDrop) {
             textfield_->OnDragUpdated(drop));
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   auto cb = textfield_->GetDropCallback(drop);
-  std::move(cb).Run(drop, output_drag_op);
+  std::move(cb).Run(drop, output_drag_op, /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(ui::mojom::DragOperation::kCopy, output_drag_op);
   EXPECT_EQ(u"hello string world", textfield_->GetText());
 
@@ -2113,7 +2113,7 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheRight) {
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   auto cb = textfield_->GetDropCallback(drop_a);
-  std::move(cb).Run(drop_a, output_drag_op);
+  std::move(cb).Run(drop_a, output_drag_op, /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(ui::mojom::DragOperation::kMove, output_drag_op);
   EXPECT_EQ(u"h welloorld", textfield_->GetText());
   textfield_->OnDragDone();
@@ -2167,7 +2167,7 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheLeft) {
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   auto cb = textfield_->GetDropCallback(drop_a);
-  std::move(cb).Run(drop_a, output_drag_op);
+  std::move(cb).Run(drop_a, output_drag_op, /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(ui::mojom::DragOperation::kMove, output_drag_op);
   EXPECT_EQ(u"h worlellod", textfield_->GetText());
   textfield_->OnDragDone();
@@ -2223,7 +2223,7 @@ TEST_F(TextfieldTest, DropCallbackCancelled) {
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   auto cb = textfield_->GetDropCallback(drop_a);
   textfield_->AppendText(u"new text");
-  std::move(cb).Run(drop_a, output_drag_op);
+  std::move(cb).Run(drop_a, output_drag_op, /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(ui::mojom::DragOperation::kNone, output_drag_op);
   EXPECT_EQ(u"hello worldnew text", textfield_->GetText());
 }

@@ -178,8 +178,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  DropCallbackWithAnimation GetDropCallbackWithAnimation(
-      const ui::DropTargetEvent& event) override;
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
 
   // Updates the visibility of app list items according to |app_list_state|.
   void UpdateControlVisibility(AppListViewState app_list_state);
@@ -938,9 +937,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   void OnIdealBoundsAnimationDone();
 
   // Callback method to clean up the dragging state of the app list.
-  void EndDragCallback(const ui::DropTargetEvent& event,
-                       ui::mojom::DragOperation& output_drag_op,
-                       std::unique_ptr<ui::LayerTreeOwner> old_layer_owner);
+  void EndDragCallback(
+      const ui::DropTargetEvent& event,
+      ui::mojom::DragOperation& output_drag_op,
+      std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   class ScopedModelUpdate;
 

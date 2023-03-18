@@ -13,6 +13,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -90,7 +91,8 @@ class TestTargetView : public views::View {
 
   // Performs the drop operation and updates |output_drag_op| accordingly.
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op);
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // Whether or not we are currently dragging.
   bool dragging_ = false;
@@ -147,8 +149,10 @@ void TestTargetView::OnDragExited() {
   dragging_ = false;
 }
 
-void TestTargetView::PerformDrop(const ui::DropTargetEvent& event,
-                                 ui::mojom::DragOperation& output_drag_op) {
+void TestTargetView::PerformDrop(
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   dropped_ = true;
   output_drag_op = DragOperation::kMove;
 }
@@ -206,7 +210,8 @@ class MenuViewDragAndDropTest : public MenuTestBase,
 
   // Performs the drop operation and updates |output_drag_op| accordingly.
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op);
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // The special view in the menu, which supports its own drag and drop.
   raw_ptr<TestTargetView> target_view_ = nullptr;
@@ -321,7 +326,8 @@ bool MenuViewDragAndDropTest::ShouldCloseOnDragComplete() {
 
 void MenuViewDragAndDropTest::PerformDrop(
     const ui::DropTargetEvent& event,
-    ui::mojom::DragOperation& output_drag_op) {
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   performed_in_menu_drop_ = true;
   output_drag_op = DragOperation::kMove;
 }

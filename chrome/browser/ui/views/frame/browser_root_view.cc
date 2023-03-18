@@ -47,6 +47,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
@@ -458,7 +459,8 @@ bool BrowserRootView::GetPasteAndGoURL(const ui::OSExchangeData& data,
 void BrowserRootView::NavigateToDropUrl(
     std::unique_ptr<DropInfo> drop_info,
     const ui::DropTargetEvent& event,
-    ui::mojom::DragOperation& output_drag_op) {
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   DCHECK(drop_info);
 
   Browser* const browser = browser_view_->browser();

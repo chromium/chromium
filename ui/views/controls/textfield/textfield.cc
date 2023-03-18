@@ -40,6 +40,7 @@
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -2796,8 +2797,10 @@ void Textfield::OnEnabledChanged() {
     GetInputMethod()->OnTextInputTypeChanged(this);
 }
 
-void Textfield::DropDraggedText(const ui::DropTargetEvent& event,
-                                ui::mojom::DragOperation& output_drag_op) {
+void Textfield::DropDraggedText(
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   DCHECK(CanDrop(event.data()));
 
   gfx::RenderText* render_text = GetRenderText();

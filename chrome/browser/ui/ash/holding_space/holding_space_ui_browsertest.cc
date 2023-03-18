@@ -65,6 +65,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
@@ -443,7 +444,8 @@ class DropTargetView : public views::WidgetDelegateView {
   }
 
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op) {
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
     EXPECT_TRUE(event.data().GetFilename(&copied_file_path_));
     output_drag_op = ui::mojom::DragOperation::kCopy;
   }

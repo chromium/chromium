@@ -166,8 +166,6 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
                    ui::DropTargetEvent event,
                    std::unique_ptr<ui::OSExchangeData> drag_data,
                    aura::client::DragDropDelegate::DropCallback drop_cb,
-                   aura::client::DragDropDelegate::DropCallbackWithAnimation
-                       drop_cb_animation,
                    std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
                    base::ScopedClosureRunner cancel_drag_callback);
 

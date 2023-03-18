@@ -29,6 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
@@ -212,7 +213,8 @@ views::View::DropCallback SavedTabGroupBar::GetDropCallback(
     const ui::DropTargetEvent& event) {
   return base::BindOnce(
       [](SavedTabGroupBar* bar, const ui::DropTargetEvent& event,
-         ui::mojom::DragOperation& drag) {
+         ui::mojom::DragOperation& drag,
+         std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
         bar->HandleDrop();
         drag = ui::mojom::DragOperation::kMove;
       },

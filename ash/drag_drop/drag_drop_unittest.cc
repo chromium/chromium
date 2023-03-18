@@ -18,6 +18,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/test/ui_controls_aura.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -53,7 +54,8 @@ class TargetView : public views::View {
 
  private:
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op) {
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
     dropped_ = true;
     output_drag_op = ui::mojom::DragOperation::kMove;
   }

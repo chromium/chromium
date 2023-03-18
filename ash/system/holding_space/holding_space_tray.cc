@@ -441,7 +441,8 @@ views::View::DropCallback HoldingSpaceTray::GetDropCallback(
 void HoldingSpaceTray::PerformDrop(
     std::vector<base::FilePath> unpinned_file_paths,
     const ui::DropTargetEvent& event,
-    ui::mojom::DragOperation& output_drag_op) {
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   DCHECK(!unpinned_file_paths.empty());
 
   holding_space_metrics::RecordPodAction(

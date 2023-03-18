@@ -5,11 +5,13 @@
 #ifndef UI_VIEWS_TEST_MENU_TEST_UTILS_H_
 #define UI_VIEWS_TEST_MENU_TEST_UTILS_H_
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/view.h"
@@ -63,7 +65,8 @@ class TestMenuDelegate : public MenuDelegate {
  private:
   // Performs the drop operation and updates |output_drag_op| accordingly.
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op);
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // The number of times ShowContextMenu was called.
   int show_context_menu_count_ = 0;

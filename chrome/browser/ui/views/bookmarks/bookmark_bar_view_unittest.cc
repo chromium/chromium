@@ -45,6 +45,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -441,7 +442,8 @@ TEST_F(BookmarkBarViewTest, DropCallbackTest) {
   EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
 
   ui::mojom::DragOperation output_drag_op;
-  std::move(cb).Run(target_event, output_drag_op);
+  std::move(cb).Run(target_event, output_drag_op,
+                    /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ("z a b c d e f", GetStringForVisibleButtons());
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
 }
@@ -486,7 +488,8 @@ TEST_F(BookmarkBarViewTest, DropCallback_InvalidatePtrTest) {
   EXPECT_EQ(6u, test_helper_->GetBookmarkButtonCount());
 
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(target_event, output_drag_op);
+  std::move(cb).Run(target_event, output_drag_op,
+                    /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kNone);
 }

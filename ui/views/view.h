@@ -292,14 +292,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // TODO(crbug.com/1289902): The |event| parameter is being removed. Do not add
   // new callers.
-  using DropCallback =
-      base::OnceCallback<void(const ui::DropTargetEvent& event,
-                              ui::mojom::DragOperation& output_drag_op)>;
-
-  using DropCallbackWithAnimation = base::OnceCallback<void(
+  using DropCallback = base::OnceCallback<void(
       const ui::DropTargetEvent& event,
       ui::mojom::DragOperation& output_drag_op,
-      std::unique_ptr<ui::LayerTreeOwner> old_layer_owner)>;
+      std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner)>;
 
   METADATA_HEADER_BASE(View);
 
@@ -1429,12 +1425,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // DataTransferPolicyController. When calling, ensure that the |event|
   // uses View local coordinates.
   virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event);
-
-  // Invoked during a drag and drop session when the user release the mouse.
-  // Similar to GetDropCallback() but the returned callback has access to the
-  // drag image layer if any animation is needed.
-  virtual DropCallbackWithAnimation GetDropCallbackWithAnimation(
-      const ui::DropTargetEvent& event);
 
   // Returns true if the mouse was dragged enough to start a drag operation.
   // delta_x and y are the distance the mouse was dragged.

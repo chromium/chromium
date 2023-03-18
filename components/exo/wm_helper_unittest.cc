@@ -115,14 +115,14 @@ TEST_F(WMHelperTest, MultipleDragDropObservers) {
                                    gfx::PointF(), ui::DragDropTypes::DRAG_NONE);
   auto drop_cb = wm_helper_chromeos->GetDropCallback(target_event);
   DragOperation output_drop_op = DragOperation::kNone;
-  std::move(drop_cb).Run(std::make_unique<ui::OSExchangeData>(),
-                         output_drop_op);
+  std::move(drop_cb).Run(std::make_unique<ui::OSExchangeData>(), output_drop_op,
+                         /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(output_drop_op, DragOperation::kNone);
 
   wm_helper_chromeos->AddDragDropObserver(&observer_copy_drop);
   drop_cb = wm_helper_chromeos->GetDropCallback(target_event);
-  std::move(drop_cb).Run(std::make_unique<ui::OSExchangeData>(),
-                         output_drop_op);
+  std::move(drop_cb).Run(std::make_unique<ui::OSExchangeData>(), output_drop_op,
+                         /*drag_image_layer_owner=*/nullptr);
   EXPECT_NE(output_drop_op, DragOperation::kNone);
 
   wm_helper_chromeos->RemoveDragDropObserver(&observer_no_drop);

@@ -131,9 +131,11 @@ class BrowserRootView : public views::internal::RootView {
   bool GetPasteAndGoURL(const ui::OSExchangeData& data, GURL* url);
 
   // Navigates to the dropped URL.
-  void NavigateToDropUrl(std::unique_ptr<DropInfo> drop_info,
-                         const ui::DropTargetEvent& event,
-                         ui::mojom::DragOperation& output_drag_op);
+  void NavigateToDropUrl(
+      std::unique_ptr<DropInfo> drop_info,
+      const ui::DropTargetEvent& event,
+      ui::mojom::DragOperation& output_drag_op,
+      std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // The BrowserView.
   raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;

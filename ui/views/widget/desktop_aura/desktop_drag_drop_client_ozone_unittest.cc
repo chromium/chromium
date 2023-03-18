@@ -222,7 +222,8 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
   }
 
   void PerformDrop(std::unique_ptr<ui::OSExchangeData> data,
-                   ui::mojom::DragOperation& output_drag_op) {
+                   ui::mojom::DragOperation& output_drag_op,
+                   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
     ++num_drops_;
     received_data_ = std::move(data);
     output_drag_op = destination_operation_;

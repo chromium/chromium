@@ -379,7 +379,8 @@ void WMHelper::RemoveExoWindowObserver(ExoWindowObserver* observer) {
 void WMHelper::PerformDrop(
     std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
     std::unique_ptr<ui::OSExchangeData> data,
-    ui::mojom::DragOperation& output_drag_op) {
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   for (auto& drop_cb : drop_callbacks) {
     auto operation = ui::mojom::DragOperation::kNone;
     std::move(drop_cb).Run(operation);

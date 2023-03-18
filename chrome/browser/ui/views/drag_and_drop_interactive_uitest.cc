@@ -65,6 +65,7 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -197,7 +198,8 @@ class DragAndDropSimulator {
     // (DragDropDelegate) doesn't return NullCallback.
     DCHECK(drop_cb);
     ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(std::move(os_exchange_data_), output_drag_op);
+    std::move(drop_cb).Run(std::move(os_exchange_data_), output_drag_op,
+                           /*drag_image_layer_owner=*/nullptr);
     return true;
   }
 
@@ -221,7 +223,8 @@ class DragAndDropSimulator {
     delegate->OnDragUpdated(*active_drag_event_);
     auto drop_cb = delegate->GetDropCallback(*active_drag_event_);
     ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(std::move(os_exchange_data_), output_drag_op);
+    std::move(drop_cb).Run(std::move(os_exchange_data_), output_drag_op,
+                           /*drag_image_layer_owner=*/nullptr);
     return true;
   }
 

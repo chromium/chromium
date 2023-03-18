@@ -374,7 +374,8 @@ views::View::DropCallback BookmarkMenuDelegate::GetDropCallback(
   return base::BindOnce(
       [](BookmarkModelDropObserver* drop_observer,
          const ui::DropTargetEvent& event,
-         ui::mojom::DragOperation& output_drag_op) {
+         ui::mojom::DragOperation& output_drag_op,
+         std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
         drop_observer->Drop(event, output_drag_op);
       },
       base::Owned(std::move(drop_observer)));

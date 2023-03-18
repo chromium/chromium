@@ -1484,12 +1484,14 @@ void DesktopNativeWidgetAura::RootWindowDestroyed() {
 void DesktopNativeWidgetAura::PerformDrop(
     views::DropHelper::DropCallback drop_cb,
     std::unique_ptr<ui::OSExchangeData> data,
-    ui::mojom::DragOperation& output_drag_op) {
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   if (ShouldActivate())
     Activate();
 
   if (drop_cb)
-    std::move(drop_cb).Run(std::move(data), output_drag_op);
+    std::move(drop_cb).Run(std::move(data), output_drag_op,
+                           std::move(drag_image_layer_owner));
 }
 
 }  // namespace views
