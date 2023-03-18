@@ -153,7 +153,7 @@
 <translation id="1923956950274750765">Medium Orchid</translation>
 <translation id="1928932365747995741">Tidak ada kolom teks yang dapat diedit sebelumnya</translation>
 <translation id="1964135212174907577">Objek Berikutnya</translation>
-<translation id="1966649499058910679">Soroti setiap kata saat kata tersebut diucapkan</translation>
+<translation id="1966649499058910679">Tandai setiap kata saat kata tersebut diucapkan</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1988733631391393183">Tampilkan perintah braille di menu ChromeVox</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{kurung siku buka}other{# kurung siku buka}}</translation>
@@ -1008,7 +1008,7 @@
 <translation id="7882421473871500483">Cokelat</translation>
 <translation id="78826985582142166">sldr</translation>
 <translation id="7913106023953875143">Tidak ada judul level 2 berikutnya</translation>
-<translation id="7914870167134465181">Menyoroti</translation>
+<translation id="7914870167134465181">Penandaan</translation>
 <translation id="7927711904086083099">Tidak dipilih</translation>
 <translation id="7935627501098484003">Kontrol waktu</translation>
 <translation id="7939428177581522200">ditambahkan ke pilihan</translation>
