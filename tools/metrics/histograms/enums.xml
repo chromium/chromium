@@ -50328,6 +50328,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10"
       label="kUnknownFailure: The operation is failed because of unknow
              error."/>
+  <int value="11"
+      label="kAlreadyFulfilled: The hotspot's current state is the same as
+             the enable/disable operation requested."/>
 </enum>
 
 <enum name="HotspotSupport">

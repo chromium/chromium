@@ -57,7 +57,7 @@ class HotspotMetricsHelperTest : public testing::Test {
                               technology_state_controller_.get());
     hotspot_configuration_handler_ =
         std::make_unique<HotspotConfigurationHandler>();
-    hotspot_configuration_handler_->Init();
+    hotspot_configuration_handler_->Init(hotspot_controller_.get());
     hotspot_metrics_helper_ = std::make_unique<HotspotMetricsHelper>();
     hotspot_metrics_helper_->Init(
         hotspot_capabilities_provider_.get(), hotspot_state_handler_.get(),
@@ -68,6 +68,7 @@ class HotspotMetricsHelperTest : public testing::Test {
   }
 
   void PrepareEnableHotspotForTesting() {
+    SetHotspotStateInShill(shill::kTetheringStateIdle);
     SetHotspotAllowStatus(hotspot_config::mojom::HotspotAllowStatus::kAllowed);
     network_state_test_helper_.manager_test()
         ->SetSimulateCheckTetheringReadinessResult(
@@ -81,6 +82,14 @@ class HotspotMetricsHelperTest : public testing::Test {
   void SetHotspotAllowStatus(
       hotspot_config::mojom::HotspotAllowStatus allow_status) {
     hotspot_capabilities_provider_->SetHotspotAllowStatus(allow_status);
+  }
+
+  void SetHotspotStateInShill(const std::string& hotspot_state) {
+    base::Value::Dict status_dict;
+    status_dict.Set(shill::kTetheringStatusStateProperty, hotspot_state);
+    network_state_test_helper_.manager_test()->SetManagerProperty(
+        shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));
+    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
@@ -186,12 +195,14 @@ TEST_F(HotspotMetricsHelperTest, HotspotUsageDurationHistogram) {
   base::RunLoop().RunUntilIdle();
   task_environment_.FastForwardBy(kHotspotUsageTime);
 
+  SetHotspotStateInShill(shill::kTetheringStateActive);
   hotspot_controller_->DisableHotspot(
       base::DoNothing(), hotspot_config::mojom::DisableReason::kUserInitiated);
   base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectTimeBucketCount(
       HotspotMetricsHelper::kHotspotUsageDuration, kHotspotUsageTime, 1);
 
+  SetHotspotStateInShill(shill::kTetheringStateIdle);
   // Verifies that the usage duration is logged if hotspot is torn down by
   // internal error.
   hotspot_controller_->EnableHotspot(base::DoNothing());
@@ -239,6 +250,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotMaxClientCountHistogram) {
       HotspotMetricsHelper::kHotspotMaxClientCount,
       /*sample=*/1, /*expected_count=*/1);
 
+  SetHotspotStateInShill(shill::kTetheringStateIdle);
   // Verifies that the max client count is logged if hotspot is torn down by
   // internal error.
   hotspot_controller_->EnableHotspot(base::DoNothing());

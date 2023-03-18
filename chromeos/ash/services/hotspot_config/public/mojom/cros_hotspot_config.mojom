@@ -92,8 +92,10 @@ enum HotspotControlResult {
   kWifiDriverFailure,
   // Cellular attach failure.
   kCellularAttachFailure,
-  // Failed due to Shill operation error,
+  // Failed due to Shill operation error.
   kShillOperationFailed,
+  // The hotspot's current state is the same as the state requested.
+  kAlreadyFulfilled,
   kUnknownFailure,
 };
 
@@ -115,6 +117,8 @@ enum DisableReason {
   kUpstreamNetworkNotAvailable,
   // Disabled because the device has been suspended.
   kSuspended,
+  // Disabled because hotspot need to be restarted.
+  kRestart,
 };
 
 // Information about Hotspot feature including current state, active client

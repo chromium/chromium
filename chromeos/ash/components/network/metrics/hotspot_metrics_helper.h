@@ -164,7 +164,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     kCellularAttachFailure = 8,
     kShillOperationFailure = 9,
     kUnknownFailure = 10,
-    kMaxValue = kUnknownFailure,
+    kAlreadyFulfilled = 11,
+    kMaxValue = kAlreadyFulfilled,
   };
 
   // Represents the upstream status when hotspot is enabled. These values are

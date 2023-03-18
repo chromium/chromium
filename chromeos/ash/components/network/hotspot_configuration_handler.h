@@ -17,6 +17,8 @@
 
 namespace ash {
 
+class HotspotController;
+
 // This class caches hotspot configurations and implements methods to get and
 // update the hotspot configurations.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotConfigurationHandler
@@ -37,7 +39,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotConfigurationHandler
       delete;
   ~HotspotConfigurationHandler() override;
 
-  void Init();
+  void Init(HotspotController* hotspot_controller);
 
   // Return the current hotspot configuration
   hotspot_config::mojom::HotspotConfigPtr GetHotspotConfig() const;
@@ -74,7 +76,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotConfigurationHandler
       absl::optional<base::Value::Dict> manager_properties);
 
   // Callback when the SetHotspotConfig operation succeeded.
-  void OnSetHotspotConfigSuccess(SetHotspotConfigCallback callback);
+  void OnSetHotspotConfigSuccess(bool restart_hotspot,
+                                 SetHotspotConfigCallback callback);
 
   // Callback when the SetHotspotConfig operation failed.
   void OnSetHotspotConfigFailure(SetHotspotConfigCallback callback,
@@ -82,6 +85,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotConfigurationHandler
                                  const std::string& error_message);
 
   absl::optional<base::Value::Dict> hotspot_config_;
+
+  HotspotController* hotspot_controller_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotConfigurationHandler> weak_ptr_factory_{this};

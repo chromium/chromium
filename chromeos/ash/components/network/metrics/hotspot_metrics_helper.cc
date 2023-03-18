@@ -133,6 +133,8 @@ HotspotMetricsHelper::GetSetEnabledMetricsResult(
       return HotspotMetricsSetEnabledResult::kCellularAttachFailure;
     case HotspotControlResult::kShillOperationFailed:
       return HotspotMetricsSetEnabledResult::kShillOperationFailure;
+    case HotspotControlResult::kAlreadyFulfilled:
+      return HotspotMetricsSetEnabledResult::kAlreadyFulfilled;
     default:
       return HotspotMetricsSetEnabledResult::kUnknownFailure;
   }

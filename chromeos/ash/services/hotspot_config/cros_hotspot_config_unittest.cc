@@ -300,6 +300,7 @@ TEST_F(CrosHotspotConfigTest, EnableHotspot) {
 
 TEST_F(CrosHotspotConfigTest, DisableHotspot) {
   SetupObserver();
+  SetHotspotStateInShill(shill::kTetheringStateActive);
   helper()->manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   base::RunLoop().RunUntilIdle();
