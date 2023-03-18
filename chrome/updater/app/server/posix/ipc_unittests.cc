@@ -451,22 +451,22 @@ class FakeUpdateServiceInternal : public UpdateServiceInternal {
   enum class FuncTag { Run, Hello };
 
   explicit FakeUpdateServiceInternal(
-      const base::RepeatingCallback<void(FuncTag)>& on_rpc_callback)
-      : on_rpc_callback_(on_rpc_callback) {}
+      const base::RepeatingCallback<void(FuncTag)>& on_ipc_callback)
+      : on_ipc_callback_(on_ipc_callback) {}
 
   // Overrides for UpdateServiceInternal
   void Run(base::OnceClosure callback) override {
-    on_rpc_callback_.Run(FuncTag::Run);
+    on_ipc_callback_.Run(FuncTag::Run);
     std::move(callback).Run();
   }
 
   void Hello(base::OnceClosure callback) override {
-    on_rpc_callback_.Run(FuncTag::Hello);
+    on_ipc_callback_.Run(FuncTag::Hello);
     std::move(callback).Run();
   }
 
  private:
-  base::RepeatingCallback<void(FuncTag)> on_rpc_callback_;
+  base::RepeatingCallback<void(FuncTag)> on_ipc_callback_;
   ~FakeUpdateServiceInternal() override = default;
 };
 
@@ -475,16 +475,16 @@ class UpdaterIPCInternalTestCase : public UpdaterIPCTestCase {
   static constexpr char kClientProcessName[] = "UpdateServiceInternalClient";
 };
 
-TEST_F(UpdaterIPCInternalTestCase, AllRpcsComplete) {
+TEST_F(UpdaterIPCInternalTestCase, AllIpcsComplete) {
   base::MockCallback<
       base::RepeatingCallback<void(FakeUpdateServiceInternal::FuncTag)>>
-      on_rpc_callback;
-  // The RPC calls should be received and processed in order.
-  EXPECT_CALL(on_rpc_callback, Run(FakeUpdateServiceInternal::FuncTag::Run));
-  EXPECT_CALL(on_rpc_callback, Run(FakeUpdateServiceInternal::FuncTag::Hello));
+      on_ipc_callback;
+  // The Ipc calls should be received and processed in order.
+  EXPECT_CALL(on_ipc_callback, Run(FakeUpdateServiceInternal::FuncTag::Run));
+  EXPECT_CALL(on_ipc_callback, Run(FakeUpdateServiceInternal::FuncTag::Hello));
 
   auto service_stub = std::make_unique<UpdateServiceInternalStub>(
-      base::MakeRefCounted<FakeUpdateServiceInternal>(on_rpc_callback.Get()),
+      base::MakeRefCounted<FakeUpdateServiceInternal>(on_ipc_callback.Get()),
       UpdaterScope::kUser, base::DoNothing(), base::DoNothing());
 
   base::Process child_process = base::SpawnMultiProcessTestChild(
