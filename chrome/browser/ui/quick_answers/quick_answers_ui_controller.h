@@ -20,6 +20,7 @@ class QuickAnswersView;
 class QuickAnswersControllerImpl;
 
 namespace quick_answers {
+class RichAnswersView;
 class UserConsentView;
 struct QuickAnswer;
 }  // namespace quick_answers
@@ -103,8 +104,9 @@ class QuickAnswersUiController {
     return static_cast<quick_answers::UserConsentView*>(
         user_consent_view_tracker_.view());
   }
-  RichAnswersView* rich_answers_view() {
-    return static_cast<RichAnswersView*>(rich_answers_view_tracker_.view());
+  quick_answers::RichAnswersView* rich_answers_view() {
+    return static_cast<quick_answers::RichAnswersView*>(
+        rich_answers_view_tracker_.view());
   }
 
  private:

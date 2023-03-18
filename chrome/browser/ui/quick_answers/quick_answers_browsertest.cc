@@ -10,19 +10,23 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_browsertest_base.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -188,6 +192,61 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
   // TODO(b/239716419): Quick answers UI should be above the notification.
   EXPECT_TRUE(message_popup_widget->IsStackedAbove(
       user_consent_view_widget->GetNativeView()));
+}
+
+class RichAnswersBrowserTest : public QuickAnswersBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    QuickAnswersBrowserTestBase::SetUpOnMainThread();
+    SetQuickAnswersEnabled(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      chromeos::features::kQuickAnswersRichCard};
+};
+
+IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
+                       RichAnswersDismissedOnOutOfBoundsClick) {
+  std::unique_ptr<ui::test::EventGenerator> event_generator_ =
+      std::make_unique<ui::test::EventGenerator>(
+          ash::Shell::GetPrimaryRootWindow());
+
+  views::NamedWidgetShownWaiter quick_answers_view_widget_waiter(
+      views::test::AnyWidgetTestPasskey(), QuickAnswersView::kWidgetName);
+
+  ShowMenuParams params;
+  params.selected_text = kTestQuery;
+  params.x = kCursorXToOverlapWithANotification;
+  params.y = kCursorYToOverlapWithANotification;
+  ShowMenu(params);
+
+  views::Widget* quick_answers_view_widget =
+      quick_answers_view_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(quick_answers_view_widget != nullptr);
+
+  // Click on the quick answers view to trigger the rich answers view.
+  views::NamedWidgetShownWaiter rich_answers_view_widget_waiter(
+      views::test::AnyWidgetTestPasskey(), RichAnswersView::kWidgetName);
+  event_generator_->MoveMouseTo(
+      quick_answers_view_widget->GetWindowBoundsInScreen().CenterPoint());
+  event_generator_->ClickLeftButton();
+
+  // Check that the quick answers view closes and the rich answers view pops up.
+  views::Widget* rich_answers_view_widget =
+      rich_answers_view_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(quick_answers_view_widget->IsClosed());
+  ASSERT_TRUE(rich_answers_view_widget != nullptr);
+
+  // Click outside the rich answers view window bounds to dismiss it.
+  gfx::Rect rich_answers_bounds =
+      rich_answers_view_widget->GetWindowBoundsInScreen();
+  event_generator_->MoveMouseTo(
+      gfx::Point(rich_answers_bounds.x() / 2, rich_answers_bounds.y() / 2));
+  event_generator_->ClickLeftButton();
+
+  // Check that the rich answers view is dismissed.
+  ASSERT_TRUE(rich_answers_view_widget->IsClosed());
 }
 
 }  // namespace quick_answers

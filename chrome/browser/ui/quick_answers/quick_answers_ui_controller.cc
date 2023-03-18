@@ -103,9 +103,9 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
   if (chromeos::features::IsQuickAnswersRichCardEnabled()) {
-    auto* const rich_answers_view =
-        new RichAnswersView(quick_answers_view_tracker_.view()->bounds(),
-                            weak_factory_.GetWeakPtr());
+    auto* const rich_answers_view = new quick_answers::RichAnswersView(
+        quick_answers_view_tracker_.view()->bounds(),
+        weak_factory_.GetWeakPtr());
     rich_answers_view_tracker_.SetView(rich_answers_view);
     rich_answers_view->GetWidget()->ShowInactive();
 

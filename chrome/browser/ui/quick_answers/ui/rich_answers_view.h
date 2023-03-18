@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -20,9 +21,14 @@ class ImageButton;
 
 class QuickAnswersUiController;
 
+namespace quick_answers {
+class RichAnswersPreTargetHandler;
+
 // A bubble style view to show QuickAnswer.
 class RichAnswersView : public views::View {
  public:
+  static constexpr char kWidgetName[] = "RichAnswersViewWidget";
+
   RichAnswersView(const gfx::Rect& anchor_view_bounds,
                   base::WeakPtr<QuickAnswersUiController> controller);
 
@@ -55,8 +61,12 @@ class RichAnswersView : public views::View {
   raw_ptr<views::View> base_view_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
 
+  std::unique_ptr<quick_answers::RichAnswersPreTargetHandler>
+      rich_answers_view_handler_;
   std::unique_ptr<QuickAnswersFocusSearch> focus_search_;
   base::WeakPtrFactory<RichAnswersView> weak_factory_{this};
 };
+
+}  // namespace quick_answers
 
 #endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_

@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
-#include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -42,6 +42,8 @@ constexpr int kBorderCornerRadius = 12;
 
 }  // namespace
 
+namespace quick_answers {
+
 // RichAnswersView -----------------------------------------------------------
 
 RichAnswersView::RichAnswersView(
@@ -49,6 +51,8 @@ RichAnswersView::RichAnswersView(
     base::WeakPtr<QuickAnswersUiController> controller)
     : anchor_view_bounds_(anchor_view_bounds),
       controller_(std::move(controller)),
+      rich_answers_view_handler_(
+          std::make_unique<quick_answers::RichAnswersPreTargetHandler>(this)),
       focus_search_(std::make_unique<QuickAnswersFocusSearch>(
           this,
           base::BindRepeating(&RichAnswersView::GetFocusableViews,
@@ -133,6 +137,7 @@ void RichAnswersView::InitWidget() {
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.corner_radius = kBorderCornerRadius;
+  params.name = kWidgetName;
 
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
@@ -188,3 +193,5 @@ std::vector<views::View*> RichAnswersView::GetFocusableViews() {
 
   return focusable_views;
 }
+
+}  // namespace quick_answers
