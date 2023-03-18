@@ -20,7 +20,7 @@ class CORE_EXPORT NavigationTransition final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  NavigationTransition(ScriptState*,
+  NavigationTransition(ExecutionContext*,
                        const String& navigation_type,
                        NavigationHistoryEntry* from);
   ~NavigationTransition() final = default;
