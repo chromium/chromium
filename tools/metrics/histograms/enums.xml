@@ -95050,6 +95050,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Opened side search via autotriggering"/>
   <int value="8" label="Opened from context menu search option"/>
   <int value="9" label="Opened from context menu Read Anything option"/>
+  <int value="10" label="Opened from an extension entry registration"/>
+  <int value="11" label="Opened from interaction in the bookmarks bar"/>
+  <int value="12"
+      label="Opened from a pinned side panel feature's toolbar button"/>
 </enum>
 
 <enum name="SideSearchAvailabilityChangeType">

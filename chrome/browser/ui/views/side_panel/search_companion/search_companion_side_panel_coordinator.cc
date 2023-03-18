@@ -19,7 +19,10 @@
 SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
     Browser* browser)
     : BrowserUserData<SearchCompanionSidePanelCoordinator>(*browser),
-      browser_(browser) {
+      browser_(browser),
+      // TODO(b/269331995): Localize menu item label.
+      name_(u"Companion"),
+      icon_(kJourneysIcon) {
   browser_->tab_strip_model()->AddObserver(this);
 }
 
@@ -91,11 +94,9 @@ void SearchCompanionSidePanelCoordinator::OnTabStripModelChanged(
 
 std::unique_ptr<SidePanelEntry>
 SearchCompanionSidePanelCoordinator::CreateCompanionEntry() {
-  // TODO(b/269331995): Localize menu item label.
-  std::u16string label(u"Companion");
   return std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kSearchCompanion, label,
-      ui::ImageModel::FromVectorIcon(kJourneysIcon, ui::kColorIcon,
+      SidePanelEntry::Id::kSearchCompanion, name(),
+      ui::ImageModel::FromVectorIcon(icon(), ui::kColorIcon,
                                      /*icon_size=*/16),
       base::BindRepeating(
           &SearchCompanionSidePanelCoordinator::CreateCompanionWebView,

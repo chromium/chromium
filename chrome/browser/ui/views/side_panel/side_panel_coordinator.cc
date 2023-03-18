@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_combobox_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -228,8 +230,9 @@ void SidePanelCoordinator::SetSidePanelButtonTooltipText(
   auto* toolbar = browser_view_->toolbar();
   // On Progressive web apps, the toolbar can be null when opening the side
   // panel. This check is added as a added safeguard.
-  if (toolbar && toolbar->side_panel_button())
-    toolbar->side_panel_button()->SetTooltipText(tooltip_text);
+  if (toolbar && toolbar->GetSidePanelButton()) {
+    toolbar->GetSidePanelButton()->SetTooltipText(tooltip_text);
+  }
 }
 
 void SidePanelCoordinator::Close() {
@@ -865,7 +868,7 @@ void SidePanelCoordinator::UpdateNewTabButtonState() {
 
 void SidePanelCoordinator::UpdateToolbarButtonHighlight(
     bool side_panel_visible) {
-  auto* side_panel_button = browser_view_->toolbar()->side_panel_button();
+  auto* side_panel_button = browser_view_->toolbar()->GetSidePanelButton();
   side_panel_button->SetHighlighted(side_panel_visible);
   side_panel_button->SetTooltipText(l10n_util::GetStringUTF16(
       side_panel_visible ? IDS_TOOLTIP_SIDE_PANEL_HIDE

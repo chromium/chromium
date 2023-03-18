@@ -52,6 +52,7 @@ class HomeButton;
 class IntentChipButton;
 class MediaToolbarButtonView;
 class ReloadButton;
+class SidePanelToolbarContainer;
 class ToolbarButton;
 class AvatarToolbarButtonBrowserTest;
 
@@ -152,9 +153,10 @@ class ToolbarView : public views::AccessiblePaneView,
     return battery_saver_button_;
   }
   media_router::CastToolbarButton* cast_button() const { return cast_; }
-  SidePanelToolbarButton* side_panel_button() const {
-    return side_panel_button_;
+  SidePanelToolbarContainer* side_panel_container() const {
+    return side_panel_container_;
   }
+  SidePanelToolbarButton* GetSidePanelButton() override;
   MediaToolbarButtonView* media_button() const { return media_button_; }
   send_tab_to_self::SendTabToSelfToolbarIconView* send_tab_to_self_button()
       const {
@@ -228,7 +230,6 @@ class ToolbarView : public views::AccessiblePaneView,
   views::AccessiblePaneView* GetAsAccessiblePaneView() override;
   views::View* GetAnchorView(PageActionIconType type) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
-  SidePanelToolbarButton* GetSidePanelButton() override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
@@ -270,6 +271,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<ChromeLabsButton> chrome_labs_button_ = nullptr;
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<media_router::CastToolbarButton> cast_ = nullptr;
+  raw_ptr<SidePanelToolbarContainer> side_panel_container_ = nullptr;
   raw_ptr<SidePanelToolbarButton> side_panel_button_ = nullptr;
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;

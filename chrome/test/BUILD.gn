@@ -8972,6 +8972,7 @@ test("unit_tests") {
       "../browser/ui/views/side_panel/read_anything/read_anything_coordinator_unittest.cc",
       "../browser/ui/views/side_panel/read_anything/read_anything_model_unittest.cc",
       "../browser/ui/views/side_panel/side_panel_coordinator_unittest.cc",
+      "../browser/ui/views/side_panel/side_panel_toolbar_container_unittest.cc",
       "../browser/ui/views/site_data/page_specific_site_data_dialog_unittest.cc",
       "../browser/ui/views/tab_contents/chrome_web_contents_view_delegate_views_unittest.cc",
       "../browser/ui/views/tabs/color_picker_view_unittest.cc",

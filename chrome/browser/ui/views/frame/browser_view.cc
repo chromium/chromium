@@ -3806,7 +3806,7 @@ void BrowserView::AddedToWidget() {
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/1267781.
-  if (toolbar_->side_panel_button() && unified_side_panel_) {
+  if (toolbar_->GetSidePanelButton() && unified_side_panel_) {
     unified_side_panel_->AddObserver(side_panel_coordinator_.get());
   }
 

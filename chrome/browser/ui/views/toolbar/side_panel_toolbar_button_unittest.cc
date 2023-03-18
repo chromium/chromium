@@ -23,7 +23,7 @@
 class SidePanelToolbarButtonTest : public TestWithBrowserView {
  public:
   SidePanelToolbarButton* GetSidePanelToolbarButton() {
-    return browser_view()->toolbar()->side_panel_button();
+    return browser_view()->toolbar()->GetSidePanelButton();
   }
 };
 

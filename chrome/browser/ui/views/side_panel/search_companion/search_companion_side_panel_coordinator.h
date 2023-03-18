@@ -38,6 +38,9 @@ class SearchCompanionSidePanelCoordinator
   bool Show();
   BrowserView* GetBrowserView();
 
+  std::u16string name() { return name_; }
+  const gfx::VectorIcon& icon() { return icon_; }
+
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -46,6 +49,8 @@ class SearchCompanionSidePanelCoordinator
 
  private:
   raw_ptr<Browser> browser_;
+  std::u16string name_;
+  const gfx::VectorIcon& icon_;
 
   friend class BrowserUserData<SearchCompanionSidePanelCoordinator>;
 
