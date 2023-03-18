@@ -33,6 +33,8 @@ constexpr uint32_t kMaxFramesInFlight = 3u;
 
 constexpr base::TimeDelta kPresentationFlushTimerDuration =
     base::Milliseconds(160);
+constexpr base::TimeDelta kPresentationFlushTimerStopThreshold =
+    kPresentationFlushTimerDuration / 10;
 
 constexpr char kBoundsRectNanOrInf[] =
     "Overlay bounds_rect is invalid (NaN or infinity).";
@@ -843,8 +845,35 @@ void WaylandFrameManager::UpdatePresentationFlushTimer() {
           FROM_HERE, kPresentationFlushTimerDuration, this,
           &WaylandFrameManager::OnPresentationFlushTimerFired);
     }
-  } else {
-    presentation_flush_timer_.Stop();
+
+    return;
+  }
+
+  if (presentation_flush_timer_.IsRunning()) {
+    // There is no queued presentation. Decide whether to stop the presentation
+    // flush timer.
+    //
+    // If we unconditionally stop the timer here, it is logically correct, but
+    // often results in frequent timer starts and stops. Imagine we have
+    // interleaved submissions and presentations:
+    //   submission_1 - presentation_1 - submission_2 - presetnation_2 - ...
+    // Then we will always start timer when we get presentation_i, and stop
+    // timer when we get submission_(i+1), at which point we send an
+    // OnSubmission IPC carrying both submission_(i+1) and presentation_i.
+    //
+    // In order to reduce timer starts/stops, here we choose not to stop the
+    // timer, except for one case: when it gets close enough to the target time
+    // of the timer. The reason is that if we don't stop the timer in this case,
+    // it is likely to fire before the next submission, resulting in either
+    //   (1) a no-op (if no presentation arrives before timer firing); or
+    //   (2) an extra OnPresentation IPC (if a presentation arrives before timer
+    //   firing), which could have been piggybacked by the next submission. This
+    //   is an expensive case that we want to avoid.
+    const base::TimeDelta remaining_delay =
+        presentation_flush_timer_.desired_run_time() - base::TimeTicks::Now();
+    if (remaining_delay <= kPresentationFlushTimerStopThreshold) {
+      presentation_flush_timer_.Stop();
+    }
   }
 }
 
