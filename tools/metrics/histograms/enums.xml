@@ -27104,6 +27104,12 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="63" label="Performance Insights"/>
 </enum>
 
+<enum name="DevToolsRecordingAssertion">
+  <int value="1" label="Assertion added"/>
+  <int value="2" label="Property assertion edited"/>
+  <int value="3" label="Attribute assertion edited"/>
+</enum>
+
 <enum name="DevToolsRecordingCodeToggled">
   <int value="1" label="Recording showing code view"/>
   <int value="2" label="Recording hiding code view"/>

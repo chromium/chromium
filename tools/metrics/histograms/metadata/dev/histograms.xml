@@ -363,6 +363,14 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools panel was shown.</summary>
 </histogram>
 
+<histogram name="DevTools.RecordingAssertion" enum="DevToolsRecordingAssertion"
+    expires_after="2024-03-13">
+  <owner>jrandolf@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when assertions are used/edited</summary>
+</histogram>
+
 <histogram name="DevTools.RecordingCodeToggled"
     enum="DevToolsRecordingCodeToggled" expires_after="2024-01-10">
   <owner>alexrudenko@chromium.org</owner>
