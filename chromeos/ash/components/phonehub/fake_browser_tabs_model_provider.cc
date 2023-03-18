@@ -11,10 +11,15 @@ FakeBrowserTabsModelProvider::FakeBrowserTabsModelProvider() = default;
 
 FakeBrowserTabsModelProvider::~FakeBrowserTabsModelProvider() {}
 
+bool FakeBrowserTabsModelProvider::IsBrowserTabSyncEnabled() {
+  return is_browser_tab_sync_enabled_;
+}
+
 void FakeBrowserTabsModelProvider::NotifyBrowserTabsUpdated(
     bool is_sync_enabled,
     const std::vector<BrowserTabsModel::BrowserTabMetadata>
         browser_tabs_metadata) {
+  is_browser_tab_sync_enabled_ = is_sync_enabled;
   BrowserTabsModelProvider::NotifyBrowserTabsUpdated(is_sync_enabled,
                                                      browser_tabs_metadata);
 }

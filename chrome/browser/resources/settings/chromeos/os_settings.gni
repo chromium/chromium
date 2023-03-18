@@ -105,6 +105,7 @@ web_component_files = [
   "chromeos/multidevice_page/multidevice_subpage.ts",
   "chromeos/multidevice_page/multidevice_task_continuation_disabled_link.ts",
   "chromeos/multidevice_page/multidevice_task_continuation_item.ts",
+  "chromeos/multidevice_page/multidevice_task_continuation_item_lacros.ts",
   "chromeos/multidevice_page/multidevice_tether_item.ts",
   "chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.ts",
   "chromeos/multidevice_page/multidevice_wifi_sync_item.ts",

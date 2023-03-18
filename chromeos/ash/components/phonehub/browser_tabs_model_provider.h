@@ -40,6 +40,8 @@ class BrowserTabsModelProvider {
   // visiting a link on the connected phone's Chrome Browser.
   virtual void TriggerRefresh() = 0;
 
+  virtual bool IsBrowserTabSyncEnabled() = 0;
+
  protected:
   BrowserTabsModelProvider();
 

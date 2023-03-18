@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/ash/components/phonehub/pref_names.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager.h"
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
@@ -75,13 +77,17 @@ const char kIsCameraRollFilePermissionGranted[] =
     "isCameraRollFilePermissionGranted";
 const char kIsPhoneHubFeatureCombinedSetupSupported[] =
     "isPhoneHubFeatureCombinedSetupSupported";
+const char kIsChromeOSSyncedSessionSharingEnabled[] =
+    "isChromeOSSyncedSessionSharingEnabled";
+const char kIsLacrosTabSyncEnabled[] = "isLacrosTabSyncEnabled";
 
 constexpr char kAndroidSmsInfoOriginKey[] = "origin";
 constexpr char kAndroidSmsInfoEnabledKey[] = "enabled";
 
 void OnRetrySetHostNowResult(bool success) {
-  if (success)
+  if (success) {
     return;
+  }
 
   PA_LOG(WARNING) << "OnRetrySetHostNowResult(): Attempt to retry setting the "
                   << "host device failed.";
@@ -98,20 +104,22 @@ MultideviceHandler::MultideviceHandler(
         android_sms_pairing_state_tracker,
     android_sms::AndroidSmsAppManager* android_sms_app_manager,
     eche_app::AppsAccessManager* apps_access_manager,
-    phonehub::CameraRollManager* camera_roll_manager)
+    phonehub::CameraRollManager* camera_roll_manager,
+    phonehub::BrowserTabsModelProvider* browser_tabs_model_provider)
     : prefs_(prefs),
       multidevice_setup_client_(multidevice_setup_client),
       multidevice_feature_access_manager_(multidevice_feature_access_manager),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
       android_sms_app_manager_(android_sms_app_manager),
       apps_access_manager_(apps_access_manager),
-      camera_roll_manager_(camera_roll_manager) {
+      camera_roll_manager_(camera_roll_manager),
+      browser_tabs_model_provider_(browser_tabs_model_provider) {
   CHECK((multidevice_setup_client_ != nullptr) ==
         multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(prefs_));
   pref_change_registrar_.Init(prefs_);
 }
 
-MultideviceHandler::~MultideviceHandler() {}
+MultideviceHandler::~MultideviceHandler() = default;
 
 void MultideviceHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -212,26 +220,38 @@ void MultideviceHandler::RegisterMessages() {
 }
 
 void MultideviceHandler::OnJavascriptAllowed() {
-  if (multidevice_setup_client_)
+  if (multidevice_setup_client_) {
     multidevice_setup_observation_.Observe(multidevice_setup_client_);
+  }
 
-  if (multidevice_feature_access_manager_)
+  if (multidevice_feature_access_manager_) {
     multidevice_feature_access_manager_observation_.Observe(
         multidevice_feature_access_manager_);
+  }
 
   if (android_sms_pairing_state_tracker_) {
     android_sms_pairing_state_tracker_observation_.Observe(
         android_sms_pairing_state_tracker_);
   }
 
-  if (android_sms_app_manager_)
+  if (android_sms_app_manager_) {
     android_sms_app_manager_observation_.Observe(android_sms_app_manager_);
+  }
 
-  if (apps_access_manager_)
+  if (apps_access_manager_) {
     apps_access_manager_observation_.Observe(apps_access_manager_);
+  }
 
-  if (camera_roll_manager_)
+  if (camera_roll_manager_) {
     camera_roll_manager_observation_.Observe(camera_roll_manager_);
+  }
+
+  if (phonehub::BrowserTabsModelProviderImpl::
+          IsLacrosSessionSyncFeatureEnabled() &&
+      browser_tabs_model_provider_) {
+    browser_tabs_model_provider_observation_.Observe(
+        browser_tabs_model_provider_);
+  }
 
   pref_change_registrar_.Add(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
@@ -354,6 +374,13 @@ void MultideviceHandler::OnCameraRollViewUiStateUpdated() {
   UpdatePageContent();
 }
 
+void MultideviceHandler::OnBrowserTabsUpdated(
+    bool is_sync_enabled,
+    const std::vector<phonehub::BrowserTabsModel::BrowserTabMetadata>&
+        browser_tabs_metadata) {
+  UpdatePageContent();
+}
+
 void MultideviceHandler::OnNearbySharingEnabledChanged() {
   UpdatePageContent();
 }
@@ -408,8 +435,9 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
   bool enabled = list[2].GetBool();
 
   absl::optional<std::string> auth_token;
-  if (list.size() >= 4 && list[3].is_string())
+  if (list.size() >= 4 && list[3].is_string()) {
     auth_token = list[3].GetString();
+  }
 
   multidevice_setup_client_->SetFeatureEnabledState(
       feature, enabled, auth_token,
@@ -458,8 +486,9 @@ void MultideviceHandler::HandleGetSmartLockSignInEnabled(
 void MultideviceHandler::HandleSetSmartLockSignInEnabled(
     const base::Value::List& args) {
   bool enabled = false;
-  if (args[0].is_bool())
+  if (args[0].is_bool()) {
     enabled = args[0].GetBool();
+  }
 
   const bool auth_token_present = args.size() >= 2 && args[1].is_string();
   const std::string& auth_token = auth_token_present ? args[1].GetString() : "";
@@ -469,8 +498,9 @@ void MultideviceHandler::HandleSetSmartLockSignInEnabled(
   CHECK(!enabled || auth_token_present);
 
   // Only check auth token if the user is attempting to enable sign-in.
-  if (enabled && !IsAuthTokenValid(auth_token))
+  if (enabled && !IsAuthTokenValid(auth_token)) {
     return;
+  }
 
   prefs_->SetBoolean(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled, enabled);
@@ -488,10 +518,12 @@ void MultideviceHandler::HandleGetSmartLockSignInAllowed(
 
 base::Value::Dict MultideviceHandler::GenerateAndroidSmsInfo() {
   absl::optional<GURL> app_url;
-  if (android_sms_app_manager_)
+  if (android_sms_app_manager_) {
     app_url = android_sms_app_manager_->GetCurrentAppUrl();
-  if (!app_url)
+  }
+  if (!app_url) {
     app_url = android_sms::GetAndroidMessagesURL();
+  }
 
   base::Value::Dict android_sms_info;
   android_sms_info.Set(
@@ -577,11 +609,13 @@ void MultideviceHandler::HandleCancelAppsSetup(const base::Value::List& args) {
 void MultideviceHandler::HandleAttemptCombinedFeatureSetup(
     const base::Value::List& args) {
   bool camera_roll = false;
-  if (args[0].is_bool())
+  if (args[0].is_bool()) {
     camera_roll = args[0].GetBool();
+  }
   bool notifications = false;
-  if (args[1].is_bool())
+  if (args[1].is_bool()) {
     notifications = args[1].GetBool();
+  }
 
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(!combined_access_operation_);
@@ -680,8 +714,9 @@ void MultideviceHandler::OnNotificationStatusChange(
   FireWebUIListener("settings.onNotificationAccessSetupStatusChanged",
                     base::Value(static_cast<int32_t>(new_status)));
 
-  if (phonehub::NotificationAccessSetupOperation::IsFinalStatus(new_status))
+  if (phonehub::NotificationAccessSetupOperation::IsFinalStatus(new_status)) {
     notification_access_operation_.reset();
+  }
 }
 
 void MultideviceHandler::OnAppsStatusChange(
@@ -689,8 +724,9 @@ void MultideviceHandler::OnAppsStatusChange(
   FireWebUIListener("settings.onAppsAccessSetupStatusChanged",
                     base::Value(static_cast<int32_t>(new_status)));
 
-  if (eche_app::AppsAccessSetupOperation::IsFinalStatus(new_status))
+  if (eche_app::AppsAccessSetupOperation::IsFinalStatus(new_status)) {
     apps_access_operation_.reset();
+  }
 }
 
 void MultideviceHandler::OnCombinedStatusChange(
@@ -698,8 +734,9 @@ void MultideviceHandler::OnCombinedStatusChange(
   FireWebUIListener("settings.onCombinedAccessSetupStatusChanged",
                     base::Value(static_cast<int32_t>(new_status)));
 
-  if (phonehub::CombinedAccessSetupOperation::IsFinalStatus(new_status))
+  if (phonehub::CombinedAccessSetupOperation::IsFinalStatus(new_status)) {
     combined_access_operation_.reset();
+  }
 }
 
 void MultideviceHandler::OnFeatureSetupConnectionStatusChange(
@@ -812,17 +849,19 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
   phonehub::MultideviceFeatureAccessManager::AccessStatus
       camera_roll_access_status = phonehub::MultideviceFeatureAccessManager::
           AccessStatus::kAvailableButNotGranted;
-  if (multidevice_feature_access_manager_)
+  if (multidevice_feature_access_manager_) {
     camera_roll_access_status =
         multidevice_feature_access_manager_->GetCameraRollAccessStatus();
+  }
   page_content_dictionary.Set(kCameraRollAccessStatus,
                               static_cast<int32_t>(camera_roll_access_status));
 
   phonehub::MultideviceFeatureAccessManager::AccessStatus apps_access_status =
       phonehub::MultideviceFeatureAccessManager::AccessStatus::
           kAvailableButNotGranted;
-  if (apps_access_manager_)
+  if (apps_access_manager_) {
     apps_access_status = apps_access_manager_->GetAccessStatus();
+  }
 
   page_content_dictionary.Set(kAppsAccessStatus,
                               static_cast<int32_t>(apps_access_status));
@@ -855,6 +894,19 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
                                         ->GetFeatureSetupRequestSupported()
                                   : false);
 
+  bool is_lacros_session_sync_feature_enabled = phonehub::
+      BrowserTabsModelProviderImpl::IsLacrosSessionSyncFeatureEnabled();
+  page_content_dictionary.Set(kIsChromeOSSyncedSessionSharingEnabled,
+                              is_lacros_session_sync_feature_enabled);
+
+  if (is_lacros_session_sync_feature_enabled && browser_tabs_model_provider_) {
+    page_content_dictionary.Set(
+        kIsLacrosTabSyncEnabled,
+        browser_tabs_model_provider_->IsBrowserTabSyncEnabled());
+  } else {
+    page_content_dictionary.Set(kIsLacrosTabSyncEnabled, false);
+  }
+
   return page_content_dictionary;
 }
 
@@ -882,8 +934,9 @@ bool MultideviceHandler::IsAuthTokenValid(const std::string& auth_token) {
 
 multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
 MultideviceHandler::GetHostStatusWithDevice() {
-  if (multidevice_setup_client_)
+  if (multidevice_setup_client_) {
     return multidevice_setup_client_->GetHostStatus();
+  }
 
   return multidevice_setup::MultiDeviceSetupClient::
       GenerateDefaultHostStatusWithDevice();
@@ -891,8 +944,9 @@ MultideviceHandler::GetHostStatusWithDevice() {
 
 multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap
 MultideviceHandler::GetFeatureStatesMap() {
-  if (multidevice_setup_client_)
+  if (multidevice_setup_client_) {
     return multidevice_setup_client_->GetFeatureStates();
+  }
 
   PA_LOG(WARNING)
       << "MultiDevice setup client missing. Responding to "

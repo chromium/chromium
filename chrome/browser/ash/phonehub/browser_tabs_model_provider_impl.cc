@@ -15,16 +15,13 @@
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 
-namespace {
+namespace ash::phonehub {
 
-bool IsLacrosSessionSyncFeatureEnabled() {
+// static
+bool BrowserTabsModelProviderImpl::IsLacrosSessionSyncFeatureEnabled() {
   return !crosapi::browser_util::IsAshWebBrowserEnabled() &&
          base::FeatureList::IsEnabled(syncer::kChromeOSSyncedSessionSharing);
 }
-
-}  // namespace
-
-namespace ash::phonehub {
 
 BrowserTabsModelProviderImpl::BrowserTabsModelProviderImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
@@ -97,6 +94,15 @@ void BrowserTabsModelProviderImpl::TriggerRefresh() {
   // (e.g. backend replication delay). I.e SyncService::TriggerRefresh() will
   // not guarantee an immediate update.
   sync_service_->TriggerRefresh({syncer::SESSIONS});
+}
+
+bool BrowserTabsModelProviderImpl::IsBrowserTabSyncEnabled() {
+  DCHECK(IsLacrosSessionSyncFeatureEnabled());
+  if (!synced_session_client_ash_) {
+    return false;
+  }
+
+  return synced_session_client_ash_->is_session_sync_enabled();
 }
 
 void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {

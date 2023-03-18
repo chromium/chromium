@@ -1,0 +1,20 @@
+<style include="settings-shared"></style>
+<settings-multidevice-feature-item id="phoneHubTaskContinuationItemLacros"
+    feature="[[MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION]]"
+    page-content-data="[[pageContentData]]" is-sub-feature>
+  <template
+      is="dom-if"
+      if="[[!isChromeTabsSyncEnabled_(pageContentData)]]"
+      restamp>
+    <settings-multidevice-task-continuation-disabled-link
+        class="secondary"
+        id="featureSecondary"
+        slot="feature-summary">
+    </settings-multidevice-task-continuation-disabled-link>
+    <!-- Replace the standard feature-controller with an always disabled and
+      off cr-toggle when Chrome Sync Open Tabs is disabled. When Chrome Sync
+      is enabled the standard feature-controller is used. -->
+    <cr-toggle disabled slot="feature-controller">
+    </cr-toggle>
+  </template>
+</settings-multidevice-feature-item>

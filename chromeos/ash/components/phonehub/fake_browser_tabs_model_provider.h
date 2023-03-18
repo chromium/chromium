@@ -19,11 +19,15 @@ class FakeBrowserTabsModelProvider : public BrowserTabsModelProvider {
 
   // BrowserTabsModelProvider:
   void TriggerRefresh() override {}
+  bool IsBrowserTabSyncEnabled() override;
 
   void NotifyBrowserTabsUpdated(
       bool is_sync_enabled,
       const std::vector<BrowserTabsModel::BrowserTabMetadata>
           browser_tabs_metadata);
+
+ private:
+  bool is_browser_tab_sync_enabled_ = false;
 };
 
 }  // namespace phonehub

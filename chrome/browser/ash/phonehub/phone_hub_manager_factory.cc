@@ -40,14 +40,6 @@
 #include "components/sync/base/features.h"
 #include "components/user_manager/user_manager.h"
 
-namespace {
-
-bool IsLacrosSessionSyncFeatureEnabled() {
-  return !crosapi::browser_util::IsAshWebBrowserEnabled() &&
-         base::FeatureList::IsEnabled(syncer::kChromeOSSyncedSessionSharing);
-}
-
-}  // namespace
 namespace ash::phonehub {
 
 namespace {
@@ -105,7 +97,14 @@ PhoneHubManagerFactory::PhoneHubManagerFactory()
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(HistoryUiFaviconRequestHandlerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(SyncMojoServiceFactoryAsh::GetInstance());
+
+  // We typically also check crosapi::browser_util::IsAshWebBrowserEnabled() in
+  // relation to this feature flag but this relies on UserManager which is not
+  // initialized at this point. Since this is just a service dependency simply
+  // checking the flag itself is fine.
+  if (base::FeatureList::IsEnabled(syncer::kChromeOSSyncedSessionSharing)) {
+    DependsOn(SyncMojoServiceFactoryAsh::GetInstance());
+  }
 }
 
 PhoneHubManagerFactory::~PhoneHubManagerFactory() = default;
@@ -140,7 +139,7 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
   }
 
   SyncedSessionClientAsh* synced_session_client = nullptr;
-  if (IsLacrosSessionSyncFeatureEnabled()) {
+  if (BrowserTabsModelProviderImpl::IsLacrosSessionSyncFeatureEnabled()) {
     SyncMojoServiceAsh* sync_mojo_service =
         SyncMojoServiceFactoryAsh::GetForProfile(profile);
     if (sync_mojo_service) {

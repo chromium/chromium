@@ -271,9 +271,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           has_incompatible_applications);
   html_source->AddBoolean("hasAdminRights", HasAdminRights());
 
-  if (has_incompatible_applications)
+  if (has_incompatible_applications) {
     AddSettingsPageUIHandler(
         std::make_unique<IncompatibleApplicationsHandler>());
+  }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   html_source->AddBoolean("signinAllowed", !profile->IsGuestSession() &&
@@ -523,6 +524,7 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
         ash::phonehub::PhoneHubManagerFactory::GetForProfile(profile);
     ash::eche_app::EcheAppManager* eche_app_manager =
         ash::eche_app::EcheAppManagerFactory::GetForProfile(profile);
+
     web_ui()->AddMessageHandler(std::make_unique<
                                 ash::settings::MultideviceHandler>(
         profile->GetPrefs(),
@@ -537,7 +539,8 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
         android_sms_service ? android_sms_service->android_sms_app_manager()
                             : nullptr,
         eche_app_manager ? eche_app_manager->GetAppsAccessManager() : nullptr,
-        phone_hub_manager ? phone_hub_manager->GetCameraRollManager()
+        phone_hub_manager ? phone_hub_manager->GetCameraRollManager() : nullptr,
+        phone_hub_manager ? phone_hub_manager->GetBrowserTabsModelProvider()
                           : nullptr));
   }
 }
@@ -546,8 +549,9 @@ void SettingsUI::BindInterface(
     mojo::PendingReceiver<
         customize_themes::mojom::CustomizeThemesHandlerFactory>
         pending_receiver) {
-  if (customize_themes_factory_receiver_.is_bound())
+  if (customize_themes_factory_receiver_.is_bound()) {
     customize_themes_factory_receiver_.reset();
+  }
   customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -555,8 +559,9 @@ void SettingsUI::BindInterface(
 void SettingsUI::BindInterface(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
         pending_receiver) {
-  if (help_bubble_handler_factory_receiver_.is_bound())
+  if (help_bubble_handler_factory_receiver_.is_bound()) {
     help_bubble_handler_factory_receiver_.reset();
+  }
   help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 

@@ -23,8 +23,9 @@ void BrowserTabsModelProvider::NotifyBrowserTabsUpdated(
     bool is_sync_enabled,
     const std::vector<BrowserTabsModel::BrowserTabMetadata>
         browser_tabs_metadata) {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnBrowserTabsUpdated(is_sync_enabled, browser_tabs_metadata);
+  }
 }
 
 }  // namespace phonehub

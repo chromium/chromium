@@ -334,8 +334,9 @@ MultiDeviceSection::MultiDeviceSection(
 
   // Note: |multidevice_setup_client_| is null when multi-device features are
   // prohibited by policy.
-  if (!multidevice_setup_client_)
+  if (!multidevice_setup_client_) {
     return;
+  }
 
   multidevice_setup_client_->AddObserver(this);
   OnHostStatusChanged(multidevice_setup_client_->GetHostStatus());
@@ -344,8 +345,9 @@ MultiDeviceSection::MultiDeviceSection(
 
 MultiDeviceSection::~MultiDeviceSection() {
   pref_change_registrar_.RemoveAll();
-  if (multidevice_setup_client_)
+  if (multidevice_setup_client_) {
     multidevice_setup_client_->RemoveObserver(this);
+  }
 }
 
 void MultiDeviceSection::AddLoadTimeData(
@@ -639,8 +641,9 @@ void MultiDeviceSection::AddLoadTimeData(
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
   // No handlers in guest mode.
-  if (profile()->IsGuestSession())
+  if (profile()->IsGuestSession()) {
     return;
+  }
 
   web_ui->AddMessageHandler(std::make_unique<MultideviceHandler>(
       pref_service_, multidevice_setup_client_,
@@ -653,7 +656,8 @@ void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
       android_sms_service_ ? android_sms_service_->android_sms_app_manager()
                            : nullptr,
       eche_app_manager_ ? eche_app_manager_->GetAppsAccessManager() : nullptr,
-      phone_hub_manager_ ? phone_hub_manager_->GetCameraRollManager()
+      phone_hub_manager_ ? phone_hub_manager_->GetCameraRollManager() : nullptr,
+      phone_hub_manager_ ? phone_hub_manager_->GetBrowserTabsModelProvider()
                          : nullptr));
 }
 
@@ -759,10 +763,12 @@ void MultiDeviceSection::OnFeatureStatesChanged(
           GetMultiDeviceOptedInPhoneHubCameraRollSearchConcepts());
     }
   }
-  if (IsFeatureSupported(Feature::kWifiSync))
+  if (IsFeatureSupported(Feature::kWifiSync)) {
     updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
-  if (IsFeatureSupported(Feature::kEche))
+  }
+  if (IsFeatureSupported(Feature::kEche)) {
     updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubAppsSearchConcepts());
+  }
 }
 
 bool MultiDeviceSection::IsFeatureSupported(Feature feature) {

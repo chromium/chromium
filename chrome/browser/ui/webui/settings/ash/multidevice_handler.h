@@ -12,6 +12,8 @@
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/phonehub/browser_tabs_model.h"
+#include "chromeos/ash/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/ash/components/phonehub/camera_roll_manager.h"
 #include "chromeos/ash/components/phonehub/combined_access_setup_operation.h"
 #include "chromeos/ash/components/phonehub/feature_setup_connection_operation.h"
@@ -38,7 +40,8 @@ class MultideviceHandler
       public eche_app::AppsAccessSetupOperation::Delegate,
       public phonehub::CameraRollManager::Observer,
       public phonehub::CombinedAccessSetupOperation::Delegate,
-      public phonehub::FeatureSetupConnectionOperation::Delegate {
+      public phonehub::FeatureSetupConnectionOperation::Delegate,
+      public phonehub::BrowserTabsModelProvider::Observer {
  public:
   MultideviceHandler(
       PrefService* prefs,
@@ -49,7 +52,8 @@ class MultideviceHandler
           android_sms_pairing_state_tracker,
       android_sms::AndroidSmsAppManager* android_sms_app_manager,
       eche_app::AppsAccessManager* apps_access_manager,
-      phonehub::CameraRollManager* camera_roll_manager);
+      phonehub::CameraRollManager* camera_roll_manager,
+      phonehub::BrowserTabsModelProvider* browser_tabs_model_provider);
 
   MultideviceHandler(const MultideviceHandler&) = delete;
   MultideviceHandler& operator=(const MultideviceHandler&) = delete;
@@ -111,6 +115,12 @@ class MultideviceHandler
 
   // phonehub::CameraRollManager::Observer:
   void OnCameraRollViewUiStateUpdated() override;
+
+  // phonehub::BrowserTabsModelProvider::Observer:
+  void OnBrowserTabsUpdated(
+      bool is_sync_enabled,
+      const std::vector<phonehub::BrowserTabsModel::BrowserTabMetadata>&
+          browser_tabs_metadata) override;
 
   // Called when the Nearby Share enabled pref changes.
   void OnNearbySharingEnabledChanged();
@@ -194,6 +204,7 @@ class MultideviceHandler
   std::unique_ptr<eche_app::AppsAccessSetupOperation> apps_access_operation_;
 
   phonehub::CameraRollManager* camera_roll_manager_;
+  phonehub::BrowserTabsModelProvider* browser_tabs_model_provider_;
 
   base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
                           multidevice_setup::MultiDeviceSetupClient::Observer>
@@ -214,6 +225,9 @@ class MultideviceHandler
   base::ScopedObservation<phonehub::CameraRollManager,
                           phonehub::CameraRollManager::Observer>
       camera_roll_manager_observation_{this};
+  base::ScopedObservation<phonehub::BrowserTabsModelProvider,
+                          phonehub::BrowserTabsModelProvider::Observer>
+      browser_tabs_model_provider_observation_{this};
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<MultideviceHandler> callback_weak_ptr_factory_{this};

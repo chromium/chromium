@@ -181,4 +181,6 @@ export interface MultiDevicePageContentData {
   isPhoneHubPermissionsDialogSupported: boolean;
   isCameraRollFilePermissionGranted: boolean;
   isPhoneHubFeatureCombinedSetupSupported: boolean;
+  isChromeOSSyncedSessionSharingEnabled: boolean;
+  isLacrosTabSyncEnabled: boolean;
 }

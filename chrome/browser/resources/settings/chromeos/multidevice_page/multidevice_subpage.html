@@ -99,11 +99,24 @@
             MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
             pageContentData)]]"
         restamp>
-      <settings-multidevice-task-continuation-item
-          id="phoneHubTaskContinuationItem"
-          page-content-data="[[pageContentData]]"
-          deep-link-focus-id$="[[Setting.kPhoneHubTaskContinuationOnOff]]">
-      </settings-multidevice-task-continuation-item>
+      <template is="dom-if"
+          if="[[isSyncedSessionSharingEnabled_(pageContentData)]]"
+          restamp>
+        <settings-multidevice-task-continuation-item-lacros
+            id="phoneHubTaskContinuationItemLacros"
+            page-content-data="[[pageContentData]]"
+            deep-link-focus-id$="[[Setting.kPhoneHubTaskContinuationOnOff]]">
+        </settings-multidevice-task-continuation-item-lacros>
+      </template>
+      <template is="dom-if"
+          if="[[!isSyncedSessionSharingEnabled_(pageContentData)]]"
+          restamp>
+        <settings-multidevice-task-continuation-item
+            id="phoneHubTaskContinuationItem"
+            page-content-data="[[pageContentData]]"
+            deep-link-focus-id$="[[Setting.kPhoneHubTaskContinuationOnOff]]">
+        </settings-multidevice-task-continuation-item>
+      </template>
     </template>
     <template is="dom-if"
         if="[[shouldShowPhoneHubCameraRollItem_(pageContentData)]]"

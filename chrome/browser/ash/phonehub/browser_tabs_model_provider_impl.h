@@ -41,6 +41,8 @@ class BrowserTabsModelProviderImpl
       public multidevice_setup::MultiDeviceSetupClient::Observer,
       public SyncedSessionClientAsh::Observer {
  public:
+  static bool IsLacrosSessionSyncFeatureEnabled();
+
   // |synced_session_client_ash| is null if kChromeOSSyncedSessionClient or
   // Lacros Only are disabled.
   BrowserTabsModelProviderImpl(
@@ -54,6 +56,7 @@ class BrowserTabsModelProviderImpl
 
   // BrowserTabsModelProvider:
   void TriggerRefresh() override;
+  bool IsBrowserTabSyncEnabled() override;
 
  private:
   friend class BrowserTabsModelProviderImplTest;

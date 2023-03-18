@@ -13,22 +13,32 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
 #include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/components/phonehub/fake_browser_tabs_model_provider.h"
 #include "chromeos/ash/components/phonehub/fake_camera_roll_manager.h"
 #include "chromeos/ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/feature_setup_connection_operation.h"
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/pref_names.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "components/account_id/account_id.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/features.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -61,6 +71,7 @@ constexpr char kDialogIntroScreenSetupModeHistogram[] =
     "PhoneHub.PermissionsOnboarding.SetUpMode.IntroScreenShown";
 constexpr char kDialogSetUpFinishedScreenSetupModeHistogram[] =
     "PhoneHub.PermissionsOnboarding.SetUpMode.SetUpFinishedScreenShown";
+constexpr char kManagedUserEmail[] = "user@managedchrome.com";
 
 using ::testing::Optional;
 
@@ -75,20 +86,65 @@ class TestMultideviceHandler : public MultideviceHandler {
           android_sms_pairing_state_tracker,
       android_sms::AndroidSmsAppManager* android_sms_app_manager,
       eche_app::AppsAccessManager* apps_access_manager,
-      phonehub::CameraRollManager* camera_roll_manager)
+      phonehub::CameraRollManager* camera_roll_manager,
+      phonehub::BrowserTabsModelProvider* browser_tabs_model_provider)
       : MultideviceHandler(prefs,
                            multidevice_setup_client,
                            multidevice_feature_access_manager,
                            android_sms_pairing_state_tracker,
                            android_sms_app_manager,
                            apps_access_manager,
-                           camera_roll_manager) {}
+                           camera_roll_manager,
+                           browser_tabs_model_provider) {}
   ~TestMultideviceHandler() override = default;
 
   // Make public for testing.
   using MultideviceHandler::AllowJavascript;
   using MultideviceHandler::RegisterMessages;
   using MultideviceHandler::set_web_ui;
+};
+
+// This class wraps the setup of a Lacros Only environment and makes it easy to
+// reset the state after use by destroying the handle.
+class ScopedLacrosOnlyHandle {
+ public:
+  ScopedLacrosOnlyHandle() {
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    fake_user_manager_ = fake_user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+
+    SetLoggedInUser();
+    SetLacrosAvailability();
+  }
+
+  ~ScopedLacrosOnlyHandle() { ResetLacrosAvailability(); }
+
+ private:
+  void SetLoggedInUser() {
+    AccountId account_id = AccountId::FromUserEmail(kManagedUserEmail);
+    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
+  }
+
+  void SetLacrosAvailability() {
+    policy::PolicyMap policy;
+    policy.Set(policy::key::kLacrosAvailability, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(GetLacrosAvailabilityPolicyName(
+                   standalone_browser::LacrosAvailability::kLacrosOnly)),
+               /*external_data_fetcher=*/nullptr);
+    crosapi::browser_util::CacheLacrosAvailability(policy);
+  }
+
+  void ResetLacrosAvailability() {
+    crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
+  }
+
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap
@@ -136,7 +192,8 @@ void VerifyPageContentDict(
     bool expected_is_phone_hub_apps_access_granted_,
     bool expected_is_camera_roll_file_permission_granted_,
     bool expected_is_camera_roll_access_status_granted_,
-    bool expected_is_feature_setup_request_supported_) {
+    bool expected_is_feature_setup_request_supported_,
+    bool expected_is_lacros_tab_sync_enabled_) {
   ASSERT_TRUE(value->is_dict());
   const base::Value::Dict& page_content_dict = value->GetDict();
 
@@ -252,6 +309,9 @@ void VerifyPageContentDict(
   EXPECT_THAT(
       page_content_dict.FindBool("isPhoneHubFeatureCombinedSetupSupported"),
       Optional(expected_is_feature_setup_request_supported_));
+
+  EXPECT_THAT(page_content_dict.FindBool("isLacrosTabSyncEnabled"),
+              Optional(expected_is_lacros_tab_sync_enabled_));
 }
 
 }  // namespace
@@ -300,12 +360,16 @@ class MultideviceHandlerTest : public testing::Test {
         phonehub::prefs::kScreenLockStatus,
         static_cast<int>(phonehub::ScreenLockManager::LockStatus::kLockedOff));
 
+    CreateHandler();
+  }
+
+  void CreateHandler() {
     handler_ = std::make_unique<TestMultideviceHandler>(
         prefs_.get(), fake_multidevice_setup_client_.get(),
         fake_multidevice_feature_access_manager_.get(),
         fake_android_sms_pairing_state_tracker_.get(),
         fake_android_sms_app_manager_.get(), fake_apps_access_manager_.get(),
-        fake_camera_roll_manager_.get());
+        fake_camera_roll_manager_.get(), &fake_browser_tabs_model_provider_);
 
     test_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&test_profile_));
@@ -328,7 +392,7 @@ class MultideviceHandlerTest : public testing::Test {
     test_web_ui_.reset();
     handler_ = std::make_unique<TestMultideviceHandler>(
         prefs_.get(), fake_multidevice_setup_client_.get(), nullptr, nullptr,
-        nullptr, nullptr, nullptr);
+        nullptr, nullptr, nullptr, nullptr);
 
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(test_web_contents_.get());
@@ -519,26 +583,30 @@ class MultideviceHandlerTest : public testing::Test {
                              std::make_unique<base::Value>(is_enabled));
       EXPECT_TRUE(
           prefs_->IsManagedPreference(::prefs::kNearbySharingEnabledPrefName));
-      if (did_managed_change)
+      if (did_managed_change) {
         ++expected_call_count;
+      }
     } else {
       prefs_->RemoveManagedPref(::prefs::kNearbySharingEnabledPrefName);
       EXPECT_FALSE(
           prefs_->IsManagedPreference(::prefs::kNearbySharingEnabledPrefName));
-      if (did_managed_change)
+      if (did_managed_change) {
         ++expected_call_count;
+      }
 
       prefs_->SetBoolean(::prefs::kNearbySharingEnabledPrefName, is_enabled);
-      if (did_enabled_change)
+      if (did_enabled_change) {
         ++expected_call_count;
+      }
     }
     EXPECT_EQ(is_enabled,
               prefs_->GetBoolean(::prefs::kNearbySharingEnabledPrefName));
 
     EXPECT_EQ(expected_call_count, test_web_ui()->call_data().size());
 
-    if (expected_call_count == call_data_count_before_call)
+    if (expected_call_count == call_data_count_before_call) {
       return;
+    }
 
     const content::TestWebUI::CallData& call_data =
         CallDataAtIndex(expected_call_count - 1);
@@ -614,6 +682,28 @@ class MultideviceHandlerTest : public testing::Test {
     VerifyPageContent(call_data.arg2());
   }
 
+  void SimulateLacrosTabSyncEnabledChanged(bool is_lacros_tab_sync_enabled) {
+    size_t call_data_count_before_call = test_web_ui()->call_data().size();
+
+    fake_browser_tabs_model_provider_.NotifyBrowserTabsUpdated(
+        is_lacros_tab_sync_enabled, {});
+    if (base::FeatureList::IsEnabled(syncer::kChromeOSSyncedSessionSharing)) {
+      expected_is_lacros_tab_sync_enabled_ = is_lacros_tab_sync_enabled;
+    } else {
+      expected_is_lacros_tab_sync_enabled_ = false;
+    }
+
+    ASSERT_EQ(call_data_count_before_call + 1u,
+              test_web_ui()->call_data().size());
+
+    const content::TestWebUI::CallData& call_data =
+        CallDataAtIndex(call_data_count_before_call);
+    EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+    EXPECT_EQ("settings.updateMultidevicePageContentData",
+              call_data.arg1()->GetString());
+    VerifyPageContent(call_data.arg2());
+  }
+
   void CallRetryPendingHostSetup(bool success) {
     base::Value::List empty_args;
     test_web_ui()->HandleReceivedMessage("retryPendingHostSetup", empty_args);
@@ -636,8 +726,9 @@ class MultideviceHandlerTest : public testing::Test {
     args.Append("handlerFunctionName");
     args.Append(static_cast<int>(feature));
     args.Append(enabled);
-    if (auth_token)
+    if (auth_token) {
       args.Append(*auth_token);
+    }
 
     base::Value::List empty_args;
     test_web_ui()->HandleReceivedMessage("setFeatureEnabledState", args);
@@ -694,8 +785,9 @@ class MultideviceHandlerTest : public testing::Test {
     bool completed_successfully = status ==
                                   phonehub::NotificationAccessSetupOperation::
                                       Status::kCompletedSuccessfully;
-    if (completed_successfully)
+    if (completed_successfully) {
       call_data_count_before_call++;
+    }
 
     EXPECT_EQ(call_data_count_before_call + 1u,
               test_web_ui()->call_data().size());
@@ -721,8 +813,9 @@ class MultideviceHandlerTest : public testing::Test {
     bool completed_successfully =
         status ==
         eche_app::AppsAccessSetupOperation::Status::kCompletedSuccessfully;
-    if (completed_successfully)
+    if (completed_successfully) {
       call_data_count_before_call++;
+    }
 
     EXPECT_EQ(call_data_count_before_call + 1u,
               test_web_ui()->call_data().size());
@@ -748,8 +841,9 @@ class MultideviceHandlerTest : public testing::Test {
     bool completed_successfully =
         status ==
         phonehub::CombinedAccessSetupOperation::Status::kCompletedSuccessfully;
-    if (completed_successfully)
+    if (completed_successfully) {
       call_data_count_before_call++;
+    }
 
     EXPECT_EQ(call_data_count_before_call + 1u,
               test_web_ui()->call_data().size());
@@ -823,6 +917,7 @@ class MultideviceHandlerTest : public testing::Test {
   bool expected_is_camera_roll_file_permission_granted_ = true;
   bool expected_is_camera_roll_access_status_granted_ = false;
   bool expected_is_feature_setup_request_supported_ = false;
+  bool expected_is_lacros_tab_sync_enabled_ = false;
 
  private:
   void VerifyPageContent(const base::Value* value) {
@@ -834,7 +929,8 @@ class MultideviceHandlerTest : public testing::Test {
         expected_is_phone_hub_apps_access_granted_,
         expected_is_camera_roll_file_permission_granted_,
         expected_is_camera_roll_access_status_granted_,
-        expected_is_feature_setup_request_supported_);
+        expected_is_feature_setup_request_supported_,
+        expected_is_lacros_tab_sync_enabled_);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -850,6 +946,7 @@ class MultideviceHandlerTest : public testing::Test {
       fake_android_sms_pairing_state_tracker_;
   std::unique_ptr<eche_app::FakeAppsAccessManager> fake_apps_access_manager_;
   std::unique_ptr<phonehub::FakeCameraRollManager> fake_camera_roll_manager_;
+  phonehub::FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
 
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
       host_status_with_device_;
@@ -1063,6 +1160,20 @@ TEST_F(MultideviceHandlerTest, CameraRollSetupFlow) {
   // If access has already been granted, a setup operation should not occur.
   CallAttemptCameraRollSetup(/*has_access_been_granted=*/true);
   EXPECT_FALSE(IsCameraRollAccessSetupOperationInProgress());
+}
+
+TEST_F(MultideviceHandlerTest, LacrosTabSyncStatusTest) {
+  // Set up the environment to reflect a "Lacros Only" scenario and recreate the
+  // handler under that setting.
+  ScopedLacrosOnlyHandle lacros_only_handle;
+  InitWithFeatures(/*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing,
+                                         ash::features::kLacrosOnly},
+                   /*disabled_features=*/{});
+  CreateHandler();
+
+  // Invokes a status change and verifies the expected enabled/disabled value.
+  SimulateLacrosTabSyncEnabledChanged(/*is_lacros_tab_sync_enabled=*/false);
+  SimulateLacrosTabSyncEnabledChanged(/*is_lacros_tab_sync_enabled=*/true);
 }
 
 TEST_F(MultideviceHandlerTest, LogUmaMetricsForSetupFlow) {
