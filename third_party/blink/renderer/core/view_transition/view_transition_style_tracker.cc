@@ -1291,6 +1291,12 @@ void ViewTransitionStyleTracker::InvalidateStyle() {
     // object. This means that we should update the paint properties to update
     // the view transition element id.
     object->SetNeedsPaintPropertyUpdate();
+
+    // All elements participating in a transition are forced to become stacking
+    // contexts. This state may change when the transition ends.
+    if (auto* layer = object->EnclosingLayer()) {
+      layer->DirtyStackingContextZOrderLists();
+    }
   }
 
   document_->GetDisplayLockDocumentState()

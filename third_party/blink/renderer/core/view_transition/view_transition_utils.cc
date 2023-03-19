@@ -52,4 +52,11 @@ bool ViewTransitionUtils::IsViewTransitionRoot(const LayoutObject& object) {
          object.GetNode()->GetPseudoId() == kPseudoIdViewTransition;
 }
 
+// static
+bool ViewTransitionUtils::IsRepresentedViaPseudoElements(
+    const LayoutObject& object) {
+  auto* transition = GetActiveTransition(object.GetDocument());
+  return transition && transition->IsRepresentedViaPseudoElements(object);
+}
+
 }  // namespace blink

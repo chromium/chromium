@@ -123,6 +123,9 @@ class CORE_EXPORT ViewTransitionUtils {
   // Returns true if the given layout object corresponds to the root
   // ::view-transition pseudo element of a view transition hierarchy.
   static bool IsViewTransitionRoot(const LayoutObject& object);
+
+  // Returns true if this element is a view transition participant.
+  static bool IsRepresentedViaPseudoElements(const LayoutObject& object);
 };
 
 }  // namespace blink

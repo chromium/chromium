@@ -1397,7 +1397,9 @@ static bool NeedsEffectIgnoringClipPath(
   // We do this by ensuring that this object needs an effect node.
   // This is not required for the root element since its snapshot comes from the
   // root stacking context which is already a backdrop filter root.
-  if (style.ViewTransitionName() && !object.IsDocumentElement()) {
+  if ((style.ViewTransitionName() ||
+       ViewTransitionUtils::IsRepresentedViaPseudoElements(object)) &&
+      !object.IsDocumentElement()) {
     return true;
   }
 
