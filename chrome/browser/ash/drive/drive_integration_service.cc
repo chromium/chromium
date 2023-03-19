@@ -1150,7 +1150,6 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
     DCHECK(!pin_manager_);
     pin_manager_ = std::make_unique<PinManager>(profile_->GetPath(),
                                                 GetDriveFsInterface());
-    pin_manager_->ShouldCheckStalledFiles(true);
     GetDriveFsHost()->AddObserver(pin_manager_.get());
 
     if (preference_watcher_) {

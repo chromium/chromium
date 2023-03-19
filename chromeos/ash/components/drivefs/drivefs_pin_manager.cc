@@ -791,11 +791,9 @@ void PinManager::StartPinning() {
   progress_.stage = Stage::kSyncing;
   NotifyProgress();
 
-  if (should_check_stalled_files_) {
-    SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
-        kStalledFileInterval);
-  }
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
+      kStalledFileInterval);
 
   CheckFreeSpace();
 
@@ -1089,10 +1087,6 @@ void PinManager::NotifyProgress() {
 
 void PinManager::CheckStalledFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!should_check_stalled_files_) {
-    return;
-  }
 
   for (auto& [id, file] : files_to_track_) {
     if (!file.pinned) {

@@ -226,14 +226,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
     should_pin_ = b;
   }
 
-  // Sets the flag controlling whether the feature should regularly check the
-  // status of files that have been pinned but that haven't seen any progress
-  // yet.
-  void ShouldCheckStalledFiles(const bool b) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    should_check_stalled_files_ = b;
-  }
-
   // Sets the online or offline network status, and starts or pauses the Pin
   // manager accordingly.
   void SetOnline(bool online);
@@ -378,11 +370,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Should the feature actually pin files, or should it stop after checking the
   // space requirements?
   bool should_pin_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
-
-  // Should the feature regularly check the status of files that have been
-  // pinned but that haven't seen any progress yet?
-  bool should_check_stalled_files_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      false;
 
   // Interval at which the free space is periodically checked.
   base::TimeDelta space_check_interval_ GUARDED_BY_CONTEXT(sequence_checker_) =
