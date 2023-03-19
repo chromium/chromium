@@ -273,7 +273,6 @@ ipcz_source_set("impl") {
     "ipcz/message_macros/message_listener_definition_macros.h",
     "ipcz/message_macros/message_listener_dispatch_macros.h",
     "ipcz/message_macros/message_params_declaration_macros.h",
-    "ipcz/message_macros/message_params_declaration_macros.h",
     "ipcz/message_macros/undef_message_macros.h",
     "ipcz/node.cc",
     "ipcz/node_connector.cc",
