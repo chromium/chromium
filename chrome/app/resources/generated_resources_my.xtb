@@ -6635,6 +6635,7 @@
 <translation id="6903022061658753260">ဤအကောင့်အတွက် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ထားသည့် Chrome ဘရောင်ဇာအားလုံးတွင် သင့်ဒေတာကို စင့်ခ်လုပ်ပါမည်။ ChromeOS စင့်ခ်လုပ်မှု ရွေးချယ်စရာများအတွက် <ph name="LINK_BEGIN" />ChromeOS ဆက်တင်များ<ph name="LINK_END" /> သို့ သွားပါ။</translation>
 <translation id="6903590427234129279">(<ph name="URL_COUNT" />) ခုလုံးကို ဖွင့်ရန်</translation>
 <translation id="6903907808598579934">စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> ကိုရှာရန်</translation>
 <translation id="6904344821472985372">ဖိုင် ရယူသုံးမှု ပယ်ဖျက်ရန်</translation>
 <translation id="6904655473976120856">ထွက်ရန် အက်ပ်ခလုတ်ကို နှိပ်ပါ</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{၁ မိနစ်ကြာ အသုံးမပြုလျှင် သင့်စကားဝှက်များလုံခြုံစေရန် Google Password Manager က လော့ခ်ချပါမည်}other{{NUM_MINS} မိနစ်ကြာ အသုံးမပြုလျှင် သင့်စကားဝှက်များလုံခြုံစေရန် Google Password Manager က လော့ခ်ချပါမည်}}</translation>
@@ -8710,6 +8711,7 @@
 <translation id="8762886931014513155">သင့် <ph name="DEVICE_TYPE" /> အတွက် အပ်ဒိတ်လိုပါသည်</translation>
 <translation id="8763927697961133303">USB ကိရိယာ</translation>
 <translation id="8766796754185931010">ကိုတိုရီ</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> အတွက် ရှာဖွေမှုအားလုံးပြရန်</translation>
 <translation id="8767621466733104912">အသုံးပြုသူများ အားလုံးအတွက် Chrome ကို အလိုအလျောက် အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="8770406935328356739">နောက်ဆက်တွဲ ပင်မလမ်းကြောင်း</translation>
 <translation id="8771300903067484968">စတင်သည့် စာမျက်နှာနောက်ခံကို မူလနောက်ခံသို့ ပြင်ဆင်သတ်မှတ်ထားပါသည်။</translation>

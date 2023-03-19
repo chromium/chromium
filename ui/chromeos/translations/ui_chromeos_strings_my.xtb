@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">ကော်ဖီသောက်နေသူ</translation>
 <translation id="2251368349685848079">အမှိုက်ပုံးမှ ပြန်ယူရန်</translation>
+<translation id="2278133026967558505">ဝဘ်ဆိုက်နှင့် URL အားလုံးက ဖိုင်သုံးနိုင်သည်</translation>
 <translation id="2282155092769082568">အလိုအလျောက် စီစဉ်သတ်မှတ်ခြင်း URL −</translation>
 <translation id="2284767815536050991">ဖယ်ရှားနိုင်သည့် သိုလှောင်ခန်း</translation>
 <translation id="2288278176040912387">ကစားသူ မှတ်တမ်းတင်</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">အထောက်အထားစိစစ်မှုဆိုင်ရာ ဆာဗာအထောက်အထားကို အတည်ပြုရန် ‘အကြောင်းအရာ၏ အခြားအမည်နှင့် ကိုက်ညီမှု’ (သို့) ‘ဒိုမိန်းနောက်ဆက်နှင့် ကိုက်ညီမှု’ တို့ မပါဝင်ပါ</translation>
 <translation id="7165320105431587207">ကွန်ရက်ပြုပြင်ရန် မအောင်မြင်ပါ</translation>
 <translation id="7170041865419449892">ဘောင်အပြင်မှာ ရှိနေ</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> မှအပ ဝဘ်ဆိုက်နှင့် URL အားလုံးက ဖိုင်သုံးနိုင်သည်</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ဖိုင်ကို အဖြစ် သိမ်းရန်</translation>

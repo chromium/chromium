@@ -1204,6 +1204,7 @@
 <translation id="7026338066939101231">Նվազեցնել</translation>
 <translation id="7029814467594812963">Ավարտել սեսիան</translation>
 <translation id="7032161822340700104">Թույլատրվում է առավելագույնը 6 ձևանմուշ։ Նոր ձևանմուշ պահելու համար հեռացրեք մեկ ուրիշը։</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> հավելվածն ուզում է օգտագործել ձեր <ph name="DEVICE_NAME" />ը։ Միացրեք սարքի <ph name="DEVICE_NAME" />ի ֆիզիկական փոխանջատիչը։</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Օգնական</translation>
 <translation id="7042322267639375032">Ծալել կարգավիճակի տարածքը</translation>
 <translation id="7045033600005038336">Փոխարինե՞լ ձևանմուշը</translation>
@@ -1371,6 +1372,7 @@
 <translation id="793716872548410480">Սեղմեք <ph name="SHORTCUT_KEY_NAME" /> + V՝ սեղմատախտակը տեսնելու համար։ Վերջին 5 պատճենված տարրերը պահվել են սեղմատախտակում։</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
 <translation id="7944023924886109030">Դիտել այսօրվա բոլոր միջոցառումները</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> հավելվածն ուզում է օգտագործել ձեր <ph name="DEVICE_NAME" />ը</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-ից</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
 <translation id="797512352675305461">Միացնել կամ անջատել լիաէկրան խոշորացույցը</translation>

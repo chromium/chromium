@@ -6626,6 +6626,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6903022061658753260">Maʼlumotlaringiz bu hisob sinxronizatsiyasi yoqilgan barcha Chrome brauzerlarida sinxronlanadi. ChromeOS sinxronizatsiya usullarini <ph name="LINK_BEGIN" />ChromeOS sozlamalari orqali<ph name="LINK_END" /> sozlash mumkin.</translation>
 <translation id="6903590427234129279">Hammasini (<ph name="URL_COUNT" />) ochish</translation>
 <translation id="6903907808598579934">Sinxronizatsiyani yoqish</translation>
+<translation id="6903916726032521638">Qidirish: <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Fayldan ruxsatni olib qo‘yish</translation>
 <translation id="6904655473976120856">Chiqish uchun ilova tugmasini bosing</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Parollaringizni xavfsiz saqlash uchun Google Password Manager 1 daqiqa nofaollikdan keyin qulflanadi}other{Parollaringizni xavfsiz saqlash uchun Google Password Manager {NUM_MINS} daqiqa nofaollikdan keyin qulflanadi}}</translation>
@@ -8699,6 +8700,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> tizimi yangilanishi lozim</translation>
 <translation id="8763927697961133303">USB qurilma</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Barcha <ph name="QUERY_CLUSTER_NAME" /> qidiruvlari</translation>
 <translation id="8767621466733104912">Barcha Chrome foydalanuvchilari uchun avtomatik yangilash</translation>
 <translation id="8770406935328356739">Kengaytma tub katalogi</translation>
 <translation id="8771300903067484968">Bosh sahifadagi fon rasmi standart fon rasm etib tayinlandi.</translation>

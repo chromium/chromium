@@ -129,6 +129,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1576623706766186887">Zoem uit wanneer vergrootglas aan is</translation>
 <translation id="1586324912145647027">Gaan na lessenaar 1 tot 8</translation>
 <translation id="1589090746204042747">Kry toegang tot al jou aktiwiteit in hierdie sessie</translation>
+<translation id="1604857178818051494">Onderbreek media</translation>
 <translation id="1610778689852195798">"Ontdoen"</translation>
 <translation id="1611993646327628135">Aan</translation>
 <translation id="1618835956950524778">Merk lanseerderknoppie op rak</translation>
@@ -190,6 +191,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1862380676329487333">Dateer op en meld af</translation>
 <translation id="1864454756846565995">USB C-toestel (poort aan agterkant)</translation>
 <translation id="1869497990620230175">Kitslêers</translation>
+<translation id="1871023081802165724">Speel media</translation>
 <translation id="1879018240766558464">Incognito-vensters word nie tans gesteun nie. Ander programme sal gestoor word.</translation>
 <translation id="1882814835921407042">Geen selnetwerk nie</translation>
 <translation id="1882897271359938046">Weerspieëling na <ph name="DISPLAY_NAME" /></translation>
@@ -241,6 +243,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2132302418721800944">Neem volskerm op</translation>
 <translation id="2135456203358955318">Gedokte vergrootglas</translation>
 <translation id="2148716181193084225">Vandag</translation>
+<translation id="2149229036084364364">Gaan na vorige snit</translation>
 <translation id="2161132820593978283">Probeer kamera se raamfunksie sodat jy met video-oproepe in die middel van die skerm is. Skakel dit aan in Kitsinstellings.</translation>
 <translation id="2170530631236737939">Swiep met drie vingers af om Oorsig te verlaat</translation>
 <translation id="2185166372312820725">Gaan na vorige oortjie</translation>
@@ -370,6 +373,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2865888419503095837">Netwerkinligting</translation>
 <translation id="2872353916818027657">Ruil primêre monitor</translation>
 <translation id="2872961005593481000">Skakel af</translation>
+<translation id="2876338922445400217">Zoem in op skerm</translation>
 <translation id="2878884018241093801">Geen onlangse items nie</translation>
 <translation id="2885950158625301909">Kom meer te wete</translation>
 <translation id="2891209721153296020">"Ontkies"</translation>
@@ -394,6 +398,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
 <translation id="3009958530611748826">Kies 'n vouer om in te stoor</translation>
 <translation id="301282384882049174">Gedeel deur jou administrateur</translation>
+<translation id="3018135054368884502">Spoel media vinnig vorentoe</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3033912566804961911">Kombineer met <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Maak lêers oop</translation>
@@ -496,6 +501,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="353086728817903341">Gekoppel aan <ph name="NUM_DEVICES" /> toestelle</translation>
 <translation id="3533126039236445965">Apps op rak</translation>
 <translation id="3542066395059568317">Jy sal aanbevelings sien sodat jy kan aangaan waar jy opgehou het. Jy kan regsklik om aanbevelings te verwyder.</translation>
+<translation id="3546121235777416274">Fokus op die prent-in-prent-venster</translation>
 <translation id="3552189655002856821">Wi-fi is afgeskakel</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> is vasgespeld</translation>
 <translation id="3558768885091059911">Skakel kamera- en mikrofoontoegang aan?</translation>
@@ -576,6 +582,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3891340733213178823">Druk Ctrl+Shift+Q twee keer om af te meld.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproke terugvoer)</translation>
 <translation id="3897533311200664389">Begin 'n teksnavraag</translation>
+<translation id="3898464793473355515">Draai skerm 90 grade kloksgewys</translation>
 <translation id="3899995891769452915">Steminvoer</translation>
 <translation id="3900355044994618856">Jou sessie sal oor <ph name="SESSION_TIME_REMAINING" /> eindig</translation>
 <translation id="3901991538546252627">Koppel tans aan <ph name="NAME" /></translation>
@@ -744,6 +751,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4702647871202761252">Privaatheidskerm is af</translation>
 <translation id="4706121060329443414">Sal later probeer aflaai. Spraak sal vir eers na Google toe gestuur word vir verwerking.</translation>
 <translation id="470644585772471629">Kleuromkering</translation>
+<translation id="4708065238214351979">Maak sleutelbord helderder</translation>
 <translation id="4717575069099566988">Jou USB-C-kabel steun nie USB4 nie. Toestelwerkverrigting kan beperk wees.</translation>
 <translation id="4730374152663651037">GEREELD GEBRUIK</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
@@ -770,6 +778,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4849058404725798627">Lig voorwerp met sleutelbordfokus uit</translation>
 <translation id="485592688953820832">Geen handeling nie (onderbreek)</translation>
 <translation id="485634149294284819">Voer sleutelbordkieslys in</translation>
+<translation id="485806788160414322">Speel of onderbreek media</translation>
 <translation id="4860284199500934869">Gaan jou netwerkverbinding na om <ph name="FILENAME" /> af te laai</translation>
 <translation id="4864369630010738180">Meld tans aan …</translation>
 <translation id="4864648187878336334">Lessenaar 15</translation>
@@ -789,6 +798,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="492453977506755176">Vasvangmodus-sleutel</translation>
 <translation id="4925542575807923399">Die administrateur vir hierdie rekening vereis dat hierdie rekening die eerste een moet wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="4929163402621253029">Praat jy tans? Jy is gedemp. Meer oor</translation>
+<translation id="493076006037866439">Zoem uit op skerm</translation>
 <translation id="4936329710968938986">Almal, af</translation>
 <translation id="4938176435186993759">Versteek alle voorstelle</translation>
 <translation id="4945196315133970626">Skakel kennisgewings af</translation>
@@ -797,6 +807,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4952936045814352993">Spoor foon op is nie beskikbaar wanneer wekkerklanke gedeaktiveer is nie</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vereis dat jy jou <ph name="DEVICE_TYPE" /> terugrol. Jou toestel sal teruggestel word en alle data sal uitgevee word.</translation>
 <translation id="4961318399572185831">Saai skerm uit</translation>
+<translation id="4966431234408005599">Stel volume harder</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> u. <ph name="MINUTES" /> m. <ph name="SECONDS" /> s.</translation>
 <translation id="4975771730019223894">Programkentekens</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
@@ -820,6 +831,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5045550434625856497">Verkeerde wagwoord</translation>
 <translation id="5078796286268621944">Verkeerde PIN</translation>
 <translation id="5083553833479578423">Ontsluit meer Assistent-kenmerke.</translation>
+<translation id="5092436659250499817">Skakel sleutelbordagterlig aan of af</translation>
 <translation id="509790653408515442">Wanneer jy jou foon se programme stroom, sal hulle hier verskyn</translation>
 <translation id="5098537242461068432">Lessenaar en vensters is heropen</translation>
 <translation id="5104236669533825617">Kan nie skermopname skep nie</translation>
@@ -844,6 +856,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5208059991603368177">Aan</translation>
 <translation id="5216991270656129561">Af tot <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Meld af</translation>
+<translation id="5229343007215035173">Skakel privaatheidskerm aan of af</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="523505283826916779">Toeganklikheidsinstellings</translation>
 <translation id="5245201184978705914">Kan nie transkripsie genereer nie</translation>
@@ -957,6 +970,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="576341972084747908">Laai gevaarlike <ph name="FILENAME" /> af</translation>
 <translation id="5763928712329149804">Rakgroep is af.</translation>
 <translation id="576453121877257266">Aandbeligting is aan.</translation>
+<translation id="5764569119212455782">Skakel oor na die laaste taal wat gekies is</translation>
 <translation id="5769373120130404283">Privaatheidskerm</translation>
 <translation id="5773950591113557721">Dit gee toegang vir <ph name="APP_NAME" /> en alle apps en webwerwe met die kamera- en mikrofoontoestemming</translation>
 <translation id="5774295353725270860">Maak Lêers-program oop</translation>
@@ -968,6 +982,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5805809050170488595">Klik om <ph name="NETWORK_NAME" /> te aktiveer</translation>
 <translation id="5825969630400862129">Instellings vir gekoppelde toestelle</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
+<translation id="5841296711770970362">Gaan na volgende snit</translation>
 <translation id="584525477304726060">Hou om groot te maak</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is nie geaktiveer nie.</translation>
 <translation id="5860033963881614850">Af</translation>
@@ -1103,6 +1118,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6497418457565568043">Moenie Steur Nie is aan</translation>
 <translation id="6500896621837555595">Dateer op</translation>
 <translation id="6501401484702599040">Saai tans skerm uit na <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507618042428827377">Skakel oor na die volgende beskikbare invoermetode</translation>
 <translation id="6508923215158854599">Maak seker jou Chromebook is op dieselfde wi-fi-netwerk as jou Chromecast-toestel.</translation>
 <translation id="6515727200518652613">Kamera is verloor; probeer tans herkoppel.</translation>
 <translation id="6520517963145875092">Kies 'n venster om vas te vang</translation>
@@ -1387,6 +1403,7 @@ Nuwe installasie</translation>
 <translation id="7942349550061667556">Rooi</translation>
 <translation id="7944023924886109030">Sien alle geleenthede vir vandag</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wil jou <ph name="DEVICE_NAME" /> gebruik</translation>
+<translation id="7951630946012935453">Demp sleutelbord</translation>
 <translation id="7963992254934562106">Vanaf <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Kies vouer …</translation>
 <translation id="797512352675305461">Skakel volskermvergrootglas aan of af</translation>
@@ -1518,10 +1535,12 @@ Nuwe installasie</translation>
 <translation id="8598235756057743477">Rangskik jou programme volgens naam of kleur</translation>
 <translation id="8609384513243082612">Maak nuwe oortjie oop</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" />- en <ph name="APP_2_TITLE" />-kennisgewings word versteek omdat kykbeskerming aan is</translation>
+<translation id="8619138598101195078">Stel volume sagter</translation>
 <translation id="8627191004499078455">Gekoppel aan <ph name="DEVICE_NAME" /></translation>
 <translation id="8630991711272431708">Skakel kameratoegang af</translation>
 <translation id="8631727435199967028">Toeganklikheidinstellings</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
+<translation id="8638637208069328956">Skakel mikrofoon aan of af</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> oor</translation>
 <translation id="8641805545866562088">Herlaai tans profiellys. Wag 'n paar minute.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" />-afteller</translation>
@@ -1540,6 +1559,7 @@ Nuwe installasie</translation>
 <translation id="8717459106217102612">Kies vorige woord of letter</translation>
 <translation id="8721053961083920564">Wissel volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Volskermskoot</translation>
+<translation id="8725214031272624704">Wys lys met beskikbare invoermetodes</translation>
 <translation id="8731487213223706745">Eindig om <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Dit kan dalk probeer om jou sleuteldrukke te steel</translation>
 <translation id="8735678380411481005">Kleur van sleutelbord se agterlig</translation>

@@ -1207,6 +1207,7 @@
 <translation id="7026338066939101231">הפחתה</translation>
 <translation id="7029814467594812963">יציאה מההפעלה</translation>
 <translation id="7032161822340700104">אפשר ליצור עד 6 תבניות. יש להסיר תבנית כדי ליצור תבנית חדשה.</translation>
+<translation id="7034025838182392395">האפליקציה <ph name="APP_NAME" /> מבקשת להשתמש ב<ph name="DEVICE_NAME" />. יש להפעיל את המתג הפיזי ב<ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />,‏ Google Assistant</translation>
 <translation id="7042322267639375032">כיווץ של אזור הסטטוס</translation>
 <translation id="7045033600005038336">להחליף את התבנית?</translation>
@@ -1377,6 +1378,7 @@
 <translation id="793716872548410480">‏לצפייה בלוח העריכה, יש ללחוץ על <ph name="SHORTCUT_KEY_NAME" /> + V. בלוח העריכה שמורים חמשת הפריטים האחרונים שהעתקת.</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7944023924886109030">הצגת כל האירועים של היום</translation>
+<translation id="7947798320695032612">האפליקציה <ph name="APP_NAME" /> מבקשת להשתמש ב<ph name="DEVICE_NAME" /></translation>
 <translation id="7963992254934562106">מ-<ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">בחירת תיקייה…</translation>
 <translation id="797512352675305461">הפעלה או השבתה של הזכוכית המגדלת במסך מלא</translation>

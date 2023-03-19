@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Google Drive keshi tozalandi.</translation>
 <translation id="2239068707900391003">Qahvasi bor odam</translation>
 <translation id="2251368349685848079">Chiqitdondan tiklash</translation>
+<translation id="2278133026967558505">Fayllarga barcha sayt va havolalar orqali ruxsat</translation>
 <translation id="2282155092769082568">Avtomatik sozlash uchun URL manzil:</translation>
 <translation id="2284767815536050991">tashqi xotira</translation>
 <translation id="2288278176040912387">Patefon</translation>
@@ -766,6 +767,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7162080671816799010">Avtorizatsiya serveri tasdiqlanishi uchun Subyektning muqobil nomi yoki domen kengaytmasi topilmadi</translation>
 <translation id="7165320105431587207">Tarmoq sozlanmadi</translation>
 <translation id="7170041865419449892">Diapazondan tashqarida</translation>
+<translation id="7179579940054351344">Fayllarga barcha sayt va havolalar orqali ruxsat (<ph name="NON_RESTRICTED_DESTINATIONS" /> dan tashqari)</translation>
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Faylni saqlab olish</translation>
