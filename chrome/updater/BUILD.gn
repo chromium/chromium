@@ -873,7 +873,7 @@ if (is_win || is_mac || is_linux) {
 
       data_deps = [
         ":updater_selfupdate_test_crx",
-        "//chrome/updater/mac:ksadmin_test",
+        "//chrome/updater/mac:ksadmin",
         "//chrome/updater/mac:updater_bundle_test",
       ]
 
