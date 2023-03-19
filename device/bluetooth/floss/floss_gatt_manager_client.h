@@ -519,8 +519,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                       int32_t handle,
                                       bool confirm,
                                       std::vector<uint8_t> value);
-  // Get whether MSFT extension is supported.
-  bool GetMsftSupported() const { return property_msft_supported_.Get(); }
 
   // Initialize the gatt client for the given adapter.
   void Init(dbus::Bus* bus,
@@ -686,10 +684,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
       gatt_client_exported_callback_manager_{gatt::kCallbackInterface};
   ExportedCallbackManager<FlossGattServerObserver>
       gatt_server_exported_callback_manager_{gatt::kServerCallbackInterface};
-
-  FlossProperty<bool> property_msft_supported_{
-      kGattInterface, gatt::kCallbackInterface, "IsMsftSupported",
-      nullptr /* property is not updateable */};
 
   base::WeakPtrFactory<FlossGattManagerClient> weak_ptr_factory_{this};
 };
