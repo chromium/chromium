@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 151) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 160) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -42,8 +42,10 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | apply_run_on_os_login_policy_allowed | Site |  | 100 | Implemented | Apply WebAppSettings policy for run_on_os_login to be allowed | phillis@ |
 | apply_run_on_os_login_policy_blocked | Site |  | 101 | Implemented | Apply WebAppSettings policy for run_on_os_login to be blocked | phillis@ |
 | apply_run_on_os_login_policy_run_windowed | Site |  | 102 | Implemented | Apply WebAppSettings policy for run_on_os_login to be run_windowed | phillis@ |
-| disable_run_on_os_login | Site |  | 105 | Implemented | Disable run on os login from app settings page | phillis@ |
-| enable_run_on_os_login | Site |  | 104 | Implemented | Enable run on os login from app settings page | phillis@ |
+| disable_run_on_os_login_from_app_settings | Site |  | 153 | Implemented | Disable run on os login from app settings page | phillis@ |
+| enable_run_on_os_login_from_app_settings | Site |  | 154 | Implemented | Enable run on os login from app settings page | phillis@ |
+| enable_run_on_os_login | Site | enable_run_on_os_login_from_app_settings($1) & enable_run_on_os_login_from_app_home($1) | 155 | Parameterized | Enable an app to run on OS login from the app settings or app home page | dibyapal@ |
+| disable_run_on_os_login | Site | disable_run_on_os_login_from_app_settings($1) & disable_run_on_os_login_from_app_home($1) | 156 | Parameterized | Disable an app from running on OS login from the app settings or app home page | dibyapal@ |
 | remove_run_on_os_login_policy | Site |  | 103 | Implemented | Remove  run_on_os_login policy for the app in WebAppSettings policy. | phillis@ |
 | |
 | # Create Shortcut |
@@ -100,7 +102,8 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_run_on_os_login_enabled | Site |  | 106 | Implemented | Check run on os login is enabled. | phillis@ |
 | check_tab_created |  |  | 22 | Implemented | A tab was created in a chrome browser window |  |
 | check_tab_not_created |  |  | 94 | Implemented | A tab was not created by the last state change action | cliffordcheng@, P1 |
-| check_user_cannot_set_run_on_os_login | Site |  | 111 | Implemented | Check user can't change the app's  run_on_os_login state.  |  |
+| check_user_cannot_set_run_on_os_login | Site | check_user_cannot_set_run_on_os_login_app_settings($1) & check_user_cannot_set_run_on_os_login_app_home($1) | 159 | Parameterized | Check an user is unable to change the run on os login state from UI surfaces due to policy.  | dibyapal@ |
+| check_user_cannot_set_run_on_os_login_app_settings | Site | | 158 | Implemented | Check user can't change the app's run_on_os_login state from the app settings page. | |
 | check_window_closed |  |  | 23 | Implemented | The window was closed |  |
 | check_window_created |  |  | 24 | Implemented | A window was created. |  |
 | check_window_not_created |  |  | 127 | Implemented | A window was not created. | P2 |
@@ -182,5 +185,6 @@ Actions that the user can take by going to chrome://apps and either left clickin
 | check_app_in_list_tabbed | Site |  | 11 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the app opens in a window by right clicking on it to see if the "open in window" option is checked, and by launching it to see if it opens in a separate window. |  |
 | check_app_in_list_windowed | Site |  | 12 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the app opens in a tab by right clicking on it to see if the "open in window" option is unchecked, and by launching it to see if it opens in a browser tab (and not a window). |  |
 | check_app_list_empty |  |  | 13 | Implemented | The app list is empty (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). |  |
-| enable_run_on_os_login_from_app_home | Site |  | 151 | Implemented | Checks the `open in window` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
-| disable_run_on_os_login_from_app_home | Site |  | 152 | Implemented | Unchecks the `open in window` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
+| enable_run_on_os_login_from_app_home | Site |  | 151 | Implemented | Checks the `launch at startup` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
+| disable_run_on_os_login_from_app_home | Site |  | 152 | Implemented | Unchecks the `launch at startup` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
+| check_user_cannot_set_run_on_os_login_app_home | Site | | 157 | Implemented | Checks that the user cannot set the `launch at startup` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |

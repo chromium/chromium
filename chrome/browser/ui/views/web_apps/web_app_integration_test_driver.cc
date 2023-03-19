@@ -1009,19 +1009,64 @@ void WebAppIntegrationTestDriver::MaybeClosePwa() {
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::DisableRunOnOsLogin(Site site) {
+void WebAppIntegrationTestDriver::DisableRunOnOsLoginFromAppSettings(
+    Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  SetRunOnOsLoginMode(site, apps::RunOnOsLoginMode::kNotRun);
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
+  app_management_page_handler.SetRunOnOsLoginMode(
+      app_id, apps::RunOnOsLoginMode::kNotRun);
+#endif
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::EnableRunOnOsLogin(Site site) {
+void WebAppIntegrationTestDriver::DisableRunOnOsLoginFromAppHome(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  SetRunOnOsLoginMode(site, apps::RunOnOsLoginMode::kWindowed);
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto app_home_page_handler = GetTestAppHomePageHandler();
+  app_home_page_handler.SetRunOnOsLoginMode(app_id,
+                                            web_app::RunOnOsLoginMode::kNotRun);
+#endif
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::EnableRunOnOsLoginFromAppSettings(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
+  app_management_page_handler.SetRunOnOsLoginMode(
+      app_id, apps::RunOnOsLoginMode::kWindowed);
+#endif
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::EnableRunOnOsLoginFromAppHome(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto app_home_page_handler = GetTestAppHomePageHandler();
+  app_home_page_handler.SetRunOnOsLoginMode(
+      app_id, web_app::RunOnOsLoginMode::kWindowed);
+#endif
   AfterStateChangeAction();
 }
 
@@ -1926,8 +1971,6 @@ void WebAppIntegrationTestDriver::SetOpenInTabFromAppSettings(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
-  // Will need to add feature flag based condition for web app settings page
 #if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge =
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
@@ -2877,7 +2920,8 @@ void WebAppIntegrationTestDriver::CheckSiteNotHandlesFile(
 #endif
 }
 
-void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLogin(Site site) {
+void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLoginAppSettings(
+    Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #else
@@ -2899,10 +2943,43 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLogin(Site site) {
   ASSERT_TRUE(app->run_on_os_login.has_value());
   ASSERT_TRUE(app->run_on_os_login.value()->is_managed);
   if (app_state->run_on_os_login_mode == apps::RunOnOsLoginMode::kWindowed) {
-    DisableRunOnOsLogin(site);
+    DisableRunOnOsLoginFromAppSettings(site);
     CheckRunOnOsLoginEnabled(site);
   } else {
-    EnableRunOnOsLogin(site);
+    EnableRunOnOsLoginFromAppSettings(site);
+    CheckRunOnOsLoginDisabled(site);
+  }
+  AfterStateCheckAction();
+#endif
+}
+
+void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLoginAppHome(
+    Site site) {
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  absl::optional<AppState> app_state =
+      GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
+  ASSERT_TRUE(app_state);
+  auto app_home_page_handler = GetTestAppHomePageHandler();
+
+  app_home::mojom::AppInfoPtr app;
+  app = app_home_page_handler.GetApp(app_state->id);
+
+  ASSERT_NE(app, app_home::mojom::AppInfoPtr());
+  bool run_on_os_login_mode_set =
+      (app->run_on_os_login_mode == web_app::RunOnOsLoginMode::kWindowed) ||
+      (app->run_on_os_login_mode == web_app::RunOnOsLoginMode::kNotRun);
+  EXPECT_TRUE(run_on_os_login_mode_set);
+  EXPECT_FALSE(app->may_toggle_run_on_os_login_mode);
+  if (app_state->run_on_os_login_mode == apps::RunOnOsLoginMode::kWindowed) {
+    DisableRunOnOsLoginFromAppHome(site);
+    CheckRunOnOsLoginEnabled(site);
+  } else {
+    EnableRunOnOsLoginFromAppHome(site);
     CheckRunOnOsLoginDisabled(site);
   }
   AfterStateCheckAction();
@@ -3717,18 +3794,6 @@ void WebAppIntegrationTestDriver::LaunchFile(Site site,
   browser_creator.Start(command_line, profile()->GetPath(),
                         {profile(), StartupProfileMode::kBrowserWindow}, {});
   content::RunAllTasksUntilIdle();
-#endif
-}
-
-void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
-    Site site,
-    apps::RunOnOsLoginMode login_mode) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  AppId app_id = GetAppIdBySiteMode(site);
-  ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
-      << "No app installed for site: " << static_cast<int>(site);
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetRunOnOsLoginMode(app_id, login_mode);
 #endif
 }
 

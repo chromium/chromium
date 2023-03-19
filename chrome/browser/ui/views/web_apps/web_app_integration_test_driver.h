@@ -252,8 +252,10 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CloseCustomToolbar();
   void ClosePwa();
   void MaybeClosePwa();
-  void DisableRunOnOsLogin(Site site);
-  void EnableRunOnOsLogin(Site site);
+  void DisableRunOnOsLoginFromAppSettings(Site site);
+  void DisableRunOnOsLoginFromAppHome(Site site);
+  void EnableRunOnOsLoginFromAppSettings(Site site);
+  void EnableRunOnOsLoginFromAppHome(Site site);
   void DisableFileHandling(Site site);
   void EnableFileHandling(Site site);
   void DisableWindowControlsOverlay(Site site);
@@ -350,7 +352,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckRunOnOsLoginDisabled(Site site);
   void CheckSiteHandlesFile(Site site, FileExtension file_extension);
   void CheckSiteNotHandlesFile(Site site, FileExtension file_extension);
-  void CheckUserCannotSetRunOnOsLogin(Site site);
+  void CheckUserCannotSetRunOnOsLoginAppSettings(Site site);
+  void CheckUserCannotSetRunOnOsLoginAppHome(Site site);
   void CheckUserDisplayModeInternal(mojom::UserDisplayMode user_display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
@@ -428,8 +431,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   bool IsFileHandledBySite(Site site, FileExtension file_extension);
   void SetFileHandlingEnabled(Site site, bool enabled);
   void LaunchFile(Site site, FilesOptions files_options);
-
-  void SetRunOnOsLoginMode(Site site, apps::RunOnOsLoginMode login_mode);
 
   void LaunchAppStartupBrowserCreator(const AppId& app_id);
 #if BUILDFLAG(IS_MAC)
