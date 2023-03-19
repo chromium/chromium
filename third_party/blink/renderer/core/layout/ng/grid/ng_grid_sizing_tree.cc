@@ -28,13 +28,21 @@ NGSubgriddedItemData::CreateSubgridCollection(
           range_indices.begin, range_indices.end, track_direction));
 }
 
-scoped_refptr<const NGGridLayoutTree> NGGridSizingTree::FinalizeTree() const {
-  auto layout_tree =
-      base::MakeRefCounted<NGGridLayoutTree>(sizing_data_.size());
-  for (const auto& sizing_data : sizing_data_) {
-    layout_tree->Append(sizing_data.layout_data, sizing_data.subtree_size);
+NGGridSizingTree NGGridSizingTree::CopySubtree(wtf_size_t subtree_root) const {
+  DCHECK_LT(subtree_root, sizing_data_.size());
+
+  const wtf_size_t subtree_size = sizing_data_[subtree_root]->subtree_size;
+  DCHECK_LE(subtree_root + subtree_size, sizing_data_.size());
+
+  NGGridSizingTree subtree_copy(subtree_size);
+  for (wtf_size_t i = 0; i < subtree_size; ++i) {
+    auto& copy_data = subtree_copy.CreateSizingData();
+    const auto& original_data = *sizing_data_[subtree_root + i];
+
+    copy_data.subtree_size = original_data.subtree_size;
+    copy_data.layout_data = original_data.layout_data;
   }
-  return layout_tree;
+  return subtree_copy;
 }
 
 }  // namespace blink

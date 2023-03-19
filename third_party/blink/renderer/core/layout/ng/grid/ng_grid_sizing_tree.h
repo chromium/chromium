@@ -12,7 +12,7 @@
 namespace blink {
 
 struct NGGridSizingData {
-  DISALLOW_NEW();
+  USING_FAST_MALLOC(NGGridSizingData);
 
  public:
   GridItems grid_items;
@@ -65,35 +65,38 @@ class CORE_EXPORT NGGridSizingTree {
   DISALLOW_NEW();
 
  public:
-  NGGridSizingTree() = default;
+  using GridSizingDataVector = Vector<std::unique_ptr<NGGridSizingData>, 16>;
+
   NGGridSizingTree(NGGridSizingTree&&) = default;
   NGGridSizingTree(const NGGridSizingTree&) = delete;
   NGGridSizingTree& operator=(NGGridSizingTree&&) = default;
   NGGridSizingTree& operator=(const NGGridSizingTree&) = delete;
 
-  NGGridSizingData& CreateSizingData() { return sizing_data_.emplace_back(); }
+  explicit NGGridSizingTree(wtf_size_t tree_size = 1) {
+    sizing_data_.ReserveInitialCapacity(tree_size);
+  }
+
+  NGGridSizingData& CreateSizingData() {
+    return *sizing_data_.emplace_back(std::make_unique<NGGridSizingData>());
+  }
 
   NGGridSizingData& At(wtf_size_t index) {
     DCHECK_LT(index, sizing_data_.size());
-    return sizing_data_[index];
+    return *sizing_data_[index];
   }
 
   NGGridSizingData& operator[](wtf_size_t index) { return At(index); }
 
   wtf_size_t SubtreeSize(wtf_size_t index) const {
     DCHECK_LT(index, sizing_data_.size());
-    return sizing_data_[index].subtree_size;
+    return sizing_data_[index]->subtree_size;
   }
 
-  // Creates a copy of the current grid geometry for the entire tree in a new
-  // `NGGridLayoutTree` instance, which doesn't hold the grid items and its
-  // stored in a `scoped_refptr` to be shared by multiple subtrees.
-  scoped_refptr<const NGGridLayoutTree> FinalizeTree() const;
-
+  NGGridSizingTree CopySubtree(wtf_size_t subtree_root) const;
   wtf_size_t Size() const { return sizing_data_.size(); }
 
  private:
-  Vector<NGGridSizingData, 16> sizing_data_;
+  GridSizingDataVector sizing_data_;
 };
 
 }  // namespace blink
