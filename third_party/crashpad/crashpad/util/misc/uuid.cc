@@ -90,7 +90,7 @@ bool UUID::InitializeFromString(const base::StringPiece& string) {
 
 #if BUILDFLAG(IS_WIN)
 bool UUID::InitializeFromString(const base::WStringPiece& string) {
-  return InitializeFromString(WideToUTF8(string));
+  return InitializeFromString(base::WideToUTF8(string));
 }
 #endif
 
