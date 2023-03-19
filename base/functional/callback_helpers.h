@@ -79,7 +79,7 @@ class OnceCallbackHolder final {
   OnceCallbackHolder& operator=(const OnceCallbackHolder&) = delete;
 
   void Run(Args... args) {
-    if (subtle::NoBarrier_AtomicExchange(&has_run_, 1)) {
+    if (has_run_.exchange(true, std::memory_order_relaxed)) {
       CHECK(ignore_extra_runs_) << "Both OnceCallbacks returned by "
                                    "base::SplitOnceCallback() were run. "
                                    "At most one of the pair should be run.";
@@ -90,7 +90,7 @@ class OnceCallbackHolder final {
   }
 
  private:
-  volatile subtle::Atomic32 has_run_ = 0;
+  std::atomic<bool> has_run_;
   base::OnceCallback<void(Args...)> callback_;
   const bool ignore_extra_runs_;
 };
