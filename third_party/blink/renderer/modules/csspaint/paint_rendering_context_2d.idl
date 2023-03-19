@@ -16,10 +16,10 @@
     void reset();
 
     // transformations (default transform is the identity matrix)
-    void scale(unrestricted double x, unrestricted double y);
-    void rotate(unrestricted double angle);
-    void translate(unrestricted double x, unrestricted double y);
-    void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+    [HighEntropy] void scale(unrestricted double x, unrestricted double y);
+    [HighEntropy] void rotate(unrestricted double angle);
+    [HighEntropy] void translate(unrestricted double x, unrestricted double y);
+    [HighEntropy] void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
     void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
     void resetTransform();
     [RaisesException] void setTransform(optional DOMMatrixInit transform = {});
@@ -28,7 +28,7 @@
 
     // compositing
     attribute unrestricted double globalAlpha; // (default 1.0)
-    attribute DOMString globalCompositeOperation; // (default source-over)
+    [HighEntropy] attribute DOMString globalCompositeOperation; // (default source-over)
     [MeasureAs=Canvas2DFilter, SetterCallWith=ExecutionContext] attribute (DOMString or CanvasFilter)? filter; // (default 'none')
 
     // image smoothing
@@ -36,30 +36,30 @@
     [RuntimeEnabled=CanvasImageSmoothing] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
 
     // colors and styles (see also the CanvasDrawingStyles interface)
-    [SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any strokeStyle; // (default black)
-    [SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any fillStyle; // (default black)
+    [HighEntropy, SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any strokeStyle; // (default black)
+    [HighEntropy, SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any fillStyle; // (default black)
     CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
     [RaisesException] CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
     [RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetitionType);
     CanvasGradient createConicGradient(double startAngle, double cx, double cy);
 
     // shadows
-    attribute unrestricted double shadowOffsetX;
-    attribute unrestricted double shadowOffsetY;
-    attribute unrestricted double shadowBlur;
-    attribute DOMString shadowColor;
+    [HighEntropy] attribute unrestricted double shadowOffsetX;
+    [HighEntropy] attribute unrestricted double shadowOffsetY;
+    [HighEntropy] attribute unrestricted double shadowBlur;
+    [HighEntropy] attribute DOMString shadowColor;
 
     // rects
-    void clearRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    void fillRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    void strokeRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [HighEntropy] void clearRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [HighEntropy] void fillRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [HighEntropy] void strokeRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
 
     // path API (see also CanvasPath)
-    void beginPath();
-    void fill(optional CanvasFillRule winding);
-    void fill(Path2D path, optional CanvasFillRule winding);
-    void stroke();
-    void stroke(Path2D path);
+    [HighEntropy] void beginPath();
+    [HighEntropy] void fill(optional CanvasFillRule winding);
+    [HighEntropy] void fill(Path2D path, optional CanvasFillRule winding);
+    [HighEntropy] void stroke();
+    [HighEntropy] void stroke(Path2D path);
 
     void clip(optional CanvasFillRule winding);
     void clip(Path2D path, optional CanvasFillRule winding);

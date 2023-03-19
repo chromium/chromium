@@ -6,16 +6,16 @@
 
 interface mixin CanvasPath {
     // shared path API methods
-    [NoAllocDirectCall] void closePath();
-    [NoAllocDirectCall] void moveTo(unrestricted double x, unrestricted double y);
-    [NoAllocDirectCall] void lineTo(unrestricted double x, unrestricted double y);
+    [HighEntropy, NoAllocDirectCall] void closePath();
+    [HighEntropy, NoAllocDirectCall] void moveTo(unrestricted double x, unrestricted double y);
+    [HighEntropy, NoAllocDirectCall] void lineTo(unrestricted double x, unrestricted double y);
     [NoAllocDirectCall] void quadraticCurveTo(unrestricted double cpx, unrestricted double cpy, unrestricted double x, unrestricted double y);
     [NoAllocDirectCall] void bezierCurveTo(unrestricted double cp1x, unrestricted double cp1y, unrestricted double cp2x, unrestricted double cp2y, unrestricted double x, unrestricted double y);
     [NoAllocDirectCall, RaisesException] void arcTo(unrestricted double x1, unrestricted double y1, unrestricted double x2, unrestricted double y2, unrestricted double radius);
-    [NoAllocDirectCall] void rect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    [RaisesException] void roundRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h, sequence<(unrestricted double or DOMPointInit)> radii);
-    [RaisesException] void roundRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h, optional (unrestricted double or DOMPointInit) radii = 0);
+    [HighEntropy, NoAllocDirectCall] void rect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [HighEntropy, RaisesException] void roundRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h, sequence<(unrestricted double or DOMPointInit)> radii);
+    [HighEntropy, RaisesException] void roundRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h, optional (unrestricted double or DOMPointInit) radii = 0);
 
-    [NoAllocDirectCall, RaisesException] void arc(unrestricted double x, unrestricted double y, unrestricted double radius, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
-    [NoAllocDirectCall, RaisesException] void ellipse(unrestricted double x, unrestricted double y, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
+    [HighEntropy, NoAllocDirectCall, RaisesException] void arc(unrestricted double x, unrestricted double y, unrestricted double radius, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
+    [HighEntropy, NoAllocDirectCall, RaisesException] void ellipse(unrestricted double x, unrestricted double y, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
 };
