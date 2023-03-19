@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/server/wayland_server_controller.h"
+#include "third_party/cros_system_api/constants/vm_tools.h"
 
 namespace guest_os {
 
@@ -32,13 +33,19 @@ void GuestOsSecurityDelegate::BuildServer(
 void GuestOsSecurityDelegate::MaybeRemoveServer(
     base::WeakPtr<GuestOsSecurityDelegate> security_delegate,
     const base::FilePath& path) {
-  if (!security_delegate)
+  if (!security_delegate) {
     return;
+  }
   exo::WaylandServerController* controller =
       exo::WaylandServerController::Get();
-  if (!controller)
+  if (!controller) {
     return;
+  }
   controller->DeleteServer(path);
+}
+
+std::string GuestOsSecurityDelegate::GetSecurityContext() const {
+  return vm_tools::kConciergeSecurityContext;
 }
 
 }  // namespace guest_os

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include <memory>
 
-#include "chrome/browser/ash/borealis/borealis_security_delegate.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -88,11 +87,10 @@ TEST_F(GuestOsWaylandServerTest, SuccessfulResultIsReused) {
   EXPECT_CALL(capability_factory, Call(_))
       .Times(1)
       .WillOnce(Invoke(
-          [this](base::OnceCallback<void(
-                     std::unique_ptr<GuestOsSecurityDelegate>)> callback) {
+          [](base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>
+                 callback) {
             std::move(callback).Run(
-                std::make_unique<borealis::BorealisSecurityDelegate>(
-                    &profile_));
+                std::make_unique<GuestOsSecurityDelegate>());
           }));
   base::RunLoop loop;
   EXPECT_CALL(result_factory, Call(_))
@@ -124,11 +122,10 @@ TEST_F(GuestOsWaylandServerTest, InvalidatedOnceServerDestroyed) {
 
   EXPECT_CALL(capability_factory, Call(_))
       .WillOnce(Invoke(
-          [this](base::OnceCallback<void(
-                     std::unique_ptr<GuestOsSecurityDelegate>)> callback) {
+          [](base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>
+                 callback) {
             std::move(callback).Run(
-                std::make_unique<borealis::BorealisSecurityDelegate>(
-                    &profile_));
+                std::make_unique<GuestOsSecurityDelegate>());
           }));
   base::RunLoop loop;
   EXPECT_CALL(result_factory, Call(_))

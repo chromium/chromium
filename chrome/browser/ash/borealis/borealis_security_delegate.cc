@@ -7,12 +7,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "third_party/cros_system_api/constants/vm_tools.h"
 #include "ui/aura/window.h"
 
 namespace borealis {
@@ -31,20 +31,15 @@ void BorealisSecurityDelegate::Build(
           std::move(callback).Run(nullptr);
           return;
         }
-        std::move(callback).Run(
-            std::make_unique<BorealisSecurityDelegate>(profile));
+        BorealisSecurityDelegate* delegate =
+            new BorealisSecurityDelegate(profile);
+        // Use WrapUnique due to private constructor.
+        std::move(callback).Run(base::WrapUnique(delegate));
       },
       profile, std::move(callback)));
 }
 
-BorealisSecurityDelegate::BorealisSecurityDelegate(Profile* profile)
-    : profile_(profile) {}
-
 BorealisSecurityDelegate::~BorealisSecurityDelegate() = default;
-
-std::string BorealisSecurityDelegate::GetSecurityContext() const {
-  return vm_tools::kConciergeSecurityContext;
-}
 
 bool BorealisSecurityDelegate::CanSelfActivate(aura::Window* window) const {
   return BorealisService::GetForProfile(profile_)
@@ -60,5 +55,16 @@ bool BorealisSecurityDelegate::CanSetBoundsWithServerSideDecoration(
     aura::Window* window) const {
   return true;
 }
+
+// static
+std::unique_ptr<BorealisSecurityDelegate>
+BorealisSecurityDelegate::MakeForTesting(Profile* profile) {
+  BorealisSecurityDelegate* delegate = new BorealisSecurityDelegate(profile);
+  // Use WrapUnique due to private constructor.
+  return base::WrapUnique(delegate);
+}
+
+BorealisSecurityDelegate::BorealisSecurityDelegate(Profile* profile)
+    : profile_(profile) {}
 
 }  // namespace borealis

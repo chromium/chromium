@@ -29,7 +29,8 @@ TEST_F(BorealisSecurityDelegateTest, MainAppCanSelfActivate) {
       "org.chromium.guest_os.borealis.wmclass.Steam",
       &BorealisService::GetForProfile(&profile_)->WindowManager());
   EXPECT_TRUE(
-      BorealisSecurityDelegate(&profile_).CanSelfActivate(window->window()));
+      BorealisSecurityDelegate::MakeForTesting(&profile_)->CanSelfActivate(
+          window->window()));
 }
 
 TEST_F(BorealisSecurityDelegateTest, NormalAppCanNotSelfActivate) {
@@ -43,7 +44,8 @@ TEST_F(BorealisSecurityDelegateTest, NormalAppCanNotSelfActivate) {
           window->window())));
 
   EXPECT_FALSE(
-      BorealisSecurityDelegate(&profile_).CanSelfActivate(window->window()));
+      BorealisSecurityDelegate::MakeForTesting(&profile_)->CanSelfActivate(
+          window->window()));
 }
 
 TEST_F(BorealisSecurityDelegateTest, AnonymousAppCanNotSelfActivate) {
@@ -56,7 +58,8 @@ TEST_F(BorealisSecurityDelegateTest, AnonymousAppCanNotSelfActivate) {
           window->window())));
 
   EXPECT_FALSE(
-      BorealisSecurityDelegate(&profile_).CanSelfActivate(window->window()));
+      BorealisSecurityDelegate::MakeForTesting(&profile_)->CanSelfActivate(
+          window->window()));
 }
 
 }  // namespace borealis

@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "third_party/cros_system_api/constants/vm_tools.h"
 #include "ui/aura/window.h"
 
 namespace crostini {
@@ -28,10 +27,6 @@ void CrostiniSecurityDelegate::Build(
 }
 
 CrostiniSecurityDelegate::~CrostiniSecurityDelegate() = default;
-
-std::string CrostiniSecurityDelegate::GetSecurityContext() const {
-  return vm_tools::kConciergeSecurityContext;
-}
 
 bool CrostiniSecurityDelegate::CanLockPointer(aura::Window* window) const {
   return window->GetProperty(chromeos::kUseOverviewToExitPointerLock);

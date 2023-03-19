@@ -43,6 +43,9 @@ class GuestOsSecurityDelegate : public exo::SecurityDelegate {
       base::WeakPtr<GuestOsSecurityDelegate> security_delegate,
       const base::FilePath& path);
 
+  // exo::SecurityDelegate overrides:
+  std::string GetSecurityContext() const override;
+
  private:
   base::WeakPtrFactory<GuestOsSecurityDelegate> weak_factory_;
 };
