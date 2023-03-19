@@ -52,10 +52,10 @@ bool HardwareVideoEncodingPreSandboxHook(
   permissions.push_back(BrokerFilePermission::ReadWrite(kDevImageProc0Path));
 #elif BUILDFLAG(USE_VAAPI)
   command_set.set(sandbox::syscall_broker::COMMAND_OPEN);
+  command_set.set(sandbox::syscall_broker::COMMAND_STAT);
 
   if (options.use_amd_specific_policies) {
     command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
-    command_set.set(sandbox::syscall_broker::COMMAND_STAT);
     command_set.set(sandbox::syscall_broker::COMMAND_READLINK);
 
     permissions.push_back(BrokerFilePermission::ReadOnly("/dev/dri"));
@@ -81,6 +81,15 @@ bool HardwareVideoEncodingPreSandboxHook(
       permissions.push_back(options.use_amd_specific_policies
                                 ? BrokerFilePermission::ReadWrite(path)
                                 : BrokerFilePermission::ReadOnly(path));
+
+#if BUILDFLAG(USE_VAAPI)
+      uint32_t major = (static_cast<uint32_t>(st.st_rdev) >> 8) & 0xff;
+      uint32_t minor = static_cast<uint32_t>(st.st_rdev) & 0xff;
+      std::string char_device_path =
+          base::StringPrintf("/sys/dev/char/%u:%u/", major, minor);
+      permissions.push_back(
+          BrokerFilePermission::ReadOnlyRecursive(char_device_path));
+#endif  // BUILDFLAG(USE_VAAPI)
     }
   }
 
