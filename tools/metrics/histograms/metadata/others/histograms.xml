@@ -2813,8 +2813,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.AcceptCHFrame" enum="AcceptCHFrameRestart"
-    expires_after="2023-08-20">
-  <owner>aarontag@chromium.org</owner>
+    expires_after="2023-10-31">
+  <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
     Emitted on two related events: First, when an request that is eligable to be
@@ -2825,8 +2825,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.CriticalCHRestart" enum="CriticalCHRestart"
-    expires_after="2023-08-20">
-  <owner>aarontag@chromium.org</owner>
+    expires_after="2023-10-31">
+  <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
     Count of requests restarted because of the Critical-CH response header.
