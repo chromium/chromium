@@ -8,10 +8,8 @@
 #include <lib/fidl/cpp/box.h>
 #include <lib/zx/clock.h>
 
-#include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/callback_helpers.h"
-#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -125,22 +123,6 @@ void SimpleTestLogListener::PushLoggedMessage(
   } else {
     logged_messages_.push_back(std::move(message));
   }
-}
-
-void ListenFilteredByCurrentProcessId(SimpleTestLogListener& listener) {
-  // Connect the test LogListenerSafe to the Log.
-  auto log_client_end = fuchsia_component::Connect<fuchsia_logger::Log>();
-  ASSERT_TRUE(log_client_end.is_ok())
-      << FidlConnectionErrorMessage(log_client_end);
-  fidl::Client log_client(std::move(log_client_end.value()),
-                          async_get_default_dispatcher());
-  listener.ListenToLog(
-      log_client,
-      std::make_unique<fuchsia_logger::LogFilterOptions>(
-          fuchsia_logger::LogFilterOptions{
-              {.filter_by_pid = true,
-               .pid = Process::Current().Pid(),
-               .min_severity = fuchsia_logger::LogLevelFilter::kInfo}}));
 }
 
 }  // namespace base

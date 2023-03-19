@@ -1404,7 +1404,6 @@ component("base") {
       "files/memory_mapped_file_posix.cc",
       "fuchsia/default_job.cc",
       "fuchsia/default_job.h",
-      "fuchsia/fidl_event_handler.h",
       "fuchsia/file_utils.cc",
       "fuchsia/file_utils.h",
       "fuchsia/filtered_service_directory.cc",
@@ -3878,7 +3877,6 @@ test("base_unittests") {
     sources += [
       "files/dir_reader_posix_unittest.cc",
       "files/file_descriptor_watcher_posix_unittest.cc",
-      "fuchsia/fidl_event_handler_unittest.cc",
       "fuchsia/file_utils_unittest.cc",
       "fuchsia/filtered_service_directory_unittest.cc",
       "fuchsia/fuchsia_logging_unittest.cc",
