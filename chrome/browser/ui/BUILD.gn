@@ -4726,6 +4726,8 @@ static_library("ui") {
       "views/global_media_controls/media_item_ui_device_selector_view.h",
       "views/global_media_controls/media_item_ui_footer_view.cc",
       "views/global_media_controls/media_item_ui_footer_view.h",
+      "views/global_media_controls/media_item_ui_helper.cc",
+      "views/global_media_controls/media_item_ui_helper.h",
       "views/global_media_controls/media_item_ui_legacy_cast_footer_view.cc",
       "views/global_media_controls/media_item_ui_legacy_cast_footer_view.h",
       "views/global_media_controls/media_notification_device_entry_ui.cc",

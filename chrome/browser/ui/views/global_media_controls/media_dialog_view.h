@@ -146,9 +146,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       MediaItemUIDeviceSelectorView* device_selector_view);
-  std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
-      const std::string& id,
-      base::WeakPtr<media_message_center::MediaNotificationItem> item);
   std::unique_ptr<global_media_controls::MediaItemUIView> BuildMediaItemUIView(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item);
