@@ -40,6 +40,15 @@ bool IsPasswordNotesWithBackupEnabled() {
   return base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup);
 }
 
+bool MatchesRealmUsernameAndPassword(
+    PasswordDetails* password,
+    const password_manager::CredentialUIEntry& credential) {
+  return base::SysNSStringToUTF8(password.signonRealm) ==
+             credential.GetFirstSignonRealm() &&
+         base::SysNSStringToUTF16(password.username) == credential.username &&
+         base::SysNSStringToUTF16(password.password) == credential.password;
+}
+
 }  // namespace
 
 using base::SysNSStringToUTF16;
@@ -181,12 +190,7 @@ using base::SysNSStringToUTF16;
   auto it = base::ranges::find_if(
       _credentials,
       [password](const password_manager::CredentialUIEntry& credential) {
-        return base::SysNSStringToUTF8(password.signonRealm) ==
-                   credential.GetFirstSignonRealm() &&
-               base::SysNSStringToUTF16(password.username) ==
-                   credential.username &&
-               base::SysNSStringToUTF16(password.password) ==
-                   credential.password;
+        return MatchesRealmUsernameAndPassword(password, credential);
       });
   if (it == _credentials.end()) {
     // TODO(crbug.com/1359392): Convert into DCHECK.
@@ -211,12 +215,7 @@ using base::SysNSStringToUTF16;
   auto it = base::ranges::find_if(
       _credentials,
       [password](const password_manager::CredentialUIEntry& credential) {
-        return base::SysNSStringToUTF8(password.signonRealm) ==
-                   credential.GetFirstSignonRealm() &&
-               base::SysNSStringToUTF16(password.username) ==
-                   credential.username &&
-               base::SysNSStringToUTF16(password.password) ==
-                   credential.password;
+        return MatchesRealmUsernameAndPassword(password, credential);
       });
 
   if (it == _credentials.end()) {
@@ -231,6 +230,29 @@ using base::SysNSStringToUTF16;
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kExplicitlyTriggeredInSettings);
   [self providePasswordsToConsumer];
+}
+
+- (void)moveCredentialToAccountStoreWithConflict:(PasswordDetails*)password {
+  auto localCredential = base::ranges::find_if(
+      _credentials,
+      [password](const password_manager::CredentialUIEntry& credential) {
+        return MatchesRealmUsernameAndPassword(password, credential);
+      });
+  absl::optional<password_manager::CredentialUIEntry> accountCredential =
+      [self conflictingAccountPassword:password];
+  DCHECK(localCredential != _credentials.end());
+  DCHECK(accountCredential.has_value());
+  if (localCredential->last_used_time < accountCredential->last_used_time) {
+    [self removeCredential:password];
+    return;
+  }
+  [self removeCredential:[[PasswordDetails alloc]
+                             initWithCredential:*accountCredential]];
+  [self moveCredentialToAccountStore:password];
+}
+
+- (BOOL)hasPasswordConflictInAccount:(PasswordDetails*)password {
+  return [self conflictingAccountPassword:password].has_value();
 }
 
 #pragma mark - PasswordDetailsTableViewControllerDelegate
@@ -384,6 +406,26 @@ using base::SysNSStringToUTF16;
     [set removeObject:oldUsername];
     [set addObject:newUsername];
   }
+}
+
+- (absl::optional<password_manager::CredentialUIEntry>)
+    conflictingAccountPassword:(PasswordDetails*)password {
+  auto it = base::ranges::find_if(
+      _credentials,
+      [password](const password_manager::CredentialUIEntry& credential) {
+        return credential.stored_in.contains(
+                   password_manager::PasswordForm::Store::kAccountStore) &&
+               base::SysNSStringToUTF8(password.signonRealm) ==
+                   credential.GetFirstSignonRealm() &&
+               base::SysNSStringToUTF16(password.username) ==
+                   credential.username &&
+               base::SysNSStringToUTF16(password.password) !=
+                   credential.password;
+      });
+  if (it == _credentials.end()) {
+    return absl::nullopt;
+  }
+  return *it;
 }
 
 @end

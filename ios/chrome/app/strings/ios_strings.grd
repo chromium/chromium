@@ -2854,6 +2854,18 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_PASSWORD_SAVED_TO_ACCOUNT_SNACKBAR_MESSAGE" desc="Message briefly displayed at the bottom of the screen to inform the user that the password had successfully been moved to their google account store. [iOS only]">
         Password saved in your Google Account, <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
+      <message name="IDS_IOS_KEEP_RECENT_PASSWORD" desc="Action button which will keep the most recently used password for a given site, and discard any older passwords, when the user is moving a password to their Google Account. [iOS only]">
+        Keep recent password
+      </message>
+      <message name="IDS_IOS_PASSWORD_MOVE_CONFLICT_ACTION_SHEET_TITLE" desc="Action sheet title to inform the user that the password they want to move to their google account store already exists. [iOS only]">
+        Password Already Exists
+      </message>
+      <message name="IDS_IOS_PASSWORD_MOVE_CONFLICT_ACTION_SHEET_MESSAGE" desc="Action sheet message to explain to the user that they already have a saved credential for the same username and website, and explain the suggested action to store only the most recent password to their google account store. [iOS only]">
+        You already saved a password for this site in your Google Account. Google can choose the most recent password for you.
+      </message>
+      <message name="IDS_IOS_CANCEL_PASSWORD_MOVE" desc="Cancel button inside the password conflict action sheet when the user is trying to move a password to their google account store [iOS only]">
+        Cancel
+      </message>
       <message name="IDS_IOS_SEARCH_COPIED" desc="The message displayed when the search is copied via long press (contextual search) [Length: 10em] [iOS only]">
         Copied
       </message>

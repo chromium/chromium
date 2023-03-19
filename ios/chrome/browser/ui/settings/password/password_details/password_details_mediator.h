@@ -57,6 +57,16 @@ class IOSChromePasswordCheckManager;
 // Moves credential and its duplicates to account store.
 - (void)moveCredentialToAccountStore:(PasswordDetails*)password;
 
+// Called to handle moving a credential to account store in case of a duplicate
+// conflict. Deletes the outdated password, and moves the local credential if it
+// is the recent one.
+- (void)moveCredentialToAccountStoreWithConflict:(PasswordDetails*)password;
+
+// Called when the user chooses to move a password to account store.
+// Returns YES if the account stores the same username for the website with a
+// different password, NO otherwise.
+- (BOOL)hasPasswordConflictInAccount:(PasswordDetails*)password;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_MEDIATOR_H_

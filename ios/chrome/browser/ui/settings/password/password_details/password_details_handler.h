@@ -29,8 +29,14 @@
                                          anchorView:(UIView*)anchorView;
 
 // Called when the user wants to move a password from profile store to account
-// store.
-- (void)moveCredentialToAccountStore:(PasswordDetails*)password;
+// store.`anchorView` should be the button that triggered this move flow, to
+// position the confirmation dialog correctly on tablets. This will trigger an
+// extra confirmation step in case there is a conflicting credential in the
+// account store (same username but different password value). `movedCompletion`
+// is called if the move is performed successfully.
+- (void)moveCredentialToAccountStore:(PasswordDetails*)password
+                          anchorView:(UIView*)anchorView
+                     movedCompletion:(void (^)())movedCompletion;
 
 // Called when the user wants to save edited password.
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin;

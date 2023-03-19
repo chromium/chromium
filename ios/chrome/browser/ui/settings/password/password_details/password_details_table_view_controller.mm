@@ -1163,15 +1163,20 @@ const int kMaxNoteCharAmount = 1000;
 }
 
 // Moves password at specified index from profile store to account store.
-- (void)moveCredentialToAccountStore:(int)passwordIndex {
+- (void)moveCredentialToAccountStore:(int)passwordIndex
+                          anchorView:(UIView*)anchorView {
   DCHECK_GE(passwordIndex, 0);
   DCHECK(self.handler);
 
-  [self.handler moveCredentialToAccountStore:self.passwords[passwordIndex]];
-  [self showToast:l10n_util::GetNSStringF(
-                      IDS_IOS_PASSWORD_SAVED_TO_ACCOUNT_SNACKBAR_MESSAGE,
-                      base::SysNSStringToUTF16(self.userEmail))
-       forSuccess:YES];
+  __weak __typeof(self) weakSelf = self;
+  NSString* toastMessage = l10n_util::GetNSStringF(
+      IDS_IOS_PASSWORD_SAVED_TO_ACCOUNT_SNACKBAR_MESSAGE,
+      base::SysNSStringToUTF16(self.userEmail));
+  [self.handler moveCredentialToAccountStore:self.passwords[passwordIndex]
+                                  anchorView:anchorView
+                             movedCompletion:^{
+                               [weakSelf showToast:toastMessage forSuccess:YES];
+                             }];
 }
 
 // Navigates to password manager list view when the timeout for a valid
@@ -1364,7 +1369,7 @@ const int kMaxNoteCharAmount = 1000;
   // With password notes feature enabled the authentication happens during
   // navigation from the password list view to the password details view.
   if (IsPasswordNotesWithBackupEnabled()) {
-    [self moveCredentialToAccountStore:passwordIndex];
+    [self moveCredentialToAccountStore:passwordIndex anchorView:view];
     return;
   }
 
@@ -1382,7 +1387,7 @@ const int kMaxNoteCharAmount = 1000;
           return;
         }
 
-        [self moveCredentialToAccountStore:passwordIndex];
+        [self moveCredentialToAccountStore:passwordIndex anchorView:view];
       };
   [self.reauthModule
       attemptReauthWithLocalizedReason:
