@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
+package org.chromium.chrome.browser.autofill.bottom_sheet_utils;
 
 import static org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState.HALF;
 
@@ -13,6 +13,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * Listener for scroll events of the recycler view holding addresses and credit cards.
+ * TODO(crbug.com/1425446): Add test coverage for this class.
  */
 public class DetailScreenScrollListener extends RecyclerView.OnScrollListener {
     private final BottomSheetController mBottomSheetController;
