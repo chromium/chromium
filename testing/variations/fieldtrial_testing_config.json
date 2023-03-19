@@ -6049,26 +6049,6 @@
             ]
         }
     ],
-    "HttpsUpgrades": [
-        {
-            "platforms": [
-                "android",
-                "windows",
-                "chromeos",
-                "chromeos_lacros",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HttpsUpgrades"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAddToHomeScreen": [
         {
             "platforms": [

@@ -109,7 +109,6 @@
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/controller_client.h"
-#include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
@@ -6458,12 +6457,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(replacement_path)));
-
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(tab, 1);
   ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
   nav_observer.Wait();
-
   security_interstitials::SecurityInterstitialTabHelper* helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
           tab);
@@ -6472,27 +6469,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 
   // Check this was logged correctly as a redirect mixed form that would not
   // expose form data.
-  // Since Https Upgrades are enabled, metrics should be recorded twice, first
-  // for the original HTTP navigation and then for the fallback navigation.
-  histograms.ExpectTotalCount(interstitial_histogram, 2);
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
   histograms.ExpectBucketCount(
       interstitial_histogram,
       InsecureFormNavigationThrottle::InterstitialTriggeredState::
           kMixedFormRedirectNoFormData,
-      2);
-
-  // Also check HTTPS upgrade metrics.
-  histograms.ExpectTotalCount(
-      security_interstitials::https_only_mode::kEventHistogram, 3);
-  histograms.ExpectBucketCount(
-      security_interstitials::https_only_mode::kEventHistogram,
-      security_interstitials::https_only_mode::Event::kUpgradeAttempted, 1);
-  histograms.ExpectBucketCount(
-      security_interstitials::https_only_mode::kEventHistogram,
-      security_interstitials::https_only_mode::Event::kUpgradeFailed, 1);
-  histograms.ExpectBucketCount(
-      security_interstitials::https_only_mode::kEventHistogram,
-      security_interstitials::https_only_mode::Event::kUpgradeNetError, 1);
+      1);
 }
 
 // Checks no interstitial is shown for mixed forms caused for a POST form with a
@@ -6523,27 +6505,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 
   // Check this was logged correctly as a redirect mixed form that would not
   // expose form data.
-  // Since Https Upgrades are enabled, metrics should be recorded twice, first
-  // for the original HTTP navigation and then for the fallback navigation.
-  histograms.ExpectTotalCount(interstitial_histogram, 2);
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
   histograms.ExpectBucketCount(
       interstitial_histogram,
       InsecureFormNavigationThrottle::InterstitialTriggeredState::
           kMixedFormRedirectNoFormData,
-      2);
-
-  // Also check HTTPS upgrade metrics.
-  histograms.ExpectTotalCount(
-      security_interstitials::https_only_mode::kEventHistogram, 3);
-  histograms.ExpectBucketCount(
-      security_interstitials::https_only_mode::kEventHistogram,
-      security_interstitials::https_only_mode::Event::kUpgradeAttempted, 1);
-  histograms.ExpectBucketCount(
-      security_interstitials::https_only_mode::kEventHistogram,
-      security_interstitials::https_only_mode::Event::kUpgradeFailed, 1);
-  histograms.ExpectBucketCount(
-      security_interstitials::https_only_mode::kEventHistogram,
-      security_interstitials::https_only_mode::Event::kUpgradeNetError, 1);
+      1);
 }
 
 namespace {
@@ -6602,27 +6569,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 
   // Check this was logged correctly as a redirect mixed form that would not
   // expose form data.
-  // Since Https Upgrades are enabled, metrics should be recorded twice, first
-  // for the original HTTP navigation and then for the fallback navigation.
-  histograms.ExpectTotalCount(interstitial_histogram, 2);
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
   histograms.ExpectBucketCount(
       interstitial_histogram,
       InsecureFormNavigationThrottle::InterstitialTriggeredState::
           kMixedFormRedirectNoFormData,
-      2);
-
-  // Also check HTTPS upgrade metrics.
-  histograms.ExpectTotalCount(
-      security_interstitials::https_only_mode::kEventHistogram, 3);
-  histograms.ExpectBucketCount(
-      security_interstitials::https_only_mode::kEventHistogram,
-      security_interstitials::https_only_mode::Event::kUpgradeAttempted, 1);
-  histograms.ExpectBucketCount(
-      security_interstitials::https_only_mode::kEventHistogram,
-      security_interstitials::https_only_mode::Event::kUpgradeFailed, 1);
-  histograms.ExpectBucketCount(
-      security_interstitials::https_only_mode::kEventHistogram,
-      security_interstitials::https_only_mode::Event::kUpgradeCertError, 1);
+      1);
 }
 
 class MixedFormsPolicyTest : public policy::PolicyTest {};

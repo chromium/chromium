@@ -1363,13 +1363,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
       SecurityStateTabHelper::FromWebContents(contents);
   ASSERT_TRUE(helper);
 
-  // Disable HTTPS upgrades on nonexistent.test for this test to work.
-  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  auto* prefs = profile->GetPrefs();
-  base::Value::List allowlist;
-  allowlist.Append("nonexistent.test");
-  prefs->SetList(prefs::kHttpAllowlist, std::move(allowlist));
-
   // Navigate to a URL that results in an error page. Even though the displayed
   // URL is http://, there shouldn't be a Not Secure warning because the browser
   // hasn't really navigated to an http:// page.

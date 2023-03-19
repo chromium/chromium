@@ -5,15 +5,11 @@
 #include "chrome/browser/ssl/https_upgrades_util.h"
 
 #include "base/values.h"
-#include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
-bool IsHostnameInHttpAllowlist(const GURL& url, PrefService* prefs) {
-  const base::Value::List& allowed_hosts =
-      prefs->GetList(prefs::kHttpAllowlist);
-
+bool IsHostnameInAllowlist(const GURL& url,
+                           const base::Value::List& allowed_hosts) {
   // Though this is not technically a Content Setting, ContentSettingsPattern
   // aligns better than URLMatcher with the rules from
   // https://chromeenterprise.google/policies/url-patterns/.
@@ -31,13 +27,4 @@ bool IsHostnameInHttpAllowlist(const GURL& url, PrefService* prefs) {
     }
   }
   return false;
-}
-
-void AllowHttpForHostnamesForTesting(const std::vector<std::string>& hostnames,
-                                     PrefService* prefs) {
-  base::Value::List allowed_hosts;
-  for (const std::string& hostname : hostnames) {
-    allowed_hosts.Append(hostname);
-  }
-  prefs->SetList(prefs::kHttpAllowlist, std::move(allowed_hosts));
 }
