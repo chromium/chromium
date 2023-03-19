@@ -28,10 +28,6 @@
 
 class PrefService;
 
-namespace {
-constexpr char kIbanValue[] = "IE64 IRCE 9205 0112 3456 78";
-}  // namespace
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -264,7 +260,7 @@ void CreateTestCreditCardFormData(FormData* form,
 // single IBAN field). Note that this actually appends fields to the form data,
 // which can be useful for building up more complex test forms.
 void CreateTestIbanFormData(FormData* form_data,
-                            const char* value = kIbanValue);
+                            const char* value = "IE64 IRCE 9205 0112 3456 78");
 
 // Strips those members from |form| and |field| that are not serialized via
 // mojo, i.e., resets them to `{}`.
