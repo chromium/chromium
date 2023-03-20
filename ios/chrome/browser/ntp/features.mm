@@ -198,6 +198,20 @@ double GetBackgroundRefreshMaxAgeInSeconds() {
       /*default=*/0);
 }
 
+bool IsFeedRefreshPostFeedSessionEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableFeedInvisibleForegroundRefresh,
+      kEnableFeedSessionCloseForegroundRefresh,
+      /*default=*/false);
+}
+
+bool IsFeedRefreshOnAppBackgroundingEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableFeedInvisibleForegroundRefresh,
+      kEnableFeedAppCloseForegroundRefresh,
+      /*default=*/false);
+}
+
 bool IsFeedSessionCloseForegroundRefreshEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedInvisibleForegroundRefresh,

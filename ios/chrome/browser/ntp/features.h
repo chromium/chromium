@@ -141,6 +141,17 @@ double GetBackgroundRefreshMaxAgeInSeconds();
 // Whether feed is refreshed after the user ends a Feed session, but while the
 // app is still in the foreground (e.g., user switches tabs, user navigates away
 // from Feed in current tab).
+// Deprecated.
+bool IsFeedRefreshPostFeedSessionEnabled();
+
+// Whether feed is refreshed at the moment the app is backgrounding. This is
+// different from background refresh.
+// Deprecated.
+bool IsFeedRefreshOnAppBackgroundingEnabled();
+
+// Whether feed is refreshed after the user ends a Feed session, but while the
+// app is still in the foreground (e.g., user switches tabs, user navigates away
+// from Feed in current tab).
 bool IsFeedSessionCloseForegroundRefreshEnabled();
 
 // Whether feed is refreshed at the moment the app is backgrounding. This is
