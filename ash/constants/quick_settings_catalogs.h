@@ -30,7 +30,8 @@ enum class QsButtonCatalogName {
   kPowerSignoutMenuButton = 14,
   kPowerLockMenuButton = 15,
   kSupervisedButton = 16,
-  kMaxValue = kSupervisedButton
+  kEolNoticeButton = 17,
+  kMaxValue = kEolNoticeButton
 };
 
 // A catalog that registers all the features on the Quick Settings page. This

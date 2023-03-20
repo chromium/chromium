@@ -35,6 +35,8 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
     return channel_view_;
   }
 
+  views::View* eol_notice_for_test() { return eol_notice_; }
+
  private:
   // Updates visibility for this view. When it has no children it sets itself
   // invisible so it does not consume any space. Also updates the size of the
@@ -45,6 +47,7 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
   EnterpriseManagedView* enterprise_managed_view_ = nullptr;
   SupervisedUserView* supervised_view_ = nullptr;
   ChannelIndicatorQuickSettingsView* channel_view_ = nullptr;
+  views::View* eol_notice_ = nullptr;
 };
 
 }  // namespace ash

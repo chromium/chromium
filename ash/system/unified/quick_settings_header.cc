@@ -14,8 +14,10 @@
 #include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/model/update_model.h"
 #include "ash/system/unified/buttons.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "ash/system/update/eol_notice_quick_settings_view.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
@@ -50,17 +52,24 @@ QuickSettingsHeader::QuickSettingsHeader(
 
   supervised_view_ = AddChildView(std::make_unique<SupervisedUserView>());
 
-  // If the release track is not "stable" then show the channel indicator UI.
-  auto channel = Shell::Get()->shell_delegate()->GetChannel();
-  if (channel_indicator_utils::IsDisplayableChannel(channel) &&
-      Shell::Get()->session_controller()->GetSessionState() ==
-          session_manager::SessionState::ACTIVE) {
-    channel_view_ =
-        AddChildView(std::make_unique<ChannelIndicatorQuickSettingsView>(
-            channel, Shell::Get()
-                         ->system_tray_model()
-                         ->client()
-                         ->IsUserFeedbackEnabled()));
+  if (Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::ACTIVE) {
+    if (Shell::Get()->system_tray_model()->update_model()->show_eol_notice()) {
+      eol_notice_ =
+          AddChildView(std::make_unique<EolNoticeQuickSettingsView>());
+    }
+
+    // If the release track is not "stable" then show the channel indicator UI.
+    auto channel = Shell::Get()->shell_delegate()->GetChannel();
+    if (channel_indicator_utils::IsDisplayableChannel(channel) &&
+        !eol_notice_) {
+      channel_view_ =
+          AddChildView(std::make_unique<ChannelIndicatorQuickSettingsView>(
+              channel, Shell::Get()
+                           ->system_tray_model()
+                           ->client()
+                           ->IsUserFeedbackEnabled()));
+    }
   }
 
   UpdateVisibilityAndLayout();
@@ -81,15 +90,22 @@ void QuickSettingsHeader::UpdateVisibilityAndLayout() {
   bool managed_view_visible =
       enterprise_managed_view_->GetVisible() || supervised_view_->GetVisible();
   bool channel_view_visible = !!channel_view_;
-  SetVisible(managed_view_visible || channel_view_visible);
+  bool eol_notice_visible = !!eol_notice_;
+
+  SetVisible(managed_view_visible || channel_view_visible ||
+             eol_notice_visible);
 
   // Update button sizes for one column vs. two columns.
-  bool two_columns = managed_view_visible && channel_view_visible;
+  bool two_columns =
+      managed_view_visible && (channel_view_visible || eol_notice_visible);
   gfx::Size size = two_columns ? kNarrowButtonSize : kWideButtonSize;
   enterprise_managed_view_->SetPreferredSize(size);
   supervised_view_->SetPreferredSize(size);
   if (channel_view_)
     channel_view_->SetPreferredSize(size);
+  if (eol_notice_) {
+    eol_notice_->SetPreferredSize(size);
+  }
 
   // Use custom narrow layouts when two columns are showing.
   enterprise_managed_view_->SetNarrowLayout(two_columns);

@@ -54,6 +54,8 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   // tests.
   ChannelIndicatorQuickSettingsView* channel_view_ = nullptr;
 
+  views::View* eol_notice_ = nullptr;
+
   // Introspection methods needed for unit tests.
   views::View* GetDateViewForTesting();
   views::View* GetDateViewLabelForTesting();

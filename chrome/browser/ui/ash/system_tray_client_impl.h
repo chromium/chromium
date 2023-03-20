@@ -56,6 +56,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void SetPerformanceTracingIconVisible(bool visible);
   void SetLocaleList(std::vector<ash::LocaleInfo> locale_list,
                      const std::string& current_locale_iso_code);
+  void SetShowEolNotice(bool show);
 
   // ash::SystemTrayClient:
   void ShowSettings(int64_t display_id) override;
@@ -105,6 +106,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowChannelInfoAdditionalDetails() override;
   void ShowChannelInfoGiveFeedback() override;
   void ShowAudioSettings() override;
+  void ShowEolInfoPage() override;
   bool IsUserFeedbackEnabled() override;
 
  protected:

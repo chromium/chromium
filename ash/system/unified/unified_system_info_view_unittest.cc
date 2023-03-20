@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -29,12 +30,13 @@ namespace ash {
 // Tests are parameterized by the release track UI:
 // - Whether the release track UI feature is enabled, and
 // - Whether the release track is a value other than "stable"
+// - Whether EOL notice is expected to be shown.
 // The release track UI only shows if both conditions are met.
 //
 // NOTE: For QsRevamp, see similar tests in QuickSettingsHeaderTest.
 class UnifiedSystemInfoViewTest
     : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   UnifiedSystemInfoViewTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -52,6 +54,10 @@ class UnifiedSystemInfoViewTest
       shell_delegate->set_channel(version_info::Channel::BETA);
     AshTestBase::SetUp(std::move(shell_delegate));
 
+    if (ShouldShowEolNotice()) {
+      Shell::Get()->system_tray_model()->SetShowEolNotice(true);
+    }
+
     // Enable/disable features based on the passed-in parameter.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeatureState(features::kReleaseTrackUi,
@@ -60,12 +66,20 @@ class UnifiedSystemInfoViewTest
     // Instantiate members.
     model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
-    info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
+    auto info_view = std::make_unique<UnifiedSystemInfoView>(controller_.get());
+    info_view_ = info_view.get();
+
+    // Place the view in a large views::Widget so the buttons are clickable.
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+    widget_->SetContentsView(std::move(info_view));
   }
 
   bool IsReleaseTrackUiEnabled() const { return std::get<0>(GetParam()); }
 
   bool IsReleaseTrackNotStable() const { return std::get<1>(GetParam()); }
+
+  bool ShouldShowEolNotice() const { return std::get<2>(GetParam()); }
 
   views::View* GetDateButton() {
     return info_view_->GetViewByID(VIEW_ID_QS_DATE_VIEW_BUTTON);
@@ -87,8 +101,13 @@ class UnifiedSystemInfoViewTest
     return info_view_->GetViewByID(VIEW_ID_QS_FEEDBACK_BUTTON);
   }
 
+  views::View* GetEolNoticeButton() {
+    return info_view_->GetViewByID(VIEW_ID_QS_EOL_NOTICE_BUTTON);
+  }
+
   void TearDown() override {
-    info_view_.reset();
+    info_view_ = nullptr;
+    widget_.reset();
     controller_.reset();
     model_.reset();
     scoped_feature_list_.reset();
@@ -96,7 +115,7 @@ class UnifiedSystemInfoViewTest
   }
 
  protected:
-  UnifiedSystemInfoView* info_view() { return info_view_.get(); }
+  UnifiedSystemInfoView* info_view() { return info_view_; }
   EnterpriseDomainModel* enterprise_domain() {
     return Shell::Get()->system_tray_model()->enterprise_domain();
   }
@@ -104,13 +123,16 @@ class UnifiedSystemInfoViewTest
  private:
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
-  std::unique_ptr<UnifiedSystemInfoView> info_view_;
+  UnifiedSystemInfoView* info_view_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          UnifiedSystemInfoViewTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 TEST_P(UnifiedSystemInfoViewTest, ButtonNameAndVisibility) {
   // By default, EnterpriseManagedView is not shown.
@@ -130,15 +152,26 @@ TEST_P(UnifiedSystemInfoViewTest, ButtonNameAndVisibility) {
   // Battery button should be shown.
   EXPECT_TRUE(GetBatteryButton()->GetVisible());
 
+  EXPECT_EQ(ShouldShowEolNotice(),
+            GetEolNoticeButton() && GetEolNoticeButton()->GetVisible());
+  if (ShouldShowEolNotice()) {
+    LeftClickOn(GetEolNoticeButton());
+    EXPECT_EQ(1, GetSystemTrayClient()->show_eol_info_count());
+  }
+
+  const bool show_release_track_info = IsReleaseTrackUiEnabled() &&
+                                       IsReleaseTrackNotStable() &&
+                                       !ShouldShowEolNotice();
+
   // If the release track UI is enabled AND the release track is non-stable, the
   // version button is shown.
-  EXPECT_EQ(IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable(),
+  EXPECT_EQ(show_release_track_info,
             GetVersionButton() && GetVersionButton()->GetVisible());
 
   // If the release track UI is enabled AND the release track is non-stable AND
   // the user feedback is enabled, the feedback button is shown.
   EXPECT_EQ(
-      IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable() &&
+      show_release_track_info &&
           Shell::Get()->system_tray_model()->client()->IsUserFeedbackEnabled(),
       GetFeedbackButton() && GetFeedbackButton()->GetVisible());
 }
@@ -153,15 +186,27 @@ TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
   // EnterpriseManagedView should be shown.
   EXPECT_TRUE(GetManagedButton()->GetVisible());
 
+  EXPECT_EQ(ShouldShowEolNotice(),
+            GetEolNoticeButton() && GetEolNoticeButton()->GetVisible());
+
+  if (ShouldShowEolNotice()) {
+    LeftClickOn(GetEolNoticeButton());
+    EXPECT_EQ(1, GetSystemTrayClient()->show_eol_info_count());
+  }
+
+  const bool show_release_track_info = IsReleaseTrackUiEnabled() &&
+                                       IsReleaseTrackNotStable() &&
+                                       !ShouldShowEolNotice();
+
   // If the release track UI is enabled AND the release track is non-stable, the
   // version button is shown.
-  EXPECT_EQ(IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable(),
+  EXPECT_EQ(show_release_track_info,
             GetVersionButton() && GetVersionButton()->GetVisible());
 
   // If the release track UI is enabled AND the release track is non-stable AND
   // the user feedback is enabled, the feedback button is shown.
   EXPECT_EQ(
-      IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable() &&
+      show_release_track_info &&
           Shell::Get()->system_tray_model()->client()->IsUserFeedbackEnabled(),
       GetFeedbackButton() && GetFeedbackButton()->GetVisible());
 }
@@ -176,15 +221,27 @@ TEST_P(UnifiedSystemInfoViewTest, EnterpriseUserManagedVisible) {
   // EnterpriseManagedView should be shown.
   EXPECT_TRUE(GetManagedButton()->GetVisible());
 
+  EXPECT_EQ(ShouldShowEolNotice(),
+            GetEolNoticeButton() && GetEolNoticeButton()->GetVisible());
+
+  if (ShouldShowEolNotice()) {
+    LeftClickOn(GetEolNoticeButton());
+    EXPECT_EQ(1, GetSystemTrayClient()->show_eol_info_count());
+  }
+
+  const bool show_release_track_info = IsReleaseTrackUiEnabled() &&
+                                       IsReleaseTrackNotStable() &&
+                                       !ShouldShowEolNotice();
+
   // If the release track UI is enabled AND the release track is non-stable, the
   // version button is shown.
-  EXPECT_EQ(IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable(),
+  EXPECT_EQ(show_release_track_info,
             GetVersionButton() && GetVersionButton()->GetVisible());
 
   // If the release track UI is enabled AND the release track is non-stable AND
   // the user feedback is enabled, the feedback button is shown.
   EXPECT_EQ(
-      IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable() &&
+      show_release_track_info &&
           Shell::Get()->system_tray_model()->client()->IsUserFeedbackEnabled(),
       GetFeedbackButton() && GetFeedbackButton()->GetVisible());
 }

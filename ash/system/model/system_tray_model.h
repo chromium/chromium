@@ -58,6 +58,7 @@ class SystemTrayModel : public SystemTray {
   void ResetUpdateState() override;
   void SetUpdateDeferred(DeferredUpdateState state) override;
   void SetUpdateOverCellularAvailableIconVisible(bool visible) override;
+  void SetShowEolNotice(bool show) override;
   void ShowVolumeSliderBubble() override;
   void ShowNetworkDetailedViewBubble() override;
   void SetPhoneHubManager(

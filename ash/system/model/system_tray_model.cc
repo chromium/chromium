@@ -113,6 +113,10 @@ void SystemTrayModel::SetUpdateOverCellularAvailableIconVisible(bool visible) {
   update_model()->SetUpdateOverCellularAvailable(visible);
 }
 
+void SystemTrayModel::SetShowEolNotice(bool show) {
+  update_model()->SetShowEolNotice(show);
+}
+
 void SystemTrayModel::ShowVolumeSliderBubble() {
   // Show the bubble on all monitors with a system tray.
   for (RootWindowController* root : Shell::GetAllRootWindowControllers()) {

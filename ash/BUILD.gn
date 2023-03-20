@@ -2024,6 +2024,8 @@ component("ash") {
     "system/unified/user_chooser_detailed_view_controller.h",
     "system/unified/user_chooser_view.cc",
     "system/unified/user_chooser_view.h",
+    "system/update/eol_notice_quick_settings_view.cc",
+    "system/update/eol_notice_quick_settings_view.h",
     "system/update/update_notification_controller.cc",
     "system/update/update_notification_controller.h",
     "system/usb_peripheral/usb_peripheral_notification_controller.cc",

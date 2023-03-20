@@ -364,6 +364,9 @@ void SystemTrayClientImpl::SetLocaleList(
   system_tray_->SetLocaleList(std::move(locale_list), current_locale_iso_code);
 }
 
+void SystemTrayClientImpl::SetShowEolNotice(bool show) {
+  system_tray_->SetShowEolNotice(show);
+}
 ////////////////////////////////////////////////////////////////////////////////
 // ash::SystemTrayClient:
 
@@ -791,6 +794,13 @@ void SystemTrayClientImpl::ShowAudioSettings() {
   base::RecordAction(base::UserMetricsAction("ShowAudioSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kAudioSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowEolInfoPage() {
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(chrome::kEolNotificationURL),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 bool SystemTrayClientImpl::IsUserFeedbackEnabled() {

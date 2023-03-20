@@ -104,6 +104,9 @@ class ASH_PUBLIC_EXPORT SystemTray {
   // granted.
   virtual void SetUpdateOverCellularAvailableIconVisible(bool visible) = 0;
 
+  // Sets whether end of life notice should be shown in quick settings.
+  virtual void SetShowEolNotice(bool show) = 0;
+
   // Shows the volume slider bubble shown at the right bottom of screen.
   virtual void ShowVolumeSliderBubble() = 0;
 

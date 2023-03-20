@@ -72,6 +72,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowChannelInfoGiveFeedback() override;
   void ShowAudioSettings() override;
   bool IsUserFeedbackEnabled() override;
+  void ShowEolInfoPage() override;
 
   int show_bluetooth_settings_count() const {
     return show_bluetooth_settings_count_;
@@ -165,6 +166,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     user_feedback_enabled_ = user_feedback_enabled;
   }
 
+  int show_eol_info_count() const { return show_eol_info_count_; }
+
  private:
   int show_network_settings_count_ = 0;
   int show_bluetooth_settings_count_ = 0;
@@ -192,6 +195,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_channel_info_give_feedback_count_ = 0;
   int show_audio_settings_count_ = 0;
   bool user_feedback_enabled_ = false;
+  int show_eol_info_count_ = 0;
 };
 
 }  // namespace ash

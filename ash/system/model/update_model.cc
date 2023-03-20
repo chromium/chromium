@@ -44,6 +44,10 @@ void UpdateModel::SetUpdateDeferred(DeferredUpdateState state) {
   NotifyUpdateAvailable();
 }
 
+void UpdateModel::SetShowEolNotice(bool show) {
+  show_eol_notice_ = show;
+}
+
 UpdateSeverity UpdateModel::GetSeverity() const {
   // TODO(https://crbug.com/927010): adjust severity according the amount of
   // time passing after update is available over cellular connection. Use low

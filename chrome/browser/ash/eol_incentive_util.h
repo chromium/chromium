@@ -13,8 +13,8 @@ class Time;
 
 namespace ash::eol_incentive_util {
 
-// The type of EOL incentive to be shown.
-enum EolIncentiveType {
+// The type of end of life (EOL) incentive to be shown.
+enum class EolIncentiveType {
   // No EOL incentive is shown.
   kNone,
 
@@ -24,6 +24,9 @@ enum EolIncentiveType {
 
   // The case where the EOL incentive is shown because of a recently passed EOL
   // date.
+  kEolPassedRecently,
+
+  // EOL passed, more than a few days ago.
   kEolPassed,
 };
 

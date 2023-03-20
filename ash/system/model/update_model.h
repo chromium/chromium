@@ -52,6 +52,9 @@ class UpdateModel {
   // If `deferred` is true, an update is downloaded but deferred.
   void SetUpdateDeferred(DeferredUpdateState state);
 
+  // Whether a notice about the device reaching end of life should be shown.
+  void SetShowEolNotice(bool show);
+
   UpdateSeverity GetSeverity() const;
 
   // Sets |update_required_| back to false.
@@ -68,6 +71,8 @@ class UpdateModel {
   }
   DeferredUpdateState update_deferred() const { return update_deferred_; }
 
+  bool show_eol_notice() const { return show_eol_notice_; }
+
  private:
   void NotifyUpdateAvailable();
 
@@ -78,6 +83,7 @@ class UpdateModel {
   RelaunchNotificationState relaunch_notification_state_;
   bool update_over_cellular_available_ = false;
   DeferredUpdateState update_deferred_ = DeferredUpdateState::kNone;
+  bool show_eol_notice_ = false;
 
   base::ObserverList<UpdateObserver>::Unchecked observers_;
 };

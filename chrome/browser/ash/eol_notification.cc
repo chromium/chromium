@@ -17,13 +17,13 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ash/eol_incentive_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -113,8 +113,20 @@ void EolNotification::OnEolInfo(UpdateEngineClient::EolInfo eol_info) {
     ResetDismissedPrefs();
   }
 
-  if (features::IsEOLIncentiveEnabled()) {
-    MaybeShowEolIncentiveNotification(eol_date);
+  eol_incentive_util::EolIncentiveType incentive_type =
+      eol_incentive_util::ShouldShowEolIncentive(profile_, eol_date, now);
+
+  SystemTrayClientImpl* tray_client = SystemTrayClientImpl::Get();
+  if (tray_client) {
+    tray_client->SetShowEolNotice(
+        incentive_type ==
+            ash::eol_incentive_util::EolIncentiveType::kEolPassed ||
+        incentive_type ==
+            ash::eol_incentive_util::EolIncentiveType::kEolPassedRecently);
+  }
+
+  if (incentive_type != eol_incentive_util::EolIncentiveType::kNone) {
+    MaybeShowEolIncentiveNotification(eol_date, incentive_type);
     return;
   }
 
@@ -241,7 +253,9 @@ void EolNotification::Click(const absl::optional<int>& button_index,
       NotificationHandler::Type::TRANSIENT, kEolNotificationId);
 }
 
-void EolNotification::MaybeShowEolIncentiveNotification(base::Time eol_date) {
+void EolNotification::MaybeShowEolIncentiveNotification(
+    base::Time eol_date,
+    eol_incentive_util::EolIncentiveType incentive_type) {
   const base::Time now = clock_->Now();
   const base::TimeDelta time_to_eol = eol_date - now;
   const int days_to_eol = time_to_eol.InDays();
@@ -251,8 +265,9 @@ void EolNotification::MaybeShowEolIncentiveNotification(base::Time eol_date) {
     return;
   }
 
-  switch (eol_incentive_util::ShouldShowEolIncentive(profile_, eol_date, now)) {
-    case eol_incentive_util::kNone:
+  switch (incentive_type) {
+    case eol_incentive_util::EolIncentiveType::kNone:
+    case eol_incentive_util::EolIncentiveType::kEolPassed:
       if (days_to_eol < kLastIncentiveEndDaysPastEol &&
           !profile_->GetPrefs()->GetBoolean(
               prefs::kEolPassedFinalIncentiveDismissed) &&
@@ -265,10 +280,10 @@ void EolNotification::MaybeShowEolIncentiveNotification(base::Time eol_date) {
         CreateNotification(eol_date, now);
       }
       return;
-    case eol_incentive_util::kEolApproaching:
+    case eol_incentive_util::EolIncentiveType::kEolApproaching:
       dismiss_pref_ = prefs::kEolApproachingIncentiveNotificationDismissed;
       break;
-    case eol_incentive_util::kEolPassed:
+    case eol_incentive_util::EolIncentiveType::kEolPassedRecently:
       dismiss_pref_ = prefs::kEolPassedFinalIncentiveDismissed;
       break;
   }
