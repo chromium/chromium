@@ -372,6 +372,10 @@ struct VideoConfig {
 
   bool have_hdr_metadata = false;
   HDRMetadata hdr_metadata;
+
+  // Info about the width and height, in pixels.
+  int width = 0;
+  int height = 0;
 };
 
 inline VideoConfig::VideoConfig()

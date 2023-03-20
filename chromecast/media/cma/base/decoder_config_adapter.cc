@@ -374,6 +374,11 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
     mm2.luminance_min = mm1.luminance_min;
   }
 
+  const gfx::Size aspect_ratio =
+      config.aspect_ratio().GetNaturalSize(config.visible_rect());
+  video_config.width = aspect_ratio.width();
+  video_config.height = aspect_ratio.height();
+
   return video_config;
 }
 
