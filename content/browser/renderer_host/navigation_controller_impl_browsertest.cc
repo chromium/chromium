@@ -20522,6 +20522,70 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(base_url, EvalJs(shell(), "document.URL"));
 }
 
+// Checks that a renderer-initiated back/forward navigation to a page which has
+// a valid base URL does not crash during restore.
+// See https://crbug.com/1082141.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    RendererInitiatedBackToLoadDataWithBaseURLDuringRestore) {
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // Webview or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting()) {
+    return;
+  }
+
+  const GURL base_url("http://baseurl");
+  const GURL history_url("http://history");
+  const std::string data = "<html><title>One</title><body>foo</body></html>";
+  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  {
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    shell()->LoadDataWithBaseURL(history_url, data, base_url);
+    same_tab_observer.Wait();
+  }
+
+  GURL url2(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url2));
+
+  // Restore into a new shell.
+  Shell* restore_shell = Shell::CreateNewWindow(
+      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  NavigationControllerImpl& restore_controller =
+      static_cast<NavigationControllerImpl&>(
+          restore_shell->web_contents()->GetController());
+  restore_controller.CopyStateFrom(&controller, true /* needs_reload */);
+  EXPECT_EQ(2, restore_controller.GetEntryCount());
+  EXPECT_EQ(1, restore_controller.GetLastCommittedEntryIndex());
+  {
+    TestNavigationObserver restore_observer(restore_shell->web_contents());
+    restore_controller.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+
+  {
+    // Renderer-initiated-back to data url with base url. This should not crash.
+    FrameTreeNode* root =
+        static_cast<WebContentsImpl*>(restore_shell->web_contents())
+            ->GetPrimaryFrameTree()
+            .root();
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(ExecJs(root, "history.back()"));
+    capturer.Wait();
+  }
+}
+
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        HistoryNavigationInNewSubframe) {
   // This test specifically observes behavior of creating a new frame during a

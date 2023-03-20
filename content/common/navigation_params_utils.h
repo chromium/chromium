@@ -24,7 +24,8 @@ class NavigationTypeUtils {
 
   static bool IsHistory(blink::mojom::NavigationType value) {
     return value == blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT ||
-           value == blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
+           value == blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT ||
+           IsRestore(value);
   }
 
   static bool IsRestore(blink::mojom::NavigationType value) {
