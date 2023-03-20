@@ -213,6 +213,7 @@ base::Value FetchManifestAndInstallCommand::ToDebugValue() const {
 void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code) {
   if (!install_callback_)
     return;
+  debug_log_.Set("result_code", base::ToString(code));
   webapps::InstallableMetrics::TrackInstallResult(false);
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
@@ -529,6 +530,7 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
           install_error_log_entry_.TakeErrorDict());
     }
   }
+  debug_log_.Set("result_code", base::ToString(code));
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
   SignalCompletionAndSelfDestruct(
