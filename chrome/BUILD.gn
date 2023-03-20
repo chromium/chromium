@@ -516,7 +516,7 @@ if (is_win) {
     if (enable_stripping) {
       # At link time, preserve the global symbols specified in the .exports
       # file. All other global symbols will be marked as private. The default
-      # //build/config/mac:strip_all config will then remove the remaining
+      # //build/config/apple:strip_all config will then remove the remaining
       # local and debug symbols.
       ldflags = [ "-Wl,-exported_symbols_list," +
                   rebase_path("app/app.exports", root_build_dir) ]
@@ -773,7 +773,7 @@ if (is_win) {
       if (enable_stripping) {
         # At link time, preserve the global symbols specified in the .exports
         # file. All other global symbols will be marked as private. The default
-        # //build/config/mac:strip_all config will then remove the remaining
+        # //build/config/apple:strip_all config will then remove the remaining
         # local and debug symbols.
         ldflags += [ "-Wl,-exported_symbols_list," +
                      rebase_path("app/app.exports", root_build_dir) ]

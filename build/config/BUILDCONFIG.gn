@@ -423,8 +423,8 @@ if (is_win) {
     # that shouldn't use the windows subsystem.
     "//build/config/win:console",
   ]
-} else if (is_mac) {
-  _linker_configs = [ "//build/config/mac:strip_all" ]
+} else if (is_apple) {
+  _linker_configs = [ "//build/config/apple:strip_all" ]
 } else {
   _linker_configs = []
 }

@@ -98,18 +98,6 @@ config("mac_dynamic_flags") {
   }
 }
 
-# The ldflags referenced below are handled by
-# //build/toolchain/apple/linker_driver.py.
-# Remove this config if a target wishes to change the arguments passed to the
-# strip command during linking. This config by default strips all symbols
-# from a binary, but some targets may wish to specify an exports file to
-# preserve specific symbols.
-config("strip_all") {
-  if (enable_stripping) {
-    ldflags = [ "-Wcrl,strip,-x,-S" ]
-  }
-}
-
 # When building with Goma, all inputs must be relative to the build directory.
 # If using the system Xcode, which typically resides outside the build root, a
 # symlink to the SDK is created in the build directory, and the path to that

@@ -1,0 +1,17 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/symbols.gni")
+
+# The ldflags referenced below are handled by
+# //build/toolchain/apple/linker_driver.py.
+# Remove this config if a target wishes to change the arguments passed to the
+# strip command during linking. This config by default strips all symbols
+# from a binary, but some targets may wish to specify an exports file to
+# preserve specific symbols.
+config("strip_all") {
+  if (enable_stripping) {
+    ldflags = [ "-Wcrl,strip,-x,-S" ]
+  }
+}
