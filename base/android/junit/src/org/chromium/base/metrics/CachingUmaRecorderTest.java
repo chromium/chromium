@@ -36,6 +36,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /** Unit tests for {@link CachingUmaRecorderTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Ok to mock UmaRecorder since this is testing metrics.
 public final class CachingUmaRecorderTest {
     @Mock
     UmaRecorder mUmaRecorder;

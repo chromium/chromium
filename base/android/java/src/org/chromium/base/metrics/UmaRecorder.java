@@ -6,11 +6,14 @@ package org.chromium.base.metrics;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.google.errorprone.annotations.DoNotMock;
+
 import org.chromium.base.Callback;
 
 import java.util.List;
 
 /** Common interface for code recording UMA metrics. */
+@DoNotMock("Use HistogramWatcher for histograms or UserActionTester for user actions instead.")
 public interface UmaRecorder {
     /** Records a single sample of a boolean histogram. */
     void recordBooleanHistogram(String name, boolean sample);
