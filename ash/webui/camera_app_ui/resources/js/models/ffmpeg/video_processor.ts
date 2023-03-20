@@ -285,13 +285,6 @@ class OutputDevice {
   }
 }
 
-declare global {
-  // TypeScript only exports values declared with "var" in global scope, and
-  // not "let" or "const".
-  // eslint-disable-next-line no-var
-  var waitReadable: ((callback: ReadableCallback) => void)|undefined;
-}
-
 /**
  * A ffmpeg-based video processor that can process input and output data
  * incrementally.
@@ -366,6 +359,9 @@ class FFMpegVideoProcessor {
         assert(stdout.fd === 1);
         assert(stderr.fd === 2);
       },
+      waitReadable: (callback: ReadableCallback) => {
+        this.inputDevice.setReadableCallback(callback);
+      },
     };
 
     function initFFmpeg() {
@@ -379,11 +375,6 @@ class FFMpegVideoProcessor {
       });
     }
     this.jobQueue.push(initFFmpeg);
-
-    // This is a function to be called by ffmpeg before running read() in C.
-    globalThis.waitReadable = (callback: ReadableCallback) => {
-      this.inputDevice.setReadableCallback(callback);
-    };
   }
 
   /**
