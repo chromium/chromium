@@ -60,12 +60,13 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!script_message.body() || !script_message.body()->is_dict()) {
+  const base::Value::Dict* script_dict =
+      script_message.body() ? script_message.body()->GetIfDict() : nullptr;
+  if (!script_dict) {
     return;
   }
 
-  std::string* frame_id =
-      script_message.body()->FindStringKey(kSenderFrameIdKey);
+  const std::string* frame_id = script_dict->FindString(kSenderFrameIdKey);
   if (!frame_id) {
     return;
   }
@@ -76,14 +77,13 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
     return;
   }
 
-  std::string* log_message =
-      script_message.body()->FindStringKey(kConsoleMessageKey);
+  const std::string* log_message = script_dict->FindString(kConsoleMessageKey);
   if (!log_message) {
     return;
   }
 
-  std::string* log_level =
-      script_message.body()->FindStringKey(kConsoleMessageLogLevelKey);
+  const std::string* log_level =
+      script_dict->FindString(kConsoleMessageLogLevelKey);
   if (!log_level) {
     return;
   }
@@ -94,8 +94,8 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
   frame_message.level = base::SysUTF8ToNSString(*log_level);
   frame_message.message = base::SysUTF8ToNSString(*log_message);
 
-  std::string* url_string =
-      script_message.body()->FindStringKey(kConsoleMessageUrlKey);
+  const std::string* url_string =
+      script_dict->FindString(kConsoleMessageUrlKey);
   if (url_string && !url_string->empty()) {
     frame_message.url = GURL(*url_string);
   }
