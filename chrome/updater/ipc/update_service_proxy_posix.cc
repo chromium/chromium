@@ -416,7 +416,7 @@ UpdateServiceProxy::~UpdateServiceProxy() {
 void UpdateServiceProxy::EnsureConnecting() {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (remote_) {
+  if (remote_ || connecting_) {
     return;
   }
   connecting_ = true;
