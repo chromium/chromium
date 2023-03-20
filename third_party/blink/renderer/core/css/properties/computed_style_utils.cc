@@ -2941,24 +2941,27 @@ CSSValue* ComputedStyleUtils::StrokeDashArrayToCSSValueList(
 
 CSSValue* ComputedStyleUtils::ValueForSVGPaint(const SVGPaint& paint,
                                                const ComputedStyle& style) {
-  if (paint.type >= SVGPaintType::kUriNone) {
-    CSSValueList* values = CSSValueList::CreateSpaceSeparated();
-    values->Append(
-        *MakeGarbageCollected<cssvalue::CSSURIValue>(paint.GetUrl()));
-    if (paint.type == SVGPaintType::kUriNone) {
-      values->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
-    } else if (paint.type == SVGPaintType::kUriColor) {
-      values->Append(*CurrentColorOrValidColor(style, paint.GetColor(),
-                                               CSSValuePhase::kComputedValue));
+  switch (paint.type) {
+    case SVGPaintType::kColor:
+      return CurrentColorOrValidColor(style, paint.GetColor(),
+                                      CSSValuePhase::kComputedValue);
+    case SVGPaintType::kNone:
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    case SVGPaintType::kUriNone:
+    case SVGPaintType::kUriColor: {
+      CSSValueList* values = CSSValueList::CreateSpaceSeparated();
+      values->Append(
+          *MakeGarbageCollected<cssvalue::CSSURIValue>(paint.GetUrl()));
+      values->Append(
+          paint.type == SVGPaintType::kUriNone
+              ? *CSSIdentifierValue::Create(CSSValueID::kNone)
+              : *CurrentColorOrValidColor(style, paint.GetColor(),
+                                          CSSValuePhase::kComputedValue));
+      return values;
     }
-    return values;
+    case SVGPaintType::kUri:
+      return MakeGarbageCollected<cssvalue::CSSURIValue>(paint.GetUrl());
   }
-  if (paint.type == SVGPaintType::kNone) {
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
-  }
-
-  return CurrentColorOrValidColor(style, paint.GetColor(),
-                                  CSSValuePhase::kComputedValue);
 }
 
 CSSValue* ComputedStyleUtils::ValueForSVGResource(
