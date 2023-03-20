@@ -814,6 +814,7 @@ class DeviceStatusCollectorTest : public testing::Test {
         got_session_status_(false),
         fake_kiosk_device_local_account_(
             DeviceLocalAccount::TYPE_KIOSK_APP,
+            DeviceLocalAccount::EphemeralMode::kUnset,
             kKioskAccountId,
             kKioskAppId,
             std::string() /* kiosk_app_update_url */),
@@ -821,13 +822,17 @@ class DeviceStatusCollectorTest : public testing::Test {
                                        std::string() /* class_name */,
                                        std::string() /* action */,
                                        std::string() /* display_name */),
-        fake_arc_kiosk_device_local_account_(fake_arc_kiosk_app_basic_info_,
-                                             kArcKioskAccountId),
+        fake_arc_kiosk_device_local_account_(
+            DeviceLocalAccount::EphemeralMode::kUnset,
+            fake_arc_kiosk_app_basic_info_,
+            kArcKioskAccountId),
         fake_web_kiosk_app_basic_info_(kWebKioskAppUrl,
                                        std::string() /* title */,
                                        std::string() /* icon_url */),
-        fake_web_kiosk_device_local_account_(fake_web_kiosk_app_basic_info_,
-                                             kWebKioskAccountId),
+        fake_web_kiosk_device_local_account_(
+            DeviceLocalAccount::EphemeralMode::kUnset,
+            fake_web_kiosk_app_basic_info_,
+            kWebKioskAccountId),
         user_data_dir_override_(chrome::DIR_USER_DATA),
         crash_dumps_dir_override_(chrome::DIR_CRASH_DUMPS) {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",

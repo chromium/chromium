@@ -226,6 +226,7 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
     // Add a new device local account and set its id for auto login.
     std::vector<policy::DeviceLocalAccount> accounts;
     accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+                          policy::DeviceLocalAccount::EphemeralMode::kUnset,
                           kTestEnterpriseAccountId, kTestEnterpriseKioskApp,
                           "");
     policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);

@@ -57,8 +57,9 @@ class MockDeviceStatusCollector : public DeviceStatusCollector {
   std::unique_ptr<DeviceLocalAccount> GetAutoLaunchedKioskSessionInfo()
       override {
     return std::make_unique<DeviceLocalAccount>(
-        DeviceLocalAccount::TYPE_KIOSK_APP, "account_id", "app_id",
-        "update_url");
+        DeviceLocalAccount::TYPE_KIOSK_APP,
+        policy::DeviceLocalAccount::EphemeralMode::kUnset, "account_id",
+        "app_id", "update_url");
   }
 };
 

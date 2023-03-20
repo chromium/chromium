@@ -44,6 +44,12 @@ bool GetString(const base::Value::Dict& dict,
   return true;
 }
 
+bool IsKioskType(DeviceLocalAccount::Type type) {
+  return type == DeviceLocalAccount::TYPE_KIOSK_APP ||
+         type == DeviceLocalAccount::TYPE_ARC_KIOSK_APP ||
+         type == DeviceLocalAccount::TYPE_WEB_KIOSK_APP;
+}
+
 }  // namespace
 
 ArcKioskAppBasicInfo::ArcKioskAppBasicInfo(const std::string& package_name,
@@ -79,27 +85,33 @@ WebKioskAppBasicInfo::WebKioskAppBasicInfo() {}
 WebKioskAppBasicInfo::~WebKioskAppBasicInfo() {}
 
 DeviceLocalAccount::DeviceLocalAccount(Type type,
+                                       EphemeralMode ephemeral_mode,
                                        const std::string& account_id,
                                        const std::string& kiosk_app_id,
                                        const std::string& kiosk_app_update_url)
     : type(type),
+      ephemeral_mode(ephemeral_mode),
       account_id(account_id),
       user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
       kiosk_app_id(kiosk_app_id),
       kiosk_app_update_url(kiosk_app_update_url) {}
 
 DeviceLocalAccount::DeviceLocalAccount(
+    EphemeralMode ephemeral_mode,
     const ArcKioskAppBasicInfo& arc_kiosk_app_info,
     const std::string& account_id)
     : type(DeviceLocalAccount::TYPE_ARC_KIOSK_APP),
+      ephemeral_mode(ephemeral_mode),
       account_id(account_id),
       user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
       arc_kiosk_app_info(arc_kiosk_app_info) {}
 
 DeviceLocalAccount::DeviceLocalAccount(
+    EphemeralMode ephemeral_mode,
     const WebKioskAppBasicInfo& web_kiosk_app_info,
     const std::string& account_id)
     : type(DeviceLocalAccount::TYPE_WEB_KIOSK_APP),
+      ephemeral_mode(ephemeral_mode),
       account_id(account_id),
       user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
       web_kiosk_app_info(web_kiosk_app_info) {}
@@ -193,6 +205,8 @@ void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
     base::Value::Dict entry;
     entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, it->account_id);
     entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyType, it->type);
+    entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+              static_cast<int>(it->ephemeral_mode));
     if (it->type == DeviceLocalAccount::TYPE_KIOSK_APP) {
       entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
                 it->kiosk_app_id);
@@ -271,6 +285,24 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
       continue;
     }
 
+    DeviceLocalAccount::EphemeralMode ephemeral_mode_value =
+        DeviceLocalAccount::EphemeralMode::kUnset;
+    if (IsKioskType(static_cast<DeviceLocalAccount::Type>(type.value()))) {
+      absl::optional<int> ephemeral_mode = entry_dict.FindInt(
+          ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode);
+      if (!ephemeral_mode || ephemeral_mode.value() < 0 ||
+          ephemeral_mode.value() >
+              static_cast<int>(DeviceLocalAccount::EphemeralMode::kMaxValue)) {
+        LOG(ERROR) << "Missing or invalid ephemeral mode (value="
+                   << ephemeral_mode.value_or(-1)
+                   << ") in device-local account list at index " << i
+                   << ", using default kUnset value for ephemeral mode.";
+      } else {
+        ephemeral_mode_value = static_cast<DeviceLocalAccount::EphemeralMode>(
+            ephemeral_mode.value());
+      }
+    }
+
     if (!account_ids.insert(account_id).second) {
       LOG(ERROR) << "Duplicate entry in device-local account list at index "
                  << i << ": " << account_id << ".";
@@ -279,12 +311,12 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
 
     switch (type.value()) {
       case DeviceLocalAccount::TYPE_PUBLIC_SESSION:
-        accounts.push_back(DeviceLocalAccount(
-            DeviceLocalAccount::TYPE_PUBLIC_SESSION, account_id, "", ""));
+        accounts.emplace_back(DeviceLocalAccount::TYPE_PUBLIC_SESSION,
+                              ephemeral_mode_value, account_id, "", "");
         break;
       case DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
-        accounts.push_back(DeviceLocalAccount(
-            DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION, account_id, "", ""));
+        accounts.emplace_back(DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION,
+                              ephemeral_mode_value, account_id, "", "");
         break;
       case DeviceLocalAccount::TYPE_KIOSK_APP: {
         std::string kiosk_app_id;
@@ -300,9 +332,9 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
                   ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                   &kiosk_app_update_url);
 
-        accounts.push_back(
-            DeviceLocalAccount(DeviceLocalAccount::TYPE_KIOSK_APP, account_id,
-                               kiosk_app_id, kiosk_app_update_url));
+        accounts.emplace_back(DeviceLocalAccount::TYPE_KIOSK_APP,
+                              ephemeral_mode_value, account_id, kiosk_app_id,
+                              kiosk_app_update_url);
         break;
       }
       case DeviceLocalAccount::TYPE_ARC_KIOSK_APP: {
@@ -330,7 +362,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         const ArcKioskAppBasicInfo arc_kiosk_app(package_name, class_name,
                                                  action, display_name);
 
-        accounts.push_back(DeviceLocalAccount(arc_kiosk_app, account_id));
+        accounts.emplace_back(ephemeral_mode_value, arc_kiosk_app, account_id);
         break;
       }
       case DeviceLocalAccount::TYPE_WEB_KIOSK_APP: {
@@ -352,8 +384,9 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         GetString(entry_dict,
                   ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
                   &icon_url);
-        accounts.push_back(DeviceLocalAccount(
-            WebKioskAppBasicInfo(url, title, icon_url), account_id));
+        accounts.emplace_back(ephemeral_mode_value,
+                              WebKioskAppBasicInfo(url, title, icon_url),
+                              account_id);
         break;
       }
       default:

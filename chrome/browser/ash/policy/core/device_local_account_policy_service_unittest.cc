@@ -255,6 +255,8 @@ void DeviceLocalAccountPolicyServiceTestBase::AddWebKioskToPolicy(
   account->set_account_id(account_id);
   account->set_type(
       em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_WEB_KIOSK_APP);
+  account->set_ephemeral_mode(
+      em::DeviceLocalAccountInfoProto::EPHEMERAL_MODE_UNSET);
   account->mutable_web_kiosk_app()->set_url(account_id);
 }
 

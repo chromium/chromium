@@ -434,6 +434,16 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
                        entry.web_kiosk_app().icon_url());
       }
+      if (entry.has_ephemeral_mode()) {
+        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+                       static_cast<int>(entry.ephemeral_mode()));
+      } else {
+        entry_dict.Set(
+            kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+            static_cast<int>(
+                em::DeviceLocalAccountInfoProto::EPHEMERAL_MODE_UNSET));
+      }
+
     } else if (entry.has_deprecated_public_session_id()) {
       // Deprecated public session specification.
       entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,

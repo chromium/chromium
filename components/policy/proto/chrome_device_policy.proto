@@ -198,6 +198,9 @@ message EphemeralUsersEnabledProto {
   // Determines whether users should be treated as ephemeral. In ephemeral users
   // mode, no cryptohome is created for the user, but a tmpfs mount is used
   // instead such that upon logout all user state is discarded.
+  //
+  // Does not apply for device-local accounts with specified `ephemeral_mode`
+  // that is equal to EPHEMERAL_MODE_DISABLE or EPHEMERAL_MODE_ENABLE.
   optional bool ephemeral_users_enabled = 1;
 }
 
@@ -553,6 +556,36 @@ message DeviceLocalAccountInfoProto {
 
   // Web Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_WEB_KIOSK_APP
   optional WebKioskAppInfoProto web_kiosk_app = 6;
+
+  enum EphemeralMode {
+    // Default value. Same behaviour as
+    // EPHEMERAL_MODE_FOLLOW_DEVICE_WIDE_POLICY value.
+    EPHEMERAL_MODE_UNSET = 0;
+    // Device-local account ephemeral mode controlled by
+    // DeviceEphemeralUsersEnabled policy.
+    //
+    // Prefer this value over EPHEMERAL_MODE_UNSET to avoid errors when merging
+    // child OU and parent OU protobufs on the service-side.
+    EPHEMERAL_MODE_FOLLOW_DEVICE_WIDE_POLICY = 1;
+    // Device-local account must be non-ephemeral.
+    EPHEMERAL_MODE_DISABLE = 2;
+    // Device-local account must be ephemeral.
+    EPHEMERAL_MODE_ENABLE = 3;
+  }
+
+  // Configures whether the current device-local account should be ephemeral and
+  // overrides the behaviour of DeviceEphemeralUsersEnabled policy for the
+  // current device-local account iff
+  //   1) `ephemeral_mode` is present AND
+  //   2) `ephemeral_mode` value is equal EPHEMERAL_MODE_DISABLE
+  //       or EPHEMERAL_MODE_ENABLE.
+  //
+  // Otherwise, DeviceEphemeralUsersEnabled policy is applied to the
+  // current device-local account.
+  //
+  // Relevant if `type` is ACCOUNT_TYPE_KIOSK_APP,
+  // ACCOUNT_TYPE_KIOSK_ANDROID_APP or ACCOUNT_TYPE_WEB_KIOSK_APP.
+  optional EphemeralMode ephemeral_mode = 7;
 }
 
 message DeviceLocalAccountsProto {

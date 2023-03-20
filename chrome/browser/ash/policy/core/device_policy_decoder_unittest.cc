@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -54,6 +56,8 @@ constexpr char kValidBluetoothServiceUUID32[] =
 constexpr char kValidBluetoothServiceUUIDList[] =
     "[\"0x1124\", \"0000180F\", \"00002A00-0000-1000-8000-00805F9B34FB\"]";
 constexpr char kInvalidBluetoothServiceUUIDList[] = "[\"wrong-uuid\"]";
+
+constexpr char kDeviceLocalAccountKioskAccountId[] = "kiosk_account_id";
 
 }  // namespace
 
@@ -506,6 +510,57 @@ TEST_F(DevicePolicyDecoderTest, DeviceSystemAecEnabled) {
 
   DecodeDevicePolicyTestHelper(device_policy, key::kDeviceSystemAecEnabled,
                                std::move(device_system_aec_enabled_value));
+}
+
+TEST_F(DevicePolicyDecoderTest,
+       DecodeDeviceLocalAccountsWithoutEphemeralModeField) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy, key::kDeviceLocalAccounts);
+
+  em::DeviceLocalAccountInfoProto* account =
+      device_policy.mutable_device_local_accounts()->add_account();
+  account->set_account_id(kDeviceLocalAccountKioskAccountId);
+  account->set_type(
+      em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_ANDROID_APP);
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLocalAccounts,
+      base::Value(base::Value::List().Append(
+          base::Value::Dict()
+              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
+                   kDeviceLocalAccountKioskAccountId)
+              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
+                   static_cast<int>(DeviceLocalAccount::TYPE_ARC_KIOSK_APP))
+              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+                   static_cast<int>(
+                       DeviceLocalAccount::EphemeralMode::kUnset)))));
+}
+
+TEST_F(DevicePolicyDecoderTest,
+       DecodeDeviceLocalAccountsWithEphemeralModeField) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy, key::kDeviceLocalAccounts);
+
+  em::DeviceLocalAccountInfoProto* account =
+      device_policy.mutable_device_local_accounts()->add_account();
+  account->set_account_id(kDeviceLocalAccountKioskAccountId);
+  account->set_type(em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
+  account->set_ephemeral_mode(
+      em::DeviceLocalAccountInfoProto::EPHEMERAL_MODE_DISABLE);
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLocalAccounts,
+      base::Value(base::Value::List().Append(
+          base::Value::Dict()
+              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
+                   kDeviceLocalAccountKioskAccountId)
+              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
+                   static_cast<int>(DeviceLocalAccount::TYPE_KIOSK_APP))
+              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+                   static_cast<int>(
+                       DeviceLocalAccount::EphemeralMode::kDisable)))));
 }
 
 }  // namespace policy

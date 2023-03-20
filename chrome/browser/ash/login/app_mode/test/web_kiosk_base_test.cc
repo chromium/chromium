@@ -48,6 +48,7 @@ void WebKioskBaseTest::SetOnline(bool online) {
 void WebKioskBaseTest::PrepareAppLaunch() {
   std::vector<policy::DeviceLocalAccount> device_local_accounts = {
       policy::DeviceLocalAccount(
+          policy::DeviceLocalAccount::EphemeralMode::kUnset,
           policy::WebKioskAppBasicInfo(kAppInstallUrl, "", ""),
           kAppInstallUrl)};
 

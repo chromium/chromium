@@ -357,6 +357,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
   void PrepareAppLaunch() {
     std::vector<policy::DeviceLocalAccount> device_local_accounts = {
         policy::DeviceLocalAccount(
+            policy::DeviceLocalAccount::EphemeralMode::kUnset,
             policy::WebKioskAppBasicInfo(kAppInstallUrl, "", ""),
             kAppInstallUrl)};
 

@@ -526,9 +526,10 @@ void KioskAppManager::AddApp(const std::string& app_id,
   }
 
   // Add the new account.
-  device_local_accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
-                                     GenerateKioskAppAccountId(app_id), app_id,
-                                     std::string());
+  device_local_accounts.emplace_back(
+      policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+      policy::DeviceLocalAccount::EphemeralMode::kUnset,
+      GenerateKioskAppAccountId(app_id), app_id, std::string());
 
   policy::SetDeviceLocalAccounts(service, device_local_accounts);
 }

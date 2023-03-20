@@ -105,6 +105,7 @@ class KioskEnterpriseTest : public KioskBaseTest {
                                  const std::string& update_url) {
     std::vector<policy::DeviceLocalAccount> accounts;
     accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
+                          policy::DeviceLocalAccount::EphemeralMode::kUnset,
                           account_id, app_id, update_url);
     policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
     settings_helper_.SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,

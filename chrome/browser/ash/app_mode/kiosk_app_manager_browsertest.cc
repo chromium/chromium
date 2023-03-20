@@ -343,6 +343,9 @@ class KioskAppManagerTest : public InProcessBrowserTest {
     entry.Set(kAccountsPrefDeviceLocalAccountsKeyId, app_id + "@kiosk-apps");
     entry.Set(kAccountsPrefDeviceLocalAccountsKeyType,
               policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+    entry.Set(
+        kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+        static_cast<int>(policy::DeviceLocalAccount::EphemeralMode::kUnset));
     entry.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId, app_id);
     device_local_accounts.Append(std::move(entry));
     owner_settings_service_->Set(kAccountsPrefDeviceLocalAccounts,

@@ -36,6 +36,8 @@ const char kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle[] =
     "web_kiosk_title";
 const char kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl[] =
     "web_kiosk_icon_url";
+const char kAccountsPrefDeviceLocalAccountsKeyEphemeralMode[] =
+    "ephemeral_mode";
 const char kAccountsPrefDeviceLocalAccountAutoLoginId[] =
     "cros.accounts.deviceLocalAccountAutoLoginId";
 const char kAccountsPrefDeviceLocalAccountAutoLoginDelay[] =

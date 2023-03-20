@@ -5388,6 +5388,7 @@ source_set("unit_tests") {
     "policy/core/device_cloud_policy_store_ash_unittest.cc",
     "policy/core/device_local_account_external_cache_unittest.cc",
     "policy/core/device_local_account_policy_service_unittest.cc",
+    "policy/core/device_local_account_unittest.cc",
     "policy/core/device_policy_decoder_unittest.cc",
     "policy/core/dm_token_storage_unittest.cc",
     "policy/core/user_cloud_policy_manager_ash_unittest.cc",

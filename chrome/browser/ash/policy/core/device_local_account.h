@@ -74,18 +74,36 @@ struct DeviceLocalAccount {
     TYPE_COUNT
   };
 
+  enum class EphemeralMode {
+    // Default value. Same behaviour as `kFollowDeviceWidePolicy` value.
+    kUnset = 0,
+    // Device-local account ephemeral mode controlled by
+    // `DeviceEphemeralUsersEnabled` policy.
+    kFollowDeviceWidePolicy = 1,
+    // Device-local account must be non-ephemeral.
+    kDisable = 2,
+    // Device-local account must be ephemeral.
+    kEnable = 3,
+    // Max value, must be last.
+    kMaxValue = kEnable,
+  };
+
   DeviceLocalAccount(Type type,
+                     EphemeralMode ephemeral_mode,
                      const std::string& account_id,
                      const std::string& kiosk_app_id,
                      const std::string& kiosk_app_update_url);
-  DeviceLocalAccount(const ArcKioskAppBasicInfo& arc_kiosk_app_info,
+  DeviceLocalAccount(EphemeralMode ephemeral_mode,
+                     const ArcKioskAppBasicInfo& arc_kiosk_app_info,
                      const std::string& account_id);
-  DeviceLocalAccount(const WebKioskAppBasicInfo& app_info,
+  DeviceLocalAccount(EphemeralMode ephemeral_mode,
+                     const WebKioskAppBasicInfo& app_info,
                      const std::string& account_id);
   DeviceLocalAccount(const DeviceLocalAccount& other);
   ~DeviceLocalAccount();
 
   Type type;
+  EphemeralMode ephemeral_mode;
   // A device-local account has two identifiers:
   // * The |account_id| is chosen by the entity that defines the device-local
   //   account. The only constraints are that the |account_id| be unique and,

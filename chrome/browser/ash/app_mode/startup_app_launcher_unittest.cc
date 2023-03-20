@@ -413,6 +413,9 @@ class ScopedKioskAppManagerOverrides : public KioskAppManager::Overrides {
     account.Set(kAccountsPrefDeviceLocalAccountsKeyId, kTestUserAccount);
     account.Set(kAccountsPrefDeviceLocalAccountsKeyType,
                 policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+    account.Set(
+        kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+        static_cast<int>(policy::DeviceLocalAccount::EphemeralMode::kUnset));
     account.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
                 kTestPrimaryAppId);
     base::Value::List accounts;

@@ -106,6 +106,9 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
                 GenerateAccountId(app.package_name()));
       entry.Set(kAccountsPrefDeviceLocalAccountsKeyType,
                 policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP);
+      entry.Set(
+          kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+          static_cast<int>(policy::DeviceLocalAccount::EphemeralMode::kUnset));
       entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
                 app.package_name());
       entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
