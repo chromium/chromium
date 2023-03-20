@@ -34,8 +34,9 @@ void FedCmHandler::Wire(UberDispatcher* dispatcher) {
   FedCm::Dispatcher::wire(dispatcher, this);
 }
 
-DispatchResponse FedCmHandler::Enable() {
+DispatchResponse FedCmHandler::Enable(Maybe<bool> in_disableRejectionDelay) {
   enabled_ = true;
+  disable_delay_ = in_disableRejectionDelay.fromMaybe(false);
   return DispatchResponse::Success();
 }
 

@@ -470,6 +470,14 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
+  bool intercept = false;
+  bool should_complete_request_immediately = false;
+  devtools_instrumentation::WillSendFedCmRequest(
+      &render_frame_host(), &intercept, &should_complete_request_immediately);
+  should_complete_request_immediately_ =
+      (intercept && should_complete_request_immediately) ||
+      api_permission_delegate_->ShouldCompleteRequestImmediately();
+
   auth_request_token_callback_ = std::move(callback);
   GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(this);
   network_manager_ = CreateNetworkManager();
@@ -1345,7 +1353,7 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // |token_request_delay_| seconds for better UX.
   token_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time = token_response_time_ - select_account_time_;
-  if (ShouldCompleteRequestImmediately() ||
+  if (should_complete_request_immediately_ ||
       fetch_time >= token_request_delay_) {
     CompleteTokenRequest(std::move(idp), status, id_token);
     return;
@@ -1535,7 +1543,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   CleanUp();
 
-  if (!should_delay_callback || ShouldCompleteRequestImmediately()) {
+  if (!should_delay_callback || should_complete_request_immediately_) {
     GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
     errors_logged_to_console_ = false;
 
@@ -1627,10 +1635,6 @@ void FederatedAuthRequestImpl::MaybeAddResponseCodeToConsole(
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError, *console_message);
   }
-}
-
-bool FederatedAuthRequestImpl::ShouldCompleteRequestImmediately() {
-  return api_permission_delegate_->ShouldCompleteRequestImmediately();
 }
 
 url::Origin FederatedAuthRequestImpl::GetEmbeddingOrigin() const {

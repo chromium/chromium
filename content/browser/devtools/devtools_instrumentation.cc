@@ -1843,6 +1843,17 @@ void CleanUpDeviceRequestPrompt(RenderFrameHost* render_frame_host,
                    prompt_info);
 }
 
+void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
+                          bool* intercept,
+                          bool* disable_delay) {
+  FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
+  if (!ftn) {
+    return;
+  }
+  DispatchToAgents(ftn, &protocol::FedCmHandler::WillSendRequest, intercept,
+                   disable_delay);
+}
+
 void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept) {
   FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
   if (!ftn) {

@@ -29,6 +29,13 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
 
   static std::vector<FedCmHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
+  void WillSendRequest(bool* intercept, bool* disable_delay) {
+    if (enabled_) {
+      *intercept = true;
+      *disable_delay |= disable_delay_;
+    }
+  }
+
   void WillShowDialog(bool* intercept) {
     if (enabled_) {
       *intercept = true;
@@ -43,7 +50,7 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
   void Wire(UberDispatcher* dispatcher) override;
 
   // FedCm::Backend
-  DispatchResponse Enable() override;
+  DispatchResponse Enable(Maybe<bool> in_disableRejectionDelay) override;
   DispatchResponse Disable() override;
   DispatchResponse SelectAccount(const String& in_dialogId,
                                  int in_accountIndex) override;
@@ -58,6 +65,7 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
   std::unique_ptr<FedCm::Frontend> frontend_;
   std::string dialog_id_;
   bool enabled_ = false;
+  bool disable_delay_ = false;
 };
 
 }  // namespace content::protocol
