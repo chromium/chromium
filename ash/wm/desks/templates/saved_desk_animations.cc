@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_animations.h"
 
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/animation/animation_builder.h"
@@ -35,6 +36,11 @@ void FadeInLayer(ui::Layer* layer, int duration_in_ms) {
 void FadeOutLayer(ui::Layer* layer,
                   base::OnceClosure on_animation_ended_callback,
                   int duration_in_ms) {
+  // Pause the window occlusion tracker since there may be occlusion observers
+  // that wake up and trigger overview mode to exit, which destroys the layers
+  // that are involved here. See http://b/273562648 for more info.
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion_tracker;
+
   std::pair<base::OnceClosure, base::OnceClosure> split =
       base::SplitOnceCallback(std::move(on_animation_ended_callback));
 
