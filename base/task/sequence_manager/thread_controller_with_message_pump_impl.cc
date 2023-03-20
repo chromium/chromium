@@ -547,11 +547,6 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   // `run_level_tracker_.OnIdle()`.
   TRACE_EVENT0("sequence_manager", "SequenceManager::DoIdleWork");
 
-  // A hang watch scope should already be in place in most cases but some
-  // MessagePump impls (e.g. Mac) can call DoIdleWork straight out of idle
-  // without first calling DoWork.
-  hang_watch_scope_.emplace();
-
 #if BUILDFLAG(IS_WIN)
   if (!power_monitor_.IsProcessInPowerSuspendState()) {
     // Avoid calling Time::ActivateHighResolutionTimer() between
