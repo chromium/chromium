@@ -1,0 +1,2 @@
+tr_italic={anchor: {:2, 0, down}, focus: {:2, 19, down}}
+italic.AXAttributedStringForTextMarkerRange(tr_italic)={This text is : {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)'}, italic: {AXFont: {AXFontItalic: 1, AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)'}}

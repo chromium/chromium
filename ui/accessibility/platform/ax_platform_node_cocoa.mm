@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "skia/ext/skia_utils_mac.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_range.h"
@@ -806,6 +807,89 @@ void CollectAncestorRoles(
                                value:@YES
                                range:leafRange];
     }
+
+    ui::AXTextAttributes text_attrs =
+        leafTextRange.anchor()->GetTextAttributes();
+
+    NSMutableDictionary* fontAttributes = [NSMutableDictionary dictionary];
+
+    // TODO(crbug.com/958811): Implement NSAccessibilityFontFamilyKey.
+    // TODO(crbug.com/958811): Implement NSAccessibilityFontNameKey.
+    // TODO(crbug.com/958811): Implement NSAccessibilityVisibleNameKey.
+
+    if (text_attrs.font_size != ui::AXTextAttributes::kUnsetValue) {
+      [fontAttributes setValue:@(text_attrs.font_size)
+                        forKey:NSAccessibilityFontSizeKey];
+    }
+
+    if (text_attrs.HasTextStyle(ax::mojom::TextStyle::kBold)) {
+      [fontAttributes setValue:@YES forKey:@"AXFontBold"];
+    }
+
+    if (text_attrs.HasTextStyle(ax::mojom::TextStyle::kItalic)) {
+      [fontAttributes setValue:@YES forKey:@"AXFontItalic"];
+    }
+
+    [attributedString addAttribute:NSAccessibilityFontTextAttribute
+                             value:fontAttributes
+                             range:leafRange];
+
+    if (text_attrs.color != ui::AXTextAttributes::kUnsetValue) {
+      [attributedString addAttribute:NSAccessibilityForegroundColorTextAttribute
+                               value:(__bridge id)skia::SkColorToSRGBNSColor(
+                                         SkColor(text_attrs.color))
+                                         .CGColor
+                               range:leafRange];
+    } else {
+      [attributedString
+          removeAttribute:NSAccessibilityForegroundColorTextAttribute
+                    range:leafRange];
+    }
+
+    if (text_attrs.background_color != ui::AXTextAttributes::kUnsetValue) {
+      [attributedString addAttribute:NSAccessibilityBackgroundColorTextAttribute
+                               value:(__bridge id)skia::SkColorToSRGBNSColor(
+                                         SkColor(text_attrs.background_color))
+                                         .CGColor
+                               range:leafRange];
+    } else {
+      [attributedString
+          removeAttribute:NSAccessibilityBackgroundColorTextAttribute
+                    range:leafRange];
+    }
+
+    // TODO(crbug.com/958811): Implement
+    // NSAccessibilitySuperscriptTextAttribute.
+    // TODO(crbug.com/958811): Implement NSAccessibilityShadowTextAttribute.
+
+    if (text_attrs.underline_style != ui::AXTextAttributes::kUnsetValue) {
+      [attributedString addAttribute:NSAccessibilityUnderlineTextAttribute
+                               value:@YES
+                               range:leafRange];
+    } else {
+      [attributedString removeAttribute:NSAccessibilityUnderlineTextAttribute
+                                  range:leafRange];
+    }
+
+    // TODO(crbug.com/958811): Implement
+    // NSAccessibilityUnderlineColorTextAttribute.
+
+    if (text_attrs.strikethrough_style != ui::AXTextAttributes::kUnsetValue) {
+      [attributedString addAttribute:NSAccessibilityStrikethroughTextAttribute
+                               value:@YES
+                               range:leafRange];
+    } else {
+      [attributedString
+          removeAttribute:NSAccessibilityStrikethroughTextAttribute
+                    range:leafRange];
+    }
+
+    // TODO(crbug.com/958811): Implement
+    // NSAccessibilityStrikethroughColorTextAttribute.
+
+    // TODO(crbug.com/958811): Implement NSAccessibilityLinkTextAttribute.
+    // TODO(crbug.com/958811): Implement
+    // NSAccessibilityAutocorrectedTextAttribute.
 
     anchorStartOffset += leafTextLength;
   }

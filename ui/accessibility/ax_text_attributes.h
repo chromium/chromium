@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ui/accessibility/ax_base_export.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 
 namespace ui {
 
@@ -35,6 +36,8 @@ struct AX_BASE_EXPORT AXTextAttributes final {
   bool operator!=(const AXTextAttributes& other) const;
 
   bool IsUnset() const;
+
+  bool HasTextStyle(const ax::mojom::TextStyle text_style_enum) const;
 
   int32_t background_color = kUnsetValue;
   int32_t color = kUnsetValue;

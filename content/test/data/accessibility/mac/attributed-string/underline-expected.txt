@@ -1,0 +1,2 @@
+tr_underline={anchor: {:2, 0, down}, focus: {:2, 22, down}}
+underline.AXAttributedStringForTextMarkerRange(tr_underline)={This text is : {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)'}, underline: {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)', AXUnderline: 1}}

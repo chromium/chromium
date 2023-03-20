@@ -1,5 +1,4 @@
 input.accessibilityParameterizedAttributeNames.has(AXAttributedStringForRange)='yes'
-input.accessibilityAttributeValue(AXAttributedStringForRange, {loc: 0, len: 8})='mispeled{
-}'
+input.accessibilityAttributeValue(AXAttributedStringForRange, {loc: 0, len: 8})={mispeled: {AXFont: {AXFontSize: 13}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)'}}
 not_applicable.accessibilityParameterizedAttributeNames.has(AXAttributedStringForRange)='no'
 not_applicable.accessibilityAttributeValue(AXAttributedStringForRange, {loc: 0, len: 8})=NULL

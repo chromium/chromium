@@ -1,0 +1,2 @@
+tr_strikethrough={anchor: {:2, 0, down}, focus: {:2, 26, down}}
+strikethrough.AXAttributedStringForTextMarkerRange(tr_strikethrough)={This text is : {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)'}, strikethrough: {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)', AXIsSuggestedDeletion: 1, AXStrikethrough: 1}}

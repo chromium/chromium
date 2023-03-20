@@ -75,4 +75,11 @@ bool AXTextAttributes::IsUnset() const {
          marker_types.size() == 0 && highlight_types.size() == 0;
 }
 
+bool AXTextAttributes::HasTextStyle(
+    ax::mojom::TextStyle text_style_enum) const {
+  return text_style != kUnsetValue &&
+         (static_cast<uint32_t>(text_style) &
+          (1U << static_cast<uint32_t>(text_style_enum))) != 0;
+}
+
 }  // namespace ui

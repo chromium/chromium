@@ -2,6 +2,9 @@ specific_include_rules = {
   "atk_util_auralinux_x11\.cc": [
     "+ui/events/x",
   ],
+  "ax_platform_node_cocoa\.mm": [
+    "+skia/ext",
+  ],
   "ax_platform_node_win\.cc": [
     "+skia/ext",
   ]

@@ -1,0 +1,2 @@
+tr_bold={anchor: {:2, 0, down}, focus: {:2, 17, down}}
+bold.AXAttributedStringForTextMarkerRange(tr_bold)={This text is : {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)'}, bold: {AXFont: {AXFontBold: 1, AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)'}}

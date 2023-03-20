@@ -62,6 +62,16 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
     }
   }
 
+  // NSAttributedString
+  if ([value isKindOfClass:[NSAttributedString class]]) {
+    return NSAttributedStringToBaseValue((NSAttributedString*)value, indexer);
+  }
+
+  // CGColorRef
+  if (CFGetTypeID(value) == CGColorGetTypeID()) {
+    return base::Value(CGColorRefToBaseValue(static_cast<CGColorRef>(value)));
+  }
+
   // AXValue
   if (CFGetTypeID(value) == AXValueGetTypeID()) {
     AXValueType type = AXValueGetType(static_cast<AXValueRef>(value));
@@ -179,6 +189,40 @@ base::Value AXTextMarkerRangeToBaseValue(id text_marker_range,
             AXPositionToBaseValue(ax_range.anchor()->Clone(), indexer));
   value.Set("focus", AXPositionToBaseValue(ax_range.focus()->Clone(), indexer));
   return base::Value(std::move(value));
+}
+
+base::Value NSAttributedStringToBaseValue(NSAttributedString* attr_string,
+                                          const AXTreeIndexerMac* indexer) {
+  __block base::Value::Dict result;
+
+  [attr_string
+      enumerateAttributesInRange:NSMakeRange(0, [attr_string length])
+                         options:
+                             NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                      usingBlock:^(NSDictionary* attrs, NSRange nsRange,
+                                   BOOL* stop) {
+                        __block base::Value::Dict base_attrs;
+                        [attrs enumerateKeysAndObjectsUsingBlock:^(
+                                   NSString* key, id attr, BOOL* dict_stop) {
+                          base_attrs.Set(
+                              std::string(base::SysNSStringToUTF8(key)),
+                              AXNSObjectToBaseValue(attr, indexer));
+                        }];
+
+                        result.Set(std::string(base::SysNSStringToUTF8(
+                                       [[attr_string string]
+                                           substringWithRange:nsRange])),
+                                   std::move(base_attrs));
+                      }];
+  return base::Value(std::move(result));
+}
+
+base::Value CGColorRefToBaseValue(CGColorRef color) {
+  const CGFloat* color_components = CGColorGetComponents(color);
+  return base::Value(base::SysNSStringToUTF16(
+      [NSString stringWithFormat:@"CGColor(%1.2f, %1.2f, %1.2f, %1.2f)",
+                                 color_components[0], color_components[1],
+                                 color_components[2], color_components[3]]));
 }
 
 base::Value AXNilToBaseValue() {

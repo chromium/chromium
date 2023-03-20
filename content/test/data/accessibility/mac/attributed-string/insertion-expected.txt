@@ -1,4 +1,2 @@
 tr_insertion={anchor: {:2, 0, down}, focus: {:2, 13, down}}
-insertion.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, tr_insertion)='Inserted Text{
-    AXIsSuggestedInsertion = 1;
-}'
+insertion.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, tr_insertion)={Inserted Text: {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)', AXIsSuggestedInsertion: 1}}

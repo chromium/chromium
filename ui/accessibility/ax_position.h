@@ -4407,6 +4407,22 @@ class AXPosition {
     return GetAnchor()->GetRole();
   }
 
+  AXTextAttributes GetTextAttributes() const {
+    // Check either the current anchor or its parent for text attributes.
+    AXTextAttributes current_anchor_text_attributes =
+        !IsNullPosition() ? GetAnchor()->GetTextAttributes()
+                          : AXTextAttributes();
+    if (current_anchor_text_attributes.IsUnset()) {
+      AXPositionInstance parent_position =
+          AsTreePosition()->CreateParentPosition(
+              ax::mojom::MoveDirection::kBackward);
+      if (!parent_position->IsNullPosition()) {
+        return parent_position->GetAnchor()->GetTextAttributes();
+      }
+    }
+    return current_anchor_text_attributes;
+  }
+
  protected:
   AXPosition()
       : kind_(AXPositionKind::NULL_POSITION),
@@ -4682,21 +4698,6 @@ class AXPosition {
   }
 
   ax::mojom::Role GetRole(AXNode* node) const { return node->GetRole(); }
-
-  AXTextAttributes GetTextAttributes() const {
-    // Check either the current anchor or its parent for text attributes.
-    AXTextAttributes current_anchor_text_attributes =
-        !IsNullPosition() ? GetAnchor()->GetTextAttributes()
-                          : AXTextAttributes();
-    if (current_anchor_text_attributes.IsUnset()) {
-      AXPositionInstance parent_position =
-          AsTreePosition()->CreateParentPosition(
-              ax::mojom::MoveDirection::kBackward);
-      if (!parent_position->IsNullPosition())
-        return parent_position->GetAnchor()->GetTextAttributes();
-    }
-    return current_anchor_text_attributes;
-  }
 
   const std::vector<int32_t>& GetWordStartOffsets() const {
     if (IsNullPosition()) {

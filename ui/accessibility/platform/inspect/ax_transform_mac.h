@@ -37,6 +37,16 @@ base::Value AXTextMarkerToBaseValue(id, const AXTreeIndexerMac*);
 // Returns the base::Value representation of the given AXTextMarkerRange.
 base::Value AXTextMarkerRangeToBaseValue(id, const AXTreeIndexerMac*);
 
+// Returns the base::Value::Dict representation of the given NSAttributedString.
+COMPONENT_EXPORT(AX_PLATFORM)
+base::Value NSAttributedStringToBaseValue(NSAttributedString*,
+                                          const AXTreeIndexerMac*);
+
+// Returns the base::Value representation of CGColorRef in the form CGColor(r,
+// g, b, a).
+COMPONENT_EXPORT(AX_PLATFORM)
+base::Value CGColorRefToBaseValue(CGColorRef color);
+
 // Returns the base::Value representation of nil.
 COMPONENT_EXPORT(AX_PLATFORM) base::Value AXNilToBaseValue();
 

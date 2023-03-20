@@ -456,6 +456,23 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   RunTypedTest<kMacAttributedString>("suggestion.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AttributedStringBold) {
+  RunTypedTest<kMacAttributedString>("bold.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AttributedStringItalic) {
+  RunTypedTest<kMacAttributedString>("italic.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AttributedStringStrikethrough) {
+  RunTypedTest<kMacAttributedString>("strikethrough.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AttributedStringUnderline) {
+  RunTypedTest<kMacAttributedString>("underline.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, ChromeAXNodeId) {
   RunTypedTest<kMacAttributes>("chrome-ax-node-id.html");
 }

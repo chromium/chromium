@@ -1,4 +1,2 @@
 tr_mark={anchor: {:2, 0, down}, focus: {:2, 9, down}}
-mark.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, tr_mark)='Mark Text{
-    AXHighlight = 1;
-}'
+mark.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, tr_mark)={Mark Text: {AXFont: {AXFontSize: 16}, AXForegroundColor: 'CGColor(0.00, 0.00, 0.00, 1.00)', AXHighlight: 1}}
