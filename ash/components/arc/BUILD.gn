@@ -217,6 +217,7 @@ static_library("arc_base_utils") {
 
   public_deps = [ ":arc_features" ]
   deps = [
+    "//ash:ash",
     "//ash/components/arc:prefs",
     "//ash/components/arc/session:arc_base_enums",
     "//ash/constants",
@@ -451,6 +452,7 @@ source_set("unit_tests") {
   # TODO(b/129295708): Clean up unused deps. Update users of this target.
   deps = [
     ":arc",
+    "//ash:test_support",
     "//ash/components/arc:arc_test_support",
     "//ash/components/arc/enterprise",
     "//ash/components/arc/media_session",

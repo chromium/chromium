@@ -12,6 +12,8 @@
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/system/time/calendar_utils.h"
+#include "ash/system/time/date_helper.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -466,14 +468,36 @@ int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {
     // The preference is uninitialized (the notification has not been shown).
     LOG(ERROR) << "No deadline can be calculated because ARCVM /data migration "
                   "notification has not been shown before";
-    return kArcVmDataMigrationDismissibleTimeDelta.InDays();
+    return kArcVmDataMigrationNumberOfDismissibleDays;
   }
-  // TODO(b/258278176): Make this work nicely in any timezones in a robust way.
-  const base::Time deadline =
-      notification_first_shown_time + kArcVmDataMigrationDismissibleTimeDelta;
-  const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = now < deadline ? deadline - now : base::Days(0);
-  return delta.InDays() + 1;
+
+  auto* date_helper = ash::DateHelper::GetInstance();
+  DCHECK(date_helper);
+  // Calculate the deadline assuming that the first notification was shown in
+  // the current timezone.
+  // ash::calendar_utils::kDurationForAdjustingDST is added to take into account
+  // days longer than 24 hours due to daylight saving time.
+  // For example, if the notification is shown for the first time at
+  // 2023-01-01T16:00:00Z and kArcVmDataMigrationNumberOfDismissibleDays is 30,
+  // the deadline will be 2023-01-31T00:00:00Z.
+  // This function will return 30 until 2023-01-01T23:59:99Z and keep returning
+  // 1 from 2023-01-30T00:00:00Z onward.
+  const base::Time deadline = date_helper->GetLocalMidnight(
+      date_helper->GetLocalMidnight(notification_first_shown_time) +
+      kArcVmDataMigrationDismissibleTimeDelta +
+      ash::calendar_utils::kDurationForAdjustingDST);
+  const base::Time last_local_midnight =
+      date_helper->GetLocalMidnight(base::Time::Now());
+  const base::TimeDelta delta =
+      last_local_midnight < deadline
+          ? deadline - last_local_midnight +
+                ash::calendar_utils::kDurationForAdjustingDST
+          : base::Days(0);
+  const int delta_in_days = delta.InDays();
+  if (delta_in_days > kArcVmDataMigrationNumberOfDismissibleDays) {
+    return kArcVmDataMigrationNumberOfDismissibleDays;
+  }
+  return std::max(delta_in_days, 1);
 }
 
 bool ArcVmDataMigrationShouldBeDismissible(int days_until_deadline) {

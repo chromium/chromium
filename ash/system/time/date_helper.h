@@ -75,7 +75,7 @@ class DateHelper : public LocaleChangeObserver,
   // e.g. If the `date` is Apr 1st 1:00 (which is Mar 31st 18:00 PST), the
   // local timezone is PST and time difference is 7 hrs. It returns Mar 31st
   // 7:00, which is Mar 31st 00:00 PST.
-  base::Time GetLocalMidnight(base::Time date);
+  ASH_EXPORT base::Time GetLocalMidnight(base::Time date);
 
   icu::SimpleDateFormat& day_of_month_formatter() {
     return day_of_month_formatter_;
