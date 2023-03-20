@@ -5679,14 +5679,20 @@ const CSSValue* OverflowClipMargin::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
+  auto* css_value_list = CSSValueList::CreateSpaceSeparated();
+
   if (!style.OverflowClipMargin()) {
-    return CSSPrimitiveValue::CreateFromLength(Length::Fixed(0), 1.f);
+    css_value_list->Append(
+        *CSSPrimitiveValue::CreateFromLength(Length::Fixed(0), 1.f));
+    return css_value_list;
   }
 
   if (style.OverflowClipMargin()->GetReferenceBox() ==
           StyleOverflowClipMargin::ReferenceBox::kPaddingBox &&
       style.OverflowClipMargin()->GetMargin() == LayoutUnit()) {
-    return CSSPrimitiveValue::CreateFromLength(Length::Fixed(0), 1.f);
+    css_value_list->Append(
+        *CSSPrimitiveValue::CreateFromLength(Length::Fixed(0), 1.f));
+    return css_value_list;
   }
 
   CSSValueID reference_box;
@@ -5702,7 +5708,6 @@ const CSSValue* OverflowClipMargin::CSSValueFromComputedStyleInternal(
       break;
   }
 
-  auto* css_value_list = CSSValueList::CreateSpaceSeparated();
   if (reference_box != CSSValueID::kPaddingBox) {
     css_value_list->Append(*CSSIdentifierValue::Create(reference_box));
   }
