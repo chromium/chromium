@@ -8,6 +8,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -168,9 +169,8 @@ PillButton::PillButton(PressedCallback callback,
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   label()->SetSubpixelRenderingEnabled(false);
-  // TODO: Unify the font size, weight under ash/style as well.
-  label()->SetFontList(views::Label::GetDefaultFontList().Derive(
-      1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kLegacyButton1,
+                                        *label());
   StyleUtil::SetUpInkDropForButton(
       this, gfx::Insets(),
       /*highlight_on_hover=*/false,
