@@ -14,6 +14,7 @@ source_set("manual_fill") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:affiliation",
     "//ios/chrome/browser/browser_state:browser_state",
+    "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:save_passwords_consumer",
   ]
   frameworks = [ "UIKit.framework" ]

@@ -11,48 +11,12 @@
 #import "components/password_manager/core/browser/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/password_store_observer_bridge.h"
 #import "ios/chrome/browser/passwords/save_passwords_consumer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// Protocol to observe changes on the Password Store.
-@protocol PasswordStoreObserver <NSObject>
-
-// The logins in the Password Store changed.
-- (void)loginsDidChange;
-
-@end
-
-namespace {
-
-// Objective-C bridge to observe changes in the Password Store.
-class PasswordStoreObserverBridge
-    : public password_manager::PasswordStoreInterface::Observer {
- public:
-  explicit PasswordStoreObserverBridge(id<PasswordStoreObserver> observer)
-      : observer_(observer) {}
-
-  PasswordStoreObserverBridge() {}
-
- private:
-  void OnLoginsChanged(
-      password_manager::PasswordStoreInterface* /*store*/,
-      const password_manager::PasswordStoreChangeList& /*changes*/) override {
-    [observer_ loginsDidChange];
-  }
-
-  void OnLoginsRetained(password_manager::PasswordStoreInterface* /*store*/,
-                        const std::vector<password_manager::PasswordForm>&
-                        /*retained_passwords*/) override {
-    [observer_ loginsDidChange];
-  }
-
-  __weak id<PasswordStoreObserver> observer_ = nil;
-};
-
-}  // namespace
 
 @interface PasswordFetcher () <SavePasswordsConsumerDelegate,
                                PasswordStoreObserver> {
