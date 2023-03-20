@@ -54,6 +54,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.JUnitTestGURLs;
+import org.chromium.base.test.util.DisabledTest;
 
 /** Unit tests for {@link ReturnToChromeUtil} class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -153,6 +154,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky, see crbug.com/1425954")
     public void testShouldShowTabSwitcher() {
         Assert.assertEquals(START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
                 START_SURFACE_RETURN_TIME_SECONDS.getValue());
