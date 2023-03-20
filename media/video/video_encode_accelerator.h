@@ -22,6 +22,7 @@
 #include "media/base/video_types.h"
 #include "media/video/video_encoder_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/color_space.h"
 
 namespace media {
 
@@ -156,6 +157,9 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   // Some platforms may adjust the encoding size to meet hardware requirements.
   // If not set, the encoded size is the same as configured.
   absl::optional<gfx::Size> encoded_size;
+
+  // Some platforms may adjust the color space.
+  absl::optional<gfx::ColorSpace> encoded_color_space;
 };
 
 // Video encoder interface.

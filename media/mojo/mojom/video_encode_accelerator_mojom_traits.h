@@ -214,6 +214,10 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
       const media::BitstreamBufferMetadata& bbm) {
     return bbm.encoded_size;
   }
+  static absl::optional<gfx::ColorSpace> encoded_color_space(
+      const media::BitstreamBufferMetadata& bbm) {
+    return bbm.encoded_color_space;
+  }
 
   static bool Read(media::mojom::BitstreamBufferMetadataDataView data,
                    media::BitstreamBufferMetadata* out_metadata);

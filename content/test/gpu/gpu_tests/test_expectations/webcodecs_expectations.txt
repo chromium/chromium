@@ -93,6 +93,7 @@ crbug.com/1311091 WebCodecs_WebRTCPeerConnection_* [ Skip ]
 
 crbug.com/1371749 [ mac-x86_64 ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-hardware [ Failure ]
 
+crbug.com/1409453 [ win amd ] WebCodecs_copyTo_hw_decoder [ Failure ]
 crbug.com/1409453 [ win amd ] WebCodecs_DrawImage_hw_decoder [ Failure ]
 crbug.com/1409453 [ win amd ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
 
@@ -114,6 +115,12 @@ crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_TexImage2d_camera
 crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ Failure ]
 
 # finder:enable-unused
+
+# Temporary expectation while hardware encoder color spaces are added.
+crbug.com/1377842 [ win ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-software [ Failure ]
+crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_vp09.00.10.08_prefer-hardware [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
