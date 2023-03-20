@@ -392,7 +392,9 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
             sync_client_->GetModelTypeStoreService()->GetStoreFactory(),
             SyncableServiceForPrefs(sync_client_->GetPrefServiceSyncable(),
                                     syncer::PREFERENCES),
-            dump_stack));
+            dump_stack,
+            SyncableServiceBasedModelTypeController::DelegateMode::
+                kLegacyFullSyncModeOnly));
   }
 
   if (!disabled_types.Has(syncer::PRIORITY_PREFERENCES)) {
@@ -402,7 +404,9 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
             sync_client_->GetModelTypeStoreService()->GetStoreFactory(),
             SyncableServiceForPrefs(sync_client_->GetPrefServiceSyncable(),
                                     syncer::PRIORITY_PREFERENCES),
-            dump_stack));
+            dump_stack,
+            SyncableServiceBasedModelTypeController::DelegateMode::
+                kLegacyFullSyncModeOnly));
   }
 
   // Register reading list unless explicitly disabled.

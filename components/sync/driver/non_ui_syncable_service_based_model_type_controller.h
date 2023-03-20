@@ -30,12 +30,21 @@ class NonUiSyncableServiceBasedModelTypeController
   using SyncableServiceProvider =
       base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>;
 
-  enum class DelegateMode { kFullSyncModeOnly, kTransportModeWithSingleModel };
+  enum class DelegateMode {
+    // The data type runs only in full-sync mode. This is deprecated; new data
+    // types should not use this!
+    kLegacyFullSyncModeOnly,
+    // The data type runs in both full-sync mode and transport mode, and it
+    // shares a single data model across both modes (i.e. the data type does not
+    // distinguish between syncing users and signed-in non-syncing users).
+    kTransportModeWithSingleModel
+  };
 
-  // |syncable_service_provider| and |store_factory| will be run on the backend
-  // sequence, i.e. |task_runner|.
-  // |allow_transport_mode| will sync the data in both full-sync mode and in
-  // transport-only mode.
+  // `syncable_service_provider` and `store_factory` will be run on the backend
+  // sequence, i.e. `task_runner`.
+  // `delegate_mode` determines whether only a single delegate (for full-sync
+  // mode) will be created, or two separate delegates for both full-sync and
+  // transport mode.
   NonUiSyncableServiceBasedModelTypeController(
       ModelType type,
       OnceModelTypeStoreFactory store_factory,

@@ -37,7 +37,8 @@ HistoryDeleteDirectivesModelTypeController::
           syncer::HISTORY_DELETE_DIRECTIVES,
           model_type_store_service->GetStoreFactory(),
           GetSyncableServiceFromHistoryService(history_service),
-          dump_stack),
+          dump_stack,
+          DelegateMode::kLegacyFullSyncModeOnly),
       helper_(syncer::HISTORY_DELETE_DIRECTIVES, sync_service, pref_service) {}
 
 HistoryDeleteDirectivesModelTypeController::
