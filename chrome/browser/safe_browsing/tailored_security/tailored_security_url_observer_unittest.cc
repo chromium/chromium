@@ -22,7 +22,6 @@ class MockTailoredSecurityService : public TailoredSecurityService {
   MOCK_METHOD2(MaybeNotifySyncUser, void(bool, base::Time));
   MOCK_METHOD0(GetURLLoaderFactory,
                scoped_refptr<network::SharedURLLoaderFactory>());
-  MOCK_METHOD1(ShowSyncNotification, void(bool));
 };
 
 }  // namespace

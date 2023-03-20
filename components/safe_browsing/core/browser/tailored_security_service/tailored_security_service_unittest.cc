@@ -102,9 +102,6 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
   void MaybeNotifySyncUser(bool is_enabled,
                            base::Time previous_update) override;
 
-  // Mock subclass overrides.
-  MOCK_METHOD1(ShowSyncNotification, void(bool));
-
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
     return url_loader_factory_;
