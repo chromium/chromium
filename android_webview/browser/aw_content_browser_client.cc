@@ -1075,7 +1075,8 @@ bool AwContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
 
 bool AwContentBrowserClient::ShouldPreconnectNavigation(
     content::BrowserContext* browser_context) {
-  return true;
+  // This didn't make a performance improvement in WebView.
+  return false;
 }
 
 void AwContentBrowserClient::OnDisplayInsecureContent(
