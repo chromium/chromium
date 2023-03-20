@@ -257,7 +257,7 @@
 <translation id="2322173485024759474">एक अक्षर मागे जा</translation>
 <translation id="2339073806695260576">नोट व स्क्रीनशॉट घेण्यासाठी, तसेच लेझर पॉइंटर किंवा भिंग वापरण्यासाठी शेल्फवरील स्टायलस बटणावर टॅप करा.</translation>
 <translation id="2341729377289034582">उभ्या दिशेने लॉक केले</translation>
-<translation id="2345226652884463045">संपादित करण्यासाठी मजकूर निवडण्याकरिता enter किंवा search + space दाबा.</translation>
+<translation id="2345226652884463045">संपादित करण्यासाठी मजकूर निवडण्याकरिता एंटर किंवा शोधा + स्पेस प्रेस करा.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> स्पीचवर आता स्थानिक पातळीवर प्रक्रिया केली जाते आणि ती ऑफलाइन काम करते. तुम्ही तुमच्या डिक्टेशनची भाषा सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी यामध्ये बदलू शकता.</translation>
 <translation id="2352467521400612932">स्टायलस सेटिंग्ज</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> सक्रिय करत आहे</translation>
@@ -667,7 +667,7 @@
 <translation id="4628757576491864469">डिव्हाइस</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, तारा रेटिंग <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{एक दिवसामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# दिवसांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
-<translation id="4633636853437260449">हटवण्यासाठी Ctrl+W दाबा</translation>
+<translation id="4633636853437260449">हटवण्यासाठी Ctrl+W प्रेस करा</translation>
 <translation id="4642092649622328492">अर्धा स्क्रीनशॉट घ्या</translation>
 <translation id="4644727592819780893">कॅमेरा बसवण्यासाठी जागा खूप लहान आहे</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ॲप शिफारस</translation>
@@ -1455,7 +1455,7 @@
 <translation id="8982906748181120328">Nearby असलेले</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> वापरत आहे</translation>
-<translation id="8991617137207906966">कलर इन्व्हर्जन मोड सुरू केला आहे. तो बंद वर टॉगल करण्यासाठी पुन्हा Ctrl+Search+H दाबा.</translation>
+<translation id="8991617137207906966">कलर इन्व्हर्जन मोड सुरू केला आहे. तो बंद वर टॉगल करण्यासाठी पुन्हा Ctrl+Search+H प्रेस करा.</translation>
 <translation id="899350903320462459">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस <ph name="LOGIN_ID" /> म्हणून अनलॉक करा</translation>
 <translation id="9000771174482730261">स्टोरेज व्यवस्थापित करा</translation>
 <translation id="9017320285115481645">Family Link पालक ॲक्सेस कोड एंटर करा.</translation>

@@ -141,7 +141,7 @@
 <translation id="1834891354138622109">स्तंभ</translation>
 <translation id="1846771122725914429">ब्लूटूथ ब्रेल डिस्प्ले</translation>
 <translation id="1852018405765032699">चार बोटांनी स्क्रीनवर टॅप केल्यामुळे ChromeVox मेनू उघडतील आणि बंद होतील. या मेनूमध्ये कमांड आणि शॉर्टकटविषयी उपयुक्त माहिती समाविष्ट आहे. मेनू उघडल्यानंतर, आयटमदरम्यान नेव्हिगेट करण्यासाठी तुम्ही एका बोटाने स्वाइप करू शकता आणि आयटम ॲक्टिव्हेट करण्यासाठी दोनदा टॅप करू शकता. पुढे सुरू ठेवण्यासाठी, चार बोटांनी स्क्रीनवर टॅप करा.</translation>
-<translation id="1864430479908918647">Search+Space दाबा</translation>
+<translation id="1864430479908918647">Search+Space प्रेस करा</translation>
 <translation id="1865601187525349519">मजकूराची समाप्ती</translation>
 <translation id="1876229593313240038">दस्तऐवज</translation>
 <translation id="1902396333223336119">सेल</translation>
@@ -239,7 +239,7 @@
 <translation id="2619344480613750862">तुम्ही स्क्रीनच्या विभागांदरम्यानदेखील हलवू शकता. उदाहरणार्थ, तुम्ही लाँंचर, शेल्फ आणि तुमच्या Chrome टॅबदरम्यान हलवू शकता. पुढील विभागावर जाण्यासाठी, चार बोटांनी डावीकडून उजवीकडे स्वाइप करा. पुढे सुरू ठेवण्यासाठी, आता वापरून पहा.</translation>
 <translation id="2624431853467395961">जाणून घ्या मोड उघडा</translation>
 <translation id="2626530649491650971">क्लिक करण्‍यायोग्य</translation>
-<translation id="263637551280112393">Search+Shift+Space दाबा</translation>
+<translation id="263637551280112393">Search+Shift+Space प्रेस करा</translation>
 <translation id="2637227747952042642">गणित</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" /> चे डाउनलोड पुन्हा सुरू केले</translation>
 <translation id="2639750663247012216">ChromeVox सुधारक</translation>
