@@ -112,7 +112,6 @@ bool PendingExtensionManager::AddFromSync(
   // it is listed as a syncable app (because its values need to be synced) it
   // should already be installed on every instance.
   if (id == extensions::kWebStoreAppId) {
-    NOTREACHED();
     return false;
   }
 
