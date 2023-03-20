@@ -163,6 +163,9 @@ void LayoutRubyRun::RemoveChild(LayoutObject* child) {
       LayoutRubyBase& right_base = right_run->EnsureRubyBase();
       if (right_base.FirstChild()) {
         // Collect all children in a single base, then swap the bases.
+        if (right_base.HasPercentHeightDescendants()) {
+          right_base.ClearPercentHeightDescendants();
+        }
         right_base.MoveChildren(*base);
         MoveChildTo(right_run, base);
         right_run->MoveChildTo(this, &right_base);
