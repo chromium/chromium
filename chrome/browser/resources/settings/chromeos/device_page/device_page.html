@@ -38,7 +38,7 @@
     </template>
     <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
       <cr-link-row class="hr" id="perDeviceKeyboardRow"
-          label="$i18n{perDeviceKeyboardTitle}"
+          label="$i18n{keyboardTitle}"
           on-click="onPerDeviceKeyboardTap_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
@@ -91,7 +91,7 @@
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/per-device-keyboard">
-    <os-settings-subpage page-title="$i18n{perDeviceKeyboardTitle}">
+    <os-settings-subpage page-title="$i18n{keyboardTitle}">
       <settings-per-device-keyboard
           is-device-settings-split-enabled="[[isDeviceSettingsSplitEnabled_]]">
       </settings-per-device-keyboard>

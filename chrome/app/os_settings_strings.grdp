@@ -4635,9 +4635,6 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Per Device Keyboard page (OS settings) -->
-  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_TITLE" translateable="false" desc="In Device Settings, the title of the new Per-device keyboard settings subpage.">
-    Per-device Keyboard
-  </message>
   <message name="IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME" translateable="false" desc="In Device Settings, the name of the built-in/internal keyboard device within the settings app.">
     Built-in Keyboard
   </message>

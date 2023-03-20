@@ -795,7 +795,6 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"keyRepeatRate", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_RATE},
       {"keyRepeatRateFast", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_FAST},
       {"keyRepeatRateSlow", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_RATE_SLOW},
-      {"perDeviceKeyboardTitle", IDS_SETTINGS_PER_DEVICE_KEYBOARD_TITLE},
       {"remapKeyboardKeysRowLabel", IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_LABEL},
       {"remapKeyboardKeysDescription",
        IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION},
@@ -1274,7 +1273,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   if (base::FeatureList::IsEnabled(ash::features::kInputDeviceSettingsSplit)) {
     // Per-device Keyboard.
-    generator->RegisterTopLevelSubpage(IDS_SETTINGS_PER_DEVICE_KEYBOARD_TITLE,
+    generator->RegisterTopLevelSubpage(IDS_SETTINGS_KEYBOARD_TITLE,
                                        mojom::Subpage::kPerDeviceKeyboard,
                                        mojom::SearchResultIcon::kKeyboard,
                                        mojom::SearchResultDefaultRank::kMedium,
