@@ -17,7 +17,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 <histograms>
 
 <histogram name="PrivacyBudget.ClockDrift.FetchLatencyVariance" units="ms^2"
-    expires_after="2023-05-10">
+    expires_after="2023-09-03">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>
@@ -29,7 +29,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockDrift.Magnitude.Negative"
-    units="microseconds/s" expires_after="2023-05-10">
+    units="microseconds/s" expires_after="2023-09-03">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>
@@ -41,7 +41,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockDrift.Magnitude.Positive"
-    units="microseconds/s" expires_after="2023-05-10">
+    units="microseconds/s" expires_after="2023-09-03">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>
@@ -55,7 +55,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 <histogram name="PrivacyBudget.ClockSkew.FetchLatency" units="ms"
     expires_after="2023-09-03">
   <owner>antoniosartori@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>areimers@chromium.org</owner>
   <summary>
     Records the duration of the network round-trip performed to fetch the time
     from the network server. Only recorded for background fetches, which are
@@ -64,9 +64,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.FetchLatencyJitter" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-09-03">
   <owner>antoniosartori@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>areimers@chromium.org</owner>
   <summary>
     Records the standard deviation of the last three fetch latencies (i.e. the
     durations of the last three network round-trip performed to fetch the time
@@ -78,7 +78,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 <histogram name="PrivacyBudget.ClockSkew.Magnitude.Negative" units="ms"
     expires_after="2023-09-03">
   <owner>antoniosartori@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>areimers@chromium.org</owner>
   <summary>
     Records the absolute value of the computed clock skew (local clock - remote
     clock), when negative. Only recorded for background fetches, which are
@@ -87,9 +87,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.Magnitude.Positive" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-09-03">
   <owner>antoniosartori@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>areimers@chromium.org</owner>
   <summary>
     Records the computed clock skew (local clock - remote clock), when positive.
     Only recorded for background fetches, which are enabled only via a feature
@@ -98,9 +98,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.Identifiability.FinchConfigValidationResult"
-    enum="BooleanSuccess" expires_after="2023-07-16">
+    enum="BooleanSuccess" expires_after="2023-09-03">
   <owner>antoniosartori@chromium.org</owner>
-  <owner>hasanka@chromium.org</owner>
+  <owner>mkwst@chromium.org</owner>
   <summary>
     Indicates whether the Finch configuration for the privacy budget
     identifiability study was validated successfully.
