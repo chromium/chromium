@@ -66,11 +66,9 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   void DeliverNewCropVersion(uint32_t crop_version);
 
   const media::VideoCaptureFormat& start_format() const { return format_; }
-  int max_requested_height() const { return max_requested_height_; }
-  int max_requested_width() const { return max_requested_width_; }
-  absl::optional<double> max_requested_frame_rate() const {
-    return max_requested_frame_rate_;
-  }
+  int max_requested_height() const { return format_.frame_size.height(); }
+  int max_requested_width() const { return format_.frame_size.width(); }
+  float max_requested_frame_rate() const { return format_.frame_rate; }
 
   void SetMutedState(bool muted_state) override {
     blink::MediaStreamVideoSource::SetMutedState(muted_state);
@@ -82,6 +80,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
 
   void EnableRestart() { can_restart_ = true; }
   void DisableRestart() { can_restart_ = false; }
+  int restart_count() const { return restart_count_; }
 
   bool is_suspended() { return is_suspended_; }
 
@@ -107,13 +106,11 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
  private:
   media::VideoCaptureFormat format_;
   bool respond_to_request_refresh_frame_;
-  int max_requested_height_ = 0;
-  int max_requested_width_ = 0;
-  absl::optional<double> max_requested_frame_rate_;
   bool attempted_to_start_;
   bool is_stopped_for_restart_ = false;
   bool can_stop_for_restart_ = true;
   bool can_restart_ = true;
+  int restart_count_ = 0;
   bool is_suspended_ = false;
   blink::VideoCaptureDeliverFrameCB frame_callback_;
   EncodedVideoFrameCB encoded_frame_callback_;

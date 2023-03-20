@@ -36,7 +36,6 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/modules/mediastream/local_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/local_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
@@ -45,6 +44,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_audio.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_content.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
@@ -60,7 +60,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -911,7 +910,7 @@ void UserMediaProcessor::SelectVideoContentSettings() {
   SendLogMessage(
       base::StringPrintf("SelectVideoContentSettings. request_id=%d.",
                          current_request_info_->request_id()));
-  gfx::Size screen_size = GetScreenSize();
+  gfx::Size screen_size = MediaStreamUtils::GetScreenSize(frame_);
   blink::VideoCaptureSettings settings =
       blink::SelectSettingsVideoContentCapture(
           current_request_info_->request()->VideoConstraints(),
@@ -1084,9 +1083,9 @@ void UserMediaProcessor::OnStreamsGenerated(
       if (stream_devices->video_device.has_value()) {
         String video_device_id(stream_devices->video_device.value().id.data());
         current_request_info_->AddNativeVideoFormats(
-            video_device_id,
-            {media::VideoCaptureFormat(GetScreenSize(), format.frame_rate,
-                                       format.pixel_format)});
+            video_device_id, {media::VideoCaptureFormat(
+                                 MediaStreamUtils::GetScreenSize(frame_),
+                                 format.frame_rate, format.pixel_format)});
       }
     }
     StartTracks(label);
@@ -1150,17 +1149,6 @@ void UserMediaProcessor::GotAllVideoInputFormatsForDevice(
   if (current_request_info_->CanStartTracks()) {
     StartTracks(label);
   }
-}
-
-gfx::Size UserMediaProcessor::GetScreenSize() {
-  gfx::Size screen_size(blink::kDefaultScreenCastWidth,
-                        blink::kDefaultScreenCastHeight);
-  if (frame_) {  // Can be null in tests.
-    const display::ScreenInfo& info =
-        frame_->GetChromeClient().GetScreenInfo(*frame_);
-    screen_size = info.rect.size();
-  }
-  return screen_size;
 }
 
 void UserMediaProcessor::OnStreamGeneratedForCancelledRequest(
