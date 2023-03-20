@@ -236,6 +236,8 @@ void SaveUpdatePasswordMessageDelegateTest::InitFeatureList() {
   } else {
     disabled_features.push_back(
         password_manager::features::kUnifiedPasswordManagerAndroid);
+    disabled_features.push_back(
+        password_manager::features::kUnifiedPasswordManagerAndroidBranding);
   }
 
   if (feature_config.with_exploratory_save_update_password_strings) {

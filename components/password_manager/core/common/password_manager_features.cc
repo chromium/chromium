@@ -273,7 +273,7 @@ BASE_FEATURE(kUnifiedPasswordManagerReenrollment,
 // icon.
 BASE_FEATURE(kUnifiedPasswordManagerAndroidBranding,
              "UnifiedPasswordManagerAndroidBranding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables new exploratory strings for the save/update password prompts.
 BASE_FEATURE(kExploratorySaveUpdatePasswordStrings,

@@ -119,6 +119,10 @@ void GeneratedPasswordSavedMessageDelegateTest::DismissMessage() {
 // Tests that message properties (title, description, icon, button text) are
 // set correctly.
 TEST_P(GeneratedPasswordSavedMessageDelegateTest, MessagePropertyValues) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroidBranding);
+
   SetUsernameAndPassword(kUsername, kPassword);
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EnqueueMessage(std::move(form_manager));
