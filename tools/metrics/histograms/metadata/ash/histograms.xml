@@ -2026,7 +2026,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_1" units="units"
     expires_after="2023-08-27">
-  <owner>afakhry@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the first desk. Emitted when a desk is removed, or
@@ -2045,7 +2045,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_11" units="units"
-    expires_after="2023-04-23">
+    expires_after="2023-08-27">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2055,7 +2055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_12" units="units"
-    expires_after="2023-04-23">
+    expires_after="2023-08-27">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2065,7 +2065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_13" units="units"
-    expires_after="2023-04-23">
+    expires_after="2023-08-27">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2075,7 +2075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_14" units="units"
-    expires_after="2023-04-23">
+    expires_after="2023-08-27">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2085,7 +2085,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_15" units="units"
-    expires_after="2023-04-23">
+    expires_after="2023-08-27">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2095,7 +2095,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_16" units="units"
-    expires_after="2023-04-23">
+    expires_after="2023-08-27">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2106,7 +2106,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_2" units="units"
     expires_after="2023-08-27">
-  <owner>afakhry@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the second desk. Emitted when a desk is removed, or
@@ -2116,7 +2116,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_3" units="units"
     expires_after="2023-08-27">
-  <owner>afakhry@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the third desk. Emitted when a desk is removed, or
@@ -2126,7 +2126,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_4" units="units"
     expires_after="2023-08-27">
-  <owner>afakhry@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the fourth desk. Emitted when a desk is removed, or
@@ -2136,7 +2136,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_5" units="units"
     expires_after="2023-08-27">
-  <owner>afakhry@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the fifth desk. Emitted when a desk is removed, or
@@ -2146,7 +2146,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_6" units="units"
     expires_after="2023-08-27">
-  <owner>afakhry@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the sixth desk. Emitted when a desk is removed, or
@@ -2156,7 +2156,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_7" units="units"
     expires_after="2023-08-27">
-  <owner>afakhry@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the seventh desk. Emitted when a desk is removed,
@@ -2166,7 +2166,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_8" units="units"
     expires_after="2023-08-27">
-  <owner>afakhry@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The number of windows on the eighth desk. Emitted when a desk is removed, or
@@ -2175,7 +2175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_9" units="units"
-    expires_after="2023-08-13">
+    expires_after="2023-08-27">
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
