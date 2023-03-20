@@ -50,6 +50,7 @@ extern const char kUseMojoVideoDecoderForPepperAllowed[];
 extern const char kPPAPISharedImagesSwapChainAllowed[];
 extern const char kForceEnablePepperVideoDecoderDevAPI[];
 extern const char kForceGoogleSafeSearch[];
+extern const char kForceYouTubeRestrict[];
 
 }  // namespace policy_prefs
 }  // namespace policy

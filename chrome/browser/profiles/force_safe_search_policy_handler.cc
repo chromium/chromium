@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/values.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
@@ -47,7 +46,7 @@ void ForceSafeSearchPolicyHandler::ApplyPolicySettings(
     // copy value, which is a boolean.
     if (value->is_bool()) {
       prefs->SetValue(
-          prefs::kForceYouTubeRestrict,
+          policy::policy_prefs::kForceYouTubeRestrict,
           base::Value(value->GetBool()
                           ? safe_search_api::YOUTUBE_RESTRICT_MODERATE
                           : safe_search_api::YOUTUBE_RESTRICT_OFF));

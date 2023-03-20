@@ -370,7 +370,6 @@ extern const char kUsedPolicyCertificates[];
 extern const char kShowHomeButton[];
 extern const char kSpeechRecognitionFilterProfanities[];
 extern const char kAllowDeletingBrowserHistory[];
-extern const char kForceYouTubeRestrict[];
 extern const char kAllowedDomainsForApps[];
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const char kUseAshProxy[];

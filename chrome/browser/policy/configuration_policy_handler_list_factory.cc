@@ -733,7 +733,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     policy_prefs::kForceGoogleSafeSearch,
     base::Value::Type::BOOLEAN },
   { key::kForceYouTubeRestrict,
-    prefs::kForceYouTubeRestrict,
+    policy::policy_prefs::kForceYouTubeRestrict,
     base::Value::Type::INTEGER },
   { key::kDefaultCookiesSetting,
     prefs::kManagedDefaultCookiesSetting,

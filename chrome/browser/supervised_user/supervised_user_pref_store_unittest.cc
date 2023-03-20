@@ -160,7 +160,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
               Optional(true));
   int force_youtube_restrict =
       fixture.changed_prefs()
-          ->FindIntByDottedPath(prefs::kForceYouTubeRestrict)
+          ->FindIntByDottedPath(policy::policy_prefs::kForceYouTubeRestrict)
           .value_or(safe_search_api::YOUTUBE_RESTRICT_OFF);
   EXPECT_EQ(force_youtube_restrict, safe_search_api::YOUTUBE_RESTRICT_MODERATE);
 
@@ -208,7 +208,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 
   force_youtube_restrict =
       fixture.changed_prefs()
-          ->FindIntByDottedPath(prefs::kForceYouTubeRestrict)
+          ->FindIntByDottedPath(policy::policy_prefs::kForceYouTubeRestrict)
           .value_or(safe_search_api::YOUTUBE_RESTRICT_MODERATE);
   EXPECT_EQ(force_youtube_restrict, safe_search_api::YOUTUBE_RESTRICT_OFF);
 

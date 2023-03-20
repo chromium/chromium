@@ -1154,10 +1154,6 @@ const char kSpeechRecognitionFilterProfanities[] =
 // permitted.
 const char kAllowDeletingBrowserHistory[] = "history.deleting_enabled";
 
-// Integer controlling whether Restrict Mode (moderate/strict) is mandatory on
-// YouTube. See |safe_search_api::YouTubeRestrictMode| for possible values.
-const char kForceYouTubeRestrict[] = "settings.force_youtube_restrict";
-
 // Comma separated list of domain names (e.g. "google.com,school.edu").
 // When this pref is set, the user will be able to access Google Apps
 // only using an account that belongs to one of the domains from this pref.

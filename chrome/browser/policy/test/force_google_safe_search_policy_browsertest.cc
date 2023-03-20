@@ -10,7 +10,6 @@
 #include "chrome/browser/policy/safe_search_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
@@ -95,19 +94,21 @@ IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, LegacySafeSearch) {
     // or any of the legacy modes.
     EXPECT_EQ(youtube_restrict != 0 || legacy_safe_search_in_effect ||
                   legacy_youtube_in_effect,
-              prefs->IsManagedPreference(prefs::kForceYouTubeRestrict));
+              prefs->IsManagedPreference(
+                  policy::policy_prefs::kForceYouTubeRestrict));
 
     if (youtube_restrict != 0) {
       // The ForceYouTubeRestrict policy should map directly to the pref.
       EXPECT_EQ(youtube_restrict - 1,
-                prefs->GetInteger(prefs::kForceYouTubeRestrict));
+                prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict));
     } else {
       // The legacy modes should result in MODERATE strictness, if enabled.
       safe_search_api::YouTubeRestrictMode expected_mode =
           legacy_safe_search_enabled || legacy_youtube_enabled
               ? safe_search_api::YOUTUBE_RESTRICT_MODERATE
               : safe_search_api::YOUTUBE_RESTRICT_OFF;
-      EXPECT_EQ(prefs->GetInteger(prefs::kForceYouTubeRestrict), expected_mode);
+      EXPECT_EQ(prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict),
+                expected_mode);
     }
   }
 }

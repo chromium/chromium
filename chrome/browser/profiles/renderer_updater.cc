@@ -51,7 +51,8 @@ RendererUpdater::RendererUpdater(Profile* profile)
   PrefService* pref_service = profile_->GetPrefs();
   force_google_safesearch_.Init(policy::policy_prefs::kForceGoogleSafeSearch,
                                 pref_service);
-  force_youtube_restrict_.Init(prefs::kForceYouTubeRestrict, pref_service);
+  force_youtube_restrict_.Init(policy::policy_prefs::kForceYouTubeRestrict,
+                               pref_service);
   allowed_domains_for_apps_.Init(prefs::kAllowedDomainsForApps, pref_service);
 
   pref_change_registrar_.Init(pref_service);
@@ -60,7 +61,7 @@ RendererUpdater::RendererUpdater(Profile* profile)
       base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kForceYouTubeRestrict,
+      policy::policy_prefs::kForceYouTubeRestrict,
       base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
