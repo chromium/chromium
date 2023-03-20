@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.settings.ClearDataProgressDialog;
@@ -69,7 +70,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         implements BrowsingDataBridge.OnClearBrowsingDataListener,
                    Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
                    SignOutDialogCoordinator.Listener, SigninManager.SignInStateObserver,
-                   CustomDividerFragment {
+                   CustomDividerFragment, ProfileDependentSetting {
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
     /**
@@ -230,6 +231,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
     private OtherFormsOfHistoryDialogFragment mDialogAboutOtherFormsOfBrowsingHistory;
 
+    private Profile mProfile;
     private SigninManager mSigninManager;
 
     private ProgressDialog mProgressDialog;
@@ -319,6 +321,16 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             if (item.isSelected()) selected.add(item.getOption());
         }
         return selected;
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
+    }
+
+    /** @return The Profile associated with the displayed Settings. */
+    protected Profile getProfile() {
+        return mProfile;
     }
 
     /**
@@ -557,8 +569,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         }
         getActivity().setTitle(R.string.clear_browsing_data_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.clear_browsing_data_preferences_tab);
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         List<Integer> options = getDialogOptions();
         mItems = new Item[options.size()];
         for (int i = 0; i < options.size(); i++) {
@@ -568,8 +579,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
             // It is possible to disable the deletion of browsing history.
             if (option == DialogOption.CLEAR_HISTORY
-                    && !UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
+                    && !UserPrefs.get(mProfile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
                 enabled = false;
                 BrowsingDataBridge.getInstance().setBrowsingDataDeletionPreference(
                         getDataType(DialogOption.CLEAR_HISTORY), ClearBrowsingDataTab.BASIC, false);

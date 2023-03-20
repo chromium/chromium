@@ -90,8 +90,8 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
                     .launchUrl(UrlConstants.MY_ACTIVITY_URL_IN_CBD, TabLaunchType.FROM_CHROME_UI);
         });
 
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(getProfile());
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // Update the Clear Browsing History text based on the sign-in/sync state and whether
             // the link to MyActivity is displayed inline or at the bottom of the page.
@@ -108,7 +108,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = getProfile();
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         ClickableSpansTextMessagePreference googleDataTextPref =
