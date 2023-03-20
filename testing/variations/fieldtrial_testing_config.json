@@ -13690,6 +13690,24 @@
             ]
         }
     ],
+    "WebApkAllowIconUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_WebApkAllowIconUpdate",
+                    "params": {
+                        "shell_version": "159"
+                    },
+                    "enable_features": [
+                        "WebApkAllowIconUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebApkManifestUniqueId": [
         {
             "platforms": [
