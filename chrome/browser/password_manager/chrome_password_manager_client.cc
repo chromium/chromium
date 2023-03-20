@@ -292,19 +292,21 @@ bool ChromePasswordManagerClient::IsSavingAndFillingEnabled(
 }
 
 bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
-  const bool ssl_errors = net::IsCertStatusError(GetMainFrameCertStatus());
+  const Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  // Guest profiles don't have PasswordStore at all, so filling should be
+  // disabled for them.
+  if (!profile || profile->IsGuestSession()) {
+    return false;
+  }
 
+  const bool ssl_errors = net::IsCertStatusError(GetMainFrameCertStatus());
   if (log_manager_->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(
         log_manager_.get());
     logger.LogBoolean(Logger::STRING_SSL_ERRORS_PRESENT, ssl_errors);
   }
-  const Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  // Guest profiles don't have PasswordStore at all, so filling should be
-  // disabled for them.
-  return !profile->IsGuestSession() && !ssl_errors &&
-         IsPasswordManagementEnabledForCurrentPage(url);
+  return !ssl_errors && IsPasswordManagementEnabledForCurrentPage(url);
 }
 
 bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
