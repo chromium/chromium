@@ -209,6 +209,7 @@ export class EventManager implements IEventManager {
     if (eventName.startsWith(EventManager.#NETWORK_DOMAIN_PREFIX)) {
       // Enable for all the contexts.
       if (contextId === null) {
+        this.#isNetworkDomainEnabled = true;
         await Promise.all(
           this.#bidiServer
             .getBrowsingContextStorage()

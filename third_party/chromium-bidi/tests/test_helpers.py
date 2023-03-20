@@ -16,7 +16,7 @@
 import itertools
 import json
 
-from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT
+from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT, AnyWithEntries
 
 _command_counter = itertools.count(1)
 
@@ -135,3 +135,19 @@ async def wait_for_event(websocket, event_method):
         if "method" in event_response and event_response[
                 "method"] == event_method:
             return event_response
+
+
+def AnyExtending(expected):
+    if type(expected) is list:
+        result = []
+        for index, _ in enumerate(expected):
+            result[index] = AnyExtending(expected[index])
+        return result
+
+    if type(expected) is dict:
+        result = {}
+        for key in expected.keys():
+            result[key] = AnyExtending(expected[key])
+        return AnyWithEntries(result)
+
+    return expected

@@ -15,8 +15,8 @@
 #
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -58,6 +58,63 @@ async def test_network_before_request_sent_event_emitted(
             "timestamp": ANY_TIMESTAMP
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_network_global_subscription_enabled_in_new_context(
+        websocket, create_context):
+    await subscribe(websocket, "network.beforeRequestSent")
+
+    new_context_id = await create_context()
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "http://example.com",
+                "wait": "complete",
+                "context": new_context_id
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+
+    assert resp == AnyExtending({
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": new_context_id
+        }
+    })
+
+
+@pytest.mark.asyncio
+async def test_network_specific_context_subscription_does_not_enable_cdp_network_globally(
+        websocket, context_id, create_context):
+    await subscribe(websocket, "network.beforeRequestSent", context_id)
+
+    new_context_id = await create_context()
+
+    # Subscribe to all CDP events.
+    await subscribe(websocket, "cdp")
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "http://example.com",
+                "wait": "complete",
+                "context": new_context_id
+            }
+        })
+    resp = await read_JSON_message(websocket)
+    while "id" not in resp:
+        # Assert CDP events are not from Network.
+        assert resp["method"] == "cdp.eventReceived"
+        assert not resp["params"]["cdpMethod"].startswith("Network"), \
+            "There should be no `Network` cdp events, but was " \
+            f"`{ resp['params']['cdpMethod'] }` "
+        resp = await read_JSON_message(websocket)
+
+    assert resp == AnyExtending({"id": command_id})
 
 
 @pytest.mark.asyncio
