@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
@@ -58,8 +59,12 @@
     _passwordViewController =
         [[PasswordViewController alloc] initWithSearchController:nil];
 
-    auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-        browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
+    auto profilePasswordStore =
+        IOSChromePasswordStoreFactory::GetForBrowserState(
+            browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
+    auto accountPasswordStore =
+        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+            browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(
             browser->GetBrowserState());
@@ -67,12 +72,14 @@
         self.browser->GetBrowserState());
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]
-         initWithPasswordStore:passwordStore
-                 faviconLoader:faviconLoader
-                      webState:browser->GetWebStateList()->GetActiveWebState()
-                   syncService:syncService
-                           URL:URL
-        invokedOnPasswordField:invokedOnPasswordField];
+        initWithProfilePasswordStore:profilePasswordStore
+                accountPasswordStore:accountPasswordStore
+                       faviconLoader:faviconLoader
+                            webState:browser->GetWebStateList()
+                                         ->GetActiveWebState()
+                         syncService:syncService
+                                 URL:URL
+              invokedOnPasswordField:invokedOnPasswordField];
     [_passwordMediator fetchPasswords];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;

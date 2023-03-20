@@ -56,13 +56,14 @@ class PasswordStoreObserverBridge
 
 @interface PasswordFetcher () <SavePasswordsConsumerDelegate,
                                PasswordStoreObserver> {
-  // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStoreInterface> _passwordStore;
+  // The interfaces for getting and manipulating a user's saved passwords.
+  scoped_refptr<password_manager::PasswordStoreInterface> _profilePasswordStore;
+  scoped_refptr<password_manager::PasswordStoreInterface> _accountPasswordStore;
   // A helper object for passing data about saved passwords from a finished
   // password store request to the SavePasswordsCollectionViewController.
   std::unique_ptr<ios::SavePasswordsConsumer> _savedPasswordsConsumer;
-  // The object to observe changes in the Password Store.
-  std::unique_ptr<PasswordStoreObserverBridge> _passwordStoreObserver;
+  // The object to observe changes in the profile Password Store.
+  std::unique_ptr<PasswordStoreObserverBridge> _profileStoreObserver;
   // URL to fetch logins for. May be empty if no filtering is needed.
   GURL _URL;
 }
@@ -78,20 +79,25 @@ class PasswordStoreObserverBridge
 
 #pragma mark - Initialization
 
-- (instancetype)initWithPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStoreInterface>)
-                        passwordStore
-                             delegate:(id<PasswordFetcherDelegate>)delegate
-                                  URL:(const GURL&)URL {
-  DCHECK(passwordStore);
+- (instancetype)
+    initWithProfilePasswordStore:
+        (scoped_refptr<password_manager::PasswordStoreInterface>)
+            profilePasswordStore
+            accountPasswordStore:
+                (scoped_refptr<password_manager::PasswordStoreInterface>)
+                    accountPasswordStore
+                        delegate:(id<PasswordFetcherDelegate>)delegate
+                             URL:(const GURL&)URL {
+  DCHECK(profilePasswordStore);
   DCHECK(delegate);
   self = [super init];
   if (self) {
     _delegate = delegate;
-    _passwordStore = passwordStore;
+    _profilePasswordStore = profilePasswordStore;
+    _accountPasswordStore = accountPasswordStore;
     _savedPasswordsConsumer.reset(new ios::SavePasswordsConsumer(self));
-    _passwordStoreObserver.reset(new PasswordStoreObserverBridge(self));
-    _passwordStore->AddObserver(_passwordStoreObserver.get());
+    _profileStoreObserver.reset(new PasswordStoreObserverBridge(self));
+    _profilePasswordStore->AddObserver(_profileStoreObserver.get());
     _URL = URL;
     [self fetchLogins];
   }
@@ -99,20 +105,21 @@ class PasswordStoreObserverBridge
 }
 
 - (void)dealloc {
-  _passwordStore->RemoveObserver(_passwordStoreObserver.get());
+  _profilePasswordStore->RemoveObserver(_profileStoreObserver.get());
 }
 
 #pragma mark - Private methods
 
 - (void)fetchLogins {
   if (_URL.is_empty()) {
-    _passwordStore->GetAutofillableLogins(
+    _profilePasswordStore->GetAutofillableLogins(
         _savedPasswordsConsumer->GetWeakPtr());
   } else {
     password_manager::PasswordFormDigest digest = {
         password_manager::PasswordForm::Scheme::kHtml, std::string(), _URL};
     digest.signon_realm = _URL.spec();
-    _passwordStore->GetLogins(digest, _savedPasswordsConsumer->GetWeakPtr());
+    _profilePasswordStore->GetLogins(digest,
+                                     _savedPasswordsConsumer->GetWeakPtr());
   }
 }
 

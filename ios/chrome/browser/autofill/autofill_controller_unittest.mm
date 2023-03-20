@@ -358,9 +358,10 @@ void AutofillControllerTest::SetUp() {
   accessory_mediator_ =
       [[FormInputAccessoryMediator alloc] initWithConsumer:nil
                                                    handler:nil
-                                              webStateList:NULL
-                                       personalDataManager:NULL
-                                             passwordStore:nullptr
+                                              webStateList:nullptr
+                                       personalDataManager:nullptr
+                                      profilePasswordStore:nullptr
+                                      accountPasswordStore:nullptr
                                       securityAlertHandler:nil
                                     reauthenticationModule:nil];
 

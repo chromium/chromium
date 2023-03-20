@@ -68,8 +68,9 @@ BOOL AreCredentialsAtIndexesConnected(
                                           FormActivityObserver,
                                           ManualFillContentInjector,
                                           PasswordFetcherDelegate> {
-  // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStoreInterface> _passwordStore;
+  // The interfaces for getting and manipulating a user's saved passwords.
+  scoped_refptr<password_manager::PasswordStoreInterface> _profilePasswordStore;
+  scoped_refptr<password_manager::PasswordStoreInterface> _accountPasswordStore;
 }
 
 // The password fetcher to query the user profile.
@@ -108,18 +109,23 @@ BOOL AreCredentialsAtIndexesConnected(
   GURL _URL;
 }
 
-- (instancetype)initWithPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStoreInterface>)
-                        passwordStore
-                        faviconLoader:(FaviconLoader*)faviconLoader
-                             webState:(web::WebState*)webState
-                          syncService:(SyncSetupService*)syncService
-                                  URL:(const GURL&)URL
-               invokedOnPasswordField:(BOOL)invokedOnPasswordField {
+- (instancetype)
+    initWithProfilePasswordStore:
+        (scoped_refptr<password_manager::PasswordStoreInterface>)
+            profilePasswordStore
+            accountPasswordStore:
+                (scoped_refptr<password_manager::PasswordStoreInterface>)
+                    accountPasswordStore
+                   faviconLoader:(FaviconLoader*)faviconLoader
+                        webState:(web::WebState*)webState
+                     syncService:(SyncSetupService*)syncService
+                             URL:(const GURL&)URL
+          invokedOnPasswordField:(BOOL)invokedOnPasswordField {
   self = [super init];
   if (self) {
     _credentials = @[];
-    _passwordStore = passwordStore;
+    _profilePasswordStore = profilePasswordStore;
+    _accountPasswordStore = accountPasswordStore;
     _faviconLoader = faviconLoader;
     _webState = webState;
     _syncService = syncService;
@@ -142,10 +148,11 @@ BOOL AreCredentialsAtIndexesConnected(
 
 - (void)fetchPasswords {
   self.credentials = @[];
-  self.passwordFetcher =
-      [[PasswordFetcher alloc] initWithPasswordStore:_passwordStore
-                                            delegate:self
-                                                 URL:_URL];
+  self.passwordFetcher = [[PasswordFetcher alloc]
+      initWithProfilePasswordStore:_profilePasswordStore
+              accountPasswordStore:_accountPasswordStore
+                          delegate:self
+                               URL:_URL];
 }
 
 #pragma mark - PasswordFetcherDelegate

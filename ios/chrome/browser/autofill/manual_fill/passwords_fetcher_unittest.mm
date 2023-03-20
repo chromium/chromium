@@ -131,10 +131,11 @@ TEST_F(PasswordFetcherTest, Initialization) {
       [[TestPasswordFetcherDelegate alloc] init];
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
-  PasswordFetcher* passwordFetcher =
-      [[PasswordFetcher alloc] initWithPasswordStore:passwordStore
-                                            delegate:passwordFetcherDelegate
-                                                 URL:GURL::EmptyGURL()];
+  PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
+      initWithProfilePasswordStore:passwordStore
+              accountPasswordStore:nullptr
+                          delegate:passwordFetcherDelegate
+                               URL:GURL::EmptyGURL()];
   EXPECT_TRUE(passwordFetcher);
 }
 
@@ -145,10 +146,11 @@ TEST_F(PasswordFetcherTest, ReturnsPassword) {
       [[TestPasswordFetcherDelegate alloc] init];
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
-  PasswordFetcher* passwordFetcher =
-      [[PasswordFetcher alloc] initWithPasswordStore:passwordStore
-                                            delegate:passwordFetcherDelegate
-                                                 URL:GURL::EmptyGURL()];
+  PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
+      initWithProfilePasswordStore:passwordStore
+              accountPasswordStore:nullptr
+                          delegate:passwordFetcherDelegate
+                               URL:GURL::EmptyGURL()];
 
   WaitUntilCondition(
       ^bool {
@@ -168,10 +170,11 @@ TEST_F(PasswordFetcherTest, ReturnsTwoPasswords) {
       [[TestPasswordFetcherDelegate alloc] init];
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
-  PasswordFetcher* passwordFetcher =
-      [[PasswordFetcher alloc] initWithPasswordStore:passwordStore
-                                            delegate:passwordFetcherDelegate
-                                                 URL:GURL::EmptyGURL()];
+  PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
+      initWithProfilePasswordStore:passwordStore
+              accountPasswordStore:nullptr
+                          delegate:passwordFetcherDelegate
+                               URL:GURL::EmptyGURL()];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
@@ -190,10 +193,11 @@ TEST_F(PasswordFetcherTest, IgnoresBlocked) {
       [[TestPasswordFetcherDelegate alloc] init];
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
-  PasswordFetcher* passwordFetcher =
-      [[PasswordFetcher alloc] initWithPasswordStore:passwordStore
-                                            delegate:passwordFetcherDelegate
-                                                 URL:GURL::EmptyGURL()];
+  PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
+      initWithProfilePasswordStore:passwordStore
+              accountPasswordStore:nullptr
+                          delegate:passwordFetcherDelegate
+                               URL:GURL::EmptyGURL()];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
@@ -214,10 +218,11 @@ TEST_F(PasswordFetcherTest, IgnoresDuplicated) {
       [[TestPasswordFetcherDelegate alloc] init];
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
-  PasswordFetcher* passwordFetcher =
-      [[PasswordFetcher alloc] initWithPasswordStore:passwordStore
-                                            delegate:passwordFetcherDelegate
-                                                 URL:GURL::EmptyGURL()];
+  PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
+      initWithProfilePasswordStore:passwordStore
+              accountPasswordStore:nullptr
+                          delegate:passwordFetcherDelegate
+                               URL:GURL::EmptyGURL()];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
@@ -235,10 +240,11 @@ TEST_F(PasswordFetcherTest, ReceivesZeroPasswords) {
       [[TestPasswordFetcherDelegate alloc] init];
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
-  PasswordFetcher* passwordFetcher =
-      [[PasswordFetcher alloc] initWithPasswordStore:passwordStore
-                                            delegate:passwordFetcherDelegate
-                                                 URL:GURL::EmptyGURL()];
+  PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
+      initWithProfilePasswordStore:passwordStore
+              accountPasswordStore:nullptr
+                          delegate:passwordFetcherDelegate
+                               URL:GURL::EmptyGURL()];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
@@ -266,9 +272,11 @@ TEST_F(PasswordFetcherTest, FilterPassword) {
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
-      initWithPasswordStore:passwordStore
-                   delegate:passwordFetcherDelegate
-                        URL:GURL("http://www.example.com/accounts/Login")];
+      initWithProfilePasswordStore:passwordStore
+              accountPasswordStore:nullptr
+                          delegate:passwordFetcherDelegate
+                               URL:GURL("http://www.example.com/accounts/"
+                                        "Login")];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;

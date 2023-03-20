@@ -283,7 +283,8 @@ class PasswordControllerTest : public PlatformTest {
                                                        handler:nil
                                                   webStateList:nullptr
                                            personalDataManager:nullptr
-                                                 passwordStore:nullptr
+                                          profilePasswordStore:nullptr
+                                          accountPasswordStore:nullptr
                                           securityAlertHandler:nil
                                         reauthenticationModule:nil];
       [accessoryMediator_ injectWebState:web_state()];

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -50,8 +51,11 @@
       initWithSearchController:searchController];
   self.passwordViewController.delegate = self;
 
-  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
+  auto profilePasswordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
+  auto accountPasswordStore =
+      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+          self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -60,12 +64,13 @@
   SyncSetupService* syncService = SyncSetupServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
   self.passwordMediator = [[ManualFillPasswordMediator alloc]
-       initWithPasswordStore:passwordStore
-               faviconLoader:faviconLoader
-                    webState:webState
-                 syncService:syncService
-                         URL:GURL::EmptyGURL()
-      invokedOnPasswordField:NO];
+      initWithProfilePasswordStore:profilePasswordStore
+              accountPasswordStore:accountPasswordStore
+                     faviconLoader:faviconLoader
+                          webState:webState
+                       syncService:syncService
+                               URL:GURL::EmptyGURL()
+            invokedOnPasswordField:NO];
   [self.passwordMediator fetchPasswords];
   self.passwordMediator.actionSectionEnabled = NO;
   self.passwordMediator.consumer = self.passwordViewController;

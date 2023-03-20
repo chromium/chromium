@@ -51,9 +51,12 @@ class WebStateList;
                    handler:(id<FormInputAccessoryMediatorHandler>)handler
               webStateList:(WebStateList*)webStateList
        personalDataManager:(autofill::PersonalDataManager*)personalDataManager
-             passwordStore:
-                 (scoped_refptr<password_manager::PasswordStoreInterface>)
-                     passwordStore
+      profilePasswordStore:
+          (scoped_refptr<password_manager::PasswordStoreInterface>)
+              profilePasswordStore
+      accountPasswordStore:
+          (scoped_refptr<password_manager::PasswordStoreInterface>)
+              accountPasswordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
     reauthenticationModule:(ReauthenticationModule*)reauthenticationModule;
 

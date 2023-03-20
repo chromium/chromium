@@ -132,9 +132,12 @@ using base::UmaHistogramEnumeration;
                    handler:(id<FormInputAccessoryMediatorHandler>)handler
               webStateList:(WebStateList*)webStateList
        personalDataManager:(autofill::PersonalDataManager*)personalDataManager
-             passwordStore:
-                 (scoped_refptr<password_manager::PasswordStoreInterface>)
-                     passwordStore
+      profilePasswordStore:
+          (scoped_refptr<password_manager::PasswordStoreInterface>)
+              profilePasswordStore
+      accountPasswordStore:
+          (scoped_refptr<password_manager::PasswordStoreInterface>)
+              accountPasswordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
     reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
   self = [super init];
@@ -179,11 +182,12 @@ using base::UmaHistogramEnumeration;
     // In BVC unit tests the password store doesn't exist. Skip creating the
     // fetcher.
     // TODO:(crbug.com/878388) Remove this workaround.
-    if (passwordStore) {
-      _passwordFetcher =
-          [[PasswordFetcher alloc] initWithPasswordStore:passwordStore
-                                                delegate:self
-                                                     URL:GURL::EmptyGURL()];
+    if (profilePasswordStore) {
+      _passwordFetcher = [[PasswordFetcher alloc]
+          initWithProfilePasswordStore:profilePasswordStore
+                  accountPasswordStore:accountPasswordStore
+                              delegate:self
+                                   URL:GURL::EmptyGURL()];
     }
     if (personalDataManager) {
       _personalDataManager = personalDataManager;

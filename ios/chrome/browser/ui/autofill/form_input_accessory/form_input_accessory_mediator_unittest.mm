@@ -55,8 +55,9 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
         [[FormInputAccessoryMediator alloc] initWithConsumer:consumer_
                                                      handler:handler_
                                                 webStateList:&web_state_list_
-                                         personalDataManager:nil
-                                               passwordStore:nil
+                                         personalDataManager:nullptr
+                                        profilePasswordStore:nullptr
+                                        accountPasswordStore:nullptr
                                         securityAlertHandler:nil
                                       reauthenticationModule:nil];
   }

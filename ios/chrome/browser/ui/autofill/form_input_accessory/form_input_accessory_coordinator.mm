@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -119,8 +120,11 @@
           initWithManualFillAccessoryViewControllerDelegate:self];
 
   DCHECK(self.browserState);
-  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
+  auto profilePasswordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
+  auto accountPasswordStore =
+      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+          self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
 
   // There is no personal data manager in OTR (incognito). Get the original
   // one for manual fallback.
@@ -135,7 +139,8 @@
                      handler:self
                 webStateList:self.browser->GetWebStateList()
          personalDataManager:personalDataManager
-               passwordStore:passwordStore
+        profilePasswordStore:profilePasswordStore
+        accountPasswordStore:accountPasswordStore
         securityAlertHandler:securityAlertHandler
       reauthenticationModule:self.reauthenticationModule];
   self.formInputAccessoryViewController.formSuggestionClient =
