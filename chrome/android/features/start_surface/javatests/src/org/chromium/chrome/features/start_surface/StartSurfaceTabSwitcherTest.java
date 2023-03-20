@@ -265,7 +265,6 @@ public class StartSurfaceTabSwitcherTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @DisabledTest(message = "https://crbug.com/1295839")
     @CommandLineFlags.
     Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/show_tabs_in_mru_order/true"})
     public void test_CarouselTabSwitcherShowTabsInMRUOrder() {
