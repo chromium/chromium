@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/cpu_card.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {CpuCardElement} from 'chrome://diagnostics/cpu_card.js';
 import {fakeCpuUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
@@ -13,9 +13,9 @@ import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {CpuUsage, SystemDataProviderInterface, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isChildVisible} from '../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';

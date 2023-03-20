@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://nearby/shared/nearby_page_template.js';
 
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';

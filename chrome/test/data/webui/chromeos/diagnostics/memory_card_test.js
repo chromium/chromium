@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/memory_card.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {convertKibToGibDecimalString} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeMemoryUsage, fakeMemoryUsageLowAvailableMemory} from 'chrome://diagnostics/fake_data.js';
@@ -14,9 +14,9 @@ import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interfa
 import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {MemoryUsage} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isChildVisible, isVisible} from '../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';

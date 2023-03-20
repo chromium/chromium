@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/text_badge.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 

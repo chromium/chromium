@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/network_card.js';
 import 'chrome://diagnostics/strings.m.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeCellularDisabledNetwork, fakeCellularDisconnectedNetwork, fakeCellularNetwork, fakeCellularWithIpConfigNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers, fakeWifiNetworkNoIpAddress} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
@@ -12,9 +12,9 @@ import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_dra
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {NetworkCardElement} from 'chrome://diagnostics/network_card.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';

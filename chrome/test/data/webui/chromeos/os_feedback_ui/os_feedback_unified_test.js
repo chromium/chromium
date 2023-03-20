@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {confirmationPageTest} from './confirmation_page_test.js';
 import {fakeHelpContentProviderTestSuite} from './fake_help_content_provider_test.js';

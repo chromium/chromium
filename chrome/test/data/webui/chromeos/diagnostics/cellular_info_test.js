@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/cellular_info.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {getLockType, getSignalStrength} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeCellularNetwork} from 'chrome://diagnostics/fake_data.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDataPointHasExpectedHeaderAndValue} from './diagnostics_test_utils.js';
 

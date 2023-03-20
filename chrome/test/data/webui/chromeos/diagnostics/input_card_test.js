@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/strings.m.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';

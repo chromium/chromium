@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {getNetworkHealthProvider, getSystemDataProvider, getSystemRoutineController, setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
-
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('fakeMojoProviderTestSuite', function() {

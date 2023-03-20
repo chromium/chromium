@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/strings.m.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {constructRgba, getTrailOpacityFromPressure, lookupCssVariableValue, MARK_COLOR, MARK_OPACITY, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider_utils.js';
-
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+
 import {MockController} from '../mock_controller.m.js';
 
 // A helper function to mock getPropertyValue function.

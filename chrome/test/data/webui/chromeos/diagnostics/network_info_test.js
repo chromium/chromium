@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/network_info.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {NetworkInfoElement} from 'chrome://diagnostics/network_info.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';

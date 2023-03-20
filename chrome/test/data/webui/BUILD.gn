@@ -230,7 +230,6 @@ if (include_js_tests) {
         "chromeos/cloud_upload/move_confirmation_page_browsertest.js",
         "chromeos/crostini_installer_browsertest.js",
         "chromeos/crostini_upgrader_browsertest.js",
-        "chromeos/diagnostics/diagnostics_browsertest.js",
         "chromeos/firmware_update/firmware_update_browsertest.js",
         "chromeos/office_fallback/office_fallback_browsertest.js",
         "chromeos/os_feedback_ui/os_feedback_browsertest.js",
@@ -263,6 +262,7 @@ if (include_js_tests) {
     ]
     if (is_chromeos_ash) {
       sources += [
+        "chromeos/diagnostics/diagnostics_browsertest.js",
         "chromeos/manage_mirrorsync/manage_mirrorsync_browsertest.js",
         "chromeos/parent_access/parent_access_browsertest.js",
         "chromeos/personalization_app/personalization_app_component_browsertest.js",

@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/routine_result_list.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
 import {RoutineResultListElement} from 'chrome://diagnostics/routine_result_list.js';
 import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 

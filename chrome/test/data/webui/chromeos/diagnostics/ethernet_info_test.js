@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/ethernet_info.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeEthernetNetwork} from 'chrome://diagnostics/fake_data.js';
 import {AuthenticationType, EthernetStateProperties, Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDataPointHasExpectedHeaderAndValue, assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/network_list.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
@@ -13,9 +13,9 @@ import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_healt
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {NetworkListElement} from 'chrome://diagnostics/network_list.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';

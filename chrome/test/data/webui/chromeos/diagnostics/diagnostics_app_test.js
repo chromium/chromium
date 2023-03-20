@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/diagnostics_app.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
@@ -14,9 +14,9 @@ import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_prov
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';

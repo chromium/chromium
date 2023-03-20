@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/percent_bar_chart.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {PercentBarChartElement} from 'chrome://diagnostics/percent_bar_chart.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
