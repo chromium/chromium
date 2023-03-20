@@ -34,28 +34,6 @@ policy::ChromeBrowserCloudManagementController* GetCBCMController() {
       ->chrome_browser_cloud_management_controller();
 }
 
-base::TimeDelta GetCrashpadPollingInterval() {
-  base::TimeDelta result =
-      base::Seconds(kDefaultCrashpadPollingIntervalSeconds);
-  if (chrome::GetChannel() != version_info::Channel::STABLE) {
-    base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-    if (cmd->HasSwitch(kCrashpadPollingIntervalFlag)) {
-      int crashpad_polling_interval_seconds = 0;
-      if (base::StringToInt(
-              cmd->GetSwitchValueASCII(kCrashpadPollingIntervalFlag),
-              &crashpad_polling_interval_seconds) &&
-          crashpad_polling_interval_seconds > 0 &&
-          crashpad_polling_interval_seconds <
-              kDefaultCrashpadPollingIntervalSeconds) {
-        result = base::Seconds(crashpad_polling_interval_seconds);
-      }
-    }
-  }
-  VLOG(1) << "enterprise.crash_reporting: crashpad polling interval set to "
-          << result;
-  return result;
-}
-
 // Copy new reports (i.e. reports that have not been sent to the
 // reporting server) from `reports_to_be_copied` to `reports`
 // based on the `latest_creation_time`.
@@ -115,6 +93,28 @@ void ReportCrashes() {
 }
 
 }  // namespace
+
+base::TimeDelta GetCrashpadPollingInterval() {
+  base::TimeDelta result =
+      base::Seconds(kDefaultCrashpadPollingIntervalSeconds);
+  if (chrome::GetChannel() != version_info::Channel::STABLE) {
+    base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+    if (cmd->HasSwitch(kCrashpadPollingIntervalFlag)) {
+      int crashpad_polling_interval_seconds = 0;
+      if (base::StringToInt(
+              cmd->GetSwitchValueASCII(kCrashpadPollingIntervalFlag),
+              &crashpad_polling_interval_seconds) &&
+          crashpad_polling_interval_seconds > 0 &&
+          crashpad_polling_interval_seconds <
+              kDefaultCrashpadPollingIntervalSeconds) {
+        result = base::Seconds(crashpad_polling_interval_seconds);
+      }
+    }
+  }
+  VLOG(1) << "enterprise.crash_reporting: crashpad polling interval set to "
+          << result;
+  return result;
+}
 
 std::vector<crashpad::CrashReportDatabase::Report> GetNewReportsFromDatabase(
     time_t latest_creation_time,

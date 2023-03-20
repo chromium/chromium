@@ -20,6 +20,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif
+
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Eq;
@@ -44,6 +48,13 @@ void CreateCrashReport(crashpad::CrashReportDatabase* database,
   EXPECT_EQ(database->LookUpCrashReport(uuid, report),
             crashpad::CrashReportDatabase::kNoError);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Duplicating the definition of these variables here to ensure that changes to
+// those values in the source file are deliberate and caught by tests otherwise.
+constexpr char kCrashpadPollingIntervalFlag[] = "crashpad-polling-interval";
+constexpr int kDefaultCrashpadPollingIntervalSeconds = 3600;
+#endif
 
 }  // namespace
 
@@ -141,6 +152,49 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
             enterprise_connectors::GetLatestCrashReportTime(&pref_service));
 }
 
-#endif
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+struct PollingIntervalParams {
+  PollingIntervalParams(chrome::ScopedChannelOverride::Channel channel,
+                        const std::string cmd_flag,
+                        int expected_interval)
+      : channel(channel),
+        cmd_flag(cmd_flag),
+        expected_interval(expected_interval) {}
+
+  chrome::ScopedChannelOverride::Channel channel;
+  std::string cmd_flag;
+  int expected_interval;
+};
+
+class CrashpadPollingIntervalTest
+    : public testing::TestWithParam<PollingIntervalParams> {};
+
+TEST_P(CrashpadPollingIntervalTest, GetCrashpadPollingInterval) {
+  chrome::ScopedChannelOverride scoped_channel(GetParam().channel);
+  base::CommandLine* commandLine = base::CommandLine::ForCurrentProcess();
+  commandLine->AppendSwitchASCII(kCrashpadPollingIntervalFlag,
+                                 GetParam().cmd_flag);
+  EXPECT_EQ(GetCrashpadPollingInterval(),
+            base::Seconds(GetParam().expected_interval));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CrashpadPollingIntervalTest,
+    CrashpadPollingIntervalTest,
+    testing::Values(
+        PollingIntervalParams(chrome::ScopedChannelOverride::Channel::kBeta,
+                              "-10",
+                              kDefaultCrashpadPollingIntervalSeconds),
+        PollingIntervalParams(chrome::ScopedChannelOverride::Channel::kBeta,
+                              "10",
+                              10),
+        PollingIntervalParams(chrome::ScopedChannelOverride::Channel::kStable,
+                              "10",
+                              kDefaultCrashpadPollingIntervalSeconds)));
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_connectors

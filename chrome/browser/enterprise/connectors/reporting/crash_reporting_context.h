@@ -75,6 +75,10 @@ void UploadToReportingServer(
     PrefService* local_state,
     std::vector<crashpad::CrashReportDatabase::Report> reports);
 
+// Get the time interval with which to query the crashpad database. Included
+// in header for testing.
+base::TimeDelta GetCrashpadPollingInterval();
+
 #endif
 
 }  // namespace enterprise_connectors
