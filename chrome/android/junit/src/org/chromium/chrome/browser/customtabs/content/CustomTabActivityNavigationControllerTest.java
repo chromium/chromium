@@ -76,7 +76,7 @@ public class CustomTabActivityNavigationControllerTest {
                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                 MinimizeAppAndCloseTabType.MINIMIZE_APP);
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
-        when(mTabController.doesCurrentTabNeedToFireBeforeUnload()).thenReturn(false);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
@@ -103,7 +103,7 @@ public class CustomTabActivityNavigationControllerTest {
         HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                 MinimizeAppAndCloseTabType.CLOSE_TAB);
-        when(mTabController.doesCurrentTabNeedToFireBeforeUnload()).thenReturn(true);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();

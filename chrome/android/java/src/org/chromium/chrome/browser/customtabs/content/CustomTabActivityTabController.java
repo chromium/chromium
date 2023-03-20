@@ -192,20 +192,15 @@ public class CustomTabActivityTabController implements InflationObserver {
     }
 
     /**
-     * Closes the current tab based on beforeunload handlers, if there's any then we need to
-     * dispatch then first. This doesn't necessarily lead to closing the entire activity, in case
-     * links with target="_blank" were followed. See the comment to
+     * Closes the current tab. This doesn't necessarily lead to closing the entire activity, in
+     * case links with target="_blank" were followed. See the comment to
      * {@link CustomTabActivityTabProvider.Observer#onAllTabsClosed}.
      */
     public void closeTab() {
         TabModel model = mTabFactory.getTabModelSelector().getCurrentModel();
         Tab currentTab = mTabProvider.getTab();
         if (!maybeStoreTab(currentTab)) {
-            if (currentTab.getWebContents().needToFireBeforeUnloadOrUnloadEvents()) {
-                currentTab.getWebContents().dispatchBeforeUnload(false);
-            } else {
-                model.closeTab(currentTab, false, false, false);
-            }
+            model.closeTab(currentTab, false, false, false);
         }
     }
 
@@ -214,9 +209,19 @@ public class CustomTabActivityTabController implements InflationObserver {
         return model.getCount() == 1;
     }
 
-    public boolean doesCurrentTabNeedToFireBeforeUnload() {
+    /**
+     * Checks if the current tab contains unload events and if so it opens the dialog
+     * to ask the user before closing the tab.
+     *
+     * @return Whether we ran the unload events or not.
+     */
+    public boolean dispatchBeforeUnloadIfNeeded() {
         Tab currentTab = mTabProvider.getTab();
-        return currentTab.getWebContents().needToFireBeforeUnloadOrUnloadEvents();
+        if (currentTab.getWebContents().needToFireBeforeUnloadOrUnloadEvents()) {
+            currentTab.getWebContents().dispatchBeforeUnload(false);
+            return true;
+        }
+        return false;
     }
 
     public void closeAndForgetTab() {
