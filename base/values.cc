@@ -1161,10 +1161,6 @@ absl::optional<int> Value::FindIntKey(StringPiece key) const {
   return GetDict().FindInt(key);
 }
 
-absl::optional<double> Value::FindDoubleKey(StringPiece key) const {
-  return GetDict().FindDouble(key);
-}
-
 const std::string* Value::FindStringKey(StringPiece key) const {
   return GetDict().FindString(key);
 }

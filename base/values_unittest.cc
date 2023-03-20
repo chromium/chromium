@@ -859,27 +859,6 @@ TEST(ValuesTest, FindIntKey) {
   EXPECT_EQ(absl::nullopt, dict.FindInt("dict"));
 }
 
-TEST(ValuesTest, FindDoubleKey) {
-  Value::Dict dict;
-  dict.Set("null", Value());
-  dict.Set("bool", false);
-  dict.Set("int", 0);
-  dict.Set("double", 0.0);
-  dict.Set("string", std::string());
-  dict.Set("blob", Value(Value::BlobStorage()));
-  dict.Set("list", Value::List());
-  dict.Set("dict", Value::Dict());
-
-  EXPECT_EQ(absl::nullopt, dict.FindDouble("null"));
-  EXPECT_EQ(absl::nullopt, dict.FindDouble("bool"));
-  EXPECT_NE(absl::nullopt, dict.FindDouble("int"));
-  EXPECT_NE(absl::nullopt, dict.FindDouble("double"));
-  EXPECT_EQ(absl::nullopt, dict.FindDouble("string"));
-  EXPECT_EQ(absl::nullopt, dict.FindDouble("blob"));
-  EXPECT_EQ(absl::nullopt, dict.FindDouble("list"));
-  EXPECT_EQ(absl::nullopt, dict.FindDouble("dict"));
-}
-
 TEST(ValuesTest, FindStringKey) {
   Value::Dict dict;
   dict.Set("null", Value());
