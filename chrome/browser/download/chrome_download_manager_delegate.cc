@@ -63,6 +63,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
@@ -849,7 +850,8 @@ void ChromeDownloadManagerDelegate::SanitizeSavePackageResourceName(
 
 void ChromeDownloadManagerDelegate::SanitizeDownloadParameters(
     download::DownloadUrlParameters* params) {
-  if (profile_->GetPrefs()->GetBoolean(prefs::kForceGoogleSafeSearch)) {
+  if (profile_->GetPrefs()->GetBoolean(
+          policy::policy_prefs::kForceGoogleSafeSearch)) {
     GURL safe_url;
     safe_search_api::ForceGoogleSafeSearch(params->url(), &safe_url);
     if (!safe_url.is_empty())

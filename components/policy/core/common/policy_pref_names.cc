@@ -137,5 +137,8 @@ const char kPPAPISharedImagesSwapChainAllowed[] =
 const char kForceEnablePepperVideoDecoderDevAPI[] =
     "policy.force_enable_pepper_video_decoder_dev_api";
 
+// Boolean controlling whether SafeSearch is mandatory for Google Web Searches.
+const char kForceGoogleSafeSearch[] = "settings.force_google_safesearch";
+
 }  // namespace policy_prefs
 }  // namespace policy

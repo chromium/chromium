@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -48,13 +49,14 @@ RendererUpdater::RendererUpdater(Profile* profile)
 #endif
 
   PrefService* pref_service = profile_->GetPrefs();
-  force_google_safesearch_.Init(prefs::kForceGoogleSafeSearch, pref_service);
+  force_google_safesearch_.Init(policy::policy_prefs::kForceGoogleSafeSearch,
+                                pref_service);
   force_youtube_restrict_.Init(prefs::kForceYouTubeRestrict, pref_service);
   allowed_domains_for_apps_.Init(prefs::kAllowedDomainsForApps, pref_service);
 
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
-      prefs::kForceGoogleSafeSearch,
+      policy::policy_prefs::kForceGoogleSafeSearch,
       base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
                           base::Unretained(this)));
   pref_change_registrar_.Add(

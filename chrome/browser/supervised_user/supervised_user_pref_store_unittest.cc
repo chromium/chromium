@@ -13,6 +13,7 @@
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -155,7 +156,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   // kForceGoogleSafeSearch defaults to true and kForceYouTubeRestrict defaults
   // to Moderate for supervised users.
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  prefs::kForceGoogleSafeSearch),
+                  policy::policy_prefs::kForceGoogleSafeSearch),
               Optional(true));
   int force_youtube_restrict =
       fixture.changed_prefs()
@@ -202,7 +203,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
                            base::Value(false));
   EXPECT_EQ(1u, fixture.changed_prefs()->size());
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  prefs::kForceGoogleSafeSearch),
+                  policy::policy_prefs::kForceGoogleSafeSearch),
               Optional(false));
 
   force_youtube_restrict =

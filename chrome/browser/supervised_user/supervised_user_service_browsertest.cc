@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -57,10 +58,11 @@ using SupervisedUserServiceTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTest, LocalPolicies) {
   Profile* profile = browser()->profile();
   PrefService* prefs = profile->GetPrefs();
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kForceGoogleSafeSearch));
+  EXPECT_FALSE(prefs->GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch));
   EXPECT_EQ(prefs->GetInteger(prefs::kForceYouTubeRestrict),
             safe_search_api::YOUTUBE_RESTRICT_OFF);
-  EXPECT_TRUE(prefs->IsUserModifiablePreference(prefs::kForceGoogleSafeSearch));
+  EXPECT_TRUE(prefs->IsUserModifiablePreference(
+      policy::policy_prefs::kForceGoogleSafeSearch));
   EXPECT_TRUE(prefs->IsUserModifiablePreference(prefs::kForceYouTubeRestrict));
 }
 
@@ -82,11 +84,11 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, LocalPolicies) {
   logged_in_user_mixin_.LogInUser();
   Profile* profile = browser()->profile();
   PrefService* prefs = profile->GetPrefs();
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kForceGoogleSafeSearch));
+  EXPECT_TRUE(prefs->GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch));
   EXPECT_EQ(prefs->GetInteger(prefs::kForceYouTubeRestrict),
             safe_search_api::YOUTUBE_RESTRICT_MODERATE);
-  EXPECT_FALSE(
-      prefs->IsUserModifiablePreference(prefs::kForceGoogleSafeSearch));
+  EXPECT_FALSE(prefs->IsUserModifiablePreference(
+      policy::policy_prefs::kForceGoogleSafeSearch));
   EXPECT_FALSE(prefs->IsUserModifiablePreference(prefs::kForceYouTubeRestrict));
 }
 

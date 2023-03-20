@@ -48,6 +48,7 @@
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -1421,7 +1422,8 @@ TEST_F(ChromeDownloadManagerDelegateTest, SanitizeGoogleSearchLink) {
   const GURL kGoogleSearchUrl("https://www.google.com/search?q=google");
   for (auto is_safe_search_enabled : {true, false}) {
     auto* prefs = profile()->GetPrefs();
-    prefs->SetBoolean(prefs::kForceGoogleSafeSearch, is_safe_search_enabled);
+    prefs->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch,
+                      is_safe_search_enabled);
 
     download::DownloadUrlParameters params(kGoogleSearchUrl,
                                            TRAFFIC_ANNOTATION_FOR_TESTS);

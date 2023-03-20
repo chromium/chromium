@@ -5490,7 +5490,8 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
 #endif
 
   chrome::mojom::DynamicParams dynamic_params = {
-      profile->GetPrefs()->GetBoolean(prefs::kForceGoogleSafeSearch),
+      profile->GetPrefs()->GetBoolean(
+          policy::policy_prefs::kForceGoogleSafeSearch),
       profile->GetPrefs()->GetInteger(prefs::kForceYouTubeRestrict),
       profile->GetPrefs()->GetString(prefs::kAllowedDomainsForApps)};
   result.push_back(std::make_unique<GoogleURLLoaderThrottle>(

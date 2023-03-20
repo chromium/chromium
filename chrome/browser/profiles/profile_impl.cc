@@ -141,6 +141,7 @@
 #include "components/permissions/permission_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -370,7 +371,8 @@ void ProfileImpl::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kSavingBrowserHistoryDisabled, false);
   registry->RegisterBooleanPref(prefs::kAllowDeletingBrowserHistory, true);
-  registry->RegisterBooleanPref(prefs::kForceGoogleSafeSearch, false);
+  registry->RegisterBooleanPref(policy::policy_prefs::kForceGoogleSafeSearch,
+                                false);
   registry->RegisterIntegerPref(prefs::kForceYouTubeRestrict,
                                 safe_search_api::YOUTUBE_RESTRICT_OFF);
   registry->RegisterStringPref(prefs::kAllowedDomainsForApps, std::string());

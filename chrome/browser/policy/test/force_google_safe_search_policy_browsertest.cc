@@ -86,9 +86,10 @@ IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, LegacySafeSearch) {
     // or the legacy safe search mode.
     PrefService* prefs = browser()->profile()->GetPrefs();
     EXPECT_EQ(google_safe_search != 0 || legacy_safe_search_in_effect,
-              prefs->IsManagedPreference(prefs::kForceGoogleSafeSearch));
+              prefs->IsManagedPreference(
+                  policy::policy_prefs::kForceGoogleSafeSearch));
     EXPECT_EQ(google_safe_search == 1 || legacy_safe_search_enabled,
-              prefs->GetBoolean(prefs::kForceGoogleSafeSearch));
+              prefs->GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch));
 
     // YouTube restrict mode can be triggered by the ForceYouTubeRestrict policy
     // or any of the legacy modes.
@@ -145,9 +146,10 @@ IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, ForceGoogleSafeSearch) {
     // Verify that the safe search pref behaves the way we expect.
     PrefService* prefs = browser()->profile()->GetPrefs();
     EXPECT_EQ(safe_search != 0,
-              prefs->IsManagedPreference(prefs::kForceGoogleSafeSearch));
+              prefs->IsManagedPreference(
+                  policy::policy_prefs::kForceGoogleSafeSearch));
     EXPECT_EQ(safe_search == 1,
-              prefs->GetBoolean(prefs::kForceGoogleSafeSearch));
+              prefs->GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch));
 
     // Verify that safe search actually works.
     CheckSafeSearch(browser(), safe_search == 1);
