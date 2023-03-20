@@ -16,6 +16,7 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
 #endif
 
+// This list should stay in sync with GetExpectedDelegatedFeaturesForTest().
 base::span<const char* const> GetControlledFrameFeatureList() {
   constexpr const char* feature_list[] = {
       "chromeWebViewInternal", "declarativeWebRequest",

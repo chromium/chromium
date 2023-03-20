@@ -1,3 +1,4 @@
 include_rules = [
+  "+extensions/common/extensions_client.h", # For feature generation testing.
   "+extensions/common/features" # For feature generation testing.
 ]

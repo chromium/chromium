@@ -178,11 +178,23 @@ const FeatureMap& FeatureProvider::GetAllFeatures() const {
 
 void FeatureProvider::AddFeature(base::StringPiece name,
                                  std::unique_ptr<Feature> feature) {
+  DCHECK(feature);
+  if (feature->RequiresDelegatedAvailabilityCheck()) {
+    auto& map =
+        ExtensionsClient::Get()->GetFeatureDelegatedAvailabilityCheckMap();
+    DCHECK(!map.empty());
+
+    auto it = map.find(feature->name());
+    DCHECK(it != map.end());
+    DCHECK(!it->second.is_null());
+    feature->SetDelegatedAvailabilityCheckHandler(it->second);
+  }
+
   features_[std::string(name)] = std::move(feature);
 }
 
 void FeatureProvider::AddFeature(base::StringPiece name, Feature* feature) {
-  features_[std::string(name)] = base::WrapUnique(feature);
+  AddFeature(name, base::WrapUnique(feature));
 }
 
 }  // namespace extensions

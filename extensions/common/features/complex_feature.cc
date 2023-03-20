@@ -128,4 +128,24 @@ bool ComplexFeature::RequiresDelegatedAvailabilityCheck() const {
   return requires_delegated_availability_check_;
 }
 
+void ComplexFeature::SetDelegatedAvailabilityCheckHandler(
+    DelegatedAvailabilityCheckHandler handler) {
+  DCHECK(RequiresDelegatedAvailabilityCheck());
+  DCHECK(!HasDelegatedAvailabilityCheckHandler());
+
+  // Set the given handler on all of the sub-feature that need a delegated
+  // availability check handler and set
+  // |has_delegated_availability_check_handler_| to true.
+  for (auto& feature : features_) {
+    if (feature->RequiresDelegatedAvailabilityCheck()) {
+      feature->SetDelegatedAvailabilityCheckHandler(handler);
+    }
+  }
+  has_delegated_availability_check_handler_ = true;
+}
+
+bool ComplexFeature::HasDelegatedAvailabilityCheckHandler() const {
+  return has_delegated_availability_check_handler_;
+}
+
 }  // namespace extensions

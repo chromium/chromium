@@ -57,6 +57,9 @@ class ComplexFeature : public Feature {
   bool IsInternal() const override;
 
   bool RequiresDelegatedAvailabilityCheck() const override;
+  void SetDelegatedAvailabilityCheckHandler(
+      DelegatedAvailabilityCheckHandler handler) override;
+  bool HasDelegatedAvailabilityCheckHandler() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FeaturesGenerationTest, FeaturesTest);
@@ -69,6 +72,7 @@ class ComplexFeature : public Feature {
   // If any of the Features comprising this class requires a delegated
   // availability check, then this flag is set to true.
   bool requires_delegated_availability_check_{false};
+  bool has_delegated_availability_check_handler_{false};
 };
 
 }  // namespace extensions

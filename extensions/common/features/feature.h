@@ -77,6 +77,7 @@ class Feature {
     MISSING_COMMAND_LINE_SWITCH,
     FEATURE_FLAG_DISABLED,
     REQUIRES_DEVELOPER_MODE,
+    FAILED_DELEGATED_AVAILABILITY_CHECK,
   };
 
   // Shorthand for delegated availability check handler function signature. The
@@ -137,6 +138,10 @@ class Feature {
   // Returns if this feature's availability requires a delegated availability
   // check.
   virtual bool RequiresDelegatedAvailabilityCheck() const = 0;
+
+  // Sets the feature availability override handler to use.
+  virtual void SetDelegatedAvailabilityCheckHandler(
+      DelegatedAvailabilityCheckHandler handler) = 0;
 
   // Returns true if the feature is available to be parsed into a new extension
   // manifest.
@@ -204,6 +209,8 @@ class Feature {
   virtual bool IsIdInBlocklist(const HashedExtensionId& hashed_id) const = 0;
   virtual bool IsIdInAllowlist(const HashedExtensionId& hashed_id) const = 0;
 
+  bool HasDelegatedAvailabilityCheckHandlerForTesting() const;
+
  protected:
   friend class SimpleFeature;
   friend class ComplexFeature;
@@ -218,6 +225,9 @@ class Feature {
       int context_id,
       bool check_developer_mode,
       std::unique_ptr<ContextData> context_data) const = 0;
+
+  // Gets whether a feature availability override handler has been set.
+  virtual bool HasDelegatedAvailabilityCheckHandler() const = 0;
 
   std::string name_;
   std::string alias_;

@@ -8286,6 +8286,7 @@ test("unit_tests") {
       "//extensions/buildflags",
       "//extensions/common",
       "//extensions/common:mojom",
+      "//extensions/common:test_support",
       "//extensions/renderer",
       "//extensions/renderer:unit_test_support",
       "//extensions/strings",

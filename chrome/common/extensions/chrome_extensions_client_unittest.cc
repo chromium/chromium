@@ -59,11 +59,6 @@ CreateFeatureDelegatedAvailabilityCheckMap() {
 
 TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
   auto* client = ExtensionsClient::Get();
-  {
-    const auto& map = client->GetFeatureDelegatedAvailabilityCheckMap();
-    EXPECT_TRUE(map.empty());
-  }
-
   client->SetFeatureDelegatedAvailabilityCheckMap(
       CreateFeatureDelegatedAvailabilityCheckMap());
   {

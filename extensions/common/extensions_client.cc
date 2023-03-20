@@ -39,7 +39,7 @@ ExtensionsClient::ExtensionsClient() = default;
 ExtensionsClient::~ExtensionsClient() = default;
 
 const Feature::FeatureDelegatedAvailabilityCheckMap&
-ExtensionsClient::GetFeatureDelegatedAvailabilityCheckMap() {
+ExtensionsClient::GetFeatureDelegatedAvailabilityCheckMap() const {
   return availability_check_map_;
 }
 

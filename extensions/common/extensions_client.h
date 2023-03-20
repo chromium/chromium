@@ -52,7 +52,7 @@ class ExtensionsClient {
   void SetFeatureDelegatedAvailabilityCheckMap(
       Feature::FeatureDelegatedAvailabilityCheckMap map);
   const Feature::FeatureDelegatedAvailabilityCheckMap&
-  GetFeatureDelegatedAvailabilityCheckMap();
+  GetFeatureDelegatedAvailabilityCheckMap() const;
 
   // Create a FeatureProvider for a specific feature type, e.g. "permission".
   std::unique_ptr<FeatureProvider> CreateFeatureProvider(

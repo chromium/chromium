@@ -39,6 +39,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extensions_client.h"
+#include "extensions/common/features/features_test_utils.h"
 #endif
 
 using ChromeContentRendererClientSearchBoxTest = ChromeRenderViewTest;
@@ -200,21 +201,21 @@ INSTANTIATE_TEST_SUITE_P(FlashEmbeds,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(ChromeContentRendererClientBrowserTest,
-                       ExtensionsClientInitialized) {
+                       AvailabilityMapCreated) {
   auto* extensions_client = extensions::ExtensionsClient::Get();
   ASSERT_TRUE(extensions_client);
 
-  // Ensure that the availability map is initialized correctly.
-  const auto& map =
-      extensions_client->GetFeatureDelegatedAvailabilityCheckMap();
-  EXPECT_EQ(6u, map.size());
-  static constexpr const char* expected_delegated_features[] = {
-      "chromeWebViewInternal", "declarativeWebRequest",
-      "guestViewInternal",     "webRequest",
-      "webViewInternal",       "webViewRequest",
-  };
-  for (const auto* feature : expected_delegated_features) {
-    EXPECT_EQ(1u, map.count(feature));
+  // ChromeContentRendererClient initializes the ExtensionClient with the
+  // FeatureDelegatedAvailabilityMap, which will maintain ownership of the map.
+  // Verify that the map is created correctly.
+  {
+    const auto& map =
+        extensions_client->GetFeatureDelegatedAvailabilityCheckMap();
+    EXPECT_EQ(6u, map.size());
+    for (const auto* feature : extensions::features_test_utils::
+             GetExpectedDelegatedFeaturesForTest()) {
+      EXPECT_EQ(1u, map.count(feature));
+    }
   }
 }
 #endif

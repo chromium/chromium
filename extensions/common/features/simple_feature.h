@@ -107,6 +107,9 @@ class SimpleFeature : public Feature {
   bool IsIdInBlocklist(const HashedExtensionId& hashed_id) const override;
   bool IsIdInAllowlist(const HashedExtensionId& hashed_id) const override;
   bool RequiresDelegatedAvailabilityCheck() const override;
+  void SetDelegatedAvailabilityCheckHandler(
+      DelegatedAvailabilityCheckHandler handler) override;
+  bool HasDelegatedAvailabilityCheckHandler() const override;
 
   static bool IsIdInArray(const std::string& extension_id,
                           const char* const array[],
@@ -282,6 +285,17 @@ class SimpleFeature : public Feature {
                                       const GURL& url,
                                       bool is_for_service_worker) const;
 
+  // Returns the result of running the installed delegated availability check
+  // handler.
+  Availability RunDelegatedAvailabilityCheck(
+      const Extension* extension,
+      Context context,
+      const GURL& url,
+      Platform platform,
+      int context_id,
+      bool check_developer_mode,
+      std::unique_ptr<ContextData> context_data) const;
+
   // For clarity and consistency, we handle the default value of each of these
   // members the same way: it matches everything. It is up to the higher level
   // code that reads Features out of static data to validate that data and set
@@ -306,7 +320,11 @@ class SimpleFeature : public Feature {
   // then cached.
   mutable absl::optional<bool> ignore_channel_;
 
-  bool component_extensions_auto_granted_;
+  // If set and the feature needs to be overridden, this is the handler used
+  // to perform the override availability check.
+  DelegatedAvailabilityCheckHandler delegated_availability_check_handler_;
+
+  bool component_extensions_auto_granted_{false};
   bool is_internal_;
   bool requires_delegated_availability_check_{false};
   bool developer_mode_only_{false};

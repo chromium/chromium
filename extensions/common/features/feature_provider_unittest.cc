@@ -10,8 +10,10 @@
 #include <utility>
 
 #include "base/ranges/algorithm.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
@@ -176,6 +178,68 @@ TEST(FeatureProviderTest, GetChildren) {
   EXPECT_THAT(children_names, testing::UnorderedElementsAre(
                                   "parent.child", "parent.child.grandchild",
                                   "parent.other_child.other_grandchild"));
+}
+
+TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
+  Feature::FeatureDelegatedAvailabilityCheckMap map;
+  static constexpr const char* kDelegatedFeatureName = "delegatedFeature";
+  static constexpr const char* kNondelgatedFeatureName = "nondelegatedFeature";
+  static constexpr const char* kMissingRequiresDelegatedCheckFeatureName =
+      "missingRequiresDelegatedCheckFeature";
+
+  auto delegated_availability_check =
+      [&](const std::string& api_full_name, const Extension* extension,
+          Feature::Context context, const GURL& url, Feature::Platform platform,
+          int context_id, bool check_developer_mode,
+          std::unique_ptr<ContextData> context_data) { return false; };
+  map.emplace(kDelegatedFeatureName,
+              base::BindLambdaForTesting(delegated_availability_check));
+  map.emplace(kMissingRequiresDelegatedCheckFeatureName,
+              base::BindLambdaForTesting(delegated_availability_check));
+  ExtensionsClient::Get()->SetFeatureDelegatedAvailabilityCheckMap(
+      std::move(map));
+
+  FeatureProvider provider;
+
+  // Verify that the delegated check handler is installed for a feature that
+  // requires it and has a handler in the map.
+  {
+    auto feature = std::make_unique<SimpleFeature>();
+    feature->set_name(kDelegatedFeatureName);
+    feature->set_requires_delegated_availability_check(true);
+    provider.AddFeature(kDelegatedFeatureName, std::move(feature));
+
+    const auto* delegated_feature = provider.GetFeature(kDelegatedFeatureName);
+    EXPECT_TRUE(
+        delegated_feature->HasDelegatedAvailabilityCheckHandlerForTesting());
+  }
+
+  // Verify that a delegated check handler is not installed for a feature that
+  // doesn't require it.
+  {
+    auto feature = std::make_unique<SimpleFeature>();
+    feature->set_name(kNondelgatedFeatureName);
+    provider.AddFeature(kNondelgatedFeatureName, std::move(feature));
+
+    const auto* nondelegated_feature =
+        provider.GetFeature(kNondelgatedFeatureName);
+    EXPECT_FALSE(
+        nondelegated_feature->HasDelegatedAvailabilityCheckHandlerForTesting());
+  }
+
+  // Verify that a delegated check handler is not installed for a feature that
+  // doesn't require it but has a handler in the map.
+  {
+    auto feature = std::make_unique<SimpleFeature>();
+    feature->set_name(kMissingRequiresDelegatedCheckFeatureName);
+    provider.AddFeature(kMissingRequiresDelegatedCheckFeatureName,
+                        std::move(feature));
+
+    const auto* missing_requires_delegated_check_feature =
+        provider.GetFeature(kMissingRequiresDelegatedCheckFeatureName);
+    EXPECT_FALSE(missing_requires_delegated_check_feature
+                     ->HasDelegatedAvailabilityCheckHandlerForTesting());
+  }
 }
 
 }  // namespace extensions

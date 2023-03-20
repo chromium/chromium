@@ -62,4 +62,8 @@ void Feature::set_source(base::StringPiece source) {
   source_ = std::string(source);
 }
 
+bool Feature::HasDelegatedAvailabilityCheckHandlerForTesting() const {
+  return HasDelegatedAvailabilityCheckHandler();
+}
+
 }  // namespace extensions

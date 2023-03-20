@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/environment.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process_handle.h"
@@ -49,6 +50,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/initialize_extensions_client.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/extensions_client.h"
 #endif
@@ -104,6 +106,30 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     browser_shutdown::ResetShutdownGlobalsForTesting();
   }
 };
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool ControlledFrameTestAvailabilityCheck(
+    const std::string& api_full_name,
+    const extensions::Extension* extension,
+    extensions::Feature::Context context,
+    const GURL& url,
+    extensions::Feature::Platform platform,
+    int context_id,
+    bool check_developer_mode,
+    std::unique_ptr<extensions::ContextData> context_data) {
+  return false;
+}
+
+extensions::Feature::FeatureDelegatedAvailabilityCheckMap
+CreateTestAvailabilityCheckMap() {
+  extensions::Feature::FeatureDelegatedAvailabilityCheckMap map;
+  for (const auto* item : GetControlledFrameFeatureList()) {
+    map.emplace(item,
+                base::BindRepeating(&ControlledFrameTestAvailabilityCheck));
+  }
+  return map;
+}
+#endif
 
 }  // namespace
 
@@ -170,7 +196,7 @@ void ChromeUnitTestSuite::InitializeProviders() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::RegisterPathProvider();
 
-  EnsureExtensionsClientInitialized();
+  EnsureExtensionsClientInitialized(CreateTestAvailabilityCheckMap());
 #endif
 
   content::WebUIControllerFactory::RegisterFactory(

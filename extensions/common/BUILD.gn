@@ -537,6 +537,8 @@ source_set("test_support") {
     "api/declarative_net_request/test_utils.h",
     "api/extension_action/action_info_test_util.cc",
     "api/extension_action/action_info_test_util.h",
+    "features/features_test_utils.cc",
+    "features/features_test_utils.h",
     "warnings_test_util.cc",
     "warnings_test_util.h",
   ]

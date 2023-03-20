@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/test/bind.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/value_builder.h"
@@ -135,44 +137,79 @@ TEST(ComplexFeatureTest, Dependencies) {
 TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
   std::vector<Feature*> features;
 
-  // Test a complex feature where requires_delegated_availability_check hasn't
+  // Test a complex feature where |requires_delegated_availability_check| hasn't
   // been set on any of its simple features.
   {
     {
-      // Rule which doesn't set requires_delegated_availability_check.
+      // Feature which doesn't set |requires_delegated_availability_check|.
       auto simple_feature = std::make_unique<SimpleFeature>();
       features.push_back(simple_feature.release());
     }
     {
-      // Rule which doesn't set requires_delegated_availability_check.
+      // Feature which doesn't set |requires_delegated_availability_check|.
       auto simple_feature = std::make_unique<SimpleFeature>();
       features.push_back(simple_feature.release());
     }
 
     ComplexFeature complex_feature(&features);
     EXPECT_FALSE(complex_feature.RequiresDelegatedAvailabilityCheck());
+    EXPECT_FALSE(complex_feature.HasDelegatedAvailabilityCheckHandler());
   }
 
-  // Test a complex feature where requires_delegated_availability_check is set.
+  uint32_t delegated_availability_check_call_count = 0;
+  uint32_t success_call_count = 2;
+  auto delegated_availability_check =
+      [&](const std::string& api_full_name, const Extension* extension,
+          Feature::Context context, const GURL& url, Feature::Platform platform,
+          int context_id, bool check_developer_mode,
+          std::unique_ptr<ContextData> context_data) {
+        ++delegated_availability_check_call_count;
+        return delegated_availability_check_call_count == success_call_count;
+      };
+
+  // Test a complex feature where |requires_delegated_availability_check| is set
+  // on multiple sub-features. The first sub-feature that requires the
+  // availability check should fail, while the second sub-feature should pass.
+  // In this case, the delegated availability check handler should be called
+  // twice.
   {
     {
-      // Rule which doesn't set requires_delegated_availability_check.
+      // Feature which doesn't set |requires_delegated_availability_check|.
       auto simple_feature = std::make_unique<SimpleFeature>();
+      simple_feature->set_contexts({Feature::BLESSED_EXTENSION_CONTEXT});
       features.push_back(simple_feature.release());
     }
+    // Two features which set |requires_delegated_availability_check| to true.
     {
-      // Rule which doesn't set requires_delegated_availability_check.
-      auto simple_feature = std::make_unique<SimpleFeature>();
-      features.push_back(simple_feature.release());
-    }
-    {
-      // Rule which sets requires_delegated_availability_check to true.
       auto simple_feature = std::make_unique<SimpleFeature>();
       simple_feature->set_requires_delegated_availability_check(true);
       features.push_back(simple_feature.release());
     }
+    {
+      auto simple_feature = std::make_unique<SimpleFeature>();
+      simple_feature->set_requires_delegated_availability_check(true);
+      features.push_back(simple_feature.release());
+    }
+
     ComplexFeature complex_feature(&features);
     EXPECT_TRUE(complex_feature.RequiresDelegatedAvailabilityCheck());
+    EXPECT_FALSE(complex_feature.HasDelegatedAvailabilityCheckHandler());
+
+    // A call to SetDelegatedAvailabilityCheckHandler() should set the
+    // handler to the sub-features that require it.
+    complex_feature.SetDelegatedAvailabilityCheckHandler(
+        base::BindLambdaForTesting(delegated_availability_check));
+    EXPECT_TRUE(complex_feature.HasDelegatedAvailabilityCheckHandler());
+
+    // This feature should be available the second time that the delegated
+    // availability check is called.
+    EXPECT_EQ(Feature::IS_AVAILABLE,
+              complex_feature
+                  .IsAvailableToContext(
+                      /*extension=*/nullptr, Feature::UNSPECIFIED_CONTEXT,
+                      GURL(), kUnspecifiedContextId, /*context_data=*/nullptr)
+                  .result());
+    EXPECT_EQ(2u, delegated_availability_check_call_count);
   }
 }
 
