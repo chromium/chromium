@@ -40,32 +40,6 @@ NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
   }
 }
 
-UIImage* ImageForCollectionShortcutType(NTPCollectionShortcutType type) {
-  NSString* imageName = nil;
-  switch (type) {
-    case NTPCollectionShortcutTypeBookmark:
-      imageName = @"ntp_bookmarks_icon";
-      break;
-    case NTPCollectionShortcutTypeReadingList:
-      imageName = @"ntp_readinglist_icon";
-      break;
-    case NTPCollectionShortcutTypeRecentTabs:
-      imageName = @"ntp_recent_icon";
-      break;
-    case NTPCollectionShortcutTypeHistory:
-      imageName = @"ntp_history_icon";
-      break;
-    case NTPCollectionShortcutTypeWhatsNew:
-      imageName = @"ntp_whats_new_icon";
-      break;
-    case NTPCollectionShortcutTypeCount:
-      NOTREACHED();
-      break;
-  }
-  return [[UIImage imageNamed:imageName]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-}
-
 UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type) {
   switch (type) {
     case NTPCollectionShortcutTypeBookmark:

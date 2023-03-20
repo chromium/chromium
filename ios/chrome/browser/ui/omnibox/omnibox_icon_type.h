@@ -15,10 +15,6 @@ enum LocationBarSecurityIconType {
   LOCATION_BAR_SECURITY_ICON_TYPE_COUNT,
 };
 
-// Returns the asset name (to be used in -[UIImage imageNamed:]).
-NSString* GetLocationBarSecurityIconTypeAssetName(
-    LocationBarSecurityIconType icon);
-
 // Returns the symbol name corresponding to the given iconType.
 NSString* GetLocationBarSecuritySymbolName(
     LocationBarSecurityIconType iconType);

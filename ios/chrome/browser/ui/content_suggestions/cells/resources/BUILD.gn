@@ -4,56 +4,11 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("ntp_readinglist_icon") {
-  sources = [
-    "ntp_readinglist_icon.imageset/Contents.json",
-    "ntp_readinglist_icon.imageset/ntp_readinglist_icon.png",
-    "ntp_readinglist_icon.imageset/ntp_readinglist_icon@2x.png",
-    "ntp_readinglist_icon.imageset/ntp_readinglist_icon@3x.png",
-  ]
-}
-
 imageset("ntp_most_visited_tile") {
   sources = [
     "ntp_most_visited_tile.imageset/Contents.json",
     "ntp_most_visited_tile.imageset/ntp_most_visited_tile.png",
     "ntp_most_visited_tile.imageset/ntp_most_visited_tile@2x.png",
     "ntp_most_visited_tile.imageset/ntp_most_visited_tile@3x.png",
-  ]
-}
-
-imageset("ntp_bookmarks_icon") {
-  sources = [
-    "ntp_bookmarks_icon.imageset/Contents.json",
-    "ntp_bookmarks_icon.imageset/ntp_bookmarks_icon.png",
-    "ntp_bookmarks_icon.imageset/ntp_bookmarks_icon@2x.png",
-    "ntp_bookmarks_icon.imageset/ntp_bookmarks_icon@3x.png",
-  ]
-}
-
-imageset("ntp_recent_icon") {
-  sources = [
-    "ntp_recent_icon.imageset/Contents.json",
-    "ntp_recent_icon.imageset/ntp_recent_icon.png",
-    "ntp_recent_icon.imageset/ntp_recent_icon@2x.png",
-    "ntp_recent_icon.imageset/ntp_recent_icon@3x.png",
-  ]
-}
-
-imageset("ntp_history_icon") {
-  sources = [
-    "ntp_history_icon.imageset/Contents.json",
-    "ntp_history_icon.imageset/ntp_history_icon.png",
-    "ntp_history_icon.imageset/ntp_history_icon@2x.png",
-    "ntp_history_icon.imageset/ntp_history_icon@3x.png",
-  ]
-}
-
-imageset("ntp_whats_new_icon") {
-  sources = [
-    "ntp_whats_new_icon.imageset/Contents.json",
-    "ntp_whats_new_icon.imageset/ntp_whats_new_icon.png",
-    "ntp_whats_new_icon.imageset/ntp_whats_new_icon@2x.png",
-    "ntp_whats_new_icon.imageset/ntp_whats_new_icon@3x.png",
   ]
 }

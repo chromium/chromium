@@ -479,13 +479,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
           forControlEvents:UIControlEventTouchUpInside];
 
       UIImage* shareImage =
-          UseSymbols()
-              ? DefaultSymbolWithPointSize(kShareSymbol, kSymbolImagePointSize)
-              : [UIImage imageNamed:@"location_bar_share"];
-      [self.locationBarSteadyView.trailingButton
-          setImage:[shareImage imageWithRenderingMode:
-                                   UIImageRenderingModeAlwaysTemplate]
-          forState:UIControlStateNormal];
+          DefaultSymbolWithPointSize(kShareSymbol, kSymbolImagePointSize);
+      [self.locationBarSteadyView.trailingButton setImage:shareImage
+                                                 forState:UIControlStateNormal];
       self.locationBarSteadyView.trailingButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SHARE);
       self.locationBarSteadyView.trailingButton.accessibilityIdentifier =
@@ -503,14 +499,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                     action:@selector(startVoiceSearch)
           forControlEvents:UIControlEventTouchUpInside];
 
-      UIImage* micImage = UseSymbols()
-                              ? DefaultSymbolWithPointSize(
-                                    kMicrophoneSymbol, kSymbolImagePointSize)
-                              : [UIImage imageNamed:@"location_bar_voice"];
-      [self.locationBarSteadyView.trailingButton
-          setImage:[micImage imageWithRenderingMode:
-                                 UIImageRenderingModeAlwaysTemplate]
-          forState:UIControlStateNormal];
+      UIImage* micImage =
+          DefaultSymbolWithPointSize(kMicrophoneSymbol, kSymbolImagePointSize);
+      [self.locationBarSteadyView.trailingButton setImage:micImage
+                                                 forState:UIControlStateNormal];
       self.locationBarSteadyView.trailingButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH);
       self.locationBarSteadyView.trailingButton.accessibilityIdentifier =
