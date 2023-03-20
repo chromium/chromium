@@ -253,7 +253,6 @@ TEST_F(ChromeSigninClientSignoutTest, AllAllowed) {
 #endif
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(ChromeSigninClientSignoutTest, ChildProfile) {
   TestingProfile::Builder builder;
   builder.SetIsSupervisedProfile();
@@ -261,7 +260,7 @@ TEST_F(ChromeSigninClientSignoutTest, ChildProfile) {
   EXPECT_TRUE(profile->IsChild());
 
   CreateClient(profile.get());
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(
       client_->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
 #else
@@ -270,7 +269,6 @@ TEST_F(ChromeSigninClientSignoutTest, ChildProfile) {
 #endif
   EXPECT_TRUE(client_->IsRevokeSyncConsentAllowed());
 }
-#endif
 
 class ChromeSigninClientSignoutSourceTest
     : public ::testing::WithParamInterface<signin_metrics::ProfileSignout>,

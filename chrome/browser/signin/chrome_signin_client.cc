@@ -310,8 +310,11 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
     return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
   }
 #endif
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !BUILDFLAG(IS_CHROMEOS)
-  // Check if supervised user.
+#if BUILDFLAG(IS_ANDROID)
+  // On Android we do not allow supervised users to sign out.
+  // We also don't allow sign out on ChromeOS, though this is enforced outside
+  // the scope of this method.
+  // Other platforms do not restrict signout of supervised users.
   if (profile_->IsChild()) {
     return SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED;
   }
