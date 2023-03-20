@@ -9,12 +9,10 @@
 
 namespace device {
 
-CardboardSdkImpl::CardboardSdkImpl() {
-  // Per the documentation this will be a no-op because of the nullptr.
-  // TODO(https://crbug.com/989117): Move this to the RequestSession flow. It's
-  // included for the time being just to ensure that the library is at least
-  // used.
-  Cardboard_initializeAndroid(base::android::GetVM(), nullptr);
+CardboardSdkImpl::CardboardSdkImpl() = default;
+
+void CardboardSdkImpl::Initialize(jobject context) {
+  Cardboard_initializeAndroid(base::android::GetVM(), context);
 }
 
 CardboardSdkImpl::~CardboardSdkImpl() = default;

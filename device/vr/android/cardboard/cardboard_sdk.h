@@ -5,6 +5,8 @@
 #ifndef DEVICE_VR_ANDROID_CARDBOARD_CARDBOARD_SDK_H_
 #define DEVICE_VR_ANDROID_CARDBOARD_CARDBOARD_SDK_H_
 
+#include <jni.h>
+
 #include "base/component_export.h"
 
 namespace device {
@@ -18,6 +20,8 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardSdk {
  public:
   CardboardSdk() = default;
   virtual ~CardboardSdk() = default;
+
+  virtual void Initialize(jobject context);
 
   CardboardSdk(const CardboardSdk&) = delete;
   CardboardSdk& operator=(const CardboardSdk&) = delete;
