@@ -42,7 +42,6 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
@@ -1391,23 +1390,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   if ([cell isKindOfClass:[TableViewDetailIconCell class]]) {
     TableViewDetailIconCell* detailCell =
         base::mac::ObjCCastStrict<TableViewDetailIconCell>(cell);
-    if (itemType == SettingsItemTypePasswords) {
-      scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
-          IOSChromePasswordStoreFactory::GetForBrowserState(
-              _browserState, ServiceAccessType::EXPLICIT_ACCESS);
-      if (!passwordStore) {
-        // The password store factory returns a NULL password store if something
-        // goes wrong during the password store initialization. Disable the save
-        // passwords cell in this case.
-        LOG(ERROR) << "Save passwords cell was disabled as the password store"
-                      " cannot be created.";
-        [detailCell setUserInteractionEnabled:NO];
-        detailCell.textLabel.textColor =
-            [UIColor colorNamed:kTextSecondaryColor];
-        return cell;
-      }
-    }
-
     [detailCell setUserInteractionEnabled:YES];
     detailCell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
