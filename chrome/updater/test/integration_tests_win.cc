@@ -256,9 +256,6 @@ void CheckInstallation(UpdaterScope scope,
                 !IsServiceGone(GetServiceName(is_internal_service)))
           << ": " << service_name << ": " << is_internal_service;
 
-// TODO(crbug.com/1378769) - this code can be enabled after the the new CIPD
-// build containing fix r1105318 is published.
-#if 0
       if (!is_installed) {
         ForEachServiceWithPrefix(
             base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
@@ -269,7 +266,6 @@ void CheckInstallation(UpdaterScope scope,
               ADD_FAILURE() << "Unexpected service found: " << service_name;
             }));
       }
-#endif  // 0
     }
   }
 
