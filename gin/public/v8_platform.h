@@ -47,6 +47,8 @@ class GIN_EXPORT V8Platform : public v8::Platform {
   std::unique_ptr<v8::JobHandle> CreateJob(
       v8::TaskPriority priority,
       std::unique_ptr<v8::JobTask> job_task) override;
+  std::unique_ptr<v8::ScopedBlockingCall> CreateBlockingScope(
+      v8::BlockingType blocking_type) override;
   bool IdleTasksEnabled(v8::Isolate* isolate) override;
   double MonotonicallyIncreasingTime() override;
   double CurrentClockTimeMillis() override;

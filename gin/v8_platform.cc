@@ -19,6 +19,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/threading/scoped_blocking_call_internal.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
@@ -184,6 +186,30 @@ class JobHandleImpl : public v8::JobHandle {
   }
 
   base::JobHandle handle_;
+};
+
+class ScopedBlockingCallImpl : public v8::ScopedBlockingCall {
+ public:
+  explicit ScopedBlockingCallImpl(v8::BlockingType blocking_type)
+      : scoped_blocking_call_(ToBaseBlockingType(blocking_type),
+                              base::internal::UncheckedScopedBlockingCall::
+                                  BlockingCallType::kRegular) {}
+  ~ScopedBlockingCallImpl() override = default;
+
+  ScopedBlockingCallImpl(const ScopedBlockingCallImpl&) = delete;
+  ScopedBlockingCallImpl& operator=(const ScopedBlockingCallImpl&) = delete;
+
+ private:
+  static base::BlockingType ToBaseBlockingType(v8::BlockingType type) {
+    switch (type) {
+      case v8::BlockingType::kMayBlock:
+        return base::BlockingType::MAY_BLOCK;
+      case v8::BlockingType::kWillBlock:
+        return base::BlockingType::WILL_BLOCK;
+    }
+  }
+
+  base::internal::UncheckedScopedBlockingCall scoped_blocking_call_;
 };
 
 }  // namespace
@@ -402,6 +428,11 @@ std::unique_ptr<v8::JobHandle> V8Platform::CreateJob(
                           base::Unretained(job_task_ptr)));
 
   return std::make_unique<JobHandleImpl>(std::move(handle));
+}
+
+std::unique_ptr<v8::ScopedBlockingCall> V8Platform::CreateBlockingScope(
+    v8::BlockingType blocking_type) {
+  return std::make_unique<ScopedBlockingCallImpl>(blocking_type);
 }
 
 bool V8Platform::IdleTasksEnabled(v8::Isolate* isolate) {
