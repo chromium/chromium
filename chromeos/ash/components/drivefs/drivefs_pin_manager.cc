@@ -808,13 +808,8 @@ void PinManager::PinSomeFiles() {
 
   while (progress_.syncing_files < 50 && !files_to_pin_.empty()) {
     const Id id = files_to_pin_.extract(files_to_pin_.begin()).value();
-
     const Files::iterator it = files_to_track_.find(id);
-    if (it == files_to_track_.end()) {
-      VLOG(2) << "Not tracked: " << id;
-      continue;
-    }
-
+    DCHECK(it != files_to_track_.end()) << "Not tracked: " << id;
     DCHECK_EQ(it->first, id);
     File& file = it->second;
     const Path& path = file.path;
@@ -869,6 +864,28 @@ void PinManager::OnFilePinned(const Id id,
   }
 
   VLOG(1) << "Pinned " << id << " " << Quote(path);
+
+  const auto it = files_to_track_.find(id);
+  if (it == files_to_track_.end()) {
+    LOG(ERROR) << "Got unexpected notification that " << id << " "
+               << Quote(path) << " was pinned: The item is not tracked";
+    DCHECK(!files_to_pin_.contains(id));
+    return;
+  }
+
+  DCHECK_EQ(it->first, id);
+  File& file = it->second;
+  if (!file.pinned) {
+    LOG(ERROR)
+        << "Got unexpected notification that " << id << " " << Quote(path)
+        << " was pinned: The item is not remembered as having been pinned";
+    file.pinned = true;
+    const size_t erased = files_to_pin_.erase(id);
+    DCHECK_EQ(erased, 1u);
+    return;
+  }
+
+  DCHECK(!files_to_pin_.contains(id));
 }
 
 void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {

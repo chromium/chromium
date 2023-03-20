@@ -404,6 +404,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFileCreated);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFileModified);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFileDeleted);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFilePinned);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnMetadataForCreatedFile);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnMetadataForModifiedFile);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CheckFreeSpace);

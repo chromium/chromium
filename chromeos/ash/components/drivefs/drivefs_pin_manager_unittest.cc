@@ -951,6 +951,91 @@ TEST_F(DriveFsPinManagerTest, OnFileDeleted) {
   manager.OnFileDeleted(std::as_const(event));
 }
 
+// Tests PinManager::OnFilePinned().
+TEST_F(DriveFsPinManagerTest, OnFilePinned) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kSyncing;
+
+  const Id id = Id(61);
+  const Path path("/root/Path 1");
+  const int64_t size = 2000;
+
+  // Cannot pin an unknown file.
+  manager.OnFilePinned(id, path, FileError::FILE_ERROR_NOT_FOUND);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+
+  // Add a file to track.
+  {
+    const auto [it, ok] = manager.files_to_track_.try_emplace(
+        id, PinManager::File{.path = path, .total = size, .pinned = true});
+    ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
+    manager.progress_.bytes_to_pin += size;
+    manager.progress_.required_space += 4096;
+  }
+
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  // Cannot pin a known file.
+  manager.OnFilePinned(id, path, FileError::FILE_ERROR_NOT_FOUND);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 0);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+  EXPECT_EQ(manager.progress_.failed_files, 1);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  manager.progress_.failed_files = 0;
+
+  // Pinned an unknown file.
+  manager.OnFilePinned(id, path, FileError::FILE_ERROR_OK);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 0);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  // Add a file to track.
+  const auto [it, ok] = manager.files_to_track_.try_emplace(
+      id, PinManager::File{.path = path, .total = size, .pinned = true});
+  ASSERT_TRUE(ok);
+  manager.progress_.syncing_files++;
+  manager.progress_.bytes_to_pin += size;
+  manager.progress_.required_space += 4096;
+
+  // Pinned a known file.
+  manager.OnFilePinned(id, path, FileError::FILE_ERROR_OK);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2000);
+  EXPECT_EQ(manager.progress_.syncing_files, 1);
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  // Pinned a known file that hasn't been asked to be pinned.
+  it->second.pinned = false;
+  manager.files_to_pin_.insert(id);
+  manager.OnFilePinned(id, path, FileError::FILE_ERROR_OK);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2000);
+  EXPECT_EQ(manager.progress_.syncing_files, 1);
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+
+  manager.Stop();
+}
+
 // Tests PinManager::OnMetadataForCreatedFile().
 TEST_F(DriveFsPinManagerTest, OnMetadataForCreatedFile) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
