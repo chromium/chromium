@@ -14,13 +14,13 @@
 
 namespace {
 // Returns |src| in a packed buffer.
-std::vector<char> CopyAndRemovePadding(const char* src,
-                                       size_t stride,
-                                       gfx::Size size) {
+std::vector<uint8_t> CopyAndRemovePadding(const uint8_t* src,
+                                          size_t stride,
+                                          gfx::Size size) {
   DCHECK_GE(stride, static_cast<size_t>(size.width()));
   LOG_ASSERT(src);
 
-  std::vector<char> dst;
+  std::vector<uint8_t> dst;
   dst.reserve(size.GetArea());
 
   const auto* const kSrcLimit = src + stride * size.height();
@@ -37,9 +37,9 @@ namespace v4l2_test {
 namespace {
 
 // Unpacks an NV12 UV plane into separate U and V planes.
-void UnpackUVPlane(std::vector<char>& dest_u,
-                   std::vector<char>& dest_v,
-                   std::vector<char>& src_uv,
+void UnpackUVPlane(std::vector<uint8_t>& dest_u,
+                   std::vector<uint8_t>& dest_v,
+                   std::vector<uint8_t>& src_uv,
                    gfx::Size size) {
   for (int i = 0; i < size.GetArea(); i++) {
     dest_u.push_back(src_uv[2 * i]);
@@ -51,9 +51,9 @@ void UnpackUVPlane(std::vector<char>& dest_u,
 // in 16x32 tiles in the Y plane and 16x16 tiles in the UV plane (since it's
 // 4:2:0 subsampled, but UV are interlaced). This function converts a single
 // MM21 plane into its equivalent NV12 plane.
-void DetilePlane(std::vector<char>& dest,
+void DetilePlane(std::vector<uint8_t>& dest,
                  const gfx::Size& dest_size,
-                 char* src,
+                 uint8_t* src,
                  const gfx::Size& src_size,
                  const gfx::Size& tile_size) {
   // Tile size in bytes.
@@ -243,11 +243,11 @@ VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
 // Unpacks NV12 to I420 and optionally trims padding from source.
 // This expects a contiguous NV12 buffer, as specified by
 // V4L2_PIX_FMT_NV12.
-void VideoDecoder::ConvertNV12ToYUV(std::vector<char>& dest_y,
-                                    std::vector<char>& dest_u,
-                                    std::vector<char>& dest_v,
+void VideoDecoder::ConvertNV12ToYUV(std::vector<uint8_t>& dest_y,
+                                    std::vector<uint8_t>& dest_u,
+                                    std::vector<uint8_t>& dest_v,
                                     const gfx::Size& dest_size,
-                                    const char* src,
+                                    const uint8_t* src,
                                     const gfx::Size& src_size) {
   CHECK(dest_size.width() <= src_size.width());
   CHECK(dest_size.height() <= src_size.height());
@@ -287,12 +287,12 @@ void VideoDecoder::ConvertNV12ToYUV(std::vector<char>& dest_y,
   }
 }
 
-void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
-                                    std::vector<char>& dest_u,
-                                    std::vector<char>& dest_v,
+void VideoDecoder::ConvertMM21ToYUV(std::vector<uint8_t>& dest_y,
+                                    std::vector<uint8_t>& dest_u,
+                                    std::vector<uint8_t>& dest_v,
                                     const gfx::Size& dest_size,
-                                    char* src_y,
-                                    char* src_uv,
+                                    uint8_t* src_y,
+                                    uint8_t* src_uv,
                                     const gfx::Size& src_size) {
   constexpr int kMM21TileWidth = 16;
   constexpr int kMM21TileHeight = 32;
@@ -304,7 +304,7 @@ void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
   constexpr gfx::Size kUVTileSize(kMM21TileWidth, kMM21TileHeight / 2);
 
   // Detile and pad MM21's luma plane in a temporary |src_y_padded|.
-  std::vector<char> src_y_padded;
+  std::vector<uint8_t> src_y_padded;
   src_y_padded.reserve(src_size.GetArea());
   DetilePlane(src_y_padded, src_size, src_y, src_size, kYTileSize);
   dest_y =
@@ -313,7 +313,7 @@ void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
   // Detile and pad MM21's chroma plane in a temporary |src_uv_padded|.
   const gfx::Size src_uv_size(base::bits::AlignUp(src_size.width(), 2),
                               base::bits::AlignUp(src_size.height(), 2) / 2);
-  std::vector<char> src_uv_padded;
+  std::vector<uint8_t> src_uv_padded;
   src_uv_padded.reserve(src_uv_size.GetArea());
   DetilePlane(src_uv_padded, src_uv_size, src_uv, src_uv_size, kUVTileSize);
 
@@ -327,8 +327,8 @@ void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
   const gfx::Size u_plane_padded_size(u_plane_padded_width,
                                       u_plane_padded_height);
 
-  std::vector<char> src_u_padded;
-  std::vector<char> src_v_padded;
+  std::vector<uint8_t> src_u_padded;
+  std::vector<uint8_t> src_v_padded;
   src_u_padded.reserve(src_uv_size.GetArea() / 2);
   src_v_padded.reserve(src_uv_size.GetArea() / 2);
 
@@ -347,11 +347,10 @@ void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
                                 src_v_padded_size);
 }
 
-std::vector<unsigned char> VideoDecoder::ConvertYUVToPNG(
-    char* y_plane,
-    char* u_plane,
-    char* v_plane,
-    const gfx::Size& size) {
+std::vector<uint8_t> VideoDecoder::ConvertYUVToPNG(uint8_t* y_plane,
+                                                   uint8_t* u_plane,
+                                                   uint8_t* v_plane,
+                                                   const gfx::Size& size) {
   const size_t argb_stride = size.width() * 4;
   auto argb_data = std::make_unique<uint8_t[]>(argb_stride * size.height());
 
@@ -362,15 +361,13 @@ std::vector<unsigned char> VideoDecoder::ConvertYUVToPNG(
   // Note that we use J420ToARGB instead of I420ToARGB so that the
   // kYuvJPEGConstants YUV-to-RGB conversion matrix is used.
   const int convert_to_argb_result = libyuv::J420ToARGB(
-      reinterpret_cast<uint8_t*>(y_plane), size.width(),
-      reinterpret_cast<uint8_t*>(u_plane), u_plane_padded_width,
-      reinterpret_cast<uint8_t*>(v_plane), v_plane_padded_width,
-      argb_data.get(), base::checked_cast<int>(argb_stride), size.width(),
-      size.height());
+      y_plane, size.width(), u_plane, u_plane_padded_width, v_plane,
+      v_plane_padded_width, argb_data.get(),
+      base::checked_cast<int>(argb_stride), size.width(), size.height());
 
   LOG_ASSERT(convert_to_argb_result == 0) << "Failed to convert to ARGB";
 
-  std::vector<unsigned char> image_buffer;
+  std::vector<uint8_t> image_buffer;
   const bool encode_to_png_result = gfx::PNGCodec::Encode(
       argb_data.get(), gfx::PNGCodec::FORMAT_BGRA, size, argb_stride,
       true /*discard_transparency*/, std::vector<gfx::PNGCodec::Comment>(),

@@ -40,9 +40,9 @@ class VideoDecoder {
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
   void Initialize();
 
-  virtual Result DecodeNextFrame(std::vector<char>& y_plane,
-                                 std::vector<char>& u_plane,
-                                 std::vector<char>& v_plane,
+  virtual Result DecodeNextFrame(std::vector<uint8_t>& y_plane,
+                                 std::vector<uint8_t>& u_plane,
+                                 std::vector<uint8_t>& v_plane,
                                  gfx::Size& size,
                                  const int frame_number) = 0;
 
@@ -58,27 +58,27 @@ class VideoDecoder {
   bool IsResolutionChanged() const { return is_resolution_changed_; }
 
   // Converts raw YUV of decoded frame data to PNG.
-  static std::vector<unsigned char> ConvertYUVToPNG(char* y_plane,
-                                                    char* u_plane,
-                                                    char* v_plane,
-                                                    const gfx::Size& size);
+  static std::vector<uint8_t> ConvertYUVToPNG(uint8_t* y_plane,
+                                              uint8_t* u_plane,
+                                              uint8_t* v_plane,
+                                              const gfx::Size& size);
 
  protected:
   // Helper method for converting NV12 frames to I420.
-  static void ConvertNV12ToYUV(std::vector<char>& dest_y,
-                               std::vector<char>& dest_u,
-                               std::vector<char>& dest_v,
+  static void ConvertNV12ToYUV(std::vector<uint8_t>& dest_y,
+                               std::vector<uint8_t>& dest_u,
+                               std::vector<uint8_t>& dest_v,
                                const gfx::Size& dest_size,
-                               const char* src,
+                               const uint8_t* src,
                                const gfx::Size& src_size);
 
   // Helper method for converting MM21 frames to I420.
-  static void ConvertMM21ToYUV(std::vector<char>& dest_y,
-                               std::vector<char>& dest_u,
-                               std::vector<char>& dest_v,
+  static void ConvertMM21ToYUV(std::vector<uint8_t>& dest_y,
+                               std::vector<uint8_t>& dest_u,
+                               std::vector<uint8_t>& dest_v,
                                const gfx::Size& dest_size,
-                               char* src_y,
-                               char* src_uv,
+                               uint8_t* src_y,
+                               uint8_t* src_uv,
                                const gfx::Size& src_size);
 
   // Wrapper for V4L2 ioctl requests.

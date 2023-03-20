@@ -79,7 +79,8 @@ constexpr char kHelpMsg[] =
 
 // Computes the md5 of given I420 data |yuv_plane| and prints the md5 to stdout.
 // This functionality is needed for tast tests.
-void ComputeAndPrintMD5hash(const std::vector<char>& yuv_plane, const base::FilePath md5_log_location) {
+void ComputeAndPrintMD5hash(const std::vector<uint8_t>& yuv_plane,
+                            const base::FilePath md5_log_location) {
   base::MD5Digest md5_digest;
   base::MD5Sum(yuv_plane.data(), yuv_plane.size(), &md5_digest);
   std::string md5_digest_b16 = MD5DigestToBase16(md5_digest);
@@ -188,9 +189,9 @@ int main(int argc, char** argv) {
   for (int i = 0; i < n_frames || n_frames == 0; i++) {
     LOG(INFO) << "Frame " << i << "...";
 
-    std::vector<char> y_plane;
-    std::vector<char> u_plane;
-    std::vector<char> v_plane;
+    std::vector<uint8_t> y_plane;
+    std::vector<uint8_t> u_plane;
+    std::vector<uint8_t> v_plane;
     gfx::Size size;
     const VideoDecoder::Result res =
         dec->DecodeNextFrame(y_plane, u_plane, v_plane, size, i);
@@ -205,7 +206,7 @@ int main(int argc, char** argv) {
     if (cmd->HasSwitch("visible") && !dec->LastDecodedFrameVisible())
       continue;
 
-    std::vector<char> yuv_plane(y_plane);
+    std::vector<uint8_t> yuv_plane(y_plane);
     yuv_plane.insert(yuv_plane.end(), u_plane.begin(), u_plane.end());
     yuv_plane.insert(yuv_plane.end(), v_plane.begin(), v_plane.end());
 
@@ -221,9 +222,10 @@ int main(int argc, char** argv) {
         filename, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
 
     if (output_format == "yuv") {
-      output_file.Write(0, yuv_plane.data(), yuv_plane.size());
+      output_file.Write(0, reinterpret_cast<const char*>(yuv_plane.data()),
+                        yuv_plane.size());
     } else {
-      std::vector<unsigned char> image_buffer = dec->ConvertYUVToPNG(
+      std::vector<uint8_t> image_buffer = dec->ConvertYUVToPNG(
           y_plane.data(), u_plane.data(), v_plane.data(), size);
       output_file.Write(0, reinterpret_cast<char*>(image_buffer.data()),
                         image_buffer.size());

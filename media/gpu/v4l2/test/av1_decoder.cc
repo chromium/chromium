@@ -980,9 +980,9 @@ void Av1Decoder::QueueReusableBuffersInCaptureQueue(
   }
 }
 
-VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
-                                                 std::vector<char>& u_plane,
-                                                 std::vector<char>& v_plane,
+VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
+                                                 std::vector<uint8_t>& u_plane,
+                                                 std::vector<uint8_t>& v_plane,
                                                  gfx::Size& size,
                                                  const int frame_number) {
   libgav1::RefCountedBufferPtr current_frame;
@@ -1024,9 +1024,9 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
     size = CAPTURE_queue_->display_size();
     ConvertMM21ToYUV(y_plane, u_plane, v_plane, size,
-                     static_cast<char*>(
+                     static_cast<uint8_t*>(
                          repeated_frame_buffer->mmaped_planes()[0].start_addr),
-                     static_cast<char*>(
+                     static_cast<uint8_t*>(
                          repeated_frame_buffer->mmaped_planes()[1].start_addr),
                      CAPTURE_queue_->coded_size());
 
@@ -1113,17 +1113,19 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
     CHECK_EQ(buffer->mmaped_planes().size(), 1u)
         << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
 
-    ConvertNV12ToYUV(y_plane, u_plane, v_plane, size,
-                     static_cast<char*>(buffer->mmaped_planes()[0].start_addr),
-                     CAPTURE_queue_->coded_size());
+    ConvertNV12ToYUV(
+        y_plane, u_plane, v_plane, size,
+        static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
+        CAPTURE_queue_->coded_size());
   } else if (CAPTURE_queue_->fourcc() == v4l2_fourcc('M', 'M', '2', '1')) {
     CHECK_EQ(buffer->mmaped_planes().size(), 2u)
         << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
 
-    ConvertMM21ToYUV(y_plane, u_plane, v_plane, size,
-                     static_cast<char*>(buffer->mmaped_planes()[0].start_addr),
-                     static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
-                     CAPTURE_queue_->coded_size());
+    ConvertMM21ToYUV(
+        y_plane, u_plane, v_plane, size,
+        static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
+        static_cast<uint8_t*>(buffer->mmaped_planes()[1].start_addr),
+        CAPTURE_queue_->coded_size());
   } else {
     LOG(FATAL) << "Unsupported CAPTURE queue format";
   }
