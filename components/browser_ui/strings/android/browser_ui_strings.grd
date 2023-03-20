@@ -751,6 +751,12 @@
       <message name="IDS_ACCESSIBILITY_TURN_OFF_CAMERA" desc="The turn off camera button that turns off the camera of the video call.">
         Turn off camera
       </message>
+      <message name="IDS_ACCESSIBILITY_PREVIOUS_SLIDE" desc="The accessibility text of the previous slide button in a Picture-in-Picture window that allow users to navigate to the previous slide.">
+        Previous slide
+      </message>
+      <message name="IDS_ACCESSIBILITY_NEXT_SLIDE" desc="The accessibility text of the next slide button in a Picture-in-Picture window that allow users to navigate to the next slide.">
+        Next slide
+      </message>
       <message name="IDS_MEDIA_NOTIFICATION_INCOGNITO" desc="Text used as a placeholder for a media notification about playing media, when notification is shown from Incognito tab.">
         A site is playing media
       </message>

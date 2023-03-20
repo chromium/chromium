@@ -113,6 +113,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     class MediaActionButtonsManager {
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        final RemoteAction mPreviousSlide;
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mPreviousTrack;
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mPlay;
@@ -122,6 +124,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         final RemoteAction mReplay;
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mNextTrack;
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        final RemoteAction mNextSlide;
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mHangUp;
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -162,6 +166,9 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             mPreviousTrack = createRemoteAction(requestCode++, MediaSessionAction.PREVIOUS_TRACK,
                     R.drawable.ic_skip_previous_white_24dp, R.string.accessibility_previous_track,
                     /**controlState=*/null);
+            mPreviousSlide = createRemoteAction(requestCode++, MediaSessionAction.PREVIOUS_SLIDE,
+                    R.drawable.ic_skip_previous_white_24dp, R.string.accessibility_previous_slide,
+                    /**controlState=*/null);
             mPlay = createRemoteAction(requestCode++, MediaSessionAction.PLAY,
                     R.drawable.ic_play_arrow_white_24dp, R.string.accessibility_play,
                     /**controlState=*/null);
@@ -173,6 +180,9 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                     /**controlState=*/null);
             mNextTrack = createRemoteAction(requestCode++, MediaSessionAction.NEXT_TRACK,
                     R.drawable.ic_skip_next_white_24dp, R.string.accessibility_next_track,
+                    /**controlState=*/null);
+            mNextSlide = createRemoteAction(requestCode++, MediaSessionAction.NEXT_SLIDE,
+                    R.drawable.ic_skip_next_white_24dp, R.string.accessibility_next_slide,
                     /**controlState=*/null);
             mHangUp = createRemoteAction(requestCode++, MediaSessionAction.HANG_UP,
                     R.drawable.ic_call_end_white_24dp, R.string.accessibility_hang_up,
@@ -201,13 +211,22 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         ArrayList<RemoteAction> getActionsForPictureInPictureParams() {
             ArrayList<RemoteAction> actions = new ArrayList<>();
 
-            boolean shouldShowPreviousNextTrack =
+            final boolean shouldShowPreviousNextTrack =
                     mVisibleActions.contains(MediaSessionAction.PREVIOUS_TRACK)
                     || mVisibleActions.contains(MediaSessionAction.NEXT_TRACK);
             if (shouldShowPreviousNextTrack) {
                 mPreviousTrack.setEnabled(
                         mVisibleActions.contains(MediaSessionAction.PREVIOUS_TRACK));
                 actions.add(mPreviousTrack);
+            }
+
+            final boolean shouldShowPreviousNextSlide =
+                    mVisibleActions.contains(MediaSessionAction.PREVIOUS_SLIDE)
+                    || mVisibleActions.contains(MediaSessionAction.NEXT_SLIDE);
+            if (shouldShowPreviousNextSlide) {
+                mPreviousSlide.setEnabled(
+                        mVisibleActions.contains(MediaSessionAction.PREVIOUS_SLIDE));
+                actions.add(mPreviousSlide);
             }
 
             if (mVisibleActions.contains(MediaSessionAction.PLAY)) {
@@ -227,6 +246,11 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             if (shouldShowPreviousNextTrack) {
                 mNextTrack.setEnabled(mVisibleActions.contains(MediaSessionAction.NEXT_TRACK));
                 actions.add(mNextTrack);
+            }
+
+            if (shouldShowPreviousNextSlide) {
+                mNextSlide.setEnabled(mVisibleActions.contains(MediaSessionAction.NEXT_SLIDE));
+                actions.add(mNextSlide);
             }
 
             if (mVisibleActions.contains(MediaSessionAction.TOGGLE_MICROPHONE)) {
@@ -345,6 +369,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                     return;
                 case MediaSessionAction.NEXT_TRACK:
                     PictureInPictureActivityJni.get().nextTrack(nativeOverlayWindowAndroid);
+                    return;
+                case MediaSessionAction.PREVIOUS_SLIDE:
+                    PictureInPictureActivityJni.get().previousSlide(nativeOverlayWindowAndroid);
+                    return;
+                case MediaSessionAction.NEXT_SLIDE:
+                    PictureInPictureActivityJni.get().nextSlide(nativeOverlayWindowAndroid);
                     return;
                 case MediaSessionAction.TOGGLE_MICROPHONE:
                     PictureInPictureActivityJni.get().toggleMicrophone(
@@ -721,6 +751,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         void togglePlayPause(long nativeOverlayWindowAndroid, boolean toggleOn);
         void nextTrack(long nativeOverlayWindowAndroid);
         void previousTrack(long nativeOverlayWindowAndroid);
+        void nextSlide(long nativeOverlayWindowAndroid);
+        void previousSlide(long nativeOverlayWindowAndroid);
         void toggleMicrophone(long nativeOverlayWindowAndroid, boolean toggleOn);
         void toggleCamera(long nativeOverlayWindowAndroid, boolean toggleOn);
         void hangUp(long nativeOverlayWindowAndroid);

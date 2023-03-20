@@ -166,6 +166,14 @@ void OverlayWindowAndroid::PreviousTrack(JNIEnv* env) {
   controller_->PreviousTrack();
 }
 
+void OverlayWindowAndroid::NextSlide(JNIEnv* env) {
+  controller_->NextSlide();
+}
+
+void OverlayWindowAndroid::PreviousSlide(JNIEnv* env) {
+  controller_->PreviousSlide();
+}
+
 void OverlayWindowAndroid::ToggleMicrophone(JNIEnv* env, bool toggleOn) {
   if (microphone_muted_ == toggleOn)
     controller_->ToggleMicrophone();
@@ -320,6 +328,16 @@ void OverlayWindowAndroid::SetToggleCameraButtonVisibility(bool is_visible) {
 void OverlayWindowAndroid::SetHangUpButtonVisibility(bool is_visible) {
   MaybeUpdateVisibleAction(media_session::mojom::MediaSessionAction::kHangUp,
                            is_visible);
+}
+
+void OverlayWindowAndroid::SetNextSlideButtonVisibility(bool is_visible) {
+  MaybeUpdateVisibleAction(media_session::mojom::MediaSessionAction::kNextSlide,
+                           is_visible);
+}
+
+void OverlayWindowAndroid::SetPreviousSlideButtonVisibility(bool is_visible) {
+  MaybeUpdateVisibleAction(
+      media_session::mojom::MediaSessionAction::kPreviousSlide, is_visible);
 }
 
 void OverlayWindowAndroid::SetSurfaceId(const viz::SurfaceId& surface_id) {

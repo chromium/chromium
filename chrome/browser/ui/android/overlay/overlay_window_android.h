@@ -40,6 +40,8 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void TogglePlayPause(JNIEnv* env, bool toggleOn);
   void NextTrack(JNIEnv* env);
   void PreviousTrack(JNIEnv* env);
+  void NextSlide(JNIEnv* env);
+  void PreviousSlide(JNIEnv* env);
   void ToggleMicrophone(JNIEnv* env, bool toggleOn);
   void ToggleCamera(JNIEnv* env, bool toggleOn);
   void HangUp(JNIEnv* env);
@@ -75,8 +77,8 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override;
   void SetToggleCameraButtonVisibility(bool is_visible) override;
   void SetHangUpButtonVisibility(bool is_visible) override;
-  void SetNextSlideButtonVisibility(bool is_visible) override {}
-  void SetPreviousSlideButtonVisibility(bool is_visible) override {}
+  void SetNextSlideButtonVisibility(bool is_visible) override;
+  void SetPreviousSlideButtonVisibility(bool is_visible) override;
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
 
  private:

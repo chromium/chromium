@@ -221,6 +221,17 @@ public class PictureInPictureActivityTest {
         Assert.assertTrue(actions.get(0).isEnabled());
         Assert.assertFalse(actions.get(2).isEnabled());
 
+        // Both next slide and previous slide button should be visible when only one of them is
+        // enabled. The one that is not handled should be visible and disabled.
+        activity.updateVisibleActions(
+                new int[] {MediaSessionAction.PLAY, MediaSessionAction.PREVIOUS_SLIDE});
+        actions = manager.getActionsForPictureInPictureParams();
+        Assert.assertEquals(actions.size(), 3);
+        Assert.assertEquals(actions.get(0), manager.mPreviousSlide);
+        Assert.assertEquals(actions.get(2), manager.mNextSlide);
+        Assert.assertTrue(actions.get(0).isEnabled());
+        Assert.assertFalse(actions.get(2).isEnabled());
+
         // When all actions are not handled, there should be a dummy action presented to prevent
         // android picture-in-picture from using default MediaSession.
         activity.updateVisibleActions(new int[] {});
