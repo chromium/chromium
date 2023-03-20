@@ -72,11 +72,11 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
      */
     this.images_ = [
       {
-        assetId: BigInt(0),
-        attribution: ['Image 0 dark'],
-        url: {url: 'https://images.googleusercontent.com/0'},
+        assetId: BigInt(1),
+        attribution: ['Image 0 light'],
+        url: {url: 'https://images.googleusercontent.com/1'},
         unitId: BigInt(1),
-        type: OnlineImageType.kDark,
+        type: OnlineImageType.kLight,
       },
       {
         assetId: BigInt(2),
@@ -86,11 +86,11 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
         type: OnlineImageType.kUnknown,
       },
       {
-        assetId: BigInt(1),
-        attribution: ['Image 0 light'],
-        url: {url: 'https://images.googleusercontent.com/1'},
+        assetId: BigInt(0),
+        attribution: ['Image 0 dark'],
+        url: {url: 'https://images.googleusercontent.com/0'},
         unitId: BigInt(1),
-        type: OnlineImageType.kLight,
+        type: OnlineImageType.kDark,
       },
     ];
 

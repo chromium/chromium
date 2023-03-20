@@ -15,7 +15,6 @@ import '../../css/wallpaper.css.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../../personalization_app.mojom-webui.js';
-import {isDarkLightModeEnabled} from '../load_time_booleans.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
@@ -52,44 +51,46 @@ function getAssetId(current: CurrentWallpaper|null): bigint|null {
 }
 
 /**
- * Return a list of tile where each tile contains a single image.
+ * Return a list of tiles capturing units of image variants.
  */
-export function getRegularImageTiles(images: WallpaperImage[]): ImageTile[] {
-  return images.reduce((result, next) => {
-    result.push({
-      assetId: next.assetId,
-      attribution: next.attribution,
-      preview: [next.url],
-    });
-    return result;
-  }, [] as ImageTile[]);
-}
-
-/**
- * Return a list of tiles capturing units of Dark/Light images.
- */
-export function getDarkLightImageTiles(
+export function getImageTiles(
     isDarkModeActive: boolean, images: WallpaperImage[]): ImageTile[] {
   const tileMap = images.reduce((result, next) => {
     if (result.has(next.unitId)) {
-      // Add light url to the front and dark url to the back of the preview.
-      if (next.type === OnlineImageType.kLight) {
-        result.get(next.unitId)!['preview'].unshift(next.url);
-      } else {
-        result.get(next.unitId)!['preview'].push(next.url);
-      }
+      const tile = result.get(next.unitId)! as ImageTile;
+      tile.preview.push(next.url);
     } else {
       result.set(next.unitId, {
         preview: [next.url],
         unitId: next.unitId,
-      });
+      } as ImageTile);
     }
     // Populate the assetId and attribution based on image type and system's
     // color mode.
-    if ((isDarkModeActive && next.type !== OnlineImageType.kLight) ||
-        (!isDarkModeActive && next.type !== OnlineImageType.kDark)) {
-      result.get(next.unitId)!['assetId'] = next.assetId;
-      result.get(next.unitId)!['attribution'] = next.attribution;
+    const tile = result.get(next.unitId)! as ImageTile;
+    switch (next.type) {
+      case OnlineImageType.kLight:
+        if (!isDarkModeActive) {
+          tile.assetId = next.assetId;
+          tile.attribution = next.attribution;
+        }
+        break;
+      case OnlineImageType.kDark:
+        if (isDarkModeActive) {
+          tile.assetId = next.assetId;
+          tile.attribution = next.attribution;
+        }
+        break;
+      case OnlineImageType.kMorning:
+      case OnlineImageType.kLateAfternoon:
+        tile.isTimeOfDayWallpaper = true;
+        tile.assetId = next.assetId;
+        tile.attribution = next.attribution;
+        break;
+      case OnlineImageType.kUnknown:
+        tile.assetId = next.assetId;
+        tile.attribution = next.attribution;
+        break;
     }
     return result;
   }, new Map() as Map<bigint, ImageTile>);
@@ -246,12 +247,7 @@ export class WallpaperImages extends WithPersonalizationStore {
     }
 
     const imageArr = images[collectionId]!;
-
-    if (isDarkLightModeEnabled()) {
-      return getDarkLightImageTiles(isDarkModeActive, imageArr);
-    } else {
-      return getRegularImageTiles(imageArr);
-    }
+    return getImageTiles(isDarkModeActive, imageArr);
   }
 
   private getMainAriaLabel_(
@@ -295,9 +291,7 @@ export class WallpaperImages extends WithPersonalizationStore {
   }
 
   private isTimeOfDayWallpaper_(tile: number|ImageTile): boolean {
-    // TODO(b/272565838): Add better check when we construct Time of Day
-    // wallpaper tile.
-    return this.isImageTile_(tile) && tile.preview.length === 4;
+    return this.isImageTile_(tile) && !!tile.isTimeOfDayWallpaper;
   }
 
   private onImageSelected_(e: WallpaperGridItemSelectedEvent&

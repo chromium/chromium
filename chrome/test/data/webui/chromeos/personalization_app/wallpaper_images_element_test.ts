@@ -6,7 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {OnlineImageType, PersonalizationRouter, WallpaperGridItem, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -58,7 +58,7 @@ suite('WallpaperImagesTest', function() {
     assertEquals(selectedElements.length, 1, '1 item aria selected');
     assertDeepEquals(
         selectedElements[0]!.src,
-        [wallpaperProvider.images![2]!.url, wallpaperProvider.images![0]!.url],
+        [wallpaperProvider.images![0]!.url, wallpaperProvider.images![2]!.url],
         `item has correct src`);
 
     const notSelectedElements: HTMLDivElement[] =
@@ -140,6 +140,67 @@ suite('WallpaperImagesTest', function() {
                           `${WallpaperGridItem.is}:not([hidden])`))
             .map(elem => elem.getAttribute('aria-label')),
         'expected aria labels are displayed for collectionId `id_1`');
+  });
+
+  test('displays time of day tile for images with same unitId', async () => {
+    personalizationStore.data.wallpaper.backdrop.images = {
+      'id_0': [
+        {
+          assetId: BigInt(1),
+          attribution: ['Light Image 0-1'],
+          type: OnlineImageType.kLight,
+          unitId: BigInt(1),
+          url: {url: 'https://id_0-1/'},
+        },
+        {
+          assetId: BigInt(2),
+          attribution: ['Dark Image 0-2'],
+          type: OnlineImageType.kDark,
+          unitId: BigInt(1),
+          url: {url: 'https://id_0-2/'},
+        },
+        {
+          assetId: BigInt(3),
+          attribution: ['Morning Image 0-3'],
+          type: OnlineImageType.kMorning,
+          unitId: BigInt(1),
+          url: {url: 'https://id_0-3/'},
+        },
+        {
+          assetId: BigInt(4),
+          attribution: ['Late Afternoon Image 0-4'],
+          type: OnlineImageType.kLateAfternoon,
+          unitId: BigInt(1),
+          url: {url: 'https://id_0-4/'},
+        },
+      ],
+    };
+    personalizationStore.data.wallpaper.backdrop.collections =
+        wallpaperProvider.collections;
+    personalizationStore.data.wallpaper.loading.images = {
+      'id_0': false,
+    };
+    personalizationStore.data.wallpaper.loading.collections = false;
+
+    wallpaperImagesElement =
+        initElement(WallpaperImages, {collectionId: 'id_0'});
+    await waitAfterNextRender(wallpaperImagesElement);
+
+    const elements = Array.from(
+        wallpaperImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
+            `${WallpaperGridItem.is}:not([hidden])`));
+
+    assertDeepEquals(
+        [
+          {url: 'https://id_0-1/'},
+          {url: 'https://id_0-2/'},
+          {url: 'https://id_0-3/'},
+          {url: 'https://id_0-4/'},
+        ],
+        elements[0]!.src, 'time of day image has four variant urls');
+    assertTrue(
+        elements[0]!.hasAttribute('data-is-time-of-day-wallpaper'),
+        'element has correct data attribute');
   });
 
   test('displays dark light tile for images with same unitId', async () => {

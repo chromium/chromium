@@ -30,4 +30,5 @@ export interface ImageTile {
   attribution?: string[];
   unitId?: bigint;
   preview: Url[];
+  isTimeOfDayWallpaper?: boolean;
 }

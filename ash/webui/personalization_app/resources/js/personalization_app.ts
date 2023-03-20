@@ -115,7 +115,7 @@ export {selectGooglePhotosAlbum, cancelPreviewWallpaper, confirmPreviewWallpaper
 export {WallpaperError} from './wallpaper/wallpaper_error_element.js';
 export {WallpaperFullscreen} from './wallpaper/wallpaper_fullscreen_element.js';
 export {WallpaperGridItem} from './wallpaper/wallpaper_grid_item_element.js';
-export {getDarkLightImageTiles, getRegularImageTiles, WallpaperImages} from './wallpaper/wallpaper_images_element.js';
+export {getImageTiles, WallpaperImages} from './wallpaper/wallpaper_images_element.js';
 export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_provider.js';
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 export {WallpaperPreview} from './wallpaper/wallpaper_preview_element.js';
