@@ -244,6 +244,16 @@ TEST_P(CookiePartitionKeyTest, FromScript) {
   EXPECT_TRUE(key);
   EXPECT_TRUE(key->from_script());
   EXPECT_TRUE(key->site().opaque());
+
+  auto key2 = CookiePartitionKey::FromScript();
+  EXPECT_TRUE(key2);
+  EXPECT_TRUE(key2->from_script());
+  EXPECT_TRUE(key2->site().opaque());
+
+  // The keys should not be equal because they get created with different opaque
+  // sites. Test both the '==' and '!=' operators here.
+  EXPECT_FALSE(key == key2);
+  EXPECT_TRUE(key != key2);
 }
 
 TEST_P(CookiePartitionKeyTest, IsSerializeable) {
