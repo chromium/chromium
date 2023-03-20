@@ -225,9 +225,9 @@ interface Observer {
 // Mojo interface for the attribution internals WebUI to communicate with the
 // storage layer.
 interface Handler {
-  // Returns whether attribution reporting and the debug mode are enabled in
-  // the browsing context the WebUI is in.
-  IsAttributionReportingEnabled() => (bool enabled, bool debug_mode);
+  // Returns the state of the Attribution Reporting API in the WebUI's browsing context.
+  IsAttributionReportingEnabled() => (bool enabled, bool debug_mode,
+                                      bool has_os_support);
 
   // Returns all active sources that are persisted in storage. This does
   // not include expired sources, or sources that can no longer be attributed

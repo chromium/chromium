@@ -1154,6 +1154,10 @@ class AttributionInternals implements ObserverInterface {
       if (!response.debugMode) {
         debugModeContent.innerText = '';
       }
+
+      const osSupport = document.querySelector<HTMLElement>('#os-support')!;
+      osSupport.innerText = response.hasOsSupport ? 'enabled' : 'disabled';
+      osSupport.classList.toggle('disabled', !response.hasOsSupport);
     });
 
     this.updateSources();
