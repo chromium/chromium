@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_WINDOW_EXPERIMENT_H_
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
@@ -18,6 +19,10 @@
 class Profile;
 
 namespace web_app {
+
+// Controls whether the cleanup and experiment-state-persisting code runs when
+// the experiment ends (when `kPreinstalledWebAppWindowExperiment` is disabled).
+BASE_DECLARE_FEATURE(kWebAppWindowExperimentCleanup);
 
 // Sets up and manages a CrOS-only experiment for opening preinstalled web apps
 // in windows with link capturing.

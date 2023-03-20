@@ -144,6 +144,10 @@ void PersistStateFromPrefsToWebAppDb(PrefService* pref_service,
 
 }  // namespace
 
+BASE_FEATURE(kWebAppWindowExperimentCleanup,
+             "WebAppWindowExperimentCleanup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 PreinstalledWebAppWindowExperiment::PreinstalledWebAppWindowExperiment(
     Profile* profile)
     : profile_(profile) {
@@ -265,10 +269,12 @@ void PreinstalledWebAppWindowExperiment::CleanUp() {
   registrar_observation_.Reset();
   preferred_apps_observation_.Reset();
 
-  PersistStateFromPrefsToWebAppDb(profile_->GetPrefs(),
-                                  *WebAppProvider::GetForWebApps(profile_));
+  if (base::FeatureList::IsEnabled(kWebAppWindowExperimentCleanup)) {
+    PersistStateFromPrefsToWebAppDb(profile_->GetPrefs(),
+                                    *WebAppProvider::GetForWebApps(profile_));
 
-  utils::DeleteExperimentPrefs(profile_->GetPrefs());
+    utils::DeleteExperimentPrefs(profile_->GetPrefs());
+  }
 
   setup_done_for_testing_.Signal();
 }

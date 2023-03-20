@@ -762,6 +762,77 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTest,
       pref_service->GetDict("web_apps.preinstalled_app_window_experiment")
           .empty());
 }
+
+class PreinstalledWebAppWindowExperimentBrowserTest_NoCleanup
+    : public PreinstalledWebAppWindowExperimentBrowserTest {
+ public:
+  PreinstalledWebAppWindowExperimentBrowserTest_NoCleanup() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kWebAppWindowExperimentCleanup});
+  }
+
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTest_NoCleanup,
+                       PRE_NoPersistStateWhenExperimentEnds) {
+  AwaitExperimentSetup();
+  AwaitPreinstalledAppsInstalled();
+
+  // Simulate experiment having run previously on this profile.
+  PrefService* pref_service = browser()->profile()->GetPrefs();
+  preinstalled_web_app_window_experiment_utils::SetUserGroupPref(
+      pref_service, UserGroup::kWindow);
+  // Simulate user manually setting some apps to their current value (`kBrowser`
+  // for Drive, `kStandalone` for YouTube).
+  preinstalled_web_app_window_experiment_utils::SetUserOverridenDisplayModePref(
+      pref_service, kGoogleDriveAppId);
+  preinstalled_web_app_window_experiment_utils::SetUserOverridenDisplayModePref(
+      pref_service, kYoutubeAppId);
+}
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTest_NoCleanup,
+                       NoPersistStateWhenExperimentEnds) {
+  AwaitExperimentSetup();
+
+  const WebAppRegistrar& registrar = provider().registrar_unsafe();
+
+  // Experiment now disabled, but cleanup is also disabled, so pref values
+  // should not be persisted to web app DB. Apps should have their default
+  // values.
+  // Drive defaults to browser.
+  ASSERT_TRUE(registrar.GetAppUserDisplayMode(kGoogleDriveAppId).has_value());
+  EXPECT_EQ(registrar.GetAppUserDisplayMode(kGoogleDriveAppId).value(),
+            UserDisplayMode::kBrowser);
+  EXPECT_EQ(registrar.GetAppById(kGoogleDriveAppId)->user_display_mode(),
+            UserDisplayMode::kBrowser);
+  // YouTube defaults to standalone.
+  ASSERT_TRUE(registrar.GetAppUserDisplayMode(kYoutubeAppId).has_value());
+  EXPECT_EQ(registrar.GetAppUserDisplayMode(kYoutubeAppId).value(),
+            UserDisplayMode::kStandalone);
+  EXPECT_EQ(registrar.GetAppById(kYoutubeAppId)->user_display_mode(),
+            UserDisplayMode::kStandalone);
+  // Calendar defaults to standalone.
+  ASSERT_TRUE(
+      registrar.GetAppUserDisplayMode(kGoogleCalendarAppId).has_value());
+  EXPECT_EQ(registrar.GetAppUserDisplayMode(kGoogleCalendarAppId).value(),
+            UserDisplayMode::kStandalone);
+  EXPECT_EQ(registrar.GetAppById(kGoogleCalendarAppId)->user_display_mode(),
+            UserDisplayMode::kStandalone);
+  // Sheets defaults to browser.
+  ASSERT_TRUE(registrar.GetAppUserDisplayMode(kGoogleSheetsAppId).has_value());
+  EXPECT_EQ(registrar.GetAppUserDisplayMode(kGoogleSheetsAppId).value(),
+            UserDisplayMode::kBrowser);
+  EXPECT_EQ(registrar.GetAppById(kGoogleSheetsAppId)->user_display_mode(),
+            UserDisplayMode::kBrowser);
+
+  // Pref should not be deleted.
+  PrefService* pref_service = browser()->profile()->GetPrefs();
+  EXPECT_FALSE(
+      pref_service->GetDict("web_apps.preinstalled_app_window_experiment")
+          .empty());
+}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace web_app
