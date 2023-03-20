@@ -9,9 +9,12 @@ import sys
 import tarfile
 import tempfile
 
-from common import DIR_SOURCE_ROOT
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
 
-sys.path.append(os.path.join(DIR_SOURCE_ROOT, 'build'))
+from common import DIR_SRC_ROOT
+
+sys.path.append(os.path.join(DIR_SRC_ROOT, 'build'))
 import find_depot_tools
 
 

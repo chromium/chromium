@@ -8,6 +8,7 @@ import logging
 import os
 import re
 import signal
+import shutil
 import subprocess
 import sys
 import time
@@ -19,6 +20,8 @@ from compatible_utils import get_ssh_prefix, get_host_arch
 
 DIR_SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+IMAGES_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk',
+                           'images')
 REPO_ALIAS = 'fuchsia.com'
 SDK_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
@@ -34,6 +37,31 @@ def set_ffx_isolate_dir(isolate_dir: str) -> None:
 
     global _FFX_ISOLATE_DIR  # pylint: disable=global-statement
     _FFX_ISOLATE_DIR = isolate_dir
+
+
+def get_host_tool_path(tool):
+    """Get a tool from the SDK."""
+
+    return os.path.join(SDK_TOOLS_DIR, tool)
+
+
+def get_host_os():
+    """Get host operating system."""
+
+    host_platform = sys.platform
+    if host_platform.startswith('linux'):
+        return 'linux'
+    if host_platform.startswith('darwin'):
+        return 'mac'
+    raise Exception('Unsupported host platform: %s' % host_platform)
+
+
+def make_clean_directory(directory_name):
+    """If the directory exists, delete it and remake with no contents."""
+
+    if os.path.exists(directory_name):
+        shutil.rmtree(directory_name)
+    os.mkdir(directory_name)
 
 
 def _get_daemon_status():

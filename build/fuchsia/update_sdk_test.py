@@ -55,7 +55,7 @@ class TestGetSDKOverrideGCSPath(unittest.TestCase):
 
 
 @mock.patch('update_sdk._GetHostArch')
-@mock.patch('update_sdk.GetHostOsFromPlatform')
+@mock.patch('update_sdk.get_host_os')
 class TestGetTarballPath(unittest.TestCase):
   def testGetTarballPath(self, mock_get_host_os, mock_host_arch):
     mock_get_host_os.return_value = 'linux'

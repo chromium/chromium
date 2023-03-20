@@ -15,10 +15,11 @@ import subprocess
 import sys
 from typing import Dict, Optional
 
-from common import DIR_SOURCE_ROOT
-from common import GetHostOsFromPlatform
-from common import IMAGES_ROOT
-from common import MakeCleanDirectory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+
+from common import DIR_SRC_ROOT, IMAGES_ROOT, get_host_os, \
+                   make_clean_directory
 
 from gcs_download import DownloadAndUnpackFromCloudStorage
 
@@ -51,7 +52,7 @@ def VarLookup(local_scope):
 def GetImageHashList(bucket):
   """Read filename entries from sdk-hash-files.list (one per line), substitute
   {platform} in each entry if present, and read from each filename."""
-  assert (GetHostOsFromPlatform() == 'linux')
+  assert (get_host_os() == 'linux')
   filenames = [
       line.strip() for line in ReadFile('sdk-hash-files.list').replace(
           '{platform}', 'linux_internal').splitlines()
@@ -82,7 +83,7 @@ def GetImageHash(bucket):
   if bucket == 'fuchsia-sdk':
     hashes = GetImageHashList(bucket)
     return max(hashes)
-  deps_file = os.path.join(DIR_SOURCE_ROOT, 'DEPS')
+  deps_file = os.path.join(DIR_SRC_ROOT, 'DEPS')
   return ParseDepsFile(deps_file)['vars']['fuchsia_version'].split(':')[1]
 
 
@@ -217,7 +218,7 @@ def main():
     return 0
 
   # Check whether there's Fuchsia support for this platform.
-  GetHostOsFromPlatform()
+  get_host_os()
 
   image_info = GetImageLocationInfo(args.default_bucket)
 
@@ -234,7 +235,7 @@ def main():
   if current_signature != new_signature:
     logging.info('Downloading Fuchsia images %s from bucket %s...', image_hash,
                  bucket)
-    MakeCleanDirectory(args.image_root_dir)
+    make_clean_directory(args.image_root_dir)
 
     try:
       DownloadBootImages(bucket, image_hash, args.boot_images,

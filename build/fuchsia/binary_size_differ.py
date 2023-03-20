@@ -6,23 +6,11 @@
 '''Implements Chrome-Fuchsia package binary size differ.'''
 
 import argparse
-import collections
-import copy
 import json
-import logging
-import math
 import os
-import re
-import shutil
-import subprocess
 import sys
-import tempfile
-import time
 import traceback
-import uuid
 
-from common import GetHostToolPathFromPlatform, GetHostArchFromPlatform
-from common import SDK_ROOT, DIR_SOURCE_ROOT
 from binary_sizes import ReadPackageSizesJson
 from binary_sizes import PACKAGES_SIZES_FILE
 

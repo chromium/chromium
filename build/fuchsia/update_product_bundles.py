@@ -15,9 +15,13 @@ import subprocess
 import sys
 
 from contextlib import ExitStack
-import common
 import ffx_session
 import log_manager
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+
+import common
 
 _PRODUCT_BUNDLES = [
     'core.x64-dfv2',
@@ -279,7 +283,7 @@ def main():
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
 
   # Check whether there's Fuchsia support for this platform.
-  common.GetHostOsFromPlatform()
+  common.get_host_os()
 
   new_product_bundles = convert_to_product_bundle(
       args.product_bundles.split(','))
@@ -350,7 +354,7 @@ def main():
     curr_subdir = []
     if os.path.exists(common.IMAGES_ROOT):
       curr_subdir = os.listdir(common.IMAGES_ROOT)
-    common.MakeCleanDirectory(common.IMAGES_ROOT)
+    common.make_clean_directory(common.IMAGES_ROOT)
 
     for pb in new_product_bundles:
       logging.debug('Downloading bundle: %s', pb)

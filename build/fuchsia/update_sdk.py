@@ -14,11 +14,12 @@ import subprocess
 import sys
 from typing import Optional
 
-from common import GetHostOsFromPlatform
-from common import MakeCleanDirectory
-from common import SDK_ROOT
-
 from gcs_download import DownloadAndUnpackFromCloudStorage
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+
+from common import SDK_ROOT, get_host_arch, get_host_os, make_clean_directory
 
 
 def _GetHostArch():
@@ -54,7 +55,7 @@ def GetSDKOverrideGCSPath(path: Optional[str] = None) -> Optional[str]:
 
 def _GetTarballPath(gcs_tarball_prefix: str) -> str:
   """Get the full path to the sdk tarball on GCS"""
-  platform = GetHostOsFromPlatform()
+  platform = get_host_os()
   arch = _GetHostArch()
   return f'{gcs_tarball_prefix}/{platform}-{arch}/gn.tar.gz'
 
@@ -73,7 +74,7 @@ def main():
 
   # Exit if there's no SDK support for this platform.
   try:
-    host_plat = GetHostOsFromPlatform()
+    host_plat = get_host_os()
   except:
     logging.warning('Fuchsia SDK is not supported on this platform.')
     return 0
@@ -98,7 +99,7 @@ def main():
 
   # Always re-download the SDK.
   logging.info('Downloading GN SDK from GCS...')
-  MakeCleanDirectory(SDK_ROOT)
+  make_clean_directory(SDK_ROOT)
   DownloadAndUnpackFromCloudStorage(_GetTarballPath(gcs_tarball_prefix),
                                     SDK_ROOT)
   return 0

@@ -20,12 +20,13 @@ import sys
 import tempfile
 import time
 
-import common
 import log_manager
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              'test')))
-from compatible_utils import parse_host_port
+
+from common import SDK_ROOT
+from compatible_utils import get_host_arch, parse_host_port
 
 RUN_SUMMARY_SCHEMA = \
   'https://fuchsia.dev/schema/ffx_test/run_summary-8d1dd964.json'
@@ -33,8 +34,7 @@ RUN_SUMMARY_SCHEMA = \
 
 def get_ffx_path():
   """Returns the full path to `ffx`."""
-  return os.path.join(common.SDK_ROOT, 'tools',
-                      common.GetHostArchFromPlatform(), 'ffx')
+  return os.path.join(SDK_ROOT, 'tools', get_host_arch(), 'ffx')
 
 
 def format_host_port(host, port):

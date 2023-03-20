@@ -6,14 +6,19 @@
 import io
 import json
 import os
+import sys
 import unittest
 from unittest import mock
 
 from parameterized import parameterized
 
-import common
 import ffx_session
 import update_product_bundles
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+
+import common
 
 
 class TestUpdateProductBundles(unittest.TestCase):

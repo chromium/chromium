@@ -7,9 +7,7 @@
 
 import argparse
 import collections
-import copy
 import json
-import logging
 import math
 import os
 import re
@@ -21,8 +19,10 @@ import time
 import traceback
 import uuid
 
-from common import GetHostToolPathFromPlatform, GetHostArchFromPlatform
-from common import SDK_ROOT, DIR_SOURCE_ROOT
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+
+from common import DIR_SRC_ROOT, SDK_ROOT, get_host_tool_path
 
 PACKAGES_BLOBS_FILE = 'package_blobs.json'
 PACKAGES_SIZES_FILE = 'package_sizes.json'
@@ -273,7 +273,7 @@ def ReadPackageSizesJson(json_path):
 def GetCompressedSize(file_path):
   """Measures file size after blobfs compression."""
 
-  compressor_path = GetHostToolPathFromPlatform('blobfs-compression')
+  compressor_path = get_host_tool_path('blobfs-compression')
   try:
     temp_dir = tempfile.mkdtemp()
     compressed_file_path = os.path.join(temp_dir, os.path.basename(file_path))
@@ -311,7 +311,7 @@ def GetCompressedSize(file_path):
 def ExtractFarFile(file_path, extract_dir):
   """Extracts contents of a Fuchsia archive file to the specified directory."""
 
-  far_tool = GetHostToolPathFromPlatform('far')
+  far_tool = get_host_tool_path('far')
 
   if not os.path.isfile(far_tool):
     raise Exception('Could not find FAR host tool "%s".' % far_tool)
@@ -376,7 +376,7 @@ def GetPackageMerkleRoot(far_file_path):
   """Returns a package's Merkle digest."""
 
   # The digest is the first word on the first line of the merkle tool's output.
-  merkle_tool = GetHostToolPathFromPlatform('merkleroot')
+  merkle_tool = get_host_tool_path('merkleroot')
   output = subprocess.check_output([merkle_tool, far_file_path])
   return output.splitlines()[0].split()[0]
 
@@ -552,7 +552,7 @@ def main():
     raise Exception('Could not find build output directory "%s".' %
                     args.build_out_dir)
 
-  with open(os.path.join(DIR_SOURCE_ROOT, args.sizes_path)) as sizes_file:
+  with open(os.path.join(DIR_SRC_ROOT, args.sizes_path)) as sizes_file:
     sizes_config = json.load(sizes_file)
 
   if args.verbose:
