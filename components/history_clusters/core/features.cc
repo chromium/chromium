@@ -81,6 +81,10 @@ BASE_FEATURE(kJourneysIncludeSyncedVisits,
              "JourneysIncludeSyncedVisits",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kJourneysPersistCachesToPrefs,
+             "JourneysPersistCachesToPrefs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHistoryClustersNavigationContextClustering,
              "HistoryClustersNavigationContextClustering",
              base::FEATURE_DISABLED_BY_DEFAULT);

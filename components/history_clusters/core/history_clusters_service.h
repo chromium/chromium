@@ -225,6 +225,17 @@ class HistoryClustersService : public base::SupportsUserData,
       std::vector<history::Cluster> clusters,
       QueryClustersContinuationParams continuation_params);
 
+  // Reads the "all keywords" and short keyword caches from prefs and
+  // deserializes them.
+  void LoadCachesFromPrefs();
+  // Serializes and writes the short keyword cache to prefs.
+  void WriteShortCacheToPrefs();
+  // Serializes and writes the "all keywords" cache to prefs.
+  void WriteAllCacheToPrefs();
+
+  // Whether keyword caches should persisted via the pref service.
+  const bool persist_caches_to_prefs_;
+
   // True if Journeys is enabled based on field trial and locale checks.
   const bool is_journeys_enabled_;
 
@@ -288,6 +299,9 @@ class HistoryClustersService : public base::SupportsUserData,
   VisitDeletionObserver visit_deletion_observer_;
 
   ContextClustererHistoryServiceObserver context_clusterer_observer_;
+
+  // Used to store keyword caches across restarts.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.

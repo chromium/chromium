@@ -404,6 +404,9 @@ Config::Config() {
 
     include_synced_visits =
         base::FeatureList::IsEnabled(internal::kJourneysIncludeSyncedVisits);
+
+    persist_caches_to_prefs =
+        base::FeatureList::IsEnabled(internal::kJourneysPersistCachesToPrefs);
   }
 }
 

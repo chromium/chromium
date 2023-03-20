@@ -59301,6 +59301,7 @@ from previous Chrome versions.
   <int value="-1578620046" label="ContextualTriggersSelectionHandles:enabled"/>
   <int value="-1578503491" label="EnableContinueReading:disabled"/>
   <int value="-1578295753" label="UserMediaScreenCapturing:disabled"/>
+  <int value="-1576943648" label="JourneysPersistCachesToPrefs:enabled"/>
   <int value="-1576408607" label="ChromeTipsInMainMenu:enabled"/>
   <int value="-1576014168" label="DesktopPWAsSubApps:enabled"/>
   <int value="-1575868447" label="RemoveNtpFakebox:enabled"/>
@@ -61927,6 +61928,7 @@ from previous Chrome versions.
   <int value="-130318058" label="ExoGamepadVibration:enabled"/>
   <int value="-129823932" label="HardwareSecureDecryptionFallback:disabled"/>
   <int value="-129384450" label="CustomizeChromeSidePanel:enabled"/>
+  <int value="-129290900" label="JourneysPersistCachesToPrefs:disabled"/>
   <int value="-129061954"
       label="AutofillEnableManualFallbackForVirtualCards:enabled"/>
   <int value="-128687277"

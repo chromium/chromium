@@ -58,6 +58,10 @@ class HistoryClustersServiceTestApi {
     history_clusters_service_->short_keyword_cache_timestamp_ = time;
   }
 
+  void SetShortKeywordCache(HistoryClustersService::KeywordMap cache) {
+    history_clusters_service_->short_keyword_cache_ = cache;
+  }
+
   void SetAllKeywordsCache(HistoryClustersService::KeywordMap cache) {
     history_clusters_service_->all_keywords_cache_ = cache;
   }

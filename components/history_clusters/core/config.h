@@ -391,6 +391,9 @@ struct Config {
   // Whether to include synced visits in clusters.
   bool include_synced_visits = false;
 
+  // Whether keyword caches should be written to and read from prefs.
+  bool persist_caches_to_prefs = false;
+
   // Order consistently with features.h.
 
   Config();

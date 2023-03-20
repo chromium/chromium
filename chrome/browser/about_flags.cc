@@ -5769,6 +5769,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(history_clusters::internal::kPersistedClusters)},
 
+    {"history-journeys-persist-caches-to-prefs",
+     flag_descriptions::kJourneysPersistCachesToPrefsName,
+     flag_descriptions::kJourneysPersistCachesToPrefsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         history_clusters::internal::kJourneysPersistCachesToPrefs)},
+
     {"history-journeys-show-all-clusters",
      flag_descriptions::kJourneysShowAllClustersName,
      flag_descriptions::kJourneysShowAllClustersDescription,

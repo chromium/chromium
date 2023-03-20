@@ -10,6 +10,8 @@ class PrefRegistrySimple;
 namespace history_clusters::prefs {
 
 extern const char kVisible[];
+extern const char kShortCache[];
+extern const char kAllCache[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

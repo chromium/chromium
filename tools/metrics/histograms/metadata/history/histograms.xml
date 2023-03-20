@@ -36,9 +36,9 @@ chromium-metrics-reviews@google.com.
                once every 10 seconds but can vary if e.g. the user isn't
                interacting with the omnibox"/>
   <variant name=".WebUI"
-      summary="only requests for the Journeys WebUI within History or Side
-               Panel, either query-less or query states, both on load and on
-               scroll"/>
+      summary="only requests for the Journeys this WebUI within History or
+               Side Panel, either query-less or query states, both on load
+               and on scroll"/>
 </variants>
 
 <histogram name="History.AttemptedToFixProfileError" units="units"
@@ -1550,6 +1550,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.KeywordCache.LoadCachesFromPrefs.Latency"
+    units="ms" expires_after="2024-04-01">
+  <owner>pnoland@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Records the amount of time spent reading all caches from the pref service
+    and deserializing them. Recorded when these caches are read from prefs,
+    which is once at startup. This is not recorded if the pref service is null.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.KeywordCache.ThreadTime" units="ms"
     expires_after="2023-08-20">
   <owner>tommycli@chromium.org</owner>
@@ -1561,6 +1573,24 @@ chromium-metrics-reviews@google.com.
 
     See History.Clusters.KeywordCache.Latency for the full wall clock time.
   </summary>
+</histogram>
+
+<histogram name="History.Clusters.KeywordCache.WriteCache.{CacheType}.Latency"
+    units="ms" expires_after="2024-04-01">
+  <owner>pnoland@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Records the amount of time spent serializing and writing a keyword cache to
+    the pref service. Recorded every time a cache is written to prefs, which is
+    every time one is updated. This is not recorded if the pref service is null.
+  </summary>
+  <token key="CacheType">
+    <variant name="All"
+        summary="Records time spent writing the 'all keywords' cache."/>
+    <variant name="Short"
+        summary="Records time spent writing the short keyword cache."/>
+  </token>
 </histogram>
 
 <histogram name="History.Clusters.ProcessClustersDuration" units="ms"

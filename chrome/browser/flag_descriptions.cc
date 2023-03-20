@@ -1890,6 +1890,11 @@ const char kJourneysOmniboxHistoryClusterProviderDescription[] =
     "Enables the History Journeys Omnibox History Cluster Provider to surface "
     "Journeys as a suggestion row instead of an action chip.";
 
+const char kJourneysPersistCachesToPrefsName[] =
+    "History Journeys Persist Caches to Prefs";
+const char kJourneysPersistCachesToPrefsDescription[] =
+    "Enables the persistence of Journeys keyword caches via the pref service.";
+
 const char kJourneysPersistedClustersName[] =
     "History Journeys Persisted Clusters";
 const char kJourneysPersistedClustersDescription[] =

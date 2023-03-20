@@ -1061,6 +1061,9 @@ extern const char kJourneysOmniboxHistoryClusterProviderDescription[];
 extern const char kJourneysPersistedClustersName[];
 extern const char kJourneysPersistedClustersDescription[];
 
+extern const char kJourneysPersistCachesToPrefsName[];
+extern const char kJourneysPersistCachesToPrefsDescription[];
+
 extern const char kJourneysShowAllClustersName[];
 extern const char kJourneysShowAllClustersDescription[];
 

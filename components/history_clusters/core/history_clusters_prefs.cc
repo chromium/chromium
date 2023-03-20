@@ -13,8 +13,16 @@ namespace prefs {
 // Whether History Clusters are visible to the user. True by default.
 const char kVisible[] = "history_clusters.visible";
 
+// Dictionary containing the short keyword cache and associated timestamp.
+const char kShortCache[] = "history_clusters.short_cache";
+
+// Dictionary containing the "all keywords" cache and associated timestamp.
+const char kAllCache[] = "history_clusters.all_cache";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kVisible, true);
+  registry->RegisterDictionaryPref(prefs::kAllCache);
+  registry->RegisterDictionaryPref(prefs::kShortCache);
 }
 
 }  // namespace prefs

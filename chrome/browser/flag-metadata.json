@@ -4265,6 +4265,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "history-journeys-persist-caches-to-prefs",
+    "owners": [ "pnoland", "chrome-journeys@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "history-journeys-persisted-clusters",
     "owners": [ "manukh", "chrome-journeys@google.com" ],
     "expiry_milestone": 115
