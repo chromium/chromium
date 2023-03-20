@@ -630,7 +630,6 @@ class AuthenticatorPhoneConfirmationSheet : public AuthenticatorSheetModelBase {
   bool IsAcceptButtonEnabled() const override;
   void OnAccept() override;
   std::u16string GetAcceptButtonLabel() const override;
-  std::u16string GetOtherMechanismButtonLabel() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

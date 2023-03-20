@@ -108,7 +108,7 @@ bool AuthenticatorSheetModelBase::IsOtherMechanismButtonVisible() const {
 
 std::u16string AuthenticatorSheetModelBase::GetOtherMechanismButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRY_ANOTHER_WAY);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE);
 }
 
 std::u16string AuthenticatorSheetModelBase::GetCancelButtonLabel() const {
@@ -1469,9 +1469,4 @@ std::u16string AuthenticatorPhoneConfirmationSheet::GetAcceptButtonLabel()
 
 void AuthenticatorPhoneConfirmationSheet::OnAccept() {
   dialog_model()->ContactPriorityPhone();
-}
-
-std::u16string
-AuthenticatorPhoneConfirmationSheet::GetOtherMechanismButtonLabel() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_ANOTHER_DEVICE);
 }

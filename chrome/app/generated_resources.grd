@@ -13761,10 +13761,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Which passkey do you want to use for <ph name="APP_NAME">$1<ex>example.com</ex></ph>?
       </message>
       <message name="IDS_WEBAUTHN_CREATE_PASSKEY_QR_TITLE" desc="The title of a dialog prompting the user to create a passkey to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Create a passkey on another device
+         Create a passkey on a phone or tablet
       </message>
       <message name="IDS_WEBAUTHN_CREATE_PASSKEY_QR_BODY" desc="The body of a dialog prompting the user to create a passkey to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Scan this QR code with the device where you want to create a passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+        Scan this QR code with a camera on the device where you want to create a passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
       </message>
       <message name="IDS_WEBAUTHN_USE_PASSKEY_QR_TITLE" desc="The title of a dialog prompting the user to use a passkey to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
          Use a passkey from another device?
@@ -13772,11 +13772,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_USE_PASSKEY_QR_BODY" desc="The body of a dialog prompting the user to use a passkey to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
          Scan this QR code with the device that has the passkey you want to use for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
       </message>
-      <message name="IDS_WEBAUTHN_TRY_ANOTHER_WAY" desc="Label on a secondary button on a dialog for creating or using a passkey to sign into a website. Clicking this button will show a menu that lets the user pick a different device (such as a phone or hardware security key) to sign in.">
-         Try another way
-      </message>
-      <message name="IDS_WEBAUTHN_USE_ANOTHER_DEVICE" desc="Label on a secondary button on a dialog for creating or using a passkey to sign into a website. Clicking this button will show a menu that lets the user pick a different device (such as a phone or hardware security key) to sign in.">
-         Use another device
+      <message name="IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE" desc="Label on a secondary button on a dialog for creating or using a passkey to sign into a website. Clicking this button will show a menu that lets the user pick a different device (such as a phone or hardware security key) to sign in.">
+         Use a different device
       </message>
 
       <!-- Side Search -->
