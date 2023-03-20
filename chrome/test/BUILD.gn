@@ -8647,9 +8647,12 @@ test("unit_tests") {
       "../browser/browser_switcher/mock_alternative_browser_driver.h",
       "../browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service_unittest.cc",
       "../browser/enterprise/connectors/device_trust/browser/browser_device_trust_connector_service_unittest.cc",
+      "../browser/enterprise/profile_token_management/profile_token_navigation_throttle_unittest.cc",
       "../browser/enterprise/remote_commands/rotate_attestation_credential_job_unittest.cc",
       "../browser/enterprise/signals/user_delegate_impl_unittest.cc",
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
+      "../browser/signin/profile_token_web_signin_interceptor_unittest.cc",
+      "../browser/signin/token_managed_profile_creator_unittest.cc",
       "../browser/ui/webui/ntp/app_launcher_handler_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_util_unittest.cc",
     ]

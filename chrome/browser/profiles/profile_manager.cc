@@ -984,6 +984,16 @@ base::FilePath ProfileManager::GetPrimaryUserProfilePath() {
 base::FilePath ProfileManager::GenerateNextProfileDirectoryPath() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
+  DCHECK(profiles::IsMultipleProfilesEnabled());
+  int next_directory = local_state->GetInteger(prefs::kProfilesNumCreated);
+  base::FilePath new_path = GetNextExpectedProfileDirectoryPath();
+  local_state->SetInteger(prefs::kProfilesNumCreated, ++next_directory);
+  return new_path;
+}
+
+base::FilePath ProfileManager::GetNextExpectedProfileDirectoryPath() {
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
 
   DCHECK(profiles::IsMultipleProfilesEnabled());
 
@@ -997,7 +1007,6 @@ base::FilePath ProfileManager::GenerateNextProfileDirectoryPath() {
 #else
   new_path = new_path.Append(profile_name);
 #endif
-  local_state->SetInteger(prefs::kProfilesNumCreated, ++next_directory);
   return new_path;
 }
 

@@ -375,6 +375,7 @@
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#include "chrome/browser/signin/profile_token_web_signin_interceptor_factory.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -783,6 +784,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   PredictionServiceFactory::GetInstance();
   PrefetchProxyServiceFactory::GetInstance();
   PrimaryAccountPolicyManagerFactory::GetInstance();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  ProfileTokenWebSigninInterceptorFactory::GetInstance();
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   PromoServiceFactory::GetInstance();
 #endif

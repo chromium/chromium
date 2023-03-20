@@ -244,6 +244,13 @@ class ProfileManager : public Profile::Delegate {
   // system.
   base::FilePath GenerateNextProfileDirectoryPath();
 
+  // Get the path of the next profile directory without incrementing the
+  // internal count.
+  // This function should only be used for path checking before
+  // 'GenerateNextProfileDirectoryPath' as this will return the path generated
+  // the next time `GenerateNextProfileDirectoryPath` is called.
+  base::FilePath GetNextExpectedProfileDirectoryPath();
+
   // Returns a ProfileAttributesStorage object which can be used to get
   // information about profiles without having to load them from disk.
   ProfileAttributesStorage& GetProfileAttributesStorage();

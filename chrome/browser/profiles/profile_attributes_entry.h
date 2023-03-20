@@ -153,6 +153,14 @@ class ProfileAttributesEntry {
   // standard gmail.com account). Unlike for other string getters, the returned
   // value is UTF8 encoded.
   std::string GetHostedDomain() const;
+
+  // Returns the enrollment token to get policies for a profile.
+  std::string GetProfileManagementEnrollmentToken() const;
+
+  // Returns the signin id for a profile managed by a token. This may be empty
+  // even if there is an enrollment token.
+  std::string GetProfileManagementId() const;
+
   // Returns an account id key of the user of the profile. Empty if the profile
   // doesn't have any associated `user_manager::User`.
   std::string GetAccountIdKey() const;
@@ -191,6 +199,9 @@ class ProfileAttributesEntry {
   // Unlike for other string setters, the argument is expected to be UTF8
   // encoded.
   void SetHostedDomain(std::string hosted_domain);
+
+  void SetProfileManagementEnrollmentToken(const std::string& enrollment_token);
+  void SetProfileManagementId(const std::string& id);
 
   void SetAuthInfo(const std::string& gaia_id,
                    const std::u16string& user_name,

@@ -54,6 +54,9 @@ const char kActiveTimeKey[] = "active_time";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
+const char kProfileManagementEnrollmentToken[] =
+    "profile_management_enrollment_token";
+const char kProfileManagementId[] = "profile_management_id";
 const char kUserAcceptedAccountManagement[] =
     "user_accepted_account_management";
 
@@ -553,6 +556,15 @@ std::string ProfileAttributesEntry::GetHostedDomain() const {
   return GetString(kHostedDomain);
 }
 
+std::string ProfileAttributesEntry::GetProfileManagementEnrollmentToken()
+    const {
+  return GetString(kProfileManagementEnrollmentToken);
+}
+
+std::string ProfileAttributesEntry::GetProfileManagementId() const {
+  return GetString(kProfileManagementId);
+}
+
 std::string ProfileAttributesEntry::GetAccountIdKey() const {
   return GetString(kAccountIdKey);
 }
@@ -750,6 +762,20 @@ void ProfileAttributesEntry::SetProfileThemeColors(
 void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {
   if (SetString(kHostedDomain, hosted_domain))
     profile_attributes_storage_->NotifyProfileHostedDomainChanged(GetPath());
+}
+
+void ProfileAttributesEntry::SetProfileManagementEnrollmentToken(
+    const std::string& enrollment_token) {
+  if (SetString(kProfileManagementEnrollmentToken, enrollment_token)) {
+    profile_attributes_storage_->NotifyProfileManagementEnrollmentTokenChanged(
+        GetPath());
+  }
+}
+
+void ProfileAttributesEntry::SetProfileManagementId(const std::string& id) {
+  if (SetString(kProfileManagementId, id)) {
+    profile_attributes_storage_->NotifyProfileManagementIdChanged(GetPath());
+  }
 }
 
 void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,

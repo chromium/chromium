@@ -29,6 +29,8 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
@@ -1625,8 +1627,15 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
                           ProfileShortcutManager::IsFeatureEnabled());
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  html_source->AddBoolean("signinAvailable",
-                          AccountConsistencyModeManager::IsDiceSignInAllowed());
+  auto* profile_entry =
+      g_browser_process->profile_manager()
+          ? g_browser_process->profile_manager()
+                ->GetProfileAttributesStorage()
+                .GetProfileAttributesWithPath(profile->GetPath())
+          : nullptr;
+  html_source->AddBoolean(
+      "signinAvailable",
+      AccountConsistencyModeManager::IsDiceSignInAllowed(profile_entry));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

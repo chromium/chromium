@@ -6117,6 +6117,10 @@ static_library("browser") {
       "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h",
       "enterprise/idle/dialog_manager.cc",
       "enterprise/idle/dialog_manager.h",
+      "enterprise/profile_token_management/profile_token_navigation_throttle.cc",
+      "enterprise/profile_token_management/profile_token_navigation_throttle.h",
+      "enterprise/profile_token_management/token_management_features.cc",
+      "enterprise/profile_token_management/token_management_features.h",
       "enterprise/remote_commands/rotate_attestation_credential_job.cc",
       "enterprise/remote_commands/rotate_attestation_credential_job.h",
       "enterprise/signals/signals_aggregator_factory.cc",
@@ -6129,6 +6133,12 @@ static_library("browser") {
       "enterprise/signals/user_permission_service_factory.h",
       "policy/local_sync_policy_handler.cc",
       "policy/local_sync_policy_handler.h",
+      "signin/profile_token_web_signin_interceptor.cc",
+      "signin/profile_token_web_signin_interceptor.h",
+      "signin/profile_token_web_signin_interceptor_factory.cc",
+      "signin/profile_token_web_signin_interceptor_factory.h",
+      "signin/token_managed_profile_creator.cc",
+      "signin/token_managed_profile_creator.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
