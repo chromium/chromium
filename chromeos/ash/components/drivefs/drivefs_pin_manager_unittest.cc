@@ -2521,20 +2521,39 @@ TEST_F(DriveFsPinManagerTest,
   new_run_loop.Run();
 }
 
+// Tests that PinManager's destructor calls OnDrop on the registered observer.
 TEST_F(DriveFsPinManagerTest, OnDrop) {
   {
     MockObserver observer;
+    PinManager::Observer observer2;
     PinManager manager(temp_dir_.GetPath(), &drivefs_);
     manager.AddObserver(&observer);
+    manager.AddObserver(&observer2);
     EXPECT_CALL(observer, OnDrop()).Times(1);
   }
   {
     MockObserver observer;
+    PinManager::Observer observer2;
     EXPECT_CALL(observer, OnDrop()).Times(0);
     PinManager manager(temp_dir_.GetPath(), &drivefs_);
     manager.AddObserver(&observer);
+    manager.AddObserver(&observer2);
     manager.RemoveObserver(&observer);
   }
+}
+
+// Tests PinManager::NotifyProgress.
+TEST_F(DriveFsPinManagerTest, NotifyProgress) {
+  MockObserver observer;
+  PinManager::Observer observer2;
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  manager.AddObserver(&observer);
+  manager.AddObserver(&observer2);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  EXPECT_CALL(observer, OnProgress(testing::Ref(manager.progress_))).Times(1);
+  manager.NotifyProgress();
+  manager.RemoveObserver(&observer);
 }
 
 TEST_F(DriveFsPinManagerTest,
