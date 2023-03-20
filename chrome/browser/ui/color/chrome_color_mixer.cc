@@ -141,16 +141,16 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSubtleEmphasisBackground};
   mixer[kColorDownloadBubbleInfoIcon] = {ui::kColorIcon};
   mixer[kColorDownloadItemForeground] = {kColorDownloadShelfForeground};
-  mixer[kColorDownloadItemForegroundDangerous] =
-      ui::PickGoogleColor(ui::kColorAlertHighSeverity, kColorToolbar,
-                          color_utils::kMinimumReadableContrastRatio);
+  mixer[kColorDownloadItemForegroundDangerous] = ui::PickGoogleColor(
+      ui::kColorAlertHighSeverity, kColorDownloadShelfBackground,
+      color_utils::kMinimumReadableContrastRatio);
   mixer[kColorDownloadItemForegroundDisabled] = BlendForMinContrast(
-      ui::AlphaBlend(kColorDownloadItemForeground, kColorToolbar,
-                     gfx::kGoogleGreyAlpha600),
-      kColorToolbar, kColorDownloadItemForeground);
-  mixer[kColorDownloadItemForegroundSafe] =
-      ui::PickGoogleColor(ui::kColorAlertLowSeverity, kColorToolbar,
-                          color_utils::kMinimumReadableContrastRatio);
+      ui::AlphaBlend(kColorDownloadItemForeground,
+                     kColorDownloadShelfBackground, gfx::kGoogleGreyAlpha600),
+      kColorDownloadShelfBackground, kColorDownloadItemForeground);
+  mixer[kColorDownloadItemForegroundSafe] = ui::PickGoogleColor(
+      ui::kColorAlertLowSeverity, kColorDownloadShelfBackground,
+      color_utils::kMinimumReadableContrastRatio);
   mixer[kColorDownloadItemProgressRingBackground] = ui::SetAlpha(
       kColorDownloadItemProgressRingForeground, gfx::kGoogleGreyAlpha400);
   mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorThrobber};
@@ -163,7 +163,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::PickGoogleColor(ui::kColorAccent, kColorDownloadShelfBackground,
                           color_utils::kMinimumReadableContrastRatio);
   mixer[kColorDownloadShelfContentAreaSeparator] = ui::AlphaBlend(
-      kColorToolbarButtonIcon, kColorDownloadShelfBackground, 0x3A);
+      kColorDownloadShelfButtonIcon, kColorDownloadShelfBackground, 0x3A);
   mixer[kColorDownloadShelfForeground] = {kColorToolbarText};
   mixer[kColorDownloadStartedAnimationForeground] =
       PickGoogleColor(ui::kColorAccent, kColorDownloadShelfBackground,
@@ -234,7 +234,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorInfoBarButtonIcon] = {kColorToolbarButtonIcon};
   mixer[kColorInfoBarButtonIconDisabled] = {kColorToolbarButtonIconDisabled};
   mixer[kColorInfoBarContentAreaSeparator] =
-      ui::AlphaBlend(kColorToolbarButtonIcon, kColorInfoBarBackground, 0x3A);
+      ui::AlphaBlend(kColorInfoBarButtonIcon, kColorInfoBarBackground, 0x3A);
   mixer[kColorInfoBarForeground] = {kColorToolbarText};
   // kColorInfoBarIcon is referenced in //components/infobars, so
   // we can't use a color id from the chrome namespace. Here we're
