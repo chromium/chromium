@@ -652,6 +652,10 @@ testcase.searchFromMyFiles = async () => {
     ENTRIES.hello,
   ]));
 
+  // Close the search before adding Linux files.
+  await remoteCall.waitAndClickElement(appId, '#search-box .clear');
+  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
+
   // Add Linux files.
   await mountCrostini(appId);
   // Add some Linux specific files.
