@@ -157,7 +157,7 @@ bool IsMobileOptimized(LayerTreeImpl* active_tree) {
                                  active_tree->viewport_mobile_optimized());
 }
 
-viz::ResourceFormat TileRasterBufferFormat(
+viz::SharedImageFormat TileRasterBufferFormat(
     const LayerTreeSettings& settings,
     viz::ContextProvider* context_provider,
     bool use_gpu_rasterization) {
@@ -166,19 +166,19 @@ viz::ResourceFormat TileRasterBufferFormat(
   // because we don't need to communicate the actual ordering as the code all
   // assumes the native skia format.
   if (!context_provider)
-    return viz::RGBA_8888;
+    return viz::SinglePlaneFormat::kRGBA_8888;
 
   // RGBA4444 overrides the defaults if specified, but only for gpu compositing.
   // It is always supported on platforms where it is specified.
   if (settings.use_rgba_4444)
-    return viz::RGBA_4444;
+    return viz::SinglePlaneFormat::kRGBA_4444;
   // Otherwise we use BGRA textures if we can but it depends on the context
   // capabilities, and we have different preferences when rastering to textures
   // vs uploading textures.
   const gpu::Capabilities& caps = context_provider->ContextCapabilities();
   if (use_gpu_rasterization)
-    return viz::PlatformColor::BestSupportedRenderBufferResourceFormat(caps);
-  return viz::PlatformColor::BestSupportedTextureResourceFormat(caps);
+    return viz::PlatformColor::BestSupportedRenderBufferFormat(caps);
+  return viz::PlatformColor::BestSupportedTextureFormat(caps);
 }
 
 void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
@@ -3598,7 +3598,7 @@ void LayerTreeHostImpl::RecreateTileResources() {
 }
 
 void LayerTreeHostImpl::CreateTileManagerResources() {
-  viz::ResourceFormat tile_format = TileRasterBufferFormat(
+  viz::SharedImageFormat tile_format = TileRasterBufferFormat(
       settings_, layer_tree_frame_sink_->context_provider(),
       use_gpu_rasterization_);
 
@@ -3606,7 +3606,8 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
   image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
       settings_.enable_shared_image_cache_for_gpu, use_gpu_rasterization_,
       gpu_compositing,
-      layer_tree_frame_sink_->worker_context_provider_wrapper(), tile_format,
+      layer_tree_frame_sink_->worker_context_provider_wrapper(),
+      tile_format.resource_format(),
       settings_.decoded_image_working_set_budget_bytes, max_texture_size_,
       dark_mode_filter_);
 
@@ -3650,7 +3651,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   viz::RasterContextProvider* worker_context_provider =
       layer_tree_frame_sink_->worker_context_provider();
 
-  viz::ResourceFormat tile_format = TileRasterBufferFormat(
+  viz::SharedImageFormat tile_format = TileRasterBufferFormat(
       settings_, compositor_context_provider, use_gpu_rasterization_);
 
   if (use_gpu_rasterization_) {

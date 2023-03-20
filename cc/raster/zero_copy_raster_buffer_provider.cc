@@ -171,10 +171,10 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     viz::ContextProvider* compositor_context_provider,
-    viz::ResourceFormat tile_format)
+    viz::SharedImageFormat tile_format)
     : gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       compositor_context_provider_(compositor_context_provider),
-      tile_format_(viz::SharedImageFormat::SinglePlane(tile_format)) {}
+      tile_format_(tile_format) {}
 
 ZeroCopyRasterBufferProvider::~ZeroCopyRasterBufferProvider() = default;
 

@@ -37,7 +37,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
       viz::ContextProvider* compositor_context_provider,
       viz::RasterContextProvider* worker_context_provider,
       bool use_gpu_memory_buffer_resources,
-      viz::ResourceFormat tile_format,
+      viz::SharedImageFormat tile_format,
       const gfx::Size& max_tile_size,
       bool unpremultiply_and_dither_low_bit_depth_tiles,
       RasterQueryQueue* const pending_raster_queries,

@@ -32,7 +32,7 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   ZeroCopyRasterBufferProvider(
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       viz::ContextProvider* compositor_context_provider,
-      viz::ResourceFormat tile_format);
+      viz::SharedImageFormat tile_format);
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;
   ~ZeroCopyRasterBufferProvider() override;
 
