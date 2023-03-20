@@ -1897,13 +1897,18 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
         AnimationUtils::KeyframeValueFromComputedStyle(
             property, state.old_style, document,
             state.animating_element.GetLayoutObject());
-    start = InterpolationValue(
-        std::make_unique<InterpolableList>(0),
-        CSSDefaultNonInterpolableValue::Create(start_css_value));
     const CSSValue* end_css_value =
         AnimationUtils::KeyframeValueFromComputedStyle(
             property, state.base_style, document,
             state.animating_element.GetLayoutObject());
+    if (!start_css_value || !end_css_value) {
+      // TODO(crbug.com/1425925): Handle newly registered custom properties
+      // correctly. If that bug is fixed, then this should never happen.
+      return;
+    }
+    start = InterpolationValue(
+        std::make_unique<InterpolableList>(0),
+        CSSDefaultNonInterpolableValue::Create(start_css_value));
     end = InterpolationValue(
         std::make_unique<InterpolableList>(0),
         CSSDefaultNonInterpolableValue::Create(end_css_value));
