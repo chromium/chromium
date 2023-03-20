@@ -123,22 +123,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Renderer" summary="Renderer"/>
 </variants>
 
-<variants name="V4StoreNewFileNames">
-  <variant name="CertCsdDownloadAllowlist"
-      summary="certificate allowlist on downloads"/>
-  <variant name="UrlCsdAllowlist"
-      summary="url allowlist on client side phishing detection"/>
-  <variant name="UrlCsdDownloadAllowlist" summary="url allowlist on downloads"/>
-</variants>
-
-<variants name="V4StoreOldFileNames">
-  <variant name="CertCsdDownloadWhitelist"
-      summary="certificate allowlist on downloads"/>
-  <variant name="UrlCsdDownloadWhitelist" summary="url allowlist on downloads"/>
-  <variant name="UrlCsdWhitelist"
-      summary="url allowlist on client side phishing detection"/>
-</variants>
-
 <histogram name="SafeBrowsing.AdvancedProtection.Enabled"
     enum="AdvancedProtectionEnabledStatus" expires_after="2023-12-01">
   <owner>meacer@chromium.org</owner>
@@ -2623,58 +2607,6 @@ and applied correctly. -->
     recording more efficient) a store is checked (a few times for each download,
     and once when a potentially dangerous subresource is loaded).
   </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.V4Store.NewFileNameExists.{NewFileNames}"
-    enum="Boolean" expires_after="2023-03-09">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Safe Browsing store files are being renamed from offensive to inclusive
-    names. This metric records if the new named file exists for {NewFileNames},
-    while attempting to rename it. Logged on browser startup as SafeBrowsing
-    service is initialized, and if the old file exists.
-  </summary>
-  <token key="NewFileNames" variants="V4StoreNewFileNames"/>
-</histogram>
-
-<histogram name="SafeBrowsing.V4Store.OldFileNameExists.{OldFileNames}"
-    enum="Boolean" expires_after="2023-03-09">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Safe Browsing store files are being renamed from offensive to inclusive
-    names. This metric records if the old named file exists for {OldFileNames},
-    while attempting to rename it. Logged on browser startup as SafeBrowsing
-    service is initialized.
-  </summary>
-  <token key="OldFileNames" variants="V4StoreOldFileNames"/>
-</histogram>
-
-<histogram name="SafeBrowsing.V4Store.OldFileNameInUse.{OldFileNames}"
-    enum="Boolean" expires_after="2023-03-09">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Safe Browsing store files are being renamed from offensive to inclusive
-    names. This metric records if the old name is still being used for
-    {OldFileNames} store file, while attempting to rename it. This should never
-    be true. Logged on browser startup as SafeBrowsing service is initialized.
-  </summary>
-  <token key="OldFileNames" variants="V4StoreOldFileNames"/>
-</histogram>
-
-<histogram name="SafeBrowsing.V4Store.RenameStatus.{NewFileNames}"
-    enum="PlatformFileError" expires_after="2023-03-09">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Safe Browsing store files are being renamed from offensive to inclusive
-    names. This metric records the return status while renaming old store file
-    of {NewFileNames}. Logged on browser startup as SafeBrowsing service is
-    initialized, and if the old file exists and the new one does not.
-  </summary>
-  <token key="NewFileNames" variants="V4StoreNewFileNames"/>
 </histogram>
 
 <histogram name="SafeBrowsing.V4StoreRead.Result"

@@ -56,13 +56,6 @@ const int kHighConfidenceAllowlistMinimumEntryCount = 100;
 const ThreatSeverity kLeastSeverity =
     std::numeric_limits<ThreatSeverity>::max();
 
-// This map contain pairs of the old and the new name for certain .store files.
-constexpr auto kStoreFilesToRename =
-    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>({
-        {"UrlCsdDownloadWhitelist.store", "UrlCsdDownloadAllowlist.store"},
-        {"UrlCsdWhitelist.store", "UrlCsdAllowlist.store"},
-    });
-
 ListInfos GetListInfos() {
   // NOTE(vakh): When adding a store here, add the corresponding store-specific
   // histograms also.
@@ -249,59 +242,6 @@ void RecordCheckUrlForHighConfidenceAllowlistBoolean(
   base::UmaHistogramBoolean(histogram_name, value);
 }
 
-// Renames the file at |old_path| to |new_path|. Executes on a task runner.
-void RenameStoreFile(const base::FilePath& old_path,
-                     const base::FilePath& new_path) {
-  base::File::Error error = base::File::FILE_OK;
-  base::ReplaceFile(old_path, new_path, &error);
-
-  base::UmaHistogramExactLinear(
-      "SafeBrowsing.V4Store.RenameStatus" + GetUmaSuffixForStore(new_path),
-      -error, -base::File::FILE_ERROR_MAX);
-}
-
-// Rename *.store files on disk per |kStoreFilesToRename|. Executes on a
-// task runner.
-void RenameOldStoreFiles(const ListInfos& list_infos,
-                         const base::FilePath base_path) {
-  for (auto const& pair : kStoreFilesToRename) {
-    const base::StringPiece& old_name = pair.first;
-    const base::StringPiece& new_name = pair.second;
-
-    const base::FilePath old_store_path = base_path.AppendASCII(old_name);
-    // Is the old filename also being used for a valid V4Store?
-    bool old_filename_in_use =
-        base::Contains(list_infos, old_name, &ListInfo::filename);
-    base::UmaHistogramBoolean("SafeBrowsing.V4Store.OldFileNameInUse" +
-                                  GetUmaSuffixForStore(old_store_path),
-                              old_filename_in_use);
-    if (old_filename_in_use) {
-      NOTREACHED() << "Trying to rename a store file that's in use: "
-                   << old_name;
-      continue;
-    }
-
-    bool old_path_exists = base::PathExists(old_store_path);
-    base::UmaHistogramBoolean("SafeBrowsing.V4Store.OldFileNameExists" +
-                                  GetUmaSuffixForStore(old_store_path),
-                              old_path_exists);
-    if (!old_path_exists) {
-      continue;
-    }
-
-    const base::FilePath new_store_path = base_path.AppendASCII(new_name);
-    bool new_path_exists = base::PathExists(new_store_path);
-    base::UmaHistogramBoolean("SafeBrowsing.V4Store.NewFileNameExists" +
-                                  GetUmaSuffixForStore(new_store_path),
-                              new_path_exists);
-    if (new_path_exists) {
-      continue;
-    }
-
-    RenameStoreFile(old_store_path, new_store_path);
-  }
-}
-
 }  // namespace
 
 V4LocalDatabaseManager::PendingCheck::PendingCheck(
@@ -392,10 +332,6 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
           nullptr,
           base::OnTaskRunnerDeleter(nullptr))) {
   DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
-
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RenameOldStoreFiles, list_infos_, base_path_));
-
   DCHECK(!base_path_.empty());
   DCHECK(!list_infos_.empty());
 }
