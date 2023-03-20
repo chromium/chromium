@@ -82,7 +82,7 @@ constexpr char kSelfUpdateCRXRun[] = "UpdaterSetup_test.exe";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app_exe.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app.exe";
 #elif BUILDFLAG(IS_LINUX)
-constexpr char kSelfUpdateCRXRun[] = "UpdaterSetup_test";
+constexpr char kSelfUpdateCRXRun[] = "updater_test";
 constexpr char kDoNothingCRXName[] = "updater_qualification_app.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app";
 #endif

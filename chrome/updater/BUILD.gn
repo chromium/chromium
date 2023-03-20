@@ -608,12 +608,17 @@ if (is_win || is_mac || is_linux) {
     }
   }
 
-  if (is_mac || is_win) {
+  if (is_linux || is_mac || is_win) {
     crx3("updater_selfupdate_test_crx") {
       base_dir = "$root_build_dir"
       key = "test/data/selfupdate_test_key.der"
       output = "$root_build_dir/updater_selfupdate.crx3"
       testonly = true
+
+      if (is_linux) {
+        inputs = [ "$root_build_dir/updater_test" ]
+        deps = [ "//chrome/updater/linux:updater_test" ]
+      }
 
       if (is_mac) {
         inputs = [
@@ -908,7 +913,10 @@ if (is_win || is_mac || is_linux) {
       sources += [ "test/integration_tests_linux.cc" ]
 
       data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
-      data_deps = [ "//chrome/updater/linux:updater_test" ]
+      data_deps = [
+        "//chrome/updater/linux:updater_test",
+        ":updater_selfupdate_test_crx",
+      ]
       public_configs = [ "linux:libsystemd" ]
     }
 
@@ -976,6 +984,9 @@ if (is_win || is_mac || is_linux) {
     }
     if (is_linux) {
       data_deps = [ "//chrome/updater/linux:updater_test" ]
+      if (is_chrome_branded) {
+          data_deps += [ "//third_party/updater:old_updater" ]
+      }
     }
   }
 

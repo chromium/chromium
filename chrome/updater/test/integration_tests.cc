@@ -420,9 +420,9 @@ TEST_F(IntegrationTest, Install) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(crbug.com/1398845) Enable test once SetupRealUpdaterLowerVersion
-// is implemented.
-#if !BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1398845) Enable test once version-skewed updater is available
+// for unbranded Linux.
+#if !(BUILDFLAG(IS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING))
 TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -457,7 +457,7 @@ TEST_F(IntegrationTest, OverinstallBroken) {
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
-#endif  // !BUILDFLAG(IS_LINUX)
+#endif  // !(BUILDFLAG(IS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING))
 
 TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   ASSERT_NO_FATAL_FAILURE(Install());
@@ -875,9 +875,9 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(COMPONENT_BUILD)
-// TODO(crbug.com/1398845): Enable test once SetupRealUpdaterLowerVersion
-// is implemented.
-#if !BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1398845) Enable test once version-skewed updater is available
+// for unbranded Linux.
+#if !(BUILDFLAG(IS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING))
 TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
@@ -954,7 +954,7 @@ TEST_F(IntegrationTest, InstallLowerVersion) {
 #endif  // IS_WIN
 }
 
-#endif  // !BUILDFLAG(IS_LINUX)
+#endif  // !(BUILDFLAG(IS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING))
 #endif
 #endif
 

@@ -4,7 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 
-if (is_win || is_mac) {
+if (is_win || is_mac || is_linux) {
   copy("old_updater") {
     testonly = true
     sources = []
@@ -73,6 +73,12 @@ if (is_win || is_mac) {
         "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/Info.plist",
         "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/MacOS/ChromiumUpdater_test",
         "chromium_mac_arm64/ChromiumUpdater_test.app/Contents/PkgInfo",
+      ]
+    }
+
+    if (is_linux && is_chrome_branded) {
+      sources += [
+        "chrome_linux64/updater_test",
       ]
     }
 

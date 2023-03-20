@@ -663,7 +663,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_linux64',
-          'version': 'fASOrs-2QxLH4wGz3cq2kYWaOmOZ6iPzXWBaHW-3YRkC',
+          'version': 'iSlHWT_rV1izyFEkrQSJUVMZ_Z_8yUezA1tZGxQGsyQC',
         },
       ],
   },
