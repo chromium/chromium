@@ -5,7 +5,6 @@
 import './accelerator_subsection.js';
 import '../css/shortcut_customization_shared.css.js';
 import './shortcut_input.js';
-import './search/search_box.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -14,7 +13,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorSubsectionElement} from './accelerator_subsection.js';
 import {AcceleratorCategory, AcceleratorSubcategory} from './shortcut_types';
-import {isSearchEnabled} from './shortcut_utils.js';
 import {getTemplate} from './shortcuts_page.html.js';
 
 /**
@@ -81,11 +79,6 @@ export class ShortcutsPageElement extends PolymerElement {
     for (const subsection of this.getAllSubsections()) {
       subsection.updateSubsection();
     }
-  }
-
-  protected shouldHideSearchBox(): boolean {
-    // Hide the search box when flag is disabled.
-    return !isSearchEnabled();
   }
 
   static get template(): HTMLTemplateElement {

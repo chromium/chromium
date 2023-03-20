@@ -31,8 +31,14 @@
     font-weight: 500;
     letter-spacing: 0.25px;
   }
+
+  #container {
+    display: grid;
+    grid-template-columns: var(--columns-nav);
+    width: 100%;
+  }
 </style>
-<div id="container" part="toolbar-container">
+<div id="container">
   <div id="leftContent">
     <template is="dom-if" if="[[isNarrow]]">
       <cr-icon-button id="menuButton" class="no-overlap"
@@ -43,4 +49,5 @@
     </template>
     <h1 id="title" part="title">[[title]]</h1>
   </div>
+  <div id="mainContent"><slot name="toolbar-main"></slot></div>
 </div>

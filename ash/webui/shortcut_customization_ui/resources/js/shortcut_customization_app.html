@@ -5,18 +5,16 @@
     font-weight: var(--shortcuts-font-weight-regular);
   }
 
-  #navigationPanel::part(toolbar-container) {
-    align-items: flex-end;
-    display: flex;
-    height: 100%;
-  }
-
   #navigationPanel::part(title) {
     padding-inline-start: 8px;
   }
 
   #navigationPanel::part(navigation-item) {
     padding-inline-start: 28px;
+  }
+
+  #navigationPanel::part(nav-spacer) {
+    height: 20px;
   }
 
   #restoreAllButton {
@@ -43,9 +41,17 @@
   #bottomNavContentPanel {
     margin-inline-start: 12px;
   }
+
+  #searchBoxWrapper {
+    font-size: var(--shortcuts-font-size-default);
+    padding-inline: var(--container-padding-nav);
+  }
 </style>
 <navigation-view-panel id="navigationPanel" title="[[i18n('appTitle')]]"
     show-tool-bar>
+  <div slot="toolbar-main" id="searchBoxWrapper">
+    <search-box hidden="[[shouldHideSearchBox()]]"></search-box>
+  </div>
   <div slot="bottom-nav-content-panel" id="bottomNavContentPanel">
     <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked"
       hidden="[[shouldHideRestoreAllButton()]]">

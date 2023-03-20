@@ -6,6 +6,7 @@ import './accelerator_edit_dialog.js';
 import './shortcut_input.js';
 import './shortcuts_page.js';
 import '../strings.m.js';
+import './search/search_box.js';
 import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
@@ -26,7 +27,7 @@ import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
-import {getCategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
+import {getCategoryNameStringId, isCustomizationDisabled, isSearchEnabled} from './shortcut_utils.js';
 
 export interface ShortcutCustomizationAppElement {
   $: {
@@ -224,6 +225,11 @@ export class ShortcutCustomizationAppElement extends
 
   protected shouldHideRestoreAllButton(): boolean {
     return isCustomizationDisabled();
+  }
+
+  protected shouldHideSearchBox(): boolean {
+    // Hide the search box when flag is disabled.
+    return !isSearchEnabled();
   }
 
   static get template(): HTMLTemplateElement {

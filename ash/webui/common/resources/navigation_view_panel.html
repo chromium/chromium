@@ -107,7 +107,8 @@
       <page-toolbar
           title="[[title]]"
           is-narrow="[[!showNav]]"
-          exportparts="title, toolbar-container">
+          exportparts="title">
+        <slot slot="toolbar-main" name="toolbar-main"></slot>
       </page-toolbar>
     </div>
   </template>
@@ -128,12 +129,13 @@
           selected-item="{{selectedItem}}"
           exportparts="navigation-item">
       </navigation-selector>
-    <slot name="bottom-nav-content-drawer"></slot>
+      <slot name="bottom-nav-content-drawer"></slot>
     </div>
   </cr-drawer>
   <template is="dom-if" if="[[showNav]]">
     <div id="sideNav">
       <div id="navigationSelector" class="left-aligned">
+        <div part="nav-spacer"></div>
         <navigation-selector selector-items={{selectorItems_}}
             selected-item="{{selectedItem}}" exportparts="navigation-item">
         </navigation-selector>
